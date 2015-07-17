@@ -3,7 +3,8 @@
 
 ### What is Hygieia
 
-A single, configurable, easy to use dashboard to visualize near real-time status of the entire delivery pipeline.
+#####Pronunciation:  	ee y EE aa (origin Greek)
+Hygieia is a single, configurable, easy to use dashboard to visualize near real-time status of the entire delivery pipeline.
 
 We use tools for everything today and each tool has its own unique dashboard to present information. What is lacking is a near real time consolidated view of the end-to-end delivery pipeline.  This view and a continuous feedback loop is critical to the success of
 any DevOps organization.
