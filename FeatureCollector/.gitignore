@@ -1,0 +1,22 @@
+# Mac artifacts
+.DS_Store
+
+# Eclipse artifacts
+.project
+.settings
+.classpath
+
+# Logs
+logs
+log
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Distributable artifacts
+target
+
+# Specific project files

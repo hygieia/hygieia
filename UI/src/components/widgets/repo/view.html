@@ -1,0 +1,44 @@
+<div class="repo-view">
+    <div class="widget">
+        <div class="widget-heading">
+            Commits per day
+        </div>
+        <div class="widget-body">
+            <chartist class="ct-chart ct-octave dash-chart-alt"
+                      chartist-chart-type="Line"
+                      chartist-data="repoView.commitChartData"
+                      chartist-chart-options="repoView.commitChartOptions"
+                      chartist-events="repoView.commitChartEvents"
+                    >
+            </chartist>
+        </div>
+    </div>
+
+    <div class="widget">
+        <div class="widget-heading">
+            Summary
+        </div>
+        <div class="widget-body">
+            <table class="table repo-summary-table">
+                <tr>
+                    <td>Total Commits</td>
+                    <td>{{repoView.lastDayCommitCount}}</td>
+                    <td>{{repoView.lastSevenDaysCommitCount}}</td>
+                    <td>{{repoView.lastFourteenDaysCommitCount}}</td>
+                </tr>
+                <tr>
+                    <td>Contributors</td>
+                    <td>{{repoView.lastDayContributorCount}}</td>
+                    <td>{{repoView.lastSevenDaysContributorCount}}</td>
+                    <td>{{repoView.lastFourteenDaysContributorCount}}</td>
+                </tr>
+                <tr class="totals">
+                    <td></td>
+                    <td>Today</td>
+                    <td>Last<br/>7 Days</td>
+                    <td>Last<br/>14 Days</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

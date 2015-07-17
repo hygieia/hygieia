@@ -1,0 +1,57 @@
+<div class="feature-view">
+	<div class="col-lg-12 col-sm-6">
+		<div class="widget">
+			<div class="widget-body">
+				<div class="col-xs-9.5 text-standard-sm dash-overflow">
+					Scope: <em>{{ctrl.teamName}}</em>
+				</div>
+			</div>
+			
+			<div class="widget-heading">
+				<div class="col-xs-2.5 text-standard-lg pull-right">
+					{{ctrl.daysTilEnd}}</div>
+				<div class="col-xs-9.5 text-standard-lg dash-overflow">
+					Sprint: <em>{{ctrl.sprintName}}</em>
+				</div>
+			</div>
+
+			<div class="widget-body" fit-text=".build-summary-count > span"
+				fit-text-max="40">
+				<div class="row">
+					<div class="col-xs-4">
+						<div class="story-summary-count story-total">
+							<!-- {{ctrl.totalStoryPointEvaluator()}} -->
+							<span>{{ctrl.totalStoryPoints}}</span>
+						</div>
+						<div class="story-summary-type">Total</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="story-summary-count story-wip">
+							<!-- {{ctrl.wipStoryPointEvaluator()}} -->
+							<span>{{ctrl.wipStoryPoints}}</span>
+						</div>
+						<div class="story-summary-type">WIP</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="story-summary-count story-done">
+							<!-- {{ctrl.doneStoryPointEvaluator()}} -->
+							<span>{{ctrl.doneStoryPoints}}</span>
+						</div>
+						<div class="story-summary-type">Done</div>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+		<div class="widget">
+			<div class="widget-body">
+				<div class="widget-heading">Features in Progress<button class="pull-right btn-default btn-xm active" ng-show="ctrl.showFeatureLimitButton" ng-click="ctrl.setFeatureLimit()" ng-init="ctrl.featureLimit=4">+/-</button></div>
+				<div class="dash-row" ng-repeat="feature in ctrl.epicStoryPoints | limitTo:ctrl.featureLimit">
+					<div class="pull-right">{{feature.sEstimate}}</div>
+					<div class="dash-overflow">{{feature.sEpicName}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

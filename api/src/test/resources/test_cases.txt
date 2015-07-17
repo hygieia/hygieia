@@ -1,0 +1,36 @@
+db.components.insert({
+    "_id" : ObjectId("552e7b21c44a49be6261d54a"),
+    "_class" : "com.capitalone.dashboard.model.Component",
+    "name" : "VersionOne App",
+    "collectorItems" : {
+        "ScopeOwner" : [ 
+            {
+                "_id" : ObjectId("552ecefac44af4d37f321a6e"),
+                "_class" : "com.capitalone.dashboard.model.TeamCollectorItem",
+                "description" : "Jugaadu",
+                "enabled" : false,
+                "collectorId" : ObjectId("552ece35c44af4da8762a087"),
+                "options" : {
+                    "assetState" : "Active",
+                    "changeDate" : "2015-02-06T14:12:19.9670000",
+                    "isDeleted" : "False",
+                    "teamId" : "Team:9933916"
+                }
+            }
+        ]
+    }
+})
+
+NOTE:  The collector ID above MUST match an existing, real collectorId from your collectors db collection
+
+http://localhost:8080/api/feature?component=552e7b21c44a49be6261d54a&number=B-736545
+http://localhost:8080/api/feature/Team:9933916?component=552e7b21c44a49be6261d54a
+http://localhost:8080/api/feature/estimates/super/Team:9933916?component=552e7b21c44a49be6261d54a
+http://localhost:8080/api/feature/estimates/total/Team:9933916?component=552e7b21c44a49be6261d54a
+http://localhost:8080/api/feature/estimates/wip/Team:9933916?component=552e7b21c44a49be6261d54a
+http://localhost:8080/api/feature/estimates/done/Team:9933916?component=552e7b21c44a49be6261d54a
+http://localhost:8080/api/iteration/Team:9933916?component=552e7b21c44a49be6261d54a
+http://localhost:8080/api/scope/Scope:4743068?component=552e7b21c44a49be6261d54a
+http://localhost:8080/api/scope?component=552e7b21c44a49be6261d54a
+http://localhost:8080/api/collector/item/type/ScopeOwner
+http://localhost:8080/api/collector/item/552ecefac44af4d37f321a6e
