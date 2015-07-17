@@ -1,4 +1,4 @@
-Hudson Collector
+Build Collector
 =================
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
@@ -38,4 +38,3 @@ for information about sourcing this properties file.
 
     #Determines if build console log is collected - defaults to false
     hudson.saveLog=true
-
