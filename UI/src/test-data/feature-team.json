@@ -1,0 +1,66 @@
+[ {
+	"_id" : "Team:102682",
+	"name" : "This is the Testable Team",
+	"changeDate" : "2015-01-30T00:00:00.0000000",
+	"assetState" : "Active"
+}, {
+	"_id" : "Team:102683",
+	"name" : "ECM- Cups of Joe",
+	"changeDate" : "2014-02-07T16:24:09.6700000",
+	"assetState" : "Closed"
+}, {
+	"_id" : "Team:102684",
+	"name" : "ECM- Lightning Fury",
+	"changeDate" : "2013-03-22T16:53:14.8170000",
+	"assetState" : "Active"
+}, {
+	"_id" : "Team:106022",
+	"name" : "Team SMART",
+	"changeDate" : "2014-08-04T09:09:37.8070000",
+	"assetState" : "Closed"
+}, {
+	"_id" : "Team:106653",
+	"name" : "Mercernaries",
+	"changeDate" : "2014-02-24T14:22:40.4400000",
+	"assetState" : "Closed"
+}, {
+	"_id" : "Team:106687",
+	"name" : "ScrumDog Millionaires - Team A",
+	"changeDate" : "2013-05-21T10:09:19.3900000",
+	"assetState" : "Active"
+}, {
+	"_id" : "Team:106690",
+	"name" : "ScrumDog Millionaires - Team B",
+	"changeDate" : "2013-05-21T10:10:16.3270000",
+	"assetState" : "Active"
+}, {
+	"_id" : "Team:106691",
+	"name" : "EC Dash",
+	"changeDate" : "2014-02-07T16:24:16.2870000",
+	"assetState" : "Closed"
+}, {
+	"_id" : "Team:107334",
+	"name" : "Stairway to Metrics",
+	"changeDate" : "2013-12-19T16:23:31.6670000",
+	"assetState" : "Active"
+}, {
+	"_id" : "Team:111288",
+	"name" : "CM Data Fu",
+	"changeDate" : "2014-02-07T16:24:22.8970000",
+	"assetState" : "Closed"
+}, {
+	"_id" : "Team:112035",
+	"name" : "BSA CoP",
+	"changeDate" : "2014-02-07T16:24:27.1800000",
+	"assetState" : "Closed"
+}, {
+	"_id" : "Team:112036",
+	"name" : "Coaches",
+	"changeDate" : "2013-03-29T10:49:51.0700000",
+	"assetState" : "Active"
+}, {
+	"_id" : "Team:112038",
+	"name" : "Product Owner CoP",
+	"changeDate" : "2014-02-07T16:24:41.8230000",
+	"assetState" : "Closed"
+} ]

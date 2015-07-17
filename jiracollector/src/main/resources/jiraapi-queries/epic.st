@@ -1,0 +1,1 @@
+epic(epicKey) ::= "issue/$epicKey$"

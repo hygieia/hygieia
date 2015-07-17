@@ -1,0 +1,268 @@
+/**
+ * Widget directives should be used in layout fines to define the
+ * specific type of widget to be used in that space
+ */
+(function () {
+    'use strict';
+
+    angular
+        .module('devops-dashboard.core')
+
+        // used by widgets to set their current state
+        // CONFIGURE will render the common config screen instead of the widget content
+        .constant('WIDGET_STATE', {
+            READY: 1,
+            CONFIGURE: 2,
+            WAITING: 3,
+            NOT_COLLECTING: 4
+        })
+
+        // constant to be used by widgets to set their state
+        // ERROR: causes the widget's panel to use the 'panel-danger' class
+        .constant('DISPLAY_STATE', {
+            DEFAULT: 1,
+            ERROR: 2
+        })
+        .directive('widget', widgetDirective);
+
+    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$modal', 'WIDGET_STATE', 'DISPLAY_STATE', '$interval', 'dashboardData','$cookies'];
+    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $modal, WIDGET_STATE, DISPLAY_STATE, $interval, dashboardData,$cookies) {
+        return {
+            templateUrl: 'app/dashboard/views/widget.html',
+            require: '^widgetContainer',
+            restrict: 'E',
+            controller: controller,
+            scope: {
+                widget: '=',
+                title: '@widgetTitle'
+            },
+            link: link
+        };
+
+        function link(scope, element, attrs, containerController) {
+            // make it so name is not case sensitive
+            attrs.name = attrs.name.toLowerCase();
+
+            scope.$widgetEl = element;
+            scope.container = containerController;
+            scope.widgetDefinition = widgetManager.getWidget(attrs.name);
+            scope.title = attrs.title || scope.widgetDefinition.view.defaults.title;
+
+
+            // when the widget loads, register it with the container which will then call back to process
+            // the widget with the proper config value if it's already been configured on the dashboard
+            containerController.registerWidget({
+                callback: processWidget,
+                element: element,
+                attrs: attrs
+            });
+
+            // determine what state it's in based on the passed config and load accordingly
+            function processWidget(configFromApi, widgetConfig, dashboard) {
+                // make sure widget has access to dashboard and config
+                scope.dashboard = dashboard;
+                scope.widgetConfig = widgetConfig;
+
+                // when the widget registers and sets a 'getState' method use that
+                // instead of the default logic to determine whether the widget should be loaded
+                if (scope.widgetDefinition.getState) {
+                    scope.state = scope.widgetDefinition.getState(widgetConfig);
+                }
+                else if (!configFromApi) {
+                    if (scope.widgetDefinition.config) {
+                        scope.state = WIDGET_STATE.CONFIGURE;
+                    }
+                }
+
+                scope.init();
+            }
+        }
+
+        function controller($scope, $element) {
+            $scope.widget_state = WIDGET_STATE;
+            $scope.display_state = DISPLAY_STATE;
+
+            // default variables
+            $scope.title = '';
+            $scope.state = WIDGET_STATE.READY;
+            $scope.display = DISPLAY_STATE.DEFAULT;
+
+            // to be set by link
+            $scope.widgetConfig = null;
+            $scope.widgetDefinition = null;
+            $scope.dashboard = null;
+            $scope.container = null;
+            $scope.owner = null;
+
+            $scope.alerts = [];
+
+
+
+            $scope.closeAlert = function(index) {
+                $scope.alerts.splice(index, 1);
+            };
+
+            $scope.lastUpdatedDisplay = '';
+
+            // public methods
+            $scope.configModal = configModal;
+            $scope.setState = setState;
+            $scope.init = init;
+            $scope.checkPermission=checkPermission;
+
+            function checkPermission(){
+
+                dashboardData.myowner($scope.dashboard.title).then(processmyownerresponse);
+
+
+            }
+
+            function processmyownerresponse(data)
+            {
+
+                $scope.owner=data;
+                console.log($scope.owner);
+                if ($scope.owner == $cookies.username || $cookies.username == "admin")
+                {
+                    console.log("Yeah you are the owner");
+                    configModal();
+                }
+                else
+                {
+                    $scope.alerts.push({type: 'info', msg: 'You are not authorized'});
+                }
+            }
+
+            // method implementations
+            function configModal() {
+                // load up a modal in the context of the settings defined in
+                // the config property when the widget was registered
+                var modalConfig = angular.extend({
+                	controllerAs: 'ctrl',
+                    resolve: {
+                        modalData: function () {
+                            return {
+                                dashboard: $scope.dashboard,
+                                widgetConfig: $scope.widgetConfig
+                            };
+                        }
+                    }
+                }, $scope.widgetDefinition.config);
+
+                // when the widget closes if an object is passed we'll assume it's an updated
+                // widget configuration so try and send it to the api or update the existing one
+                $modal.open(modalConfig).result.then(function (newWidgetConfig) {
+                    if (newWidgetConfig) {
+                        // use existing values if they're not defined
+                        angular.extend($scope.widgetConfig, newWidgetConfig);
+
+                        // support single value or array values for collectorItemId
+                        if ($scope.widgetConfig.collectorItemId) {
+                            $scope.widgetConfig.collectorItemIds = [$scope.widgetConfig.collectorItemId];
+                            delete $scope.widgetConfig.collectorItemId;
+                        }
+
+                        dashboardData
+                            .upsertWidget($scope.dashboard.id, $scope.widgetConfig)
+                            .then(function (response) {
+                                // response comes back with two properties, a widget and a component
+                                // we need to update the component on the dashboard so that when the
+                                // widget loads it will be able to get to the collector data. we
+                                // then need to update the widget configuration stored on the container
+
+                                // add or update the widget from the response.
+                                // required when a new widget id is created
+                                if(response.widget !== null && typeof response.widget == 'object') {
+                                    angular.extend($scope.widgetConfig, response.widget);
+                                }
+
+                                // save the widget locally
+                                $scope.container.upsertWidget($scope.widgetConfig);
+
+                                $scope.container.upsertComponent(response.component);
+
+                                // TODO: should probably call back to the widget's getState method
+                                $scope.state = WIDGET_STATE.READY;
+
+                                init();
+                            });
+                    }
+                });
+            }
+
+            // redraws the widget which forces it to go through the entire flow
+            // TODO: this method causes the screen to flash and should probably just render and replace content
+            function init() {
+                stopInterval();
+
+                // don't request if widget is not in the read state
+                if ($scope.state != WIDGET_STATE.READY) {
+                    return;
+                }
+
+                // grab values from the registered configuration
+                var templateUrl = $scope.widgetDefinition.view.templateUrl;
+                var controllerName = $scope.widgetDefinition.view.controller;
+                var controllerAs = $scope.widgetDefinition.view.controllerAs || 'ctrl';
+
+                // create the widget's controller based on config values
+                $scope.widgetViewController = $controller(controllerName + ' as ' + controllerAs, {
+                    $scope: $scope
+                });
+
+                if(!$scope.widgetViewController.load) {
+                    throw new Error(controllerName + ' must define a load method');
+                }
+
+                // load the widget with content from the given template url
+                $http.get(templateUrl, {cache: $templateCache})
+                    .then(function (response) {
+                        //TODO: widget implementation should actually start this up after all the data is loaded
+                        startInterval();
+
+                        // request the content and add it to the placeholder
+                        var $contentEl = angular.element($scope.$widgetEl[0].querySelector('.widget-body-main'));
+                        $contentEl.html(response.data);
+                        $contentEl.children().data('$ngControllerController', $scope.widgetViewCtrl);
+                        $compile($contentEl.contents())($scope);
+
+                        // Ask the widget to update itself
+                        refresh();
+                    });
+            }
+
+            function setState(state) {
+                $scope.state = state;
+                stopInterval();
+            }
+
+            var refreshInterval;
+
+            function startInterval() {
+                stopInterval();
+
+                // TODO: make timeout a setting in the widget configuration
+                if($scope.widgetViewController && $scope.widgetViewController.load) {
+                    refreshInterval = $interval(refresh, 60000);
+                }
+            }
+
+            function stopInterval() {
+                $interval.cancel(refreshInterval);
+            }
+
+            function refresh() {
+                var load = $scope.widgetViewController.load();
+                if (load && load.then) {
+                    load.then(function(result) {
+                        var lastUpdated = angular.isArray(result) ? _.max(result) : result;
+                        $scope.lastUpdatedDisplay = moment(lastUpdated).dash('ago');
+                    });
+                }
+            }
+
+            // prevent intervals from continuing to be called when changing pages
+            $scope.$on('$routeChangeStart', stopInterval);
+        }
+    }
+})();

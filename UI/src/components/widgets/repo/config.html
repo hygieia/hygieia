@@ -1,0 +1,48 @@
+<widget-modal widget-modal-title="Configure Code Repo Widget">
+<form name="configForm"
+	ng-submit="repoConfig.submit(configForm.$valid, repoConfig.repoUrl, repoConfig.repoOption)"
+	novalidate="novalidate">
+
+	<div class="form-group text-center"
+		ng-class="{'has-error': configForm.repoOption.$invalid && repoConfig.submitted}">
+		<label class="modal-label">Repo Type</label> <select name="repoId"
+			class="form-control" ng-model="repoConfig.repoOption"
+			ng-options="repoOption.value for repoOption in repoConfig.repoOptions"
+			ng-init="repoConfig.repoOption = repoConfig.repoOptions[0]" required>
+		</select>
+
+		<p class="help-block"
+			ng-if="configForm.collectorItemId.$error.required">Please select
+			a repository type</p>
+	</div>
+
+	<div class="form-group clearfix"
+		ng-class="{'has-error': configForm.repoUrl.$invalid && repoConfig.submitted}">
+		<div class="col-sm-push-2 col-sm-8">
+			<label class="modal-label">Repo URL</label> <input type="text"
+				name="repoUrl" class="form-control" ng-model="repoConfig.repoUrl"
+				placeholder="Enter URL" required>
+
+			<p class="help-block" ng-if="configForm.repoUrl.$error.required">Repository
+				URL is required</p>
+		</div>
+	</div>
+
+	<div class="form-group clearfix"
+		ng-class="{'has-error': configForm.gitBranch.$invalid && repoConfig.submitted}"
+		 ng-if="repoConfig.repoOption.name == 'GitHub (public)' || repoConfig.repoOption.name == 'GitHub'">
+		<div class="col-sm-push-2 col-sm-8">
+			<label class="modal-label" id="repoLabel">GitHub branch</label> <input
+				type="text" name="gitBranch" class="form-control"
+				ng-model="repoConfig.gitBranch" placeholder="Enter Branch" required>
+
+			<p class="help-block" ng-if="configForm.gitBranch.$error.required">GitHub
+				branch is required</p>
+		</div>
+	</div>
+
+	<div class="button-row row text-center">
+		<button type="submit" class="btn btn-primary btn-wide">Save</button>
+	</div>
+</form>
+</widget-modal>

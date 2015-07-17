@@ -1,0 +1,78 @@
+@import '../../../app/css/variables.less';
+@import '../../../app/css/mixins.less';
+
+/* Add custom styles here. Any properties involving colors
+   should considering using values from the variables.less file.
+   All dash variables are prefixed with @dash.
+
+   Widget styles should only consume variables from dash and never
+   set a dash or bootstrap variables. This allows the theme to maintain
+   control of overall styles
+*/
+
+.feature-view {
+	.sprintDaysTilEnd {
+	    font-size: 1.5rem;
+	    float: right;
+	}
+	
+	.story-summary-count {
+        border-bottom: 1px solid @dash-divider;
+        font-size: 4rem;
+        margin-bottom: .5rem;
+        text-align: center;
+    }
+
+    .story-summary-type {
+        .text-standard;
+        text-align: center;
+    }
+    
+    .story-total {
+    	color: @dash-chart-alt-fill;
+    }
+    
+    .story-wip {
+    	color: @dash-status-warn;
+    }
+    
+    .story-done {
+    	color: @dash-status-pass;
+    }    
+    
+    .story-total-pass {
+    	color: @dash-status-pass;
+    }
+    
+    .story-total-warn {
+    	color: @dash-status-warn;
+    }
+    
+    .story-total-fail {
+    	color: @dash-status-fail;
+    }
+    
+    .story-wip-pass {
+    	color: @dash-status-pass;
+    }
+    
+    .story-wip-warn {
+    	color: @dash-status-warn;
+    }
+    
+    .story-wip-fail {
+    	color: @dash-status-fail;
+    }
+    
+    .story-done-pass {
+    	color: @dash-status-pass;
+    }
+    
+    .story-done-warn {
+    	color: @dash-status-warn;
+    }
+    
+    .story-done-fail {
+    	color: @dash-status-fail;
+    }
+}
