@@ -5,6 +5,7 @@ public class UDeployApplication extends CollectorItem {
     private static final String APP_NAME = "applicationName";
     private static final String APP_ID = "applicationId";
 
+
     public String getInstanceUrl() {
         return (String) getOptions().get(INSTANCE_URL);
     }
@@ -17,6 +18,7 @@ public class UDeployApplication extends CollectorItem {
         return (String) getOptions().get(APP_ID);
     }
 
+    
     public void setApplicationId(String id) {
         getOptions().put(APP_ID, id);
     }
@@ -29,6 +31,7 @@ public class UDeployApplication extends CollectorItem {
         getOptions().put(APP_NAME, name);
     }
 
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

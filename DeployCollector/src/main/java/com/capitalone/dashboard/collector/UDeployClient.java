@@ -4,6 +4,8 @@ import com.capitalone.dashboard.model.Environment;
 import com.capitalone.dashboard.model.EnvironmentComponent;
 import com.capitalone.dashboard.model.EnvironmentStatus;
 import com.capitalone.dashboard.model.UDeployApplication;
+import com.capitalone.dashboard.model.UDeployEnvResCompData;
+import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
 
 import java.util.List;
 
@@ -42,7 +44,8 @@ public interface UDeployClient {
      *
      * @param application a {@link UDeployApplication}
      * @param environment an {@link Environment}
+     * @param environmentComponentRepository 
      * @return list of {@link EnvironmentStatus}es
      */
-    List<EnvironmentStatus> getEnvironmentStatusData(UDeployApplication application, Environment environment);
+    List<UDeployEnvResCompData> getEnvironmentResourceStatusData(UDeployApplication application, Environment environment);
 }

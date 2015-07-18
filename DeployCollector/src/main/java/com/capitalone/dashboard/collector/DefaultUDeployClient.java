@@ -4,6 +4,8 @@ import com.capitalone.dashboard.model.Environment;
 import com.capitalone.dashboard.model.EnvironmentComponent;
 import com.capitalone.dashboard.model.EnvironmentStatus;
 import com.capitalone.dashboard.model.UDeployApplication;
+import com.capitalone.dashboard.model.UDeployEnvResCompData;
+import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
 import com.capitalone.dashboard.util.Supplier;
 
 import org.apache.commons.codec.binary.Base64;
@@ -98,6 +100,7 @@ public class DefaultUDeployClient implements UDeployClient {
 				component.setEnvironmentUrl(normalizeUrl(
 						application.getInstanceUrl(), "/#environment/"
 								+ environment.getId()));
+				component.setComponentID(str(componentObject, "id"));
 				component.setComponentName(str(componentObject, "name"));
 				component.setComponentVersion(str(versionObject, "name"));
 				component.setDeployed(complianceObject.get("correctCount")
@@ -112,66 +115,94 @@ public class DefaultUDeployClient implements UDeployClient {
 		return components;
 	}
 
+	// Called by DefaultEnvironmentStatusUpdater
 	@Override
-	public List<EnvironmentStatus> getEnvironmentStatusData(
+	public List<UDeployEnvResCompData> getEnvironmentResourceStatusData(
 			UDeployApplication application, Environment environment) {
-		List<EnvironmentStatus> environmentStatuses = new ArrayList<>();
-		String url = "deploy/application/" + application.getApplicationId()
-				+ "/components";
 
-		// Get the environment status for each application component
-		for (Object item : paresAsArray(makeRestCall(
-				application.getInstanceUrl(), url))) {
+		List<UDeployEnvResCompData> environmentStatuses = new ArrayList<>();
+		String urlNonCompliantResources = "deploy/environment/"
+				+ environment.getId() + "/noncompliantResources";
+		String urlAllResources = "deploy/environment/" + environment.getId()
+				+ "/resources";
+
+		ResponseEntity<String> nonCompliantResourceResponse = makeRestCall(
+				application.getInstanceUrl(), urlNonCompliantResources);
+		JSONArray nonCompliantResourceJSON = paresAsArray(nonCompliantResourceResponse);
+		ResponseEntity<String> allResourceResponse = makeRestCall(
+				application.getInstanceUrl(), urlAllResources);
+		JSONArray allResourceJSON = paresAsArray(allResourceResponse);
+
+		for (Object item : allResourceJSON) {
 			JSONObject jsonObject = (JSONObject) item;
-			String componentId = str(jsonObject, "id");
-			String componentName = str(jsonObject, "name");
+			if (jsonObject != null) {
+				JSONObject parentObject = (JSONObject) jsonObject.get("parent");
+				UDeployEnvResCompData data = new UDeployEnvResCompData();
+				data.setEnvironmentName(environment.getName());
+				data.setCollectorItemId(application.getId());
+				String resourceName = str(jsonObject, "name");
+				
+				data.setResourceName(resourceName);
+				boolean status = "ONLINE".equalsIgnoreCase(str(parentObject,
+						"status"));
+				data.setOnline(status);
+				JSONArray jsonChildren = (JSONArray) jsonObject.get("children");
+				if ((jsonChildren != null) && (jsonChildren.size() > 0)) {
+					for (Object children : jsonChildren) {
+						JSONObject childrenObject = (JSONObject) children;
+						String componentName = (String) childrenObject
+								.get("name");
 
-			environmentStatuses.addAll(getComponentMappedEnvironmentStatus(
-					application, environment, componentName, componentId));
-		}
-		return environmentStatuses;
-	}
+						data.setComponentName(componentName);
+						JSONArray jsonVersions = (JSONArray) childrenObject
+								.get("versions");
+						String version = "UNKNOWN";
+						data.setDeployed(false);
 
-	private List<EnvironmentStatus> getComponentMappedEnvironmentStatus(
-			UDeployApplication application, Environment environment,
-			String componentName, String componentId) {
-		List<EnvironmentStatus> environmentStatuses = new ArrayList<>();
-		String url = "deploy/environment/" + environment.getId()
-				+ "/componentMappings/" + componentId;
-
-		for (Object item : paresAsArray(makeRestCall(
-				application.getInstanceUrl(), url))) {
-			JSONObject jsonObject = (JSONObject) item;
-			JSONArray children = (JSONArray) jsonObject.get("children");
-
-			if (children != null) {
-				for (Object child : children) {
-					JSONObject resourceObject = (JSONObject) child;
-					environmentStatuses.add(statusFor(environment.getName(),
-							componentName, resourceObject));
+						if ((jsonVersions != null) && (jsonVersions.size() > 0)) {
+							JSONObject versionObject = (JSONObject) jsonVersions
+									.get(0);
+							version = (String) versionObject.get("name");
+							data.setAsOfDate(date(versionObject, "created"));
+							data.setDeployed(true);
+						} else {
+							// get it from non-compliant resource list
+							nonCompliantSearchLoop: for (Object nonCompItem : nonCompliantResourceJSON) {
+								JSONArray nonCompChildrenArray = (JSONArray) ((JSONObject) nonCompItem)
+										.get("children");
+								for (Object nonCompChildItem : nonCompChildrenArray) {
+									JSONObject nonCompChildObject = (JSONObject) nonCompChildItem;
+									JSONObject nonCompVersonObject = (JSONObject) nonCompChildObject
+											.get("version");
+									if (nonCompVersonObject != null) {
+										JSONObject nonCompComponentObject = (JSONObject) nonCompVersonObject
+												.get("component");
+										if ((nonCompComponentObject != null)
+												&& (componentName
+														.equalsIgnoreCase((String) nonCompComponentObject
+																.get("name")))) {
+											version = (String) nonCompVersonObject
+													.get("name");
+											data.setAsOfDate(date(
+													nonCompVersonObject,
+													"created"));
+											data.setDeployed(false);
+											break nonCompliantSearchLoop;
+										}
+									}
+								}
+							}
+						}
+						data.setComponentVersion(version);
+						environmentStatuses.add(data);
+					}
 				}
-			} else {
-				JSONObject resourceObject = (JSONObject) jsonObject
-						.get("resource");
-				environmentStatuses.add(statusFor(environment.getName(),
-						componentName, resourceObject));
 			}
 		}
 		return environmentStatuses;
 	}
 
 	// ////// Helpers
-
-	private EnvironmentStatus statusFor(String envName, String componentName,
-			JSONObject resourceObject) {
-		EnvironmentStatus environmentStatus = new EnvironmentStatus();
-		environmentStatus.setEnvironmentName(envName);
-		environmentStatus.setComponentName(componentName);
-		environmentStatus.setResourceName(str(resourceObject, "name"));
-		environmentStatus.setOnline(str(resourceObject, "status").equals(
-				"ONLINE"));
-		return environmentStatus;
-	}
 
 	private ResponseEntity<String> makeRestCall(String instanceUrl,
 			String endpoint) {
@@ -180,7 +211,7 @@ public class DefaultUDeployClient implements UDeployClient {
 		try {
 			response = restOperations.exchange(url, HttpMethod.GET,
 					new HttpEntity<>(createHeaders()), String.class);
-			
+
 		} catch (RestClientException re) {
 			LOG.error("Error with REST url: " + url);
 			LOG.error(re.getMessage());
@@ -206,6 +237,8 @@ public class DefaultUDeployClient implements UDeployClient {
 	}
 
 	private JSONArray paresAsArray(ResponseEntity<String> response) {
+		if (response == null)
+			return new JSONArray();
 		try {
 			return (JSONArray) new JSONParser().parse(response.getBody());
 		} catch (ParseException pe) {
