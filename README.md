@@ -14,15 +14,13 @@ Capital One Engineers from our DevOps team developed Hygieia keeping in mind the
 For the past two years, we’ve looked for DevOps visualization tools in the commercial market as well as in the Open Source community
 
 
-<ul>
-<li>
-There are some excellent commercial ALM tools that allow one to visualize traceability between stories, code, tests and builds however they do not cross over from build to deployment</li>
 
-<li>There are some good commercial Operations tools that provide visibility into server and application run time health, metrics, analytics etc. however they do not provide visibility into the development and build activities</li>
+* There are some excellent commercial ALM tools that allow one to visualize traceability between stories, code, tests and builds however they do not cross over from build to deployment</li>
 
-<li>Open source tools/frameworks such as Grafana provide generic framework to build a dashboard however collecting data from the numerous DevOps tools is still the challenge.</li>
-</li>
-</ul>
+* There are some good commercial Operations tools that provide visibility into server and application run time health, metrics, analytics etc. however they do not provide visibility into the development and build activities</li>
+
+* Open source tools/frameworks such as Grafana provide generic framework to build a dashboard however collecting data from the numerous DevOps tools is still the challenge.</li>
+
 
 ### ScreenShot
 ![Image](/UI/src/assets/images/hygiea-screenshot.jpg)
