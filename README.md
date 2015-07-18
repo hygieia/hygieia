@@ -23,3 +23,6 @@ There are some excellent commercial ALM tools that allow one to visualize tracea
 <li>Open source tools/frameworks such as Grafana provide generic framework to build a dashboard however collecting data from the numerous DevOps tools is still the challenge.</li>
 </li>
 </ul>
+
+### ScreenShot
+![Image](/UI/src/assets/images/hygiea-screenshot.jpg)
