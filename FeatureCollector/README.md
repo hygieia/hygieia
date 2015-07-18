@@ -1,4 +1,4 @@
-#Version One Feature Collector
+#Feature Collector
 Retrieves VersionOne feature content data from the source system APIs and places it in a MongoDB for later retrieval and use by the DevOps Dashboard
 
 ##Introduction
