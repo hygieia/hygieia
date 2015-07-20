@@ -1,8 +1,6 @@
 {
 	"directory": "bower_components",
 	"timeout": 120000,
-	"proxy": "http://proxy.kdc.capitalone.com:8099/",
-	"https-proxy": "http://proxy.kdc.capitalone.com:8099/",
 	"strict-ssl": false,
 	"storage": {
              "cache" : "~/.bower/cache"
