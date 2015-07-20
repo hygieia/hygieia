@@ -80,10 +80,10 @@ public class DashboardController {
 
     @RequestMapping(value = "/dashboard/{id}/widget/{widgetId}", method = PUT, consumes = JSON)
     public ResponseEntity<WidgetResponse> updateWidget(@PathVariable ObjectId id,
-                                               @PathVariable ObjectId widgetId,
-                                               @RequestBody WidgetRequest request) {
+                                                       @PathVariable ObjectId widgetId,
+                                                       @RequestBody WidgetRequest request) {
         Component component = dashboardService.associateCollectorToComponent(
-                    request.getComponentId(), request.getCollectorItemIds());
+                request.getComponentId(), request.getCollectorItemIds());
 
         Dashboard dashboard = dashboardService.get(id);
         Widget widget = request.updateWidget(dashboardService.getWidget(dashboard, widgetId));
@@ -91,28 +91,21 @@ public class DashboardController {
 
         return ResponseEntity.ok().body(new WidgetResponse(component, widget));
     }
-    
-    @RequestMapping(value="/dashboard/mydashboard/{username}", method = GET, produces = JSON)
+
+    @RequestMapping(value = "/dashboard/mydashboard/{username}", method = GET, produces = JSON)
     public List<Dashboard> getOwnedDashboards(@PathVariable String username) {
-    	List<Dashboard> myDashboard=dashboardService.getOwnedDashboards(username);
-		return myDashboard;
-    	
+        List<Dashboard> myDashboard = dashboardService.getOwnedDashboards(username);
+        return myDashboard;
+
     }
-    
-    @RequestMapping(value="/dashboard/myowner/{dashboardtitle}", method = GET, produces = JSON)
-    	public String getDashboardOwner(@PathVariable String dashboardtitle)
-    	{
-    	    String dashboardOwner="No Owner defined";
-    	    if(null != dashboardtitle)
-    	    {
-    	    System.out.println("Dashboard Title is:"+ dashboardtitle);
-    		dashboardOwner=dashboardService.getDashboardOwner(dashboardtitle);
-    	    }
-    		return dashboardOwner;
-    	}
-  
-    
-    
-    
-    
+
+    @RequestMapping(value = "/dashboard/myowner/{dashboardtitle}", method = GET, produces = JSON)
+    public String getDashboardOwner(@PathVariable String dashboardtitle) {
+        String dashboardOwner = "No Owner defined";
+        if (null != dashboardtitle) {
+            System.out.println("Dashboard Title is:" + dashboardtitle);
+            dashboardOwner = dashboardService.getDashboardOwner(dashboardtitle);
+        }
+        return dashboardOwner;
+    }
 }
