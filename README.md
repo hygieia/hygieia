@@ -12,7 +12,9 @@ any DevOps organization.
 Capital One Engineers from our DevOps team developed Hygieia keeping in mind the need for such a tool , since none is available commercially out of the box in ready to use state as well as ease of use.
 For the past two years, we’ve looked for DevOps visualization tools in the commercial market as well as in the Open Source community
 
+Please view a video below to see Hygieia in action
 
+ [![Hygieia Is AWESOME](/media/images/video-shot.png)](https://www.youtube.com/watch?v=SoNTA78j0tc "Hygieia Is AWESOME")
 
 * There are some excellent commercial ALM tools that allow one to visualize traceability between stories, code, tests and builds however they do not cross over from build to deployment</li>
 
@@ -22,4 +24,4 @@ For the past two years, we’ve looked for DevOps visualization tools in the com
 
 
 ### ScreenShot
-![Image](/UI/src/assets/images/hygiea-screenshot.jpg)
+![Image](/media/images/hygiea-screenshot.jpg)
