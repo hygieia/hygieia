@@ -6,15 +6,16 @@
 #####Pronunciation:  	ee y EE aa (origin Greek)
 Hygieia is a single, configurable, easy to use dashboard to visualize near real-time status of the entire delivery pipeline.
 
+Please view a video below to see Hygieia in action
+
+ [![Hygieia Is AWESOME](/media/images/video-shot.png)](https://www.youtube.com/watch?v=SoNTA78j0tc "Hygieia Is AWESOME")
+
 We use tools for everything today and each tool has its own unique dashboard to present information. What is lacking is a near real time consolidated view of the end-to-end delivery pipeline.  This view and a continuous feedback loop is critical to the success of
 any DevOps organization.
 
 Capital One Engineers from our DevOps team developed Hygieia keeping in mind the need for such a tool , since none is available commercially out of the box in ready to use state as well as ease of use.
 For the past two years, we’ve looked for DevOps visualization tools in the commercial market as well as in the Open Source community
 
-Please view a video below to see Hygieia in action
-
- [![Hygieia Is AWESOME](/media/images/video-shot.png)](https://www.youtube.com/watch?v=SoNTA78j0tc "Hygieia Is AWESOME")
 
 * There are some excellent commercial ALM tools that allow one to visualize traceability between stories, code, tests and builds however they do not cross over from build to deployment</li>
 
