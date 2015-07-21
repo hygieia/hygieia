@@ -30,7 +30,7 @@ import com.capitalone.dashboard.model.Feature;
  */
 public interface FeatureRepository extends
 		CrudRepository<Feature, ObjectId>, QueryDslPredicateExecutor<Feature> {
-	@Query(value = "{ $query: { 'collectorId' : ?0, 'changeDate' : {$gt: ?0}}, $orderby: { 'changeDate' :-1 }}", fields="{'changeDate' : 1, '_id' : 0}")
+	@Query(value = "{ $query: { 'collectorId' : ?0, 'changeDate' : {$gt: ?1}}, $orderby: { 'changeDate' :-1 }}", fields="{'changeDate' : 1, '_id' : 0}")
 	List<Feature> getFeatureMaxChangeDate(ObjectId collectorId, String lastChangeDate);
 	
 	@Query(value = "{ $query: {'sId' : ?0},{'sId' : 1}}")
