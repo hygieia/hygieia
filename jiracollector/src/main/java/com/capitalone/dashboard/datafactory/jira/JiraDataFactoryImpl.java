@@ -22,13 +22,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.springframework.stereotype.Component;
 
-import com.capitalone.jira.client.connector.GetResponseBuilderImpl;
+import com.capitalone.dashboard.datafactory.jira.sdk.connector.GetResponseBuilder;
+import com.capitalone.dashboard.datafactory.jira.sdk.connector.GetResponseBuilderImpl;
 import com.google.api.client.http.HttpRequestFactory;
 
 @Component
 public class JiraDataFactoryImpl implements JiraDataFactory {
 	private static Log logger = LogFactory.getLog(JiraDataFactoryImpl.class);
-	protected GetResponseBuilderImpl jiraConnection = new GetResponseBuilderImpl();
+	protected GetResponseBuilder jiraConnection = new GetResponseBuilderImpl();
 	protected int pageSize;
 	protected int pageIndex;
 	protected JSONArray jsonOutputArray;
