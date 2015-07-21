@@ -70,7 +70,8 @@ public class VersionOneDataFactoryImplTest {
 	public static void setUpBeforeClass() throws Exception {
 		logger.info("Beginning tests for com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl");
 		auth = new HashMap<String, String>();
-		auth.put("v1ProxyUrl", "http://proxy.kdc.capitalone.com:8099");
+		// TODO:  Include your own company proxy
+		auth.put("v1ProxyUrl", "");
 		// TODO:  Include your own base uri for VersionOne
 		auth.put("v1BaseUri", "");
 		// TODO:  Include your own v1 auth token
