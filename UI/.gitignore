@@ -43,6 +43,6 @@ bower_components
 
 # Project specific artifacts
 src/**/*.css
-src/index.html
+#src/index.html
 /bin
 /target/
