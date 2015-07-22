@@ -45,3 +45,4 @@ bower_components
 src/**/*.css
 src/index.html
 /bin
+/target/

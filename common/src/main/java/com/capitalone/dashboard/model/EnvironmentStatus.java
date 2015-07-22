@@ -9,7 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "environment_status")
 public class EnvironmentStatus extends BaseModel {
     private ObjectId collectorItemId;
-    private String environmentName;
+    private String componentID;
+	private String environmentName;
     private String componentName;
     private String resourceName;
     private String parentAgentName;
@@ -23,6 +24,14 @@ public class EnvironmentStatus extends BaseModel {
         this.collectorItemId = collectorItemId;
     }
 
+    public String getComponentID() {
+		return componentID;
+	}
+
+	public void setComponentID(String componentID) {
+		this.componentID = componentID;
+	}
+	
     public String getEnvironmentName() {
         return environmentName;
     }
