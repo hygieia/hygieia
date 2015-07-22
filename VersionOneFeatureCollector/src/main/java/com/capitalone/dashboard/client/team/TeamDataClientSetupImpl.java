@@ -1,19 +1,3 @@
-/*************************DA-BOARD-LICENSE-START*********************************
- * Copyright 2014 CapitalOne, LLC.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *************************DA-BOARD-LICENSE-END*********************************/
-
 package com.capitalone.dashboard.client.team;
 
 import java.text.SimpleDateFormat;
@@ -38,9 +22,9 @@ import com.capitalone.dashboard.util.FeatureSettings;
 /**
  * Implemented class which is extended by children to perform actual
  * source-system queries as a service and to update the MongoDB in accordance.
- * 
+ *
  * @author kfk884
- * 
+ *
  */
 @Component
 public abstract class TeamDataClientSetupImpl implements DataClientSetup {
@@ -57,10 +41,10 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 
 	/**
 	 * Constructs the feature data collection based on system settings.
-	 * 
+	 *
 	 * @param featureSettings
 	 *            Feature collector system settings
-	 * @param vOneApi 
+	 * @param vOneApi
 	 */
 	public TeamDataClientSetupImpl(FeatureSettings featureSettings,
 			TeamRepository teamRepository,
@@ -79,7 +63,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * This method is used to update the database with model defined in the
 	 * collector model definitions.
-	 * 
+	 *
 	 * @see Story
 	 */
 	public void updateObjectInformation() {
@@ -124,7 +108,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 
 	/**
 	 * Generates and retrieves the local server time stamp in Unix Epoch format.
-	 * 
+	 *
 	 * @param unixTimeStamp
 	 *            The current millisecond value of since the Unix Epoch
 	 * @return Unix Epoch-formatted time stamp for the current date/time
@@ -142,7 +126,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * Generates and retrieves the change date that occurs a minute prior to the
 	 * specified change date in ISO format.
-	 * 
+	 *
 	 * @param changeDateISO
 	 *            A given change date in ISO format
 	 * @return The ISO-formatted date/time stamp for a minute prior to the given
@@ -156,7 +140,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 
 	/**
 	 * Generates and retrieves the sprint start date in ISO format.
-	 * 
+	 *
 	 * @return The ISO-formatted date/time stamp for the sprint start date
 	 */
 	public String getSprintBeginDateFilter() {
@@ -167,7 +151,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 
 	/**
 	 * Generates and retrieves the sprint end date in ISO format.
-	 * 
+	 *
 	 * @return The ISO-formatted date/time stamp for the sprint end date
 	 */
 	public String getSprintEndDateFilter() {
@@ -179,7 +163,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * Generates and retrieves the difference between the sprint start date and
 	 * the sprint end date in ISO format.
-	 * 
+	 *
 	 * @return The ISO-formatted date/time stamp for the sprint start date
 	 */
 	public String getSprintDeltaDateFilter() {
@@ -204,7 +188,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 
 	/**
 	 * Retrieves the maximum change date for a given query.
-	 * 
+	 *
 	 * @return A list object of the maximum change date
 	 */
 	public String getMaxChangeDate() {
@@ -235,7 +219,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * Abstract method required by children methods to update the MongoDB with a
 	 * JSONArray received from the source system back-end.
-	 * 
+	 *
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
 	 * @return
