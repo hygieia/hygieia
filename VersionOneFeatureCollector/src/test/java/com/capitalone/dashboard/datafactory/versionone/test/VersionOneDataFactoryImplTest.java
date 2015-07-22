@@ -1,19 +1,3 @@
-/*************************DA-BOARD-LICENSE-START*********************************
- * Copyright 2014 CapitalOne, LLC.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *************************DA-BOARD-LICENSE-END*********************************/
-
 package com.capitalone.dashboard.datafactory.versionone.test;
 
 import static org.junit.Assert.*;
@@ -40,9 +24,9 @@ import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl
 /**
  * Tests all facets of the VerisonOneDataFactoryImpl class, which is responsible
  * for handling all transactions to the source system, VersionOne.
- * 
+ *
  * @author KFK884
- * 
+ *
  */
 public class VersionOneDataFactoryImplTest {
 	private static Logger logger = LoggerFactory
@@ -60,10 +44,10 @@ public class VersionOneDataFactoryImplTest {
 	 */
 	public VersionOneDataFactoryImplTest() {
 	}
-	
+
 	/**
 	 * Runs actions before test is initialized.
-	 * 
+	 *
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
@@ -89,7 +73,7 @@ public class VersionOneDataFactoryImplTest {
 
 	/**
 	 * Runs actions after test is complete.
-	 * 
+	 *
 	 * @throws java.lang.Exception
 	 */
 	@AfterClass
@@ -102,7 +86,7 @@ public class VersionOneDataFactoryImplTest {
 
 	/**
 	 * Performs these actions before each test.
-	 * 
+	 *
 	 * @throws java.lang.Exception
 	 */
 	@Before
@@ -111,7 +95,7 @@ public class VersionOneDataFactoryImplTest {
 
 	/**
 	 * Performs these actions after each test completes.
-	 * 
+	 *
 	 * @throws java.lang.Exception
 	 */
 	@After

@@ -1,19 +1,3 @@
-/*************************DA-BOARD-LICENSE-START*********************************
- * Copyright 2014 CapitalOne, LLC.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *************************DA-BOARD-LICENSE-END*********************************/
-
 package com.capitalone.dashboard.client.team;
 
 import java.util.Arrays;
@@ -36,9 +20,9 @@ import com.capitalone.dashboard.util.FeatureWidgetQueries;
  * collector. This will get data from the source system, but will grab the
  * majority of needed data and aggregate it in a single, flat MongoDB collection
  * for consumption.
- * 
+ *
  * @author kfk884
- * 
+ *
  */
 public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 		TeamDataClient {
@@ -52,7 +36,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 
 	/**
 	 * Extends the constructor from the super class.
-	 * 
+	 *
 	 * @param teamRepository
 	 */
 	public TeamDataClientImpl(
@@ -72,7 +56,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
-	 * 
+	 *
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
 	 * @param featureCollector
@@ -151,7 +135,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	/**
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
-	 * 
+	 *
 	 * @param A
 	 *            local repository item ID (not the precise mongoID)
 	 */
