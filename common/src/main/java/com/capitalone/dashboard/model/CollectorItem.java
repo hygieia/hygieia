@@ -66,4 +66,5 @@ public class CollectorItem extends BaseModel {
     public Map<String, Object> getOptions() {
         return options;
     }
+    
 }
