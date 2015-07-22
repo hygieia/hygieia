@@ -1,19 +1,3 @@
-/*************************DA-BOARD-LICENSE-START*********************************
- * Copyright 2014 CapitalOne, LLC.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *************************DA-BOARD-LICENSE-END*********************************/
-
 package com.capitalone.dashboard.datafactory.jira;
 
 import org.apache.commons.logging.Log;
@@ -45,7 +29,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 
 	/**
 	 * Default constructor, which sets page size to 1000 and page index to 0.
-	 * 
+	 *
 	 * @param jiraCredentials
 	 *            Jira x64 encoded credentials (see jira client library for
 	 *            details)
@@ -65,7 +49,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 
 	/**
 	 * Default constructor, which sets page size to 1000 and page index to 0.
-	 * 
+	 *
 	 * @param jiraCredentials
 	 *            Jira x64 encoded credentials (see jira client library for
 	 *            details)
@@ -91,7 +75,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	/**
 	 * Constructs Jira data factory, but defaults the page size to the page size
 	 * parameter given, and the page index to 0.
-	 * 
+	 *
 	 * @param inPageSize
 	 *            A default page size to give the class on construction
 	 * @param jiraCredentials
@@ -114,7 +98,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	/**
 	 * Constructs Jira data factory, but defaults the page size to the page size
 	 * parameter given, and the page index to 0.
-	 * 
+	 *
 	 * @param inPageSize
 	 *            A default page size to give the class on construction
 	 * @param jiraCredentials
@@ -142,7 +126,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 
 	/**
 	 * Sets the local query value on demand based on a given basic query.
-	 * 
+	 *
 	 * @param query
 	 *            A query in REST syntax as a String
 	 * @return The saved REST-syntax basic query
@@ -156,7 +140,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 * Creates a query on demand based on a given basic query and a specified
 	 * page index value. It is recommended to use this method in a loop to
 	 * ensure all pages are covered.
-	 * 
+	 *
 	 * @param pageIndex
 	 *            A given query's current page index, from 0-oo
 	 * @return A JSON-formatted response
@@ -173,7 +157,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 * Runs the jira-client library tools against a given REST-formatted query.
 	 * This requires a pre-formatted paged query to run, and will not perform
 	 * the paging for you - there are other helper methods for this.
-	 * 
+	 *
 	 * @return A formatted JSONArray response
 	 */
 	@SuppressWarnings("unchecked")
@@ -195,7 +179,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	/**
 	 * Runs the jira-client library tools against a given REST-formatted query.
 	 * This requires a pre-formatted basic query (single-use).
-	 * 
+	 *
 	 * @return A formatted JSONArray response
 	 */
 	@SuppressWarnings("unchecked")
@@ -217,7 +201,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 * This requires a pre-formatted paged query to run, and will not perform
 	 * the paging for you - there are other helper methods for this. This is
 	 * designed to work explicitly for team-related queries
-	 * 
+	 *
 	 * @return A formatted JSONArray response
 	 */
 	@SuppressWarnings("unchecked")
@@ -237,7 +221,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 * Runs the jira-client library tools against a given REST-formatted query.
 	 * This requires a pre-formatted basic query (single-use) and works only for
 	 * Epic-style values.
-	 * 
+	 *
 	 * @return A formatted JSONArray response
 	 */
 	@SuppressWarnings("unchecked")
@@ -254,7 +238,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 
 	/**
 	 * Mutator method for page index.
-	 * 
+	 *
 	 * @param pageIndex
 	 *            Page index of query
 	 */
@@ -264,7 +248,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 
 	/**
 	 * Accessor method for page index.
-	 * 
+	 *
 	 * @return Page index of query
 	 */
 	public int getPageIndex() {
@@ -273,7 +257,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 
 	/**
 	 * Accessor method for basic query formatted object.
-	 * 
+	 *
 	 * @return Basic Jira REST query
 	 */
 	public String getBasicQuery() {
@@ -282,7 +266,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 
 	/**
 	 * Mutator method for basic query formatted object.
-	 * 
+	 *
 	 * @param Basic
 	 *            Jira REST query
 	 */
@@ -292,7 +276,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 
 	/**
 	 * Accessor method for retrieving paged query.
-	 * 
+	 *
 	 * @return The paged REST query
 	 */
 	public String getPagingQuery() {
@@ -301,7 +285,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 
 	/**
 	 * Mutator method for setting paged query
-	 * 
+	 *
 	 * @param pagingQuery
 	 *            The paged REST query
 	 */
