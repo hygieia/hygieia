@@ -5,7 +5,7 @@
 	<groupId>com.capitalone.dashboard</groupId>
 	<artifactId>jira-feature-collector</artifactId>
 	<packaging>jar</packaging>
-	<version>01.00.00.01</version>
+	<version>01.00.01.01</version>
 	<name>jira-feature-collector</name>
 
 	<properties>
@@ -127,6 +127,23 @@
 			<scope>testing</scope>
 		</dependency>
 
+		<!-- Jira Connection Transient Dependencies -->
+		<dependency>
+			<groupId>com.google.oauth-client</groupId>
+			<artifactId>google-oauth-client</artifactId>
+			<version>1.14.1-beta</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.http-client</groupId>
+			<artifactId>google-http-client-jackson2</artifactId>
+			<version>1.14.1-beta</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.oauth-client</groupId>
+			<artifactId>google-oauth-client-java7</artifactId>
+			<version>1.14.1-beta</version>
+		</dependency>
+
 		<!-- String Template (ST Readers) -->
 		<dependency>
 			<groupId>org.antlr</groupId>
@@ -142,6 +159,11 @@
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-library</artifactId>
 			<version>2.10.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>findbugs</artifactId>
+			<version>3.0.1</version>
 		</dependency>
 
 		<!-- Logging Dependencies -->
