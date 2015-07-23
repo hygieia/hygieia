@@ -5,7 +5,7 @@
 	<groupId>com.capitalone.dashboard</groupId>
 	<artifactId>jira-feature-collector</artifactId>
 	<packaging>jar</packaging>
-	<version>01.00.01.01</version>
+	<version>1.0.1</version>
 	<name>jira-feature-collector</name>
 
 	<properties>
