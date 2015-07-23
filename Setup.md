@@ -1,7 +1,7 @@
 <img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/images/Hygieia_b.png)
 --
 ### Hygieia Setup Instructions
-For Hygieia  you require following components to run
+The following components are required to run Hygieia:
 
 * [UI](https://github.com/capitalone/Hygieia/tree/master/UI)
 * [API](https://github.com/capitalone/Hygieia/tree/master/api)
@@ -28,4 +28,4 @@ For Hygieia  you require following components to run
   * [**Deployment**](https://github.com/capitalone/Hygieia/tree/master/DeployCollector)
     * uDeploy 6.x from IBM
 
-    You can pick and choose what collectors are applicable for your Devops toolset, or following the guidance provided you can write your own collector and plug it in.
+    You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.
