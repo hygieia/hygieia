@@ -127,13 +127,6 @@
 			<scope>testing</scope>
 		</dependency>
 
-		<!-- Jira Client Connection -->
-		<dependency>
-			<groupId>com.capitalone.versionone</groupId>
-			<artifactId>jira-client</artifactId>
-			<version>01.01.00.01-SNAPSHOT</version>
-		</dependency>
-
 		<!-- String Template (ST Readers) -->
 		<dependency>
 			<groupId>org.antlr</groupId>
