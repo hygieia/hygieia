@@ -36,7 +36,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<jvmArguments>-Dgithub.host="${github.host}" -Dgithub.cron="${github.cron}" -Dgithub.username="${github.username}" -Dgithub.password="${github.password}"</jvmArguments>
+					<jvmArguments>-Dgithub.host="${github.host}" -Dgithub.cron="${github.cron}" -Dgithub.username="${github.username}" -Dgithub.password="${github.password}" -Dspring.data.mongodb.database="${spring.data.mongodb.database}"</jvmArguments>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -66,6 +66,7 @@
 		<github.cron>0 0/1 * * * *</github.cron>
 		<github.username></github.username>
 		<github.password></github.password>
+		<spring.data.mongodb.database>dashboard</spring.data.mongodb.database>
 	</properties>
 
 	<dependencies>

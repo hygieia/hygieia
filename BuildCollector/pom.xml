@@ -36,7 +36,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<jvmArguments>-DJenkins.servers="${jenkins.servers}" -DJenkins.cron="${jenkins.cron}"</jvmArguments>
+					<jvmArguments>-DJenkins.servers="${jenkins.servers}" -DJenkins.cron="${jenkins.cron}" -Dspring.data.mongodb.database="${spring.data.mongodb.database}"</jvmArguments>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -64,6 +64,7 @@
 		<java.version>1.7</java.version>
 		<jenkins.cron>0 0/1 * * * *</jenkins.cron>
 		<jenkins.servers>http://localhost:8080/</jenkins.servers>
+		<spring.data.mongodb.database>dashboard</spring.data.mongodb.database>
 	</properties>
 
 	<dependencies>
