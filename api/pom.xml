@@ -53,6 +53,24 @@
 					<stagingProgressPauseDurationSeconds>15</stagingProgressPauseDurationSeconds>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.2.8.v20150217</version>
+				<configuration>
+					<webApp>
+						<contextPath>/api</contextPath>
+					</webApp>
+					<systemProperties>
+						<!--
+                             <systemProperty>
+                               <key>hawtio.config.dir</key>
+                               <value>target/hawtioConfig</value>
+                             </systemProperty>
+            -->
+					</systemProperties>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -62,7 +80,7 @@
 		<dependency>
 			<groupId>com.capitalone.dashboard</groupId>
 			<artifactId>core</artifactId>
-			<version>0.3.1-SNAPSHOT</version>
+			<version>0.3.1</version>
 		</dependency>
 
 		<!-- Oracle Java Libraries -->

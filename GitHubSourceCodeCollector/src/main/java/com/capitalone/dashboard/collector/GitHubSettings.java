@@ -16,6 +16,14 @@ public class GitHubSettings {
     private String password;
     private String host;
 
+    @Override
+    public String toString() {
+        return "GitHubSettings{" +
+                "host='" + host + '\'' +
+                ", username='" + username + '\'' +
+                ", cron='" + cron + '\'' +
+                '}';
+    }
 
     public String getHost() {
 		return host;

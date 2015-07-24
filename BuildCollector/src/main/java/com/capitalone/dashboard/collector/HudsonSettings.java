@@ -16,6 +16,15 @@ public class HudsonSettings {
     private boolean saveLog = false;
     private List<String> servers;
 
+    @Override
+    public String toString() {
+        return "HudsonSettings{" +
+                "cron='" + cron + '\'' +
+                ", saveLog=" + saveLog +
+                ", servers=" + servers +
+                '}';
+    }
+
     public String getCron() {
         return cron;
     }
