@@ -56,21 +56,36 @@ public class DefaultGitHubClient implements GitHubClient {
 		List<Commit> commits = new ArrayList<>();
 		
 		String repoUrl = (String)repo.getOptions().get("url");
-		URL url=null;
 		String hostName="";
 		String protocol="";
 		try {
-			url=new URL(repoUrl);
+			URL url=new URL(repoUrl);
 			hostName =url.getHost();
 			protocol= url.getProtocol();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			LOG.error(e.getMessage());
 		}
+		String segmentApi = SEGMENT_API;
+
 		String hostUrl = protocol + "://" + hostName + "/";
 		String repoName= repoUrl.substring(hostUrl.length(), repoUrl.length());
-	
-		String apiUrl = protocol + "://" + hostName +SEGMENT_API+repoName;
+
+		// if we are using github online then we need to use the API host as the host name
+		try {
+			URL url=new URL(settings.getHost());
+			String settingsHostName = url.getHost();
+			if (settingsHostName.endsWith(".github.com")) {
+				hostName = settingsHostName;
+				protocol= url.getProtocol();
+				segmentApi = "/repos/";
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			LOG.error(e.getMessage());
+		}
+
+		String apiUrl = protocol + "://" + hostName + segmentApi + repoName;
 		
 		DateTime dt = repo.getLastUpdateTime().minusMinutes(10); //randomly chosen 10 minutes. Need to refactor
 		DateTimeFormatter fmt = ISODateTimeFormat.dateHourMinuteSecond();

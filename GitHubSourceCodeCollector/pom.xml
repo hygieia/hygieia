@@ -62,7 +62,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<github.host>http://github.com/</github.host>
+		<github.host>https://api.github.com/</github.host>
 		<github.cron>0 0/1 * * * *</github.cron>
 		<github.username></github.username>
 		<github.password></github.password>
