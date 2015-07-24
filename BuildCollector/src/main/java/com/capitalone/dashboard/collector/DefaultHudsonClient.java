@@ -214,7 +214,7 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     private JSONArray getJsonArray(JSONObject json, String key) {
-        Object array = json.get(key);
+        Object array = json != null ? json.get(key) : null;
         return array == null ? new JSONArray() : (JSONArray) array;
     }
 
