@@ -37,6 +37,9 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                                    GitHubClient gitHubClient,
                                    GitHubSettings gitHubSettings) {
         super(taskScheduler, "GitHub");
+
+        LOG.info("Starting with GitHubSettings: " + gitHubSettings);
+
         this.collectorRepository = collectorRepository;
         this.gitHubRepoRepository = gitHubRepoRepository;
         this.commitRepository = commitRepository;
