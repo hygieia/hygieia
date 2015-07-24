@@ -12,7 +12,19 @@ to connect to the Dashboard MongoDB database instance, as well as properties the
 the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files)
 for information about sourcing this properties file.
 
-###Sample application.properties file
+Running in development
+----------------------
+
+Type
+
+    mvn spring-boot:run
+
+If you are running [Fabric8 DevOps on Vagrant](http://fabric8.io/guide/getStarted/vagrant.html) then try the following and it will automatically connect to the Jenkins and SonarQube running on Kubernetes:
+    
+    mvn spring-boot:run -Pfabric8-vagrant
+    
+
+Sample application.properties file
 --------------------------------------
 
     #Database Name - default is test
@@ -31,10 +43,10 @@ for information about sourcing this properties file.
     spring.data.mongodb.password=dbpass
 
     #Collector schedule (required)
-    hudson.cron=0 0/5 * * * *
+    Jenkins.cron=0 0/5 * * * *
 
     #Hudson server (required) - Can provide multiple
-    hudson.servers[0]=http://hudson.company.com
+    Jenkins.servers[0]=http://hudson.company.com
 
     #Determines if build console log is collected - defaults to false
-    hudson.saveLog=true
+    Jenkins.saveLog=true

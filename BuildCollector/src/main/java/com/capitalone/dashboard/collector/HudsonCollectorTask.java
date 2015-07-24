@@ -41,6 +41,8 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
                                HudsonClient hudsonClient,
                                HudsonSettings hudsonSettings) {
         super(taskScheduler, "Hudson");
+        LOG.info("Starting with HudsonSettings: " + hudsonSettings);
+
         this.hudsonCollectorRepository = hudsonCollectorRepository;
         this.hudsonJobRepository = hudsonJobRepository;
         this.buildRepository = buildRepository;
