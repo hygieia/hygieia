@@ -2,4 +2,4 @@
 language: java
 
 # need to override travis 'install' since it will try gpg sign and fail.
-install: mvn clean compile install package -DskipTests=true
+install: mvn clean compile install package -Dmaven.repo.local=$TRAVIS_BUILD_DIR/.maven/repo -DskipTests=true
