@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "dependencies": {},
   "devDependencies": {
+    "bower": "^1.4.1",
     "browser-sync": "~1.7.1",
     "chalk": "~0.5.1",
     "del": "~0.1.3",
