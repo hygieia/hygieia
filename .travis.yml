@@ -2,4 +2,4 @@
 language: java
 
 # need to override travis 'install' since it will try gpg sign and fail.
-install: mvn clean compile package -DskipTests=true
+install: mvn clean compile install package -DskipTests=true
