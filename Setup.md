@@ -33,6 +33,6 @@ The following components are required to run Hygieia:
     ###How to build the project
     We have included a parent pom for your use, the parent pom will build each of the individual projects in correct order.
 
-    * Command to build the project
+    * In the root folder where master pom.xml resides execute below command
 
-   <code> mvn --settings [Path to settings.xml] clean compile package </code>
+   <code> mvn --settings [Path to your settings.xml] clean compile package </code>
