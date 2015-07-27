@@ -19,6 +19,7 @@
         <module>VersionOneFeatureCollector</module>
         <module>DeployCollector</module>
         <module>JiraFeatureCollector</module>
+        <module>UI</module>
     </modules>
 
     <build>
