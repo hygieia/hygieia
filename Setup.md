@@ -29,3 +29,10 @@ The following components are required to run Hygieia:
     * uDeploy 6.x from IBM
 
     You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.
+
+    ###How to build the project
+    We have included a parent pom for your use, the parent pom will build each of the individual projects in correct order.
+
+    * Command to build the project
+
+   <code> mvn --settings [Path to settings.xml] clean compile package </code>
