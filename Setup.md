@@ -35,4 +35,4 @@ The following components are required to run Hygieia:
 
     * In the root folder where master pom.xml resides execute below command
 
-   <code> mvn --settings [Path to your settings.xml] clean compile package </code>
+   <code> mvn --settings [Path to your settings.xml] clean compile install package </code>
