@@ -11,16 +11,12 @@ to any given source system.
 
 Api layer needs a property file in following format
 
-<code>dbname=[dashboarddb]<code>
-
-<code>dbusername=[MogoDb Database Username]</code>
-
-<code>dbpassword=[MongoDb Database Password]<code>
-
-<code>dbhost=[Host on which MongoDb is running]<code>  
-
-<code>dbport=[Port on which MongoDb is listening]</code>
+dbname=[dashboarddb]  
+dbusername=[MogoDb Database Username]  
+dbpassword=[MongoDb Database Password]  
+dbhost=[Host on which MongoDb is running]  
+dbport=[Port on which MongoDb is listening]  
 
 For API web application to use this property file make sure that following environment property is set in following format
 
-<code>DASHBOARD_PROP=[path to dashboard.properties file]</code>
+DASHBOARD_PROP=[path to dashboard.properties file]  
