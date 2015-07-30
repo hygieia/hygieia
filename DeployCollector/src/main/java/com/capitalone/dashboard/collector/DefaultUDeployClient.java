@@ -137,22 +137,20 @@ public class DefaultUDeployClient implements UDeployClient {
 			JSONObject jsonObject = (JSONObject) item;
 			if (jsonObject != null) {
 				JSONObject parentObject = (JSONObject) jsonObject.get("parent");
-				UDeployEnvResCompData data = new UDeployEnvResCompData();
-				data.setEnvironmentName(environment.getName());
-				data.setCollectorItemId(application.getId());
 				String resourceName = str(jsonObject, "name");
-				
-				data.setResourceName(resourceName);
 				boolean status = "ONLINE".equalsIgnoreCase(str(parentObject,
 						"status"));
-				data.setOnline(status);
 				JSONArray jsonChildren = (JSONArray) jsonObject.get("children");
 				if ((jsonChildren != null) && (jsonChildren.size() > 0)) {
 					for (Object children : jsonChildren) {
 						JSONObject childrenObject = (JSONObject) children;
 						String componentName = (String) childrenObject
 								.get("name");
-
+						UDeployEnvResCompData data = new UDeployEnvResCompData();
+						data.setEnvironmentName(environment.getName());
+						data.setCollectorItemId(application.getId());
+						data.setResourceName(resourceName);
+						data.setOnline(status);
 						data.setComponentName(componentName);
 						JSONArray jsonVersions = (JSONArray) childrenObject
 								.get("versions");
