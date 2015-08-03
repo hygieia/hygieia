@@ -137,62 +137,66 @@ public class DefaultUDeployClient implements UDeployClient {
 			JSONObject jsonObject = (JSONObject) item;
 			if (jsonObject != null) {
 				JSONObject parentObject = (JSONObject) jsonObject.get("parent");
-				String resourceName = str(jsonObject, "name");
-				boolean status = "ONLINE".equalsIgnoreCase(str(parentObject,
-						"status"));
-				JSONArray jsonChildren = (JSONArray) jsonObject.get("children");
-				if ((jsonChildren != null) && (jsonChildren.size() > 0)) {
-					for (Object children : jsonChildren) {
-						JSONObject childrenObject = (JSONObject) children;
-						String componentName = (String) childrenObject
-								.get("name");
-						UDeployEnvResCompData data = new UDeployEnvResCompData();
-						data.setEnvironmentName(environment.getName());
-						data.setCollectorItemId(application.getId());
-						data.setResourceName(resourceName);
-						data.setOnline(status);
-						data.setComponentName(componentName);
-						JSONArray jsonVersions = (JSONArray) childrenObject
-								.get("versions");
-						String version = "UNKNOWN";
-						data.setDeployed(false);
+				if (parentObject != null) {
+					String resourceName = str(jsonObject, "name");
+					boolean status = "ONLINE".equalsIgnoreCase(str(
+							parentObject, "status"));
+					JSONArray jsonChildren = (JSONArray) jsonObject
+							.get("children");
+					if ((jsonChildren != null) && (jsonChildren.size() > 0)) {
+						for (Object children : jsonChildren) {
+							JSONObject childrenObject = (JSONObject) children;
+							String componentName = (String) childrenObject
+									.get("name");
+							UDeployEnvResCompData data = new UDeployEnvResCompData();
+							data.setEnvironmentName(environment.getName());
+							data.setCollectorItemId(application.getId());
+							data.setResourceName(resourceName);
+							data.setOnline(status);
+							data.setComponentName(componentName);
+							JSONArray jsonVersions = (JSONArray) childrenObject
+									.get("versions");
+							String version = "UNKNOWN";
+							data.setDeployed(false);
 
-						if ((jsonVersions != null) && (jsonVersions.size() > 0)) {
-							JSONObject versionObject = (JSONObject) jsonVersions
-									.get(0);
-							version = (String) versionObject.get("name");
-							data.setAsOfDate(date(versionObject, "created"));
-							data.setDeployed(true);
-						} else {
-							// get it from non-compliant resource list
-							nonCompliantSearchLoop: for (Object nonCompItem : nonCompliantResourceJSON) {
-								JSONArray nonCompChildrenArray = (JSONArray) ((JSONObject) nonCompItem)
-										.get("children");
-								for (Object nonCompChildItem : nonCompChildrenArray) {
-									JSONObject nonCompChildObject = (JSONObject) nonCompChildItem;
-									JSONObject nonCompVersonObject = (JSONObject) nonCompChildObject
-											.get("version");
-									if (nonCompVersonObject != null) {
-										JSONObject nonCompComponentObject = (JSONObject) nonCompVersonObject
-												.get("component");
-										if ((nonCompComponentObject != null)
-												&& (componentName
-														.equalsIgnoreCase((String) nonCompComponentObject
-																.get("name")))) {
-											version = (String) nonCompVersonObject
-													.get("name");
-											data.setAsOfDate(date(
-													nonCompVersonObject,
-													"created"));
-											data.setDeployed(false);
-											break nonCompliantSearchLoop;
+							if ((jsonVersions != null)
+									&& (jsonVersions.size() > 0)) {
+								JSONObject versionObject = (JSONObject) jsonVersions
+										.get(0);
+								version = (String) versionObject.get("name");
+								data.setAsOfDate(date(versionObject, "created"));
+								data.setDeployed(true);
+							} else {
+								// get it from non-compliant resource list
+								nonCompliantSearchLoop: for (Object nonCompItem : nonCompliantResourceJSON) {
+									JSONArray nonCompChildrenArray = (JSONArray) ((JSONObject) nonCompItem)
+											.get("children");
+									for (Object nonCompChildItem : nonCompChildrenArray) {
+										JSONObject nonCompChildObject = (JSONObject) nonCompChildItem;
+										JSONObject nonCompVersonObject = (JSONObject) nonCompChildObject
+												.get("version");
+										if (nonCompVersonObject != null) {
+											JSONObject nonCompComponentObject = (JSONObject) nonCompVersonObject
+													.get("component");
+											if ((nonCompComponentObject != null)
+													&& (componentName
+															.equalsIgnoreCase((String) nonCompComponentObject
+																	.get("name")))) {
+												version = (String) nonCompVersonObject
+														.get("name");
+												data.setAsOfDate(date(
+														nonCompVersonObject,
+														"created"));
+												data.setDeployed(false);
+												break nonCompliantSearchLoop;
+											}
 										}
 									}
 								}
 							}
+							data.setComponentVersion(version);
+							environmentStatuses.add(data);
 						}
-						data.setComponentVersion(version);
-						environmentStatuses.add(data);
 					}
 				}
 			}
