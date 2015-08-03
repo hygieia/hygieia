@@ -19,11 +19,11 @@ import com.capitalone.dashboard.service.AuthenticationService;
 
 @RestController
 public class AuthenticationController {
-	
-	private final AuthenticationService authenticationService;
-	private static final String JSON = MediaType.APPLICATION_JSON_VALUE;
-	
-	@Autowired
+
+    private final AuthenticationService authenticationService;
+    private static final String JSON = MediaType.APPLICATION_JSON_VALUE;
+
+    @Autowired
     public AuthenticationController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
@@ -31,37 +31,30 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/authenticateUser", method = POST, consumes = JSON, produces = JSON)
     public ResponseEntity<Boolean> authenticateUser(@Valid @RequestBody AuthenticationRequest request) {
-    	try {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(authenticationService.authenticate(request.getUsername(),request.getPassword()));
-    	}catch(org.springframework.dao.DuplicateKeyException de)
-    	{
-    		return ResponseEntity.status(HttpStatus.OK).body(false);
-    	}
-    }
-    
-    @RequestMapping(value="/registerUser", method = POST, consumes = JSON, produces = JSON)
-    public ResponseEntity<String> registerUser(@Valid @RequestBody AuthenticationRequest request){
-    	try {
-    	return ResponseEntity.status(HttpStatus.OK).body(authenticationService.create(request.getUsername(), request.getPassword()));
-    	}catch(org.springframework.dao.DuplicateKeyException de)
-    	{
-    		return ResponseEntity.status(HttpStatus.OK).body("User already Exist");
-    	}
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(authenticationService.authenticate(request.getUsername(), request.getPassword()));
+        } catch (org.springframework.dao.DuplicateKeyException de) {
+            return ResponseEntity.status(HttpStatus.OK).body(false);
+        }
     }
 
-    @RequestMapping(value="/updateUser", method = POST, consumes = JSON, produces = JSON)
-    public ResponseEntity<String> updateUser(@Valid @RequestBody AuthenticationRequest request){
-    	try {
-    	return ResponseEntity.status(HttpStatus.OK).body(authenticationService.update(request.getUsername(), request.getPassword()));
-    	}catch(org.springframework.dao.DuplicateKeyException de)
-    	{
-    		return ResponseEntity.status(HttpStatus.OK).body("User Does Not Exist, Please choose another username");
-    	}
+    @RequestMapping(value = "/registerUser", method = POST, consumes = JSON, produces = JSON)
+    public ResponseEntity<String> registerUser(@Valid @RequestBody AuthenticationRequest request) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(authenticationService.create(request.getUsername(), request.getPassword()));
+        } catch (org.springframework.dao.DuplicateKeyException de) {
+            return ResponseEntity.status(HttpStatus.OK).body("User already Exist");
+        }
     }
-    
-  
 
-
+    @RequestMapping(value = "/updateUser", method = POST, consumes = JSON, produces = JSON)
+    public ResponseEntity<String> updateUser(@Valid @RequestBody AuthenticationRequest request) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(authenticationService.update(request.getUsername(), request.getPassword()));
+        } catch (org.springframework.dao.DuplicateKeyException de) {
+            return ResponseEntity.status(HttpStatus.OK).body("User Does Not Exist, Please choose another username");
+        }
+    }
 }
