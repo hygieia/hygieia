@@ -1,0 +1,97 @@
+
+ext.springDataVer = "1.6.0.RELEASE"
+ext.queryDslVer = "3.6.0"
+
+// todo, rename directory to core
+archivesBaseName = "hygieia-core"
+
+
+def querydslGeneratedDir = 'src/generated/querydsl'
+
+sourceSets {
+    generated {
+        java {
+            srcDirs = [querydslGeneratedDir]
+        }
+    }
+}
+configurations {
+    querydsl
+}
+
+def processors() {
+  List p = []
+  //p << "com.mysema.query.apt.hibernate.HibernateAnnotationProcessor"
+  //p << "com.mysema.query.apt.jdo.JDOAnnotationProcessor"
+  //p << "com.mysema.query.apt.jpa.JPAAnnotationProcessor"
+  //p << "com.mysema.query.apt.morphia.MorphiaAnnotationProcessor"
+  //p << "com.mysema.query.apt.QuerydslAnnotationProcessor"
+  //p << "com.mysema.query.apt.roo.RooAnnotationProcessor"
+  //p << "com.mysema.query.apt.QuerydslAnnotationProcessor"
+  //p << "com.mysema.query.apt.roo.RooAnnotationProcessor"
+
+  p << "org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor"
+
+  return p.join(',')
+}
+
+
+task generateQueryDSL(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
+    source = sourceSets.main.java
+    classpath = configurations.compile + configurations.querydsl
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", processors()
+    ]
+    destinationDir = sourceSets.generated.java.srcDirs.iterator().next()
+}
+
+compileJava {
+    dependsOn generateQueryDSL
+    source generateQueryDSL.destinationDir
+}
+
+compileGeneratedJava {
+    dependsOn generateQueryDSL
+    options.warnings = false
+    classpath += sourceSets.main.runtimeClasspath
+}
+
+clean {
+    delete sourceSets.generated.java.srcDirs
+}
+
+idea {
+    module {
+        sourceDirs += file(querydslGeneratedDir)
+    }
+}
+
+eclipse.classpath.file.whenMerged {
+  cp ->
+    def genSrc = new org.gradle.plugins.ide.eclipse.model.SourceFolder(querydslGeneratedDir, null)
+  cp.entries.add(genSrc)
+}
+
+
+dependencies {
+  // spring
+  compile "org.springframework:spring-core:$springVer"
+  compile "org.springframework.data:spring-data-mongodb:$springDataVer"
+  testCompile "org.springframework:spring-test:$springVer"
+
+
+  // Query DSL
+  compile "com.mysema.querydsl:querydsl-jpa:$queryDslVer"
+  querydsl "com.mysema.querydsl:querydsl-apt:$queryDslVer"
+  compile "com.mysema.querydsl:querydsl-mongodb:$queryDslVer"
+
+  compile "com.googlecode.json-simple:json-simple:1.1.1"
+
+  testCompile "junit:junit:4.11"
+  testCompile "org.mockito:mockito-core:1.10.19"
+  testCompile "org.hamcrest:hamcrest-all:1.3"
+  // embedded mongo testing
+  testCompile group: "de.flapdoodle.embed", name: "de.flapdoodle.embed.mongo", version: "1.48.2"
+
+}
