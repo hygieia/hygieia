@@ -11,6 +11,7 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "jenkins")
 public class HudsonSettings {
+    
 
     private String cron;
     private boolean saveLog = false;
