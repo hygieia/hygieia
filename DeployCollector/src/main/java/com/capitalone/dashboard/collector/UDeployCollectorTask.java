@@ -101,20 +101,25 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 	}
 
 	/**
-	 * Clean up unused deployment collector items 
+	 * Clean up unused deployment collector items
+	 * 
 	 * @param collector
 	 *            the {@link UDeployCollector}
 	 */
-	
+
 	private void clean(UDeployCollector collector) {
 		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
 				.findAll()) {
-			if (!comp.getCollectorItems().isEmpty()) {
-				for (CollectorItem ci : comp.getCollectorItems().get(
-						CollectorType.Deployment)) {
-					if (ci != null) {
-						uniqueIDs.add(ci.getId());
+			if ((comp.getCollectorItems() != null)
+					&& !comp.getCollectorItems().isEmpty()) {
+				List<CollectorItem> itemList = comp.getCollectorItems().get(
+						CollectorType.Deployment);
+				if (itemList != null) {
+					for (CollectorItem ci : itemList) {
+						if (ci != null) {
+							uniqueIDs.add(ci.getId());
+						}
 					}
 				}
 			}
