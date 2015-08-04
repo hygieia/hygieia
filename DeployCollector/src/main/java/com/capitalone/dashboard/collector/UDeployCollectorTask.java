@@ -1,14 +1,20 @@
 package com.capitalone.dashboard.collector;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Environment;
 import com.capitalone.dashboard.model.EnvironmentComponent;
 import com.capitalone.dashboard.model.EnvironmentStatus;
@@ -16,6 +22,7 @@ import com.capitalone.dashboard.model.UDeployApplication;
 import com.capitalone.dashboard.model.UDeployCollector;
 import com.capitalone.dashboard.model.UDeployEnvResCompData;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
 import com.capitalone.dashboard.repository.EnvironmentStatusRepository;
 import com.capitalone.dashboard.repository.UDeployApplicationRepository;
@@ -36,27 +43,28 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 	private final UDeployApplicationRepository uDeployApplicationRepository;
 	private final UDeployClient uDeployClient;
 	private final UDeploySettings uDeploySettings;
-	// private final EnvironmentComponentUpdater componentUpdater;
-	// private final EnvironmentStatusUpdater environmentStatusUpdater;
-	private final EnvironmentComponentRepository componentRepository;
+
+	private final EnvironmentComponentRepository envComponentRepository;
 	private final EnvironmentStatusRepository environmentStatusRepository;
+
+	private final ComponentRepository dbComponentRepository;
 
 	@Autowired
 	public UDeployCollectorTask(TaskScheduler taskScheduler,
 			UDeployCollectorRepository uDeployCollectorRepository,
 			UDeployApplicationRepository uDeployApplicationRepository,
-			EnvironmentComponentRepository componentRepository,
+			EnvironmentComponentRepository envComponentRepository,
 			EnvironmentStatusRepository environmentStatusRepository,
-			UDeploySettings uDeploySettings, UDeployClient uDeployClient) {
+			UDeploySettings uDeploySettings, UDeployClient uDeployClient,
+			ComponentRepository dbComponentRepository) {
 		super(taskScheduler, "UDeploy");
 		this.uDeployCollectorRepository = uDeployCollectorRepository;
 		this.uDeployApplicationRepository = uDeployApplicationRepository;
 		this.uDeploySettings = uDeploySettings;
 		this.uDeployClient = uDeployClient;
-		// this.componentUpdater = componentUpdater;
-		// this.environmentStatusUpdater = environmentStatusUpdater;
-		this.componentRepository = componentRepository;
+		this.envComponentRepository = envComponentRepository;
 		this.environmentStatusRepository = environmentStatusRepository;
+		this.dbComponentRepository = dbComponentRepository;
 	}
 
 	@Override
@@ -82,6 +90,8 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 
 			long start = System.currentTimeMillis();
 
+			clean(collector);
+
 			addNewApplications(uDeployClient.getApplications(instanceUrl),
 					collector);
 			updateData(enabledApplications(collector, instanceUrl));
@@ -90,6 +100,34 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 		}
 	}
 
+	/**
+	 * Clean up unused deployment collector items 
+	 * @param collector
+	 *            the {@link UDeployCollector}
+	 */
+	
+	private void clean(UDeployCollector collector) {
+		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
+				.findAll()) {
+			if (!comp.getCollectorItems().isEmpty()) {
+				for (CollectorItem ci : comp.getCollectorItems().get(
+						CollectorType.Deployment)) {
+					if (ci != null) {
+						uniqueIDs.add(ci.getId());
+					}
+				}
+			}
+		}
+		List<UDeployApplication> appList = new ArrayList<UDeployApplication>();
+		for (UDeployApplication app : uDeployApplicationRepository.findAll()) {
+			if (app != null) {
+				app.setEnabled(uniqueIDs.contains(app.getId()));
+				appList.add(app);
+			}
+		}
+		uDeployApplicationRepository.save(appList);
+	}
 
 	/**
 	 * For each {@link UDeployApplication}, update the current
@@ -112,7 +150,6 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 						.getEnvironmentResourceStatusData(application,
 								environment);
 
-
 				for (UDeployEnvResCompData combinedData : combinedDataList) {
 
 					EnvironmentComponent component = new EnvironmentComponent();
@@ -129,7 +166,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 							application.getInstanceUrl(), "/")
 							+ "/#environment/" + environment.getId();
 					component.setEnvironmentUrl(environmentURL);
-					List<EnvironmentComponent> existingComponents = componentRepository
+					List<EnvironmentComponent> existingComponents = envComponentRepository
 							.findByCollectorItemId(application.getId());
 					EnvironmentComponent existing = findExistingComponent(
 							component, existingComponents);
@@ -137,15 +174,14 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 					if (existing == null) {
 						// Add new
 						component.setCollectorItemId(application.getId());
-						componentRepository.save(component);
+						envComponentRepository.save(component);
 					} else if (changed(component, existing)) {
 						// Update date and deployment status of existing
 						existing.setAsOfDate(component.getAsOfDate());
 						existing.setDeployed(component.isDeployed());
-						componentRepository.save(existing);
+						envComponentRepository.save(existing);
 					}
 				}
-
 
 				for (UDeployEnvResCompData data : uDeployClient
 						.getEnvironmentResourceStatusData(application,
