@@ -9,7 +9,7 @@ import java.util.List;
  * Bean to hold settings specific to the Hudson collector.
  */
 @Component
-@ConfigurationProperties(prefix = "Jenkins")
+@ConfigurationProperties(prefix = "jenkins")
 public class HudsonSettings {
 
     private String cron;
