@@ -1,0 +1,106 @@
+[
+		{
+			"_id" : "Epic:100259",
+			"number" : "E-02892",
+			"name" : "This and another testable epic",
+			"assetState" : "Active",
+			"changeDate" : "2013-03-21T13:47:49.9130000"
+		},
+		{
+			"_id" : "Epic:101522",
+			"number" : "E-02893",
+			"name" : "Digital & Middleware IT Operational Activities",
+			"assetState" : "Active",
+			"changeDate" : "2013-03-25T11:10:32.9600000"
+		},
+		{
+			"_id" : "Epic:1280782",
+			"number" : "E-02894",
+			"name" : "USC 52770 EFIT Outbound Statements, Letters & STAG RTE",
+			"assetState" : "Active",
+			"changeDate" : "2013-08-22T14:16:49.9330000"
+		},
+		{
+			"_id" : "Epic:1280780",
+			"number" : "E-01175",
+			"name" : "Performance Management",
+			"assetState" : "Closed",
+			"changeDate" : "2013-01-10T11:00:51.8230000"
+		},
+		{
+			"_id" : "Epic:101863",
+			"number" : "E-02895",
+			"name" : "As a Retail Bank Customer, I would like to see the Account Summary of my Bank Accounts",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:15:45.0530000"
+		},
+		{
+			"_id" : "Epic:101864",
+			"number" : "E-02896",
+			"name" : "As a Credit Card Customer, I would like to see the Account Summary of my Card Accounts",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:00:00.9530000"
+		},
+		{
+			"_id" : "Epic:101871",
+			"number" : "E-02901",
+			"name" : "Native Header Updates - Card",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:16:34.1770000"
+		},
+		{
+			"_id" : "Epic:101872",
+			"number" : "E-02902",
+			"name" : "Native Header Updates - OLB",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:00:12.9200000"
+		},
+		{
+			"_id" : "Epic:101874",
+			"number" : "E-02903",
+			"name" : "As a Capital One customer, I would like to see Multiple Web Views in Modal Windows",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:00:09.3400000"
+		},
+		{
+			"_id" : "Epic:101885",
+			"number" : "E-02905",
+			"name" : "As a Credit Card Customer, I would like to view Account Details",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:00:23.0300000"
+		},
+		{
+			"_id" : "Epic:101886",
+			"number" : "E-02906",
+			"name" : "As a Retail Bank Customer, I would like to view Account Details",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:00:16.2300000"
+		},
+		{
+			"_id" : "Epic:101887",
+			"number" : "E-02907",
+			"name" : "As a Credit Card Customer, I would like to view Recent Transactions",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:00:20.4530000"
+		},
+		{
+			"_id" : "Epic:101888",
+			"number" : "E-02908",
+			"name" : "As a Retail Bank Customer, I would like to view Recent Transactions",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:15:47.4600000"
+		},
+		{
+			"_id" : "Epic:101890",
+			"number" : "E-02909",
+			"name" : "As a Credit Card Customer, I would like to view my Rewards Balance",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:00:27.1230000"
+		},
+		{
+			"_id" : "Epic:101893",
+			"number" : "E-02910",
+			"name" : "As a Credit Card Customer, I would like to access my Deals",
+			"assetState" : "Active",
+			"changeDate" : "2014-04-21T16:15:51.9570000"
+		} ]

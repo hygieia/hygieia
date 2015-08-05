@@ -1,0 +1,101 @@
+{"lastUpdated": 1422924638613, "result": [
+	{
+		"id":"id",
+		"collectorItemId":"kjhalsdaSHD",
+		"timestamp":1422924638613,
+		"executionId":"TEST1",
+		"description":"My test suite",
+		"url":"http://www.google.com/",
+		"startTime":1422924618613,
+		"endTime":1422924628613,
+		"duration":200,
+		"failureCount":1,
+		"errorCount":1,
+		"skippedCount":1,
+		"totalCount":5,
+		"testSuites": [
+			{
+				"description":"Suite 1",
+				"type":"Functional",
+				"startTime":1422924618613,
+				"endTime":1422924628613,
+				"duration":200,
+				"failureCount":0,
+				"errorCount":0,
+				"skippedCount":0,
+				"totalCount":1,
+				"testCases": [
+					{
+						"id":"case0",
+						"description":"case 0",
+						"duration": 1,
+						"status":"Success"
+					}
+				]
+			},
+			{
+				"description":"Suite 2",
+				"type":"Functional",
+				"startTime":1422924618613,
+				"endTime":1422924628613,
+				"duration":200,
+				"failureCount":1,
+				"errorCount":0,
+				"skippedCount":0,
+				"totalCount":1,
+				"testCases": [
+					{
+						"id":"case0",
+						"description":"case 0",
+						"duration": 1,
+						"status":"Failure"
+					}
+				]
+			},
+			{
+				"description":"Suite 3",
+				"type":"Functional",
+				"startTime":1422924618613,
+				"endTime":1422924628613,
+				"duration":200,
+				"failureCount":0,
+				"errorCount":1,
+				"skippedCount":1,
+				"totalCount":2,
+				"testCases": [
+					{
+						"id":"case0",
+						"description":"case 0",
+						"duration": 1,
+						"status":"Error"
+					},
+					{
+						"id":"case0",
+						"description":"case 0",
+						"duration": 1,
+						"status":"Skipped"
+					}
+				]
+			},
+			{
+				"description":"Suite 4",
+				"type":"Performance",
+				"startTime":1422924618613,
+				"endTime":1422924628613,
+				"duration":200,
+				"failureCount":0,
+				"errorCount":0,
+				"skippedCount":0,
+				"totalCount":1,
+				"testCases": [
+					{
+						"id":"case0",
+						"description":"case 0",
+						"duration": 1,
+						"status":"Success"
+					}
+				]
+			}
+		]
+	}
+]}

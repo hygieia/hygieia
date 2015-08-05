@@ -1,0 +1,77 @@
+<div id="site">
+    <ng-include src="ctrl.templateUrl"></ng-include>
+
+    <div class="col-md-8 col-md-push-2">
+        <div class="widget-modal">
+            <div class="widget-modal-heading">
+                Select Your Dashboard
+            </div>
+            <div class="widget-modal-body">
+                <div class="row">
+                    <div class="col-xs-8">
+                        <input type="search" id="filter" class="form-control text-center" ng-model="ctrl.search"
+                               placeholder="Type to find dashboard"/>
+                    </div>
+                    <div class="col-xs-2">
+                        <div class="btn btn-default" ng-click="ctrl.createDashboard()">
+                            <span class="fa fa-stack fa-lg">
+                                <span class="fa-circle-thin fa-stack-2x"></span>
+                                <span class="fa-plus fa-stack-1x"></span>
+                            </span>
+                            <br/>
+                            Create a new dashboard
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-4">
+                        <h5>All Dashboard's</span></h5>
+
+                        <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
+
+                        <ul class="list-animate list-group text-left">
+                            <li class="list-group-item clickable" ng-click="ctrl.open(item.id)"
+                                ng-repeat="item in filteredDashboards = (ctrl.dashboards | filter:ctrl.search | orderBy:'name')">
+                                {{item.name}}
+                                    <span class="pull-right fa fa-lg">
+                                        <span class="fa-angle-right fa-lg"></span>
+                                    </span>
+
+                            </li>
+                        </ul>
+
+                        <div class="text-center" ng-show="ctrl.dashboards && !filteredDashboards.length">
+                            No results
+                        </div>
+                    </div>
+
+
+                    <div class="col-xs-4">
+                        <h5>My Dashboard's <span class="label label-default"></span></h5>
+
+                        <div class="text-center" ng-hide="ctrl.mydash">Loading Your Dashboards...</div>
+                        <div class="text-center" ng-show="ctrl.mydash && !mydashboards.length">
+                            No results
+                        </div>
+
+                        <ul class="list-animate list-group text-left">
+                            <li class="list-group-item "
+                                ng-repeat="myitem in mydashboards = (ctrl.mydash | filter:ctrl.search | orderBy: 'name')">
+                                <a href ng-click="ctrl.open(myitem.id)">{{ myitem.name }}
+                                </a>
+                        <span class="pull-right fa fa-lg">
+                           <a href ng-click="ctrl.deleteDashboard(myitem.id)"><span
+                                   class="fa-trash fa-lg text-danger"></span></a>
+                        </span>
+
+                            </li>
+                        </ul>
+                        <p>{{ctrl.filter}}</p>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

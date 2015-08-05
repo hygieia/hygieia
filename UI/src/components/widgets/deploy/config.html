@@ -1,0 +1,30 @@
+<widget-modal widget-modal-title="Configure Deploy Widget">
+    <form class="deploy-config" name="configForm" ng-submit="deployConfig.submit(configForm.$valid)" novalidate="novalidate">
+        <div class="form-group" ng-class="{'has-error': configForm.collectorItemId.$invalid && deployConfig.submitted}">
+            <select name="collectorItemId"
+                    class="form-control"
+                    ng-model="deployConfig.deployJob"
+                    ng-options="job.name for job in deployConfig.deployJobs | orderBy: 'name' track by job.value"
+                    ng-disabled="deployConfig.jobDropdownDisabled"
+                    required>
+                <option value="">{{deployConfig.jobDropdownPlaceholder}}</option>
+            </select>
+
+            <p class="help-block" ng-if="configForm.collectorItemId.$error.required">Please select your application</p>
+        </div>
+
+        <hr/>
+
+        <div class="form-group text-center">
+            <label class="modal-label">
+                Alert takeover criteria:
+            </label>
+            <br/>
+            If any environment is down
+        </div>
+
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+</widget-modal>
