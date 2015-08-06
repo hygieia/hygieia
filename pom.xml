@@ -20,6 +20,7 @@
         <module>VersionOneFeatureCollector</module>
         <module>DeployCollector</module>
         <module>JiraFeatureCollector</module>
+        <module>JenkinsCucumberTestCollector</module>
         <module>UI</module>
     </modules>
 
