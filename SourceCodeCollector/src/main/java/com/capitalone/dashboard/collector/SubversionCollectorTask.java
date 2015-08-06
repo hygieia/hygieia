@@ -3,17 +3,23 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.SubversionRepoRepository;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * CollectorTask that fetches Commit information from Subversion
@@ -28,12 +34,14 @@ public class SubversionCollectorTask extends CollectorTask<Collector> {
     private final CommitRepository commitRepository;
     private final SubversionClient subversionClient;
     private final SubversionSettings subversionSettings;
+    private final ComponentRepository dbComponentRepository;
 
     @Autowired
     public SubversionCollectorTask(TaskScheduler taskScheduler,
                                    BaseCollectorRepository<Collector> collectorRepository,
                                    SubversionRepoRepository subversionRepoRepository,
                                    CommitRepository commitRepository,
+                                   ComponentRepository dbComponentRepository,
                                    SubversionClient subversionClient,
                                    SubversionSettings subversionSettings) {
         super(taskScheduler, "Subversion");
@@ -42,6 +50,7 @@ public class SubversionCollectorTask extends CollectorTask<Collector> {
         this.commitRepository = commitRepository;
         this.subversionClient = subversionClient;
         this.subversionSettings = subversionSettings;
+        this.dbComponentRepository = dbComponentRepository;
     }
 
     @Override
@@ -64,6 +73,42 @@ public class SubversionCollectorTask extends CollectorTask<Collector> {
         return subversionSettings.getCron();
     }
 
+	/**
+	 * Clean up unused deployment collector items
+	 * 
+	 * @param collector
+	 *            the {@link UDeployCollector}
+	 */
+
+	private void clean(Collector collector) {
+		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
+				.findAll()) {
+			if ((comp.getCollectorItems() != null)
+					&& !comp.getCollectorItems().isEmpty()) {
+				List<CollectorItem> itemList = comp.getCollectorItems().get(
+						CollectorType.SCM);
+				if (itemList != null) {
+					for (CollectorItem ci : itemList) {
+						if ((ci != null) && (ci.getCollectorId().equals(collector.getId()))){
+							uniqueIDs.add(ci.getId());
+						}
+					}
+				}
+			}
+		}
+		List<SubversionRepo> repoList = new ArrayList<SubversionRepo>();
+		Set<ObjectId> svnId = new HashSet<ObjectId>();
+		svnId.add(collector.getId());
+		for (SubversionRepo repo : subversionRepoRepository.findByCollectorIdIn(svnId)) {
+			if (repo != null) {
+				repo.setEnabled(uniqueIDs.contains(repo.getId()));
+				repoList.add(repo);
+			}
+		}
+		subversionRepoRepository.save(repoList);
+	}
+	
     @Override
     public void collect(Collector collector) {
 
@@ -72,6 +117,7 @@ public class SubversionCollectorTask extends CollectorTask<Collector> {
         int repoCount = 0;
         int commitCount = 0;
 
+        clean(collector);
         for (SubversionRepo repo : enabledRepos(collector)) {
             for (Commit commit : subversionClient.getCommits(repo, startRevision(repo))) {
                 if (isNewCommit(repo, commit)) {
