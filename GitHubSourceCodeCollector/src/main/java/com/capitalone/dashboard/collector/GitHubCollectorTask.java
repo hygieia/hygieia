@@ -4,17 +4,24 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitHubRepoRepository;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * CollectorTask that fetches Commit information from GitHub
@@ -28,6 +35,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     private final CommitRepository commitRepository;
     private final GitHubClient gitHubClient;
     private final GitHubSettings gitHubSettings;
+    private final ComponentRepository dbComponentRepository;
 
     @Autowired
     public GitHubCollectorTask(TaskScheduler taskScheduler,
@@ -35,13 +43,15 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                                    GitHubRepoRepository gitHubRepoRepository,
                                    CommitRepository commitRepository,
                                    GitHubClient gitHubClient,
-                                   GitHubSettings gitHubSettings) {
+                                   GitHubSettings gitHubSettings,
+                                   ComponentRepository dbComponentRepository) {
         super(taskScheduler, "GitHub");
         this.collectorRepository = collectorRepository;
         this.gitHubRepoRepository = gitHubRepoRepository;
         this.commitRepository = commitRepository;
         this.gitHubClient = gitHubClient;
         this.gitHubSettings = gitHubSettings;
+        this.dbComponentRepository = dbComponentRepository;
     }
 
     @Override
@@ -63,6 +73,52 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     public String getCron() {
         return gitHubSettings.getCron();
     }
+    
+	/**
+	 * Clean up unused deployment collector items
+	 * 
+	 * @param collector
+	 *            the {@link UDeployCollector}
+	 */
+
+	private void clean(Collector collector) {
+		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+		/**
+		 * Logic: For each component, retrieve the collector item list of the type SCM. 
+		 * Store their IDs in a unique set ONLY if their collector IDs match with GitHub collectors ID.
+		 */
+		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
+				.findAll()) {
+			if ((comp.getCollectorItems() != null)
+					&& !comp.getCollectorItems().isEmpty()) {
+				List<CollectorItem> itemList = comp.getCollectorItems().get(
+						CollectorType.SCM);
+				if (itemList != null) {
+					for (CollectorItem ci : itemList) {
+						if ((ci != null) && (ci.getCollectorId().equals(collector.getId()))){
+							uniqueIDs.add(ci.getId());
+						}
+					}
+				}
+			}
+		}
+		
+		/**
+		 * Logic: Get all the collector items from the collector_item collection for this collector.
+		 * If their id is in the unique set (above), keep them enabled; else, disable them.
+		 */
+		List<GitHubRepo> repoList = new ArrayList<GitHubRepo>();
+		Set<ObjectId> gitID = new HashSet<ObjectId>();
+		gitID.add(collector.getId());
+		for (GitHubRepo repo : gitHubRepoRepository.findByCollectorIdIn(gitID)) {
+			if (repo != null) {
+				repo.setEnabled(uniqueIDs.contains(repo.getId()));
+				repoList.add(repo);
+			}
+		}
+		gitHubRepoRepository.save(repoList);
+	}
+	
 
     @Override
     public void collect(Collector collector) {
@@ -72,6 +128,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         int repoCount = 0;
         int commitCount = 0;
 
+        clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
         	repo.setLastUpdateTime(new DateTime());
             gitHubRepoRepository.save(repo);
