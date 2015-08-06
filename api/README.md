@@ -11,11 +11,13 @@ to any given source system.
 
 Api layer needs a property file in following format
 
+```
 dbname=[dashboarddb]  
 dbusername=[MogoDb Database Username]  
 dbpassword=[MongoDb Database Password]  
 dbhost=[Host on which MongoDb is running]  
 dbport=[Port on which MongoDb is listening]  
+```
 
 For API web application to use this property file make sure that following environment property is set in following format
 

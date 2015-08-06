@@ -31,10 +31,10 @@ for information about sourcing this properties file.
     spring.data.mongodb.password=dbpass
 
     #Collector schedule (required)
-    jenkins.cron=0 0/5 * * * *
+    Jenkins.cron=0 0/5 * * * *
 
     #Hudson server (required) - Can provide multiple
-    jenkins.servers[0]=http://hudson.company.com
+    Jenkins.servers[0]=http://hudson.company.com
 
     #Determines if build console log is collected - defaults to false
-    jenkins.saveLog=true
+    Jenkins.saveLog=true

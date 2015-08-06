@@ -26,10 +26,27 @@ For the past two years, we’ve looked for DevOps visualization tools in the com
 
 * Open source tools/frameworks such as Grafana provide generic framework to build a dashboard however collecting data from the numerous DevOps tools is still the challenge.</li>
 
-
 ### ScreenShot
 ![Image](/media/images/hygiea-screenshot.jpg)
 
 ### Contributors :
 We welcome Your interest in Capital One’s Open Source Projects (the “Project”). Any Contributor to the Project must accept and sign an Agreement indicating agreement to the license terms below.Except for the license granted in this Agreement to Capital One and to recipients of software distributed by Capital One, You reserve all right, title, and interest in and to Your Contributions; this Agreement does not impact Your rights to use Your own Contributions for any other purpose
+
 ##### [Link to Agreement] (https://docs.google.com/forms/d/19LpBBjykHPox18vrZvBbZUcK6gQTj7qv1O5hCduAZFU/viewform)
+
+### Running Locally
+
+* Start API
+```
+./gradlew :api:run
+```
+
+* Start UI
+```
+./gradlew :UI:run
+```
+
+* Running a collector
+```
+java -jar CodeQualityCollector/build/libs/hygieia-code-quality-collector-1.0.0.jar --spring.config.location=file:sample.properties
+```
