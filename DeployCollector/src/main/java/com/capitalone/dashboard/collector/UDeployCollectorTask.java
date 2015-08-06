@@ -125,7 +125,9 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 			}
 		}
 		List<UDeployApplication> appList = new ArrayList<UDeployApplication>();
-		for (UDeployApplication app : uDeployApplicationRepository.findAll()) {
+		Set<ObjectId> udId = new HashSet<ObjectId>();
+		udId.add(collector.getId());
+		for (UDeployApplication app : uDeployApplicationRepository.findByCollectorIdIn(udId)) {
 			if (app != null) {
 				app.setEnabled(uniqueIDs.contains(app.getId()));
 				appList.add(app);
