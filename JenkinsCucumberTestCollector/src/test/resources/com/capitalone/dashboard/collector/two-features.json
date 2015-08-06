@@ -1,0 +1,188 @@
+[
+  {
+    "comments": [
+      {
+        "value": "# Feature comment",
+        "line": 1
+      }
+    ],
+    "keyword": "Feature",
+    "name": "eCUKE Feature",
+    "line": 2,
+    "description": "",
+    "id": "ecuke-feature",
+    "uri": "features/sample.feature",
+    "elements": [
+      {
+        "keyword": "Scenario",
+        "name": "I say hi",
+        "line": 5,
+        "description": "",
+        "tags": [
+          {
+            "name": "@alm_test=99772",
+            "line": 4
+          }
+        ],
+        "id": "ecuke-feature;i-say-hi",
+        "type": "scenario",
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "You said hi",
+            "line": 6,
+            "output": [
+              "Hello to you"
+            ],
+            "match": {
+              "location": "features/step_definitions/my_steps.rb:1"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 4001555571
+            }
+          }
+        ]
+      },
+      {
+        "keyword": "Scenario",
+        "name": "You say hi",
+        "line": 9,
+        "description": "",
+        "tags": [
+          {
+            "name": "@alm_test=99773",
+            "line": 8
+          }
+        ],
+        "id": "ecuke-feature;you-say-hi",
+        "type": "scenario",
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "Something happened",
+            "line": 10,
+            "output": [
+              "Something happens",
+              "12",
+              "5",
+              "7"
+            ],
+            "match": {
+              "location": "features/step_definitions/my_steps.rb:5"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1001212921
+            }
+          }
+        ]
+      },
+      {
+        "keyword": "Scenario Outline",
+        "name": "Eating Cucumbers",
+        "line": 13,
+        "description": "",
+        "tags": [
+          {
+            "name": "@alm_test=99771",
+            "line": 12
+          }
+        ],
+        "id": "ecuke-feature;eating-cucumbers",
+        "type": "scenario_outline",
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "there are 12 cucumbers",
+            "line": 14,
+            "match": {
+
+            },
+            "result": {
+              "status": "passed"
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I eat 5 cucumbers",
+            "line": 15,
+            "match": {
+
+            },
+            "result": {
+              "status": "passed"
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "I should have 7 cucumbers",
+            "line": 16,
+            "match": {
+
+            },
+            "result": {
+              "status": "passed",
+              "duration": 2013197371
+            },
+            "output": [
+              "20",
+              "5",
+              "15"
+            ]
+          }
+        ]
+      },
+      {
+        "keyword": "Scenario Outline",
+        "name": "Eating Cucumbers",
+        "line": 13,
+        "description": "",
+        "tags": [
+          {
+            "name": "@alm_test=99771",
+            "line": 12
+          }
+        ],
+        "id": "ecuke-feature;eating-cucumbers",
+        "type": "scenario_outline",
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "there are 20 cucumbers",
+            "line": 14,
+            "match": {
+
+            },
+            "result": {
+              "status": "passed"
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I eat 5 cucumbers",
+            "line": 15,
+            "match": {
+
+            },
+            "result": {
+              "status": "passed"
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "I should have 15 cucumbers",
+            "line": 16,
+            "match": {
+
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8003875005
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
