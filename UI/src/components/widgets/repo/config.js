@@ -109,7 +109,8 @@
 				name : 'repo',
 				options : {
 					id : widgetConfig.options.id,
-					url : ctrl.repoUrl
+					url : ctrl.repoUrl,
+					branch : ctrl.gitBranch
 				},
 				componentId : modalData.dashboard.application.components[0].id,
 				collectorItemId : response.data.id
