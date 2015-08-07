@@ -1,0 +1,13 @@
+<div class="widget spendBy">
+    <div class="widget-heading">
+        Spend by {{cloudView.userSpendByOptions[0]}}
+    </div>
+    <div class="widget-body">
+        <chartist class="ct-chart ct-major-twelfth"
+                  chartist-chart-type="Line"
+                  chartist-data="cloudView.instanceData"
+                  chartist-chart-options="cloudView.lineOptions"
+                >
+        </chartist>
+    </div>
+</div> 

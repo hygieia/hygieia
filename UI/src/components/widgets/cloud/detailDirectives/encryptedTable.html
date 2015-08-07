@@ -1,0 +1,17 @@
+<div class="widget-detail" ng-model="cloudView.detail">
+    <a href="" class="detail-close" ng-click="detail.close()"><span class="fa fa-2x fa-times-circle-o"></span></a>
+
+    <div class="widget-heading">
+        Instances Not Encrypted
+    </div>
+
+    <div class="widget-body table-overflow">
+        <table class="table widget">
+            <tbody>
+            <tr class="hover-effects" ng-repeat="data in cloudView.tableData">
+                <td ng-if="data.encrypted == false">{{data.instanceId}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

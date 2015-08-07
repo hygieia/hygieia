@@ -1,0 +1,22 @@
+<div class="widget notEncryptedPercent clickable">
+    <div class="widget-heading">
+        Encryption
+    </div>
+    <div class="widget-body" ng-click="cloudView.detail('Encrypted')">
+        <div guage-container>
+            <div class="ct-wrapper clearfix">
+                <chartist class="ct-chart ct-square db-chart-primary"
+                          chartist-data="cloudView.notEncryptedPercent"
+                          chartist-chart-options="cloudView.rainbowOptions"
+                          chartist-chart-type="Pie"></chartist>
+                <div class="guage-number">
+                    <span fit-text>{{ cloudView.notEncryptedPercent.series[0] | number:0 }}<small class="percent">%
+                    </small></span>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div class="cloud-value">{{cloudView.notEncryptedCount | number:0 }} instances not encrypted</div>
+        </div>
+    </div>
+</div>

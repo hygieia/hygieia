@@ -1,0 +1,21 @@
+<div class="widget notTaggedPercent">
+    <div class="widget-heading">
+        ASV/ENV tag
+    </div>
+    <div class="widget-body">
+        <div guage-container>
+            <div class="ct-wrapper clearfix">
+                <chartist class="ct-chart ct-square db-chart-primary"
+                          chartist-data="cloudView.notTaggedPercent"
+                          chartist-chart-options="cloudView.rainbowOptions"
+                          chartist-chart-type="Pie"></chartist>
+                <div class="guage-number">
+                    <span fit-text>{{ cloudView.notTaggedPercent.series[0] | number:0 }}<small class="percent">%</small></span>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div class="cloud-value">{{cloudView.notTaggedCount | number:0 }} instances not ASV/ENV tagged</div>
+        </div>
+    </div>
+</div>

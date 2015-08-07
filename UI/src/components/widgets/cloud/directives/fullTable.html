@@ -1,0 +1,28 @@
+<div class="widget-heading">
+    Server Life
+</div>
+<table class="widget table">
+    <thead>
+    <tr class="clickable text-center">
+        <th ng-click="reverse=!reverse;order('instanceId', reverse)">Instance ID</th>
+        <th ng-click="reverse=!reverse;order('cpuUtilization', reverse)">CPU Utilization</th>
+        <th ng-click="reverse=!reverse;order('encrypted', reverse)">Encrypted</th>
+        <th class="text-right " ng-click="reverse=!reverse;order('age', reverse)">Age in days</th>
+    </tr>
+    </thead>
+</table>
+<div class="widget-body table-overflow">
+    <table class="table widget">
+        <tbody>
+        <tr class="hover-effects" ng-repeat="data in cloudView.tableData"
+            ng-class="{'warn':data.cpuUtilization < 10,'pass':data.cpuUtilization>=10&&data.cpuUtilization<90,'fail':data.cpuUtilization>=50}">
+            <td>{{data.instanceId}}</td>
+            <td>{{data.cpuUtilization | number:1}}%</td>
+            <td>{{data.encrypted}}</td>
+            <td class="text-right ">{{data.age}}  <span class="fa "
+                                                        ng-class="{'fa-warning' : data.age < 65 && data.age >= 45, 'fa-check':data.age < 45, 'fa-ban':data.age >= 65}"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
