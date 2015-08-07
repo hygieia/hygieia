@@ -3,16 +3,22 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.SonarCollectorRepository;
 import com.capitalone.dashboard.repository.SonarProjectRepository;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class SonarCollectorTask extends CollectorTask<SonarCollector> {
@@ -23,20 +29,24 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     private final CodeQualityRepository codeQualityRepository;
     private final SonarClient sonarClient;
     private final SonarSettings sonarSettings;
-
+    private final ComponentRepository dbComponentRepository;
+    private final int CLEANUP_INTERVAL = 3600000;
+    
     @Autowired
     public SonarCollectorTask(TaskScheduler taskScheduler,
                               SonarCollectorRepository sonarCollectorRepository,
                               SonarProjectRepository sonarProjectRepository,
                               CodeQualityRepository codeQualityRepository,
                               SonarSettings sonarSettings,
-                              SonarClient sonarClient) {
+                              SonarClient sonarClient,
+                              ComponentRepository dbComponentRepository) {
         super(taskScheduler, "Sonar");
         this.sonarCollectorRepository = sonarCollectorRepository;
         this.sonarProjectRepository = sonarProjectRepository;
         this.codeQualityRepository = codeQualityRepository;
         this.sonarSettings = sonarSettings;
         this.sonarClient = sonarClient;
+        this.dbComponentRepository = dbComponentRepository;
     }
 
     @Override
@@ -56,13 +66,20 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
 
     @Override
     public void collect(SonarCollector collector) {
+        long start = System.currentTimeMillis();
+        
+		// Clean up every hour
+		if ((start - collector.getLastExecuted()) > CLEANUP_INTERVAL) {
+			clean(collector);
+		}
         for (String instanceUrl : collector.getSonarServers()) {
             logInstanceBanner(instanceUrl);
 
-            long start = System.currentTimeMillis();
+
 
             List<SonarProject> projects = sonarClient.getProjects(instanceUrl);
-            log("Fetched projects", start);
+            int projSize = ((projects != null) ? projects.size() : 0);
+            log("Fetched projects   " + projSize , start);
 
             addNewProjects(projects, collector);
 
@@ -72,6 +89,43 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         }
     }
 
+    
+	/**
+	 * Clean up unused sonar collector items
+	 * 
+	 * @param collector
+	 *            the {@link HudsonCollector}
+	 */
+
+	private void clean(SonarCollector collector) {
+		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
+				.findAll()) {
+			if ((comp.getCollectorItems() != null)
+					&& !comp.getCollectorItems().isEmpty()) {
+				List<CollectorItem> itemList = comp.getCollectorItems().get(
+						CollectorType.CodeQuality);
+				if (itemList != null) {
+					for (CollectorItem ci : itemList) {
+						if ((ci != null) && (ci.getCollectorId().equals(collector.getId()))){
+							uniqueIDs.add(ci.getId());
+						}
+					}
+				}
+			}
+		}
+		List<SonarProject> jobList = new ArrayList<SonarProject>();
+		Set<ObjectId> udId = new HashSet<ObjectId>();
+		udId.add(collector.getId());
+		for (SonarProject job : sonarProjectRepository.findByCollectorIdIn(udId)) {
+			if (job != null) {
+				job.setEnabled(uniqueIDs.contains(job.getId()));
+				jobList.add(job);
+			}
+		}
+		sonarProjectRepository.save(jobList);
+	}
+	
     private void refreshData(List<SonarProject> sonarProjects) {
         long start = System.currentTimeMillis();
         int count = 0;
