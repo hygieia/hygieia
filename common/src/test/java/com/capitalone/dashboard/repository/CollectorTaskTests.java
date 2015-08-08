@@ -2,10 +2,12 @@ package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.collector.CollectorTask;
 import com.capitalone.dashboard.model.Collector;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -35,19 +37,17 @@ public class CollectorTaskTests {
         Collector c = new Collector();
         when(baseCollectorRepository.findByName(COLLECTOR_NAME)).thenReturn(null);
         when(baseCollectorRepository.save(any(Collector.class))).thenReturn(c);
-
         task.run();
-
         verify(baseCollectorRepository).save(any(Collector.class));
     }
 
     @Test
     public void run_enabled() {
-        Collector c = new Collector();
+    	Collector c = new Collector();
         c.setEnabled(true);
         long prevLastExecuted = c.getLastExecuted();
         when(baseCollectorRepository.findByName(COLLECTOR_NAME)).thenReturn(c);
-
+        when(baseCollectorRepository.save(any(Collector.class))).thenReturn(c);
         task.run();
 
         assertThat(c.getLastExecuted(), greaterThan(prevLastExecuted));
@@ -56,10 +56,10 @@ public class CollectorTaskTests {
 
     @Test
     public void run_disabled() {
-        Collector c = new Collector();
+    	Collector c =  new Collector();
         c.setEnabled(false);
         when(baseCollectorRepository.findByName(COLLECTOR_NAME)).thenReturn(c);
-
+        when(baseCollectorRepository.save(any(Collector.class))).thenReturn(c);
         task.run();
 
         verify(baseCollectorRepository, never()).save(c);
@@ -70,7 +70,6 @@ public class CollectorTaskTests {
         Collector c = new Collector();
         c.setOnline(false);
         when(baseCollectorRepository.findByName(COLLECTOR_NAME)).thenReturn(c);
-
         task.onStartup();
 
         assertThat(c.isOnline(), is(true));
