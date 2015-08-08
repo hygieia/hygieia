@@ -21,41 +21,34 @@
 			value: 'Subversion'
 		}];
 
+console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
+		console.log(JSON.stringify(widgetConfig.options.id));
 
-		var myindex;
+		if (!widgetConfig.options.scm) {
+			ctrl.repoOption="";
+		}
+		else
+		{
+			var myindex;
 
-		for (var v = 0; v < ctrl.repoOptions.length; v++) {
-			console.log(v+ctrl.repoOptions[v].name);
-
-			if(ctrl.repoOptions[v].name == widgetConfig.options.scm.name)
-			{
-				myindex = v;
+			for (var v = 0; v < ctrl.repoOptions.length; v++) {
+				if (ctrl.repoOptions[v].name == widgetConfig.options.scm.name) {
+					myindex = v;
+				}
 			}
+			ctrl.repoOption=ctrl.repoOptions[myindex];
 		}
 
 
-		console.log("index is" + myindex);
-
-		ctrl.repoOption=ctrl.repoOptions[myindex];
 		ctrl.gitBranch = widgetConfig.options.branch;
 		ctrl.username = "";
 		ctrl.password = "";
-		ctrl.selectedOption=widgetConfig.options.scm.name;
+
 
 		// public variables
 		ctrl.submitted = false;
 		ctrl.collectors = [];
 		ctrl.repoUrl = widgetConfig.options.url;
-
-
-		console.log(JSON.stringify(widgetConfig.options));
-
-
-
-
-
-
-
 
 		// public methods
 		ctrl.submit = submitForm;
