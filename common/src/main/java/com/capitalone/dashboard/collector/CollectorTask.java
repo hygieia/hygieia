@@ -41,6 +41,17 @@ public abstract class CollectorTask<T extends Collector> implements Runnable {
         if (collector == null) {
             // Register new collector
             collector = getCollectorRepository().save(getCollector());
+        } 
+        else {
+        	// In case the collector options changed via collectors properties setup.
+        	// We want to keep the existing collectors ID same as it ties to collector items.
+        	T newCollector = getCollector();
+        	newCollector.setId(collector.getId());
+        	newCollector.setEnabled(collector.isEnabled());
+        	newCollector.setCollectorType(collector.getCollectorType());
+        	newCollector.setLastExecuted(collector.getLastExecuted());
+        	newCollector.setName(collector.getName());
+        	collector = getCollectorRepository().save(newCollector); 	
         }
 
         if (collector.isEnabled()) {
