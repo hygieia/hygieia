@@ -124,7 +124,6 @@
                 console.log($scope.owner);
                 if ($scope.owner == $cookies.username || $cookies.username == "admin")
                 {
-                    console.log("Yeah you are the owner");
                     configModal();
                 }
                 else
