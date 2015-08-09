@@ -122,8 +122,11 @@ public class Encryption {
 	
 	public static void main(String[] args) {
 		try {
+			String k = Encryption.getStringKey();
 			System.out.println("Your secret key is:");
-			System.out.println(Encryption.getStringKey());
+			System.out.println(k);
+			System.out.println("Sample encrypted string with the above key for 'thisIsMyPassword' is:");
+			System.out.println(Encryption.encryptString("thisIsMyPassword", k));
 		} catch (EncryptionException e) {
 			e.printStackTrace();
 		}
