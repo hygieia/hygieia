@@ -26,6 +26,8 @@ import org.springframework.web.client.RestOperations;
 
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.util.Encryption;
+import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
 
 /**
@@ -42,7 +44,7 @@ public class DefaultGitHubClient implements GitHubClient {
 	private final RestOperations restOperations;
 	private final String SEGMENT_API = "/api/v3/repos/";
 	private final String PUBLIC_GITHUB_REPO_HOST = "api.github.com/repos/";
-	private final String PUBLIC_GITHUB_HOST_NAME =  "github.com";
+	private final String PUBLIC_GITHUB_HOST_NAME = "github.com";
 
 	@Autowired
 	public DefaultGitHubClient(GitHubSettings settings,
@@ -56,6 +58,7 @@ public class DefaultGitHubClient implements GitHubClient {
 
 		List<Commit> commits = new ArrayList<>();
 
+		// format URL
 		String repoUrl = (String) repo.getOptions().get("url");
 
 		URL url = null;
@@ -75,8 +78,7 @@ public class DefaultGitHubClient implements GitHubClient {
 		if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
 			apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + repoName;
 		} else {
-			 apiUrl = protocol + "://" + hostName + SEGMENT_API
-					+ repoName;
+			apiUrl = protocol + "://" + hostName + SEGMENT_API + repoName;
 		}
 
 		DateTime dt = repo.getLastUpdateTime().minusMinutes(10000); // randomly
@@ -88,7 +90,18 @@ public class DefaultGitHubClient implements GitHubClient {
 		String strDt = fmt.print(dt);
 		String queryUrl = apiUrl.concat("/commits?branch=" + repo.getBranch()
 				+ "&since=" + strDt);
-		for (Object item : paresAsArray(makeRestCall(queryUrl))) {
+		
+		// decrypt password
+		String decryptedPassword = "";
+		if ((repo.getPassword() != null) && !"".equals(repo.getPassword())) {
+			try {
+				decryptedPassword = Encryption.decryptString(repo.getPassword(), settings.getKey());
+			} catch (EncryptionException e) {
+				LOG.error(e.getMessage());
+			}
+		}
+		
+		for (Object item : paresAsArray(makeRestCall(queryUrl, repo.getUserId(), decryptedPassword))) {
 			JSONObject jsonObject = (JSONObject) item;
 			String sha = str(jsonObject, "sha");
 			JSONObject commitObject = (JSONObject) jsonObject.get("commit");
@@ -110,16 +123,24 @@ public class DefaultGitHubClient implements GitHubClient {
 		return commits;
 	}
 
-	private ResponseEntity<String> makeRestCall(String url) {
-		// Not using github auth now. Assuming all public repos.
-		return restOperations.exchange(url, HttpMethod.GET, null, String.class);
+	private ResponseEntity<String> makeRestCall(String url, String userId,
+			String password) {
+		//Basic Auth only.
+		if (!"".equals(userId) && !"".equals(password)) {
+			return restOperations.exchange(url, HttpMethod.GET,
+					new HttpEntity<>(createHeaders(userId, password)), String.class);
+
+		} else {
+			return restOperations.exchange(url, HttpMethod.GET, null,
+					String.class);
+		}
+
 	}
 
-	private HttpHeaders createHeaders() {
+	private HttpHeaders createHeaders(final String userId, final String password) {
 		return new HttpHeaders() {
 			{
-				String auth = settings.getUsername() + ":"
-						+ settings.getPassword();
+				String auth = userId + ":" + password;
 				byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset
 						.forName("US-ASCII")));
 				String authHeader = "Basic " + new String(encodedAuth);
