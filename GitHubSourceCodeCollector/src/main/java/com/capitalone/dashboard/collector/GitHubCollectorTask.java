@@ -128,7 +128,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         int repoCount = 0;
         int commitCount = 0;
 
-//        clean(collector);
+        clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
         	repo.setLastUpdateTime(new DateTime());
             gitHubRepoRepository.save(repo);
