@@ -65,4 +65,9 @@ public class TestConfig {
 	public ScopeService scopeService() {
 		return Mockito.mock(ScopeService.class);
 	}
+	
+	@Bean
+	public EncryptionService encryptionService() {
+		return Mockito.mock(EncryptionService.class);
+	}
 }
