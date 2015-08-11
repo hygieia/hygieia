@@ -8,8 +8,27 @@ import org.joda.time.DateTime;
 public class GitHubRepo extends CollectorItem {
     private static final String REPO_URL = "repoUrl"; // http://github.company.com/jack/somejavacode
     private static final String BRANCH = "branch"; // master, development etc.
+    private static final String USER_ID = "userID";
+    private static final String PASSWORD = "password";
     private static final String LAST_UPDATE_TIME = "lastUpdate";
 
+    public String getUserId() {
+        return (String) getOptions().get(USER_ID);
+    }
+
+    public void setUserId(String userId) {
+        getOptions().put(USER_ID, userId);
+    }
+    
+    public String getPassword() {
+        return (String) getOptions().get(PASSWORD);
+    }
+
+    public void setPassword(String password) {
+        getOptions().put(PASSWORD, password);
+    }
+    
+    
     public String getRepoUrl() {
         return (String) getOptions().get(REPO_URL);
     }
