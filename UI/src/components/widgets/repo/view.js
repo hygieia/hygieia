@@ -14,10 +14,10 @@
                 Chartist.plugins.gridBoundaries(),
                 Chartist.plugins.lineAboveArea(),
                 Chartist.plugins.pointHalo(),
-                Chartist.plugins.tooltip()
-                //Chartist.plugins.ctPointLabels({
-                //    textAnchor: 'middle'
-                //})
+                //Chartist.plugins.tooltip()
+                Chartist.plugins.ctPointLabels({
+                    textAnchor: 'middle'
+                })
             ],
             showArea: true,
             lineSmooth: false,
@@ -73,8 +73,9 @@
                     return moment(item.scmCommitTimestamp).format('L');
                 }).forEach(function(group) {
                     commits.push(group.length);
+
                 });
-            console.log(commits);
+
             //update charts
             ctrl.commitChartData.labels = [
                 moment().subtract(14, 'days').format('MMM DD'),
@@ -121,11 +122,10 @@
 
                 if(commit.scmCommitTimestamp >= fourteenDays.getTime()) {
                     lastFourteenDayCount++;
-
+                    ctrl.commits.push(commit);
                     if(lastFourteenDaysContributors.indexOf(commit.scmAuthor) == -1) {
                         lastFourteenDaysContributors.push(commit.scmAuthor);
                     }
-                    ctrl.commits.push(commit);
                 }
 
             });
