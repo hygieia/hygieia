@@ -11,7 +11,7 @@ import com.capitalone.dashboard.util.EncryptionException;
 
 @Service
 public class EncryptionServiceImpl implements EncryptionService {
-	@Autowired
+	
 	public EncryptionServiceImpl() {
 
 	}
