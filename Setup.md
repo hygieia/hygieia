@@ -5,11 +5,11 @@ The following components are required to run Hygieia:
 
 * [UI](https://github.com/capitalone/Hygieia/tree/master/UI)
 * [API](https://github.com/capitalone/Hygieia/tree/master/api)
-* Mongo DB 2.6+
+* MongoDB 2.6+
      * [Download & Installation instructions](https://www.mongodb.org/downloads#previous)
-     * Configure Mongodb
-      * Name the database as dashboarddb. (Note: This is the same database that the collectors write to. So make sure that this name matches with the database names in collector properties)
-      * create a user called dashboarduser with read/write priveleges.
+     * Configure MongoDB
+      * Name the database as `dashboarddb`. (Note: This is the same database that the collectors write to. So make sure that this name matches with the database names in collector properties)
+      * create a user called `dashboarduser` with read/write priveleges.
       * Turn Authentication on.
 
 
