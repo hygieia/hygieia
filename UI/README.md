@@ -1,9 +1,13 @@
-##Hygieia UI
+## Hygieia UI
 
-###Setup -
-Make sure to have node, gulp bower, and npm set up
+### Requirements
 
-#######Linux
+- NodeJS
+- npm
+- gulp
+- bower
+
+#### Mac OS X
 
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     brew install node
@@ -17,7 +21,7 @@ Pull down everything that's configured with bower and npm. I think it's:
 
 Will need up update the ngFitText bower.json file to point to 'src/ng-FitText.js' instead of '/src/ng-FitText.js'
 
-#######Windows
+#### Windows
 
 	Install the following MSI package to install Node.JS:  http://nodejs.org/download/
 
