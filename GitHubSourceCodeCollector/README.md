@@ -33,11 +33,8 @@ for information about sourcing this properties file.
     spring.data.mongodb.password=dbpass
 
     #Collector schedule (required)
-    subversion.cron=0 0/5 * * * *
+    github.cron=0 0/5 * * * *
 
-    #Shared subversion username and password
-    subversion.username=foo
-    subversion.password=bar
 
     #Maximum number of days to go back in time when fetching commits
-    subversion.commitThresholdDays=15
+    github.commitThresholdDays=15
