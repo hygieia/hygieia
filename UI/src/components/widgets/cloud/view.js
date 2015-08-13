@@ -51,7 +51,6 @@
 
             //replace localTest with table
             cloudData.localTable(params).then(function (data) {
-                console.log(data);
                 ctrl.tableData = orderBy(data, sortBy, direction);
             }).catch(function (err) {
             });
