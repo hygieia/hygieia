@@ -23,7 +23,7 @@ Will need up update the ngFitText bower.json file to point to 'src/ng-FitText.js
 
 #### Windows
 
-	Install the following MSI package to install Node.JS:  http://nodejs.org/download/
+Install NodeJS using the MSI package available at: http://nodejs.org/download/
 
 Issue the following commands via command line:
 
