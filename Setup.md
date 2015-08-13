@@ -8,7 +8,7 @@ The following components are required to run Hygieia:
 * Mongo DB 2.6+
      * [Download & Installation instructions](https://www.mongodb.org/downloads#previous)
      * Configure Mongodb
-      * Name the database as dashboarddb.
+      * Name the database as dashboarddb. (Note: This is the same database that the collectors write to. So make sure that this name matches with the database names in collector properties)
       * create a user called dashboarduser with read/write priveleges.
       * Turn Authentication on.
 
