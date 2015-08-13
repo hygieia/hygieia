@@ -8,5 +8,7 @@ notifications:
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
 
-# need to override travis 'install' since it will try gpg sign and fail.
-#install: mvn clean compile package -DskipTests=true
+before_install:
+  - pip install codecov
+after_success:
+  - codecov
