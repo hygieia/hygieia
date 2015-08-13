@@ -1,4 +1,4 @@
-SourceCode Collector
+Subversion SourceCode Collector
 =================
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
