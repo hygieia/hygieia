@@ -1,6 +1,11 @@
 {
   "name": "devops-dashboard",
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/capitalone/Hygieia"
+  },
+  "license": "Apache-2.0",
   "dependencies": {},
   "devDependencies": {
     "bower": "^1.4.1",
