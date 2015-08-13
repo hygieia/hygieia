@@ -11,7 +11,7 @@ to any given source system.
 
 Api layer needs a property file in following format
 
-dbname=[dashboarddb]  
+dbname=dashboarddb  
 dbusername=[MogoDb Database Username]  
 dbpassword=[MongoDb Database Password]  
 dbhost=[Host on which MongoDb is running]  
