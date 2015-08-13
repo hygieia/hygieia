@@ -1,32 +1,39 @@
 <div ng-controller="CapOneTemplateController as template">
     <div id="header">
-
-        <img class="mycenter pull-left" alt="Hygieia" src="assets/images/Hygieia_b.png"/>
-
+        <a href="/#site" class="pull-left">
+            <img class="mycenter" alt="Hygieia" src="assets/images/hygieia_H.png"/>
+        </a>
 
         {{::ctrl.dashboard.title}}
 
         <div class="pipeline-toggle btn-group"
-             ng-click="template.toggleView()"
-             ng-show="template.hasComponents(ctrl.dashboard, ['Deployment'])">
-            <span class="btn" ng-class="{'btn-primary':template.widgetView, 'btn-default': !template.widgetView}">
+             ng-click="template.toggleView($event)">
+            <!--ng-show="template.hasComponents(ctrl.dashboard, ['Deployment'])"-->
+            <!-- readd previous line -->
+            <span id="widget" class="btn" ng-class="{'btn-primary':template.widgetView[0], 'btn-default': !template.widgetView[0]}">
                 <span class="fa fa-th"></span>
                 Widget
             </span>
-            <span class="btn" ng-class="{'btn-primary':!template.widgetView, 'btn-default': template.widgetView}">
+
+            <span id="pipeline" class="btn" ng-class="{'btn-primary':template.widgetView[1], 'btn-default': !template.widgetView[1]}">
                 <span class="fa fa-tasks"></span>
                 Pipeline
+            </span>
+
+            <span id="cloud" class="btn" ng-class="{'btn-primary':template.widgetView[2], 'btn-default': !template.widgetView[2]}">
+                <span class="fa fa-cloud"></span>
+                Cloud
             </span>
         </div>
 
         <div class="clear"></div>
     </div>
 
-    <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView">
+    <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView[0]">
         <div class="row">
             <div class="col-md-3">
                 <!--<div class="col-sm-6 col-md-12">-->
-                    <!--<widget name="nada" widget-title="Feature"></widget>-->
+                <!--<widget name="nada" widget-title="Feature"></widget>-->
                 <!--</div>-->
                 <!--<div class="col-sm-6 col-md-12">-->
                 <div class="col-xs-12">
@@ -54,9 +61,16 @@
         </div>
     </div>
 
-    <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="!template.widgetView">
+    <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView[1]">
         <div class="col-xs-12">
             <widget name="pipeline" widget-title="Delivery Pipeline"></widget>
+        </div>
+    </div>
+
+    <!--The following snippet of code is a template of how to add another panel to the dashboard-->
+    <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView[2]">
+        <div class="col-xs-6">
+            <widget name="cloud"></widget>
         </div>
     </div>
 

@@ -9,21 +9,30 @@
         .factory('cloudData', cloudData);
 
     function cloudData($http) {
-        var testDetailRoute = 'test-data/serverdata.json';
+        var testDetailsRoute = 'test-data/aws_aggregate.json';
+        var testTableRoute = 'test-data/aws_raw.json';
         var caDetailRoute = '/api/cloud/';
         var tableDetailRoute = '/api/cloud/detailed';
         var authenticationRoute = '/api/cloud/authenticateUser';
 
+
         return {
-            localTest: localTest,
+            localDetails: localDetails,
+            localTable: localTable,
             details: details,
             accessAuthentication: accessAuthentication,
             table: table
         };
 
-        function localTest(params) {
-            return $http.get(testDetailRoute, {params: params}).then(function (response) {
-                return response.data;
+        function localDetails(params) {
+            return $http.get(testDetailsRoute, {params: params}).then(function (response) {
+                return response;
+            })
+        }
+
+        function localTable(params) {
+            return $http.get(testTableRoute, {params: params}).then(function (response) {
+                return response;
             })
         }
 

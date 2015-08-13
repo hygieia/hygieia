@@ -33,6 +33,6 @@
     function getState(widgetConfig) {
         return localTesting || widgetConfig.id ?
             widget_state.READY :
-            widget_state.CONFIGURE;//change ready to CONFIG
+            widget_state.CONFIGURE;
     }
 })();

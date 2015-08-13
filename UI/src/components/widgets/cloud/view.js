@@ -35,7 +35,7 @@
         ctrl.load = function () {
             var params = {'componentId': ctrl.componentId}; //component id and filter from config
             //replace localTest with details
-            cloudData.details(params).then(function (data) {
+            cloudData.localDetails(params).then(function (data) {
                 ctrl.totalCount = data.totalInstanceCount;
                 ctrl.stoppedCount = data.stoppedCount;
 
@@ -50,7 +50,7 @@
             });
 
             //replace localTest with table
-            cloudData.table(params).then(function (data) {
+            cloudData.localTable(params).then(function (data) {
                 ctrl.tableData = orderBy(data, sortBy, direction);
             }).catch(function (err) {
             });
