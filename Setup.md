@@ -15,12 +15,12 @@ The following components are required to run Hygieia:
 
 * Collectors for each widget you want data to be collected for.
 * Collectors for following tools are supported currently
-  * [**Agile Story Management**](https://github.com/capitalone/Hygieia/tree/master/FeatureCollector)
-    * VersionOne
-    * Jira
-  * [**Source**](https://github.com/capitalone/Hygieia/tree/master/SourceCodeCollector)
-    * Github
-    * Subversion
+  * **Agile Story Management**
+    * [VersionOne](https://github.com/capitalone/Hygieia/tree/master/VersionOneFeatureCollector)
+    * [Jira](https://github.com/capitalone/Hygieia/tree/master/JiraFeatureCollector)
+  * **Source**
+    * [GitHub](https://github.com/capitalone/Hygieia/tree/master/GitHubSourceCodeCollector)
+    * [Subversion](https://github.com/capitalone/Hygieia/tree/master/SourceCodeCollector)
   * [**Build tools**](https://github.com/capitalone/Hygieia/tree/master/BuildCollector)
     * Jenkins/Hudson
   * [**Code Quality**](https://github.com/capitalone/Hygieia/tree/master/CodeQualityCollector)
