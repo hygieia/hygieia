@@ -4,7 +4,7 @@
             Commits per day
         </div>
         <div class="widget-body">
-            <chartist class="ct-chart ct-octave dash-chart-alt"
+            <chartist class="ct-chart ct-octave dash-chart-alt clickable" ng-click="repoView.showDetail()"
                       chartist-chart-type="Line"
                       chartist-data="repoView.commitChartData"
                       chartist-chart-options="repoView.commitChartOptions"

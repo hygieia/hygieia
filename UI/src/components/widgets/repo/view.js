@@ -5,8 +5,8 @@
         .module('devops-dashboard')
         .controller('RepoViewController', RepoViewController);
 
-    RepoViewController.$inject = ['$q', '$scope', 'codeRepoData'];
-    function RepoViewController($q, $scope, codeRepoData) {
+    RepoViewController.$inject = ['$q', '$scope','codeRepoData', '$modal'];
+    function RepoViewController($q, $scope, codeRepoData, $modal) {
         var ctrl = this;
 
         ctrl.commitChartOptions = {
@@ -14,7 +14,10 @@
                 Chartist.plugins.gridBoundaries(),
                 Chartist.plugins.lineAboveArea(),
                 Chartist.plugins.pointHalo(),
-                Chartist.plugins.tooltip()
+                //Chartist.plugins.tooltip()
+                Chartist.plugins.ctPointLabels({
+                    textAnchor: 'middle'
+                })
             ],
             showArea: true,
             lineSmooth: false,
@@ -22,7 +25,7 @@
             chartPadding: 7,
             axisY: {
                 offset: 30,
-                //showGrid: false,
+                showGrid: true,
                 showLabel: true,
                 labelInterpolationFnc: function(value) { return Math.round(value * 100) / 100; }
             }
@@ -33,6 +36,8 @@
             series: []
         };
 
+        ctrl.commits = [];
+        ctrl.showDetail = showDetail;
         ctrl.load = function() {
             var deferred = $q.defer();
             var params = {
@@ -46,6 +51,20 @@
             return deferred.promise;
         };
 
+        function showDetail() {
+            $modal.open({
+                controller: 'RepoDetailController',
+                controllerAs: 'detail',
+                templateUrl: 'components/widgets/repo/detail.html',
+                size: 'lg',
+                resolve: {
+                    commits: function() {
+                        return ctrl.commits;
+                    }
+                }
+            });
+        }
+
         function processResponse(data) {
             // get total commits by day
             var commits = [];
@@ -54,6 +73,7 @@
                     return moment(item.scmCommitTimestamp).format('L');
                 }).forEach(function(group) {
                     commits.push(group.length);
+
                 });
 
             //update charts
@@ -83,6 +103,7 @@
 
             // loop through and add to counts
             _(data).forEach(function (commit) {
+
                 if(commit.scmCommitTimestamp >= today.getTime()) {
                     lastDayCount++;
 
@@ -101,11 +122,12 @@
 
                 if(commit.scmCommitTimestamp >= fourteenDays.getTime()) {
                     lastFourteenDayCount++;
-
+                    ctrl.commits.push(commit);
                     if(lastFourteenDaysContributors.indexOf(commit.scmAuthor) == -1) {
                         lastFourteenDaysContributors.push(commit.scmAuthor);
                     }
                 }
+
             });
 
             ctrl.lastDayCommitCount = lastDayCount;
@@ -119,7 +141,7 @@
                 date.setHours(0, 0, 0, 0);
                 return date;
             }
-
         }
+
     }
 })();

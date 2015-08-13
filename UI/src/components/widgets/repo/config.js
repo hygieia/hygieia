@@ -13,17 +13,37 @@
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
 
-		ctrl.repoOptions = [ {
+		ctrl.repoOptions = [{
 			name: 'GitHub',
 			value: 'GitHub'
 		}, {
-			name : 'Subversion',
-			value : 'Subversion'
-		} ];
-		ctrl.repoOption = "";
-		ctrl.gitBranch = "";
+			name: 'Subversion',
+			value: 'Subversion'
+		}];
+
+console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
+		console.log(JSON.stringify(widgetConfig.options.id));
+
+		if (!widgetConfig.options.scm) {
+			ctrl.repoOption="";
+		}
+		else
+		{
+			var myindex;
+
+			for (var v = 0; v < ctrl.repoOptions.length; v++) {
+				if (ctrl.repoOptions[v].name == widgetConfig.options.scm.name) {
+					myindex = v;
+				}
+			}
+			ctrl.repoOption=ctrl.repoOptions[myindex];
+		}
+
+
+		ctrl.gitBranch = widgetConfig.options.branch;
 		ctrl.username = "";
 		ctrl.password = "";
+
 
 		// public variables
 		ctrl.submitted = false;
@@ -79,24 +99,23 @@
 
 		function createCollectorItem(url, repoTypeName, branch) {
 			var item = {};
-			console.log(repoTypeName);
-			console.log(branch);
 
 			if (repoTypeName.indexOf("GitHub") != -1) {
 
 				item = {
 					collectorId: _.findWhere(ctrl.collectors, {name: 'GitHub'}).id,
 					options: {
+						scm: 'Github',
 						url: url,
 						branch: branch
 					}
 				};
 			} else {
+				console.log(repoTypeName);
 				item = {
-					collectorId : _.findWhere(ctrl.collectors, {
-						name: repoTypeName
-					}).id,
+					collectorId : _.findWhere(ctrl.collectors, { name: 'Subversion' }).id,
 					options: {
+						scm: 'Subversion',
 						url: url
 					}
 				};
@@ -106,9 +125,10 @@
 
 		function processCollectorItemResponse(response) {
 			var postObj = {
-				name : 'repo',
+				name : "repo",
 				options : {
 					id : widgetConfig.options.id,
+					scm : ctrl.repoOption,
 					url : ctrl.repoUrl,
 					branch : ctrl.gitBranch
 				},
