@@ -30,9 +30,10 @@ The following components are required to run Hygieia:
 
     You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.
 
-    ###How to build the project
+    ### How to build the project
+    
     We have included a parent pom for your use, the parent pom will build each of the individual projects in correct order.
 
-    * In the root folder where master pom.xml resides execute below command
+    * In the root folder, where the master `pom.xml` file resides, execute the command below:
 
-   <code> mvn --settings [Path to your settings.xml] clean compile install package </code>
+            mvn --settings [Path to your settings.xml] clean compile install package
