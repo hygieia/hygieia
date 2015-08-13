@@ -43,14 +43,15 @@
                 ctrl.ageData.series = [data.ageGood, data.ageExpired, data.ageWarning];
 
                 ctrl.notEncryptedCount = data.nonEncryptedCount;
-                ctrl.notEncryptedPercent.series = [data.nonEncryptedCount / data.totalInstanceCount * 100, 100 - (data.nonEncryptedCount / data.totalInstanceCount * 100)];
+                ctrl.notEncryptedPercent.series = [ 100 - (data.nonEncryptedCount / data.totalInstanceCount * 100), data.nonEncryptedCount / data.totalInstanceCount * 100];
                 ctrl.notTaggedCount = data.nonTaggedCount;
-                ctrl.notTaggedPercent.series = [data.nonTaggedCount / data.totalInstanceCount * 100, 100 - (data.nonTaggedCount / data.totalInstanceCount * 100)];
+                ctrl.notTaggedPercent.series = [100 - (data.nonTaggedCount / data.totalInstanceCount * 100), data.nonTaggedCount / data.totalInstanceCount * 100];
             }).catch(function (err) {
             });
 
             //replace localTest with table
             cloudData.localTable(params).then(function (data) {
+                console.log(data);
                 ctrl.tableData = orderBy(data, sortBy, direction);
             }).catch(function (err) {
             });

@@ -26,13 +26,13 @@
 
         function localDetails(params) {
             return $http.get(testDetailsRoute, {params: params}).then(function (response) {
-                return response;
+                return response.data;
             })
         }
 
         function localTable(params) {
             return $http.get(testTableRoute, {params: params}).then(function (response) {
-                return response;
+                return response.data.result;
             })
         }
 
