@@ -134,6 +134,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
 		String queryName = this.featureSettings.getProjectQuery();
 		super.query = this.featureWidgetQueries.getQuery(queryName);
+		logger.debug("updateProjectInformation: queryName = " + query + "; query = " + query);
 		updateObjectInformation();
 
 	}

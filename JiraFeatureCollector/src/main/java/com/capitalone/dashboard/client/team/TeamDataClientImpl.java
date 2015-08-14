@@ -128,6 +128,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
 		String queryName = this.featureSettings.getTeamQuery();
 		super.query = this.featureWidgetQueries.getQuery(queryName);
+		logger.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
 		updateObjectInformation();
 
 	}
