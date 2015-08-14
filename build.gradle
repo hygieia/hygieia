@@ -24,7 +24,7 @@ allprojects {
   apply plugin: 'checkstyle'
   apply plugin: "jacoco"
 
-  group = "com.capitalone.dashboard"
+  group = "com.capitalone"
   version = "1.0.0"
   ext.vendor = "capitalone"
 
@@ -80,6 +80,75 @@ allprojects {
     }
   }
 }
+
+def sonatypeRepositoryUrl
+def isRelease = false
+//set build variables based on build type (release, continuous integration, development)
+if (hasProperty("release")) {
+  sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+  isRelease = true
+} else if (hasProperty("snapshot")) {
+  version += "-SNAPSHOT"
+  isRelease = true
+} else {
+  version += "-SNAPSHOT"
+  sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+  ext.ossrhUsername = ""
+  ext.ossrhPassword = ""
+}
+
+signing {
+  if (isRelease) {
+    sign configurations.archives
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: sonatypeRepositoryUrl) {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name 'hygieia'
+        packaging 'jar'
+        // optionally artifactId can be defined here 
+        description 'Hygieia is a single, configurable, easy to use dashboard to visualize near real-time status of the entire delivery pipeline.'
+        url 'https://github.com/capitalone/Hygieia'
+
+        scm {
+          connection 'scm:git:git://github.com/capitalone/Hygieia.git'
+          developerConnection 'scm:git:git@github.com:capitalone/Hygieia.git'
+          url 'https://github.com/capitalone/Hygieia'
+        }
+
+        licenses {
+          license {
+            name 'The Apache License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+
+        developers {
+          developer {
+            id 'hygieia'
+            url 'https://github.com/Hygieia'
+            name 'Capital One'
+            email '@capitalone.com'
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 // http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
 if (JavaVersion.current().isJava8Compatible()) {
