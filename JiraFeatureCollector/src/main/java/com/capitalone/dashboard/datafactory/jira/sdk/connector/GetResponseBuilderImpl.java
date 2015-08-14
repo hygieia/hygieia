@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
@@ -162,7 +162,7 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 	public JSONObject getResponseOAuth(HttpRequestFactory rqFactory,
 			String query) throws NotImplementedException {
 		// TODO This is currently not implemented for OAuth functionality
-		throw new NotImplementedException();
+		throw new NotImplementedException("currently not implemented for OAuth functionality");
 	}
 
 	/**

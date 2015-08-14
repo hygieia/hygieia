@@ -1,0 +1,26 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVer")
+    }
+}
+
+apply plugin: 'spring-boot'
+
+// todo: rename directory
+archivesBaseName = "hygieia-udeploy-collector"
+
+dependencies {
+
+  compile project(':common')
+
+  compile "commons-io:commons-io:2.4"
+  compile "org.apache.commons:commons-lang3:3.3.2"
+  compile "com.googlecode.json-simple:json-simple:1.1.1"
+  compile "org.springframework:spring-web:$springVer"
+  compile "org.springframework.boot:spring-boot-starter-data-mongodb"
+
+  compile "org.apache.httpcomponents:httpclient:4.4.1"
+
+  testCompile "org.springframework.boot:spring-boot-starter-test"
+}

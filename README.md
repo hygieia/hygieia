@@ -1,10 +1,9 @@
 [![Build Status](https://travis-ci.org/capitalone/Hygieia.svg?branch=master)](https://travis-ci.org/capitalone/Hygieia)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Join the chat at https://gitter.im/capitalone/Hygieia](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/capitalone/Hygieia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 <img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/images/Hygieia_b.png)
 --------------------
-
-[![Join the chat at https://gitter.im/capitalone/Hygieia](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/capitalone/Hygieia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ### What is Hygieia
 
@@ -28,10 +27,27 @@ For the past two years, we’ve looked for DevOps visualization tools in the com
 
 * Open source tools/frameworks such as Grafana provide generic framework to build a dashboard however collecting data from the numerous DevOps tools is still the challenge.</li>
 
-
 ### ScreenShot
 ![Image](/media/images/hygiea-screenshot.jpg)
 
 ### Contributors :
 We welcome Your interest in Capital One’s Open Source Projects (the “Project”). Any Contributor to the Project must accept and sign an Agreement indicating agreement to the license terms below.Except for the license granted in this Agreement to Capital One and to recipients of software distributed by Capital One, You reserve all right, title, and interest in and to Your Contributions; this Agreement does not impact Your rights to use Your own Contributions for any other purpose
+
 ##### [Link to Agreement] (https://docs.google.com/forms/d/19LpBBjykHPox18vrZvBbZUcK6gQTj7qv1O5hCduAZFU/viewform)
+
+### Running Locally
+
+* Start API
+```
+./gradlew :api:run
+```
+
+* Start UI
+```
+./gradlew :UI:run
+```
+
+* Running a collector
+```
+java -jar CodeQualityCollector/build/libs/hygieia-code-quality-collector-1.0.0.jar --spring.config.location=file:sample.properties
+```
