@@ -10,7 +10,7 @@
     Chartist.plugins.pointHalo = function () {
 
         return function pointHalo(chart) {
-            if (!chart instanceof Chartist.Line) {
+            if (!(chart instanceof Chartist.Line)) {
                 return;
             }
 
