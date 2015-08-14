@@ -77,7 +77,7 @@
             var testResult = _.isEmpty(response.result) ? { testSuites: []} : response.result[0];
             var allZeros = {
                 failureCount: 0, errorCount: 0, skippedCount: 0, totalCount: 0
-            }
+            };
 
             // Aggregate the counts of all Functional test suites
             var aggregate = _.reduce(_.filter(testResult.testSuites, { type: "Functional" }), function(result, suite) {
@@ -85,7 +85,7 @@
                 result.errorCount += suite.errorCount;
                 result.skippedCount += suite.skippedCount;
                 result.totalCount += suite.totalCount;
-                return result
+                return result;
             }, allZeros);
             var passed = aggregate.totalCount - aggregate.failureCount - aggregate.errorCount - aggregate.skippedCount;
             var allPassed = aggregate.errorCount === 0 && aggregate.failureCount === 0;
