@@ -36,4 +36,4 @@ The following components are required to run Hygieia:
 
     * In the root folder, where the master `pom.xml` file resides, execute the command below:
 
-            mvn --settings [Path to your settings.xml] clean compile install package
+   <code> ./gradlew clean build </code>
