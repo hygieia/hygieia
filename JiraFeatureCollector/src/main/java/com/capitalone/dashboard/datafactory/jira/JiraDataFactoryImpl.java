@@ -40,6 +40,9 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 */
 	public JiraDataFactoryImpl(String jiraCredentials, String jiraBaseUrl,
 			String jiraQueryEndpoint) {
+		logger.debug("constructor: jiraCredentials = " + jiraCredentials +
+		             "; jiraBaseUrl = " + jiraBaseUrl +
+		             "; jiraQueryEndpoint = " + jiraQueryEndpoint);
 		jiraConnection.setBasicAuth(jiraCredentials);
 		jiraConnection.setJiraURI(jiraBaseUrl, jiraQueryEndpoint);
 
