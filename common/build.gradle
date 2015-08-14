@@ -80,6 +80,7 @@ dependencies {
   compile "org.springframework.data:spring-data-mongodb:$springDataVer"
   testCompile "org.springframework:spring-test:$springVer"
 
+  compile "commons-codec:commons-codec:1.9"
 
   // Query DSL
   compile "com.mysema.querydsl:querydsl-jpa:$queryDslVer"
