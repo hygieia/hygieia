@@ -1,0 +1,96 @@
+plugins {
+  id 'nebula.provided-base' version '2.2.2'
+}
+
+task createWrapper(type: Wrapper) {
+  description = "Create a gradle wrapper for you project"
+  gradleVersion = '2.4'
+}
+
+allprojects {
+
+  apply plugin: 'java'
+  apply plugin: 'maven'
+  apply plugin: 'signing'
+  apply plugin: 'idea'
+  apply plugin: 'eclipse'
+
+  // apply nebula plugins to all projects
+  apply plugin: "nebula.provided-base"
+
+  // code checks
+  apply plugin: 'findbugs'
+  apply plugin: 'pmd'
+  apply plugin: 'checkstyle'
+  apply plugin: "jacoco"
+
+  group = "com.capitalone.dashboard"
+  version = "1.0.0"
+  ext.vendor = "capitalone"
+
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+
+  ext.springVer = "4.1.0.RELEASE"
+  ext.springBootVer = "1.2.5.RELEASE"
+
+  repositories {
+    mavenCentral()
+  }
+
+
+  /// Code checks
+  checkstyle {
+    configFile = rootProject.file('gradle/config/checkstyle.xml')
+    ignoreFailures = true // for now..
+  }
+  pmd {
+    ignoreFailures = true // for now..
+  }
+  findbugs {
+    ignoreFailures = true // for now..
+  }
+  // exclude the checkstyle, findbugsTest, pmdTest on test source..
+  gradle.startParameter.excludedTaskNames += ["checkstyleTest", "findbugsTest", "pmdTest"]
+  jacoco {
+    toolVersion = '0.7.2.201409121644'
+  }
+  tasks.check.dependsOn(jacocoTestReport)
+  ////
+
+  task sourcesJar(type: Jar) {
+      from sourceSets.main.allJava
+  }
+
+  task docJar(type: Jar, dependsOn: 'javadoc') {
+      from javadoc.destinationDir
+  }
+
+  artifacts { // define the artifacts for a service
+      archives sourcesJar { classifier "sources" }
+      archives docJar { classifier "javadoc" }
+  }
+
+  jar.doFirst {
+    manifest {
+        attributes 'Implementation-Title': "${archivesBaseName}",
+                   'Implementation-Version': "${version}",
+                   'Implementation-Vendor': "${vendor}",
+                    provider: 'gradle'
+    }
+  }
+}
+
+// http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+      tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+      }
+    }
+}
+
+archivesBaseName = "hygieia"
+
+dependencies {
+}

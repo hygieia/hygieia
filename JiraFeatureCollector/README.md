@@ -16,7 +16,7 @@ for information about sourcing this properties file.
 --------------------------------------
 
     #Database Name - default is test
-    spring.data.mongodb.database=dashboard
+    spring.data.mongodb.database=dashboarddb
 
     #Database HostName - default is localhost
     spring.data.mongodb.host=10.0.1.1

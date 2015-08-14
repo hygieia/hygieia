@@ -1,0 +1,28 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVer")
+    }
+}
+
+apply plugin: 'spring-boot'
+
+// todo: rename directory
+archivesBaseName = "hygieia-subversion-collector"
+
+
+dependencies {
+
+  compile project(':common')
+
+  compile "commons-io:commons-io:2.4"
+  compile "org.apache.commons:commons-lang3:3.3.2"
+  compile "com.googlecode.json-simple:json-simple:1.1.1"
+  compile "org.springframework:spring-web:$springVer"
+  compile "org.springframework.boot:spring-boot-starter-data-mongodb"
+
+  compile "joda-time:joda-time:2.7"
+  compile "org.tmatesoft.svnkit:svnkit:1.8.7"
+  
+  testCompile "org.springframework.boot:spring-boot-starter-test"
+}
