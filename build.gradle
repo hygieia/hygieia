@@ -140,7 +140,7 @@ uploadArchives {
             id 'hygieia'
             url 'https://github.com/Hygieia'
             name 'Capital One'
-            email '@capitalone.com'
+            email 'Hygieia@capitalone.com'
           }
         }
       }
