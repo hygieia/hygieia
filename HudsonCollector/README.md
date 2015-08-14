@@ -1,4 +1,4 @@
-Build Collector
+Hudson Collector
 =================
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
