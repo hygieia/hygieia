@@ -1,0 +1,35 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVer")
+    }
+}
+
+apply plugin: 'spring-boot'
+
+// todo: rename directory
+archivesBaseName = "hygieia-jira-feature-collector"
+
+
+dependencies {
+
+  compile project(':common')
+
+  compile "commons-io:commons-io:2.4"
+  compile "org.apache.commons:commons-lang3:3.3.2"
+  compile "com.googlecode.json-simple:json-simple:1.1.1"
+  compile "org.springframework:spring-web:$springVer"
+  compile "org.springframework.boot:spring-boot-starter-data-mongodb"
+
+  compile "org.antlr:ST4:4.0.8"
+  compile "org.antlr:antlr4-runtime:4.3"
+  compile "org.scala-lang:scala-library:2.10.4"
+
+
+  compile "org.apache.httpcomponents:httpclient:4.4.1"
+  compile "com.google.oauth-client:google-oauth-client:1.14.1-beta"
+  compile "com.google.http-client:google-http-client-jackson2:1.14.1-beta"
+  compile "com.google.oauth-client:google-oauth-client-java7:1.14.1-beta"
+
+  testCompile "org.springframework.boot:spring-boot-starter-test"
+}

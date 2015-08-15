@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.datafactory.jira.sdk.connector;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import com.google.api.client.http.HttpRequestFactory;
 
