@@ -16,7 +16,7 @@
         options = Chartist.extend({}, defaultOptions, options);
 
         return function tooltip(chart) {
-            if (!chart instanceof Chartist.Line || !chart instanceof Chartist.Bar) {
+            if (!(chart instanceof Chartist.Line) || !(chart instanceof Chartist.Bar)) {
                 return;
             }
 

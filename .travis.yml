@@ -1,12 +1,18 @@
-# kickstart travis.
 language: java
-
+jdk:
+- oraclejdk8
+script:
+  - ./gradlew clean check
 notifications:
   webhooks:
     urls:
       https://webhooks.gitter.im/e/48597b0f75dd571734bc
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
+<<<<<<< HEAD
 
 after_success:
   - codecov
+=======
+    on_start: false     # default: false
+>>>>>>> upstream/master
