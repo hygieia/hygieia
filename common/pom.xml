@@ -147,6 +147,10 @@
 			<version>${hamcrest.version}</version>
 			<scope>test</scope>
 		</dependency>
-
+    <dependency>
+    <groupId>de.flapdoodle.embed</groupId>
+    <artifactId>de.flapdoodle.embed.mongo</artifactId>
+    <version>1.50.0</version>
+   </dependency>
 	</dependencies>
 </project>
