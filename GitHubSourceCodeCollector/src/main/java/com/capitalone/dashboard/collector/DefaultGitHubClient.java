@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import com.capitalone.dashboard.model.Commit;
@@ -90,45 +91,53 @@ public class DefaultGitHubClient implements GitHubClient {
 		String strDt = fmt.print(dt);
 		String queryUrl = apiUrl.concat("/commits?branch=" + repo.getBranch()
 				+ "&since=" + strDt);
-		
+
 		// decrypt password
 		String decryptedPassword = "";
 		if ((repo.getPassword() != null) && !"".equals(repo.getPassword())) {
 			try {
-				decryptedPassword = Encryption.decryptString(repo.getPassword(), settings.getKey());
+				decryptedPassword = Encryption.decryptString(
+						repo.getPassword(), settings.getKey());
 			} catch (EncryptionException e) {
 				LOG.error(e.getMessage());
 			}
 		}
-		
-		for (Object item : paresAsArray(makeRestCall(queryUrl, repo.getUserId(), decryptedPassword))) {
-			JSONObject jsonObject = (JSONObject) item;
-			String sha = str(jsonObject, "sha");
-			JSONObject commitObject = (JSONObject) jsonObject.get("commit");
-			JSONObject authorObject = (JSONObject) commitObject.get("author");
-			String message = str(commitObject, "message");
-			String author = str(authorObject, "name");
-			long timestamp = new DateTime(str(authorObject, "date"))
-					.getMillis();
-			Commit commit = new Commit();
-			commit.setTimestamp(System.currentTimeMillis());
-			commit.setScmUrl(repo.getRepoUrl());
-			commit.setScmRevisionNumber(sha);
-			commit.setScmAuthor(author);
-			commit.setScmCommitLog(message);
-			commit.setScmCommitTimestamp(timestamp);
-			commit.setNumberOfChanges(1);
-			commits.add(commit);
+
+		try {
+			for (Object item : paresAsArray(makeRestCall(queryUrl,
+					repo.getUserId(), decryptedPassword))) {
+				JSONObject jsonObject = (JSONObject) item;
+				String sha = str(jsonObject, "sha");
+				JSONObject commitObject = (JSONObject) jsonObject.get("commit");
+				JSONObject authorObject = (JSONObject) commitObject
+						.get("author");
+				String message = str(commitObject, "message");
+				String author = str(authorObject, "name");
+				long timestamp = new DateTime(str(authorObject, "date"))
+						.getMillis();
+				Commit commit = new Commit();
+				commit.setTimestamp(System.currentTimeMillis());
+				commit.setScmUrl(repo.getRepoUrl());
+				commit.setScmRevisionNumber(sha);
+				commit.setScmAuthor(author);
+				commit.setScmCommitLog(message);
+				commit.setScmCommitTimestamp(timestamp);
+				commit.setNumberOfChanges(1);
+				commits.add(commit);
+			}
+		} catch (RestClientException re) {
+			LOG.error(re.getMessage() + ":" + queryUrl);
 		}
 		return commits;
 	}
 
 	private ResponseEntity<String> makeRestCall(String url, String userId,
 			String password) {
-		//Basic Auth only.
+		// Basic Auth only.
 		if (!"".equals(userId) && !"".equals(password)) {
 			return restOperations.exchange(url, HttpMethod.GET,
-					new HttpEntity<>(createHeaders(userId, password)), String.class);
+					new HttpEntity<>(createHeaders(userId, password)),
+					String.class);
 
 		} else {
 			return restOperations.exchange(url, HttpMethod.GET, null,
