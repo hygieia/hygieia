@@ -186,6 +186,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 						// Update date and deployment status of existing
 						existing.setAsOfDate(component.getAsOfDate());
 						existing.setDeployed(component.isDeployed());
+						existing.setComponentVersion(component.getComponentVersion());
 						envComponentRepository.save(existing);
 					}
 				}
@@ -292,7 +293,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 	private boolean changed(EnvironmentComponent component,
 			EnvironmentComponent existing) {
 		return existing.isDeployed() != component.isDeployed()
-				|| existing.getAsOfDate() != component.getAsOfDate();
+				|| existing.getAsOfDate() != component.getAsOfDate() || !existing.getComponentVersion().equalsIgnoreCase(component.getComponentVersion());
 	}
 
 	private EnvironmentComponent findExistingComponent(
@@ -306,9 +307,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 						return existing.getEnvironmentName().equals(
 								proposed.getEnvironmentName())
 								&& existing.getComponentName().equals(
-										proposed.getComponentName())
-								&& existing.getComponentVersion().equals(
-										proposed.getComponentVersion());
+										proposed.getComponentName());
 
 					}
 				}).orNull();
