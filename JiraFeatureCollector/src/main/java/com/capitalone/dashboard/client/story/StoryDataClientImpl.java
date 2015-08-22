@@ -471,6 +471,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 		super.returnDate = tools.toNativeDate(super.returnDate);
 		String queryName = this.featureSettings.getStoryQuery();
 		super.query = this.featureWidgetQueries.getQuery(returnDate, queryName);
+		logger.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
 		updateObjectInformation();
 
 	}
