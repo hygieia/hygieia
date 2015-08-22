@@ -63,6 +63,7 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 					userAgent.generateApplicationUseHeader()));
 			request.setConnectTimeout(TIMEOUT);
 			request.setReadTimeout(TIMEOUT);
+			LOGGER.info("getResponse: url = " + url);
 			synchronized (request) {
 				nativeRs = request.execute();
 			}

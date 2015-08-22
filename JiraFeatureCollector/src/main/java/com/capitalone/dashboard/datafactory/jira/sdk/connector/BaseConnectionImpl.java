@@ -91,6 +91,8 @@ public class BaseConnectionImpl implements BaseConnection {
 	 */
 	@Override
 	public boolean setBasicAuth(String credentials) {
+		LOGGER.debug("setBasicAuth: credentials = " + credentials);
+
 		try {
 			if (credentials.isEmpty()) {
 				return false;
@@ -112,6 +114,8 @@ public class BaseConnectionImpl implements BaseConnection {
 	 */
 	@Override
 	public boolean setJiraURI(String baseUrl, String apiContextPath) {
+		LOGGER.debug("setJiraURI: baseUrl = " + baseUrl + "; apiContextPath = " + apiContextPath);
+
 		try {
 			if (baseUrl.isEmpty() || apiContextPath.isEmpty()) {
 				return false;
