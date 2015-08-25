@@ -1,20 +1,19 @@
 package com.capitalone.dashboard.util;
 
-import static org.junit.Assert.*;
-
-import java.security.NoSuchAlgorithmException;
+import org.junit.Test;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import java.security.NoSuchAlgorithmException;
 
-import org.apache.commons.codec.binary.Base64;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class EncryptionTests {
 
 	private final String THING_TO_BE_ENCRYPTED = "AKIAJ24MI4VLOIR72NVA";
 	private final String A_GOOD_STRING_KEY = "5XBoZ7li2W5wzhOULEqtQzdkufjsVFs4";
-	private final String A_LONG_KEY = "0ED1C7B771C9BBAB2583C364AFE8FB0C2F23A6FC8157EE3601ABB53D9CEA9893";	
+	private final String A_LONG_KEY = "0ED1C7B771C9BBAB2583C364AFE8FB0C2F23A6FC8157EE3601ABB53D9CEA9893";
 	private final String A_SHORT_KEY = "F55CC56E8DB6056EB4085263";
 	private final String A_BAD_STRING_KEY = "c/t/nuBFwTgvB+lwzS/q5W0ZkQhhxCB1";
 	private static final String ALGO = "DESede";
@@ -31,11 +30,11 @@ public class EncryptionTests {
 //		String stringKey = Base64.encodeBase64String(key.getEncoded());
 		return key;
 	}
-		
+
 
 	@Test
 	public void testGetStringKey() {
-		String key = null;	
+		String key = null;
 		try {
 			key = Encryption.getStringKey();
 		} catch (EncryptionException e) {
@@ -47,7 +46,7 @@ public class EncryptionTests {
 
 	@Test
 	public void testGetSecretKey() {
-		SecretKey key = null;	
+		SecretKey key = null;
 		try {
 			key = Encryption.getSecretKey();
 		} catch (EncryptionException e) {
@@ -56,7 +55,7 @@ public class EncryptionTests {
 		assertNotEquals(null, key);
 		assertNotEquals(0, key.getEncoded().length);
 	}
-	
+
 	@Test
 	public void testEncryptDecryptString() {
 		String encryptedString = null;
@@ -92,20 +91,20 @@ public class EncryptionTests {
 		@SuppressWarnings("unused")
 		String decryptedString = Encryption.decryptString(null, GOOD_KEY);
 	}
-	
-	@Test 
+
+	@Test
 	public void testEncryptEmptyString() throws Exception {
 		String encryptedString = Encryption.encryptString("", GOOD_KEY);
 		String decryptedString = Encryption.decryptString(encryptedString, GOOD_KEY);
 		assertEquals("", decryptedString);
 	}
 
-	@Test 
+	@Test
 	public void testDecryptEmptyString() throws Exception {
 		String decryptedString = Encryption.decryptString("", GOOD_KEY);
 		assertEquals("", decryptedString);
 	}
-	
+
 	@Test
 	public void testEncryptString() {
 		String encryptedString = null;
@@ -120,7 +119,7 @@ public class EncryptionTests {
 		}
 		assertEquals(THING_TO_BE_ENCRYPTED, decryptedString);
 	}
-	
+
 	@Test(expected = com.capitalone.dashboard.util.EncryptionException.class)
 	public void testDecryptionWithBadStringKey() throws Exception {
 		String encryptedString = Encryption.encryptString(THING_TO_BE_ENCRYPTED,
@@ -129,15 +128,15 @@ public class EncryptionTests {
 		String decryptedString = Encryption.decryptString(encryptedString, A_BAD_STRING_KEY);
 
 	}
-	
+
 	@Test (expected = com.capitalone.dashboard.util.EncryptionException.class)
 	public void testShortKeyLength() throws Exception{
 		@SuppressWarnings("unused")
 		String encryptedString = Encryption.encryptString(THING_TO_BE_ENCRYPTED,
 					A_SHORT_KEY);
 	}
-	
-	
+
+
 	@Test (expected = com.capitalone.dashboard.util.EncryptionException.class)
 	public void testLongKeyLength() throws Exception{
 		@SuppressWarnings("unused")
