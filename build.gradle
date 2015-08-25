@@ -162,4 +162,5 @@ if (JavaVersion.current().isJava8Compatible()) {
 archivesBaseName = "hygieia"
 
 dependencies {
+  testCompile "junit:junit:4.11"
 }
