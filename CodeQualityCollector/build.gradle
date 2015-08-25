@@ -16,7 +16,9 @@ dependencies {
 
   compile "commons-io:commons-io:2.4"
   compile "org.apache.commons:commons-lang3:3.3.2"
-  compile "com.googlecode.json-simple:json-simple:1.1.1"
+  compile("com.googlecode.json-simple:json-simple:1.1.1") {
+    exclude group: 'junit', module: 'junit'
+  }
   compile "org.springframework:spring-web:$springVer"
   compile "org.springframework.boot:spring-boot-starter-data-mongodb"
 
