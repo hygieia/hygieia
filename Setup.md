@@ -3,37 +3,67 @@
 ### Hygieia Setup Instructions
 The following components are required to run Hygieia:
 
-* [UI](https://github.com/capitalone/Hygieia/tree/master/UI)
-* [API](https://github.com/capitalone/Hygieia/tree/master/api)
+#### Database
 * MongoDB 2.6+
      * [Download & Installation instructions](https://www.mongodb.org/downloads#previous)
      * Configure MongoDB
-      * Name the database as `dashboarddb`. (Note: This is the same database that the collectors write to. So make sure that this name matches with the database names in collector properties)
-      * create a user called `dashboarduser` with read/write priveleges.
-      * Turn Authentication on.
+      * Go to the bin directory of your mongodb installation and run the following command to start the mongodb do make sure that data directory should pre-exist at the target location <br/>
+       <code>mongod --dbpath < path to the data directory> </code> <br/>
+       for e.g <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongod --dbpath /dev/data/db </code>
+      * Run the following commands as shown below at mongodb command prompt
+        <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongo </code>  
+        ```Shell
+         $ mongo  
+         MongoDB shell version: 3.0.4
+         connecting to: test  
+
+         > use dashboardb
+         switched to db dashboardb
+         > db.createUser(
+              ... {
+                ... user: "dashboarduser",
+                ... pwd: "1qazxSw2",
+                ... roles: [
+                  ... {role: "readWrite", db: "dashboarddb"}
+                        ... ]
+                ... })
+                Successfully added user: {
+                  "user" : "dashboarduser",
+                  "roles" : [
+                  {
+                    "role" : "readWrite",
+                    "db" : "dashboarddb"
+                  }
+                  ]
+                }  
+                ```
 
 
-* Collectors for each widget you want data to be collected for.
-* Collectors for following tools are supported currently
+We recommend that you download  MongoDB clients(RoboMongo etc) to connect to your local
+running Database and make sure that dashboarddb is created and you are successfully able to connect to it.
+
+#### API Layer
+Please click on the link below to learn about how to build and run the API layer
+* [API](https://github.com/capitalone/Hygieia/tree/master/api)
+
+#### Tool Collectors
+
+* Collectors for following tools are supported currently please click on links below in order to learn about how to build and run these collectors
   * **Agile Story Management**
     * [VersionOne](https://github.com/capitalone/Hygieia/tree/master/VersionOneFeatureCollector)
     * [Jira](https://github.com/capitalone/Hygieia/tree/master/JiraFeatureCollector)
   * **Source**
     * [GitHub](https://github.com/capitalone/Hygieia/tree/master/GitHubSourceCodeCollector)
     * [Subversion](https://github.com/capitalone/Hygieia/tree/master/SourceCodeCollector)
-  * [**Build tools**](https://github.com/capitalone/Hygieia/tree/master/BuildCollector)
-    * Jenkins/Hudson
-  * [**Code Quality**](https://github.com/capitalone/Hygieia/tree/master/CodeQualityCollector)
-    * Sonar
-  * [**Deployment**](https://github.com/capitalone/Hygieia/tree/master/DeployCollector)
-    * uDeploy 6.x from IBM
+  * **Build tools**
+    * [Jenkins/Hudson](https://github.com/capitalone/Hygieia/tree/master/BuildCollector)
+  * **Code Quality**
+    * [Sonar](https://github.com/capitalone/Hygieia/tree/master/CodeQualityCollector)
+  * **Deployment**
+    * [uDeploy 6.x from IBM](https://github.com/capitalone/Hygieia/tree/master/DeployCollector)
 
-    You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.
+You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.
 
-    ### How to build the project
-    
-    We have included a parent pom for your use, the parent pom will build each of the individual projects in correct order.
-
-    * In the root folder, where the master `pom.xml` file resides, execute the command below:
-
-   <code> ./gradlew clean build </code>
+#### UI Layer
+Please click on the link below to learn about how to build and run the UI layer
+ * [UI](https://github.com/capitalone/Hygieia/tree/master/UI)
