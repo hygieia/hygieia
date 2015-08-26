@@ -1,2 +1,0 @@
-include 'common','api', 'BuildCollector','CodeQualityCollector','DeployCollector','GitHubSourceCodeCollector','JiraFeatureCollector', 'SourceCodeCollector', 
-        'VersionOneFeatureCollector', 'UI', 'JenkinsCucumberTestCollector'
