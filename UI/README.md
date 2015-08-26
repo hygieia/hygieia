@@ -51,6 +51,12 @@ All widgets have to be hardcoded into the layout right now.
 
 
 ### Running
-In terminal navigate to the project root and run ```gulp serve```. Should serve up on port 3000.
+In terminal navigate to the project root and run ```gulp serve```. Should serve up on port 3000.  
+
+or you can run via maven from UI project root folder
+ ```bash
+ mvn clean package integration-test
+ ```
+ for local testing of Hygieia UI layer
 
 All data is currently coming from the test-data folder so you shouldn't need an api, but also means no settings will be saved..
