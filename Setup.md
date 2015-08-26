@@ -1,5 +1,12 @@
 <img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/images/Hygieia_b.png)
 --
+
+### Build Hygieia
+```bash
+mvn clean install package
+```
+The above command will build all components for Hygieia.
+
 ### Hygieia Setup Instructions
 The following components are required to run Hygieia:
 
@@ -47,8 +54,12 @@ Please click on the link below to learn about how to build and run the API layer
 * [API](https://github.com/capitalone/Hygieia/tree/master/api)
 
 #### Tool Collectors
+* In general all the collectors can be run using the following command
+```bash
+java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>
+```
+For each individual collector setup click on the links below
 
-* Collectors for following tools are supported currently please click on links below in order to learn about how to build and run these collectors
   * **Agile Story Management**
     * [VersionOne](https://github.com/capitalone/Hygieia/tree/master/VersionOneFeatureCollector)
     * [Jira](https://github.com/capitalone/Hygieia/tree/master/JiraFeatureCollector)
@@ -67,4 +78,3 @@ You can pick and choose which collectors are applicable for your DevOps toolset 
 #### UI Layer
 Please click on the link below to learn about how to build and run the UI layer
  * [UI](https://github.com/capitalone/Hygieia/tree/master/UI)
-
