@@ -24,3 +24,19 @@ For the API web application to use this property file, make sure that the follow
 ```bash
 DASHBOARD_PROP=[path to dashboard.properties file]
 ```
+
+
+# Run the API
+ ### 1. Embedded Jetty container
+
+```bash
+mvn jetty:run   -DPROP_FILE=<Path to dashboard.properties file>
+```
+
+  ### 2. Tomcat container
+   * Copy the genrated war file  from project target folder after you have build the project into tomcat webapps folder
+   * Add a file setEnv.sh into Tomcat bin folder with following content
+   ```bash
+   export DASHBOARD_PROP=<Path to dashboard.properties file>
+   ```
+   * Start the tomcat container.
