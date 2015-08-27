@@ -41,12 +41,11 @@ export DASHBOARD_PROP=<Path to dashboard.properties file>
 java -jar api.jar 
 ```
 
-By default it uses `8080` as port and `/api` as context path. You can run them different port or context-path by passing below arguments,
+By default it uses port `8080` and context-path `/api`. You can run it with different port and context-path by passing below arguments,
 
 ```bash
 export DASHBOARD_PROP=<Path to dashboard.properties file>
 java -jar api.jar --server.port=8080 --server.contextPath=/api
 ```
 
-For more information about the configuration,
-see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
+For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
