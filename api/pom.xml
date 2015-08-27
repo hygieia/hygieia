@@ -84,24 +84,6 @@
   </executions>
 </plugin>
 
-
-<plugin>
-  <groupId>org.eclipse.jetty</groupId>
-  <artifactId>jetty-maven-plugin</artifactId>
-  <version>9.3.2.v20150730</version>
-	<configuration>
-    <systemProperties>
-      <systemProperty>
-         <name>dashboard.prop</name>
-         <value>${PROP_FILE}</value>
-       </systemProperty>
-    </systemProperties>
-    <webApp>
-      <contextPath>/api</contextPath>
-    </webApp>
-   </configuration>
-</plugin>
-
 	</plugins>
 	</build>
 
