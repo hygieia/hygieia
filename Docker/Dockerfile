@@ -79,7 +79,7 @@ RUN useradd -ms /bin/bash hygieia
 # -----------------------------------------------------------------------------
 # github -> change github url here
 # -----------------------------------------------------------------------------
-RUN git clone https://github.com/tyrion70/Hygieia.git
+RUN git clone https://github.com/capitalone/Hygieia.git
 RUN mv Hygieia /var
 
 RUN chown hygieia:hygieia /var/Hygieia
