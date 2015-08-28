@@ -70,21 +70,6 @@
 
 
 
-							 <execution>
-	     <id>gulp serve</id>
-	     <goals>
-	         <goal>gulp</goal>
-	     </goals>
-
-	     <!-- optional: the default phase is "generate-resources" -->
-	     <phase>integration-test</phase>
-
-	     <configuration>
-	         <!-- optional: if not specified, it will run gulp's default
-	         task (and you can remove this whole <configuration> section.) -->
-	         <arguments>serve</arguments>
-	     </configuration>
-	 </execution>
 	 </executions>
 
 </plugin>
