@@ -1,0 +1,33 @@
+mysql:
+  image: mysql
+  volumes:
+   - /root/docker/mysql:/var/lib/mysql
+  environment:
+   - MYSQL_ROOT_PASSWORD=password
+sonar:
+  image: sonarqube
+  links: 
+   - mysql:mysql
+  environment:
+   - SONARQUBE_JDBC_USERNAME=sonar
+   - SONARQUBE_JDBC_PASSWORD=sonar
+   - SONARQUBE_JDBC_URL=jdbc:mysql://mysql:3306/sonar?useUnicode=true&characterEncoding=utf8
+  volumes:
+   - /root/docker/sonarplugins:/opt/sonarqube/extensions/plugins
+  ports:
+   - "9000:9000"
+jenkins:
+  image: jenkins
+  links:
+   - mysql:mysql
+  volumes:
+   - /root/docker/jenkinshome:/var/jenkins_home
+   - /root/docker/maven:/var/maven
+  ports:
+   - "8081:8080"
+hygieia:
+  image: hygieia
+  ports:
+   - "3000:3000"
+  volumes:
+   - /root/docker/mongodb:/data

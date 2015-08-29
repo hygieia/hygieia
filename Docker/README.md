@@ -41,22 +41,32 @@ To have a complete set running with Sonar (+mysql) and Jenkins fire up a MySQL, 
 ### Mysql
 https://hub.docker.com/_/mysql/
 
-docker pull mysql
-docker run -d -e MYSQL_ROOT_PASSWORD=password  --name mysql --hostname mysql -v /root/docker/mysql:/var/lib/mysql mysql
-docker exec -ti mysql mysql -ppassword
-create database sonar;
-grant all on sonar.* to 'sonar'@'%' identified by 'sonar';
-grant all on sonar.* to 'sonar'@'localhost' identified by 'sonar';
+    docker pull mysql
+    docker run -d -e MYSQL_ROOT_PASSWORD=password  --name mysql --hostname mysql -v /root/docker/mysql:/var/lib/mysql mysql
+    docker exec -ti mysql mysql -ppassword
+    create database sonar;
+    grant all on sonar.* to 'sonar'@'%' identified by 'sonar';
+    grant all on sonar.* to 'sonar'@'localhost' identified by 'sonar';
 
 ### SonarQube
 https://hub.docker.com/_/sonarqube/
 
-docker pull sonarqube
-docker run  -d --publish 9000:9000 --name sonarqube --hostname sonarqube -e SONARQUBE_JDBC_USERNAME=sonar -e SONARQUBE_JDBC_PASSWORD=sonar -e SONARQUBE_JDBC_URL=jdbc:mysql://mysql:3306/sonar?useUnicode=true\&amp\;characterEncoding=utf8 --link mysql:mysql -v /root/docker/sonarplugins:/opt/sonarqube/extensions/plugins sonarqube
+    docker pull sonarqube
+    docker run  -d --publish 9000:9000 --name sonarqube --hostname sonarqube -e SONARQUBE_JDBC_USERNAME=sonar -e SONARQUBE_JDBC_PASSWORD=sonar -e SONARQUBE_JDBC_URL=jdbc:mysql://mysql:3306/sonar?useUnicode=true\&amp\;characterEncoding=utf8 --link mysql:mysql -v /root/docker/sonarplugins:/opt/sonarqube/extensions/plugins sonarqube
+
 (make sure the java sonar plugin is in this location, otherwise the java profile is gone after a restart for some weird reason)
 
 ### Jenkins
 https://hub.docker.com/_/jenkins/
 
-docker pull jenkins
-docker run -d --publish 8081:8080 --name jenkins --hostname  jenkins -v /root/docker/jenkinshome:/var/jenkins_home -v /root/docker/maven:/var/maven --link mysql:mysql jenkins 
+    docker pull jenkins
+    docker run -d --publish 8081:8080 --name jenkins --hostname  jenkins -v /root/docker/jenkinshome:/var/jenkins_home -v /root/docker/maven:/var/maven --link mysql:mysql jenkins 
+
+## Compose
+Once you've setup the complete set at least once (meaning you got a mongodb and a working mysql/sonar) you can use the docker-compose.yml to start everything at once. Make sure you configure the right local directories in each volume section and then start the containers with:
+
+    docker-compose up
+
+or in the background
+
+    docker-compose up -d
