@@ -8,13 +8,19 @@ fi
 # enable if you have a registry running
 #docker tag -f hygieia localhost:5000/peter/hygieia:1.1
 
+# Find and stop running image with name Hygieia
 RUNNINGIMAGE=`docker ps|grep hygieia|awk -F\  '{print $1}'`
 if [ "$RUNNINGIMAGE" != "" ]
 then
   docker stop $RUNNINGIMAGE
 fi
 
-docker rm hygieia
+# Find stopped image with name Hygieia
+STOPPEDIMAGE=`docker ps -a|grep hygieia|awk -F\  '{print $1}'`
+if [ "$STOPPEDIMAGE" != "" ]
+then
+  docker rm hygieia
+fi
 
 ID=`docker run -d --publish 3000:3000 --env TZ="Europe/Amsterdam" --name hygieia --hostname hygieia -v /root/docker/mongodb:/data hygieia`
 # enable if you have a registry running
