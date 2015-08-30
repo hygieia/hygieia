@@ -15,6 +15,8 @@ To run  Hygieia you need some more packages:
 * node/npm
 * gulp
 
+The webserver will run both on gulp and apache. You can reach the dashboard at http://localhost:3000 (for gulp) or http://localhost:3001 (for apache)
+
 ## Installation
 The Dockerfile first installs all apt packages needed and then proceeds with the installation of npm and maven.
 
@@ -29,6 +31,10 @@ The container needs to be started with a -v localmongodbfiles:/data/db to ensure
 Important: The first time you run the daemon there is no mongodb yet (unless you create one locally first) so it will fail after a short while. You have to create the database then by executing mongo in your container (docker exec -ti hygieia mongo) and running db.use dashboarddb and configure security (see README in the main file for more information)
 
 For our convenience a createdocker bash script was added. That created a new image from the Dockerfile, removes any old Hygieia images and fires up the new one.
+
+To run the docker container by hand run
+
+    docker run -d --publish 3000:3000 --publish 3001:80 --env TZ="Europe/Amsterdam" --name hygieia --hostname hygieia -v /root/docker/mongodb:/data hygieia
 
 ## Configuration
 
@@ -61,6 +67,11 @@ https://hub.docker.com/_/jenkins/
 
     docker pull jenkins
     docker run -d --publish 8081:8080 --name jenkins --hostname  jenkins -v /root/docker/jenkinshome:/var/jenkins_home -v /root/docker/maven:/var/maven --link mysql:mysql jenkins 
+
+### Hygieia
+Start the container you build by running:
+
+    docker run -d --publish 3000:3000 --publish 3001:80 --env TZ="Europe/Amsterdam" --name hygieia --hostname hygieia -v /root/docker/mongodb:/data hygieia
 
 ## Compose
 Once you've setup the complete set at least once (meaning you got a mongodb and a working mysql/sonar) you can use the docker-compose.yml to start everything at once. Make sure you configure the right local directories in each volume section and then start the containers with:

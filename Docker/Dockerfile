@@ -101,4 +101,12 @@ ADD sonar.properties /var/Hygieia/CodeQualityCollector/target/application.proper
 ADD cucumber.conf /etc/supervisor/conf.d/cucumber.conf
 ADD cucumber.properties /var/Hygieia/JenkinsCucumberTestCollector/target/application.properties
 
+RUN apt-get install -y apache2
+RUN mkdir -p /var/lock/apache2 /var/run/apache2 
+ADD apachesupervisor.conf /etc/supervisor/conf.d/apache2.conf
+ADD 000-default.conf /etc/apache2/sites-available/000-default.conf
+ADD apachedirectory.conf /etc/apache2/conf-enabled/apachedirectory.conf
+RUN ln -s /var/Hygieia/UI/bower_components /var/Hygieia/UI/src/bower_components
+RUN a2enmod proxy
+RUN a2enmod proxy_http
 CMD /usr/bin/supervisord -n

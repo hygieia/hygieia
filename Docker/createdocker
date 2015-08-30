@@ -22,7 +22,7 @@ then
   docker rm hygieia
 fi
 
-ID=`docker run -d --publish 3000:3000 --env TZ="Europe/Amsterdam" --name hygieia --hostname hygieia -v /root/docker/mongodb:/data hygieia`
+ID=`docker run -d --publish 3000:3000 --publish 3001:80 --env TZ="Europe/Amsterdam" --name hygieia --hostname hygieia -v /root/docker/mongodb:/data hygieia`
 # enable if you have a registry running
 #ID=`docker run -d --publish 3000:3000 --env TZ="Europe/Amsterdam" --name hygieia --hostname hygieia -v /root/docker/mongodb:/data localhost:5000/peter/hygieia:1.1`
 docker exec -ti $ID bash
