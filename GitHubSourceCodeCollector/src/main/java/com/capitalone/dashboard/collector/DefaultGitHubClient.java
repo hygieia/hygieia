@@ -4,14 +4,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -46,6 +48,7 @@ public class DefaultGitHubClient implements GitHubClient {
 	private final String SEGMENT_API = "/api/v3/repos/";
 	private final String PUBLIC_GITHUB_REPO_HOST = "api.github.com/repos/";
 	private final String PUBLIC_GITHUB_HOST_NAME = "github.com";
+	private final int FIRST_RUN_HISTORY_DEFAULT = 14;
 
 	@Autowired
 	public DefaultGitHubClient(GitHubSettings settings,
@@ -55,13 +58,15 @@ public class DefaultGitHubClient implements GitHubClient {
 	}
 
 	@Override
-	public List<Commit> getCommits(GitHubRepo repo) {
+	public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) {
 
 		List<Commit> commits = new ArrayList<>();
 
 		// format URL
 		String repoUrl = (String) repo.getOptions().get("url");
-
+		if (repoUrl.endsWith(".git")) {
+			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
+		}
 		URL url = null;
 		String hostName = "";
 		String protocol = "";
@@ -81,16 +86,29 @@ public class DefaultGitHubClient implements GitHubClient {
 		} else {
 			apiUrl = protocol + "://" + hostName + SEGMENT_API + repoName;
 		}
+		Date dt;
+		if (firstRun) {
+			int firstRunDaysHistory = settings.getFirstRunHistoryDays();
+			if (firstRunDaysHistory > 0) {
+				dt = getDate(new Date(), -firstRunDaysHistory, 0);
+			} else {
+				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
+			}
+		} else {
+			dt = getDate(repo.getLastUpdateTime(), 0, -10);
+		}
+		Calendar calendar = new GregorianCalendar();
+		TimeZone timeZone = calendar.getTimeZone();
+		Calendar cal = Calendar.getInstance(timeZone);
+		cal.setTime(dt);
+		String thisMoment = String.format("%tFT%<tRZ", cal);
 
-		DateTime dt = repo.getLastUpdateTime().minusMinutes(10000); // randomly
-																	// chosen 10
-																	// minutes.
-																	// Need to
-																	// refactor
-		DateTimeFormatter fmt = ISODateTimeFormat.dateHourMinuteSecond();
-		String strDt = fmt.print(dt);
 		String queryUrl = apiUrl.concat("/commits?branch=" + repo.getBranch()
-				+ "&since=" + strDt);
+				+ "&since=" + thisMoment);
+		/*
+		 * Calendar cal = Calendar.getInstance(); cal.setTime(dateInstance);
+		 * cal.add(Calendar.DATE, -30); Date dateBefore30Days = cal.getTime();
+		 */
 
 		// decrypt password
 		String decryptedPassword = "";
@@ -102,33 +120,74 @@ public class DefaultGitHubClient implements GitHubClient {
 				LOG.error(e.getMessage());
 			}
 		}
+		boolean lastPage = false;
+		int pageNumber = 1;
+		String queryUrlPage = queryUrl;
+		while (!lastPage) {
+			try {
+				ResponseEntity<String> response = (makeRestCall(queryUrlPage,
+						repo.getUserId(), decryptedPassword));
+				JSONArray jsonArray = paresAsArray(response);
+				for (Object item : jsonArray) {
+					JSONObject jsonObject = (JSONObject) item;
+					String sha = str(jsonObject, "sha");
+					JSONObject commitObject = (JSONObject) jsonObject
+							.get("commit");
+					JSONObject authorObject = (JSONObject) commitObject
+							.get("author");
+					String message = str(commitObject, "message");
+					String author = str(authorObject, "name");
+					long timestamp = new DateTime(str(authorObject, "date"))
+							.getMillis();
+					Commit commit = new Commit();
+					commit.setTimestamp(System.currentTimeMillis());
+					commit.setScmUrl(repo.getRepoUrl());
+					commit.setScmRevisionNumber(sha);
+					commit.setScmAuthor(author);
+					commit.setScmCommitLog(message);
+					commit.setScmCommitTimestamp(timestamp);
+					commit.setNumberOfChanges(1);
+					commits.add(commit);
+				}
+				if ((jsonArray == null) || jsonArray.isEmpty()) {
+					lastPage = true;
+				} else {
+					lastPage = isThisLastPage(response);
+					pageNumber++;
+					queryUrlPage = queryUrl + "&page=" + pageNumber;
+				}
 
-		try {
-			for (Object item : paresAsArray(makeRestCall(queryUrl,
-					repo.getUserId(), decryptedPassword))) {
-				JSONObject jsonObject = (JSONObject) item;
-				String sha = str(jsonObject, "sha");
-				JSONObject commitObject = (JSONObject) jsonObject.get("commit");
-				JSONObject authorObject = (JSONObject) commitObject
-						.get("author");
-				String message = str(commitObject, "message");
-				String author = str(authorObject, "name");
-				long timestamp = new DateTime(str(authorObject, "date"))
-						.getMillis();
-				Commit commit = new Commit();
-				commit.setTimestamp(System.currentTimeMillis());
-				commit.setScmUrl(repo.getRepoUrl());
-				commit.setScmRevisionNumber(sha);
-				commit.setScmAuthor(author);
-				commit.setScmCommitLog(message);
-				commit.setScmCommitTimestamp(timestamp);
-				commit.setNumberOfChanges(1);
-				commits.add(commit);
+			} catch (RestClientException re) {
+				LOG.error(re.getMessage() + ":" + queryUrl);
+				lastPage = true;
+
 			}
-		} catch (RestClientException re) {
-			LOG.error(re.getMessage() + ":" + queryUrl);
 		}
 		return commits;
+	}
+
+	private Date getDate(Date dateInstance, int offsetDays, int offsetMinutes) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dateInstance);
+		cal.add(Calendar.DATE, offsetDays);
+		cal.add(Calendar.MINUTE, offsetMinutes);
+		return cal.getTime();
+	}
+
+	private boolean isThisLastPage(ResponseEntity<String> response) {
+		HttpHeaders header = response.getHeaders();
+		List<String> link = header.get("Link");
+		if ((link == null) || (link.isEmpty())) {
+			return true;
+		} else {
+			for (String l : link) {
+				if (l.contains("rel=\"next\"")) {
+					return false;
+				}
+
+			}
+		}
+		return true;
 	}
 
 	private ResponseEntity<String> makeRestCall(String url, String userId,

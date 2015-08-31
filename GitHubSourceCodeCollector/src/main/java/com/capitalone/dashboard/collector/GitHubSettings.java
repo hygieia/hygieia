@@ -12,9 +12,10 @@ public class GitHubSettings {
     private String cron;
     private String host;
     private String key;
+    private int firstRunHistoryDays;
 
 
-    public String getHost() {
+	public String getHost() {
 		return host;
 	}
 
@@ -36,5 +37,13 @@ public class GitHubSettings {
 	
 	public void setKey(String key) {
 		this.key = key;
+	}
+	
+    public int getFirstRunHistoryDays() {
+		return firstRunHistoryDays;
+	}
+
+	public void setFirstRunHistoryDays(int firstRunHistoryDays) {
+		this.firstRunHistoryDays = firstRunHistoryDays;
 	}
 }
