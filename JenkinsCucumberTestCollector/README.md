@@ -31,14 +31,11 @@ for information about sourcing this properties file.
     spring.data.mongodb.password=dbpass
 
     #Collector schedule (required)
-    subversion.cron=0 0/5 * * * *
 
-    #Shared subversion username and password
-    subversion.username=foo
-    subversion.password=bar
+    jenkins-cucumber.cron=1 * * * * *
+    jenkins-cucumber.servers[0]=http://myjenkins1.company.com
+    jenkins-cucumber.servers[1]=http://myjenkins2.company.com
 
-    #Maximum number of days to go back in time when fetching commits
-    subversion.commitThresholdDays=15
 
 
 
