@@ -16,7 +16,7 @@
 
 FROM ubuntu:14.04
 
-MAINTAINER Peter van Mourik <tyrion70@gmail.com>
+MAINTAINER Capital One <Hygieia@capitalone.com>
 
 # -----------------------------------------------------------------------------
 # update and install packages
