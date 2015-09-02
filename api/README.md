@@ -19,33 +19,30 @@ The API layer needs a property file in following format:
 
 ```properties
 # dashboard.properties
-dbname=dashboarddb
-dbusername=[MogoDb Database Username]
-dbpassword=[MongoDb Database Password]
-dbhost=[Host on which MongoDb is running]
-dbport=[Port on which MongoDb is listening]
+dbname=dashboard
+dbusername=[MogoDb Database Username, defaults to empty]
+dbpassword=[MongoDb Database Password, defaults to empty]
+dbhost=[Host on which MongoDb is running, defaults to localhost]
+dbport=[Port on which MongoDb is listening, defaults to 27017]
 ```
 
-For the API web application to use this property file, make sure that the following environment variable is set in the following format:
-
-```bash
-DASHBOARD_PROP=[path to dashboard.properties file]
-```
+All the above values are optional. Even without the property file you must be able to run the api (assuming you have mongodb installed with no authorization).
+**Note:** When `dbusername` is not present or the value is empty then it skips the mongodb authorization part.
 
 ## Run the API
 
 After you have build your project, from the target folder run the below command,
 
 ```bash
-export DASHBOARD_PROP=<Path to dashboard.properties file>
-java -jar api.jar 
+java -jar api.jar --spring.config.location=dashboard.properties
 ```
 
-By default it uses port `8080` and context-path `/api`. You can run it with different port and context-path by passing below arguments,
+By default the server starts at port `8080` and uses the context path `/api`.
+These values are configurable by using the below 2 properties in `dashboard.properties`.
 
-```bash
-export DASHBOARD_PROP=<Path to dashboard.properties file>
-java -jar api.jar --server.port=8080 --server.contextPath=/api
+```properties
+server.contextPath=/api
+server.port=8080
 ```
 
 For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
