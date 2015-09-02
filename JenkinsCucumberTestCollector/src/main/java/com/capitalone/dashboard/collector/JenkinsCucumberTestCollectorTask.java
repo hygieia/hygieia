@@ -118,7 +118,7 @@ public class JenkinsCucumberTestCollectorTask extends
 			if ((comp.getCollectorItems() != null)
 					&& !comp.getCollectorItems().isEmpty()) {
 				List<CollectorItem> itemList = comp.getCollectorItems().get(
-						CollectorType.Build);
+						CollectorType.Test);
 				if (itemList != null) {
 					for (CollectorItem ci : itemList) {
 						if ((ci != null)
