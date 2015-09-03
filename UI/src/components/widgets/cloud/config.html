@@ -1,0 +1,84 @@
+<widget-modal widget-modal-title="Cloud Config">
+    <!--
+    This view is called in the context of the controller and controllerAs
+    values defined in the config property of the module.js config.
+
+    It will be triggered by the settings cog or configure screen and opened in a modal.
+    Using the widget-modal directive ensures consistent styles across modals, but is not required.
+
+    Add forms or other elements to save back to the widget options in your controller.
+
+    This example uses a form to collect and validate data for the configuration options.
+    -->
+    <div class="cloud-config">
+        <!--<p class="help-block" ng-show="!validAccess">Access key invalid</p>-->
+        <form name="configForm"
+              ng-submit="cloudConfig.submit(configForm.$valid)"
+              novalidate="novalidate">
+
+
+            <div class="form-group clearfix"
+                 ng-class="{'has-error': configForm.collectorItemId.$invalid && cloudConfig.submitted}">
+                <div class="col-sm-push-2 col-sm-8">
+                    <label class="modal-label">Cloud Service:</label>
+                    <select name="collectorItemId" class="form-control"
+                            ng-model="cloudConfig.collectorItemId"
+                            ng-options="service.name for service in cloudConfig.services | orderBy:'name'"
+                            required>
+                        <option value="">{{cloudConfig.toolsDropdownPlaceholder}}</option>
+                    </select>
+
+                    <p class="help-block" ng-if="configForm.collectorItemId.$error.required">Please choose a service</p>
+                </div>
+            </div>
+
+
+            <div class="form-group clearfix"
+                 ng-class="{'has-error': configForm.accessKey.$invalid && cloudConfig.submitted}"
+                 ng-if="cloudConfig.collectorItemId.name == 'Amazon Web Services'">
+                <div class="col-sm-push-2 col-sm-8">
+                    <label class="modal-label">Access Key</label> <input
+                        type="text" name="accessKey" class="form-control"
+                        ng-model="cloudConfig.accessKey" placeholder=""
+                        required>
+                    <!-- show the display error: {{configForm.accessKey.$error.required}}
+                    <br>
+                    show access key invalid: {{!cloudConfig.validAccess && !configForm.accessKey.$error.required}} -->
+
+                    <p class="help-block" ng-if="configForm.accessKey.$error.required">Please input an access key</p>
+
+                    <p class="help-block" ng-if="!cloudConfig.validAccess && !configForm.accessKey.$error.required">
+                        Access key invalid</p>
+                </div>
+            </div>
+
+            <div class="form-group clearfix"
+                 ng-class="{'has-error': configForm.secretKey.$invalid && cloudConfig.submitted}"
+                 ng-if="cloudConfig.collectorItemId.name == 'Amazon Web Services'">
+                <div class="col-sm-push-2 col-sm-8">
+                    <label class="modal-label">Secret Key</label> <input
+                        type="password" name="secretKey" class="form-control"
+                        ng-model="cloudConfig.secretKey"
+                        required>
+
+                    <p class="help-block" ng-if="configForm.secretKey.$error.required">Please input a secret key</p>
+                    <!--<p class="help-block" ng-if="configForm.secretKey.$error.required">Incorrect secret key</p>-->
+                </div>
+            </div>
+
+            <!--<p class="help-block" ng-if="configForm.collectorItemId.$error.required">Please select a collector</p>-->
+
+
+            <div class="button-row row text-center">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</widget-modal>
+
+
+
+
+
+
+

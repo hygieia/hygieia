@@ -1,0 +1,13 @@
+<div class="widget serverUtilization">
+    <div class="widget-heading">
+        Server Utilization
+    </div>
+    <div class="widget-body" ng-click="cloudView.detail('full')">
+        <chartist class="ct-chart ct-major-twelfth"
+                  chartist-chart-type="Bar"
+                  chartist-data="cloudView.serverGraphData"
+                  chartist-chart-options="cloudView.stackOptions"
+                >
+        </chartist>
+    </div>
+</div>

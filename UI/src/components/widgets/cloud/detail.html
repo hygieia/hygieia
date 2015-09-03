@@ -1,0 +1,12 @@
+<div class="widget-detail " ng-model="cloudView.detail">
+	<a href="" class="detail-close" ng-click="detail.close()"><span class="fa fa-2x fa-times-circle-o"></span></a>	
+	<div ng-if="detail.type == 'CPU Utilization'">
+		<cpu-table></cpu-table>
+	</div>
+	<div ng-if="detail.type == 'Encrypted'">
+		<encrypted-table></encrypted-table>
+	</div>
+	<div ng-if="detail.type == 'Age'">
+		<age-table></age-table>
+	</div>
+</div>

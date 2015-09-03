@@ -1,0 +1,27 @@
+<div class="widget-detail" ng-model="cloudView.detail">
+    <a href="" class="detail-close" ng-click="detail.close()"><span class="fa fa-2x fa-times-circle-o"></span></a>
+
+    <div class="widget-heading">
+        Server Age
+    </div>
+    <table class="widget table">
+        <thead>
+        <tr class="clickable text-center tab-head">
+            <th>Instance ID</th>
+            <th ng-click="reverse=!reverse;order('age', reverse)">Age <span ng-if="reverse"
+                                                                            class="fa fa-arrow-up"></span> <span
+                    ng-if="!reverse" class="fa fa-arrow-down"></span></th>
+        </tr>
+        </thead>
+    </table>
+    <div class="widget-body table-overflow">
+        <table class="table widget">
+            <tbody>
+            <tr ng-repeat="data in cloudView.tableData">
+                <td>{{data.instanceId}}</td>
+                <td>{{data.age}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
