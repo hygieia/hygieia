@@ -117,8 +117,8 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector>{
 		logger.info("Starting Cloud collection...");
 		
 		ClientConfiguration clientConfig = new ClientConfiguration()
-			.withProxyHost("proxy.kdc.capitalone.com")
-			.withProxyPort(8099)
+			.withProxyHost("proxy.mycompany.com")
+			.withProxyPort(80)
 			.withPreemptiveBasicProxyAuth(true)
 			.withProxyUsername("xxx")
 			.withProxyPassword("xxxxxxx");
