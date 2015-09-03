@@ -14,7 +14,7 @@
  * limitations under the License.
  *************************DA-BOARD-LICENSE-END*********************************/
 
-package com.capitalone.dashboard.util;
+package com.capitalone.dashboard.collector;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -22,19 +22,55 @@ import org.springframework.stereotype.Component;
 /**
  * Bean to hold settings specific to the Cloud collector.
  * 
- * @author 
+ * @author
  */
 @Component
-@ConfigurationProperties(prefix = "aws-cloud-collector")
+@ConfigurationProperties(prefix = "aws")
 public class AWSCloudSettings {
-    private String cron;
+	private String cron;
+	private String proxyURL;
+	private int proxyPort;
+	private String proxyUser;
+	private String proxyPassword;
 
-    public String getCron() {
-        return cron;
-    }
+	public int getProxyPort() {
+		return proxyPort;
+	}
 
-    public void setCron(String cron) {
-        this.cron = cron;
-    }
+	public void setProxyPort(int proxyPort) {
+		this.proxyPort = proxyPort;
+	}
+
+	public String getProxyURL() {
+		return proxyURL;
+	}
+
+	public void setProxyURL(String proxyURL) {
+		this.proxyURL = proxyURL;
+	}
+
+	public String getProxyUser() {
+		return proxyUser;
+	}
+
+	public void setProxyUser(String proxyUser) {
+		this.proxyUser = proxyUser;
+	}
+
+	public String getProxyPassword() {
+		return proxyPassword;
+	}
+
+	public void setProxyPassword(String proxyPassword) {
+		this.proxyPassword = proxyPassword;
+	}
+
+	public String getCron() {
+		return cron;
+	}
+
+	public void setCron(String cron) {
+		this.cron = cron;
+	}
 
 }

@@ -16,7 +16,6 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceState;
 import com.amazonaws.services.ec2.model.Tag;
 import com.capitalone.dashboard.model.CloudRawData;
-import com.capitalone.dashboard.util.AWSCloudSettings;
 
 /**
  * Collects the instance specific data from AWS.
