@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.model;
 
-import org.joda.time.DateTime;
+import java.util.Date;
+
+
 
 /**
  * CollectorItem extension to store the github repo url and branch.
@@ -45,12 +47,12 @@ public class GitHubRepo extends CollectorItem {
         getOptions().put(BRANCH, branch);
     }
     
-    public DateTime getLastUpdateTime() {
+    public Date getLastUpdateTime() {
         Object latest = getOptions().get(LAST_UPDATE_TIME);
-        return (DateTime) latest;
+        return (Date) latest;
     }
 
-    public void setLastUpdateTime(DateTime date) {
+    public void setLastUpdateTime(Date date) {
         getOptions().put(LAST_UPDATE_TIME, date);
     }
 
