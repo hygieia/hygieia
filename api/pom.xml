@@ -28,6 +28,7 @@
 			<url></url>
 		</snapshotRepository>
 	</distributionManagement>
+	
 	<build>
 		<finalName>api</finalName>
 		<plugins>
@@ -90,8 +91,64 @@
     </webApp>
    </configuration>
 </plugin>
-
+<plugin>
+      <groupId>com.spotify</groupId>
+      <artifactId>docker-maven-plugin</artifactId>
+      <version>0.3.2</version>
+      <configuration>
+        <imageName>hygieia_api</imageName>
+        <baseImage>tomcat</baseImage>
+        <!--  <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>-->
+        <!-- copy the service's jar file from target into the root directory of the image -->
+        <dockerDirectory>docker</dockerDirectory> 
+        <resources>
+           <resource>
+             <targetPath>/usr/local/tomcat/webapps</targetPath>
+             <directory>${project.build.directory}</directory>
+             <include>${project.build.finalName}.war</include>
+           </resource>
+           <resource>
+             <targetPath>/</targetPath>
+             <directory>docker</directory>
+             <include>dashboard.properties</include>
+           </resource>
+        </resources>
+      </configuration>
+    </plugin>
 	</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.jacoco</groupId>
+										<artifactId>
+											jacoco-maven-plugin
+										</artifactId>
+										<versionRange>
+											[0.5.8.201207111220,)
+										</versionRange>
+										<goals>
+											<goal>prepare-agent</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<dependencies>

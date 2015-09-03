@@ -73,6 +73,32 @@
 	 </executions>
 
 </plugin>
+
+<plugin>
+      <groupId>com.spotify</groupId>
+      <artifactId>docker-maven-plugin</artifactId>
+      <version>0.3.2</version>
+      <configuration>
+        <imageName>hygieia_ui</imageName>
+        <baseImage>nginx</baseImage>
+        <!--  <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>-->
+        <!-- copy the service's jar file from target into the root directory of the image -->
+        <dockerDirectory>docker</dockerDirectory> 
+        <resources>
+           <resource>
+             <targetPath>/usr/share/nginx/html</targetPath>
+             <directory>dist</directory>
+             <include>*/**</include>
+           </resource>
+           <resource>
+             <targetPath>/etc/nginx/conf.d</targetPath>
+             <directory>docker</directory>
+             <include>default.conf</include>
+           </resource>
+        </resources>
+      </configuration>
+    </plugin>
+    
 </plugins>
 </build>
 </project>
