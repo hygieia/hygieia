@@ -39,3 +39,11 @@ for information about sourcing this properties file.
 
     #Maximum number of days to go back in time when fetching commits
     github.commitThresholdDays=15
+
+    #Encryption key, this is used for encrypting / decrypting git passwords
+    github.key=xFj9m3rf5d9YW8EHqyBUKhmKklcWW60L
+
+###Note on Encryption
+For private repositories there is a need to store a github user account with encrypted credentials
+There is a tool that now assists with the creation of this encryption information check out the tool project
+

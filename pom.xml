@@ -22,6 +22,7 @@
         <module>JiraFeatureCollector</module>
         <module>JenkinsCucumberTestCollector</module>
         <module>UI</module>
+        <module>tools</module>
     </modules>
 
     <build>
