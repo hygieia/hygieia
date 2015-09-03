@@ -10,3 +10,6 @@ notifications:
     on_start: false     # default: false
 after_success:
   - codecov
+branches:
+  only:
+    - master
