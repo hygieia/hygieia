@@ -27,6 +27,30 @@
     <build>
         <pluginManagement>
             <plugins>
+             <plugin>
+            <groupId>org.eclipse.m2e</groupId>
+            <artifactId>lifecycle-mapping</artifactId>
+            <version>1.0.0</version>
+            <configuration>
+                <lifecycleMappingMetadata>
+                    <pluginExecutions>
+                        <pluginExecution>
+                            <pluginExecutionFilter>
+                                <groupId>org.jacoco</groupId>
+                                <artifactId>jacoco-maven-plugin</artifactId>
+                                <versionRange>[0.0.1,)</versionRange>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </pluginExecutionFilter>
+                            <action>
+                                <ignore />
+                            </action>
+                        </pluginExecution>
+                    </pluginExecutions>
+                </lifecycleMappingMetadata>
+            </configuration>
+        </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -37,5 +61,12 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+        	<plugin>
+        		<groupId>com.spotify</groupId>
+        		<artifactId>docker-maven-plugin</artifactId>
+        		<version>0.3.2</version>
+        	</plugin>
+        </plugins>
     </build>
 </project>
