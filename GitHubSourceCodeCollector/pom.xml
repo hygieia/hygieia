@@ -48,6 +48,29 @@
 					<stagingProgressPauseDurationSeconds>15</stagingProgressPauseDurationSeconds>
 				</configuration>
 			</plugin>
+			<plugin>
+      <groupId>com.spotify</groupId>
+      <artifactId>docker-maven-plugin</artifactId>
+      <version>0.3.2</version>
+      <configuration>
+        <imageName>hygieia_github_collector</imageName>
+        <baseImage>java</baseImage>
+        <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+        <!-- copy the service's jar file from target into the root directory of the image --> 
+        <resources>
+           <resource>
+             <targetPath>/</targetPath>
+             <directory>${project.build.directory}</directory>
+             <include>${project.build.finalName}.jar</include>
+           </resource>
+           <resource>
+             <targetPath>/</targetPath>
+             <directory>.</directory>
+             <include>application.properties</include>
+           </resource>
+        </resources>
+      </configuration>
+    </plugin>
 		</plugins>
 
 		<testResources>

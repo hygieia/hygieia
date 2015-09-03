@@ -60,3 +60,32 @@ or you can run via maven from UI project root folder
  for local testing of Hygieia UI layer
 
 All data is currently coming from the test-data folder so you shouldn't need an api, but also means no settings will be saved..
+
+By default this expects the api project to run from the same server.
+The best way to accomplish this is by using a proxy pass in nginx or apache to take all /api requests and pass them back to the API server.
+
+### To Docker-ize
+```bash
+mvn clean package docker:build
+```
+
+Expectation is you have already dockerized the API and have a mongo configured
+```bash
+cd Hygieia/api
+mvn clean package docker:build
+
+cd ../UI
+mvn clean package docker:build
+
+docker run -h mongo -d --name mongo mongo:latest
+docker run -h hygieia_api --link mongo:mongo -P -d --name hygieia_api hygieia_api
+docker run -d -P -h hygieia_ui --name hygieia_ui --link hygieia_api:api hygieia_ui
+
+# to find the port that hygieia_ui is now running on
+docker port hygieia_ui 80
+
+```
+
+Using the ip address of your docker instance either boot2docker ip or docker-machine env <default> and the above port
+you should be able to get to the front UI page and create an account.
+
