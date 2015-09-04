@@ -76,9 +76,7 @@ public class DefaultHudsonClient implements HudsonClient {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
         try {
             String url = StringUtils.removeEnd(instanceUrl, "/") + JOBS_URL_SUFFIX;
-            ResponseEntity<String> responseEntity = makeRestCall(URI.create(url),
-                    this.settings.isAuthRequired(),
-                    this.settings.getUsername(), this.settings.getApiKey());
+            ResponseEntity<String> responseEntity = makeRestCall(URI.create(url));
             String returnJSON = responseEntity.getBody();
             JSONParser parser = new JSONParser();
 
@@ -123,9 +121,7 @@ public class DefaultHudsonClient implements HudsonClient {
     public Build getBuildDetails(String buildUrl) {
         try {
             String url = StringUtils.removeEnd(buildUrl, "/") + BUILD_DETAILS_URL_SUFFIX;
-            ResponseEntity<String> result = makeRestCall(URI.create(url),
-                    this.settings.isAuthRequired(),
-                    this.settings.getUsername(), this.settings.getApiKey());
+            ResponseEntity<String> result = makeRestCall(URI.create(url));
             String returnJSON = result.getBody();
             JSONParser parser = new JSONParser();
 
@@ -260,12 +256,11 @@ public class DefaultHudsonClient implements HudsonClient {
         }
     }
 
-    private ResponseEntity<String> makeRestCall(
-            URI uri, boolean authRequired, String userId, String password) {
+    private ResponseEntity<String> makeRestCall(URI uri) {
         // Basic Auth only.
-        if (authRequired) {
+        if (this.settings.isAuthRequired()) {
             return rest.exchange(uri, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(userId, password)),
+                    new HttpEntity<>(createHeaders(this.settings.getUsername(), this.settings.getApiKey())),
                     String.class);
 
         } else {
@@ -288,9 +283,7 @@ public class DefaultHudsonClient implements HudsonClient {
 
     private String getLog(String buildUrl) {
         ResponseEntity<String> responseEntity = makeRestCall(
-                URI.create(buildUrl + "consoleText"),
-                this.settings.isAuthRequired(),
-                this.settings.getUsername(), this.settings.getApiKey());
+                URI.create(buildUrl + "consoleText"));
         String returnJSON = responseEntity.getBody();
 
         return returnJSON;
