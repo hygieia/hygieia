@@ -22,3 +22,19 @@ gradle.properties
 common/src/querydsl
 common/src/generated
 *.log
+# Eclipse Core
+.project
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+.settings/

@@ -1,38 +1,45 @@
 package com.capitalone.dashboard.tools;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import com.capitalone.dashboard.tools.utils.EncryptionTool;
+import com.capitalone.dashboard.util.Encryption;
+import com.capitalone.dashboard.util.EncryptionException;
 
 /**
- * Unit test for simple App.
+ * Test Cases for Tools App
  */
-public class AppTest 
-    extends TestCase
-{
+public class AppTest {
+
     /**
-     * Create the test case
-     *
-     * @param testName name of the test case
+     * Verify encryption / decryption work
+     * 
+     * @throws EncryptionException
      */
-    public AppTest( String testName )
-    {
-        super( testName );
+    @Test
+    public void testEncryption() throws EncryptionException {
+        String key = EncryptionTool.genkey();
+        String original = new String("The Quick Brown Fox");
+        String encrypted = EncryptionTool.encrypt(original, key);
+        assertNotEquals(original, encrypted); // that would be bad
+
+        String decrypted = Encryption.decryptString(encrypted, key);
+        assertEquals(original, decrypted);
+
     }
 
     /**
-     * @return the suite of tests being tested
+     * GenKey should generate a 32 bit key
+     * 
+     * @throws EncryptionException
      */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
+    @Test
+    public void testKeyGeneration() throws EncryptionException {
+        String key = EncryptionTool.genkey();
+        assertNotNull(key);
+        assertEquals(32, key.getBytes().length);
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
-    }
 }

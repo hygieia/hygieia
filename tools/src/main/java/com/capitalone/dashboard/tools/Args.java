@@ -2,6 +2,6 @@ package com.capitalone.dashboard.tools;
 
 public enum Args {
 
-	e, encrypt, genkey
-	
+    e, encrypt, genkey
+    
 }
