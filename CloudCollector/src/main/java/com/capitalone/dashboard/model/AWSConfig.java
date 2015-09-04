@@ -4,9 +4,8 @@ public class AWSConfig extends CollectorItem {
 	private static final String ACCESS_KEY = "accessKey";
 	private static final String SECRET_KEY = "secretKey";
 
-	
     public void setAccessKey (String accessKey) {
-        getOptions().put(ACCESS_KEY, accessKey);
+    	getOptions().put(ACCESS_KEY, accessKey);
     }
     
 	public String getAccessKey() {
@@ -14,7 +13,7 @@ public class AWSConfig extends CollectorItem {
 	}
 
     public void setSecretKey (String secretKey) {
-        getOptions().put(SECRET_KEY, secretKey);
+    	getOptions().put(SECRET_KEY, secretKey);
     }
     
 	public String getSecretKey() {
