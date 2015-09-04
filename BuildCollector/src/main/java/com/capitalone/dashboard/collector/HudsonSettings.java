@@ -16,7 +16,6 @@ public class HudsonSettings {
     private String cron;
     private boolean saveLog = false;
     private List<String> servers;
-    private boolean authRequired = false;
     private String username;
     private String apiKey;
 
@@ -42,14 +41,6 @@ public class HudsonSettings {
 
     public void setServers(List<String> servers) {
         this.servers = servers;
-    }
-
-    public boolean isAuthRequired() {
-        return authRequired;
-    }
-
-    public void setAuthRequired(boolean authRequired) {
-        this.authRequired = authRequired;
     }
 
     public String getUsername() {
