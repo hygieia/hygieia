@@ -12,6 +12,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
 import java.io.IOException;
@@ -42,7 +46,8 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void instanceJobs_emptyResponse_returnsEmptyMap() {
-        when(rest.getForObject(Matchers.any(URI.class), eq(String.class))).thenReturn("");
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<String>("", HttpStatus.OK));
 
         Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL);
 
@@ -51,7 +56,8 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void instanceJobs_twoJobsTwoBuilds() throws Exception {
-        when(rest.getForObject(Matchers.any(URI.class), eq(String.class))).thenReturn(getJson("instanceJobs_twoJobsTwoBuilds.json"));
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<String>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
 
         Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL);
 
@@ -81,7 +87,8 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void buildDetails_full() throws Exception {
-        when(rest.getForObject(Matchers.any(URI.class), eq(String.class))).thenReturn(getJson("buildDetails_full.json"));
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<String>(getJson("buildDetails_full.json"), HttpStatus.OK));
 
         Build build = hudsonClient.getBuildDetails(URL);
 
