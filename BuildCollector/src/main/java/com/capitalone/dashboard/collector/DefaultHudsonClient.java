@@ -23,7 +23,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import java.net.URI;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -279,10 +279,9 @@ public class DefaultHudsonClient implements HudsonClient {
         return new HttpHeaders() {
             {
                 String auth = userId + ":" + password;
-                byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset
-                        .forName("US-ASCII")));
+                byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
                 String authHeader = "Basic " + new String(encodedAuth);
-                set("Authorization", authHeader);
+                set(HttpHeaders.AUTHORIZATION, authHeader);
             }
         };
     }
