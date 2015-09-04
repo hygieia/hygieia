@@ -5,6 +5,7 @@ import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.HudsonJob;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.util.Supplier;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,11 +14,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -70,7 +76,10 @@ public class DefaultHudsonClient implements HudsonClient {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
         try {
             String url = StringUtils.removeEnd(instanceUrl, "/") + JOBS_URL_SUFFIX;
-            String returnJSON = rest.getForObject(URI.create(url), String.class);
+            ResponseEntity<String> responseEntity = makeRestCall(URI.create(url),
+                    this.settings.isAuthRequired(),
+                    this.settings.getUsername(), this.settings.getApiKey());
+            String returnJSON = responseEntity.getBody();
             JSONParser parser = new JSONParser();
 
             try {
@@ -114,7 +123,10 @@ public class DefaultHudsonClient implements HudsonClient {
     public Build getBuildDetails(String buildUrl) {
         try {
             String url = StringUtils.removeEnd(buildUrl, "/") + BUILD_DETAILS_URL_SUFFIX;
-            String returnJSON = rest.getForObject(URI.create(url), String.class);
+            ResponseEntity<String> result = makeRestCall(URI.create(url),
+                    this.settings.isAuthRequired(),
+                    this.settings.getUsername(), this.settings.getApiKey());
+            String returnJSON = result.getBody();
             JSONParser parser = new JSONParser();
 
             try {
@@ -248,7 +260,40 @@ public class DefaultHudsonClient implements HudsonClient {
         }
     }
 
+    private ResponseEntity<String> makeRestCall(
+            URI uri, boolean authRequired, String userId, String password) {
+        // Basic Auth only.
+        if (authRequired) {
+            return rest.exchange(uri, HttpMethod.GET,
+                    new HttpEntity<>(createHeaders(userId, password)),
+                    String.class);
+
+        } else {
+            return rest.exchange(uri, HttpMethod.GET, null,
+                    String.class);
+        }
+
+    }
+
+    private HttpHeaders createHeaders(final String userId, final String password) {
+        return new HttpHeaders() {
+            {
+                String auth = userId + ":" + password;
+                byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset
+                        .forName("US-ASCII")));
+                String authHeader = "Basic " + new String(encodedAuth);
+                set("Authorization", authHeader);
+            }
+        };
+    }
+
     private String getLog(String buildUrl) {
-        return rest.getForObject(URI.create(buildUrl + "consoleText"), String.class);
+        ResponseEntity<String> responseEntity = makeRestCall(
+                URI.create(buildUrl + "consoleText"),
+                this.settings.isAuthRequired(),
+                this.settings.getUsername(), this.settings.getApiKey());
+        String returnJSON = responseEntity.getBody();
+
+        return returnJSON;
     }
 }
