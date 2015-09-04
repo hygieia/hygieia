@@ -11,11 +11,14 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "jenkins")
 public class HudsonSettings {
-    
+
 
     private String cron;
     private boolean saveLog = false;
     private List<String> servers;
+    private boolean authRequired = false;
+    private String username;
+    private String apiKey;
 
     public String getCron() {
         return cron;
@@ -40,4 +43,29 @@ public class HudsonSettings {
     public void setServers(List<String> servers) {
         this.servers = servers;
     }
+
+    public boolean isAuthRequired() {
+        return authRequired;
+    }
+
+    public void setAuthRequired(boolean authRequired) {
+        this.authRequired = authRequired;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
 }
