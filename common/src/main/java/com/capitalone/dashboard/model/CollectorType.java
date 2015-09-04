@@ -12,7 +12,8 @@ public enum CollectorType {
     ScopeOwner,
     Scope,
     CodeQuality,
-    Test;
+    Test,
+    Cloud;
 
     public static CollectorType fromString(String value) {
         for (CollectorType collectorType : values()) {
