@@ -69,7 +69,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
 	/* Averages CPUUtil every minute for the last hour */
 	private static Double getLastHourCPU(String instanceId, AmazonCloudWatchClient ec2Client) {
-		long offsetInMilliseconds = 1000 * 60 * 60; // one hour in msec
+		long offsetInMilliseconds = (1000 * 60 * 60); // one hour in msec
 		Dimension instanceDimension = new Dimension().withName("InstanceId").withValue(instanceId);
 		GetMetricStatisticsRequest request = new GetMetricStatisticsRequest().withMetricName("CPUUtilization")
 				.withNamespace("AWS/EC2").withPeriod(60 * 60) // one hour
@@ -91,9 +91,11 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	/* If the instance is tagged with ASV or ENV */
 	private static boolean isTagged(Instance currInstance) {
 		List<Tag> tags = currInstance.getTags();
-		for (Tag currTag : tags)
-			if (currTag.getKey().equals("ASV") || currTag.getKey().equals("ENV"))
+		for (Tag currTag : tags) {
+			if (currTag.getKey().equals("ASV") || currTag.getKey().equals("ENV")) {
 				return true;
+			}
+		}
 		return false;
 	}
 
@@ -103,10 +105,10 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	 */
 	public static boolean isStopped(Instance myInstance) {
 		InstanceState instanceState = myInstance.getState();
-		if (instanceState.getName().equals("stopped"))
+		if (instanceState.getName().equals("stopped")) {
 			return true;
-		else
+		} else {
 			return false;
+		}
 	}
-
 }
