@@ -258,7 +258,8 @@ public class DefaultHudsonClient implements HudsonClient {
 
     private ResponseEntity<String> makeRestCall(URI uri) {
         // Basic Auth only.
-        if (this.settings.isAuthRequired()) {
+        if (StringUtils.isNotEmpty(this.settings.getUsername())
+                && StringUtils.isNotEmpty(this.settings.getApiKey())) {
             return rest.exchange(uri, HttpMethod.GET,
                     new HttpEntity<>(createHeaders(this.settings.getUsername(), this.settings.getApiKey())),
                     String.class);
