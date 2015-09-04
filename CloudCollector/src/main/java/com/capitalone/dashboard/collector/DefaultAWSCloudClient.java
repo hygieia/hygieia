@@ -45,7 +45,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 		object.setCpuUtilization(getLastHourCPU(currInstance.getInstanceId(), cwClient));
 		object.setTagged(isTagged(currInstance));
 		object.setStopped(isStopped(currInstance));
-		object.setAccountName("cof-sandbox-dev"); //TODO: account name is hardcoded currently
+		object.setAccountName(""); //TODO: account name is hardcoded currently
 		return object;
 	}
 
