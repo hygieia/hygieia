@@ -5,48 +5,34 @@
 	<artifactId>udeploy-collector</artifactId>
 	<packaging>jar</packaging>
 	<version>0.1.1</version>
-	<name>UDeploy Collector</name>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Deploy Collector microservice currently collects data from IBM UCD</description>
+	<url>https://github.com/capitalone/Hygieia</url>
+
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.1.RELEASE</version>
+		<groupId>com.capitalone.dashboard</groupId>
+		<artifactId>Hygieia</artifactId>
+		<version>1.0</version>
 	</parent>
 
-	<scm>
-		<connection></connection>
-		<developerConnection></developerConnection>
-		<url></url>
-		<tag>HEAD</tag>
-	</scm>
 	<distributionManagement>
-		<repository>
-			<id>nexus</id>
-			<url></url>
-		</repository>
 		<snapshotRepository>
-			<id>nexus</id>
-			<url></url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
 	</distributionManagement>
+
 	<!-- Package as an executable jar -->
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.3</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>nexus</serverId>
-					<nexusUrl></nexusUrl>
-					<stagingProgressTimeoutMinutes>15</stagingProgressTimeoutMinutes>
-					<stagingProgressPauseDurationSeconds>15</stagingProgressPauseDurationSeconds>
-				</configuration>
 			</plugin>
 		</plugins>
 
