@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.capitalone.dashboard</groupId>
   <artifactId>rest-api</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <version>0.3.0</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Hygieia Rest API Layer</description>
@@ -15,7 +15,7 @@
   </parent>
 
   <properties>
-    <spring.version>4.1.0.RELEASE</spring.version>
+	<spring.version>4.1.4.RELEASE</spring.version>
     <jackson.version>2.5.0</jackson.version>
     <guava.version>16.0.1</guava.version>
   </properties>
@@ -37,6 +37,10 @@
   <build>
     <finalName>api</finalName>
     <plugins>
+      <plugin>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -67,23 +71,6 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <version>9.3.2.v20150730</version>
-        <configuration>
-          <systemProperties>
-            <systemProperty>
-              <name>dashboard.prop</name>
-              <value>${PROP_FILE}</value>
-            </systemProperty>
-          </systemProperties>
-          <webApp>
-            <contextPath>/api</contextPath>
-          </webApp>
-        </configuration>
-      </plugin>
-
     </plugins>
   </build>
 
@@ -105,6 +92,11 @@
     </dependency>
 
 <!-- Spring Libraries -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-aop</artifactId>
