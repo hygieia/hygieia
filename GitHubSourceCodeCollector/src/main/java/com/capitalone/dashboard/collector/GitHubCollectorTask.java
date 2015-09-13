@@ -1,11 +1,11 @@
 package com.capitalone.dashboard.collector;
 
 
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.CommitRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.GitHubRepoRepository;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -16,12 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.CommitRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.GitHubRepoRepository;
 
 /**
  * CollectorTask that fetches Commit information from GitHub
@@ -130,9 +133,11 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
         clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
-        	repo.setLastUpdateTime(new DateTime());
+        	boolean firstRun = false;
+        	if (repo.getLastUpdateTime() == null) firstRun = true;
+        	repo.setLastUpdateTime(new Date());
             gitHubRepoRepository.save(repo);
-            for (Commit commit : gitHubClient.getCommits(repo)) {
+            for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
                     commitRepository.save(commit);
@@ -146,7 +151,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         log("Finished", start);
     }
 
-    private DateTime lastUpdated(GitHubRepo repo) {
+    private Date lastUpdated(GitHubRepo repo) {
         return repo.getLastUpdateTime();
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
  * Created by ltm688 on 2/12/15.
  */
 @Component
-@ConfigurationProperties(prefix = "jenkins")
+@ConfigurationProperties(prefix = "jenkins-cucumber")
 public class JenkinsSettings {
 
     private String cron;

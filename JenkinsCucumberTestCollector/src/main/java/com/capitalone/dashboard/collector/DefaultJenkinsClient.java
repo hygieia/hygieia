@@ -87,7 +87,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
             List<TestSuite> suites = new ArrayList<>();
             Boolean building = (Boolean) buildJson.get("building");
 
-            if (!building) {
+            if ((building != null) && !building) {
                 for (Object artifactObj : (JSONArray) buildJson.get("artifacts")) {
                     JSONObject artifact = (JSONObject) artifactObj;
 
