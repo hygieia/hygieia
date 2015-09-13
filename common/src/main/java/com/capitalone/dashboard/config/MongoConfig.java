@@ -1,10 +1,10 @@
 package com.capitalone.dashboard.config;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -57,4 +57,8 @@ public class MongoConfig extends AbstractMongoConfiguration {
         return new MongoTemplate(mongo(), getDatabaseName());
     }
 
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 }

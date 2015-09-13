@@ -1,7 +1,17 @@
 package com.capitalone.dashboard.repository;
 
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.URL;
+
+import org.junit.rules.ExternalResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
+
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
@@ -16,19 +26,6 @@ import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.store.IProxyFactory;
 import de.flapdoodle.embed.process.runtime.Network;
-import org.junit.rules.ExternalResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Proxy;
-import java.net.URL;
-import java.util.Properties;
 
 /**
  *
@@ -69,33 +66,29 @@ public class EmbeddedMongoDBRule extends ExternalResource {
             port = Integer.valueOf(portProp);
         }
 
-        IMongodConfig conf = new MongodConfigBuilder()
-                .version(Version.Main.PRODUCTION)
-                .net(new Net(port, Network.localhostIsIPv6()))
-                .build();
-
+        IMongodConfig conf =
+                new MongodConfigBuilder().version(Version.Main.PRODUCTION)
+                    .net(new Net(port, Network.localhostIsIPv6())).build();
 
         Command command = Command.MongoD;
-        IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
-                .defaults(command)
-                .artifactStore(new ArtifactStoreBuilder()
-                        .defaults(command)
-                        .download(new DownloadConfigBuilder()
-                                .defaultsForCommand(command)
-                                .proxyFactory(new SystemProxy())))
-                .build();
-
+        IRuntimeConfig runtimeConfig =
+                new RuntimeConfigBuilder()
+                    .defaults(command)
+                    .artifactStore(
+                            new ArtifactStoreBuilder().defaults(command).download(
+                                    new DownloadConfigBuilder().defaultsForCommand(command).proxyFactory(new SystemProxy())))
+                    .build();
 
         MongodStarter runtime = MongodStarter.getInstance(runtimeConfig);
         mongoExec = runtime.prepare(conf);
-
 
         mongoProc = mongoExec.start();
 
         client = new MongoClient(new ServerAddress(conf.net().getServerAddress(), conf.net().getPort()));
 
         // set the property for our config...
-        writeConfig(conf);
+        System.setProperty("dbhost", conf.net().getServerAddress().getHostAddress());
+        System.setProperty("dbport", Integer.toString(conf.net().getPort()));
     }
 
     @Override
@@ -117,18 +110,5 @@ public class EmbeddedMongoDBRule extends ExternalResource {
 
     public MongoClient client() {
         return client;
-    }
-
-    void writeConfig(IMongodConfig conf) throws IOException {
-        File propsFile = File.createTempFile("hygieia", "temp");
-        propsFile.deleteOnExit();
-        Properties props = new Properties();
-        props.setProperty("dbhost", conf.net().getServerAddress().getHostAddress());
-        props.setProperty("dbport", Integer.toString(conf.net().getPort()));
-
-        try (OutputStream out = new FileOutputStream(propsFile);) {
-            props.store(out, "");
-        }
-        System.setProperty("dashboard.prop", propsFile.getAbsolutePath());
     }
 }
