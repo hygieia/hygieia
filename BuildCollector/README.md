@@ -38,3 +38,7 @@ for information about sourcing this properties file.
 
     #Determines if build console log is collected - defaults to false
     jenkins.saveLog=true
+
+    #Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
+    jenkins.username=
+    jenkins.apiKey=
