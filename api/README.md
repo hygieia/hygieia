@@ -46,3 +46,63 @@ server.port=8080
 ```
 
 For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
+
+## Docker image
+
+
+### Create
+
+```bash
+# from top-level project
+mvn clean package -pl api docker:build
+```
+
+### Run
+
+First start Mongodb
+
+For example:
+```
+docker run -d -p 27017:27017 --name mongodb -v ./mongo:/data/db mongo:latest  mongod --smallfiles
+```
+
+
+Create User:
+```
+use db
+db.createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})
+```
+or from CLI:
+```bash
+mongo 192.168.64.2/admin --eval 'db.getSiblingDB("db").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
+```
+
+More details: <https://hub.docker.com/r/library/mongo/>
+
+
+Then running the API from docker is easy:
+
+```
+docker run -t -p 8080:8080 --link mongodb:mongo -v ./logs:/hygieia/logs -i hygieia-api:latest
+```
+
+### Environment variables
+
+Environment variables for dashboard properties can be specified like:
+
+```
+docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -i hygieia-api:latest
+```
+
+For more properties see the [Dockerfile](Dockerfile)
+
+### List containers
+
+View port by running
+```bash
+docker ps
+```
+
+### API Access
+
+Take the port mapping and the IP for your docker-machine <env> ip and verify by http://<docker-machine env ip>:<docker port for hygieia_api>/api/dashboard

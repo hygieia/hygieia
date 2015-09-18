@@ -60,3 +60,19 @@ or you can run via maven from UI project root folder
  for local testing of Hygieia UI layer
 
 All data is currently coming from the test-data folder so you shouldn't need an api, but also means no settings will be saved..
+
+
+### Docker
+
+#### Create
+
+```bash
+# from top-level project
+mvn clean package -pl UI docker:build
+```
+
+#### Run
+
+```bash
+docker run -t -p 8088:80 --link hygieia-api -i hygieia-ui:latest
+```
