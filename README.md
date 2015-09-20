@@ -35,21 +35,19 @@ We welcome Your interest in Capital One’s Open Source Projects (the “Project
 
 ##### [Link to Agreement] (https://docs.google.com/forms/d/19LpBBjykHPox18vrZvBbZUcK6gQTj7qv1O5hCduAZFU/viewform)
 
-
-
 ### Running Locally
 
 * Start API
 ```
-
+./gradlew :api:run
 ```
 
 * Start UI
 ```
-
+./gradlew :UI:run
 ```
 
 * Running a collector
 ```
-
+java -jar CodeQualityCollector/build/libs/hygieia-code-quality-collector-1.0.0.jar --spring.config.location=file:sample.properties
 ```
