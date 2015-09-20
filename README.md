@@ -36,20 +36,5 @@ We welcome Your interest in Capital One’s Open Source Projects (the “Project
 ##### [Link to Agreement] (https://docs.google.com/forms/d/19LpBBjykHPox18vrZvBbZUcK6gQTj7qv1O5hCduAZFU/viewform)
 
 
-
-### Running Locally
-
-* Start API
-```
-
-```
-
-* Start UI
-```
-
-```
-
-* Running a collector
-```
-
-```
+### How to Start
+[Setup Instructions](https://github.com/capitalone/Hygieia/blob/master/Setup.md)
