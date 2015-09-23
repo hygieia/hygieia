@@ -108,7 +108,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<scope>testing</scope>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- Jira Connection Transient Dependencies -->
