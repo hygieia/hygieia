@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<scope>testing</scope>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- V1APIConnector -->
