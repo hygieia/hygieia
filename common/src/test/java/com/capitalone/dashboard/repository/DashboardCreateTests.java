@@ -49,6 +49,7 @@ public class DashboardCreateTests {
         scm.getOptions().put("threshold", 10);
         dashboard.getWidgets().add(scm);
 
+
         dashboardRepository.save(dashboard);
 
 
