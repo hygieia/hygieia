@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -34,12 +35,12 @@ import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.capitalone.dashboard.model.AWSConfig;
-import com.capitalone.dashboard.model.CloudAggregatedData;
-import com.capitalone.dashboard.model.CloudRawData;
+import com.capitalone.dashboard.model.CloudComputeAggregatedData;
+import com.capitalone.dashboard.model.CloudComputeRawData;
 import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.repository.CloudAggregatedDataRepository;
 import com.capitalone.dashboard.repository.AWSConfigRepository;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.CloudAggregatedDataRepository;
 import com.capitalone.dashboard.repository.CloudRawDataRepository;
 
 /**
@@ -59,6 +60,7 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 	private final AWSCloudClient awsClient;
 	private final AWSConfigRepository awsConfigRepository;
 	private final BaseCollectorRepository<AWSCloudCollector> collectorRepository;
+	private final Iterable<CloudComputeAggregatedData> allAggregatedData; 
 
 	/**
 	 * Default constructor for the collector task. This will construct this
@@ -87,6 +89,7 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 		this.awsSetting = cloudSettings;
 		this.awsConfigRepository = awsConfigRepository;
 		this.awsAggregatedDataRepository = awsAggregatedRepository;
+		this.allAggregatedData= awsAggregatedDataRepository.findAll();
 	}
 
 	public AWSCloudCollector getCollector() {
@@ -132,7 +135,6 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 			AmazonCloudWatchClient cwClient = new AmazonCloudWatchClient(creds,
 					clientConfig);
 			DescribeInstancesResult result = ec2Client.describeInstances();
-
 			// create list of instances
 			List<Instance> instanceList = new ArrayList<Instance>();
 			List<Reservation> reservations = result.getReservations();
@@ -140,54 +142,66 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 				List<Instance> currInstanceList = currRes.getInstances();
 				instanceList.addAll(currInstanceList);
 			}
+			
+			//delete old data
+			CloudComputeAggregatedData oldData = findAggregatedDataByConfig(config);
+			if (oldData != null) {
+				awsAggregatedDataRepository.delete(oldData);
+			}
 
-			// purge the repo of old instance data
-			if (awsRawDataRepository.count() > 0)
-				awsRawDataRepository.deleteAll();
-
+			ArrayList<CloudComputeRawData> rawDataList = new ArrayList<CloudComputeRawData> ();
 			// for every instance determine all metrics
 			logger.info("Collecting Raw Data...");
 			for (Instance currInstance : instanceList) {
-				CloudRawData object = awsClient.getMetrics(currInstance,
+				CloudComputeRawData object = awsClient.getMetrics(currInstance,
 						cwClient, accessKey);
-				System.out.println("Acount Name:" + object.getAccountName());
+				object.setCollectorItemId(config.getId());
+				System.out.println("Collector Item ID:"
+						+ object.getCollectorItemId());
+				rawDataList.add(object);
 				awsRawDataRepository.save(object);
 			}
 
-			// purge the repo of old account data
-			if (awsAggregatedDataRepository.count() > 0)
-				awsAggregatedDataRepository.deleteAll();
 
 			logger.info("Agregating Data...");
-			CloudAggregatedData aggregatedData = new CloudAggregatedData();
-			aggregatedData.setAgeWarning(awsRawDataRepository.runAgeWarning(
-					"cof-sandbox-dev").size());
-			aggregatedData.setAgeExpired(awsRawDataRepository.runAgeExpired(
-					"cof-sandbox-dev").size());
-			aggregatedData.setAgeGood(awsRawDataRepository.runAgeGood(
-					"cof-sandbox-dev").size());
+			CloudComputeAggregatedData aggregatedData = new CloudComputeAggregatedData();
+			ObjectId id = config.getId();
+			aggregatedData.setAgeWarning(awsRawDataRepository.runAgeWarning(id)
+					.size());
+			aggregatedData.setAgeExpired(awsRawDataRepository.runAgeExpired(id)
+					.size());
+			aggregatedData.setAgeGood(awsRawDataRepository.runAgeGood(id)
+					.size());
 			aggregatedData.setCpuHigh(awsRawDataRepository
-					.runCpuUtilizationHigh("cof-sandbox-dev").size());
+					.runCpuUtilizationHigh(id).size());
 			aggregatedData.setCpuMid(awsRawDataRepository.runCpuUtilizationMid(
-					"cof-sandbox-dev").size());
+					id).size());
 			aggregatedData.setCpuLow(awsRawDataRepository.runCpuUtilizationLow(
-					"cof-sandbox-dev").size());
+					id).size());
 			aggregatedData.setNonEncryptedCount(awsRawDataRepository
-					.runNonEncrypted("cof-sandbox-dev").size());
+					.runNonEncrypted(id).size());
 			aggregatedData.setNonTaggedCount(awsRawDataRepository.runNonTagged(
-					"cof-sandbox-dev").size());
-			aggregatedData.setStoppedCount(awsRawDataRepository.runStopped(
-					"cof-sandbox-dev").size());
-			aggregatedData.setAccountName("cof-sandbox-dev");
+					id).size());
+			aggregatedData.setStoppedCount(awsRawDataRepository.runStopped(id)
+					.size());
+			aggregatedData.setCollectorItemId(config.getId());
 			aggregatedData.setTotalInstanceCount(awsRawDataRepository
-					.runAllInstanceCount("cof-sandbox-dev").size());
-
+					.runAllInstanceCount(id).size());
+			aggregatedData.setCollectorItemId(id);
+			aggregatedData.setDetailList(rawDataList);
 			awsAggregatedDataRepository.save(aggregatedData);
 
 		}
 		logger.info("Finished Cloud collection.");
 	}
 
+	public CloudComputeAggregatedData findAggregatedDataByConfig(AWSConfig config) {
+		CloudComputeAggregatedData returnData = null;
+		for (CloudComputeAggregatedData data : this.allAggregatedData) {
+			returnData = data;
+		}
+		return returnData;
+	}
 	@Override
 	public BaseCollectorRepository<AWSCloudCollector> getCollectorRepository() {
 		return collectorRepository;

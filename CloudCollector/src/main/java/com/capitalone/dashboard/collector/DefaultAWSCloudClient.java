@@ -15,18 +15,18 @@ import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceState;
 import com.amazonaws.services.ec2.model.Tag;
-import com.capitalone.dashboard.model.CloudRawData;
+import com.capitalone.dashboard.model.AWSConfig;
+import com.capitalone.dashboard.model.CloudComputeRawData;
 
 /**
  * Collects the instance specific data from AWS.
  * 
- * @author NAA505
- * @author CUO722
  */
 @Component
 public class DefaultAWSCloudClient implements AWSCloudClient {
 
 	private final AWSCloudSettings settings;
+
 
 	@Autowired
 	public DefaultAWSCloudClient(AWSCloudSettings settings) {
@@ -34,17 +34,18 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	}
 
 	@Override
-	/*Creates the AWSObject for a given instance.*/
-	public CloudRawData getMetrics(Instance currInstance, AmazonCloudWatchClient cwClient, String accessKey) {
-		CloudRawData object = new CloudRawData();			
+	/* Creates the AWSObject for a given instance. */
+	public CloudComputeRawData getMetrics(Instance currInstance,
+			AmazonCloudWatchClient cwClient, String accessKey) {
+		CloudComputeRawData object = new CloudComputeRawData();
 		object.setTimestamp(new Date());
 		object.setInstanceId(currInstance.getInstanceId());
 		object.setAge(getAge(currInstance));
 		object.setEncrypted(isEncrypted(currInstance));
-		object.setCpuUtilization(getLastHourCPU(currInstance.getInstanceId(), cwClient));
+		object.setCpuUtilization(getLastHourCPU(currInstance.getInstanceId(),
+				cwClient));
 		object.setTagged(isTagged(currInstance));
 		object.setStopped(isStopped(currInstance));
-		object.setAccountName("cof-sandbox-dev"); //TODO: account name is hardcoded currently
 		return object;
 	}
 
@@ -53,7 +54,8 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 		Date launchDate = myInstance.getLaunchTime();
 		Date today = new Date();
 		long diffInMillies = today.getTime() - launchDate.getTime();
-		return (int) TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+		return (int) TimeUnit.DAYS
+				.convert(diffInMillies, TimeUnit.MILLISECONDS);
 	}
 
 	/*
@@ -67,16 +69,25 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	}
 
 	/* Averages CPUUtil every minute for the last hour */
-	private static Double getLastHourCPU(String instanceId, AmazonCloudWatchClient ec2Client) {
+	private static Double getLastHourCPU(String instanceId,
+			AmazonCloudWatchClient ec2Client) {
 		long offsetInMilliseconds = 1000 * 60 * 60; // one hour in msec
-		Dimension instanceDimension = new Dimension().withName("InstanceId").withValue(instanceId);
-		GetMetricStatisticsRequest request = new GetMetricStatisticsRequest().withMetricName("CPUUtilization")
-				.withNamespace("AWS/EC2").withPeriod(60 * 60) // one hour
-				.withDimensions(instanceDimension) // to get metrics a specific
-													// instance
-				.withStatistics("Average").withStartTime(new Date(new Date().getTime() - offsetInMilliseconds))
+		Dimension instanceDimension = new Dimension().withName("InstanceId")
+				.withValue(instanceId);
+		GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
+				.withMetricName("CPUUtilization")
+				.withNamespace("AWS/EC2")
+				.withPeriod(60 * 60)
+				// one hour
+				.withDimensions(instanceDimension)
+				// to get metrics a specific
+				// instance
+				.withStatistics("Average")
+				.withStartTime(
+						new Date(new Date().getTime() - offsetInMilliseconds))
 				.withEndTime(new Date());
-		GetMetricStatisticsResult result = ec2Client.getMetricStatistics(request);
+		GetMetricStatisticsResult result = ec2Client
+				.getMetricStatistics(request);
 		// to read data
 		List<Datapoint> datapoints = result.getDatapoints();
 		if (datapoints.size() == 0) {
@@ -88,11 +99,16 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	}
 
 	/* If the instance is tagged with ASV or ENV */
-	private static boolean isTagged(Instance currInstance) {
+	private boolean isTagged(Instance currInstance) {
 		List<Tag> tags = currInstance.getTags();
-		for (Tag currTag : tags)
-			if (currTag.getKey().equals("ASV") || currTag.getKey().equals("ENV"))
-				return true;
+		if (settings.getValidTagKey().isEmpty()) return false;
+		
+		for (Tag currTag : tags) {
+			for (String tagKey : settings.getValidTagKey()) {
+				if (currTag.getKey().equals(tagKey))
+					return true;
+			}
+		}
 		return false;
 	}
 
@@ -100,12 +116,18 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	 * Returns true if instance is stopped. Other possible states include
 	 * pending, running, shutting-down, terminated, stopping
 	 */
-	public static boolean isStopped(Instance myInstance) {
+	public boolean isStopped(Instance myInstance) {
 		InstanceState instanceState = myInstance.getState();
 		if (instanceState.getName().equals("stopped"))
 			return true;
 		else
 			return false;
+	}
+
+	@Override
+	public List<Instance> getInstances(AWSConfig config) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

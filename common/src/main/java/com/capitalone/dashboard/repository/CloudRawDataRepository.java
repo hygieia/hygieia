@@ -23,7 +23,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 
-import com.capitalone.dashboard.model.CloudRawData;
+import com.capitalone.dashboard.model.CloudComputeRawData;
 //import com.capitalone.dashboard.model.CloudCpuUtilization;`
 import com.capitalone.dashboard.model.Feature;
 
@@ -31,47 +31,47 @@ import com.capitalone.dashboard.model.Feature;
  * Repository for {@link AWSCloudCollector}.
  */
 public interface CloudRawDataRepository extends
-		CrudRepository<CloudRawData, ObjectId>,
-		QueryDslPredicateExecutor<CloudRawData> {
-	// TODO: changed feature to CloudRawData
+		CrudRepository<CloudComputeRawData, ObjectId>,
+		QueryDslPredicateExecutor<CloudComputeRawData> {
+
 	// Age
-	@Query(value = "{ $query: { $and: [ { accountName:  ?0 }, { age: { $gte: 45, $lt: 60 } } ] }}")
-	List<CloudRawData> runAgeWarning(String accountName);
+	@Query(value = "{ $query: { $and: [ { collectorItemId:  ?0 }, { age: { $gte: 45, $lt: 60 } } ] }}")
+	List<CloudComputeRawData> runAgeWarning(ObjectId collectorItemId);
 
-	@Query(value = "{ $query: { $and: [ { accountName:  ?0 }, { age: { $gte: 60 } } ] }}")
-	List<CloudRawData> runAgeExpired(String accountName);
+	@Query(value = "{ $query: { $and: [ { collectorItemId:  ?0 }, { age: { $gte: 60 } } ] }}")
+	List<CloudComputeRawData> runAgeExpired(ObjectId collectorItemId);
 
-	@Query(value = "{ $query: { $and: [ { accountName:  ?0 }, { age: { $lt: 45 } } ] }}")
-	List<CloudRawData> runAgeGood(String accountName);
+	@Query(value = "{ $query: { $and: [ { collectorItemId:  ?0 }, { age: { $lt: 45 } } ] }}")
+	List<CloudComputeRawData> runAgeGood(ObjectId collectorItemId);
 
 	// CPU Utilization
-	@Query(value = "{ $query: { $and: [ { accountName:  ?0 }, { cpuUtilization: { $lte: 10 } } ] }}")
-	List<CloudRawData> runCpuUtilizationLow(String accountName);
+	@Query(value = "{ $query: { $and: [ { collectorItemId:  ?0 }, { cpuUtilization: { $lte: 10 } } ] }}")
+	List<CloudComputeRawData> runCpuUtilizationLow(ObjectId collectorItemId);
 
-	@Query(value = "{ $query: { $and: [ { accountName:  ?0 }, { cpuUtilization: { $gt: 10, $lt: 80 } } ] }}")
-	List<CloudRawData> runCpuUtilizationMid(String accountName);
+	@Query(value = "{ $query: { $and: [ { collectorItemId:  ?0 }, { cpuUtilization: { $gt: 10, $lt: 80 } } ] }}")
+	List<CloudComputeRawData> runCpuUtilizationMid(ObjectId collectorItemId);
 
-	@Query(value = "{ $query: { $and: [ { accountName:  ?0 }, { cpuUtilization: { $gte: 80 } } ] }}")
-	List<CloudRawData> runCpuUtilizationHigh(String accountName);
+	@Query(value = "{ $query: { $and: [ { collectorItemId:  ?0 }, { cpuUtilization: { $gte: 80 } } ] }}")
+	List<CloudComputeRawData> runCpuUtilizationHigh(ObjectId collectorItemId);
 
 	// Tagged
-	@Query(value = "{ $query: { $and: [ { accountName:  ?0 }, { isTagged: false } ] }}") 
-	List<CloudRawData> runNonTagged(String accountName);
+	@Query(value = "{ $query: { $and: [ { collectorItemId:  ?0 }, { isTagged: false } ] }}") 
+	List<CloudComputeRawData> runNonTagged(ObjectId collectorItemId);
 
 	// Encrypted
-	@Query(value = "{ $query: { $and: [ { accountName:  ?0 }, { isEncrypted: false } ] }}")
-	List<CloudRawData> runNonEncrypted(String accountName);
+	@Query(value = "{ $query: { $and: [ { collectorItemId:  ?0 }, { isEncrypted: false } ] }}")
+	List<CloudComputeRawData> runNonEncrypted(ObjectId collectorItemId);
 
 	// Stopped
-	@Query(value = "{ $query: { $and: [ { accountName:  ?0 }, { isStopped: true  } ] }}")
-	List<CloudRawData> runStopped(String accountName);
+	@Query(value = "{ $query: { $and: [ { collectorItemId:  ?0 }, { isStopped: true  } ] }}")
+	List<CloudComputeRawData> runStopped(ObjectId collectorItemId);
 
 	// All Instances in an account
-	@Query(value = "{ $query: { $and: [ { accountName:  ?0 } ] }}")
-	List<CloudRawData> runAllInstanceCount(String accountName);
+	@Query(value = "{ $query: { $and: [ { collectorItemId:  ?0 } ] }}")
+	List<CloudComputeRawData> runAllInstanceCount(ObjectId collectorItemId);
 
 	// Get every instance details
-	@Query(value = "{ accountName : ?0 }")
-	List<CloudRawData> runInstanceDetailList(String accountName);
+	@Query(value = "{ collectorItemId : ?0 }")
+	List<CloudComputeRawData> runInstanceDetailList(ObjectId collectorItemId);
 
 }

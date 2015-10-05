@@ -6,10 +6,14 @@ public class AWSConfig extends CollectorItem {
 	private static final String CLOUD_PROVIDER= "cloudProvider";
 
 	
-    public static String getCloudProvider() {
-		return CLOUD_PROVIDER;
+    public String getCloudProvider() {
+    	return (String) getOptions().get(CLOUD_PROVIDER);
 	}
 
+    public void setCloudProvider(String cloudProvider) {
+    	 getOptions().put(CLOUD_PROVIDER, cloudProvider);
+    }
+    
 	public void setAccessKey (String accessKey) {
         getOptions().put(ACCESS_KEY, accessKey);
     }

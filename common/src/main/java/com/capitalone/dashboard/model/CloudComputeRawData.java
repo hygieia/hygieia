@@ -18,6 +18,7 @@ package com.capitalone.dashboard.model;
 
 import java.util.Date;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -25,11 +26,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * 
  * Possible collectors: AWS, Microsoft Azure
  * 
- * @author cuo722 naa505
  * 
  */
-@Document(collection = "rawCloudData")
-public class CloudRawData extends BaseModel {
+@Document(collection = "RawCloudData")
+public class CloudComputeRawData extends BaseModel {
+	private ObjectId collectorItemId;
 	private String instanceId;
 	private int age;
 	private boolean isEncrypted;
@@ -37,7 +38,15 @@ public class CloudRawData extends BaseModel {
 	private boolean isTagged;
 	private double cpuUtilization;
 	private Date timestamp;
-	private String accountName;
+	
+	
+	public ObjectId getCollectorItemId() {
+		return collectorItemId;
+	}
+
+	public void setCollectorItemId(ObjectId collectorItemId) {
+		this.collectorItemId = collectorItemId;
+	}
 	
 	public String getInstanceId() {
 		return instanceId;
@@ -95,12 +104,6 @@ public class CloudRawData extends BaseModel {
 		this.timestamp = timestamp;
 	}
 
-	public String getAccountName() {
-		return accountName;
-	}
 
-	public void setAccountName(String accountName) {
-		this.accountName = accountName;
-	}
 	
 }
