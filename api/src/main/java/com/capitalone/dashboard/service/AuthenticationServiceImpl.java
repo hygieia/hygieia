@@ -28,7 +28,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public Authentication get(ObjectId id) {
 
         Authentication authentication = authenticationRepository.findOne(id);
-        System.out.println("[DEBUG] GET authentication " + authentication);
         return authentication;
     }
 
