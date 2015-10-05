@@ -16,6 +16,8 @@
 
 package com.capitalone.dashboard.collector;
 
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +34,15 @@ public class AWSCloudSettings {
 	private int proxyPort;
 	private String proxyUser;
 	private String proxyPassword;
+	private List<String>  validTagKey;
+
+	public List<String> getValidTagKey() {
+		return validTagKey;
+	}
+
+	public void setValidTagKey(List<String> validTagKey) {
+		this.validTagKey = validTagKey;
+	}
 
 	public int getProxyPort() {
 		return proxyPort;

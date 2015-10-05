@@ -19,15 +19,17 @@ package com.capitalone.dashboard.model;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Represents a cloud account
  */
-@Document(collection = "aggregatedCloudData")
-public class CloudAggregatedData extends BaseModel {
+@Document(collection = "CloudComputeData")
+public class CloudComputeAggregatedData extends BaseModel {
 
-	private String accountName;
+//	private String accountName;
+	private ObjectId collectorItemId;
 	private int nonEncryptedCount;
 	private int nonTaggedCount;
 	private int stoppedCount;
@@ -38,9 +40,18 @@ public class CloudAggregatedData extends BaseModel {
 	private int cpuMid;
 	private int cpuHigh;
 	private int totalInstanceCount;
-	List<CloudRawData> instanceDetailList;
+	List<CloudComputeRawData> instanceDetailList;
 	private HashMap<String, Integer> countByMonth = new HashMap<>();
 
+	
+	public ObjectId getCollectorItemId() {
+		return collectorItemId;
+	}
+
+	public void setCollectorItemId(ObjectId collectorItemId) {
+		this.collectorItemId = collectorItemId;
+	}
+	
 	public int getNonEncryptedCount() {
 		return nonEncryptedCount;
 	}
@@ -121,19 +132,11 @@ public class CloudAggregatedData extends BaseModel {
 		this.countByMonth = countByMonth;
 	}
 
-	public String getAccountName() {
-		return accountName;
-	}
-
-	public void setAccountName(String accountName) {
-		this.accountName = accountName;
-	}
-
-	public void setDetailList(List<CloudRawData> instanceDetailList) {
+	public void setDetailList(List<CloudComputeRawData> instanceDetailList) {
 		this.instanceDetailList = instanceDetailList;
 	}
 
-	public List<CloudRawData> getDetailList() {
+	public List<CloudComputeRawData> getDetailList() {
 		return instanceDetailList;
 	}
 
