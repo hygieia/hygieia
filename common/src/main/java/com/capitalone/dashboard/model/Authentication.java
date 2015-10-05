@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.model;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -11,8 +12,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Authentication extends BaseModel {
 	
 	
-
+	@Indexed(unique = true)
 	private String username;
+	
 	private String password;
 	
 	
@@ -31,6 +33,11 @@ public class Authentication extends BaseModel {
 	public String getPassword() {
 		return password;
 	}
+	@Override
+	public String toString() {
+		return "Authentication [username=" + username + ", password=" + password + "]";
+	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
