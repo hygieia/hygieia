@@ -1,7 +1,5 @@
 package com.capitalone.dashboard.service;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +28,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public Authentication get(ObjectId id) {
 
         Authentication authentication = authenticationRepository.findOne(id);
+        System.out.println("[DEBUG] GET authentication " + authentication);
         return authentication;
     }
 
@@ -72,11 +71,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public boolean authenticate(String username, String password) {
         boolean flag = false;
-        List<Authentication> authenticationList = authenticationRepository.findByUsernameAndPassword(username, password);
-        if (authenticationList.size() == 1) {
-            if (authenticationList.get(0).getUsername().equals(username) && authenticationList.get(0).getPassword().equals(password)) {
-                flag = true;
-            }
+        Authentication authentication = authenticationRepository.findByUsername(username);
+        if (authentication.getUsername().equals(username) && authentication.getPassword().equals(password)) {
+        	flag = true;
         }
         return flag;
     }
