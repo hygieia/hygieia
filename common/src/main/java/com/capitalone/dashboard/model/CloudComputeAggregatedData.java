@@ -30,6 +30,7 @@ public class CloudComputeAggregatedData extends BaseModel {
 
 //	private String accountName;
 	private ObjectId collectorItemId;
+	private ObjectId componentId;
 	private int nonEncryptedCount;
 	private int nonTaggedCount;
 	private int stoppedCount;
@@ -40,6 +41,7 @@ public class CloudComputeAggregatedData extends BaseModel {
 	private int cpuMid;
 	private int cpuHigh;
 	private int totalInstanceCount;
+    private long lastUpdated;
 	List<CloudComputeRawData> instanceDetailList;
 	private HashMap<String, Integer> countByMonth = new HashMap<>();
 
@@ -50,6 +52,14 @@ public class CloudComputeAggregatedData extends BaseModel {
 
 	public void setCollectorItemId(ObjectId collectorItemId) {
 		this.collectorItemId = collectorItemId;
+	}
+	
+	public ObjectId getComponentId() {
+		return componentId;
+	}
+
+	public void setComponentId(ObjectId componentId) {
+		this.componentId = componentId;
 	}
 	
 	public int getNonEncryptedCount() {
@@ -146,5 +156,13 @@ public class CloudComputeAggregatedData extends BaseModel {
 
 	public void setTotalInstanceCount(int totalInstanceCount) {
 		this.totalInstanceCount = totalInstanceCount;
+	}
+	
+	public long getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(long lastUpdated) {
+		this.lastUpdated = lastUpdated;
 	}
 }
