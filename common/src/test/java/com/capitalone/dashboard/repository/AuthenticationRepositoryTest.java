@@ -1,7 +1,8 @@
 package com.capitalone.dashboard.repository;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,15 @@ import com.capitalone.dashboard.model.Authentication;
 @DirtiesContext
 public class AuthenticationRepositoryTest {
 	
-
+	private static int testNumber = 0;
+	
+	private static String username  ;
+	
+	@Before
+	public void updateUsername(){
+		username = "usernameTest" + testNumber;
+		testNumber++;
+	}
 	
     @ClassRule
     public static final EmbeddedMongoDBRule RULE = new EmbeddedMongoDBRule();
@@ -29,11 +38,12 @@ public class AuthenticationRepositoryTest {
     @Autowired
     private AuthenticationRepository authenticationRepository;
     
+    
     /*
      * This test checks that adding a duplicate username will create an exception
      */
-    @Test
-    public void createUserTest() {
+    @Test(expected=DuplicateKeyException.class)
+    public void createDuplicateUserTest() {
     	
     	String username = "username";
     	
@@ -41,20 +51,17 @@ public class AuthenticationRepositoryTest {
     	
     	authenticationRepository.save(user1);
     	
-    	try{
     	Authentication user2 = new Authentication(username, "pass2");
     	
     	// This line should throw a DuplicateKeyException
     	authenticationRepository.save(user2);
-    	
-    	// If the above line did not throw a DuplicateKeyException, fail the test
-    	fail("Didn't throw any Exception");
-    	}
-    	catch(DuplicateKeyException e){
-    		e.printStackTrace();
-    	}
-
     }
-
+    /*
+     * This test checks that we ge a null when getting a user which does not exist
+     */
+    @Test
+    public void testGetUserDoesNotExist() {
+    	assertNull(authenticationRepository.findByUsername(username));
+    }
 
 }
