@@ -13,7 +13,8 @@
         var ctrl = this;
         // public variables
         ctrl.componentId = $scope.widgetConfig.componentId;
-        console.log(ctrl);
+        console.log("In Cloud details view ctrl=", ctrl);
+        console.log("In Cloud details view widgetConfig=", $scope.widgetConfig);
         ctrl.detail = function (type) {
             $modal.open({
                 templateUrl: 'components/widgets/cloud/detail.html',
@@ -33,9 +34,9 @@
 
         var sortBy, direction;
         ctrl.load = function () {
-            var params = {componentId : $scope.widgetConfig.componentId}; //component id and filter from config
+            var params = {id : $scope.widgetConfig.componentId}; //component id and filter from config
             //replace localTest with details
-            cloudData.details(params).then(function (data) {
+            cloudData.aggregate(params).then(function (data) {
                 ctrl.totalCount = data.totalInstanceCount;
                 ctrl.stoppedCount = data.stoppedCount;
 
@@ -49,8 +50,7 @@
             }).catch(function (err) {
             });
 
-            //replace localTest with table
-            cloudData.table(params).then(function (data) {
+            cloudData.details(params).then(function (data) {
                 ctrl.tableData = orderBy(data, sortBy, direction);
             }).catch(function (err) {
             });
