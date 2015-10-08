@@ -12,9 +12,7 @@ import com.capitalone.dashboard.model.DataResponse;
 public interface CloudService {
 
 	DataResponse<CloudComputeAggregatedData> getAggregatedData(ObjectId id);
-
 	DataResponse<List<CloudComputeRawData>> getInstanceDetails(ObjectId id);
-	
-    CollectorItem createCloudConfigCollectorItem(CollectorItem item);
-  
+	CollectorItem createCloudConfigCollectorItem(CollectorItem item);
+
 }

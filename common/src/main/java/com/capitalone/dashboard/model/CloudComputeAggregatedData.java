@@ -16,6 +16,7 @@
 
 package com.capitalone.dashboard.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,8 +28,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Document(collection = "CloudComputeData")
 public class CloudComputeAggregatedData extends BaseModel {
-
-//	private String accountName;
 	private ObjectId collectorItemId;
 	private ObjectId componentId;
 	private int nonEncryptedCount;
@@ -42,7 +41,7 @@ public class CloudComputeAggregatedData extends BaseModel {
 	private int cpuHigh;
 	private int totalInstanceCount;
     private long lastUpdated;
-	List<CloudComputeRawData> instanceDetailList;
+	private ArrayList<CloudComputeRawData> instanceDetailList;
 	private HashMap<String, Integer> countByMonth = new HashMap<>();
 
 	
@@ -142,7 +141,7 @@ public class CloudComputeAggregatedData extends BaseModel {
 		this.countByMonth = countByMonth;
 	}
 
-	public void setDetailList(List<CloudComputeRawData> instanceDetailList) {
+	public void setDetailList(ArrayList<CloudComputeRawData> instanceDetailList) {
 		this.instanceDetailList = instanceDetailList;
 	}
 
