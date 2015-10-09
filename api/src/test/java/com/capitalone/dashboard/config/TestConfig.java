@@ -70,4 +70,9 @@ public class TestConfig {
 	public EncryptionService encryptionService() {
 		return Mockito.mock(EncryptionService.class);
 	}
+	
+	@Bean
+	public CloudService cloudService() {
+		return Mockito.mock(CloudService.class);
+	}
 }
