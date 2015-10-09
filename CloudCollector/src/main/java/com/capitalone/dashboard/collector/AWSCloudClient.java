@@ -5,7 +5,7 @@ import java.util.List;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
 import com.amazonaws.services.ec2.model.Instance;
 import com.capitalone.dashboard.model.AWSConfig;
-import com.capitalone.dashboard.model.CloudComputeRawData;
+import com.capitalone.dashboard.model.CloudComputeInstanceData;
 
 /**
  * Client for fetching commit history from GitHub
@@ -22,7 +22,7 @@ public interface AWSCloudClient {
      * @return a collection of objects with metrics for each instance
      */
 
-  CloudComputeRawData getMetrics(Instance currInstance, AmazonCloudWatchClient cwClient, String accessKey);
+  CloudComputeInstanceData getMetrics(Instance currInstance, AmazonCloudWatchClient cwClient, String accessKey);
 
   List<Instance> getInstances (AWSConfig config);
   

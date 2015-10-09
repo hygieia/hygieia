@@ -22,14 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitalone.dashboard.editors.CaseInsensitiveBuildStatusEditor;
 import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.CloudComputeAggregatedData;
-import com.capitalone.dashboard.model.CloudComputeRawData;
+import com.capitalone.dashboard.model.CloudComputeData;
+import com.capitalone.dashboard.model.CloudComputeInstanceData;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.CloudRequest;
 import com.capitalone.dashboard.request.CollectorItemRequest;
 import com.capitalone.dashboard.service.CloudService;
 import com.capitalone.dashboard.service.CloudServiceImpl;
+import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.EncryptionService;
 
 /**
@@ -40,24 +41,25 @@ import com.capitalone.dashboard.service.EncryptionService;
 public class CloudController {
 	private final CloudService cloudService;
 	private final EncryptionService encryptionService;
+	private final CollectorService collectorService;
 	private static final String JSON = MediaType.APPLICATION_JSON_VALUE;
 
 	@Autowired
-	public CloudController(
-			EncryptionService encryptionService,
-			CloudService cloudService) {
+	public CloudController(EncryptionService encryptionService,
+			CloudService cloudService, CollectorService collectorService) {
 		this.cloudService = cloudService;
 		this.encryptionService = encryptionService;
+		this.collectorService = collectorService;
 	}
-    
+
 	@RequestMapping(value = "/cloud/aggregate", method = POST, consumes = JSON, produces = JSON)
-	public DataResponse<CloudComputeAggregatedData> getAggregatedData(
+	public DataResponse<CloudComputeData> getAggregatedData(
 			@Valid @RequestBody CloudRequest request) {
 		return cloudService.getAggregatedData(request.getId());
 	}
 
 	@RequestMapping(value = "/cloud/details", method = POST, consumes = JSON, produces = JSON)
-	public DataResponse<List<CloudComputeRawData>> getInstanceDetails(
+	public DataResponse<List<CloudComputeInstanceData>> getInstanceDetails(
 			@Valid @RequestBody CloudRequest request) {
 		return cloudService.getInstanceDetails(request.getId());
 	}
@@ -68,24 +70,30 @@ public class CloudController {
 
 		final String ACCESS_KEY = "accessKey";
 		final String SECRET_KEY = "secretKey";
-System.out.println("Inside controller");
-		CollectorItem item = null;
-		String encAccessKey = encryptionService.encrypt((String) request
-				.getOptions().get(ACCESS_KEY));
-		String encSecretKey = encryptionService.encrypt((String) request
-				.getOptions().get(SECRET_KEY));
-		if (!"ERROR".equalsIgnoreCase(encAccessKey)
-				&& !"ERROR".equalsIgnoreCase(encSecretKey)) {
-			request.getOptions().put(ACCESS_KEY, encAccessKey);
-			request.getOptions().put(SECRET_KEY, encSecretKey);
-			
-			item = cloudService.createCloudConfigCollectorItem(request
-					.toCollectorItem());
+
+		CollectorItem item = collectorService
+				.getCollectorItemByCollectorIDandOptions(
+						request.getCollectorId(), request.getOptions());
+
+		if (item != null) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(item);
 		} else {
-			System.out.println("Error out #################");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(request.toCollectorItem());
+			String encAccessKey = encryptionService.encrypt((String) request
+					.getOptions().get(ACCESS_KEY));
+			String encSecretKey = encryptionService.encrypt((String) request
+					.getOptions().get(SECRET_KEY));
+			if (!"ERROR".equalsIgnoreCase(encAccessKey)
+					&& !"ERROR".equalsIgnoreCase(encSecretKey)) {
+				request.getOptions().put(ACCESS_KEY, encAccessKey);
+				request.getOptions().put(SECRET_KEY, encSecretKey);
+
+				item = collectorService.createCollectorItem(request
+						.toCollectorItem());
+				return ResponseEntity.status(HttpStatus.CREATED).body(item);
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body(request.toCollectorItem());
+			}
 		}
 	}
 

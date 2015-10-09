@@ -1,18 +1,4 @@
-/*************************DA-BOARD-LICENSE-START*********************************
- * Copyright 2014 CapitalOne, LLC.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *************************DA-BOARD-LICENSE-END*********************************/
+
 
 package com.capitalone.dashboard.model;
 
@@ -27,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * Represents a cloud account
  */
 @Document(collection = "CloudComputeData")
-public class CloudComputeAggregatedData extends BaseModel {
+public class CloudComputeData extends BaseModel {
 	private ObjectId collectorItemId;
 	private ObjectId componentId;
 	private int nonEncryptedCount;
@@ -41,7 +27,7 @@ public class CloudComputeAggregatedData extends BaseModel {
 	private int cpuHigh;
 	private int totalInstanceCount;
     private long lastUpdated;
-	private ArrayList<CloudComputeRawData> instanceDetailList;
+	private ArrayList<CloudComputeInstanceData> instanceDetailList;
 	private HashMap<String, Integer> countByMonth = new HashMap<>();
 
 	
@@ -141,11 +127,11 @@ public class CloudComputeAggregatedData extends BaseModel {
 		this.countByMonth = countByMonth;
 	}
 
-	public void setDetailList(ArrayList<CloudComputeRawData> instanceDetailList) {
+	public void setDetailList(ArrayList<CloudComputeInstanceData> instanceDetailList) {
 		this.instanceDetailList = instanceDetailList;
 	}
 
-	public List<CloudComputeRawData> getDetailList() {
+	public List<CloudComputeInstanceData> getDetailList() {
 		return instanceDetailList;
 	}
 

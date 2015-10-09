@@ -35,13 +35,12 @@ import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.capitalone.dashboard.model.AWSConfig;
-import com.capitalone.dashboard.model.CloudComputeAggregatedData;
-import com.capitalone.dashboard.model.CloudComputeRawData;
+import com.capitalone.dashboard.model.CloudComputeData;
+import com.capitalone.dashboard.model.CloudComputeInstanceData;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.repository.AWSConfigRepository;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.CloudAggregatedDataRepository;
-import com.capitalone.dashboard.repository.CloudRawDataRepository;
+import com.capitalone.dashboard.repository.CloudComputeDataRepository;
 
 /**
  * Collects {@link AWSCloudCollector} data from feature content source system.
@@ -54,13 +53,12 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 	private static final Log logger = LogFactory
 			.getLog(AWSCloudCollectorTask.class);
 
-	private final CloudRawDataRepository awsRawDataRepository;
-	private final CloudAggregatedDataRepository awsAggregatedDataRepository;
+	private final CloudComputeDataRepository awsAggregatedDataRepository;
 	private final AWSCloudSettings awsSetting;
 	private final AWSCloudClient awsClient;
 	private final AWSConfigRepository awsConfigRepository;
 	private final BaseCollectorRepository<AWSCloudCollector> collectorRepository;
-	private final Iterable<CloudComputeAggregatedData> allAggregatedData; 
+	private final Iterable<CloudComputeData> allAggregatedData;
 
 	/**
 	 * Default constructor for the collector task. This will construct this
@@ -78,29 +76,20 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 	@Autowired
 	public AWSCloudCollectorTask(TaskScheduler taskScheduler,
 			BaseCollectorRepository<AWSCloudCollector> collectorRepository,
-			CloudRawDataRepository awsObjectRepository,
 			AWSCloudSettings cloudSettings, AWSCloudClient cloudClient,
 			AWSConfigRepository awsConfigRepository,
-			CloudAggregatedDataRepository awsAggregatedRepository) {
+			CloudComputeDataRepository awsAggregatedRepository) {
 		super(taskScheduler, "AWSCloud");
 		this.collectorRepository = collectorRepository;
 		this.awsClient = cloudClient;
-		this.awsRawDataRepository = awsObjectRepository;
 		this.awsSetting = cloudSettings;
 		this.awsConfigRepository = awsConfigRepository;
 		this.awsAggregatedDataRepository = awsAggregatedRepository;
-		this.allAggregatedData= awsAggregatedDataRepository.findAll();
+		this.allAggregatedData = awsAggregatedDataRepository.findAll();
 	}
 
 	public AWSCloudCollector getCollector() {
 		return AWSCloudCollector.prototype();
-	}
-
-	/**
-	 * Accessor method for the collector repository
-	 */
-	public CloudRawDataRepository getAWSObjectRepository() {
-		return awsRawDataRepository;
 	}
 
 	/**
@@ -125,6 +114,7 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 				.withProxyUsername(awsSetting.getProxyUser())
 				.withProxyPassword(awsSetting.getProxyPassword());
 
+		logger.info("Collecting AWS Cloud Data...");
 		List<AWSConfig> enabledList = enabledConfigs(collector);
 		for (AWSConfig config : enabledList) {
 			String accessKey = config.getAccessKey();
@@ -142,66 +132,48 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 				List<Instance> currInstanceList = currRes.getInstances();
 				instanceList.addAll(currInstanceList);
 			}
-			
-			//delete old data
-			CloudComputeAggregatedData oldData = findAggregatedDataByConfig(config);
-			if (oldData != null) {
-				awsAggregatedDataRepository.delete(oldData);
-			}
 
-			ArrayList<CloudComputeRawData> rawDataList = new ArrayList<CloudComputeRawData> ();
-			// for every instance determine all metrics
-			logger.info("Collecting Raw Data...");
+			ArrayList<CloudComputeInstanceData> rawDataList = new ArrayList<CloudComputeInstanceData>();
 			for (Instance currInstance : instanceList) {
-				CloudComputeRawData object = awsClient.getMetrics(currInstance,
+				CloudComputeInstanceData object = awsClient.getMetrics(currInstance,
 						cwClient, accessKey);
 				object.setCollectorItemId(config.getId());
 				System.out.println("Collector Item ID:"
 						+ object.getCollectorItemId());
 				rawDataList.add(object);
-				awsRawDataRepository.save(object);
 			}
 
-
 			logger.info("Agregating Data...");
-			CloudComputeAggregatedData aggregatedData = new CloudComputeAggregatedData();
+			CloudComputeData computeData = new CloudComputeData();
+			AWSCloudStatistics stat = new AWSCloudStatistics(rawDataList);
 			ObjectId id = config.getId();
-			aggregatedData.setAgeWarning(awsRawDataRepository.runAgeWarning(id)
-					.size());
-			aggregatedData.setAgeExpired(awsRawDataRepository.runAgeExpired(id)
-					.size());
-			aggregatedData.setAgeGood(awsRawDataRepository.runAgeGood(id)
-					.size());
-			aggregatedData.setCpuHigh(awsRawDataRepository
-					.runCpuUtilizationHigh(id).size());
-			aggregatedData.setCpuMid(awsRawDataRepository.runCpuUtilizationMid(
-					id).size());
-			aggregatedData.setCpuLow(awsRawDataRepository.runCpuUtilizationLow(
-					id).size());
-			aggregatedData.setNonEncryptedCount(awsRawDataRepository
-					.runNonEncrypted(id).size());
-			aggregatedData.setNonTaggedCount(awsRawDataRepository.runNonTagged(
-					id).size());
-			aggregatedData.setStoppedCount(awsRawDataRepository.runStopped(id)
-					.size());
-			aggregatedData.setCollectorItemId(config.getId());
-			aggregatedData.setTotalInstanceCount(awsRawDataRepository
-					.runAllInstanceCount(id).size());
-			aggregatedData.setCollectorItemId(id);
-			aggregatedData.setDetailList(rawDataList);
-			awsAggregatedDataRepository.save(aggregatedData);
+			computeData.setAgeWarning(stat.getAgeWarningCount());
+			computeData.setAgeExpired(stat.getAgeExpireCount());
+			computeData.setAgeGood(stat.getAgeGoodCount());
+			computeData.setCpuHigh(stat.getCpuHighCount());
+			computeData.setCpuMid(stat.getCpuMidCount());
+			computeData.setCpuLow(stat.getCpuLowCount());
+			computeData.setNonEncryptedCount(stat.getUnEcryptedCount());
+			computeData.setNonTaggedCount(stat.getUnTaggedCount());
+			computeData.setStoppedCount(stat.getStoppedCount());
+			computeData.setTotalInstanceCount(stat.getTotalCount());
+			computeData.setCollectorItemId(id);
+			computeData.setDetailList(rawDataList);
+			computeData.setLastUpdated(System.currentTimeMillis());
+			awsAggregatedDataRepository.save(computeData);
 
 		}
 		logger.info("Finished Cloud collection.");
 	}
 
-	public CloudComputeAggregatedData findAggregatedDataByConfig(AWSConfig config) {
-		CloudComputeAggregatedData returnData = null;
-		for (CloudComputeAggregatedData data : this.allAggregatedData) {
+	public CloudComputeData findAggregatedDataByConfig(AWSConfig config) {
+		CloudComputeData returnData = null;
+		for (CloudComputeData data : this.allAggregatedData) {
 			returnData = data;
 		}
 		return returnData;
 	}
+
 	@Override
 	public BaseCollectorRepository<AWSCloudCollector> getCollectorRepository() {
 		return collectorRepository;
