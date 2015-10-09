@@ -59,11 +59,6 @@
   <version>0.5.8.201207111220</version>
   <executions>
     <execution>
-      <goals>
-        <goal>prepare-agent</goal>
-      </goals>
-    </execution>
-    <execution>
       <id>report</id>
       <phase>test</phase>
       <goals>
@@ -100,7 +95,7 @@
 		<dependency>
 			<groupId>com.capitalone.dashboard</groupId>
 			<artifactId>core</artifactId>
-			<version>0.4.1</version>
+			<version>0.5.0</version>
 		</dependency>
 
 		<!-- Oracle Java Libraries -->

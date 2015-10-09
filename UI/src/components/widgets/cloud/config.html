@@ -32,10 +32,10 @@
                 </div>
             </div>
 
-
+<!-- ng-class="{'has-error': configForm.accessKey.$invalid && cloudConfig.submitted}"  -->
             <div class="form-group clearfix"
-                 ng-class="{'has-error': configForm.accessKey.$invalid && cloudConfig.submitted}"
-                 ng-if="cloudConfig.collectorItemId.name == 'Amazon Web Services'">
+                 ng-class="{'has-error': !cloudConfig.validAccess && cloudConfig.submitted}"
+                 ng-if="cloudConfig.collectorItemId.name == 'AWS'">
                 <div class="col-sm-push-2 col-sm-8">
                     <label class="modal-label">Access Key</label> <input
                         type="text" name="accessKey" class="form-control"
@@ -47,14 +47,14 @@
 
                     <p class="help-block" ng-if="configForm.accessKey.$error.required">Please input an access key</p>
 
-                    <p class="help-block" ng-if="!cloudConfig.validAccess && !configForm.accessKey.$error.required">
+                    <p class="help-block" ng-if="!cloudConfig.validAccess">
                         Access key invalid</p>
                 </div>
             </div>
 
             <div class="form-group clearfix"
-                 ng-class="{'has-error': configForm.secretKey.$invalid && cloudConfig.submitted}"
-                 ng-if="cloudConfig.collectorItemId.name == 'Amazon Web Services'">
+                 ng-class="{'has-error': !cloudConfig.validAccess && cloudConfig.submitted}"
+                 ng-if="cloudConfig.collectorItemId.name == 'AWS'">
                 <div class="col-sm-push-2 col-sm-8">
                     <label class="modal-label">Secret Key</label> <input
                         type="password" name="secretKey" class="form-control"
@@ -62,6 +62,8 @@
                         required>
 
                     <p class="help-block" ng-if="configForm.secretKey.$error.required">Please input a secret key</p>
+                    <p class="help-block" ng-if="!cloudConfig.validAccess">
+                        Secret key invalid</p>
                     <!--<p class="help-block" ng-if="configForm.secretKey.$error.required">Incorrect secret key</p>-->
                 </div>
             </div>

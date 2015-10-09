@@ -16,7 +16,7 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceState;
 import com.amazonaws.services.ec2.model.Tag;
 import com.capitalone.dashboard.model.AWSConfig;
-import com.capitalone.dashboard.model.CloudComputeRawData;
+import com.capitalone.dashboard.model.CloudComputeInstanceData;
 
 /**
  * Collects the instance specific data from AWS.
@@ -35,9 +35,9 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
 	@Override
 	/* Creates the AWSObject for a given instance. */
-	public CloudComputeRawData getMetrics(Instance currInstance,
+	public CloudComputeInstanceData getMetrics(Instance currInstance,
 			AmazonCloudWatchClient cwClient, String accessKey) {
-		CloudComputeRawData object = new CloudComputeRawData();
+		CloudComputeInstanceData object = new CloudComputeInstanceData();
 		object.setTimestamp(new Date());
 		object.setInstanceId(currInstance.getInstanceId());
 		object.setAge(getAge(currInstance));

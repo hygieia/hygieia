@@ -29,7 +29,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * 
  */
 @Document(collection = "RawCloudData")
-public class CloudComputeRawData extends BaseModel {
+public class CloudComputeInstanceData extends BaseModel {
 	private ObjectId collectorItemId;
 	private String instanceId;
 	private int age;
