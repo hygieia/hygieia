@@ -1,7 +1,5 @@
 package com.capitalone.dashboard.repository;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -11,7 +9,6 @@ public interface AuthenticationRepository extends PagingAndSortingRepository<Aut
 	
 	
 	 Authentication findByUsername(String username);
-	 List<Authentication> findByUsernameAndPassword(String username, String password);
 
 
 }
