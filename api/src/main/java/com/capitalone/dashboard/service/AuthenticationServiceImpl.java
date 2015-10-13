@@ -35,11 +35,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String create(String username, String password) {
         Authentication authentication = new Authentication(username, password);
-        try{
-        authenticationRepository.save(authentication);
-        return "User is created";
-        } catch(DuplicateKeyException e){
-        	return "User already exists";
+        try {
+            authenticationRepository.save(authentication);
+            return "User is created";
+        } catch (DuplicateKeyException e) {
+            return "User already exists";
         }
 
     }
@@ -59,29 +59,29 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void delete(ObjectId id) {
-    	Authentication authentication = authenticationRepository.findOne(id);
-    	if(authentication != null){
-    		authenticationRepository.delete(authentication);
-    	}
+        Authentication authentication = authenticationRepository.findOne(id);
+        if (authentication != null) {
+            authenticationRepository.delete(authentication);
+        }
     }
 
     @Override
     public void delete(String username) {
         Authentication authentication = authenticationRepository
                 .findByUsername(username);
-        if(authentication != null){
-        	authenticationRepository.delete(authentication);
+        if (authentication != null) {
+            authenticationRepository.delete(authentication);
         }
     }
 
     @Override
     public boolean authenticate(String username, String password) {
         boolean flag = false;
-		Authentication authentication = authenticationRepository.findByUsername(username);
-		
-			if (authentication != null && authentication.getPassword().equals(password)) {
-				flag = true;
-			}
-		return flag;
-	}
+        Authentication authentication = authenticationRepository.findByUsername(username);
+
+        if (authentication != null && authentication.getPassword().equals(password)) {
+            flag = true;
+        }
+        return flag;
+    }
 }
