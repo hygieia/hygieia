@@ -1,18 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
-
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Environment;
@@ -29,6 +16,18 @@ import com.capitalone.dashboard.repository.UDeployApplicationRepository;
 import com.capitalone.dashboard.repository.UDeployCollectorRepository;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Collects {@link EnvironmentComponent} and {@link EnvironmentStatus} data from
@@ -102,7 +101,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 
 	/**
 	 * Clean up unused deployment collector items
-	 * 
+	 *
 	 * @param collector
 	 *            the {@link UDeployCollector}
 	 */
@@ -111,8 +110,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
 				.findAll()) {
-			if ((comp.getCollectorItems() != null)
-					&& !comp.getCollectorItems().isEmpty()) {
+			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
 				List<CollectorItem> itemList = comp.getCollectorItems().get(
 						CollectorType.Deployment);
 				if (itemList != null) {

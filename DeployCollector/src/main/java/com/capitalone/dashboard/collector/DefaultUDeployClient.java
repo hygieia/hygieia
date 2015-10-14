@@ -2,12 +2,9 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Environment;
 import com.capitalone.dashboard.model.EnvironmentComponent;
-import com.capitalone.dashboard.model.EnvironmentStatus;
 import com.capitalone.dashboard.model.UDeployApplication;
 import com.capitalone.dashboard.model.UDeployEnvResCompData;
-import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
 import com.capitalone.dashboard.util.Supplier;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -20,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -143,7 +139,7 @@ public class DefaultUDeployClient implements UDeployClient {
 							parentObject, "status"));
 					JSONArray jsonChildren = (JSONArray) jsonObject
 							.get("children");
-					if ((jsonChildren != null) && (jsonChildren.size() > 0)) {
+					if (jsonChildren != null && jsonChildren.size() > 0) {
 						for (Object children : jsonChildren) {
 							JSONObject childrenObject = (JSONObject) children;
 							String componentName = (String) childrenObject
@@ -159,10 +155,8 @@ public class DefaultUDeployClient implements UDeployClient {
 							String version = "UNKNOWN";
 							data.setDeployed(false);
 
-							if ((jsonVersions != null)
-									&& (jsonVersions.size() > 0)) {
-								JSONObject versionObject = (JSONObject) jsonVersions
-										.get(0);
+							if (jsonVersions != null && jsonVersions.size() > 0) {
+								JSONObject versionObject = (JSONObject) jsonVersions.get(0);
 								version = (String) versionObject.get("name");
 								data.setAsOfDate(date(versionObject, "created"));
 								data.setDeployed(true);
@@ -176,12 +170,11 @@ public class DefaultUDeployClient implements UDeployClient {
 										JSONObject nonCompVersonObject = (JSONObject) nonCompChildObject
 												.get("version");
 										if (nonCompVersonObject != null) {
-											JSONObject nonCompComponentObject = (JSONObject) nonCompVersonObject
-													.get("component");
-											if ((nonCompComponentObject != null)
-													&& (componentName
-															.equalsIgnoreCase((String) nonCompComponentObject
-																	.get("name")))) {
+											JSONObject nonCompComponentObject =
+													(JSONObject) nonCompVersonObject.get("component");
+											if (nonCompComponentObject != null &&
+													componentName.equalsIgnoreCase(
+															(String) nonCompComponentObject.get("name"))) {
 												version = (String) nonCompVersonObject
 														.get("name");
 												data.setAsOfDate(date(

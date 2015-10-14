@@ -106,7 +106,7 @@ public class JenkinsCucumberTestCollectorTask extends
 
 	/**
 	 * Clean up unused hudson/jenkins collector items
-	 * 
+	 *
 	 * @param collector
 	 *            the {@link HudsonCollector}
 	 */
@@ -115,15 +115,12 @@ public class JenkinsCucumberTestCollectorTask extends
 		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
 				.findAll()) {
-			if ((comp.getCollectorItems() != null)
-					&& !comp.getCollectorItems().isEmpty()) {
+			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
 				List<CollectorItem> itemList = comp.getCollectorItems().get(
 						CollectorType.Test);
 				if (itemList != null) {
 					for (CollectorItem ci : itemList) {
-						if ((ci != null)
-								&& (ci.getCollectorId().equals(collector
-										.getId()))) {
+						if (ci != null && ci.getCollectorId().equals(collector.getId())) {
 							uniqueIDs.add(ci.getId());
 						}
 					}

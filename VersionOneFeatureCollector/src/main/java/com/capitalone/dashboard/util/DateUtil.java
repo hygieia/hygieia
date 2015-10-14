@@ -36,7 +36,7 @@ public class DateUtil {
 	public static boolean isToday(Date iDate) {
 		Date today = DateUtil.getTodayNoTime();
 		Date inputDate = DateUtil.getDateNoTime(iDate);
-		return (inputDate.compareTo(today) == 0);
+		return inputDate.compareTo(today) == 0;
 	}
 
 	public static String toISODateTimeFormat(Date iDate) {

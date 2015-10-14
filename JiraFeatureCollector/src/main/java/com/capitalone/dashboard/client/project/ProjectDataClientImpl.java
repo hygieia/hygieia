@@ -68,6 +68,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 				dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
 				Scope scope = new Scope();
 
+				@SuppressWarnings("unused")
 				boolean deleted = this.removeExistingEntity(tools
 						.sanitizeResponse((String) dataMainObj.get("_oid")));
 
