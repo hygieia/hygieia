@@ -16,15 +16,6 @@
 
 package com.capitalone.dashboard.client.story;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
@@ -32,15 +23,23 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This is the primary implemented/extended data collector for the feature
  * collector. This will get data from the source system, but will grab the
  * majority of needed data and aggregate it in a single, flat MongoDB collection
  * for consumption.
- * 
+ *
  * @author kfk884
- * 
+ *
  */
 public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 		StoryDataClient {
@@ -53,7 +52,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 
 	/**
 	 * Extends the constructor from the super class.
-	 * 
+	 *
 	 * @param teamRepository
 	 */
 	public StoryDataClientImpl(FeatureSettings featureSettings,
@@ -72,7 +71,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
-	 * 
+	 *
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
 	 * @param featureCollector
@@ -101,6 +100,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 							.get("customfield_10007");
 					Feature feature = new Feature();
 
+					@SuppressWarnings("unused")
 					boolean deleted = this.removeExistingEntity(tools
 							.sanitizeResponse(dataMainObj.get("id")));
 					if (!tools.sanitizeResponse(issueType.get("name"))
@@ -187,7 +187,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 					try {
 						String epicKey = tools.sanitizeResponse(fields
 								.get("customfield_10400"));
-						if ((epicKey == null) || (epicKey.isEmpty())) {
+						if (epicKey == null || epicKey.isEmpty()) {
 							throw new NullPointerException();
 						}
 						JSONObject epicData = this.getEpicData(epicKey);
@@ -407,7 +407,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 	/**
 	 * Retrieves the related Epic to the current issue from Jira. To make this
 	 * thread-safe, please synchronize and lock on the result of this method.
-	 * 
+	 *
 	 * @param epicId
 	 *            A given Epic Key
 	 * @return A valid JSONObject with Epic data held within
@@ -479,7 +479,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 	/**
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
-	 * 
+	 *
 	 * @param A
 	 *            local repository item ID (not the precise mongoID)
 	 */

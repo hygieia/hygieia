@@ -71,6 +71,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 				dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
 				TeamCollectorItem team = new TeamCollectorItem();
 
+				@SuppressWarnings("unused") //?
 				boolean deleted = this.removeExistingEntity(tools
 						.sanitizeResponse(dataMainObj.get("id")));
 
