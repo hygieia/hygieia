@@ -12,18 +12,18 @@ import com.capitalone.dashboard.datafactory.DataFactory;
  *
  */
 public interface VersionOneDataFactory extends DataFactory{
-	public String buildBasicQuery(String query);
+	String buildBasicQuery(String query);
 
-	public String buildPagingQuery(int inPageIndex);
+	String buildPagingQuery(int inPageIndex);
 
-	public JSONArray getPagingQueryResponse();
+	JSONArray getPagingQueryResponse();
 
-	public JSONArray getQueryResponse();
+	JSONArray getQueryResponse();
 
-	public String getBasicQuery();
+	String getBasicQuery();
 
-	public String getPagingQuery();
+	String getPagingQuery();
 
-	public int getPageIndex();
+	int getPageIndex();
 
 }

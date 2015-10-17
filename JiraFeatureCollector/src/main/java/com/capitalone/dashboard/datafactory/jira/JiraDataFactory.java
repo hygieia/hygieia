@@ -23,23 +23,23 @@ import com.capitalone.dashboard.datafactory.DataFactory;
 /**
  * Interface for Jira data connection. An implemented class should be able to create a formatted request,
  * and retrieve a response in JSON syntax from that request to Jira.
- * 
+ *
  * @author KFK884
  *
  */
 public interface JiraDataFactory extends DataFactory{
-	public String buildBasicQuery(String query);
+	String buildBasicQuery(String query);
 
-	public String buildPagingQuery(int inPageIndex);
+	String buildPagingQuery(int inPageIndex);
 
-	public JSONArray getPagingQueryResponse();
+	JSONArray getPagingQueryResponse();
 
-	public JSONArray getQueryResponse();
-	
-	public String getBasicQuery();
-	
-	public String getPagingQuery();
-	
-	public int getPageIndex();
+	JSONArray getQueryResponse();
+
+	String getBasicQuery();
+
+	String getPagingQuery();
+
+	int getPageIndex();
 
 }

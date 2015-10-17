@@ -35,9 +35,9 @@ import com.capitalone.dashboard.util.FeatureWidgetQueries;
  * collector. This will get data from the source system, but will grab the
  * majority of needed data and aggregate it in a single, flat MongoDB collection
  * for consumption.
- * 
+ *
  * @author kfk884
- * 
+ *
  */
 public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 		TeamDataClient {
@@ -51,7 +51,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 
 	/**
 	 * Extends the constructor from the super class.
-	 * 
+	 *
 	 * @param teamRepository
 	 */
 	public TeamDataClientImpl(
@@ -73,7 +73,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
-	 * 
+	 *
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
 	 * @param featureCollector
@@ -92,6 +92,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 				dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
 				TeamCollectorItem team = new TeamCollectorItem();
 
+				@SuppressWarnings("unused")
 				boolean deleted = this.removeExistingEntity(tools
 						.sanitizeResponse((String) dataMainObj.get("_oid")));
 
@@ -155,7 +156,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	/**
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
-	 * 
+	 *
 	 * @param A
 	 *            local repository item ID (not the precise mongoID)
 	 */

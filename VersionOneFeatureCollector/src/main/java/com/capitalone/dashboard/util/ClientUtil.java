@@ -16,6 +16,9 @@
 
 package com.capitalone.dashboard.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
@@ -24,17 +27,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * This class houses any globally-used utility methods re-used by aspects of
  * clients in this collector
- * 
+ *
  * @author KFK884
- * 
+ *
  */
 public class ClientUtil {
+	@SuppressWarnings("unused")
 	private static Log logger = LogFactory.getLog(ClientUtil.class);
 
 	/**
@@ -49,7 +50,7 @@ public class ClientUtil {
 	 * artifact from a source system. This will return a valid UTF-8 strings, or
 	 * a "" (blank) response for any of the following cases:
 	 * "NULL";"Null";"null";null;""
-	 * 
+	 *
 	 * @param nativeRs
 	 *            The string response artifact retrieved from the source system
 	 *            to be sanitized
@@ -85,7 +86,7 @@ public class ClientUtil {
 	 * Canonicalizes date format returned from source system. Some source
 	 * systems have incorrectly formatted dates, or date times stamps that are
 	 * not database friendly.
-	 * 
+	 *
 	 * @param nativeRs
 	 *            Native date format as a string
 	 * @return A stringified canonical date format
@@ -95,24 +96,24 @@ public class ClientUtil {
 
 		//canonicalRs = nativeRs.replace("T", " ");
 		canonicalRs = nativeRs;
-		
+
 		return canonicalRs;
 	}
 
 	/**
 	 * Canonicalizes a given JSONArray to a basic List object to avoid the use of JSON parsers.
-	 * 
+	 *
 	 * @param list A given JSONArray object response from the source system
 	 * @return The sanitized, canonical List<String>
 	 */
 	public List <String> toCanonicalList(List<String> list) {
 		List<String> canonicalRs = new ArrayList<String>();
-		
+
 		Iterator<String> iterator = list.iterator();
 		while(iterator.hasNext()) {
 			canonicalRs.add(this.sanitizeResponse(iterator.next()));
 		}
-		
+
 		return canonicalRs;
 	}
 }
