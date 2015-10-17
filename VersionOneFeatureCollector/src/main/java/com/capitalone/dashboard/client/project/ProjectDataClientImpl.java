@@ -38,9 +38,9 @@ import com.capitalone.dashboard.util.FeatureWidgetQueries;
  * collector. This will get data from the source system, but will grab the
  * majority of needed data and aggregate it in a single, flat MongoDB collection
  * for consumption.
- * 
+ *
  * @author kfk884
- * 
+ *
  */
 public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 		ProjectDataClient {
@@ -54,7 +54,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 
 	/**
 	 * Extends the constructor from the super class.
-	 * 
+	 *
 	 * @param teamRepository
 	 */
 	public ProjectDataClientImpl(FeatureSettings featureSettings,
@@ -76,7 +76,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
-	 * 
+	 *
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
 	 * @param featureCollector
@@ -96,6 +96,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 				dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
 				Scope scope = new Scope();
 
+				@SuppressWarnings("unused") // ?
 				boolean deleted = this.removeExistingEntity(tools
 						.sanitizeResponse((String) dataMainObj.get("_oid")));
 
@@ -180,7 +181,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	/**
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
-	 * 
+	 *
 	 * @param A
 	 *            local repository item ID (not the precise mongoID)
 	 */

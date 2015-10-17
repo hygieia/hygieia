@@ -16,6 +16,10 @@
 
 package com.capitalone.dashboard.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.simple.JSONObject;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
@@ -25,19 +29,16 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.simple.JSONObject;
-
 /**
  * This class houses any globally-used utility methods re-used by aspects of
  * clients in this collector
- * 
+ *
  * @author KFK884
- * 
+ *
  */
 public class ClientUtil {
-	private static Log logger = LogFactory.getLog(ClientUtil.class);
+	@SuppressWarnings("unused")
+	private static Log LOGGER = LogFactory.getLog(ClientUtil.class);
 
 	/**
 	 * Default constructor
@@ -51,7 +52,7 @@ public class ClientUtil {
 	 * artifact from a source system. This will return a valid UTF-8 strings, or
 	 * a "" (blank) response for any of the following cases:
 	 * "NULL";"Null";"null";null;""
-	 * 
+	 *
 	 * @param nativeRs
 	 *            The string response artifact retrieved from the source system
 	 *            to be sanitized
@@ -88,7 +89,7 @@ public class ClientUtil {
 	 * artifact from a source system. This will return a valid UTF-8 strings, or
 	 * a "" (blank) response for any of the following cases:
 	 * "NULL";"Null";"null";null;""
-	 * 
+	 *
 	 * @param nativeRs
 	 *            The string response artifact retrieved from the source system
 	 *            to be sanitized
@@ -124,7 +125,7 @@ public class ClientUtil {
 	 * Canonicalizes date format returned from source system. Some source
 	 * systems have incorrectly formatted dates, or date times stamps that are
 	 * not database friendly.
-	 * 
+	 *
 	 * @param nativeRs
 	 *            Native date format as a string
 	 * @return A stringified canonical date format
@@ -152,7 +153,7 @@ public class ClientUtil {
 	/**
 	 * Canonicalizes a given JSONArray to a basic List object to avoid the use
 	 * of JSON parsers.
-	 * 
+	 *
 	 * @param list
 	 *            A given JSONArray object response from the source system
 	 * @return The sanitized, canonical List<String>
@@ -177,7 +178,7 @@ public class ClientUtil {
 	 * local MongoDB instance into a string date representation used by the
 	 * source system. This can be used to convert dates found in MongoDB into
 	 * source system syntax for querying the source system based on local data
-	 * 
+	 *
 	 * @param canonicalDate
 	 *            A string representation of an ISO format used by the local
 	 *            MongoDB instance
@@ -202,7 +203,7 @@ public class ClientUtil {
 	/**
 	 * Converts a Jira string representation of sprint artifacts into a
 	 * canonical JSONArray format.
-	 * 
+	 *
 	 * @param nativeRs
 	 *            a sanitized String representation of a sprint artifact link
 	 *            from Jira

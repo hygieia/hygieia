@@ -37,8 +37,11 @@ import com.versionone.apiclient.interfaces.IServices;
 
 @Component
 public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
-	private static Log logger = LogFactory
-			.getLog(VersionOneDataFactoryImpl.class);
+	private static Log LOGGER = LogFactory.getLog(VersionOneDataFactoryImpl.class);
+	@SuppressWarnings("PMD.AvoidUsingHardCodedIP") // not an IP
+	private static final String AGENT_VER = "01.00.00.01";
+	private static final String AGENT_NAME = "Hygieia Dashboard - VersionOne Feature Collector";
+
 	protected int pageSize;
 	protected int pageIndex;
 	protected JSONArray jsonOutputArray;
@@ -64,7 +67,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	/**
 	 * Constructs V1 data factory, but defaults the page size to the page size
 	 * parameter given, and the page index to 0.
-	 * 
+	 *
 	 * @param inPageSize
 	 *            A default page size to give the class on construction
 	 */
@@ -76,7 +79,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Used for establishing connection to VersionOne based on authentication
-	 * 
+	 *
 	 * @param auth
 	 *            A key-value pairing of authentication values
 	 * @return A V1Connector connection instance
@@ -91,35 +94,31 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 				connector = V1Connector
 						.withInstanceUrl(auth.get("v1BaseUri"))
-						.withUserAgentHeader(
-								"Hygieia Dashboard - VersionOne Feature Collector",
-								"01.00.00.01")
+						.withUserAgentHeader(AGENT_NAME, AGENT_VER)
 						.withAccessToken(auth.get("v1AccessToken"))
 						.withProxy(proxyProvider).build();
 			} else {
 				connector = V1Connector
 						.withInstanceUrl(auth.get("v1BaseUri"))
-						.withUserAgentHeader(
-								"Hygieia Dashboard - VersionOne Feature Collector",
-								"01.00.00.01")
+						.withUserAgentHeader(AGENT_NAME, AGENT_VER)
 						.withAccessToken(auth.get("v1AccessToken")).build();
 			}
 		} catch (MalformedURLException | V1Exception e) {
-			logger.error("There was a problem connecting and authenticating with VersionOne:\n"
+			LOGGER.error("There was a problem connecting and authenticating with VersionOne:\n"
 					+ e.getMessage()
 					+ " | "
 					+ e.getCause()
 					+ " | "
 					+ Arrays.toString(e.getStackTrace()));
 		} catch (URISyntaxException e) {
-			logger.error("There was a problem connecting and authenticating with VersionOne while creating a proxy:\n"
+			LOGGER.error("There was a problem connecting and authenticating with VersionOne while creating a proxy:\n"
 					+ e.getMessage()
 					+ " | "
 					+ e.getCause()
 					+ " | "
 					+ Arrays.toString(e.getStackTrace()));
 		} catch (Exception e) {
-			logger.error("There was an unexpected problem connecting and authenticating with VersionOne:\n"
+			LOGGER.error("There was an unexpected problem connecting and authenticating with VersionOne:\n"
 					+ e.getMessage()
 					+ " | "
 					+ e.getCause()
@@ -132,7 +131,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Sets the local query value on demand based on a given basic query.
-	 * 
+	 *
 	 * @param query
 	 *            A query in YAML syntax as a String
 	 * @return The saved YAML-syntax basic query
@@ -146,7 +145,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	 * Creates a query on demand based on a given basic query and a specified
 	 * page index value. It is recommended to use this method in a loop to
 	 * ensure all pages are covered.
-	 * 
+	 *
 	 * @param inPageIndex
 	 *            A given query's current page index, from 0-oo
 	 * @return A JSON-formatted response
@@ -164,7 +163,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	 * YAML-formatted query. This requires a pre-formatted paged query to run,
 	 * and will not perform the paging for you - there are other helper methods
 	 * for this.
-	 * 
+	 *
 	 * @return A formatted JSONArray response
 	 */
 	public JSONArray getPagingQueryResponse() {
@@ -180,7 +179,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	 * Runs the VersionOneConnection library tools against a given
 	 * YAML-formatted query. This requires a pre-formatted basic query
 	 * (single-use).
-	 * 
+	 *
 	 * @return A formatted JSONArray response
 	 */
 	public JSONArray getQueryResponse() {
@@ -194,7 +193,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for page index.
-	 * 
+	 *
 	 * @param pageIndex
 	 *            Page index of query
 	 */
@@ -204,7 +203,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for page size.
-	 * 
+	 *
 	 * @param pageIndex
 	 *            Page index of query
 	 */
@@ -214,7 +213,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Accessor method for page index.
-	 * 
+	 *
 	 * @return Page index of query
 	 */
 	public int getPageIndex() {
@@ -223,7 +222,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Accessor method for JSON response output array.
-	 * 
+	 *
 	 * @return JSON response array from VersionOne
 	 */
 	private JSONArray getJsonOutputArray() {
@@ -232,7 +231,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for JSON response output array.
-	 * 
+	 *
 	 * @return JSON response array from VersionOne
 	 */
 	private void setJsonOutputArray(String stringResult) {
@@ -241,7 +240,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 		try {
 			nativeRs = parser.parse(stringResult);
 		} catch (ParseException e) {
-			logger.error("There was a problem parsing the JSONArray response value from the source system:\n"
+			LOGGER.error("There was a problem parsing the JSONArray response value from the source system:\n"
 					+ e.getMessage()
 					+ " | "
 					+ e.getCause()
@@ -254,7 +253,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Accessor method for basic query formatted object.
-	 * 
+	 *
 	 * @return Basic VersionOne YAML query
 	 */
 	public String getBasicQuery() {
@@ -263,7 +262,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for basic query formatted object.
-	 * 
+	 *
 	 * @param Basic
 	 *            VersionOne YAML query
 	 */
@@ -273,7 +272,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Accessor method for retrieving paged query.
-	 * 
+	 *
 	 * @return The paged YAML query
 	 */
 	public String getPagingQuery() {
@@ -282,7 +281,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for setting paged query
-	 * 
+	 *
 	 * @param pagingQuery
 	 *            The paged YAML query
 	 */

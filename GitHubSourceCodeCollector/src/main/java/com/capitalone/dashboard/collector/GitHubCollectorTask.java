@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -76,42 +75,40 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     public String getCron() {
         return gitHubSettings.getCron();
     }
-    
+
 	/**
 	 * Clean up unused deployment collector items
-	 * 
+	 *
 	 * @param collector
 	 *            the {@link UDeployCollector}
 	 */
 
 	private void clean(Collector collector) {
-		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+		Set<ObjectId> uniqueIDs = new HashSet<>();
 		/**
-		 * Logic: For each component, retrieve the collector item list of the type SCM. 
+		 * Logic: For each component, retrieve the collector item list of the type SCM.
 		 * Store their IDs in a unique set ONLY if their collector IDs match with GitHub collectors ID.
 		 */
-		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
-				.findAll()) {
-			if ((comp.getCollectorItems() != null)
-					&& !comp.getCollectorItems().isEmpty()) {
+		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
+			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
 				List<CollectorItem> itemList = comp.getCollectorItems().get(
 						CollectorType.SCM);
 				if (itemList != null) {
 					for (CollectorItem ci : itemList) {
-						if ((ci != null) && (ci.getCollectorId().equals(collector.getId()))){
+						if (ci != null && ci.getCollectorId().equals(collector.getId())){
 							uniqueIDs.add(ci.getId());
 						}
 					}
 				}
 			}
 		}
-		
+
 		/**
 		 * Logic: Get all the collector items from the collector_item collection for this collector.
 		 * If their id is in the unique set (above), keep them enabled; else, disable them.
 		 */
-		List<GitHubRepo> repoList = new ArrayList<GitHubRepo>();
-		Set<ObjectId> gitID = new HashSet<ObjectId>();
+		List<GitHubRepo> repoList = new ArrayList<>();
+		Set<ObjectId> gitID = new HashSet<>();
 		gitID.add(collector.getId());
 		for (GitHubRepo repo : gitHubRepoRepository.findByCollectorIdIn(gitID)) {
 			if (repo != null) {
@@ -121,7 +118,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 		}
 		gitHubRepoRepository.save(repoList);
 	}
-	
+
 
     @Override
     public void collect(Collector collector) {
@@ -151,6 +148,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         log("Finished", start);
     }
 
+    @SuppressWarnings("unused")
     private Date lastUpdated(GitHubRepo repo) {
         return repo.getLastUpdateTime();
     }

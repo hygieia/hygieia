@@ -1,6 +1,10 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.SubversionRepo;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -75,30 +79,27 @@ public class SubversionCollectorTask extends CollectorTask<Collector> {
 
 	/**
 	 * Clean up unused deployment collector items
-	 * 
+	 *
 	 * @param collector
 	 *            the {@link UDeployCollector}
 	 */
 
 	private void clean(Collector collector) {
 		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
-		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
-				.findAll()) {
-			if ((comp.getCollectorItems() != null)
-					&& !comp.getCollectorItems().isEmpty()) {
-				List<CollectorItem> itemList = comp.getCollectorItems().get(
-						CollectorType.SCM);
+		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
+			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
+				List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
 				if (itemList != null) {
 					for (CollectorItem ci : itemList) {
-						if ((ci != null) && (ci.getCollectorId().equals(collector.getId()))){
+						if (ci != null && ci.getCollectorId().equals(collector.getId())){
 							uniqueIDs.add(ci.getId());
 						}
 					}
 				}
 			}
 		}
-		List<SubversionRepo> repoList = new ArrayList<SubversionRepo>();
-		Set<ObjectId> svnId = new HashSet<ObjectId>();
+		List<SubversionRepo> repoList = new ArrayList<>();
+		Set<ObjectId> svnId = new HashSet<>();
 		svnId.add(collector.getId());
 		for (SubversionRepo repo : subversionRepoRepository.findByCollectorIdIn(svnId)) {
 			if (repo != null) {
@@ -108,7 +109,7 @@ public class SubversionCollectorTask extends CollectorTask<Collector> {
 		}
 		subversionRepoRepository.save(repoList);
 	}
-	
+
     @Override
     public void collect(Collector collector) {
 
