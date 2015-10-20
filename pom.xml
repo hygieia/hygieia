@@ -108,14 +108,14 @@
       <modules>
         <module>common</module>
         <module>api</module>
-        <module>BuildCollector</module>
-        <module>CodeQualityCollector</module>
-        <module>SourceCodeCollector</module>
-        <module>GitHubSourceCodeCollector</module>
-        <module>VersionOneFeatureCollector</module>
-        <module>DeployCollector</module>
-        <module>JiraFeatureCollector</module>
-        <module>JenkinsCucumberTestCollector</module>
+        <module>jenkins-build-collector</module>
+        <module>sonar-codequality-collector</module>
+        <module>subversion-scm-collector</module>
+        <module>github-scm-collector</module>
+        <module>versionone-feature-collector</module>
+        <module>udeploy-deployment-collector</module>
+        <module>jira-feature-collector</module>
+        <module>jenkins-cucumber-test-collector</module>
         <module>UI</module>
       </modules>
       <build>
@@ -139,14 +139,14 @@
       <modules>
         <module>common</module>
         <module>api</module>
-        <module>BuildCollector</module>
-        <module>CodeQualityCollector</module>
-        <module>SourceCodeCollector</module>
-        <module>GitHubSourceCodeCollector</module>
-        <module>VersionOneFeatureCollector</module>
-        <module>DeployCollector</module>
-        <module>JiraFeatureCollector</module>
-        <module>JenkinsCucumberTestCollector</module>
+        <module>jenkins-build-collector</module>
+        <module>sonar-codequality-collector</module>
+        <module>subversion-scm-collector</module>
+        <module>github-scm-collector</module>
+        <module>versionone-feature-collector</module>
+        <module>udeploy-deployment-collector</module>
+        <module>jira-feature-collector</module>
+        <module>jenkins-cucumber-test-collector</module>
       </modules>
       <build>
         <plugins>
