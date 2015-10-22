@@ -22,7 +22,7 @@
     </encoder>
  </appender>
 
-  <root level="INFO">
+  <root level="DEBUG">
       <appender-ref ref="ROLLING" />
       <appender-ref ref="STDOUT" />
   </root>
