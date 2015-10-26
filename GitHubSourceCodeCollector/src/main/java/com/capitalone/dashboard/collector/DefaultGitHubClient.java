@@ -1,15 +1,10 @@
 package com.capitalone.dashboard.collector;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
-
+import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.util.Encryption;
+import com.capitalone.dashboard.util.EncryptionException;
+import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,11 +22,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.GitHubRepo;
-import com.capitalone.dashboard.util.Encryption;
-import com.capitalone.dashboard.util.EncryptionException;
-import com.capitalone.dashboard.util.Supplier;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * GitHubClient implementation that uses SVNKit to fetch information about
@@ -113,7 +112,7 @@ public class DefaultGitHubClient implements GitHubClient {
 
 		// decrypt password
 		String decryptedPassword = "";
-		if ((repo.getPassword() != null) && !"".equals(repo.getPassword())) {
+		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
 			try {
 				decryptedPassword = Encryption.decryptString(
 						repo.getPassword(), settings.getKey());
@@ -126,16 +125,13 @@ public class DefaultGitHubClient implements GitHubClient {
 		String queryUrlPage = queryUrl;
 		while (!lastPage) {
 			try {
-				ResponseEntity<String> response = (makeRestCall(queryUrlPage,
-						repo.getUserId(), decryptedPassword));
+				ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
 				JSONArray jsonArray = paresAsArray(response);
 				for (Object item : jsonArray) {
 					JSONObject jsonObject = (JSONObject) item;
 					String sha = str(jsonObject, "sha");
-					JSONObject commitObject = (JSONObject) jsonObject
-							.get("commit");
-					JSONObject authorObject = (JSONObject) commitObject
-							.get("author");
+					JSONObject commitObject = (JSONObject) jsonObject.get("commit");
+					JSONObject authorObject = (JSONObject) commitObject.get("author");
 					String message = str(commitObject, "message");
 					String author = str(authorObject, "name");
 					long timestamp = new DateTime(str(authorObject, "date"))
@@ -150,7 +146,7 @@ public class DefaultGitHubClient implements GitHubClient {
 					commit.setNumberOfChanges(1);
 					commits.add(commit);
 				}
-				if ((jsonArray == null) || jsonArray.isEmpty()) {
+				if (jsonArray == null || jsonArray.isEmpty()) {
 					lastPage = true;
 				} else {
 					lastPage = isThisLastPage(response);
@@ -178,7 +174,7 @@ public class DefaultGitHubClient implements GitHubClient {
 	private boolean isThisLastPage(ResponseEntity<String> response) {
 		HttpHeaders header = response.getHeaders();
 		List<String> link = header.get("Link");
-		if ((link == null) || (link.isEmpty())) {
+		if (link == null || link.isEmpty()) {
 			return true;
 		} else {
 			for (String l : link) {
