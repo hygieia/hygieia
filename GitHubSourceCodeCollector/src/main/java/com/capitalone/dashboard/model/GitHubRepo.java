@@ -67,7 +67,7 @@ public class GitHubRepo extends CollectorItem {
 
         GitHubRepo gitHubRepo = (GitHubRepo) o;
 
-        return getRepoUrl().equals(gitHubRepo.getRepoUrl()) && getBranch().equals(gitHubRepo.getBranch());
+        return getRepoUrl().equals(gitHubRepo.getRepoUrl()) & getBranch().equals(gitHubRepo.getBranch());
     }
 
     @Override

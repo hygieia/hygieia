@@ -1,20 +1,6 @@
 package com.capitalone.dashboard.collector;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
-
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -24,6 +10,15 @@ import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitHubRepoRepository;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
 
 /**
  * CollectorTask that fetches Commit information from GitHub
@@ -84,15 +79,14 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 	 */
 
 	private void clean(Collector collector) {
-		Set<ObjectId> uniqueIDs = new HashSet<>();
+		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
 		/**
 		 * Logic: For each component, retrieve the collector item list of the type SCM.
 		 * Store their IDs in a unique set ONLY if their collector IDs match with GitHub collectors ID.
 		 */
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
 			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
-				List<CollectorItem> itemList = comp.getCollectorItems().get(
-						CollectorType.SCM);
+				List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
 				if (itemList != null) {
 					for (CollectorItem ci : itemList) {
 						if (ci != null && ci.getCollectorId().equals(collector.getId())){
@@ -107,8 +101,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 		 * Logic: Get all the collector items from the collector_item collection for this collector.
 		 * If their id is in the unique set (above), keep them enabled; else, disable them.
 		 */
-		List<GitHubRepo> repoList = new ArrayList<>();
-		Set<ObjectId> gitID = new HashSet<>();
+		List<GitHubRepo> repoList = new ArrayList<GitHubRepo>();
+		Set<ObjectId> gitID = new HashSet<ObjectId>();
 		gitID.add(collector.getId());
 		for (GitHubRepo repo : gitHubRepoRepository.findByCollectorIdIn(gitID)) {
 			if (repo != null) {
@@ -134,17 +128,21 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         	if (repo.getLastUpdateTime() == null) firstRun = true;
         	repo.setLastUpdateTime(new Date());
             gitHubRepoRepository.save(repo);
+            LOG.debug(repo.getOptions().toString()+"::"+repo.getBranch());
             for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
+            	LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
                     commitRepository.save(commit);
                     commitCount++;
                 }
             }
+
             repoCount++;
         }
         log("Repo Count", start, repoCount);
         log("New Commits", start, commitCount);
+
         log("Finished", start);
     }
 
