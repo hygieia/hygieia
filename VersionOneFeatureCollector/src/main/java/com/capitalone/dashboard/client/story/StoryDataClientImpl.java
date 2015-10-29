@@ -1,13 +1,5 @@
 package com.capitalone.dashboard.client.story;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
@@ -15,6 +7,13 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the primary implemented/extended data collector for the feature
@@ -80,6 +79,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 				dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
 				Feature feature = new Feature();
 
+				@SuppressWarnings("unused")
 				boolean deleted = this.removeExistingEntity(tools
 						.sanitizeResponse((String) dataMainObj.get("_oid")));
 

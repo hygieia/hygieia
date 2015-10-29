@@ -11,5 +11,5 @@ public interface StoryDataClient {
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
 	 */
-	public void updateStoryInformation();
+	void updateStoryInformation();
 }

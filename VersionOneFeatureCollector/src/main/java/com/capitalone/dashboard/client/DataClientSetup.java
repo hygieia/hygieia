@@ -13,19 +13,19 @@ public interface DataClientSetup {
 	 *
 	 * @see Story
 	 */
-	public void updateObjectInformation();
+	void updateObjectInformation();
 
-	public String getLocalTimeStampFromUnix(long unixTimeStamp);
+	String getLocalTimeStampFromUnix(long unixTimeStamp);
 
-	public String getChangeDateMinutePrior(String changeDateISO);
+	String getChangeDateMinutePrior(String changeDateISO);
 
-	public String getSprintBeginDateFilter();
+	String getSprintBeginDateFilter();
 
-	public String getSprintEndDateFilter();
+	String getSprintEndDateFilter();
 
-	public String getSprintDeltaDateFilter();
+	String getSprintDeltaDateFilter();
 
-	public String getTodayDateISO();
+	String getTodayDateISO();
 
-	public void setTodayDateISO(String todayDateISO);
+	void setTodayDateISO(String todayDateISO);
 }

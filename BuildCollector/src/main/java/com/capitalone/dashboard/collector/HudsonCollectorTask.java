@@ -75,7 +75,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 	@Override
 	public void collect(HudsonCollector collector) {
 		long start = System.currentTimeMillis();
-		
+
 		// Clean up every hour
 		if ((start - collector.getLastExecuted()) > CLEANUP_INTERVAL) {
 			clean(collector);
@@ -98,7 +98,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
 	/**
 	 * Clean up unused hudson/jenkins collector items
-	 * 
+	 *
 	 * @param collector
 	 *            the {@link HudsonCollector}
 	 */
@@ -107,15 +107,14 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
 				.findAll()) {
-			if ((comp.getCollectorItems() != null)
+			if (comp.getCollectorItems() != null
 					&& !comp.getCollectorItems().isEmpty()) {
 				List<CollectorItem> itemList = comp.getCollectorItems().get(
 						CollectorType.Build);
 				if (itemList != null) {
 					for (CollectorItem ci : itemList) {
-						if ((ci != null)
-								&& (ci.getCollectorId().equals(collector
-										.getId()))) {
+						if (ci != null
+								&& ci.getCollectorId().equals(collector.getId())) {
 							uniqueIDs.add(ci.getId());
 						}
 					}

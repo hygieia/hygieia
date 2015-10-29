@@ -14,7 +14,8 @@ import org.stringtemplate.v4.STGroupDir;
  *
  */
 public class FeatureWidgetQueries {
-	private static Log logger = LogFactory.getLog(FeatureWidgetQueries.class);
+	@SuppressWarnings("unused")
+	private static Log LOGGER = LogFactory.getLog(FeatureWidgetQueries.class);
 
 	private final FeatureSettings featureSettings;
 	private final String queryFolder;
