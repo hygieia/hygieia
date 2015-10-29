@@ -36,7 +36,9 @@ We welcome Your interest in Capital One’s Open Source Projects (the “Project
 ##### [Link to Agreement] (https://docs.google.com/forms/d/19LpBBjykHPox18vrZvBbZUcK6gQTj7qv1O5hCduAZFU/viewform)
 
 This project adheres to the [Open Code of Conduct][code-of-conduct]. By participating, you are expected to honor this code.
-[code-of-conduct]: http://todogroup.org/opencodeofconduct/#Hygieia/Hygieia@capitalone.com
+
+[code-of-conduct]: http://www.capitalone.io/codeofconduct/
+
 
 ### How to Start
 [Setup Instructions](https://github.com/capitalone/Hygieia/blob/master/Setup.md)
