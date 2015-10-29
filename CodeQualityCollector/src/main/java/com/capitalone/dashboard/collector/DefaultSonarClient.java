@@ -62,7 +62,7 @@ public class DefaultSonarClient implements SonarClient {
                 project.setInstanceUrl(instanceUrl);
                 project.setProjectId(str(prjData, ID));
                 project.setProjectName(str(prjData, NAME));
-                projects.add((project));
+                projects.add(project);
             }
 
         } catch (ParseException e) {
@@ -135,17 +135,19 @@ public class DefaultSonarClient implements SonarClient {
         Object obj = json.get(key);
         return obj == null ? null : obj.toString();
     }
-
+    @SuppressWarnings("unused")
     private Integer integer(JSONObject json, String key) {
         Object obj = json.get(key);
         return obj == null ? null : (Integer) obj;
     }
 
+    @SuppressWarnings("unused")
     private BigDecimal decimal(JSONObject json, String key) {
         Object obj = json.get(key);
         return obj == null ? null : new BigDecimal(obj.toString());
     }
 
+    @SuppressWarnings("unused")
     private Boolean bool(JSONObject json, String key) {
         Object obj = json.get(key);
         return obj == null ? null : Boolean.valueOf(obj.toString());

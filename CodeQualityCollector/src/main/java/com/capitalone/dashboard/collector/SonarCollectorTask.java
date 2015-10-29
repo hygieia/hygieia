@@ -1,6 +1,10 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.SonarCollector;
+import com.capitalone.dashboard.model.SonarProject;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -31,7 +35,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     private final SonarSettings sonarSettings;
     private final ComponentRepository dbComponentRepository;
     private final int CLEANUP_INTERVAL = 3600000;
-    
+
     @Autowired
     public SonarCollectorTask(TaskScheduler taskScheduler,
                               SonarCollectorRepository sonarCollectorRepository,
@@ -67,7 +71,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     @Override
     public void collect(SonarCollector collector) {
         long start = System.currentTimeMillis();
-        
+
 		// Clean up every hour
 		if ((start - collector.getLastExecuted()) > CLEANUP_INTERVAL) {
 			clean(collector);
@@ -89,33 +93,32 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         }
     }
 
-    
+
 	/**
 	 * Clean up unused sonar collector items
-	 * 
+	 *
 	 * @param collector
 	 *            the {@link HudsonCollector}
 	 */
 
 	private void clean(SonarCollector collector) {
-		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+		Set<ObjectId> uniqueIDs = new HashSet<>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
 				.findAll()) {
-			if ((comp.getCollectorItems() != null)
-					&& !comp.getCollectorItems().isEmpty()) {
+			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
 				List<CollectorItem> itemList = comp.getCollectorItems().get(
 						CollectorType.CodeQuality);
 				if (itemList != null) {
 					for (CollectorItem ci : itemList) {
-						if ((ci != null) && (ci.getCollectorId().equals(collector.getId()))){
+						if (ci != null && ci.getCollectorId().equals(collector.getId())){
 							uniqueIDs.add(ci.getId());
 						}
 					}
 				}
 			}
 		}
-		List<SonarProject> jobList = new ArrayList<SonarProject>();
-		Set<ObjectId> udId = new HashSet<ObjectId>();
+		List<SonarProject> jobList = new ArrayList<>();
+		Set<ObjectId> udId = new HashSet<>();
 		udId.add(collector.getId());
 		for (SonarProject job : sonarProjectRepository.findByCollectorIdIn(udId)) {
 			if (job != null) {
@@ -125,14 +128,14 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
 		}
 		sonarProjectRepository.save(jobList);
 	}
-	
+
     private void refreshData(List<SonarProject> sonarProjects) {
         long start = System.currentTimeMillis();
         int count = 0;
 
         for (SonarProject project : sonarProjects) {
             CodeQuality codeQuality = sonarClient.currentCodeQuality(project);
-            if ((codeQuality != null) && isNewQualityData(project, codeQuality)) {
+            if (codeQuality != null && isNewQualityData(project, codeQuality)) {
                 codeQuality.setCollectorItemId(project.getId());
                 codeQualityRepository.save(codeQuality);
                 count++;
