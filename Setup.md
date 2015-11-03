@@ -84,6 +84,10 @@ Please click on the link below to learn about how to build and run the UI layer
 * Build the API Image
 
 ```bash
+mvn clean package
+```
+
+```bash
 mvn -pl api docker:build
 ```
 
