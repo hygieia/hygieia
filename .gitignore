@@ -24,3 +24,4 @@ common/src/generated
 *.log
 target
 UI/node
+*.releaseBackup
