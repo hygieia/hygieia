@@ -41,13 +41,15 @@ public class MongoConfig extends AbstractMongoConfiguration {
     @Override
     @Bean
     public MongoClient mongo() throws Exception {
-        MongoClient client = null;
+        ServerAddress serverAddr = new ServerAddress(host, port);
+        LOGGER.info("Initializing Mongo Client server at: {}", serverAddr);
+        MongoClient client;
         if (StringUtils.isEmpty(userName)) {
-            client = new MongoClient(new ServerAddress(host, port));
+            client = new MongoClient(serverAddr);
         } else {
             MongoCredential mongoCredential = MongoCredential.createScramSha1Credential(
                     userName, databaseName, password.toCharArray());
-            client = new MongoClient(new ServerAddress(host, port), Collections.singletonList(mongoCredential));
+            client = new MongoClient(serverAddr, Collections.singletonList(mongoCredential));
         }
         LOGGER.info("Connecting to Mongo: {}", client);
         return client;
@@ -55,7 +57,7 @@ public class MongoConfig extends AbstractMongoConfiguration {
 
     @Override
     protected String getMappingBasePackage() {
-        return "com.capitalone.dashboard.model";
+        return com.capitalone.dashboard.model.Application.class.getPackage().getName();
     }
 
     @Bean
