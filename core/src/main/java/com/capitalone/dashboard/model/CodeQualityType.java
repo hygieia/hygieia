@@ -5,7 +5,7 @@ package com.capitalone.dashboard.model;
  */
 public enum CodeQualityType {
     StaticAnalysis,
-    Security;
+    SecurityAnalysis;
 
     public static CodeQualityType fromString(String value) {
         for (CodeQualityType qualityType : values()) {
