@@ -87,7 +87,7 @@
 
             ctrl.securityIssues = [
                 getMetric(saData.metrics, 'blocker', 'Blocker'),
-                getMetric(saData.metrics, 'crtical', 'Critical'),
+                getMetric(saData.metrics, 'critical', 'Critical'),
                 getMetric(saData.metrics, 'major', 'Major'),
                 getMetric(saData.metrics, 'minor', 'Minor')
             ];
