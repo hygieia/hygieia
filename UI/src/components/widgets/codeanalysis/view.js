@@ -24,15 +24,22 @@
         ctrl.load = function() {
             var caRequest = {
                 componentId: $scope.widgetConfig.componentId,
-                max: 1
+                max: 1,
+                type: 'StaticAnalysis'
             };
             var testRequest = {
                 componentId: $scope.widgetConfig.componentId,
                 types: ['Functional'],
                 max: 1
             };
+            var saRequest = {
+                componentId: $scope.widgetConfig.componentId,
+                max: 1,
+                type: 'SecurityAnalysis'
+            };
             return $q.all([
                 codeAnalysisData.details(caRequest).then(processCaResponse),
+                codeAnalysisData.details(saRequest).then(processSaResponse),
                 testSuiteData.details(testRequest).then(processTestResponse)
             ]);
         };
@@ -67,6 +74,23 @@
             ctrl.lineCoverage = getMetric(caData.metrics, 'line_coverage');
 
             coveragePieChart(ctrl.lineCoverage);
+
+            deferred.resolve(response.lastUpdated);
+            return deferred.promise;
+        }
+
+        function processSaResponse(response) {
+            var deferred = $q.defer();
+            var saData = _.isEmpty(response.result) ? {} : response.result[0];
+
+            //ctrl.versionNumber = saData.version;
+
+            ctrl.securityIssues = [
+                getMetric(saData.metrics, 'blocker', 'Blocker'),
+                getMetric(saData.metrics, 'crtical', 'Critical'),
+                getMetric(saData.metrics, 'major', 'Major'),
+                getMetric(saData.metrics, 'minor', 'Minor')
+            ];
 
             deferred.resolve(response.lastUpdated);
             return deferred.promise;

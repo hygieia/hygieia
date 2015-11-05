@@ -119,10 +119,20 @@
             </div>
             <div class="widget-body">
                 <table class="table">
-                    <tr class="dash-row"><td></td><td class="ca-name">Blocker</td><td class="ca-value">-</td></tr>
-                    <tr class="dash-row"><td></td><td class="ca-name">Critical</td><td class="ca-value">-</td></tr>
-                    <tr class="dash-row"><td></td><td class="ca-name">Major</td><td class="ca-value">-</td></tr>
-                    <tr class="dash-row"><td></td><td class="ca-name">Issues</td><td class="ca-value">-</td></tr>
+                    <tr class="dash-row" ng-repeat="issue in caWidget.securityIssues track by issue.name"
+                        ng-class="{'clickable': !!issue.statusMessage}"
+                        popover-html-unsafe="{{issue.statusMessage}}"
+                        popover-trigger="focus"
+                        popover-placement="left"
+                        tabindex="0">
+
+                        <td>
+                            <span dash-status="{{ issue.status }}" ng-if="caWidget.showStatusIcon(issue)"></span>
+                        </td>
+                        <td class="ca-name">{{issue.name}}</td>
+                        <td class="ca-value">{{issue.formattedValue}}</td>
+
+                    </tr>
                 </table>
             </div>
         </div>
