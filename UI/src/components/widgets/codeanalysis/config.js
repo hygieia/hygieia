@@ -15,6 +15,7 @@
         var component = modalData.dashboard.application.components[0];
 
         ctrl.caToolsDropdownPlaceholder = 'Loading Code Analysis Jobs...';
+        ctrl.saToolsDropdownPlaceholder = 'Loading Security Analysis Jobs...';
         ctrl.testToolsDropdownPlaceholder = 'Loading Functional Test Jobs...';
 
         // public methods
@@ -22,6 +23,7 @@
 
         // request all the codequality and test collector items
         collectorData.itemsByType('codequality').then(processCaResponse);
+        collectorData.itemsByType('staticSecurityScan').then(processSaResponse);
         collectorData.itemsByType('test').then(processTestsResponse);
 
         function processCaResponse(data) {
@@ -30,20 +32,30 @@
 
             ctrl.caJobs = data;
             ctrl.caCollectorItem = caCollectorItemId ? _.findWhere(ctrl.caJobs, { id: caCollectorItemId }) : null;
-            ctrl.caToolsDropdownPlaceholder = 'Select a Code Analysis Job';
+            ctrl.caToolsDropdownPlaceholder = data.length ? 'Select a Code Analysis Job' : 'No Code Analysis Job Found';
         }
 
+        function processSaResponse(data) {
+            var saCollectorItems = component.collectorItems.StaticSecurityScan;
+            var saCollectorItemId = _.isEmpty(saCollectorItems) ? null : saCollectorItems[0].id;
+
+            ctrl.saJobs = data;
+            ctrl.saCollectorItem = saCollectorItemId ? _.findWhere(ctrl.saJobs, { id: saCollectorItemId }): null;
+            ctrl.saToolsDropdownPlaceholder = data.length ? 'Select a Security Analysis Job' : 'No Security Analysis Job Found';
+        }
         function processTestsResponse(data) {
             var testCollectorItems = component.collectorItems.Test;
             var testCollectorItemId = _.isEmpty(testCollectorItems) ? null : testCollectorItems[0].id;
 
             ctrl.testJobs = data;
             ctrl.testCollectorItem = testCollectorItemId ? _.findWhere(ctrl.testJobs, { id: testCollectorItemId }) : null;
-            ctrl.testToolsDropdownPlaceholder = data.length ? 'Select a Functional Test Job' : 'No Functional Test Jobs found';
+            ctrl.testToolsDropdownPlaceholder = data.length ? 'Select a Functional Test Job' : 'No Functional Test Jobs Found';
         }
 
-        function submitForm(caCollectorItem, testCollectorItem) {
-            var collectorItems = [caCollectorItem.id];
+        function submitForm(caCollectorItem, saCollectorItem, testCollectorItem) {
+            var collectorItems = [];
+            if (caCollectorItem) collectorItems.push(caCollectorItem.id);
+            if (saCollectorItem) collectorItems.push(saCollectorItem.id);
             if (testCollectorItem) collectorItems.push(testCollectorItem.id);
 
             var postObj = {
