@@ -21,6 +21,7 @@ gradle.properties
 .idea
 common/src/querydsl
 common/src/generated
+core/src/generated
 *.log
 target
 UI/node
