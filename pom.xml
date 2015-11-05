@@ -21,7 +21,7 @@
     <jackson.version>2.5.0</jackson.version>
     <guava.version>16.0.1</guava.version>
     <pmd.version>3.5</pmd.version>
-    <jacoco.version>0.5.8.201207111220</jacoco.version>
+    <jacoco.version>0.7.5.201505241946</jacoco.version>
   </properties>
 
   <licenses>
@@ -70,15 +70,20 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
           <version>${pmd.version}</version>
-             <executions>
-                <execution>
-                  <phase>validate</phase>
-                  <goals>
-                    <goal>check</goal>
-                    <!-- disabled for now <goal>cpd-check</goal> -->
-                  </goals>
-                </execution>
-             </executions>
+          <configuration>
+            <excludeRoots>
+              <excludeRoot>${project.basedir}/target/generated-sources/java</excludeRoot>
+            </excludeRoots>
+          </configuration>
+          <executions>
+            <execution>
+              <phase>validate</phase>
+              <goals>
+              <goal>check</goal>
+              <!-- disabled for now <goal>cpd-check</goal> -->
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     <pluginManagement>
