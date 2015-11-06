@@ -120,3 +120,10 @@ docker-compose restart
 ```bash
 docker port hygieia-ui
 ```
+
+### Start Collectors
+* To start individual collector as a background process please run the command in below format
+  * On linux platform
+```bash
+nohup java -jar <collector-name>.jar --spring.config.name=<property file name> & >/dev/null
+```
