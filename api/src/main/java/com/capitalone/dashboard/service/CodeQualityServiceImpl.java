@@ -1,10 +1,13 @@
 package com.capitalone.dashboard.service;
 
+import java.util.List;
+
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.Collector;
@@ -37,50 +40,12 @@ public class CodeQualityServiceImpl implements CodeQualityService {
 
 	@Override
 	public DataResponse<Iterable<CodeQuality>> search(CodeQualityRequest request) {
-		Component component = componentRepository.findOne(request
-				.getComponentId());
-		CollectorItem item = null;
 		Iterable<CodeQuality> result = null;
-		if (request.getType() == null) {
-			item = component.getCollectorItems().get(CollectorType.CodeQuality)
-					.get(0);
-		} else {
-			switch (request.getType()) {
-			case StaticAnalysis:
-				if ((component.getCollectorItems() != null)
-						&& (component.getCollectorItems().get(
-								CollectorType.CodeQuality) != null)) {
-					item = component.getCollectorItems()
-							.get(CollectorType.CodeQuality).get(0);
-				}
-				break;
-
-			case SecurityAnalysis:
-				if ((component.getCollectorItems() != null)
-						&& (component.getCollectorItems().get(
-								CollectorType.StaticSecurityScan) != null)) {
-					item = component.getCollectorItems()
-							.get(CollectorType.StaticSecurityScan).get(0);
-				}
-				break;
-
-			default:
-				if ((component.getCollectorItems() != null)
-						&& (component.getCollectorItems().get(
-								CollectorType.CodeQuality) != null)) {
-					item = component.getCollectorItems()
-							.get(CollectorType.CodeQuality).get(0);
-				}
-				break;
-			}
-
-		}
-		
+		CollectorItem item = getCollectorItem(request);
 		if (item == null) {
-			
 			return new DataResponse<>(result, System.currentTimeMillis());
 		}
-		
+
 		QCodeQuality quality = new QCodeQuality("quality");
 		BooleanBuilder builder = new BooleanBuilder();
 
@@ -90,14 +55,11 @@ public class CodeQualityServiceImpl implements CodeQualityService {
 			long endTimeTarget = new LocalDate()
 					.minusDays(request.getNumberOfDays()).toDate().getTime();
 			builder.and(quality.timestamp.goe(endTimeTarget));
-		} else {
-			if (request.validDateRange()) {
-				builder.and(quality.timestamp.between(request.getDateBegins(),
-						request.getDateEnds()));
-			}
+		} else if (request.validDateRange()) {
+			builder.and(quality.timestamp.between(request.getDateBegins(),
+					request.getDateEnds()));
 		}
 
-		
 		if (request.getMax() == null) {
 			result = codeQualityRepository.findAll(builder.getValue(),
 					quality.timestamp.desc());
@@ -111,5 +73,44 @@ public class CodeQualityServiceImpl implements CodeQualityService {
 		Collector collector = collectorRepository
 				.findOne(item.getCollectorId());
 		return new DataResponse<>(result, collector.getLastExecuted());
+	}
+
+	private CollectorItem getCollectorItem(CodeQualityRequest request) {
+		CollectorItem item = null;
+		Component component = componentRepository.findOne(request
+				.getComponentId());
+
+		if (request.getType() == null) {
+			item = component.getCollectorItems().get(CollectorType.CodeQuality)
+					.get(0);
+		} else {
+			switch (request.getType()) {
+			case StaticAnalysis:
+				if (!CollectionUtils.isEmpty(component.getCollectorItems().get(
+						CollectorType.CodeQuality))) {
+					item = component.getCollectorItems()
+							.get(CollectorType.CodeQuality).get(0);
+				}
+				break;
+
+			case SecurityAnalysis:
+				if (!CollectionUtils.isEmpty(component.getCollectorItems().get(
+						CollectorType.StaticSecurityScan))) {
+					item = component.getCollectorItems()
+							.get(CollectorType.StaticSecurityScan).get(0);
+				}
+				break;
+
+			default:
+				if (!CollectionUtils.isEmpty(component.getCollectorItems().get(
+						CollectorType.CodeQuality))) {
+					item = component.getCollectorItems()
+							.get(CollectorType.CodeQuality).get(0);
+				}
+				break;
+			}
+
+		}
+		return item;
 	}
 }
