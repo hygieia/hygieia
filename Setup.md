@@ -83,7 +83,7 @@ Please click on the link below to learn about how to build and run the UI layer
 
 There are two different ways you can run Hygieia using Docker.
 
-##Building your own Docker containers
+####Building your own Docker containers
 If you have already followed the instructions above to configure the API and UI layer then building your own containers would be the best way to run Hygieia using Docker containers.
 
 * Build the API Image
@@ -119,7 +119,7 @@ docker port hygieia-ui
 
 You can access Hygieia through the following link (http://localhost:PORTNUM)
 
-##Downloading Hygieia containers
+####Downloading Hygieia containers
 You can download the API, UI and MongoDB containers from the Docker public registry instead of pulling down the source code.
 
 * Create the following docker compose file. Make sure you specify the location of the MongoDB directory that you want all the databases stored in. You can also change which port you want exposed to access the Hygieia UI. If you want Hygieia running on port 80 then change the port number from 8088 to 80. 
