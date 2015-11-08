@@ -209,7 +209,7 @@ connecting to: test
 
 The function returns 1 for success and 0 for failure.
 
-*Shut down the MongoDB container
+* Shut down the MongoDB container
 
 ```bash
 docker stop CONTAINER_ID
