@@ -227,6 +227,8 @@ docker-compose up -d
 docker port hygieia-ui
 ```
 
+Once the containers are up and you are able to access Hygieia's UI, you will need to setup the appropriate collectors before configuring the widgets on the UI.
+
 ### Start Collectors
 * To start individual collector as a background process please run the command in below format
   * On linux platform
