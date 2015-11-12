@@ -34,7 +34,7 @@ public class TestResultController {
         binder.registerCustomEditor(CodeQualityType.class, new CaseInsensitiveTestSuiteTypeEditor());
     }
 
-    @RequestMapping(value = "/test", method = GET, produces = JSON)
+    @RequestMapping(value = "/quality/test", method = GET, produces = JSON)
     public DataResponse<Iterable<TestResult>> qualityData(@Valid TestResultRequest request) {
         return testResultService.search(request);
     }

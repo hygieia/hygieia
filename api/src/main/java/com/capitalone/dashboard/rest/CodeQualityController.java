@@ -41,11 +41,13 @@ public class CodeQualityController {
 
     @RequestMapping(value = "/quality/static-analysis", method = GET, produces = JSON)
     public DataResponse<Iterable<CodeQuality>> qualityStaticAnalysis(@Valid CodeQualityRequest request) {
+        request.setType(CodeQualityType.StaticAnalysis);
         return codeQualityService.search(request);
     }
 
     @RequestMapping(value = "/quality/security-analysis", method = GET, produces = JSON)
     public DataResponse<Iterable<CodeQuality>> qualitySecurityAnalysis(@Valid CodeQualityRequest request) {
+        request.setType(CodeQualityType.SecurityAnalysis);
         return codeQualityService.search(request);
     }
 }
