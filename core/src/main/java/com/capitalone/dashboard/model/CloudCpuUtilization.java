@@ -16,10 +16,7 @@
 
 package com.capitalone.dashboard.model;
 
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 /**
  * Represents a feature (story/requirement) of a component.
