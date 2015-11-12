@@ -40,9 +40,6 @@
 <!-- inject:js -->
 <script src="app/app.js"></script>
 <script src="components/widgets/codeanalysis/directives/guage-container.js"></script>
-<script src="components/widgets/cloud/directives/guage-container.js"></script>
-<script src="components/widgets/cloud/directives/directives.js"></script>
-<script src="components/widgets/cloud/detailDirectives/directives.js"></script>
 <script src="components/widgets/build/directives/directives.js"></script>
 <script src="app/dashboard/core/module.js"></script>
 <script src="app/dashboard/core/providers/widget-manager.js"></script>
@@ -58,7 +55,6 @@
 <script src="app/dashboard/core/data-factories/collector-data.js"></script>
 <script src="app/dashboard/core/data-factories/code-repo-data.js"></script>
 <script src="app/dashboard/core/data-factories/code-analysis-data.js"></script>
-<script src="app/dashboard/core/data-factories/cloud-data.js"></script>
 <script src="app/dashboard/core/data-factories/build-data.js"></script>
 <script src="components/widgets/repo/view.js"></script>
 <script src="components/widgets/repo/module.js"></script>
@@ -80,10 +76,6 @@
 <script src="components/widgets/codeanalysis/view.js"></script>
 <script src="components/widgets/codeanalysis/module.js"></script>
 <script src="components/widgets/codeanalysis/config.js"></script>
-<script src="components/widgets/cloud/view.js"></script>
-<script src="components/widgets/cloud/module.js"></script>
-<script src="components/widgets/cloud/detail.js"></script>
-<script src="components/widgets/cloud/config.js"></script>
 <script src="components/widgets/build/view.js"></script>
 <script src="components/widgets/build/module.js"></script>
 <script src="components/widgets/build/detail.js"></script>

@@ -21,8 +21,6 @@
 			value: 'Subversion'
 		}];
 
-console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
-		console.log(JSON.stringify(widgetConfig.options.id));
 
 		if (!widgetConfig.options.scm) {
 			ctrl.repoOption="";

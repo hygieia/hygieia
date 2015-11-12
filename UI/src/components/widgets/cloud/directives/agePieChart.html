@@ -1,0 +1,12 @@
+<div class="widget agePieChart clickable" ng-click="cloudView.detail('Age');order('age', reverse)">
+    <div class="widget-heading">
+        Servers by Age
+    </div>
+    <div class="widget-body enlarge-hover">
+        <chartist class="ct-chart"
+                  chartist-chart-type="Pie"
+                  chartist-data="cloudView.ageData"
+                  chartist-chart-options="cloudView.pieOptions"
+                  chartist-responsive-options="cloudView.pieResponsiveOptions"></chartist>
+    </div>
+</div>

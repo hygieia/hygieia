@@ -1,0 +1,17 @@
+<div class="widget cpuPieChart clickable"
+     ng-click="cloudView.detail('CPU Utilization');order('cpuUtilization', reverse)">
+    <div class="widget-heading">
+        CPU Utilization
+    </div>
+    <div class="widget-body enlarge-hover">
+        <chartist class="ct-chart"
+                  chartist-chart-type="Pie"
+                  chartist-data="cloudView.cpuData"
+                  chartist-chart-options="cloudView.pieOptions"
+                  chartist-responsive-options="cloudView.pieResponsiveOptions"></chartist>
+        <!--         <div ng-repeat = "item in cloudView.cpuData.labels">
+                    <div class="legend-box"> </div>
+                    {{item}}
+                </div> -->
+    </div>
+</div>
