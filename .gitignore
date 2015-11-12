@@ -25,4 +25,5 @@ core/src/generated
 *.log
 target
 UI/node
+UI/src/app/local-testing.js
 *.releaseBackup

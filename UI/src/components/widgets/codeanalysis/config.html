@@ -1,5 +1,5 @@
 <widget-modal widget-modal-title="Configure Code Analysis Widget" class="ca-config">
-    <form name="configForm" role="form" ng-submit="caWidget.submit(caWidget.caCollectorItem, caWidget.testCollectorItem)"
+    <form name="configForm" role="form" ng-submit="caWidget.submit(caWidget.caCollectorItem, caWidget.saCollectorItem, caWidget.testCollectorItem)"
           novalidate="novalidate">
 
         <div class="form-group text-center">
@@ -7,9 +7,18 @@
                     class="form-control"
                     ng-model="caWidget.caCollectorItem"
                     ng-options="(item.collector.name + ' - ' + item.description) for item in caWidget.caJobs | orderBy:['collector.name','description'] track by item.id"
-                    ng-disabled="caWidget.caJobs.length === 0"
-                    required>
+                    ng-disabled="caWidget.caJobs.length === 0">
                 <option value="">{{caWidget.caToolsDropdownPlaceholder}}</option>
+            </select>
+        </div>
+
+        <div class="form-group text-center">
+            <select name="saCollectorItem"
+                    class="form-control"
+                    ng-model="caWidget.saCollectorItem"
+                    ng-options="(item.collector.name + ' - ' + item.options.projectName + '-' + item.options.projectversion) for item in caWidget.saJobs | orderBy:['collector.name','description'] track by item.id"
+                    ng-disabled="caWidget.saJobs.length === 0">
+                <option value="">{{caWidget.saToolsDropdownPlaceholder}}</option>
             </select>
         </div>
 
@@ -24,7 +33,7 @@
         </div>
 
         <div class="row text-center">
-            <button type="submit" class="btn btn-primary btn-wide" ng-disabled="configForm.$invalid">Save</button>
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
         </div>
     </form>
 </widget-modal>

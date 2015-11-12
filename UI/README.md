@@ -53,6 +53,12 @@ All widgets have to be hardcoded into the layout right now.
 ### Running
 In terminal navigate to the project root and run ```gulp serve```. Should serve up on port 3000.  
 
+Local Testing with Mocks:
+
+```bash
+ gulp serve --local true
+```
+
 or you can run via maven from UI project root folder
  ```bash
  mvn clean package integration-test

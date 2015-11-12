@@ -53,7 +53,7 @@ public class TestResultControllerTest {
 
         when(testResultService.search(Mockito.any(TestResultRequest.class))).thenReturn(response);
 
-        mockMvc.perform(get("/test?componentId=" + ObjectId.get()))
+        mockMvc.perform(get("/quality/test?componentId=" + ObjectId.get()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$result", hasSize(1)))
                 .andExpect(jsonPath("$result[0].id", is(testResult.getId().toString())))
