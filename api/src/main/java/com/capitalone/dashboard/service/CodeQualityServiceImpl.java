@@ -1,18 +1,9 @@
 package com.capitalone.dashboard.service;
 
-import java.util.List;
-
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
 import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.QCodeQuality;
@@ -20,7 +11,16 @@ import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.CodeQualityRequest;
+import com.google.common.base.Objects;
+import com.google.common.collect.Iterables;
 import com.mysema.query.BooleanBuilder;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CodeQualityServiceImpl implements CodeQualityService {
@@ -75,42 +75,16 @@ public class CodeQualityServiceImpl implements CodeQualityService {
 		return new DataResponse<>(result, collector.getLastExecuted());
 	}
 
-	private CollectorItem getCollectorItem(CodeQualityRequest request) {
+	protected CollectorItem getCollectorItem(CodeQualityRequest request) {
 		CollectorItem item = null;
-		Component component = componentRepository.findOne(request
-				.getComponentId());
+		Component component = componentRepository.findOne(request.getComponentId());
 
-		if (request.getType() == null) {
-			item = component.getCollectorItems().get(CollectorType.CodeQuality)
-					.get(0);
-		} else {
-			switch (request.getType()) {
-			case StaticAnalysis:
-				if (!CollectionUtils.isEmpty(component.getCollectorItems().get(
-						CollectorType.CodeQuality))) {
-					item = component.getCollectorItems()
-							.get(CollectorType.CodeQuality).get(0);
-				}
-				break;
+        CodeQualityType qualityType = Objects.firstNonNull(request.getType(), CodeQualityType.StaticAnalysis);
+        List<CollectorItem> items = component.getCollectorItems().get(qualityType.collectorType());
+        if (items != null) {
+            item = Iterables.getFirst(items, null);
+        }
 
-			case SecurityAnalysis:
-				if (!CollectionUtils.isEmpty(component.getCollectorItems().get(
-						CollectorType.StaticSecurityScan))) {
-					item = component.getCollectorItems()
-							.get(CollectorType.StaticSecurityScan).get(0);
-				}
-				break;
-
-			default:
-				if (!CollectionUtils.isEmpty(component.getCollectorItems().get(
-						CollectorType.CodeQuality))) {
-					item = component.getCollectorItems()
-							.get(CollectorType.CodeQuality).get(0);
-				}
-				break;
-			}
-
-		}
 		return item;
 	}
 }
