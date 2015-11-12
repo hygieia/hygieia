@@ -10,7 +10,7 @@
 
     function testSuiteData($http) {
         var testDetailRoute = 'test-data/test_suite_detail.json';
-        var caDetailRoute = '/api/test/';
+        var caDetailRoute = '/api/quality/test/';
 
         return {
             details: details

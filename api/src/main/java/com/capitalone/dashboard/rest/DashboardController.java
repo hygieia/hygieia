@@ -103,7 +103,6 @@ public class DashboardController {
     public String getDashboardOwner(@PathVariable String dashboardtitle) {
         String dashboardOwner = "No Owner defined";
         if (null != dashboardtitle) {
-            System.out.println("Dashboard Title is:" + dashboardtitle);
             dashboardOwner = dashboardService.getDashboardOwner(dashboardtitle);
         }
         return dashboardOwner;

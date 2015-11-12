@@ -1,5 +1,3 @@
-// a debug variable to support locally requesting json data from the data factories
-var localTesting = false;
 
 // test to see if local storage is supported functionality
 var localStorageSupported = (function () {
