@@ -1,14 +1,14 @@
 package com.capitalone.dashboard.rest;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Arrays;
-
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityMetricStatus;
+import com.capitalone.dashboard.model.CodeQualityType;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.request.CodeQualityRequest;
+import com.capitalone.dashboard.service.CodeQualityService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,15 +22,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CodeQualityMetric;
-import com.capitalone.dashboard.model.CodeQualityMetricStatus;
-import com.capitalone.dashboard.model.CodeQualityType;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.request.CodeQualityRequest;
-import com.capitalone.dashboard.service.CodeQualityService;
+import java.util.Arrays;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class, WebMVCConfig.class })
@@ -60,8 +59,7 @@ public class CodeQualityControllerTest {
 		when(codeQualityService.search(Mockito.any(CodeQualityRequest.class)))
 				.thenReturn(response);
 		mockMvc.perform(
-				get("/quality?componentId=" + ObjectId.get()
-						+ "&max=1&type=StaticAnalysis"))
+				get("/quality/static-analysis?componentId=" + ObjectId.get() + "&max=1"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$result", hasSize(1)))
 				.andExpect(
@@ -99,8 +97,7 @@ public class CodeQualityControllerTest {
 		when(codeQualityService.search(Mockito.any(CodeQualityRequest.class)))
 				.thenReturn(response);
 		mockMvc.perform(
-				get("/quality?componentId=" + ObjectId.get()
-						+ "&max=1&type=SecurityAnalysis"))
+				get("/quality/security-analysis?componentId=" + ObjectId.get() + "&max=1"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$result", hasSize(1)))
 				.andExpect(

@@ -25,66 +25,86 @@ import java.util.List;
 @Service
 public class CodeQualityServiceImpl implements CodeQualityService {
 
-	private final CodeQualityRepository codeQualityRepository;
-	private final ComponentRepository componentRepository;
-	private final CollectorRepository collectorRepository;
+    private final CodeQualityRepository codeQualityRepository;
+    private final ComponentRepository componentRepository;
+    private final CollectorRepository collectorRepository;
 
-	@Autowired
-	public CodeQualityServiceImpl(CodeQualityRepository codeQualityRepository,
-			ComponentRepository componentRepository,
-			CollectorRepository collectorRepository) {
-		this.codeQualityRepository = codeQualityRepository;
-		this.componentRepository = componentRepository;
-		this.collectorRepository = collectorRepository;
-	}
+    @Autowired
+    public CodeQualityServiceImpl(CodeQualityRepository codeQualityRepository,
+                                  ComponentRepository componentRepository,
+                                  CollectorRepository collectorRepository) {
+        this.codeQualityRepository = codeQualityRepository;
+        this.componentRepository = componentRepository;
+        this.collectorRepository = collectorRepository;
+    }
 
-	@Override
-	public DataResponse<Iterable<CodeQuality>> search(CodeQualityRequest request) {
-		Iterable<CodeQuality> result = null;
-		CollectorItem item = getCollectorItem(request);
-		if (item == null) {
-			return new DataResponse<>(result, System.currentTimeMillis());
-		}
+    @Override
+    public DataResponse<Iterable<CodeQuality>> search(CodeQualityRequest request) {
+        if (request == null) {
+            return emptyResponse();
+        }
 
-		QCodeQuality quality = new QCodeQuality("quality");
-		BooleanBuilder builder = new BooleanBuilder();
+        if (request.getType() == null) { // return whole model
+            // TODO: but the dataresponse needs changing.. the timestamp breaks this ability.
+//            Iterable<CodeQuality> concatinatedResult = ImmutableList.of();
+//            for (CodeQualityType type : CodeQualityType.values()) {
+//                request.setType(type);
+//                DataResponse<Iterable<CodeQuality>> result = searchType(request);
+//                Iterables.concat(concatinatedResult, result.getResult());
+//            }
+            return emptyResponse();
+        }
 
-		builder.and(quality.collectorItemId.eq(item.getId()));
+        return searchType(request);
+    }
 
-		if (request.getNumberOfDays() != null) {
-			long endTimeTarget = new LocalDate()
-					.minusDays(request.getNumberOfDays()).toDate().getTime();
-			builder.and(quality.timestamp.goe(endTimeTarget));
-		} else if (request.validDateRange()) {
-			builder.and(quality.timestamp.between(request.getDateBegins(),
-					request.getDateEnds()));
-		}
+    protected DataResponse<Iterable<CodeQuality>> emptyResponse() {
+        return new DataResponse<>(null, System.currentTimeMillis());
+    }
 
-		if (request.getMax() == null) {
-			result = codeQualityRepository.findAll(builder.getValue(),
-					quality.timestamp.desc());
-		} else {
-			PageRequest pageRequest = new PageRequest(0, request.getMax(),
-					Sort.Direction.DESC, "timestamp");
-			result = codeQualityRepository.findAll(builder.getValue(),
-					pageRequest).getContent();
-		}
+    public DataResponse<Iterable<CodeQuality>> searchType(CodeQualityRequest request) {
+        CollectorItem item = getCollectorItem(request);
+        if (item == null) {
+            return emptyResponse();
+        }
 
-		Collector collector = collectorRepository
-				.findOne(item.getCollectorId());
-		return new DataResponse<>(result, collector.getLastExecuted());
-	}
+        QCodeQuality quality = new QCodeQuality("quality");
+        BooleanBuilder builder = new BooleanBuilder();
 
-	protected CollectorItem getCollectorItem(CodeQualityRequest request) {
-		CollectorItem item = null;
-		Component component = componentRepository.findOne(request.getComponentId());
+        builder.and(quality.collectorItemId.eq(item.getId()));
 
-        CodeQualityType qualityType = Objects.firstNonNull(request.getType(), CodeQualityType.StaticAnalysis);
+        if (request.getNumberOfDays() != null) {
+            long endTimeTarget =
+                    new LocalDate().minusDays(request.getNumberOfDays()).toDate().getTime();
+            builder.and(quality.timestamp.goe(endTimeTarget));
+        } else if (request.validDateRange()) {
+            builder.and(quality.timestamp.between(request.getDateBegins(), request.getDateEnds()));
+        }
+
+        Iterable<CodeQuality> result;
+        if (request.getMax() == null) {
+            result = codeQualityRepository.findAll(builder.getValue(), quality.timestamp.desc());
+        } else {
+            PageRequest pageRequest =
+                    new PageRequest(0, request.getMax(), Sort.Direction.DESC, "timestamp");
+            result = codeQualityRepository.findAll(builder.getValue(), pageRequest).getContent();
+        }
+
+        Collector collector = collectorRepository.findOne(item.getCollectorId());
+        return new DataResponse<>(result, collector.getLastExecuted());
+    }
+
+    protected CollectorItem getCollectorItem(CodeQualityRequest request) {
+        CollectorItem item = null;
+        Component component = componentRepository.findOne(request.getComponentId());
+
+        CodeQualityType qualityType = Objects.firstNonNull(request.getType(),
+                CodeQualityType.StaticAnalysis);
         List<CollectorItem> items = component.getCollectorItems().get(qualityType.collectorType());
         if (items != null) {
             item = Iterables.getFirst(items, null);
         }
 
-		return item;
-	}
+        return item;
+    }
 }
