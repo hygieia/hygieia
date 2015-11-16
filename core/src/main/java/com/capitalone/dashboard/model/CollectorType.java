@@ -13,10 +13,7 @@ public enum CollectorType {
     Scope,
     CodeQuality,
     Test,
-<<<<<<< HEAD:common/src/main/java/com/capitalone/dashboard/model/CollectorType.java
-=======
     StaticSecurityScan,
->>>>>>> origin/cloud-changes:core/src/main/java/com/capitalone/dashboard/model/CollectorType.java
     Cloud;
 
     public static CollectorType fromString(String value) {

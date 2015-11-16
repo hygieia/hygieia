@@ -16,9 +16,5 @@ public class CloudRequest {
 		this.id = id;
 	}
 
-<<<<<<< HEAD
  
-=======
-
->>>>>>> origin/cloud-changes
 }

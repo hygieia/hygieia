@@ -1,21 +1,9 @@
-
-
 package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-/**
- * Represents a cloud account
- */
-@Document(collection = "CloudComputeData")
-public class CloudComputeData extends BaseModel {
-	private ObjectId collectorItemId;
-	private ObjectId componentId;
+public class CloudComputeData {
 	private int nonEncryptedCount;
 	private int nonTaggedCount;
 	private int stoppedCount;
@@ -26,26 +14,10 @@ public class CloudComputeData extends BaseModel {
 	private int cpuMid;
 	private int cpuHigh;
 	private int totalInstanceCount;
-    private long lastUpdated;
+	private double estimatedCharge;
+	private String currency = "USD";
+	private long lastUpdated;
 	private ArrayList<CloudComputeInstanceData> instanceDetailList;
-	private HashMap<String, Integer> countByMonth = new HashMap<>();
-
-
-	public ObjectId getCollectorItemId() {
-		return collectorItemId;
-	}
-
-	public void setCollectorItemId(ObjectId collectorItemId) {
-		this.collectorItemId = collectorItemId;
-	}
-
-	public ObjectId getComponentId() {
-		return componentId;
-	}
-
-	public void setComponentId(ObjectId componentId) {
-		this.componentId = componentId;
-	}
 
 	public int getNonEncryptedCount() {
 		return nonEncryptedCount;
@@ -119,15 +91,8 @@ public class CloudComputeData extends BaseModel {
 		this.cpuHigh = cpuHigh;
 	}
 
-	public HashMap<String, Integer> getCountByMonth() {
-		return countByMonth;
-	}
-
-	public void setCountByMonth(HashMap<String, Integer> countByMonth) {
-		this.countByMonth = countByMonth;
-	}
-
-	public void setDetailList(ArrayList<CloudComputeInstanceData> instanceDetailList) {
+	public void setDetailList(
+			ArrayList<CloudComputeInstanceData> instanceDetailList) {
 		this.instanceDetailList = instanceDetailList;
 	}
 
@@ -149,5 +114,21 @@ public class CloudComputeData extends BaseModel {
 
 	public void setLastUpdated(long lastUpdated) {
 		this.lastUpdated = lastUpdated;
+	}
+
+	public double getEstimatedCharge() {
+		return estimatedCharge;
+	}
+
+	public void setEstimatedCharge(double estimatedCharge) {
+		this.estimatedCharge = estimatedCharge;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 }

@@ -1,12 +1,11 @@
 package com.capitalone.dashboard;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
-
 import com.capitalone.dashboard.config.MongoConfig;
 import com.capitalone.dashboard.config.RestApiAppConfig;
 import com.capitalone.dashboard.config.WebMVCConfig;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 
 /**
  * Application configuration and bootstrap

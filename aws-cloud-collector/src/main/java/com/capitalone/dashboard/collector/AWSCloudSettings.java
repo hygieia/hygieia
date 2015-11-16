@@ -23,8 +23,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Bean to hold settings specific to the Cloud collector.
- * 
- * @author
  */
 @Component
 @ConfigurationProperties(prefix = "aws")
@@ -34,6 +32,7 @@ public class AWSCloudSettings {
 	private int proxyPort;
 	private String proxyUser;
 	private String proxyPassword;
+	private String key;
 	private List<String>  validTagKey;
 
 	public List<String> getValidTagKey() {
@@ -82,6 +81,14 @@ public class AWSCloudSettings {
 
 	public void setCron(String cron) {
 		this.cron = cron;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 
 }

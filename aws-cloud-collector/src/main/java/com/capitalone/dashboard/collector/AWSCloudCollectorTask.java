@@ -16,69 +16,54 @@
 
 package com.capitalone.dashboard.collector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
-import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.Reservation;
 import com.capitalone.dashboard.model.AWSConfig;
+import com.capitalone.dashboard.model.Cloud;
 import com.capitalone.dashboard.model.CloudComputeData;
-import com.capitalone.dashboard.model.CloudComputeInstanceData;
+import com.capitalone.dashboard.model.CloudStorageData;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.repository.AWSConfigRepository;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.CloudComputeDataRepository;
+import com.capitalone.dashboard.repository.CloudRepository;
 
 /**
  * Collects {@link AWSCloudCollector} data from feature content source system.
- * 
- * @author
- * @param <ObjectId>
+ *
  */
 @Component
 public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 	private static final Log logger = LogFactory
 			.getLog(AWSCloudCollectorTask.class);
 
-	private final CloudComputeDataRepository awsAggregatedDataRepository;
+	private final CloudRepository awsAggregatedDataRepository;
 	private final AWSCloudSettings awsSetting;
 	private final AWSCloudClient awsClient;
 	private final AWSConfigRepository awsConfigRepository;
 	private final BaseCollectorRepository<AWSCloudCollector> collectorRepository;
-	private final Iterable<CloudComputeData> allAggregatedData;
+	private final Iterable<Cloud> allAggregatedData;
 
 	/**
-	 * Default constructor for the collector task. This will construct this
-	 * collector task with all repository, scheduling, and settings
-	 * configurations custom to this collector.
-	 * 
+	 *
 	 * @param taskScheduler
-	 *            A task scheduler artifact
-	 * @param teamRepository
-	 *            The repository being use for feature collection
-	 * @param featureSettings
-	 *            The settings being used for feature collection from the source
-	 *            system
+	 * @param collectorRepository
+	 * @param cloudSettings
+	 * @param cloudClient
+	 * @param awsConfigRepository
+	 * @param awsAggregatedRepository
 	 */
 	@Autowired
 	public AWSCloudCollectorTask(TaskScheduler taskScheduler,
 			BaseCollectorRepository<AWSCloudCollector> collectorRepository,
 			AWSCloudSettings cloudSettings, AWSCloudClient cloudClient,
 			AWSConfigRepository awsConfigRepository,
-			CloudComputeDataRepository awsAggregatedRepository) {
+			CloudRepository awsAggregatedRepository) {
 		super(taskScheduler, "AWSCloud");
 		this.collectorRepository = collectorRepository;
 		this.awsClient = cloudClient;
@@ -102,76 +87,27 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 	/**
 	 * The collection action. This is the task which will run on a schedule to
 	 * gather data from the feature content source system and update the
-	 * repository with retrieved data.
+	 * repository with retrieved .
 	 */
 	public void collect(AWSCloudCollector collector) {
 		logger.info("Starting AWS collection...");
-
-		ClientConfiguration clientConfig = new ClientConfiguration()
-				.withProxyHost(awsSetting.getProxyURL())
-				.withProxyPort(awsSetting.getProxyPort())
-				.withPreemptiveBasicProxyAuth(true)
-				.withProxyUsername(awsSetting.getProxyUser())
-				.withProxyPassword(awsSetting.getProxyPassword());
-
 		logger.info("Collecting AWS Cloud Data...");
 		List<AWSConfig> enabledList = enabledConfigs(collector);
+		int i = 0;
 		for (AWSConfig config : enabledList) {
-			String accessKey = config.getAccessKey();
-			String secretKey = config.getSecretKey();
-
-			AWSCredentials creds = new BasicAWSCredentials(accessKey, secretKey);
-			AmazonEC2Client ec2Client = new AmazonEC2Client(creds, clientConfig);
-			AmazonCloudWatchClient cwClient = new AmazonCloudWatchClient(creds,
-					clientConfig);
-			DescribeInstancesResult result = ec2Client.describeInstances();
-			// create list of instances
-			List<Instance> instanceList = new ArrayList<Instance>();
-			List<Reservation> reservations = result.getReservations();
-			for (Reservation currRes : reservations) {
-				List<Instance> currInstanceList = currRes.getInstances();
-				instanceList.addAll(currInstanceList);
-			}
-
-			ArrayList<CloudComputeInstanceData> rawDataList = new ArrayList<CloudComputeInstanceData>();
-			for (Instance currInstance : instanceList) {
-				CloudComputeInstanceData object = awsClient.getMetrics(currInstance,
-						cwClient, accessKey);
-				object.setCollectorItemId(config.getId());
-				System.out.println("Collector Item ID:"
-						+ object.getCollectorItemId());
-				rawDataList.add(object);
-			}
-
-			logger.info("Agregating Data...");
-			CloudComputeData computeData = new CloudComputeData();
-			AWSCloudStatistics stat = new AWSCloudStatistics(rawDataList);
-			ObjectId id = config.getId();
-			computeData.setAgeWarning(stat.getAgeWarningCount());
-			computeData.setAgeExpired(stat.getAgeExpireCount());
-			computeData.setAgeGood(stat.getAgeGoodCount());
-			computeData.setCpuHigh(stat.getCpuHighCount());
-			computeData.setCpuMid(stat.getCpuMidCount());
-			computeData.setCpuLow(stat.getCpuLowCount());
-			computeData.setNonEncryptedCount(stat.getUnEcryptedCount());
-			computeData.setNonTaggedCount(stat.getUnTaggedCount());
-			computeData.setStoppedCount(stat.getStoppedCount());
-			computeData.setTotalInstanceCount(stat.getTotalCount());
-			computeData.setCollectorItemId(id);
-			computeData.setDetailList(rawDataList);
-			computeData.setLastUpdated(System.currentTimeMillis());
-			awsAggregatedDataRepository.save(computeData);
-
+			i = i + 1;
+			logger.info("Collecting AWS Data for item " + i + "of " + enabledList.size());
+			CloudComputeData computeData = awsClient.getCloudComputeData(config);
+//			CloudStorageData storageData = awsClient.getCloudStorageData(config);
+			Cloud cloud = new Cloud();
+			cloud.setCollectorItemId(config.getId());
+			cloud.setCompute(computeData);
+//			cloud.setStorage(storageData);
+			config.setLastUpdateTime(System.currentTimeMillis());
+			awsAggregatedDataRepository.save(cloud);
 		}
+
 		logger.info("Finished Cloud collection.");
-	}
-
-	public CloudComputeData findAggregatedDataByConfig(AWSConfig config) {
-		CloudComputeData returnData = null;
-		for (CloudComputeData data : this.allAggregatedData) {
-			returnData = data;
-		}
-		return returnData;
 	}
 
 	@Override

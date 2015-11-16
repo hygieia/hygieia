@@ -1,10 +1,13 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.CloudComputeInstanceData;
-
+import java.util.Iterator;
 import java.util.List;
 
-public class AWSCloudStatistics {
+import com.capitalone.dashboard.model.CloudComputeInstanceData;
+import com.capitalone.dashboard.model.CloudStorageBucket;
+import com.capitalone.dashboard.model.CloudStorageObject;
+
+public class AWSCloudComptuteStatistics {
 	private List<CloudComputeInstanceData> rawData;
 	private int ageWarningCount = 0;
 	private int ageExpireCount = 0;
@@ -12,11 +15,11 @@ public class AWSCloudStatistics {
 	private int cpuHighCount = 0;
 	private int cpuMidCount = 0;
 	private int cpuLowCount = 0;
-	private int unEcryptedCount = 0;
+	private int unEcryptedComputeCount = 0;
 	private int unTaggedCount = 0;
 	private int stoppedCount = 0;
 	private int totalCount = 0;
-	
+		
 	private static final int HIGH_AGE = 60;
 	private static final int MID_AGE = 45;
 	private static final int LOW_AGE = 15;
@@ -25,8 +28,8 @@ public class AWSCloudStatistics {
 	private static final int MID_CPU = 50;
 	private static final int LOW_CPU = 25;
 	
-	public AWSCloudStatistics(List<CloudComputeInstanceData> data) {
-		rawData = data;
+	public AWSCloudComptuteStatistics(List<CloudComputeInstanceData> dataCompute) {
+		rawData = dataCompute;
 		runStat();
 	}
 
@@ -34,7 +37,7 @@ public class AWSCloudStatistics {
 		for (CloudComputeInstanceData rd : rawData) {
 			totalCount = totalCount + 1;
 			
-			if (!rd.isEncrypted()) { unEcryptedCount = unEcryptedCount + 1;}
+			if (!rd.isEncrypted()) { unEcryptedComputeCount = unEcryptedComputeCount + 1;}
 			if (rd.isStopped()) {stoppedCount = stoppedCount + 1;}
 			if (!rd.isTagged()) {unTaggedCount = unTaggedCount + 1;}
 			if (rd.getAge() >= HIGH_AGE) {ageExpireCount = ageExpireCount + 1;}
@@ -73,7 +76,7 @@ public class AWSCloudStatistics {
 	}
 
 	public int getUnEcryptedCount() {
-		return unEcryptedCount;
+		return unEcryptedComputeCount;
 	}
 
 	public int getUnTaggedCount() {
@@ -86,6 +89,59 @@ public class AWSCloudStatistics {
 
 	public int getTotalCount() {
 		return totalCount;
+	}
+
+	public List<CloudComputeInstanceData> getRawData() {
+		return rawData;
+	}
+
+	public void setRawData(List<CloudComputeInstanceData> rawData) {
+		this.rawData = rawData;
+	}
+
+	public int getUnEcryptedComputeCount() {
+		return unEcryptedComputeCount;
+	}
+
+	public void setUnEcryptedComputeCount(int unEcryptedComputeCount) {
+		this.unEcryptedComputeCount = unEcryptedComputeCount;
+	}
+
+
+	public void setAgeWarningCount(int ageWarningCount) {
+		this.ageWarningCount = ageWarningCount;
+	}
+
+	public void setAgeExpireCount(int ageExpireCount) {
+		this.ageExpireCount = ageExpireCount;
+	}
+
+	public void setAgeGoodCount(int ageGoodCount) {
+		this.ageGoodCount = ageGoodCount;
+	}
+
+	public void setCpuHighCount(int cpuHighCount) {
+		this.cpuHighCount = cpuHighCount;
+	}
+
+	public void setCpuMidCount(int cpuMidCount) {
+		this.cpuMidCount = cpuMidCount;
+	}
+
+	public void setCpuLowCount(int cpuLowCount) {
+		this.cpuLowCount = cpuLowCount;
+	}
+
+	public void setUnTaggedCount(int unTaggedCount) {
+		this.unTaggedCount = unTaggedCount;
+	}
+
+	public void setStoppedCount(int stoppedCount) {
+		this.stoppedCount = stoppedCount;
+	}
+
+	public void setTotalCount(int totalCount) {
+		this.totalCount = totalCount;
 	}
 
 }

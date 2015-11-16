@@ -1,9 +1,12 @@
 package com.capitalone.dashboard.model;
 
+import java.util.Date;
+
 public class AWSConfig extends CollectorItem {
 	private static final String ACCESS_KEY = "accessKey";
 	private static final String SECRET_KEY = "secretKey";
 	private static final String CLOUD_PROVIDER= "cloudProvider";
+	private static final String LAST_UPDATE_TIME = "lastUpdate";
 
 	
     public String getCloudProvider() {
@@ -30,6 +33,15 @@ public class AWSConfig extends CollectorItem {
 		return (String) getOptions().get(SECRET_KEY);
 	}
 
+    public long getLastUpdateTime() {
+        Object latest = getOptions().get(LAST_UPDATE_TIME);
+        return (!(latest == null) ? (long) latest : 0);
+    }
+
+    public void setLastUpdateTime(long millisecond) {
+        getOptions().put(LAST_UPDATE_TIME, millisecond);
+    }
+    
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
