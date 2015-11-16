@@ -3,7 +3,8 @@
 var gulp = require('gulp');
 
 var $ = require('gulp-load-plugins')({
-    pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
+    pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del',
+              'minimist']
 });
 
 gulp.task('themes', ['wiredep'], function() {
@@ -79,10 +80,24 @@ gulp.task('scripts', function () {
         .pipe($.jshint.reporter('jshint-stylish'));
 });
 
-gulp.task('injector:js', ['scripts', 'injector:css'], function () {
+gulp.task('local-testing', function() {
+  var localOption = {
+    boolean: 'local',
+    default: { local: false }
+  };
+
+  var options = $.minimist(process.argv.slice(2), localOption);
+
+  return gulp.src(['src/app/local-testing.js'])
+    .pipe($.replace(/localTesting.*=.*/, 'localTesting = '+ options.local.toString() + ';'))
+    .pipe(gulp.dest('src/app'));
+})
+
+gulp.task('injector:js', ['local-testing', 'scripts', 'injector:css'], function () {
     return gulp.src(['src/index.html', '.tmp/index.html'])
         .pipe($.inject(gulp.src([
             'src/{app,components}/**/*.js',
+            '!src/app/local-testing.js',
             '!src/{app,components}/**/*.spec.js',
             '!src/{app,components}/**/*.mock.js'
         ]).pipe($.angularFilesort()), {
@@ -91,6 +106,7 @@ gulp.task('injector:js', ['scripts', 'injector:css'], function () {
         }))
         .pipe(gulp.dest('src/'));
 });
+
 
 gulp.task('partials', ['consolidate'], function () {
     return gulp.src(['src/{app,components}/**/*.html', '.tmp/{app,components}/**/*.html'])

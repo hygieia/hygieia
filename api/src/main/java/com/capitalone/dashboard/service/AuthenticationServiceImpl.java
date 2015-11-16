@@ -1,13 +1,11 @@
 package com.capitalone.dashboard.service;
 
-import java.util.List;
-
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.capitalone.dashboard.model.Authentication;
 import com.capitalone.dashboard.repository.AuthenticationRepository;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -36,8 +34,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String create(String username, String password) {
         Authentication authentication = new Authentication(username, password);
-        authenticationRepository.save(authentication);
-        return "User is created";
+        try {
+            authenticationRepository.save(authentication);
+            return "User is created";
+        } catch (DuplicateKeyException e) {
+            return "User already exists";
+        }
 
     }
 
@@ -57,27 +59,29 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void delete(ObjectId id) {
         Authentication authentication = authenticationRepository.findOne(id);
-        authenticationRepository.delete(authentication);
-
+        if (authentication != null) {
+            authenticationRepository.delete(authentication);
+        }
     }
 
     @Override
     public void delete(String username) {
         Authentication authentication = authenticationRepository
                 .findByUsername(username);
-        authenticationRepository.delete(authentication);
-
+        if (authentication != null) {
+            authenticationRepository.delete(authentication);
+        }
     }
 
     @Override
     public boolean authenticate(String username, String password) {
         boolean flag = false;
-        List<Authentication> authenticationList = authenticationRepository.findByUsernameAndPassword(username, password);
-        if (authenticationList.size() == 1) {
-            if (authenticationList.get(0).getUsername().equals(username) && authenticationList.get(0).getPassword().equals(password)) {
-                flag = true;
-            }
+        Authentication authentication = authenticationRepository.findByUsername(username);
+
+        if (authentication != null && authentication.checkPassword(password)) {
+            flag = true;
         }
         return flag;
     }
+
 }

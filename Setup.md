@@ -78,3 +78,52 @@ You can pick and choose which collectors are applicable for your DevOps toolset 
 #### UI Layer
 Please click on the link below to learn about how to build and run the UI layer
  * [UI](https://github.com/capitalone/Hygieia/tree/master/UI)
+
+### Build Docker images
+
+* Build the API Image
+
+```bash
+mvn clean package
+```
+
+```bash
+mvn -pl api docker:build
+```
+
+* Build the UI Image
+
+```bash
+mvn -pl UI docker:build
+```
+
+* Bring up the container images
+
+```bash
+docker-compose up -d
+```
+
+* Create user in mongo
+
+```bash
+mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
+```
+
+* Make sure everything is restarted _it may fail if the user doesn't exist at start up time_
+
+```bash
+docker-compose restart
+```
+
+* Get the port for the UI
+
+```bash
+docker port hygieia-ui
+```
+
+### Start Collectors
+* To start individual collector as a background process please run the command in below format
+  * On linux platform
+```bash
+nohup java -jar <collector-name>.jar --spring.config.name=<property file name> & >/dev/null
+```

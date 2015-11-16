@@ -31,8 +31,13 @@
                 types: ['Functional'],
                 max: 1
             };
+            var saRequest = {
+                componentId: $scope.widgetConfig.componentId,
+                max: 1
+            };
             return $q.all([
-                codeAnalysisData.details(caRequest).then(processCaResponse),
+                codeAnalysisData.staticDetails(caRequest).then(processCaResponse),
+                codeAnalysisData.securityDetails(saRequest).then(processSaResponse),
                 testSuiteData.details(testRequest).then(processTestResponse)
             ]);
         };
@@ -72,6 +77,23 @@
             return deferred.promise;
         }
 
+        function processSaResponse(response) {
+            var deferred = $q.defer();
+            var saData = _.isEmpty(response.result) ? {} : response.result[0];
+
+            //ctrl.versionNumber = saData.version;
+
+            ctrl.securityIssues = [
+                getMetric(saData.metrics, 'blocker', 'Blocker'),
+                getMetric(saData.metrics, 'critical', 'Critical'),
+                getMetric(saData.metrics, 'major', 'Major'),
+                getMetric(saData.metrics, 'minor', 'Minor')
+            ];
+
+            deferred.resolve(response.lastUpdated);
+            return deferred.promise;
+        }
+
         function processTestResponse(response) {
             var deferred = $q.defer();
             var testResult = _.isEmpty(response.result) ? { testSuites: []} : response.result[0];
@@ -96,28 +118,28 @@
             ctrl.functionalTests.push({
                 name: 'Success',
                 formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(success, 1) + '%',
-                status: allPassed ? 'Ok' : 'Alert', 
+                status: allPassed ? 'Ok' : 'Alert',
                 statusMessage: allPassed ? '' : 'Success percent < 100'
             });
 
             ctrl.functionalTests.push({
                 name: 'Failures',
                 formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.failureCount, 0),
-                status: aggregate.failureCount === 0 ? 'Ok' : 'Alert', 
+                status: aggregate.failureCount === 0 ? 'Ok' : 'Alert',
                 statusMessage: aggregate.failureCount === 0 ? '' : 'Failure count > 0'
             });
 
             ctrl.functionalTests.push({
                 name: 'Errors',
                 formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.errorCount, 0),
-                status: aggregate.errorCount === 0 ? 'Ok' : 'Alert', 
+                status: aggregate.errorCount === 0 ? 'Ok' : 'Alert',
                 statusMessage: aggregate.errorCount === 0 ? '' : 'Error count > 0'
             });
 
             ctrl.functionalTests.push({
                 name: 'Tests',
                 formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
-                status: 'Ok', 
+                status: 'Ok',
                 statusMessage: ''
             });
 
@@ -125,7 +147,7 @@
             return deferred.promise;
         }
 
-        function coveragePieChart(lineCoverage) {            
+        function coveragePieChart(lineCoverage) {
             lineCoverage.value = lineCoverage.value || 0;
 
             ctrl.unitTestCoverageData = {

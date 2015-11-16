@@ -70,7 +70,11 @@ public class TestConfig {
 	public EncryptionService encryptionService() {
 		return Mockito.mock(EncryptionService.class);
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> origin/cloud-changes
 	@Bean
 	public CloudService cloudService() {
 		return Mockito.mock(CloudService.class);
