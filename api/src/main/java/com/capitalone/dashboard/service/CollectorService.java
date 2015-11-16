@@ -44,11 +44,19 @@ public interface CollectorService {
      * @return created CollectorItem
      */
     CollectorItem createCollectorItem(CollectorItem item);
+<<<<<<< HEAD
+    
+    /**
+     * Gets a collectorItem with a given Collector Id and options
+     *
+     * @param id ObjectId 
+=======
 
     /**
      * Gets a collectorItem with a given Collector Id and options
      *
      * @param id ObjectId
+>>>>>>> origin/cloud-changes
      * @return options Map<String, Object>
      */
     CollectorItem getCollectorItemByCollectorIDandOptions (ObjectId id, Map<String, Object> options);
