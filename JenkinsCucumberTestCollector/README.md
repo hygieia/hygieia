@@ -7,7 +7,7 @@ Building and Deploying
 --------------------------------------
 
 Run mvn install to package the collector into an executable JAR file. Copy this file to your server and launch it using
-java -JAR jenkins-cucumber-test-collector.jar. You will need to provide an application.properties file that contains information about how
+java -JAR subversion-collector.jar. You will need to provide an application.properties file that contains information about how
 to connect to the Dashboard MongoDB database instance, as well as properties the Subversion collector requires. See
 the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files)
 for information about sourcing this properties file.
