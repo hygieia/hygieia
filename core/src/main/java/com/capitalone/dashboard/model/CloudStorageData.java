@@ -1,5 +1,4 @@
 
-
 package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
@@ -10,9 +9,6 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-/**
- * Represents a cloud account
- */
 
 public class CloudStorageData extends BaseModel {
 	private int nonEncryptedCount;
