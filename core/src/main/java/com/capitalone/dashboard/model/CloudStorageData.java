@@ -1,13 +1,7 @@
 
 package com.capitalone.dashboard.model;
 
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.HashMap;
 import java.util.List;
-
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 
 public class CloudStorageData extends BaseModel {
