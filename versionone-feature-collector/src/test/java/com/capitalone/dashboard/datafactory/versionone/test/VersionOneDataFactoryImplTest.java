@@ -1,6 +1,11 @@
 package com.capitalone.dashboard.datafactory.versionone.test;
 
-import static org.junit.Assert.*;
+import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.junit.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -8,18 +13,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
+import static org.junit.Assert.*;
 
 /**
  * Tests all facets of the VerisonOneDataFactoryImpl class, which is responsible
@@ -180,7 +174,7 @@ public class VersionOneDataFactoryImplTest {
 
 	/**
 	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl#VersionOneDataFactoryImpl(int)}
+	 * {@link com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl(int)}
 	 * .
 	 */
 	@Test
@@ -209,7 +203,7 @@ public class VersionOneDataFactoryImplTest {
 
 	/**
 	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl#getQueryResponse(java.lang.String)}
+	 * {@link com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl(java.lang.String)}
 	 * .
 	 */
 	@Ignore

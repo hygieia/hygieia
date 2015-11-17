@@ -3,7 +3,6 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.service.FeatureService;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -52,9 +51,9 @@ public class FeatureController {
 	/**
 	 * REST endpoint for retrieving all features for a given sprint and team
 	 * (the sprint is derived)
-	 * 
-	 * @param teamId
 	 *            A given scope-owner's source-system ID
+	 * @param cId
+	 * @param storyNumber
 	 * @return A data response list of type Feature containing all features for
 	 *         the given team and current sprint
 	 */

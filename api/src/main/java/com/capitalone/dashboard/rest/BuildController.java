@@ -1,7 +1,9 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.editors.CaseInsensitiveBuildStatusEditor;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.BuildRequest;
 import com.capitalone.dashboard.service.BuildService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -8,7 +8,6 @@ import com.capitalone.dashboard.repository.CollectorRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,10 +78,10 @@ public class CollectorServiceImpl implements CollectorService {
         }
     }
 
+
 	@Override
 	public CollectorItem getCollectorItemByCollectorIDandOptions(ObjectId id,
 			Map<String, Object> options) {
-		// TODO Auto-generated method stub
 		return collectorItemRepository.findByCollectorAndOptions(id, options);
 	}
 }

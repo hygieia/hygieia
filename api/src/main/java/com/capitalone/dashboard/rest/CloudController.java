@@ -1,27 +1,5 @@
 package com.capitalone.dashboard.rest;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-
-import java.util.List;
-
-import javax.validation.Valid;
-
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.capitalone.dashboard.editors.CaseInsensitiveBuildStatusEditor;
-import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.CloudComputeData;
 import com.capitalone.dashboard.model.CloudComputeInstanceData;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -29,9 +7,20 @@ import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.CloudRequest;
 import com.capitalone.dashboard.request.CollectorItemRequest;
 import com.capitalone.dashboard.service.CloudService;
-import com.capitalone.dashboard.service.CloudServiceImpl;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.EncryptionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.List;
+
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * REST service managing all requests to the feature repository.

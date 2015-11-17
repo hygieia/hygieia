@@ -1,11 +1,10 @@
 package com.capitalone.dashboard.repository;
 
-import java.util.List;
-
+import com.capitalone.dashboard.model.TeamCollectorItem;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.capitalone.dashboard.model.TeamCollectorItem;
+import java.util.List;
 
 /**
  * CollectorItem repository for {@link TeamCollectorItem}.

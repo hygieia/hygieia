@@ -1,22 +1,15 @@
 package com.capitalone.dashboard.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.repository.CloudRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitalone.dashboard.model.Cloud;
-import com.capitalone.dashboard.model.CloudComputeData;
-import com.capitalone.dashboard.model.CloudComputeInstanceData;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.repository.CloudRepository;
-import com.capitalone.dashboard.repository.CollectorItemRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CloudServiceImpl implements CloudService {

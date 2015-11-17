@@ -1,16 +1,7 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.SonarCollector;
-import com.capitalone.dashboard.model.SonarProject;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.CodeQualityRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.SonarCollectorRepository;
-import com.capitalone.dashboard.repository.SonarProjectRepository;
-
+import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.repository.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

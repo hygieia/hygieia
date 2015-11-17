@@ -1,8 +1,7 @@
 package com.capitalone.dashboard.datafactory.jira.sdk.connector;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import com.google.api.client.http.HttpRequestFactory;
+import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * Builds HTTP GET responses for talking to Jira. Requires a fully qualified

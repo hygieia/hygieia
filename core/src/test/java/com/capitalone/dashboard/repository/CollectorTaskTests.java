@@ -2,20 +2,18 @@ package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.collector.CollectorTask;
 import com.capitalone.dashboard.model.Collector;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CollectorTaskTests {

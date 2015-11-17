@@ -1,11 +1,8 @@
 package com.capitalone.dashboard.collector;
 
-import java.util.Iterator;
-import java.util.List;
-
 import com.capitalone.dashboard.model.CloudComputeInstanceData;
-import com.capitalone.dashboard.model.CloudStorageBucket;
-import com.capitalone.dashboard.model.CloudStorageObject;
+
+import java.util.List;
 
 public class AWSCloudComptuteStatistics {
 	private List<CloudComputeInstanceData> rawData;

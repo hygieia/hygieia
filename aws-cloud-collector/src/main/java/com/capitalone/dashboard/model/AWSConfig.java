@@ -1,7 +1,5 @@
 package com.capitalone.dashboard.model;
 
-import java.util.Date;
-
 public class AWSConfig extends CollectorItem {
 	private static final String ACCESS_KEY = "accessKey";
 	private static final String SECRET_KEY = "secretKey";

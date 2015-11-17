@@ -1,11 +1,7 @@
 package com.capitalone.dashboard.datafactory.jira.sdk.connector;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-
+import com.capitalone.dashboard.datafactory.jira.sdk.util.SystemInfo;
+import com.google.api.client.http.*;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,12 +9,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import com.capitalone.dashboard.datafactory.jira.sdk.util.SystemInfo;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpHeaders;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /**
  * {@inheritDoc}
@@ -169,10 +164,9 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 	/**
 	 * Converts an HttpResponse message content stream into a valid JSONObject
 	 * for file consumption
-	 * 
-	 * @param content
-	 *            HttpResponse message content as an input stream
+	 * @param nativeRs
 	 * @return A valid JSONObject from the HttpResponse message content
+	 * @throws IOException
 	 */
 	private JSONObject toCanonicalRs(HttpResponse nativeRs) throws IOException {
 		JSONObject canonicalRs = new JSONObject();
@@ -194,10 +188,9 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 	/**
 	 * Converts an HttpResponse message content stream into a valid JSONArray
 	 * for file consumption
-	 * 
-	 * @param content
-	 *            HttpResponse message content as an input stream
+	 * @param nativeRs
 	 * @return A valid JSONArray from the HttpResponse message content
+	 * @throws IOException
 	 */
 	private JSONArray toCanonicalRsArray(HttpResponse nativeRs)
 			throws IOException {

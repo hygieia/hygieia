@@ -1,19 +1,18 @@
 package com.capitalone.dashboard.client.team;
 
-import java.util.Arrays;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.capitalone.dashboard.model.TeamCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.Arrays;
 
 /**
  * This is the primary implemented/extended data collector for the feature
@@ -59,7 +58,6 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	 *
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
-	 * @param featureCollector
 	 */
 	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
 		try {
@@ -138,7 +136,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
 	 *
-	 * @param A
+	 * @param localId
 	 *            local repository item ID (not the precise mongoID)
 	 */
 	protected Boolean removeExistingEntity(String localId) {

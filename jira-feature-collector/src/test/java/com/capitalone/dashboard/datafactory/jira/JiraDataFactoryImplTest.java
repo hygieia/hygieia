@@ -16,26 +16,19 @@
 
 package com.capitalone.dashboard.datafactory.jira;
 
-import static org.junit.Assert.*;
+import com.capitalone.dashboard.datafactory.jira.sdk.config.ApiPropertiesSupplier;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.junit.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Properties;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
-import com.capitalone.dashboard.datafactory.jira.sdk.config.ApiPropertiesSupplier;
+import static org.junit.Assert.*;
 
 /**
  * Tests all facets of the VerisonOneDataFactoryImpl class, which is responsible

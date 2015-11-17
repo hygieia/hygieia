@@ -1,16 +1,15 @@
 package com.capitalone.dashboard.repository;
 
-import java.util.List;
-
+import com.capitalone.dashboard.model.Feature;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 
-import com.capitalone.dashboard.model.Feature;
+import java.util.List;
 
 /**
- * Repository for {@link FeatureCollector}.
+ * Repository for {@link Feature}.
  */
 public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 		QueryDslPredicateExecutor<Feature> {

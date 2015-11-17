@@ -1,15 +1,14 @@
 package com.capitalone.dashboard.datafactory.jira.sdk.connector;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.util.Arrays;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.Arrays;
 
 /**
  * {@inheritDoc}

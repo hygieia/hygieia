@@ -4,13 +4,8 @@ import com.capitalone.dashboard.client.project.ProjectDataClientImpl;
 import com.capitalone.dashboard.client.story.StoryDataClientImpl;
 import com.capitalone.dashboard.client.team.TeamDataClientImpl;
 import com.capitalone.dashboard.model.FeatureCollector;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.FeatureRepository;
-import com.capitalone.dashboard.repository.ProjectRepository;
-import com.capitalone.dashboard.repository.TeamRepository;
+import com.capitalone.dashboard.repository.*;
 import com.capitalone.dashboard.util.FeatureSettings;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

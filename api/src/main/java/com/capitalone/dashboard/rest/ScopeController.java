@@ -3,7 +3,6 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.service.ScopeService;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -35,11 +34,10 @@ public class ScopeController {
 	/**
 	 * REST endpoint for retrieving all features for a given sprint and team
 	 * (the sprint is derived)
-	 * 
-	 * @param teamId
-	 *            A given scope-owner's source-system ID
-	 * @return A data response list of type Feature containing all features for
-	 *         the given team and current sprint
+	 *
+	 * @param cId
+	 * @param scopeId
+	 * @return
 	 */
 	@RequestMapping(value = "/scope/{scopeId}", method = GET, produces = JSON)
 	public DataResponse<List<Scope>> scope(
@@ -52,11 +50,8 @@ public class ScopeController {
 	/**
 	 * REST endpoint for retrieving all features for a given sprint and team
 	 * (the sprint is derived)
-	 * 
-	 * @param teamId
-	 *            A given scope-owner's source-system ID
-	 * @return A data response list of type Feature containing all features for
-	 *         the given team and current sprint
+	 * @param cId
+	 * @return
 	 */
 	@RequestMapping(value = "/scope", method = GET, produces = JSON)
 	public DataResponse<List<Scope>> allScopes(

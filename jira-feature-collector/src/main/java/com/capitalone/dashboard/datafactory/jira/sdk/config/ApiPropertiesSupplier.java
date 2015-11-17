@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.datafactory.jira.sdk.config;
 
 import com.capitalone.dashboard.datafactory.jira.sdk.util.Supplier;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

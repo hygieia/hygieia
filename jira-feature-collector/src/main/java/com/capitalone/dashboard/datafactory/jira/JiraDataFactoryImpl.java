@@ -1,14 +1,13 @@
 package com.capitalone.dashboard.datafactory.jira;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
-import org.springframework.stereotype.Component;
-
 import com.capitalone.dashboard.datafactory.jira.sdk.connector.GetResponseBuilder;
 import com.capitalone.dashboard.datafactory.jira.sdk.connector.GetResponseBuilderImpl;
 import com.google.api.client.http.HttpRequestFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JiraDataFactoryImpl implements JiraDataFactory {

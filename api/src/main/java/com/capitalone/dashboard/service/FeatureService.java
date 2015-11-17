@@ -1,11 +1,10 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.Feature;
+import org.bson.types.ObjectId;
 
 import java.util.List;
-
-import org.bson.types.ObjectId;
 
 public interface FeatureService {
 

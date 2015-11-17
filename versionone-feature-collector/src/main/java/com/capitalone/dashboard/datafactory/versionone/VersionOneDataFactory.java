@@ -1,8 +1,7 @@
 package com.capitalone.dashboard.datafactory.versionone;
 
-import org.json.simple.JSONArray;
-
 import com.capitalone.dashboard.datafactory.DataFactory;
+import org.json.simple.JSONArray;
 
 /**
  * Interface for VersionOne data connection. An implemented class should be able to create a formatted request,

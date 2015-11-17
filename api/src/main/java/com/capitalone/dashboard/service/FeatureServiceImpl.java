@@ -5,19 +5,12 @@ import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.mysema.query.BooleanBuilder;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
-import java.util.TimeZone;
-
 import javax.xml.bind.DatatypeConverter;
+import java.util.*;
 
 @Service
 public class FeatureServiceImpl implements FeatureService {

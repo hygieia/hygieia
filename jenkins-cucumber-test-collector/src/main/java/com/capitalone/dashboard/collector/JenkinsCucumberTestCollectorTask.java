@@ -1,11 +1,7 @@
 package com.capitalone.dashboard.collector;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.repository.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,21 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.JenkinsCucumberTestCollector;
-import com.capitalone.dashboard.model.JenkinsJob;
-import com.capitalone.dashboard.model.TestResult;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.JenkinsCucumberTestCollectorRepository;
-import com.capitalone.dashboard.repository.JenkinsCucumberTestJobRepository;
-import com.capitalone.dashboard.repository.TestResultRepository;
+import java.util.*;
 
-/**
- * Created by Kyle Heide on 2/12/15.
- */
 @Component
 public class JenkinsCucumberTestCollectorTask extends
 		CollectorTask<JenkinsCucumberTestCollector> {
@@ -108,11 +91,11 @@ public class JenkinsCucumberTestCollectorTask extends
 	 * Clean up unused hudson/jenkins collector items
 	 *
 	 * @param collector
-	 *            the {@link HudsonCollector}
+	 *            the {@link JenkinsCucumberTestCollector}
 	 */
 
 	private void clean(JenkinsCucumberTestCollector collector) {
-		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+		Set<ObjectId> uniqueIDs = new HashSet<>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
 				.findAll()) {
 			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
@@ -127,8 +110,8 @@ public class JenkinsCucumberTestCollectorTask extends
 				}
 			}
 		}
-		List<JenkinsJob> jobList = new ArrayList<JenkinsJob>();
-		Set<ObjectId> udId = new HashSet<ObjectId>();
+		List<JenkinsJob> jobList = new ArrayList<>();
+		Set<ObjectId> udId = new HashSet<>();
 		udId.add(collector.getId());
 		for (JenkinsJob job : jenkinsCucumberTestJobRepository
 				.findByCollectorIdIn(udId)) {

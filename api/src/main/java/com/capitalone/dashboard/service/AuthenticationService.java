@@ -1,8 +1,7 @@
 package com.capitalone.dashboard.service;
 
-import org.bson.types.ObjectId;
-
 import com.capitalone.dashboard.model.Authentication;
+import org.bson.types.ObjectId;
 
 public interface AuthenticationService {
 	
@@ -24,17 +23,18 @@ public interface AuthenticationService {
 
     /**
      * Creates a new Users and saves it to the store.
-     *
-     * @param authentication new Authentication to createCollectorItem
-     * @return newly created Authentication object
+     * @param username
+     * @param password
+     * @return
      */
+
     String create(String username, String password);
 
     /**
      * Updates an existing quthentication instance.
-     *
-     * @param dashboard Authentication to update
-     * @return updated Authentication instance
+     * @param username
+     * @param password
+     * @return
      */
     String update(String username, String password);
 
@@ -49,11 +49,12 @@ public interface AuthenticationService {
      * Deletes an existing authentication instance
      */
 	void delete(String username);
-	
-	/**
-	 * 
-	 * @param authentication
-	 * @return
-	 */
+
+    /**
+     *
+     * @param username
+     * @param password
+     * @return
+     */
 	boolean authenticate(String username, String password);
 }

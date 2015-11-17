@@ -16,21 +16,15 @@
 
 package com.capitalone.dashboard.util;
 
-import static org.junit.Assert.*;
+import org.json.simple.JSONObject;
+import org.junit.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONObject;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.capitalone.dashboard.util.ClientUtil;
+import static org.junit.Assert.*;
 
 /**
  * Tests key facets of the ClientUtilTest class, which is responsible for

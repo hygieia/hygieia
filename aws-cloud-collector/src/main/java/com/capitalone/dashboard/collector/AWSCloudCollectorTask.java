@@ -16,22 +16,20 @@
 
 package com.capitalone.dashboard.collector;
 
-import java.util.List;
-
+import com.capitalone.dashboard.model.AWSConfig;
+import com.capitalone.dashboard.model.Cloud;
+import com.capitalone.dashboard.model.CloudComputeData;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.repository.AWSConfigRepository;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.CloudRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.capitalone.dashboard.model.AWSConfig;
-import com.capitalone.dashboard.model.Cloud;
-import com.capitalone.dashboard.model.CloudComputeData;
-import com.capitalone.dashboard.model.CloudStorageData;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.repository.AWSConfigRepository;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.CloudRepository;
+import java.util.List;
 
 /**
  * Collects {@link AWSCloudCollector} data from feature content source system.

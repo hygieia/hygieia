@@ -16,9 +16,8 @@
 
 package com.capitalone.dashboard.datafactory.jira;
 
-import org.json.simple.JSONArray;
-
 import com.capitalone.dashboard.datafactory.DataFactory;
+import org.json.simple.JSONArray;
 
 /**
  * Interface for Jira data connection. An implemented class should be able to create a formatted request,

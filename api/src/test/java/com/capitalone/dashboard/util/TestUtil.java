@@ -1,4 +1,5 @@
 package com.capitalone.dashboard.util;
+
 import com.capitalone.dashboard.mapper.CustomObjectMapper;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,7 +8,7 @@ import org.springframework.http.MediaType;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class TestUtil {
 

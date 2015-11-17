@@ -1,13 +1,12 @@
 package com.capitalone.dashboard.service;
 
-import java.util.List;
-import java.util.Map;
-
-import org.bson.types.ObjectId;
-
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
+import org.bson.types.ObjectId;
+
+import java.util.List;
+import java.util.Map;
 
 public interface CollectorService {
 
@@ -44,19 +43,11 @@ public interface CollectorService {
      * @return created CollectorItem
      */
     CollectorItem createCollectorItem(CollectorItem item);
-<<<<<<< HEAD
-    
-    /**
-     * Gets a collectorItem with a given Collector Id and options
-     *
-     * @param id ObjectId 
-=======
 
     /**
      * Gets a collectorItem with a given Collector Id and options
      *
      * @param id ObjectId
->>>>>>> origin/cloud-changes
      * @return options Map<String, Object>
      */
     CollectorItem getCollectorItemByCollectorIDandOptions (ObjectId id, Map<String, Object> options);

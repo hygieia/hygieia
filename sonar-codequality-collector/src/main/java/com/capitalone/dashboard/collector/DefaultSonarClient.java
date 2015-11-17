@@ -16,7 +16,8 @@ import org.springframework.web.client.RestOperations;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class DefaultSonarClient implements SonarClient {

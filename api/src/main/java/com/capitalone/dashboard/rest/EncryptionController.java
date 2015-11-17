@@ -1,9 +1,7 @@
 package com.capitalone.dashboard.rest;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-
-import javax.validation.Valid;
-
+import com.capitalone.dashboard.request.EncryptionRequest;
+import com.capitalone.dashboard.service.EncryptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,8 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitalone.dashboard.request.EncryptionRequest;
-import com.capitalone.dashboard.service.EncryptionService;
+import javax.validation.Valid;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 public class EncryptionController {

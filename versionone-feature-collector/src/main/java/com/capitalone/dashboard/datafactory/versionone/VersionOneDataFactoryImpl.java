@@ -16,12 +16,11 @@
 
 package com.capitalone.dashboard.datafactory.versionone;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Map;
-
+import com.versionone.apiclient.ProxyProvider;
+import com.versionone.apiclient.Services;
+import com.versionone.apiclient.V1Connector;
+import com.versionone.apiclient.exceptions.V1Exception;
+import com.versionone.apiclient.interfaces.IServices;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
@@ -29,11 +28,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
 
-import com.versionone.apiclient.ProxyProvider;
-import com.versionone.apiclient.Services;
-import com.versionone.apiclient.V1Connector;
-import com.versionone.apiclient.exceptions.V1Exception;
-import com.versionone.apiclient.interfaces.IServices;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Map;
 
 @Component
 public class VersionOneDataFactoryImpl implements VersionOneDataFactory {

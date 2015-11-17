@@ -1,19 +1,7 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Environment;
-import com.capitalone.dashboard.model.EnvironmentComponent;
-import com.capitalone.dashboard.model.EnvironmentStatus;
-import com.capitalone.dashboard.model.UDeployApplication;
-import com.capitalone.dashboard.model.UDeployCollector;
-import com.capitalone.dashboard.model.UDeployEnvResCompData;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
-import com.capitalone.dashboard.repository.EnvironmentStatusRepository;
-import com.capitalone.dashboard.repository.UDeployApplicationRepository;
-import com.capitalone.dashboard.repository.UDeployCollectorRepository;
+import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.repository.*;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.StringUtils;

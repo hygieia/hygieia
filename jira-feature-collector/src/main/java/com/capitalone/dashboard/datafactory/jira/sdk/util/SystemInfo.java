@@ -1,12 +1,13 @@
 package com.capitalone.dashboard.datafactory.jira.sdk.util;
 
-import java.io.IOException;
-import java.net.*;
-
+import com.capitalone.dashboard.datafactory.jira.sdk.config.ApiPropertiesSupplier;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.capitalone.dashboard.datafactory.jira.sdk.config.ApiPropertiesSupplier;
+import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * This class retains the ability to gather user and application system meta-data when
