@@ -55,7 +55,7 @@ public class Authentication extends BaseModel {
     }
 
     public boolean checkPassword(String password) {
-        return hash(password).equals(hash(password));
+        return hash(this.password).equals(hash(password));
     }
 
     @Override
