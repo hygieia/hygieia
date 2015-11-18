@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -81,13 +82,24 @@ public class AuthenticationRepositoryTest {
 
 	@Test
 	public void verifyExistingWithNewPasswords() throws Exception {
-		String username = "username2";
+		String username = "username" + System.currentTimeMillis();
 
 		Authentication user1 = new Authentication(username, "pass1");
 
 		authenticationRepository.save(user1);
 		Authentication u = authenticationRepository.findByUsername(username);
-		u.checkPassword("pass1");
+		assertTrue(u.checkPassword("pass1"));
+	}
+
+	@Test
+	public void verifyWithBadPasswords() throws Exception {
+		String username = "username" + System.currentTimeMillis();
+
+		Authentication user1 = new Authentication(username, "pass2");
+
+		authenticationRepository.save(user1);
+		Authentication u = authenticationRepository.findByUsername(username);
+		assertFalse(u.checkPassword("pass1"));
 	}
 
     /*
