@@ -11,7 +11,7 @@ The above command will build all components for Hygieia.
 The following components are required to run Hygieia:
 
 #### Database
-* MongoDB 2.6+
+* MongoDB 3.0+
      * [Download & Installation instructions](https://www.mongodb.org/downloads#previous)
      * Configure MongoDB
       * Go to the bin directory of your mongodb installation and run the following command to start the mongodb do make sure that data directory should pre-exist at the target location <br/>
