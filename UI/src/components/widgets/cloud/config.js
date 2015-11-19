@@ -24,24 +24,27 @@
 
         console.log("WidgetConfig:", widgetConfig);
         console.log("Ctrl: ", ctrl);
+        // Request collectors
+        collectorData.collectorsByType('cloud').then(processCollectorsResponse);
 
         var idx;
-
 
         for (var v = 0; v < ctrl.services.length; v++) {
             if (ctrl.services[v].name == widgetConfig.options.cloudProvider) {
                 console.log("Matched with :", widgetConfig.options.cloudProvider);
+                //console.log("Selected Index =", ctrl.services.selectedIndex);
                 idx = v;
+                ctrl.service = ctrl.services[idx].name;
+                ctrl.services.selectedIndex = idx;
+
             }
         }
-        ctrl.service = ctrl.services[idx].name;
-        ctrl.services.selectedIndex = idx;
-
+        ctrl.service = "AWS";
         ctrl.accessKey = widgetConfig.options.accessKey;
         ctrl.secretKey = widgetConfig.options.secretKey;
 
-        // Request collectors
-        collectorData.collectorsByType('cloud').then(processCollectorsResponse);
+
+
 
         function processCollectorsResponse(data) {
             console.log(data);
@@ -53,7 +56,7 @@
             return element.$invalid && ctrl.submitted;
         }
 
-        function submitConfig(valid) {
+        function submitConfig(valid, cloudProvider) {
             ctrl.submitted = true;
 
             if (valid) {

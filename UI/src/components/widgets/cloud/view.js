@@ -37,9 +37,10 @@
             var params = {id : $scope.widgetConfig.componentId}; //component id and filter from config
             //replace localTest with details
             cloudData.aggregate(params).then(function (data) {
+                console.log("Aggregate Data: ", data);
                 ctrl.totalCount = data.totalInstanceCount;
                 ctrl.stoppedCount = data.stoppedCount;
-
+                ctrl.estimatedCharge = data.estimatedCharge;
                 ctrl.cpuData.series = [data.cpuLow, data.cpuMid, data.cpuHigh];
                 ctrl.ageData.series = [data.ageGood, data.ageExpired, data.ageWarning];
 
@@ -51,11 +52,13 @@
             });
 
             cloudData.details(params).then(function (data) {
+                console.log(data);
+                console.log(data.length);
                 ctrl.tableData = orderBy(data, sortBy, direction);
             }).catch(function (err) {
             });
 
-        }
+        };
 
 
         //template to sort table
@@ -80,11 +83,12 @@
                 ]
             };
             ctrl.ageData = {
-                labels: ['pass', 'fail', 'warn'],
+                // labels: ['pass', 'fail', 'warn'],
+                labels: ['< 15d', '> 60d', '< 45d'],
                 series: []
             };
             ctrl.cpuData = {
-                labels: ['low', 'high', 'normal'],
+                labels: ['< 25%', '> 80%', '< 50%'],
                 series: [[]]
             };
         }
@@ -98,7 +102,7 @@
                     Chartist.plugins.tooltip({})],
                 labelOverflow: true,
                 labelOffset: 45,
-                height: '250px',
+                height: '225px',
                 labelInterpolationFnc: function (value) {
                     return value
                 }
@@ -110,10 +114,6 @@
                 total: 200,
                 showLabel: false
             };
-
-
         }
-
-
     }
 })();

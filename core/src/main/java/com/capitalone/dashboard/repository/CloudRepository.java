@@ -10,7 +10,7 @@ public interface CloudRepository extends
         CrudRepository<Cloud, ObjectId>,
         QueryDslPredicateExecutor<Cloud> {
 
-    @Query(value = "{ cottectorItemId:  ?0 }")
+    @Query(value = "{ collectorItemId:  ?0 }")
     Cloud findByCollectorItemId(ObjectId collectorItemId);
 
 }

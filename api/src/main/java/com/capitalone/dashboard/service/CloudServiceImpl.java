@@ -14,15 +14,15 @@ import java.util.List;
 @Service
 public class CloudServiceImpl implements CloudService {
 
-	private final CloudRepository cloudAggregatedDataRepository;
+	private final CloudRepository cloudRepository;
 	private final ComponentRepository componentRepository;
 	private final CollectorItemRepository collectorItemRepository;
 
 	@Autowired
-	public CloudServiceImpl(CloudRepository cloudAggregatedDataRepository,
+	public CloudServiceImpl(CloudRepository cloudRepository,
 			ComponentRepository cloudConfigRepository,
 			CollectorItemRepository collectorItemRepository) {
-		this.cloudAggregatedDataRepository = cloudAggregatedDataRepository;
+		this.cloudRepository = cloudRepository;
 		this.componentRepository = cloudConfigRepository;
 		this.collectorItemRepository = collectorItemRepository;
 	}
@@ -34,7 +34,7 @@ public class CloudServiceImpl implements CloudService {
 		CollectorItem item = component.getCollectorItems()
 				.get(CollectorType.Cloud).get(0);
 		ObjectId collectorItemId = item.getId();
-		Cloud data = cloudAggregatedDataRepository
+		Cloud data = cloudRepository
 				.findByCollectorItemId(collectorItemId);
 		if (data != null) {
 			CloudComputeData computeData = data.getCompute();
@@ -58,7 +58,7 @@ public class CloudServiceImpl implements CloudService {
 		CollectorItem item = component.getCollectorItems()
 				.get(CollectorType.Cloud).get(0);
 		ObjectId collectorItemId = item.getId();
-		Cloud data = cloudAggregatedDataRepository
+		Cloud data = cloudRepository
 				.findByCollectorItemId(collectorItemId);
 		List<CloudComputeInstanceData> list = new ArrayList<>();
 		if (data != null) {

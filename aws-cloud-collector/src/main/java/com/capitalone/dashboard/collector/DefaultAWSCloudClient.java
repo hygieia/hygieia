@@ -70,11 +70,12 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
 			AmazonCloudWatchClient cwClient = new AmazonCloudWatchClient(creds,
 					clientConfig);
-			DescribeInstancesResult result = ec2Client.describeInstances();
+			DescribeInstancesResult instanceResult = ec2Client.describeInstances();
 			DescribeImagesResult imageResult = ec2Client.describeImages();
+
 			DescribeVolumesResult volumeResult = ec2Client.describeVolumes();
 			List<Instance> instanceList = new ArrayList<>();
-			List<Reservation> reservations = result.getReservations();
+			List<Reservation> reservations = instanceResult.getReservations();
 			for (Reservation currRes : reservations) {
 				List<Instance> currInstanceList = currRes.getInstances();
 				instanceList.addAll(currInstanceList);
@@ -395,6 +396,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	@Override
 	public CloudStorageData getCloudStorageData(AWSConfig config) {
 		String proxyPassword;
+		logger.info("Collecting AWS Cloud Storage Data...");
 		try {
 			proxyPassword = Encryption.decryptString(
 					settings.getProxyPassword(), settings.getKey());
@@ -406,7 +408,6 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 					.withProxyUsername(settings.getProxyUser())
 					.withProxyPassword(proxyPassword);
 
-			logger.info("Collecting AWS Cloud Data...");
 			String accessKey = Encryption.decryptString(config.getAccessKey(),
 					settings.getKey());
 			String secretKey = Encryption.decryptString(config.getSecretKey(),
@@ -420,17 +421,18 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 			CloudStorageData storageData = new CloudStorageData();
 			ArrayList<CloudStorageBucket> bucketList = new ArrayList<>();
 			for (Bucket bucket : buckets) {
-				
 				CloudStorageBucket buk = new CloudStorageBucket();
 				buk.setCreationDate(bucket.getCreationDate().getTime());
 				buk.setName(bucket.getName());
 				buk.setOwner(bucket.getOwner().getDisplayName());
-
+/**
+ * The following code to get the objects does not work fully without the owner details.
+ * Need more work. In the mean time, leave the object browsing alone!
 				ArrayList<CloudStorageObject> objectList = new ArrayList<>();
 				try {
 					ObjectListing s3Objects = s3Client.listObjects(bucket
 							.getName());
-				
+
 					List<S3ObjectSummary> summary = s3Objects
 							.getObjectSummaries();
 					for (S3ObjectSummary s3ObjectSummary : summary) {
@@ -439,7 +441,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 						S3Object object = s3Client
 								.getObject(new GetObjectRequest(bucket.getName(), key));
 						ObjectMetadata meta = object.getObjectMetadata();
-						
+
 						String sseKey = meta.getSSEAlgorithm();
 						myObject.setCreationDate(meta.getLastModified().getTime());
 						myObject.setEncryption(sseKey);
@@ -453,13 +455,14 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 				} finally {
 					buk.setObjects(objectList);
 				}
+ **/
 				bucketList.add(buk);
 			}
 			storageData.setBucketList(bucketList);
 
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (AmazonS3Exception | EncryptionException se) {
+			logger.error("Error collecting storage data for access key=" + config.getAccessKey(), se);
 		}
 		return null;
 	}

@@ -82,6 +82,7 @@ public class CollectorServiceImpl implements CollectorService {
 	@Override
 	public CollectorItem getCollectorItemByCollectorIDandOptions(ObjectId id,
 			Map<String, Object> options) {
+
 		return collectorItemRepository.findByCollectorAndOptions(id, options);
 	}
 }
