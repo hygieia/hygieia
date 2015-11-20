@@ -7,7 +7,8 @@
     var directives = [
         'cpuTable',
         'ageTable',
-        'encryptedTable'
+        'encryptedTable',
+        'taggedTable'
     ];
 
     _(directives).forEach(function (name) {

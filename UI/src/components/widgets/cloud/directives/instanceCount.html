@@ -1,17 +1,22 @@
-<div class="widget instanceCount">
+<div class="widget notEncryptedPercent clickable">
     <div class="widget-heading">
-        Instance Count by Month
+        Encryption
     </div>
-    <div class="widget-body">
-        <chartist class="ct-chart"
-                  chartist-chart-type="Line"
-                  chartist-data="cloudView.instanceData"
-                  chartist-chart-options="cloudView.lineOptions"
-                >
-        </chartist>
+    <div class="widget-body" ng-click="cloudView.detail('Encrypted')">
+        <div guage-container>
+            <div class="ct-wrapper clearfix">
+                <chartist class="ct-chart ct-square db-chart-primary"
+                          chartist-data="cloudView.notEncryptedPercent"
+                          chartist-chart-options="cloudView.rainbowOptions"
+                          chartist-chart-type="Pie"></chartist>
+                <div class="guage-number">
+                    <span fit-text>{{ 100-cloudView.notEncryptedPercent.series[1] | number:0 }}<small class="percent">%
+                    </small></span>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div class="cloud-value">Encryption</div>
+        </div>
     </div>
-<<<<<<< HEAD
-</div> 
-=======
 </div>
->>>>>>> origin/cloud-changes
