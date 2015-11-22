@@ -53,7 +53,7 @@ public class TestResultServiceImpl implements TestResultService {
         }
 
         if (!request.getTypes().isEmpty()) {
-            builder.and(testResult.testSuites.any().type.in(request.getTypes()));
+            builder.and(testResult.testCapabilities.any().type.in(request.getTypes()));
         }
 
         Iterable<TestResult> result;

@@ -79,10 +79,10 @@ public class CucumberJsonToTestResultTransformerTest {
     private void assertSuite(TestSuite suite, String desc, int fail, int error, int skip, int total, long duration) {
         assertThat(suite.getType(), is(TestSuiteType.Functional));
         assertThat(suite.getDescription(), is(desc));
-        assertThat(suite.getFailureCount(), is(fail));
-        assertThat(suite.getErrorCount(), is(error));
-        assertThat(suite.getSkippedCount(), is(skip));
-        assertThat(suite.getTotalCount(), is(total));
+        assertThat(suite.getFailedTestCaseCount(), is(fail));
+        assertThat(suite.getSuccessTestCaseCount(), is(error));
+        assertThat(suite.getSkippedTestCaseCount(), is(skip));
+        assertThat(suite.getTotalTestCaseCount(), is(total));
         assertThat(suite.getDuration(), is(duration));
         assertThat(suite.getStartTime(), is(0l));
         assertThat(suite.getEndTime(), is(0l));
