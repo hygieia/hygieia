@@ -10,7 +10,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -29,7 +31,9 @@ public class DefaultJenkinsClient implements JenkinsClient {
     private final Pattern cucumberJsonFilePattern;
 
     private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs[name,url,builds[number,url]]";
-    private static final String BUILD_URL_SUFFIX = "/api/json?tree=timestamp,duration,number,fullDisplayName,building,artifacts[fileName,relativePath]";
+    private static final String LAST_SUCCESSFUL_BUILD = "/lastSuccessfulBuild";
+    private static final String LAST_SUCCESSFUL_BUILD_SUFFIX = "/lastSuccessfulBuild/api/json?tree=url,timestamp,number,fullDisplayName";
+    private static final String LAST_SUCCESSFUL_BUILD_ARTIFACT_SUFFIX = "/lastSuccessfulBuild/api/json?tree=timestamp,duration,number,fullDisplayName,building,artifacts[fileName,relativePath]";
 
     @Autowired
     public DefaultJenkinsClient(Supplier<RestOperations> restOperationsSupplier,
@@ -76,13 +80,37 @@ public class DefaultJenkinsClient implements JenkinsClient {
         return result;
     }
 
+
+    @Override
+    public Build getLastSuccessfulBuild(String buildUrl) {
+        Build build = new Build();
+        try {
+            // Get Build info
+            JSONObject buildJson = (JSONObject) new JSONParser().parse(getJson(buildUrl, LAST_SUCCESSFUL_BUILD_SUFFIX));
+            build.setBuildUrl(getString(buildJson, "url"));
+            build.setNumber(buildJson.get("number").toString());
+            build.setTimestamp(getLong(buildJson, "timestamp"));
+
+        } catch (ParseException e) {
+            LOG.error("Parsing jobs on instance: " + buildUrl, e);
+        } catch (HttpClientErrorException hce) {
+            if (hce.getStatusCode() != HttpStatus.NOT_FOUND) {
+                LOG.error("HTTP Client Exception for: " + buildUrl, hce);
+            }
+        }
+        return build;
+    }
+
     @Override
     public boolean buildHasCucumberResults(String buildUrl) {
 
-        JSONObject buildJson = null;
+        JSONObject buildJson;
+        if (buildUrl.contains("cos-ui-test-chrome-priority-high")) {
+            System.out.println("Here ");
+        }
         try {
             // Get Build info
-            buildJson = (JSONObject) new JSONParser().parse(getJson(buildUrl, BUILD_URL_SUFFIX));
+            buildJson = (JSONObject) new JSONParser().parse(getJson(buildUrl, LAST_SUCCESSFUL_BUILD_ARTIFACT_SUFFIX));
 
             Boolean building = (Boolean) buildJson.get("building");
 
@@ -103,6 +131,10 @@ public class DefaultJenkinsClient implements JenkinsClient {
 
         } catch (ParseException e) {
             LOG.error("Parsing jobs on instance: " + buildUrl, e);
+        } catch (HttpClientErrorException hce) {
+            if (hce.getStatusCode() != HttpStatus.NOT_FOUND) {
+                LOG.error("HTTP Client Exception for: " + buildUrl, hce);
+            }
         }
 
         return false;
@@ -111,43 +143,97 @@ public class DefaultJenkinsClient implements JenkinsClient {
     @Override
     public TestResult getCucumberTestResult(String buildUrl) {
         try {
-            JSONObject buildJson = (JSONObject) new JSONParser().parse(getJson(buildUrl, BUILD_URL_SUFFIX));
+            JSONObject buildJson = (JSONObject) new JSONParser().parse(getJson(buildUrl, LAST_SUCCESSFUL_BUILD_ARTIFACT_SUFFIX));
 
-            List<TestSuite> suites = new ArrayList<>();
+            List<TestCapability> capabilities = new ArrayList<>();
             Boolean building = (Boolean) buildJson.get("building");
 
             if (!building) {
                 for (Object artifactObj : (JSONArray) buildJson.get("artifacts")) {
                     JSONObject artifact = (JSONObject) artifactObj;
-
                     if (cucumberJsonFilePattern.matcher(getString(artifact, "fileName")).matches()) {
                         String cucumberJson = getCucumberJson(buildUrl, getString(artifact, "relativePath"));
-                        suites.addAll(cucumberTransformer.transformer(cucumberJson));
+                        if (!StringUtils.isEmpty(cucumberJson)) {
+                            TestCapability cap = new TestCapability();
+                            cap.setType(TestSuiteType.Functional);
+                            List<TestSuite> testSuites = cucumberTransformer.transformer(cucumberJson);
+                            cap.setDescription(getCapabilityDescription(cucumberJsonFilePattern.pattern(), getString(artifact, "relativePath")));
+                            cap.getTestSuites().addAll(testSuites);
+                            long duration = 0;
+                            int testSuiteSkippedCount = 0, testSuiteSuccessCount = 0, testSuiteFailCount = 0, testSuiteUnknownCount = 0;
+                            for (TestSuite t : testSuites) {
+                                duration += t.getDuration();
+                                switch(t.getStatus()) {
+                                    case Success:
+                                        testSuiteSuccessCount++;
+                                        break;
+                                    case Failure:
+                                        testSuiteFailCount++;
+                                        break;
+                                    case Skipped:
+                                        testSuiteSkippedCount++;
+                                        break;
+                                    default:
+                                        testSuiteUnknownCount++;
+                                }
+                            }
+                            if(testSuiteFailCount > 0) {
+                                cap.setStatus(TestCaseStatus.Failure);
+                            } else if(testSuiteSkippedCount > 0) {
+                                cap.setStatus(TestCaseStatus.Skipped);
+                            } else if (testSuiteSuccessCount > 0){
+                                cap.setStatus(TestCaseStatus.Success);
+                            } else {
+                                cap.setStatus(TestCaseStatus.Unknown);
+                            }
+                            cap.setFailedTestSuiteCount(testSuiteFailCount);
+                            cap.setSkippedTestSuiteCount(testSuiteSkippedCount);
+                            cap.setSuccessTestSuiteCount(testSuiteSuccessCount);
+                            cap.setUnknownStatusTestSuiteCount(testSuiteUnknownCount);
+                            cap.setTotalTestSuiteCount(testSuites.size());
+                            cap.setDuration(duration);
+                            cap.setExecutionId(buildJson.get("number").toString());
+                            capabilities.add(cap);
+                        }
                     }
                 }
             }
 
-            if (!suites.isEmpty()) {
+            if (!capabilities.isEmpty()) {
                 // There are test suites so let's construct a TestResult to encapsulate these results
                 TestResult testResult = new TestResult();
                 testResult.setDescription(getString(buildJson, "fullDisplayName"));
                 testResult.setExecutionId(buildJson.get("number").toString());
                 testResult.setUrl(buildUrl);
-
                 // Using the build times for start, end and duration is not ideal but the Cucumber JSON does not capture
                 // start or end times
                 testResult.setDuration(getLong(buildJson, "duration"));
                 testResult.setEndTime(getLong(buildJson, "timestamp"));
                 testResult.setStartTime(testResult.getEndTime() - testResult.getDuration());
-                testResult.getTestSuites().addAll(suites);
-
+                testResult.getTestCapabilities().addAll(capabilities);
+                testResult.setTotalCount(capabilities.size());
+                int testCapabilitySkippedCount = 0, testCapabilitySuccessCount = 0, testCapabilityFailCount = 0;
+                int testCapabilityUnknownCount = 0;
                 // Calculate counts based on test suites
-                for (TestSuite suite : suites) {
-                    testResult.setFailureCount(testResult.getFailureCount() + suite.getFailureCount());
-                    testResult.setErrorCount(testResult.getErrorCount() + suite.getErrorCount());
-                    testResult.setSkippedCount(testResult.getSkippedCount() + suite.getSkippedCount());
-                    testResult.setTotalCount(testResult.getTotalCount() + suite.getTotalCount());
+                for (TestCapability cap : capabilities) {
+                    switch(cap.getStatus()) {
+                        case Success:
+                            testCapabilitySuccessCount++;
+                            break;
+                        case Failure:
+                            testCapabilityFailCount++;
+                            break;
+                        case Skipped:
+                            testCapabilitySkippedCount++;
+                            break;
+                        default:
+                            testCapabilityUnknownCount++;
+                    }
                 }
+                testResult.setSuccessCount(testCapabilitySuccessCount);
+                testResult.setFailureCount(testCapabilityFailCount);
+                testResult.setSkippedCount(testCapabilitySkippedCount);
+                testResult.setUnknownStatusCount(testCapabilityUnknownCount);
 
                 return testResult;
             }
@@ -159,6 +245,10 @@ public class DefaultJenkinsClient implements JenkinsClient {
 
         // An exception occurred or this build does not have cucumber test results
         return null;
+    }
+
+    private String getCapabilityDescription(String cucumberJsonPattern, String fileName) {
+        return StringUtils.removeEnd(fileName, cucumberJsonPattern);
     }
 
     // Helper Methods
@@ -183,6 +273,6 @@ public class DefaultJenkinsClient implements JenkinsClient {
     }
 
     private String getCucumberJson(String buildUrl, String artifactRelativePath) {
-        return getJson(buildUrl, "/artifact/" + artifactRelativePath);
+        return getJson(buildUrl + LAST_SUCCESSFUL_BUILD, "/artifact/" + artifactRelativePath);
     }
 }

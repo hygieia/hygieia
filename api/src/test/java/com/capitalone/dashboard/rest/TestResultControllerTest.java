@@ -48,7 +48,8 @@ public class TestResultControllerTest {
         TestResult testResult = makeTestResult();
         Iterable<TestResult> results = Arrays.asList(testResult);
         DataResponse<Iterable<TestResult>> response = new DataResponse<>(results, 1);
-        TestSuite testSuite = testResult.getTestSuites().iterator().next();
+        TestCapability testCapability = testResult.getTestCapabilities().iterator().next();
+        TestSuite testSuite = testCapability.getTestSuites().iterator().next();
         TestCase testCase = testSuite.getTestCases().iterator().next();
 
         when(testResultService.search(Mockito.any(TestResultRequest.class))).thenReturn(response);
@@ -66,7 +67,7 @@ public class TestResultControllerTest {
                 .andExpect(jsonPath("$result[0].endTime", is(intVal(testResult.getEndTime()))))
                 .andExpect(jsonPath("$result[0].duration", is(intVal(testResult.getDuration()))))
                 .andExpect(jsonPath("$result[0].failureCount", is(intVal(testResult.getFailureCount()))))
-                .andExpect(jsonPath("$result[0].errorCount", is(intVal(testResult.getErrorCount()))))
+                .andExpect(jsonPath("$result[0].errorCount", is(intVal(testResult.getSuccessCount()))))
                 .andExpect(jsonPath("$result[0].skippedCount", is(intVal(testResult.getSkippedCount()))))
                 .andExpect(jsonPath("$result[0].totalCount", is(intVal(testResult.getTotalCount()))))
                 .andExpect(jsonPath("$result[0].testSuites", hasSize(1)))
@@ -77,7 +78,7 @@ public class TestResultControllerTest {
                 .andExpect(jsonPath("$result[0].testSuites[0].endTime", is(intVal(testResult.getEndTime()))))
                 .andExpect(jsonPath("$result[0].testSuites[0].duration", is(intVal(testResult.getDuration()))))
                 .andExpect(jsonPath("$result[0].testSuites[0].failureCount", is(intVal(testResult.getFailureCount()))))
-                .andExpect(jsonPath("$result[0].testSuites[0].errorCount", is(intVal(testResult.getErrorCount()))))
+                .andExpect(jsonPath("$result[0].testSuites[0].errorCount", is(intVal(testResult.getSuccessCount()))))
                 .andExpect(jsonPath("$result[0].testSuites[0].skippedCount", is(intVal(testResult.getSkippedCount()))))
                 .andExpect(jsonPath("$result[0].testSuites[0].totalCount", is(intVal(testResult.getTotalCount()))))
 
@@ -99,9 +100,19 @@ public class TestResultControllerTest {
         result.setEndTime(3l);
         result.setUrl("http://foo.com");
         result.setFailureCount(1);
-        result.setErrorCount(2);
+        result.setSuccessCount(2);
         result.setSkippedCount(0);
         result.setTotalCount(3);
+
+        TestCapability capability = new TestCapability();
+        capability.setDescription("description");
+        capability.setDuration(1l);
+        capability.setStartTime(2l);
+        capability.setEndTime(3l);
+        capability.setFailedTestSuiteCount(1);
+        capability.setSkippedTestSuiteCount(2);
+        capability.setSuccessTestSuiteCount(3);
+        capability.setTotalTestSuiteCount(6);
 
         TestSuite suite = new TestSuite();
         suite.setDescription("description");
@@ -109,12 +120,13 @@ public class TestResultControllerTest {
         suite.setStartTime(2l);
         suite.setEndTime(3l);
         suite.setType(TestSuiteType.Functional);
-        suite.setFailureCount(1);
-        suite.setErrorCount(2);
-        suite.setSkippedCount(0);
-        suite.setTotalCount(3);
+        suite.setFailedTestCaseCount(1);
+        suite.setSuccessTestCaseCount(2);
+        suite.setSkippedTestCaseCount(0);
+        suite.setTotalTestCaseCount(3);
 
-        result.getTestSuites().add(suite);
+        capability.getTestSuites().add(suite);
+        result.getTestCapabilities().add(capability);
 
         TestCase testCase = new TestCase();
         testCase.setId("id");
