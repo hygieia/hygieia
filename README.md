@@ -42,4 +42,4 @@ This project adheres to the [Open Code of Conduct][code-of-conduct]. By particip
 
 
 ### How to Start
-[Setup Instructions](https://github.com/capitalone/Hygieia/blob/master/Setup.md)
+[Setup Instructions](Setup.md)
