@@ -51,7 +51,7 @@ running Database and make sure that dashboarddb is created and you are successfu
 
 #### API Layer
 Please click on the link below to learn about how to build and run the API layer
-* [API](https://github.com/capitalone/Hygieia/tree/master/api)
+* [API](/api)
 
 #### Tool Collectors
 * In general all the collectors can be run using the following command
@@ -61,23 +61,23 @@ java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properti
 For each individual collector setup click on the links below
 
   * **Agile Story Management**
-    * [VersionOne](https://github.com/capitalone/Hygieia/tree/master/VersionOneFeatureCollector)
-    * [Jira](https://github.com/capitalone/Hygieia/tree/master/JiraFeatureCollector)
+    * [VersionOne](versionone-feature-collector)
+    * [Jira](jira-feature-collector)
   * **Source**
-    * [GitHub](https://github.com/capitalone/Hygieia/tree/master/GitHubSourceCodeCollector)
-    * [Subversion](https://github.com/capitalone/Hygieia/tree/master/SourceCodeCollector)
+    * [GitHub](github-scm-collector)
+    * [Subversion](subversion-scm-collector)
   * **Build tools**
-    * [Jenkins/Hudson](https://github.com/capitalone/Hygieia/tree/master/BuildCollector)
+    * [Jenkins/Hudson](jenkins-build-collector)
   * **Code Quality**
-    * [Sonar](https://github.com/capitalone/Hygieia/tree/master/CodeQualityCollector)
+    * [Sonar](sonar-codequality-collector)
   * **Deployment**
-    * [uDeploy 6.x from IBM](https://github.com/capitalone/Hygieia/tree/master/DeployCollector)
+    * [uDeploy 6.x from IBM](udeploy-deployment-collector)
 
 You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.
 
 #### UI Layer
 Please click on the link below to learn about how to build and run the UI layer
- * [UI](https://github.com/capitalone/Hygieia/tree/master/UI)
+ * [UI](/UI)
 
 ### Build Docker images
 
