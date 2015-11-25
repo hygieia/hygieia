@@ -1,0 +1,133 @@
+<div class="widget-detail test-detail" ng-model="testDetails.testResult">
+    <a href="" class="detail-close" ng-click="testDetails.close()"><span class="fa fa-2x fa-times-circle-o"></span></a>
+
+    <div class="widget-detail-heading">
+
+        <div class="ca-label">Run#: {{testDetails.testResult.executionId}} <br>
+            Run Duration: {{testDetails.duration}} h
+        </div>
+    </div>
+
+    <div class="widget-detail-body">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Group</th>
+                <th>Test Suites</th>
+                <th>Passed</th>
+                <th>Failed</th>
+                <th>Duration</th>
+                <th></th>
+            </tr>
+            </thead>
+            <div>
+                <tbody ng-repeat="capability in testDetails.testResult.testCapabilities">
+                <tr id="capability.description" class="clickableRow"
+                    ng-click="(capability.testSuites.length > 0) ? showCapabilityDetail(capability): null">
+                    <td>{{capability.description}}</td>
+                    <td>{{capability.totalTestSuiteCount}}</td>
+                    <td>{{capability.successTestSuiteCount}}</td>
+                    <td>{{capability.failedTestSuiteCount}}</td>
+                    <td ng-if="capability.duration == 0">-</td>
+                    <td ng-if="capability.duration > 0">{{capability.duration | date:'hh:mm:ss'}}</td>
+                    <td><a href=""><i
+                            ng-hide="(activeCapability==capability.description) || (capability.testSuites.length ==0)"
+                            class="fa fa-plus fa-x"></i><i ng-show="activeCapability==capability.description"
+                                                           class="fa fa-minus fa-x"></i></a></td>
+                </tr>
+                <tr ng-show="activeCapability==capability.description">
+                    <td colspan="6">
+                        <div>
+                            <div class="pull-left">
+                                <table class="table table-hover table-condensed table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Test Suite</th>
+                                        <th>Test Cases</th>
+                                        <th>Passed</th>
+                                        <th>Failed</th>
+                                        <th>Duration</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody ng-repeat="testSuite in capability.testSuites">
+                                    <tr id="testSuite.description" class="clickableRow"
+                                        ng-click="(testSuite.testCases.length > 0) ? showTestSuiteDetail(testSuite): null">
+                                        <td>{{testSuite.description}}</td>
+                                        <td>{{testSuite.totalTestCaseCount}}</td>
+                                        <td>{{testSuite.successTestCaseCount}}</td>
+                                        <td>{{testSuite.failedTestCaseCount}}</td>
+                                        <td ng-if="testSuite.duration == 0">-</td>
+                                        <td ng-if="testSuite.duration > 0">{{testSuite.duration | date:'hh:mm:ss'}}</td>
+                                        <td><a href=""><i
+                                                ng-hide="(activeSuite==testSuite.description) || (testSuite.testCases.length ==0)"
+                                                class="fa fa-plus fa-x"></i><i
+                                                ng-show="activeSuite==testSuite.description"
+                                                class="fa fa-minus fa-x"></i></a></td>
+                                    </tr>
+                                    <tr ng-show="activeSuite==testSuite.description">
+                                        <td colspan="6">
+                                            <div>
+                                                <div class="pull-left">
+                                                    <table class="table table-hover table-condensed table-striped">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>Test Case</th>
+                                                            <th>Total</th>
+                                                            <th>Passed</th>
+                                                            <th>Failed</th>
+                                                            <th>Skipped</th>
+                                                            <th>Duration</th>
+                                                            <th></th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody ng-repeat="testCase in testSuite.testCases">
+                                                        <tr id="testCase.description" class="clickableRow"
+                                                            ng-click="(testSuite.testCases.length > 0) ? showTestCaseDetail(testSuite): null">
+                                                            <td>{{testCase.description}}</td>
+                                                            <td>{{testCase.totalTestStepCount}}</td>
+                                                            <td>{{testCase.successTestStepCount}}</td>
+                                                            <td>{{testCase.failedTestStepCount}}</td>
+                                                            <td>{{testCase.skippedTestStepCount}}</td>
+                                                            <td ng-if="testCase.duration == 0">-</td>
+                                                            <td ng-if="testCase.duration > 0">{{testCase.duration | date:'hh:mm:ss'}}</td>
+
+                                                        </tr>
+                                                        <tr ng-show="activeSuite==testSuite.description">
+                                                            <td colspan="6">
+                                                                <div>
+                                                                    <div class="dash-row">
+                                                                        <table class="table">
+                                                                            <tbody ng-repeat="testStep in testCase.testSteps">
+                                                                            <tr id="testStep.description">
+                                                                                <td ng-if="testStep.status != 'Success'">
+                                                                                    <span dash-status=false></span>
+                                                                                </td>
+                                                                                <td ng-if="testStep.status == 'Success'">
+                                                                                    <span dash-status=true></span>
+                                                                                </td>
+                                                                                <td>{{testStep.description}}</td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </div>
+        </table>
+    </div>
+</div>
