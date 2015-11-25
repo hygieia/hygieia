@@ -5,8 +5,8 @@
         .module('devops-dashboard')
         .controller('CodeAnalysisViewController', CodeAnalysisViewController);
 
-    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', '$q', '$filter'];
-    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, $q, $filter) {
+    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', '$q', '$filter', '$modal'];
+    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, $q, $filter, $modal) {
         var ctrl = this;
 
         ctrl.pieOptions = {
@@ -18,6 +18,7 @@
         };
 
         ctrl.showStatusIcon = showStatusIcon;
+        ctrl.showDetail = showDetail;
 
         coveragePieChart({});
 
@@ -97,7 +98,7 @@
         function processTestResponse(response) {
             var deferred = $q.defer();
             var testResult = _.isEmpty(response.result) ? { testCapabilities: []} : response.result[0];
-
+            ctrl.testResult = testResult;
             var allZeros = {
                 failureCount: 0, successCount: 0, skippedCount: 0, totalCount: 0
             };
@@ -119,6 +120,15 @@
 
 
             ctrl.functionalTests = [];
+            ctrl.executionId = _.isEmpty(response.result) ?  "-" : response.result[0].executionId;
+
+            console.log("Execution ID=", ctrl.executionId);
+            ctrl.functionalTests.push({
+                name: 'Total',
+                formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
+                status: 'Ok',
+                statusMessage: ''
+            });
 
             ctrl.functionalTests.push({
                 name: 'Success',
@@ -141,14 +151,6 @@
                 statusMessage: aggregate.skippedCount === 0 ? '' : 'Skipped count > 0'
             });
 
-
-            ctrl.functionalTests.push({
-                name: 'Total',
-                formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
-                status: 'Ok',
-                statusMessage: ''
-            });
-
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
         }
@@ -160,6 +162,7 @@
                 series: [ lineCoverage.value, (100 - lineCoverage.value) ]
             };
         }
+
 
         function getMetric(metrics, metricName, title) {
             title = title || metricName;
@@ -187,6 +190,22 @@
 
         function showStatusIcon(item) {
             return item.status && item.status.toLowerCase() != 'ok';
+        }
+
+
+        function showDetail() {
+            console.log("In showDetail");
+            $modal.open({
+                controller: 'TestDetailsController',
+                controllerAs: 'testDetails',
+                templateUrl: 'components/widgets/codeanalysis/testdetails.html',
+                size: 'lg',
+                resolve: {
+                    testResult: function() {
+                        return ctrl.testResult;
+                    }
+                }
+            });
         }
     }
 })();
