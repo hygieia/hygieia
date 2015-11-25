@@ -24,6 +24,6 @@ public interface TeamRepository extends
 	List<TeamCollectorItem> getTeamMaxChangeDate(ObjectId collectorId,
 			String lastChangeDate);
 
-	@Query(value = "{ $query: {'options.teamId' : ?0},{'options.teamId' : 1}}")
+	@Query(value = "{'options.teamId' : ?0}")
 	List<TeamCollectorItem> getTeamIdById(String teamId);
 }
