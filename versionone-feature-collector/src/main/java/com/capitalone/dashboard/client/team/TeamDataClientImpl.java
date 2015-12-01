@@ -16,12 +16,6 @@
 
 package com.capitalone.dashboard.client.team;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.model.TeamCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
@@ -29,6 +23,11 @@ import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
+import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the primary implemented/extended data collector for the feature
@@ -41,12 +40,12 @@ import com.capitalone.dashboard.util.FeatureWidgetQueries;
  */
 public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 		TeamDataClient {
-	private static Log logger = LogFactory.getLog(TeamDataClientImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientImpl.class);
+	private static final ClientUtil TOOLS = new ClientUtil();
 
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
 	private final TeamRepository teamRepo;
-	private final ClientUtil tools;
 	private final FeatureCollectorRepository featureCollectorRepository;
 
 	/**
@@ -60,14 +59,13 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 			VersionOneDataFactoryImpl vOneApi) {
 		super(featureSettings, teamRepository, featureCollectorRepository,
 				vOneApi);
-		logger.debug("Constructing data collection for the feature widget, story-level data...");
+		LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
 		this.featureSettings = featureSettings;
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepo = teamRepository;
 		this.featureWidgetQueries = new FeatureWidgetQueries(
 				this.featureSettings);
-		tools = new ClientUtil();
 	}
 
 	/**
@@ -83,8 +81,6 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
 		try {
 			JSONObject dataMainObj = new JSONObject();
-			System.out.println("Size of PagingJSONArray: "
-					+ tmpMongoDetailArray.size());
 			for (int i = 0; i < tmpMongoDetailArray.size(); i++) {
 				if (dataMainObj != null) {
 					dataMainObj.clear();
@@ -93,7 +89,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 				TeamCollectorItem team = new TeamCollectorItem();
 
 				@SuppressWarnings("unused")
-				boolean deleted = this.removeExistingEntity(tools
+				boolean deleted = this.removeExistingEntity(TOOLS
 						.sanitizeResponse((String) dataMainObj.get("_oid")));
 
 				// collectorId
@@ -101,37 +97,35 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 						"VersionOne").getId());
 
 				// teamId
-				team.setTeamId(tools.sanitizeResponse((String) dataMainObj
+				team.setTeamId(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("_oid")));
 
 				// name
-				team.setName(tools.sanitizeResponse((String) dataMainObj
+				team.setName(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("Name")));
 
 				// changeDate;
-				team.setChangeDate(tools.toCanonicalDate(tools
+				team.setChangeDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("ChangeDate"))));
 
 				// assetState
-				team.setAssetState(tools.sanitizeResponse((String) dataMainObj
+				team.setAssetState(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("AssetState")));
 
 				// isDeleted;
-				team.setIsDeleted(tools.sanitizeResponse((String) dataMainObj
+				team.setIsDeleted(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("IsDeleted")));
 
 				try {
 					teamRepo.save(team);
 				} catch (Exception e) {
-					logger.error("Unexpected error caused when attempting to save data\nCaused by: "
-							+ e.getCause());
-					e.printStackTrace();
+					LOGGER.error("Unexpected error caused when attempting to save data\nCaused by: "
+							+ e.getCause(), e);
 				}
 			}
 		} catch (Exception e) {
-			logger.error("FAILED: " + e.getMessage() + ", " + e.getClass());
-			e.printStackTrace();
+			LOGGER.error("FAILED: " + e.getMessage() + ", " + e.getClass(), e);
 		}
 	}
 
@@ -171,10 +165,9 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 				deleted = true;
 			}
 		} catch (IndexOutOfBoundsException ioobe) {
-			logger.debug("Nothing matched the redundancy checking from the database");
+			LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
 		} catch (Exception e) {
-			logger.error("There was a problem validating the redundancy of the data model");
-			e.printStackTrace();
+			LOGGER.error("There was a problem validating the redundancy of the data model", e);
 		}
 
 		return deleted;

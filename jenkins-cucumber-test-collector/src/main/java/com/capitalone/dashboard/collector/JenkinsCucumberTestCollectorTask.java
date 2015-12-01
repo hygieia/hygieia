@@ -1,19 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
-
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -25,6 +11,18 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.JenkinsCucumberTestCollectorRepository;
 import com.capitalone.dashboard.repository.JenkinsCucumberTestJobRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Kyle Heide on 2/12/15.
@@ -33,8 +31,9 @@ import com.capitalone.dashboard.repository.TestResultRepository;
 public class JenkinsCucumberTestCollectorTask extends
 		CollectorTask<JenkinsCucumberTestCollector> {
 
-	private static final Log LOG = LogFactory
-			.getLog(JenkinsCucumberTestCollector.class);
+	@SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(JenkinsCucumberTestCollector.class);
+	private static final int CLEANUP_INTERVAL = 3600000;
 
 	private final JenkinsCucumberTestCollectorRepository jenkinsCucumberTestCollectorRepository;
 	private final JenkinsCucumberTestJobRepository jenkinsCucumberTestJobRepository;
@@ -42,7 +41,7 @@ public class JenkinsCucumberTestCollectorTask extends
 	private final JenkinsClient jenkinsClient;
 	private final JenkinsSettings jenkinsCucumberTestSettings;
 	private final ComponentRepository dbComponentRepository;
-	private final int CLEANUP_INTERVAL = 3600000;
+
 
 	@Autowired
 	public JenkinsCucumberTestCollectorTask(
@@ -89,7 +88,7 @@ public class JenkinsCucumberTestCollectorTask extends
 		}
 
 		for (String instanceUrl : collector.getBuildServers()) {
-			logInstanceBanner(instanceUrl);
+			logBanner(instanceUrl);
 
 			Map<JenkinsJob, Set<Build>> buildsByJob = jenkinsClient
 					.getInstanceJobs(instanceUrl);
@@ -108,11 +107,10 @@ public class JenkinsCucumberTestCollectorTask extends
 	 * Clean up unused hudson/jenkins collector items
 	 *
 	 * @param collector
-	 *            the {@link HudsonCollector}
 	 */
-
+	@SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
 	private void clean(JenkinsCucumberTestCollector collector) {
-		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+		Set<ObjectId> uniqueIDs = new HashSet<>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
 				.findAll()) {
 			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
@@ -127,8 +125,8 @@ public class JenkinsCucumberTestCollectorTask extends
 				}
 			}
 		}
-		List<JenkinsJob> jobList = new ArrayList<JenkinsJob>();
-		Set<ObjectId> udId = new HashSet<ObjectId>();
+		List<JenkinsJob> jobList = new ArrayList<>();
+		Set<ObjectId> udId = new HashSet<>();
 		udId.add(collector.getId());
 		for (JenkinsJob job : jenkinsCucumberTestJobRepository
 				.findByCollectorIdIn(udId)) {
@@ -219,32 +217,4 @@ public class JenkinsCucumberTestCollectorTask extends
 	private Set<Build> nullSafe(Set<Build> builds) {
 		return builds == null ? new HashSet<Build>() : builds;
 	}
-
-	// Helper Log Methods TODO: these should be moved to the super class in core
-
-	private void log(String marker, long start) {
-		log(marker, start, null);
-	}
-
-	private void log(String text, long start, Integer count) {
-		long end = System.currentTimeMillis();
-		String elapsed = ((end - start) / 1000) + "s";
-		String token2 = "";
-		String token3;
-		if (count == null) {
-			token3 = StringUtils.leftPad(elapsed, 30 - text.length());
-		} else {
-			String countStr = count.toString();
-			token2 = StringUtils.leftPad(countStr, 20 - text.length());
-			token3 = StringUtils.leftPad(elapsed, 10);
-		}
-		LOG.info(text + token2 + token3);
-	}
-
-	private void logInstanceBanner(String instanceUrl) {
-		LOG.info("------------------------------");
-		LOG.info(instanceUrl);
-		LOG.info("------------------------------");
-	}
-
 }

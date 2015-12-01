@@ -5,10 +5,14 @@ import com.capitalone.dashboard.client.story.StoryDataClientImpl;
 import com.capitalone.dashboard.client.team.TeamDataClientImpl;
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.model.FeatureCollector;
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.FeatureCollectorRepository;
+import com.capitalone.dashboard.repository.FeatureRepository;
+import com.capitalone.dashboard.repository.ProjectRepository;
+import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.FeatureSettings;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -23,8 +27,7 @@ import java.util.Map;
  */
 @Component
 public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
-	private static final Log logger = LogFactory
-			.getLog(FeatureCollectorTask.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 
 	private final FeatureRepository featureRepository;
 	private final TeamRepository teamRepository;
@@ -94,7 +97,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 */
 	@Override
 	public void collect(FeatureCollector collector) {
-		logger.info("Starting Feature collection...");
+		LOGGER.info("Starting Feature collection...");
 
 		TeamDataClientImpl teamData = new TeamDataClientImpl(
 				this.featureCollectorRepository, this.featureSettings,
@@ -111,11 +114,11 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 				this.featureCollectorRepository, this.v1Connection);
 		storyData.updateStoryInformation();
 
-		logger.info("Feature Data Collection Finished");
+		LOGGER.info("Feature Data Collection Finished");
 	}
 
 	private VersionOneDataFactoryImpl connectToPersistentClient() {
-		Map<String, String> auth = new HashMap<String, String>();
+		Map<String, String> auth = new HashMap<>();
 		auth.put("v1ProxyUrl", this.featureSettings.getVersionOneProxyUrl());
 		auth.put("v1BaseUri", this.featureSettings.getVersionOneBaseUri());
 		auth.put("v1AccessToken",
