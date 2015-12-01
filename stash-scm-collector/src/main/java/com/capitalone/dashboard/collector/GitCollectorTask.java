@@ -42,7 +42,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
                                    GitClient gitClient,
                                    GitSettings gitSettings,
                                    ComponentRepository dbComponentRepository) {
-        super(taskScheduler, "Git");
+        super(taskScheduler, "Stash");
         this.collectorRepository = collectorRepository;
         this.gitRepoRepository = gitRepoRepository;
         this.commitRepository = commitRepository;
@@ -54,7 +54,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
     @Override
     public Collector getCollector() {
         Collector protoType = new Collector();
-        protoType.setName("Git");
+        protoType.setName("Stash");
         protoType.setCollectorType(CollectorType.SCM);
         protoType.setOnline(true);
         protoType.setEnabled(true);
