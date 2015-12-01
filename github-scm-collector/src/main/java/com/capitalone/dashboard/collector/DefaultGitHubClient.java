@@ -24,7 +24,7 @@ import org.springframework.web.client.RestOperations;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,10 +44,10 @@ public class DefaultGitHubClient implements GitHubClient {
 	private final GitHubSettings settings;
 
 	private final RestOperations restOperations;
-	private final String SEGMENT_API = "/api/v3/repos/";
-	private final String PUBLIC_GITHUB_REPO_HOST = "api.github.com/repos/";
-	private final String PUBLIC_GITHUB_HOST_NAME = "github.com";
-	private final int FIRST_RUN_HISTORY_DEFAULT = 14;
+	private static final String SEGMENT_API = "/api/v3/repos/";
+	private static final String PUBLIC_GITHUB_REPO_HOST = "api.github.com/repos/";
+	private static final String PUBLIC_GITHUB_HOST_NAME = "github.com";
+	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
 
 	@Autowired
 	public DefaultGitHubClient(GitHubSettings settings,
@@ -56,6 +56,7 @@ public class DefaultGitHubClient implements GitHubClient {
 		this.restOperations = restOperationsSupplier.get();
 	}
 
+	@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"}) // agreed, fixme
 	@Override
 	public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) {
 
@@ -203,15 +204,13 @@ public class DefaultGitHubClient implements GitHubClient {
 	}
 
 	private HttpHeaders createHeaders(final String userId, final String password) {
-		return new HttpHeaders() {
-			{
-				String auth = userId + ":" + password;
-				byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset
-						.forName("US-ASCII")));
-				String authHeader = "Basic " + new String(encodedAuth);
-				set("Authorization", authHeader);
-			}
-		};
+		String auth = userId + ":" + password;
+		byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
+		String authHeader = "Basic " + new String(encodedAuth);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", authHeader);
+		return headers;
 	}
 
 	private JSONArray paresAsArray(ResponseEntity<String> response) {

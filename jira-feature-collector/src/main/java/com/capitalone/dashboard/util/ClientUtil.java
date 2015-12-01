@@ -16,12 +16,11 @@
 
 package com.capitalone.dashboard.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -36,9 +35,10 @@ import java.util.List;
  * @author KFK884
  *
  */
+@SuppressWarnings("PMD.AvoidCatchingNPE") // agreed..fixme
 public class ClientUtil {
 	@SuppressWarnings("unused")
-	private static Log LOGGER = LogFactory.getLog(ClientUtil.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClientUtil.class);
 
 	/**
 	 * Default constructor
@@ -58,67 +58,27 @@ public class ClientUtil {
 	 *            to be sanitized
 	 * @return A UTF-8 sanitized response
 	 */
-	public String sanitizeResponse(String nativeRs) {
-		boolean isNull = false;
-		byte[] utf8Bytes;
-		CharsetDecoder cs = Charset.forName("UTF-8").newDecoder();
-		String canonicalRs = new String();
-		try {
-			isNull = nativeRs.equalsIgnoreCase("null");
-			if (isNull) {
-				return "";
-			}
-			isNull = nativeRs.isEmpty();
-			if (isNull) {
-				return "";
-			}
-			utf8Bytes = nativeRs.getBytes("UTF-8");
-			cs.decode(ByteBuffer.wrap(utf8Bytes));
-			canonicalRs = new String(utf8Bytes, StandardCharsets.UTF_8);
-		} catch (NullPointerException npe) {
+	public String sanitizeResponse(Object inNativeRs) {
+		if (inNativeRs == null) {
 			return "";
+		}
+		String nativeRs = inNativeRs.toString();
+
+		byte[] utf8Bytes;
+		CharsetDecoder cs = StandardCharsets.UTF_8.newDecoder();
+		try {
+			if ("null".equalsIgnoreCase(nativeRs)) {
+				return "";
+			}
+			if (nativeRs.isEmpty()) {
+				return "";
+			}
+			utf8Bytes = nativeRs.getBytes(StandardCharsets.UTF_8);
+			cs.decode(ByteBuffer.wrap(utf8Bytes));
+			return new String(utf8Bytes, StandardCharsets.UTF_8);
 		} catch (Exception e) {
 			return "[INVALID NON UTF-8 ENCODING]";
 		}
-
-		return canonicalRs;
-	}
-
-	/**
-	 * Utility method used to sanitize / canonicalize a String-based response
-	 * artifact from a source system. This will return a valid UTF-8 strings, or
-	 * a "" (blank) response for any of the following cases:
-	 * "NULL";"Null";"null";null;""
-	 *
-	 * @param nativeRs
-	 *            The string response artifact retrieved from the source system
-	 *            to be sanitized
-	 * @return A UTF-8 sanitized response
-	 */
-	public String sanitizeResponse(Object nativeRs) {
-		boolean isNull = false;
-		byte[] utf8Bytes;
-		CharsetDecoder cs = Charset.forName("UTF-8").newDecoder();
-		String canonicalRs = new String();
-		try {
-			isNull = nativeRs.toString().equalsIgnoreCase("null");
-			if (isNull) {
-				return "";
-			}
-			isNull = nativeRs.toString().isEmpty();
-			if (isNull) {
-				return "";
-			}
-			utf8Bytes = nativeRs.toString().getBytes("UTF-8");
-			cs.decode(ByteBuffer.wrap(utf8Bytes));
-			canonicalRs = new String(utf8Bytes, StandardCharsets.UTF_8);
-		} catch (NullPointerException npe) {
-			return "";
-		} catch (Exception e) {
-			return "[INVALID NON UTF-8 ENCODING]";
-		}
-
-		return canonicalRs;
 	}
 
 	/**
@@ -131,20 +91,17 @@ public class ClientUtil {
 	 * @return A stringified canonical date format
 	 */
 	public String toCanonicalDate(String nativeRs) {
-		String canonicalRs = new String();
-		StringBuilder interrimRs = new StringBuilder();
+		String canonicalRs = "";
 		int maxIndex = 23;
 
 		try {
-			interrimRs = new StringBuilder(nativeRs);
+			StringBuilder interrimRs = new StringBuilder(nativeRs);
 			if (interrimRs.length() > 0) {
 				canonicalRs = interrimRs.substring(0, maxIndex);
 				canonicalRs = canonicalRs.concat("0000");
-			} else {
-				canonicalRs = "";
 			}
 		} catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
-			canonicalRs = "";
+			// nothing, fall through.
 		}
 
 		return canonicalRs;
@@ -159,7 +116,7 @@ public class ClientUtil {
 	 * @return The sanitized, canonical List<String>
 	 */
 	public List<String> toCanonicalList(List<String> list) {
-		List<String> canonicalRs = new ArrayList<String>();
+		List<String> canonicalRs = new ArrayList<>();
 
 		try {
 			Iterator<String> iterator = list.iterator();
@@ -185,7 +142,7 @@ public class ClientUtil {
 	 * @return A nativized date string that can be consumed by a source system
 	 */
 	public String toNativeDate(String canonicalDate) {
-		String nativeDate = new String();
+		String nativeDate = "";
 		try {
 			nativeDate = canonicalDate.replace("T", "%20");
 			try {
@@ -212,9 +169,6 @@ public class ClientUtil {
 	@SuppressWarnings("unchecked")
 	public JSONObject toCanonicalSprint(String nativeRs) {
 		JSONObject canonicalRs = new JSONObject();
-		String interrimStr = new String();
-		String temp = new String();
-		StringBuffer interrimBuf = new StringBuffer();
 		CharSequence interrimChar;
 		int start = 0;
 		int end = 0;
@@ -222,20 +176,18 @@ public class ClientUtil {
 		try {
 			start = nativeRs.indexOf('[') + 1;
 			end = nativeRs.length() - 1;
-			interrimBuf = new StringBuffer(nativeRs);
+			StringBuffer interrimBuf = new StringBuffer(nativeRs);
 			interrimChar = interrimBuf.subSequence(start, end);
-			interrimStr = interrimChar.toString();
+			String interrimStr = interrimChar.toString();
 
 			List<String> list = Arrays.asList(interrimStr.split(","));
 			Iterator<String> listIt = list.iterator();
 			while (listIt.hasNext()) {
-				String key = new String();
-				String value = new String();
-				temp = listIt.next();
+				String temp = listIt.next();
 				List<String> keyValuePair = Arrays.asList(temp.split("=", 2));
-				key = keyValuePair.get(0).toString();
-				value = keyValuePair.get(1).toString();
-				if (value.equalsIgnoreCase("<null>")) {
+				String key = keyValuePair.get(0).toString();
+				String value = keyValuePair.get(1).toString();
+				if ("<null>".equalsIgnoreCase(value)) {
 					value = "";
 				}
 				canonicalRs.put(key, value);

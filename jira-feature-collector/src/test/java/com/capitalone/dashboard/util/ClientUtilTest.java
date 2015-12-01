@@ -16,11 +16,6 @@
 
 package com.capitalone.dashboard.util;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -30,15 +25,20 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capitalone.dashboard.util.ClientUtil;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests key facets of the ClientUtilTest class, which is responsible for
  * orchestrating updates to the local repositories based on data from the source
  * system.
- * 
+ *
  * @author KFK884
- * 
+ *
  */
 public class ClientUtilTest {
 	private static Logger logger = LoggerFactory.getLogger("ClientUtilTest");
@@ -68,39 +68,12 @@ public class ClientUtilTest {
 	public void tearDown() throws Exception {
 	}
 
-	/**
-	 * Tests capabilities of string sanitizing method to, in fact, sanitize data
-	 */
-	@Test
-	public void testSanitizeResponse_String() {
-		String badEncoding;
-		byte[] b = { (byte) 0xc3, (byte) 0x28 };
-		badEncoding = new String(b);
-
-		assertEquals("Santized test string did not match expected output",
-				"Happy Path", classUnderTest.sanitizeResponse("Happy Path"));
-		assertEquals("Santized test string did not match expected output", "",
-				classUnderTest.sanitizeResponse(""));
-		assertEquals("Santized test string did not match expected output", "",
-				classUnderTest.sanitizeResponse("NULL"));
-		assertEquals("Santized test string did not match expected output", "",
-				classUnderTest.sanitizeResponse("Null"));
-		assertEquals("Santized test string did not match expected output", "",
-				classUnderTest.sanitizeResponse("null"));
-		assertEquals("Santized test string did not match expected output", "",
-				classUnderTest.sanitizeResponse(null));
-		// This test is slightly misleading - there is no good way natively to
-		// handle for removal of character set mapping tests in Java
-		assertNotEquals("Santized test string did not match expected output",
-				"[INVALID NON UTF-8 ENCODING]",
-				classUnderTest.sanitizeResponse(badEncoding));
-	}
 
 	/**
 	 * Tests capabilities of string sanitizing method to, in fact, sanitize data
 	 */
 	@Test
-	public void testSanitizeResponse_Object() {
+	public void testSanitizeResponse() {
 		String badEncoding;
 		byte[] b = { (byte) 0xc3, (byte) 0x28 };
 		badEncoding = new String(b);
@@ -231,7 +204,7 @@ public class ClientUtilTest {
 		testSprint = new String(
 				"com.atlassian.greenhopper.service.sprint.Sprint@78d510cf[id=590,rapidViewId=265,state=FUTURE,name=Chassis Sprint 1.1,startDate=2015-06-04T09:22:11.525-04:00,endDate=<null>,completeDate=<null>,sequence=590]");
 		testSprint = classUnderTest.sanitizeResponse(testSprint);
-		
+
 		expectedBlank = new JSONObject();
 		expectedFull = new JSONObject();
 		expectedFull.put("id", "590");

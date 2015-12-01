@@ -272,14 +272,13 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     private HttpHeaders createHeaders(final String userId, final String password) {
-        return new HttpHeaders() {
-            {
-                String auth = userId + ":" + password;
-                byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
-                String authHeader = "Basic " + new String(encodedAuth);
-                set(HttpHeaders.AUTHORIZATION, authHeader);
-            }
-        };
+        byte[] encodedAuth = Base64.encodeBase64(
+                (userId + ":" + password).getBytes(StandardCharsets.US_ASCII));
+        String authHeader = "Basic " + new String(encodedAuth);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, authHeader);
+        return headers;
     }
 
     private String getLog(String buildUrl) {

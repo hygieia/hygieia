@@ -16,28 +16,27 @@
 
 package com.capitalone.dashboard.datafactory.versionone;
 
+import com.versionone.apiclient.ProxyProvider;
+import com.versionone.apiclient.Services;
+import com.versionone.apiclient.V1Connector;
+import com.versionone.apiclient.exceptions.V1Exception;
+import com.versionone.apiclient.interfaces.IServices;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.stereotype.Component;
-
-import com.versionone.apiclient.ProxyProvider;
-import com.versionone.apiclient.Services;
-import com.versionone.apiclient.V1Connector;
-import com.versionone.apiclient.exceptions.V1Exception;
-import com.versionone.apiclient.interfaces.IServices;
-
 @Component
 public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
-	private static Log LOGGER = LogFactory.getLog(VersionOneDataFactoryImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(VersionOneDataFactoryImpl.class);
 	@SuppressWarnings("PMD.AvoidUsingHardCodedIP") // not an IP
 	private static final String AGENT_VER = "01.00.00.01";
 	private static final String AGENT_NAME = "Hygieia Dashboard - VersionOne Feature Collector";
@@ -59,7 +58,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	 * Default constructor, which sets page size to 2000 and page index to 0.
 	 */
 	public VersionOneDataFactoryImpl(Map<String, String> auth) {
-		this.v1Service = new Services(VersionOneAuthentication(auth));
+		this.v1Service = new Services(versionOneAuthentication(auth));
 		this.pageSize = 2000;
 		this.pageIndex = 0;
 	}
@@ -72,7 +71,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	 *            A default page size to give the class on construction
 	 */
 	public VersionOneDataFactoryImpl(int inPageSize, Map<String, String> auth) {
-		this.v1Service = new Services(VersionOneAuthentication(auth));
+		this.v1Service = new Services(versionOneAuthentication(auth));
 		this.pageSize = inPageSize;
 		pageIndex = 0;
 	}
@@ -84,7 +83,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	 *            A key-value pairing of authentication values
 	 * @return A V1Connector connection instance
 	 */
-	private V1Connector VersionOneAuthentication(Map<String, String> auth) {
+	private V1Connector versionOneAuthentication(Map<String, String> auth) {
 		V1Connector connector = null;
 
 		try {
