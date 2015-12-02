@@ -30,14 +30,14 @@
 
 	<div class="form-group clearfix"
 		ng-class="{'has-error': configForm.gitBranch.$invalid && repoConfig.submitted}"
-		 ng-if="repoConfig.repoOption.name == 'GitHub (public)' || repoConfig.repoOption.name == 'GitHub'">
+		 ng-if="repoConfig.repoOption.name == 'GitHub (public)' || repoConfig.repoOption.name == 'GitHub'  || repoConfig.repoOption.name == 'Stash'">
 		<div class="col-sm-push-2 col-sm-8">
-			<label class="modal-label" id="repoLabel">GitHub branch</label> <input
+			<label class="modal-label" id="repoLabel">Branch</label> <input
 				type="text" name="gitBranch" class="form-control"
 				ng-model="repoConfig.gitBranch" placeholder="Enter Branch" required>
 
-			<p class="help-block" ng-if="configForm.gitBranch.$error.required">GitHub
-				branch is required</p>
+			<p class="help-block" ng-if="configForm.gitBranch.$error.required">
+				Branch is required</p>
 		</div>
 	</div>
 
