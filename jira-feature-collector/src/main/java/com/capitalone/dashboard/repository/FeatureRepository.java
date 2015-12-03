@@ -18,6 +18,6 @@ public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 	List<Feature> getFeatureMaxChangeDate(ObjectId collectorId,
 			String lastChangeDate);
 
-	@Query(value = "{ $query: {'sId' : ?0},{'sId' : 1}}")
+	@Query(value = "{'sId' : ?0}")
 	List<Feature> getFeatureIdById(String sId);
 }

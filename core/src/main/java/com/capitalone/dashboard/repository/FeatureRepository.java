@@ -41,25 +41,25 @@ public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 	List<Feature> getSprintStoriesByTeamId(String sTeamID,
 			String currentISODateTime);
 
-	@Query(value = "{ $query: {'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }}", fields = "{'sSprintID' : 1, 'sSprintName' : 1,'sSprintBeginDate' : 1, 'sSprintEndDate' : 1}")
+	@Query(value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }", fields = "{'sSprintID' : 1, 'sSprintName' : 1,'sSprintBeginDate' : 1, 'sSprintEndDate' : 1}")
 	List<Feature> getCurrentSprintDetail(String sTeamID,
 			String currentISODateTime);
 
-	@Query(value = "{ $query: {'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sEpicID' :-1 }}", fields = "{'sEpicID' : 1,'sEpicNumber' : 1,'sEpicName' : 1,'sEstimate' : 1}")
+	@Query(value = " {'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sEpicID' :-1 }", fields = "{'sEpicID' : 1,'sEpicNumber' : 1,'sEpicName' : 1,'sEstimate' : 1}")
 	List<Feature> getInProgressFeaturesEstimatesByTeamId(String sTeamID,
 			String currentISODateTime);
 
-	@Query(value = "{ $query: {'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }}", fields = "{'sStatus': 1,'sEstimate' : 1}")
+	@Query(value = " {'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }", fields = "{'sStatus': 1,'sEstimate' : 1}")
 	List<Feature> getSprintBacklogTotal(String sTeamID,
 			String currentISODateTime);
 
-	@Query(value = "{ $query: {'sTeamID' : ?0 , $and : [{'isDeleted' : 'False'} , {'sState' : 'Active'}] , $or : [{'sStatus' : 'In Progress'} , {'sStatus' : 'Waiting'} , {'sStatus' : 'Impeded'}] , $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }}", fields = "{'sStatus': 1,'sEstimate' : 1}")
+	@Query(value = " {'sTeamID' : ?0 , $and : [{'isDeleted' : 'False'} , {'sState' : 'Active'}] , $or : [{'sStatus' : 'In Progress'} , {'sStatus' : 'Waiting'} , {'sStatus' : 'Impeded'}] , $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }", fields = "{'sStatus': 1,'sEstimate' : 1}")
 	List<Feature> getSprintBacklogInProgress(String sTeamID,
 			String currentISODateTime);
 
-	@Query(value = "{ $query: {'sTeamID' : ?0 , 'isDeleted' : 'False' , $or : [{'sStatus' : 'Done'} , {'sStatus' : 'Accepted'}] , $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }}", fields = "{'sStatus': 1,'sEstimate' : 1}")
+	@Query(value = " {'sTeamID' : ?0 , 'isDeleted' : 'False' , $or : [{'sStatus' : 'Done'} , {'sStatus' : 'Accepted'}] , $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }", fields = "{'sStatus': 1,'sEstimate' : 1}")
 	List<Feature> getSprintBacklogDone(String sTeamID, String currentISODateTime);
 
-	@Query(value = "{ $query: {'sNumber' : ?0 }}")
+	@Query(value = " {'sNumber' : ?0 }")
 	List<Feature> getStoryByNumber(String sNumber);
 }
