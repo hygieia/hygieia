@@ -4,13 +4,16 @@ import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -93,6 +96,22 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         Component component = componentRepository.findOne(componentId);
+        //we can not assume what collector item is added, what is removed etc so, we will
+        //refresh the association. First disable all collector items, then remove all and re-add
+        Map<CollectorType, List<CollectorItem>> existingCollectorItems = component.getCollectorItems();
+        for (Map.Entry<CollectorType, List<CollectorItem>> entry : existingCollectorItems.entrySet()) {
+            List<CollectorItem> cItems = entry.getValue();
+            if (!CollectionUtils.isEmpty(cItems)) {
+                for (CollectorItem ci : cItems) {
+                    ci.setEnabled(false);
+                    collectorItemRepository.save(ci);
+                }
+            }
+        }
+        //Now remove all collector items
+        component.getCollectorItems().clear();
+
+        //Last step: add collector items that came in
         for (ObjectId collectorItemId : collectorItemIds) {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());

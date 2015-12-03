@@ -21,7 +21,7 @@
             </tr>
             </thead>
             <div>
-                <tbody ng-repeat="capability in testDetails.testResult.testCapabilities">
+                <tbody ng-repeat="capability in testDetails.testResult.testCapabilities" ng-class-odd="'alt'">
                 <tr id="capability.description" class="clickableRow"
                     ng-click="(capability.testSuites.length > 0) ? showCapabilityDetail(capability): null">
                     <td>{{capability.description}}</td>
@@ -100,11 +100,14 @@
                                                                         <table class="table">
                                                                             <tbody ng-repeat="testStep in testCase.testSteps">
                                                                             <tr id="testStep.description">
-                                                                                <td ng-if="testStep.status != 'Success'">
+                                                                                <td ng-if="testStep.status == 'Success'">
+                                                                                    <span dash-status='ok'></span>
+                                                                                </td>
+                                                                                <td ng-if="testStep.status == 'Failure'">
                                                                                     <span dash-status=false></span>
                                                                                 </td>
-                                                                                <td ng-if="testStep.status == 'Success'">
-                                                                                    <span dash-status=true></span>
+                                                                                <td ng-if="testStep.status == 'Skipped'">
+                                                                                    <span dash-status='warning'></span>
                                                                                 </td>
                                                                                 <td>{{testStep.description}}</td>
                                                                             </tr>

@@ -121,8 +121,6 @@
 
             ctrl.functionalTests = [];
             ctrl.executionId = _.isEmpty(response.result) ?  "-" : response.result[0].executionId;
-
-            console.log("Execution ID=", ctrl.executionId);
             ctrl.functionalTests.push({
                 name: 'Total',
                 formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
@@ -194,7 +192,6 @@
 
 
         function showDetail() {
-            console.log("In showDetail");
             $modal.open({
                 controller: 'TestDetailsController',
                 controllerAs: 'testDetails',
