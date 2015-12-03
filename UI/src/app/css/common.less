@@ -394,9 +394,11 @@ body {
                 padding: 4px;
                 font-weight: 900;
                 border-bottom: 1px solid @dash-detail-divider;
+                table-layout: fixed;
             }
             td {
                 padding: 4px;
+                word-wrap: break-word;
             }
         }
     }
@@ -532,6 +534,19 @@ tr.dash-row > td {
         background-color: @dash-status-alert-fail !important;
     }
 }
+
+.widget-font-pass {
+    color: @dash-status-pass !important;
+}
+
+.widget-font-fail {
+    color: @dash-status-fail !important;
+}
+
+.widget-font-warn {
+    color: @dash-status-warn !important;
+}
+
 
 // SITE
 // ========================================

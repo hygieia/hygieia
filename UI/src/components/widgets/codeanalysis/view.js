@@ -95,60 +95,108 @@
             return deferred.promise;
         }
 
+        //function processTestResponse(response) {
+        //    var deferred = $q.defer();
+        //    var testResult = _.isEmpty(response.result) ? { testCapabilities: []} : response.result[0];
+        //    console.log("Test Response:" ,response);
+        //    ctrl.testResult = testResult;
+        //    var allZeros = {
+        //        failureCount: 0, successCount: 0, skippedCount: 0, totalCount: 0
+        //    };
+        //    // Aggregate the counts of all Functional test suites
+        //    var aggregate = _.reduce(_.filter(testResult.testCapabilities, { type: "Functional" }), function(result, capability) {
+        //        var index;
+        //        for (index = 0; index < capability.testSuites.length; ++index) {
+        //            var testSuite = capability.testSuites[index];
+        //            result.failureCount += testSuite.failedTestCaseCount;
+        //            result.successCount += testSuite.successTestCaseCount;
+        //            result.skippedCount += testSuite.skippedTestCaseCount;
+        //            result.totalCount += testSuite.totalTestCaseCount;
+        //        }
+        //        return result;
+        //    }, allZeros);
+        //    var passed = aggregate.totalCount - aggregate.failureCount - aggregate.errorCount - aggregate.skippedCount;
+        //    var allPassed = aggregate.successCount === aggregate.totalCount;
+        //    var success = allPassed ? 100 : ((passed / (aggregate.totalCount)) * 100);
+        //
+        //
+        //    ctrl.functionalTests = [];
+        //    ctrl.executionId = _.isEmpty(response.result) ?  "-" : response.result[0].executionId;
+        //    ctrl.functionalTests.push({
+        //        name: 'Total',
+        //        formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
+        //        status: 'Ok',
+        //        statusMessage: ''
+        //    });
+        //
+        //    ctrl.functionalTests.push({
+        //        name: 'Success',
+        //        formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.successCount, 0),
+        //        status: allPassed ? 'Ok' : 'Alert',
+        //        statusMessage: allPassed ? '' : 'Success percent < 100%'
+        //    });
+        //
+        //    ctrl.functionalTests.push({
+        //        name: 'Failures',
+        //        formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.failureCount, 0),
+        //        status: aggregate.failureCount === 0 ? 'Ok' : 'Alert',
+        //        statusMessage: aggregate.failureCount === 0 ? '' : 'Failure count > 0'
+        //    });
+        //
+        //    ctrl.functionalTests.push({
+        //        name: 'Skipped',
+        //        formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.skippedCount, 0),
+        //        status: aggregate.skippedCount === 0 ? 'Ok' : 'Alert',
+        //        statusMessage: aggregate.skippedCount === 0 ? '' : 'Skipped count > 0'
+        //    });
+        //
+        //    deferred.resolve(response.lastUpdated);
+        //    return deferred.promise;
+        //}
+
+
         function processTestResponse(response) {
             var deferred = $q.defer();
-            var testResult = _.isEmpty(response.result) ? { testCapabilities: []} : response.result[0];
-            ctrl.testResult = testResult;
-            var allZeros = {
-                failureCount: 0, successCount: 0, skippedCount: 0, totalCount: 0
-            };
-            // Aggregate the counts of all Functional test suites
-            var aggregate = _.reduce(_.filter(testResult.testCapabilities, { type: "Functional" }), function(result, capability) {
-                var index;
-                for (index = 0; index < capability.testSuites.length; ++index) {
-                    var testSuite = capability.testSuites[index];
-                    result.failureCount += testSuite.failedTestCaseCount;
-                    result.successCount += testSuite.successTestCaseCount;
-                    result.skippedCount += testSuite.skippedTestCaseCount;
-                    result.totalCount += testSuite.totalTestCaseCount;
-                }
-                return result;
-            }, allZeros);
-            var passed = aggregate.totalCount - aggregate.failureCount - aggregate.errorCount - aggregate.skippedCount;
-            var allPassed = aggregate.successCount === aggregate.totalCount;
-            var success = allPassed ? 100 : ((passed / (aggregate.totalCount)) * 100);
 
+            console.log("Test Response:" ,response);
+            ctrl.testResult = testResult;
 
             ctrl.functionalTests = [];
-            ctrl.executionId = _.isEmpty(response.result) ?  "-" : response.result[0].executionId;
-            ctrl.functionalTests.push({
-                name: 'Total',
-                formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
-                status: 'Ok',
-                statusMessage: ''
-            });
+            var index;
+            var totalSize = _.isEmpty(response.result) ? 0 : response.result.length;
+            for (index = 0; index < totalSize; ++index) {
 
-            ctrl.functionalTests.push({
-                name: 'Success',
-                formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.successCount, 0),
-                status: allPassed ? 'Ok' : 'Alert',
-                statusMessage: allPassed ? '' : 'Success percent < 100%'
-            });
+                var testResult = _.isEmpty(response.result) ? {testCapabilities: []} : response.result[index];
+                var allZeros = {
+                    failureCount: 0, successCount: 0, skippedCount: 0, totalCount: 0
+                };
+                // Aggregate the counts of all Functional test suites
+                var aggregate = _.reduce(_.filter(testResult.testCapabilities, {type: "Functional"}), function (result, capability) {
+                    var ind;
+                    for (ind = 0; ind < capability.testSuites.length; ++ind) {
+                        var testSuite = capability.testSuites[ind];
+                        result.failureCount += testSuite.failedTestCaseCount;
+                        result.successCount += testSuite.successTestCaseCount;
+                        result.skippedCount += testSuite.skippedTestCaseCount;
+                        result.totalCount += testSuite.totalTestCaseCount;
+                    }
+                    return result;
+                }, allZeros);
+                var passed = aggregate.totalCount - aggregate.failureCount - aggregate.errorCount - aggregate.skippedCount;
+                var allPassed = aggregate.successCount === aggregate.totalCount;
+                var success = allPassed ? 100 : ((passed / (aggregate.totalCount)) * 100);
 
-            ctrl.functionalTests.push({
-                name: 'Failures',
-                formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.failureCount, 0),
-                status: aggregate.failureCount === 0 ? 'Ok' : 'Alert',
-                statusMessage: aggregate.failureCount === 0 ? '' : 'Failure count > 0'
-            });
 
-            ctrl.functionalTests.push({
-                name: 'Skipped',
-                formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.skippedCount, 0),
-                status: aggregate.skippedCount === 0 ? 'Ok' : 'Alert',
-                statusMessage: aggregate.skippedCount === 0 ? '' : 'Skipped count > 0'
-            });
-
+                ctrl.executionId = _.isEmpty(response.result) ? "-" : response.result[index].executionId;
+                ctrl.functionalTests.push({
+                    name: 'Test# '+index,
+                    totalCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
+                    successCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.successCount, 0),
+                    failureCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.failureCount, 0),
+                    skippedCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.skippedCount, 0),
+                    details: testResult
+                });
+            }
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
         }
@@ -191,7 +239,7 @@
         }
 
 
-        function showDetail() {
+        function showDetail(test) {
             $modal.open({
                 controller: 'TestDetailsController',
                 controllerAs: 'testDetails',
@@ -199,7 +247,7 @@
                 size: 'lg',
                 resolve: {
                     testResult: function() {
-                        return ctrl.testResult;
+                        return test;
                     }
                 }
             });

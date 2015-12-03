@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
 
 @Service
 public class TestResultServiceImpl implements TestResultService {
@@ -33,38 +36,41 @@ public class TestResultServiceImpl implements TestResultService {
         if (!component.getCollectorItems().containsKey(CollectorType.Test)) {
             return new DataResponse<>(null, 0L);
         }
+        ArrayList<TestResult> result = new ArrayList<>();
 
-        CollectorItem item = component.getCollectorItems().get(CollectorType.Test).get(0);
 
-        QTestResult testResult = new QTestResult("testResult");
-        BooleanBuilder builder = new BooleanBuilder();
+        for (CollectorItem item : component.getCollectorItems().get(CollectorType.Test)) {
+//            CollectorItem item = component.getCollectorItems().get(CollectorType.Test).get(0);
 
-        builder.and(testResult.collectorItemId.eq(item.getId()));
+            QTestResult testResult = new QTestResult("testResult");
+            BooleanBuilder builder = new BooleanBuilder();
 
-        if (request.validStartDateRange()) {
-            builder.and(testResult.startTime.between(request.getStartDateBegins(), request.getStartDateEnds()));
+            builder.and(testResult.collectorItemId.eq(item.getId()));
+
+            if (request.validStartDateRange()) {
+                builder.and(testResult.startTime.between(request.getStartDateBegins(), request.getStartDateEnds()));
+            }
+            if (request.validEndDateRange()) {
+                builder.and(testResult.endTime.between(request.getEndDateBegins(), request.getEndDateEnds()));
+            }
+
+            if (request.validDurationRange()) {
+                builder.and(testResult.duration.between(request.getDurationGreaterThan(), request.getDurationLessThan()));
+            }
+
+            if (!request.getTypes().isEmpty()) {
+                builder.and(testResult.testCapabilities.any().type.in(request.getTypes()));
+            }
+
+
+            if (request.getMax() == null) {
+                result.addAll(Lists.newArrayList(testResultRepository.findAll(builder.getValue(), testResult.timestamp.desc())));
+            } else {
+                PageRequest pageRequest = new PageRequest(0, request.getMax(), Sort.Direction.DESC, "timestamp");
+                result.addAll(Lists.newArrayList(testResultRepository.findAll(builder.getValue(), pageRequest).getContent()));
+            }
         }
-        if (request.validEndDateRange()) {
-            builder.and(testResult.endTime.between(request.getEndDateBegins(), request.getEndDateEnds()));
-        }
-
-        if (request.validDurationRange()) {
-            builder.and(testResult.duration.between(request.getDurationGreaterThan(), request.getDurationLessThan()));
-        }
-
-        if (!request.getTypes().isEmpty()) {
-            builder.and(testResult.testCapabilities.any().type.in(request.getTypes()));
-        }
-
-        Iterable<TestResult> result;
-        if (request.getMax() == null) {
-            result = testResultRepository.findAll(builder.getValue(), testResult.timestamp.desc());
-        } else {
-            PageRequest pageRequest = new PageRequest(0, request.getMax(), Sort.Direction.DESC, "timestamp");
-            result = testResultRepository.findAll(builder.getValue(), pageRequest).getContent();
-        }
-
-        Collector collector = collectorRepository.findOne(item.getCollectorId());
-        return new DataResponse<>(result, collector.getLastExecuted());
+        Collector collector = collectorRepository.findOne(component.getCollectorItems().get(CollectorType.Test).get(0).getCollectorId());
+        return new DataResponse<>((Iterable<TestResult>) result, collector.getLastExecuted());
     }
 }
