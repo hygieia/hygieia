@@ -45,14 +45,17 @@
             }
         };
 
+        $scope.showStatusIcon =
         function showStatusIcon(item) {
+            console.log("Returning true");
             if (item.status.toLowerCase() == 'success') {
-                console.log("Returning true");
-                return true;
+                return 'ok';
+            } else if (item.status.toLowerCase() == 'skipped') {
+                return 'warning';
             } else {
-                return false;
-            };
-        }
+                return 'error';
+            }
+        };
 
         function msToTime(duration) {
             var milliseconds = parseInt((duration%1000)/100)

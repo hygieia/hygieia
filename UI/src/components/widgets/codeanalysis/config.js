@@ -20,6 +20,8 @@
 
         // public methods
         ctrl.submit = submitForm;
+        ctrl.addTestConfig = addTestConfig;
+        ctrl.deleteTestConfig = deleteTestConfig;
 
         // request all the codequality and test collector items
         collectorData.itemsByType('codequality').then(processCaResponse);
@@ -31,7 +33,7 @@
             var caCollectorItemId = _.isEmpty(caCollectorItems) ? null : caCollectorItems[0].id;
 
             ctrl.caJobs = data;
-            ctrl.caCollectorItem = caCollectorItemId ? _.findWhere(ctrl.caJobs, { id: caCollectorItemId }) : null;
+            ctrl.caCollectorItem = caCollectorItemId ? _.findWhere(ctrl.caJobs, {id: caCollectorItemId}) : null;
             ctrl.caToolsDropdownPlaceholder = data.length ? 'Select a Code Analysis Job' : 'No Code Analysis Job Found';
         }
 
@@ -40,23 +42,41 @@
             var saCollectorItemId = _.isEmpty(saCollectorItems) ? null : saCollectorItems[0].id;
 
             ctrl.saJobs = data;
-            ctrl.saCollectorItem = saCollectorItemId ? _.findWhere(ctrl.saJobs, { id: saCollectorItemId }): null;
+            ctrl.saCollectorItem = saCollectorItemId ? _.findWhere(ctrl.saJobs, {id: saCollectorItemId}) : null;
             ctrl.saToolsDropdownPlaceholder = data.length ? 'Select a Security Analysis Job' : 'No Security Analysis Job Found';
         }
-        function processTestsResponse(data) {
-            var testCollectorItems = component.collectorItems.Test;
-            var testCollectorItemId = _.isEmpty(testCollectorItems) ? null : testCollectorItems[0].id;
 
+        function processTestsResponse(data) {
             ctrl.testJobs = data;
-            ctrl.testCollectorItem = testCollectorItemId ? _.findWhere(ctrl.testJobs, { id: testCollectorItemId }) : null;
+            ctrl.testConfigs = [];
+            var testCollectorItems = component.collectorItems.Test;
+            var testCollectorItemIds = [];
+            var index;
+            for (index = 0; index < testCollectorItems.length; ++index) {
+                testCollectorItemIds.push(testCollectorItems[index].id);
+            }
+            for (index = 0; index < testCollectorItemIds.length; ++index) {
+                var testItem = testCollectorItemIds ? _.findWhere(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
+                ctrl.testConfigs.push({testJob: ctrl.testJobs, testCollectorItem: testItem});
+            }
+
+            console.log(ctrl.testConfigs);
             ctrl.testToolsDropdownPlaceholder = data.length ? 'Select a Functional Test Job' : 'No Functional Test Jobs Found';
         }
 
-        function submitForm(caCollectorItem, saCollectorItem, testCollectorItem) {
+        function submitForm(caCollectorItem, saCollectorItem, testConfigs) {
+            console.log("LOOKING", ctrl.testConfigs[0].testName);
             var collectorItems = [];
             if (caCollectorItem) collectorItems.push(caCollectorItem.id);
             if (saCollectorItem) collectorItems.push(saCollectorItem.id);
-            if (testCollectorItem) collectorItems.push(testCollectorItem.id);
+            if (testConfigs) {
+                var index;
+                console.log(testConfigs);
+                for (index = 0; index < testConfigs.length; ++index) {
+                    collectorItems.push(testConfigs[index].testCollectorItem.id);
+                }
+                console.log("****** CollectorItems=", collectorItems);
+            }
 
             var postObj = {
                 name: 'codeanalysis',
@@ -66,9 +86,21 @@
                 componentId: component.id,
                 collectorItemIds: collectorItems
             };
+            console.log("POSTOBJECT=", postObj);
 
             // pass this new config to the modal closing so it's saved
             $modalInstance.close(postObj);
+        }
+
+
+        function addTestConfig() {
+            ctrl.testConfigs.push({testJob: ctrl.testJobs, testCollectorItem: null});
+            console.log(ctrl.testConfigs);
+        }
+
+        function deleteTestConfig(item) {
+            ctrl.testConfigs.pop(item);
+            console.log(ctrl.testConfigs);
         }
     }
 })();

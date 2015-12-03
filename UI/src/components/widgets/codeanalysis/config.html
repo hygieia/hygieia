@@ -1,5 +1,6 @@
 <widget-modal widget-modal-title="Configure Code Analysis Widget" class="ca-config">
-    <form name="configForm" role="form" ng-submit="caWidget.submit(caWidget.caCollectorItem, caWidget.saCollectorItem, caWidget.testCollectorItem)"
+    <form name="configForm" role="form"
+          ng-submit="caWidget.submit(caWidget.caCollectorItem, caWidget.saCollectorItem, caWidget.testConfigs)"
           novalidate="novalidate">
 
         <div class="form-group text-center">
@@ -22,14 +23,22 @@
             </select>
         </div>
 
-        <div class="form-group text-center">
-            <select name="testCollectorItem"
-                    class="form-control"
-                    ng-model="caWidget.testCollectorItem"
-                    ng-options="(item.collector.name + ' - ' + item.description) for item in caWidget.testJobs | orderBy:['collector.name','description'] track by item.id"
-                    ng-disabled="caWidget.testJobs.length === 0">
-                <option value="">{{caWidget.testToolsDropdownPlaceholder}}</option>
-            </select>
+
+        <div class="form-group text-center" ng-repeat="configItem in caWidget.testConfigs">
+            <i class="fa fa-minus-circle fa-2x clickable" ng-click="caWidget.deleteTestConfig(item)"></i>
+            <div class="col-sm-10">
+                <select class="form-control" name="collectorItemList"
+                        ng-model="configItem.testCollectorItem"
+                        ng-options="(item.collector.name + ' - ' + item.description) for item in configItem.testJob | orderBy:['collector.name','description'] track by item.id"
+                        ng-disabled="caWidget.testJobs.length === 0">
+                    <option value="">{{caWidget.testToolsDropdownPlaceholder}}</option>
+                </select>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <i class="fa fa-plus-circle fa-2x" ng-click="caWidget.addTestConfig()"></i>
+        </div>
         </div>
 
         <div class="row text-center">
