@@ -13,11 +13,7 @@
             <thead>
             <tr>
                 <th>Group</th>
-                <th>Test Suites</th>
-                <th>Passed</th>
-                <th>Failed</th>
-                <th>Duration</th>
-                <th></th>
+                <th colspan="5">Test Suites</th>
             </tr>
             </thead>
             <div>
@@ -26,8 +22,8 @@
                     ng-click="(capability.testSuites.length > 0) ? showCapabilityDetail(capability): null">
                     <td>{{capability.description}}</td>
                     <td>{{capability.totalTestSuiteCount}}</td>
-                    <td>{{capability.successTestSuiteCount}}</td>
-                    <td>{{capability.failedTestSuiteCount}}</td>
+                    <td ng-class="{'widget-font-pass': capability.successTestSuiteCount > 0}">{{capability.successTestSuiteCount}}</td>
+                    <td ng-class="{'widget-font-fail': capability.failedTestSuiteCount > 0}">{{capability.failedTestSuiteCount}}</td>
                     <td ng-if="capability.duration == 0">-</td>
                     <td ng-if="capability.duration > 0">{{capability.duration | date:'hh:mm:ss'}}</td>
                     <td><a href=""><i
@@ -43,20 +39,16 @@
                                     <thead>
                                     <tr>
                                         <th>Test Suite</th>
-                                        <th>Test Cases</th>
-                                        <th>Passed</th>
-                                        <th>Failed</th>
-                                        <th>Duration</th>
-                                        <th></th>
-                                    </tr>
+                                        <th colspan="5">Test Cases</th>
+                                   </tr>
                                     </thead>
                                     <tbody ng-repeat="testSuite in capability.testSuites">
                                     <tr id="testSuite.description" class="clickableRow"
                                         ng-click="(testSuite.testCases.length > 0) ? showTestSuiteDetail(testSuite): null">
                                         <td>{{testSuite.description}}</td>
                                         <td>{{testSuite.totalTestCaseCount}}</td>
-                                        <td>{{testSuite.successTestCaseCount}}</td>
-                                        <td>{{testSuite.failedTestCaseCount}}</td>
+                                        <td ng-class="{'widget-font-pass': testSuite.successTestCaseCount > 0}">{{testSuite.successTestCaseCount}}</td>
+                                        <td ng-class="{'widget-font-fail': testSuite.failedTestCaseCount > 0}">{{testSuite.failedTestCaseCount}}</td>
                                         <td ng-if="testSuite.duration == 0">-</td>
                                         <td ng-if="testSuite.duration > 0">{{testSuite.duration | date:'hh:mm:ss'}}</td>
                                         <td><a href=""><i
@@ -73,12 +65,7 @@
                                                         <thead>
                                                         <tr>
                                                             <th>Test Case</th>
-                                                            <th>Total</th>
-                                                            <th>Passed</th>
-                                                            <th>Failed</th>
-                                                            <th>Skipped</th>
-                                                            <th>Duration</th>
-                                                            <th></th>
+                                                            <th colspan="5">Test Steps</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody ng-repeat="testCase in testSuite.testCases">
@@ -86,9 +73,9 @@
                                                             ng-click="(testSuite.testCases.length > 0) ? showTestCaseDetail(testSuite): null">
                                                             <td>{{testCase.description}}</td>
                                                             <td>{{testCase.totalTestStepCount}}</td>
-                                                            <td>{{testCase.successTestStepCount}}</td>
-                                                            <td>{{testCase.failedTestStepCount}}</td>
-                                                            <td>{{testCase.skippedTestStepCount}}</td>
+                                                            <td ng-class="{'widget-font-pass': testCase.successTestStepCount > 0}" >{{testCase.successTestStepCount}}</td>
+                                                            <td ng-class="{'widget-font-fail': testCase.failedTestStepCount > 0}">{{testCase.failedTestStepCount}}</td>
+                                                            <td ng-class="{'widget-font-warn': testCase.skippedTestStepCount > 0}">{{testCase.skippedTestStepCount}}</td>
                                                             <td ng-if="testCase.duration == 0">-</td>
                                                             <td ng-if="testCase.duration > 0">{{testCase.duration | date:'hh:mm:ss'}}</td>
 
