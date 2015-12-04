@@ -1,12 +1,24 @@
 <div class="widget-detail test-detail" ng-model="testDetails.testResult">
     <a href="" class="detail-close" ng-click="testDetails.close()"><span class="fa fa-2x fa-times-circle-o"></span></a>
-
     <div class="widget-detail-heading">
-
-        <div class="ca-label">Run#: {{testDetails.testResult.executionId}} <br>
-            Run Duration: {{testDetails.duration}} h
+        <div class="row">
+            <div class="col-md-3 build-desc">
+                <span class="build-number">Run# {{testDetails.testResult.executionId}}</span>
+            </div>
+            <div class="col-md-3 build-time">
+                <span>{{testDetails.testResult.endTime | date:'MMM d, HH:mm:ss'}}</span>
+            </div>
+            <div class="col-md-3 build-duration">
+                <span>Duration: {{testDetails.duration | duration}}</span>
+            </div>
+            <div class="col-md-3 view-in-tool">
+                <a ng-href="{{::testDetails.testResult.url}}" target="_blank">
+                    View Test Job <span class="fa fa-angle-right"></span>
+                </a>
+            </div>
         </div>
     </div>
+
 
     <div class="widget-detail-body">
         <table class="table">
@@ -21,9 +33,9 @@
                 <tr id="capability.description" class="clickableRow"
                     ng-click="(capability.testSuites.length > 0) ? showCapabilityDetail(capability): null">
                     <td>{{capability.description}}</td>
-                    <td>{{capability.totalTestSuiteCount}}</td>
-                    <td ng-class="{'widget-font-pass': capability.successTestSuiteCount > 0}">{{capability.successTestSuiteCount}}</td>
-                    <td ng-class="{'widget-font-fail': capability.failedTestSuiteCount > 0}">{{capability.failedTestSuiteCount}}</td>
+                    <td colspan="2">{{capability.totalTestSuiteCount}}</td>
+                    <td colspan="2" ng-class="{'widget-font-pass': capability.successTestSuiteCount > 0}">{{capability.successTestSuiteCount}}</td>
+                    <td colspan="2" ng-class="{'widget-font-fail': capability.failedTestSuiteCount > 0}">{{capability.failedTestSuiteCount}}</td>
                     <td ng-if="capability.duration == 0">-</td>
                     <td ng-if="capability.duration > 0">{{capability.duration | date:'hh:mm:ss'}}</td>
                     <td><a href=""><i
@@ -73,9 +85,9 @@
                                                             ng-click="(testSuite.testCases.length > 0) ? showTestCaseDetail(testSuite): null">
                                                             <td>{{testCase.description}}</td>
                                                             <td>{{testCase.totalTestStepCount}}</td>
-                                                            <td ng-class="{'widget-font-pass': testCase.successTestStepCount > 0}" >{{testCase.successTestStepCount}}</td>
-                                                            <td ng-class="{'widget-font-fail': testCase.failedTestStepCount > 0}">{{testCase.failedTestStepCount}}</td>
-                                                            <td ng-class="{'widget-font-warn': testCase.skippedTestStepCount > 0}">{{testCase.skippedTestStepCount}}</td>
+                                                            <td colspan="2" ng-class="{'widget-font-pass': testCase.successTestStepCount > 0}" >{{testCase.successTestStepCount}}</td>
+                                                            <td colspan="2" ng-class="{'widget-font-fail': testCase.failedTestStepCount > 0}">{{testCase.failedTestStepCount}}</td>
+                                                            <td colspan="2" ng-class="{'widget-font-warn': testCase.skippedTestStepCount > 0}">{{testCase.skippedTestStepCount}}</td>
                                                             <td ng-if="testCase.duration == 0">-</td>
                                                             <td ng-if="testCase.duration > 0">{{testCase.duration | date:'hh:mm:ss'}}</td>
 

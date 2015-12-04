@@ -177,7 +177,7 @@
 
                                 // save the widget locally
                                 $scope.container.upsertWidget($scope.widgetConfig);
-
+console.log("AFTER UPSERTWIDGET, Component=", response);
                                 $scope.container.upsertComponent(response.component);
 
                                 // TODO: should probably call back to the widget's getState method
