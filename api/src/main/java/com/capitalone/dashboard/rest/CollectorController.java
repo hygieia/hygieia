@@ -9,14 +9,18 @@ import com.capitalone.dashboard.service.CollectorService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -25,7 +29,6 @@ public class CollectorController {
 
     private final CollectorService collectorService;
 
-    private static final String JSON = MediaType.APPLICATION_JSON_VALUE;
 
     @Autowired
     public CollectorController(CollectorService collectorService) {
@@ -37,24 +40,37 @@ public class CollectorController {
         binder.registerCustomEditor(CollectorType.class, new CaseInsensitiveCollectorTypeEditor());
     }
 
-    @RequestMapping(value = "/collector/type/{collectorType}", method = GET, produces = JSON)
+//    @RequestMapping(value = "/collector/{itemId}/{collectorType}", method = POST,
+//            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+//    public ResponseEntity<Void> collectorItemsIngest(@PathVariable ObjectId itemId,
+//                                                     @PathVariable CollectorType collectorType,
+//                                                     InputStream collectorData) {
+//
+//
+//        return ResponseEntity.noContent().build();
+//    }
+
+    @RequestMapping(value = "/collector/type/{collectorType}",
+            method = GET, produces = APPLICATION_JSON_VALUE)
     public List<Collector> collectorsByType(@PathVariable CollectorType collectorType) {
         return collectorService.collectorsByType(collectorType);
     }
 
-    @RequestMapping(value = "/collector/item", method = POST, consumes = JSON, produces = JSON)
+    @RequestMapping(value = "/collector/item", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectorItem> createCollectorItem(@Valid @RequestBody CollectorItemRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(collectorService.createCollectorItem(request.toCollectorItem()));
     }
 
-    @RequestMapping(value = "/collector/item/{id}", method = GET, produces = JSON)
+    @RequestMapping(value = "/collector/item/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectorItem> getCollectorItem(@PathVariable ObjectId id) {
         return ResponseEntity.ok(collectorService.getCollectorItem(id));
     }
 
-    @RequestMapping(value = "/collector/item/type/{collectorType}", method = GET, produces = JSON)
+    @RequestMapping(value = "/collector/item/type/{collectorType}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
     public List<CollectorItem> collectorItemsByType(@PathVariable CollectorType collectorType) {
         return collectorService.collectorItemsByType(collectorType);
     }

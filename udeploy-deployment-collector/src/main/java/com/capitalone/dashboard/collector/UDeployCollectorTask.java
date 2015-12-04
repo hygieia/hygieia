@@ -17,9 +17,9 @@ import com.capitalone.dashboard.repository.UDeployCollectorRepository;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -35,8 +35,8 @@ import java.util.Set;
  */
 @Component
 public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
-	private static final Log LOG = LogFactory
-			.getLog(UDeployCollectorTask.class);
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateField"})
+	private static final Logger LOGGER = LoggerFactory.getLogger(UDeployCollectorTask.class);
 
 	private final UDeployCollectorRepository uDeployCollectorRepository;
 	private final UDeployApplicationRepository uDeployApplicationRepository;
@@ -85,7 +85,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 	public void collect(UDeployCollector collector) {
 		for (String instanceUrl : collector.getUdeployServers()) {
 
-			logInstanceBanner(instanceUrl);
+			logBanner(instanceUrl);
 
 			long start = System.currentTimeMillis();
 
@@ -105,7 +105,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 	 * @param collector
 	 *            the {@link UDeployCollector}
 	 */
-
+    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
 	private void clean(UDeployCollector collector) {
 		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
@@ -141,6 +141,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 	 * @param uDeployApplications
 	 *            list of {@link UDeployApplication}s
 	 */
+	@SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, this method needs refactoring.
 	private void updateData(List<UDeployApplication> uDeployApplications) {
 		/**
 		 * steps - 1. get environments 2. for each environment, get resources
@@ -309,32 +310,5 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 
 					}
 				}).orNull();
-	}
-
-	private void log(String marker, long start) {
-		log(marker, start, null);
-	}
-
-	private void log(String text, long start, Integer count) {
-		long end = System.currentTimeMillis();
-		int maxWidth = 25;
-		String elapsed = ((end - start) / 1000) + "s";
-		String token2 = "";
-		String token3;
-		if (count == null) {
-			token3 = StringUtils.leftPad(elapsed, 30 - text.length());
-		} else {
-			maxWidth = 17;
-			String countStr = count.toString();
-			token2 = StringUtils.leftPad(countStr, 20 - text.length());
-			token3 = StringUtils.leftPad(elapsed, 10);
-		}
-		LOG.info(StringUtils.abbreviate(text, maxWidth) + token2 + token3);
-	}
-
-	private void logInstanceBanner(String instanceUrl) {
-		LOG.info("------------------------------");
-		LOG.info(instanceUrl);
-		LOG.info("------------------------------");
 	}
 }

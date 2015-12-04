@@ -10,7 +10,6 @@ import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitHubRepoRepository;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -18,7 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * CollectorTask that fetches Commit information from GitHub
@@ -77,7 +80,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 	 * @param collector
 	 *            the {@link UDeployCollector}
 	 */
-
+    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, fixme
 	private void clean(Collector collector) {
 		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
 		/**
@@ -101,8 +104,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 		 * Logic: Get all the collector items from the collector_item collection for this collector.
 		 * If their id is in the unique set (above), keep them enabled; else, disable them.
 		 */
-		List<GitHubRepo> repoList = new ArrayList<GitHubRepo>();
-		Set<ObjectId> gitID = new HashSet<ObjectId>();
+		List<GitHubRepo> repoList = new ArrayList<>();
+		Set<ObjectId> gitID = new HashSet<>();
 		gitID.add(collector.getId());
 		for (GitHubRepo repo : gitHubRepoRepository.findByCollectorIdIn(gitID)) {
 			if (repo != null) {
@@ -160,28 +163,5 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 repo.getId(), commit.getScmRevisionNumber()) == null;
     }
 
-    private void log(String marker, long start) {
-        log(marker, start, null);
-    }
 
-    private void log(String text, long start, Integer count) {
-        long end = System.currentTimeMillis();
-        String elapsed = ((end - start) / 1000) + "s";
-        String token2 = "";
-        String token3;
-        if (count == null) {
-            token3 = StringUtils.leftPad(elapsed, 30 - text.length() );
-        } else {
-            String countStr = count.toString();
-            token2 = StringUtils.leftPad(countStr, 20 - text.length() );
-            token3 = StringUtils.leftPad(elapsed, 10 );
-        }
-        LOG.info(text + token2 + token3);
-    }
-
-    private void logBanner(String instanceUrl) {
-        LOG.info("------------------------------");
-        LOG.info(instanceUrl);
-        LOG.info("------------------------------");
-    }
 }

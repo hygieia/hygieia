@@ -2,6 +2,7 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,5 +93,30 @@ public abstract class CollectorTask<T extends Collector> implements Runnable {
             collector.setOnline(online);
             getCollectorRepository().save(collector);
         }
+    }
+
+
+    protected void log(String marker, long start) {
+        log(marker, start, null);
+    }
+
+    protected void log(String text, long start, Integer count) {
+        long end = System.currentTimeMillis();
+        String elapsed = ((end - start) / 1000) + "s";
+        String token2 = "";
+        String token3;
+        if (count == null) {
+            token3 = Strings.padStart(elapsed, 30 - text.length(), ' ');
+        } else {
+            token2 = Strings.padStart(count.toString(), 20 - text.length(), ' ');
+            token3 = Strings.padStart(elapsed, 10, ' ');
+        }
+        LOGGER.info(text + token2 + token3);
+    }
+
+    protected void logBanner(String instanceUrl) {
+        LOGGER.info("------------------------------");
+        LOGGER.info(instanceUrl);
+        LOGGER.info("------------------------------");
     }
 }

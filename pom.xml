@@ -74,6 +74,9 @@
             <excludeRoots>
               <excludeRoot>${project.basedir}/target/generated-sources/java</excludeRoot>
             </excludeRoots>
+            <rulesets>
+              <ruleset>${project.parent.basedir}/pmd.xml</ruleset>
+            </rulesets>
           </configuration>
           <executions>
             <execution>

@@ -23,10 +23,10 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,12 +43,12 @@ import java.util.List;
  */
 public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 		StoryDataClient {
-	private static Log logger = LogFactory.getLog(StoryDataClientImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StoryDataClientImpl.class);
 
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
 	private final FeatureRepository featureRepo;
-	private final ClientUtil tools;
+	private final static ClientUtil TOOLS = new ClientUtil();
 
 	/**
 	 * Extends the constructor from the super class.
@@ -59,13 +59,12 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 			FeatureRepository featureRepository,
 			FeatureCollectorRepository featureCollectorRepository) {
 		super(featureSettings, featureRepository, featureCollectorRepository);
-		logger.debug("Constructing data collection for the feature widget, story-level data...");
+		LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
 		this.featureSettings = featureSettings;
 		this.featureRepo = featureRepository;
 		this.featureWidgetQueries = new FeatureWidgetQueries(
 				this.featureSettings);
-		tools = new ClientUtil();
 	}
 
 	/**
@@ -74,15 +73,15 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 	 *
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
-	 * @param featureCollector
-	 * @return
 	 * @return
 	 */
+    // need to rewrite this method.. fixme
+	@SuppressWarnings({"unchecked", "PMD.ExcessiveMethodLength", "PMD.AvoidCatchingNPE",
+			"PMD.NPathComplexity", "PMD.ExceptionAsFlowControl", "PMD.NcssMethodCount"})
 	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
 		try {
 			JSONObject dataMainObj = new JSONObject();
-			logger.debug("Size of PagingJSONArray: "
-					+ tmpMongoDetailArray.size());
+			LOGGER.debug("Size of PagingJSONArray: {}", tmpMongoDetailArray.size());
 			for (int i = 0; i < tmpMongoDetailArray.size(); i++) {
 				try {
 					if (dataMainObj != null) {
@@ -101,10 +100,9 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 					Feature feature = new Feature();
 
 					@SuppressWarnings("unused")
-					boolean deleted = this.removeExistingEntity(tools
-							.sanitizeResponse(dataMainObj.get("id")));
-					if (!tools.sanitizeResponse(issueType.get("name"))
-							.equalsIgnoreCase("Story")) {
+					boolean deleted = this.removeExistingEntity(
+                            TOOLS.sanitizeResponse(dataMainObj.get("id")));
+					if (!TOOLS.sanitizeResponse(issueType.get("name")).equalsIgnoreCase("Story")) {
 						throw new IllegalArgumentException();
 					}
 
@@ -113,22 +111,22 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 							.findByName("Jira").getId());
 
 					// ID
-					feature.setsId(tools.sanitizeResponse(dataMainObj.get("id")));
+					feature.setsId(TOOLS.sanitizeResponse(dataMainObj.get("id")));
 
 					// sNumber
-					feature.setsNumber(tools.sanitizeResponse(dataMainObj
+					feature.setsNumber(TOOLS.sanitizeResponse(dataMainObj
 							.get("key")));
 
 					// sName
-					feature.setsName(tools.sanitizeResponse(fields
+					feature.setsName(TOOLS.sanitizeResponse(fields
 							.get("summary")));
 
 					// sStatus
-					feature.setsStatus(tools.sanitizeResponse(statusCategory
+					feature.setsStatus(TOOLS.sanitizeResponse(statusCategory
 							.get("name")));
 
 					// sState
-					feature.setsState(tools.sanitizeResponse(statusCategory
+					feature.setsState(TOOLS.sanitizeResponse(statusCategory
 							.get("name")));
 
 					// sSoftwareTesting - does not exist for Jira
@@ -141,25 +139,23 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 					try {
 						seconds = (long) fields.get("timeestimate");
 						hours = Integer.toString((int) (seconds / 3600));
-						feature.setsEstimate(tools.sanitizeResponse(hours));
+						feature.setsEstimate(TOOLS.sanitizeResponse(hours));
 					} catch (Exception e) {
 						feature.setsEstimate("0");
 					}
 
 					// sChangeDate
-					feature.setChangeDate(tools.toCanonicalDate(tools
+					feature.setChangeDate(TOOLS.toCanonicalDate(TOOLS
 							.sanitizeResponse(fields.get("updated"))));
 
 					// IsDeleted - does not exist for Jira
 					feature.setIsDeleted("False");
 
 					// sProjectID
-					feature.setsProjectID(tools.sanitizeResponse(project
-							.get("id")));
+					feature.setsProjectID(TOOLS.sanitizeResponse(project.get("id")));
 
 					// sProjectName
-					feature.setsProjectName(tools.sanitizeResponse(project
-							.get("name")));
+					feature.setsProjectName(TOOLS.sanitizeResponse(project.get("name")));
 
 					// sProjectBeginDate - does not exist in Jira
 					feature.setsProjectBeginDate("");
@@ -185,7 +181,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 					 * Epic Data
 					 */
 					try {
-						String epicKey = tools.sanitizeResponse(fields
+						String epicKey = TOOLS.sanitizeResponse(fields
 								.get("customfield_10400"));
 						if (epicKey == null || epicKey.isEmpty()) {
 							throw new NullPointerException();
@@ -193,27 +189,27 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 						JSONObject epicData = this.getEpicData(epicKey);
 
 						// sEpicID
-						feature.setsEpicID(tools.sanitizeResponse(epicData
+						feature.setsEpicID(TOOLS.sanitizeResponse(epicData
 								.get("id")));
 
 						// sEpicNumber
-						feature.setsEpicNumber(tools.sanitizeResponse(epicData
+						feature.setsEpicNumber(TOOLS.sanitizeResponse(epicData
 								.get("key")));
 
 						// sEpicName
-						feature.setsEpicName(tools.sanitizeResponse(epicData
+						feature.setsEpicName(TOOLS.sanitizeResponse(epicData
 								.get("name")));
 
 						// sEpicBeginDate - mapped to create date
-						feature.setsEpicBeginDate(tools.toCanonicalDate(tools
+						feature.setsEpicBeginDate(TOOLS.toCanonicalDate(TOOLS
 								.sanitizeResponse(epicData.get("created"))));
 
 						// sEpicEndDate
-						feature.setsEpicEndDate(tools.toCanonicalDate(tools
+						feature.setsEpicEndDate(TOOLS.toCanonicalDate(TOOLS
 								.sanitizeResponse(epicData.get("dueDate"))));
 
 						// sEpicAssetState
-						feature.setsEpicAssetState(tools
+						feature.setsEpicAssetState(TOOLS
 								.sanitizeResponse(epicData.get("status")));
 					} catch (ArrayIndexOutOfBoundsException
 							| NullPointerException e) {
@@ -245,7 +241,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 					 * Sprint Data
 					 */
 					try {
-						JSONObject canonicalSprint = tools
+						JSONObject canonicalSprint = TOOLS
 								.toCanonicalSprint(sprint.get(0).toString());
 
 						// sSprintID
@@ -266,7 +262,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 
 						// sSprintBeginDate
 						try {
-							feature.setsSprintBeginDate(tools
+							feature.setsSprintBeginDate(TOOLS
 									.toCanonicalDate(canonicalSprint.get(
 											"startDate").toString()));
 						} catch (NullPointerException e) {
@@ -275,7 +271,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 
 						// sSprintEndDate
 						try {
-							feature.setsSprintEndDate(tools
+							feature.setsSprintEndDate(TOOLS
 									.toCanonicalDate(canonicalSprint.get(
 											"endDate").toString()));
 						} catch (NullPointerException e) {
@@ -306,10 +302,10 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 					feature.setsSprintIsDeleted("False");
 
 					// sTeamID
-					feature.setsTeamID(tools.sanitizeResponse(project.get("id")));
+					feature.setsTeamID(TOOLS.sanitizeResponse(project.get("id")));
 
 					// sTeamName
-					feature.setsTeamName(tools.sanitizeResponse(project
+					feature.setsTeamName(TOOLS.sanitizeResponse(project
 							.get("name")));
 
 					// sTeamChangeDate - not able to retrieve at this asset
@@ -326,7 +322,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 					// sOwnersID
 					List<String> assigneeKey = new ArrayList<String>();
 					try {
-						assigneeKey.add(tools.sanitizeResponse(assignee
+						assigneeKey.add(TOOLS.sanitizeResponse(assignee
 								.get("key")));
 					} catch (NullPointerException e) {
 						assigneeKey.add("");
@@ -336,7 +332,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 					// sOwnersShortName
 					List<String> assigneeName = new ArrayList<String>();
 					try {
-						assigneeName.add(tools.sanitizeResponse(assignee
+						assigneeName.add(TOOLS.sanitizeResponse(assignee
 								.get("name")));
 					} catch (NullPointerException e) {
 						assigneeName.add("");
@@ -346,7 +342,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 					// sOwnersFullName
 					List<String> assigneeDisplayName = new ArrayList<String>();
 					try {
-						assigneeDisplayName.add(tools.sanitizeResponse(assignee
+						assigneeDisplayName.add(TOOLS.sanitizeResponse(assignee
 								.get("displayName")));
 					} catch (NullPointerException e) {
 						assigneeDisplayName.add("");
@@ -359,7 +355,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 					// sOwnersState
 					List<String> assigneeActive = new ArrayList<String>();
 					try {
-						assigneeActive.add(tools.sanitizeResponse(assignee
+						assigneeActive.add(TOOLS.sanitizeResponse(assignee
 								.get("active")));
 					} catch (NullPointerException e) {
 						assigneeActive.add("");
@@ -368,15 +364,15 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 
 					// sOwnersChangeDate - does not exist in Jira
 					List<String> temp = null;
-					feature.setsOwnersChangeDate(tools.toCanonicalList(temp));
+					feature.setsOwnersChangeDate(TOOLS.toCanonicalList(temp));
 
 					// sOwnersIsDeleted - does not exist in Jira
-					feature.setsOwnersIsDeleted(tools.toCanonicalList(temp));
+					feature.setsOwnersIsDeleted(TOOLS.toCanonicalList(temp));
 
 					try {
 						featureRepo.save(feature);
 					} catch (Exception e) {
-						logger.error("Unexpected error caused when attempting to save data\nCaused by:\n"
+						LOGGER.error("Unexpected error caused when attempting to save data\nCaused by:\n"
 								+ e.getMessage()
 								+ " : "
 								+ e.getCause()
@@ -384,23 +380,15 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 								+ Arrays.toString(e.getStackTrace()));
 					}
 				} catch (IllegalArgumentException e) {
-					logger.info("Ignoring data entry for non-feature entity");
+					LOGGER.info("Ignoring data entry for non-feature entity");
 				}
 			}
 		} catch (NullPointerException e) {
-			logger.error("A object, likely an array, was found to be null upon sanitization and thus the main object was skipped and not added to the source system.\nThis is an error that should be resolved by a developer if it continues to occur (essentially, you are now missing data):\n"
-					+ e.getMessage()
-					+ " : "
-					+ e.getCause()
-					+ "\n"
-					+ Arrays.toString(e.getStackTrace()));
+			LOGGER.error("A object, likely an array, was found to be null upon sanitization and thus the main object was skipped and not added to the source system.\nThis is an error that should be resolved by a developer if it continues to occur (essentially, you are now missing data):\n"
+					+ e.getMessage() + " : " + e.getCause(), e);
 		} catch (Exception e) {
-			logger.error("Unexpected error caused while mapping data from source system to local data store:\n"
-					+ e.getMessage()
-					+ " : "
-					+ e.getCause()
-					+ "\n"
-					+ Arrays.toString(e.getStackTrace()));
+			LOGGER.error("Unexpected error caused while mapping data from source system to local data store:\n"
+					+ e.getMessage() + " : " + e.getCause(), e);
 		}
 	}
 
@@ -408,16 +396,13 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 	 * Retrieves the related Epic to the current issue from Jira. To make this
 	 * thread-safe, please synchronize and lock on the result of this method.
 	 *
-	 * @param epicId
+	 * @param epicKey
 	 *            A given Epic Key
 	 * @return A valid JSONObject with Epic data held within
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "PMD.AvoidCatchingNPE"})
 	protected JSONObject getEpicData(String epicKey) {
 		JSONObject canonicalRs = new JSONObject();
-		// JSONObject interrimRs = new JSONObject();
-		JSONArray nativeRs = new JSONArray();
-		JSONObject innerRs = new JSONObject();
 		String jiraCredentials = this.featureSettings.getJiraCredentials();
 		String jiraBaseUrl = this.featureSettings.getJiraBaseUrl();
 		String jiraQueryEndpoint = this.featureSettings.getJiraQueryEndpoint();
@@ -427,10 +412,10 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 			JiraDataFactoryImpl jiraConnect = new JiraDataFactoryImpl(
 					jiraCredentials, jiraBaseUrl, jiraQueryEndpoint);
 			jiraConnect.buildBasicQuery(query);
-			nativeRs = jiraConnect.getEpicQueryResponse();
+            JSONArray nativeRs = jiraConnect.getEpicQueryResponse();
 
 			try {
-				innerRs = (JSONObject) nativeRs.get(0);
+                JSONObject innerRs = (JSONObject) nativeRs.get(0);
 				JSONObject fields = (JSONObject) innerRs.get("fields");
 				JSONObject status = (JSONObject) fields.get("status");
 				canonicalRs.put("id", innerRs.get("id"));
@@ -445,12 +430,8 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 				canonicalRs.clear();
 			}
 		} catch (Exception e) {
-			logger.error("There was a problem connecting to Jira while getting sub-relationships to epics:"
-					+ e.getMessage()
-					+ " : "
-					+ e.getCause()
-					+ "\n"
-					+ Arrays.toString(e.getStackTrace()));
+			LOGGER.error("There was a problem connecting to Jira while getting sub-relationships to epics:"
+					+ e.getMessage() + " : "  + e.getCause(), e);
 			canonicalRs.clear();
 		}
 
@@ -468,10 +449,10 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 			super.returnDate = super.getMaxChangeDate();
 		}
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
-		super.returnDate = tools.toNativeDate(super.returnDate);
+		super.returnDate = TOOLS.toNativeDate(super.returnDate);
 		String queryName = this.featureSettings.getStoryQuery();
 		super.query = this.featureWidgetQueries.getQuery(returnDate, queryName);
-		logger.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
+		LOGGER.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
 		updateObjectInformation();
 
 	}
@@ -491,13 +472,12 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 			for (Feature f : listOfFeature) {
 				featureRepo.delete(f.getId());
 				deleted = true;
-				logger.debug("Removed existing entities that will be replaced by newer instances");
+				LOGGER.debug("Removed existing entities that will be replaced by newer instances");
 			}
 		} catch (IndexOutOfBoundsException ioobe) {
-			logger.debug("Nothing matched the redundancy checking from the database");
+			LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
 		} catch (Exception e) {
-			logger.error("There was a problem validating the redundancy of the data model");
-			e.printStackTrace();
+			LOGGER.error("There was a problem validating the redundancy of the data model", e);
 		}
 
 		return deleted;

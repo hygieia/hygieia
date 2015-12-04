@@ -10,8 +10,6 @@ import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.HudsonCollectorRepository;
 import com.capitalone.dashboard.repository.HudsonJobRepository;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -30,7 +28,7 @@ import java.util.Set;
  */
 @Component
 public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
-
+	@SuppressWarnings("PMD.UnusedPrivateField")
 	private static final Log LOG = LogFactory.getLog(HudsonCollectorTask.class);
 
 	private final HudsonCollectorRepository hudsonCollectorRepository;
@@ -39,7 +37,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 	private final HudsonClient hudsonClient;
 	private final HudsonSettings hudsonSettings;
 	private final ComponentRepository dbComponentRepository;
-	private final int CLEANUP_INTERVAL = 3600000;
+	private final static int CLEANUP_INTERVAL = 3600000;
 
 	@Autowired
 	public HudsonCollectorTask(TaskScheduler taskScheduler,
@@ -81,7 +79,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 			clean(collector);
 		}
 		for (String instanceUrl : collector.getBuildServers()) {
-			logInstanceBanner(instanceUrl);
+			logBanner(instanceUrl);
 
 			Map<HudsonJob, Set<Build>> buildsByJob = hudsonClient
 					.getInstanceJobs(instanceUrl);
@@ -103,6 +101,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 	 *            the {@link HudsonCollector}
 	 */
 
+	@SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // PMD is right, fixme
 	private void clean(HudsonCollector collector) {
 		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
@@ -210,30 +209,5 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 	private boolean isNewBuild(HudsonJob job, Build build) {
 		return buildRepository.findByCollectorItemIdAndNumber(job.getId(),
 				build.getNumber()) == null;
-	}
-
-	private void log(String marker, long start) {
-		log(marker, start, null);
-	}
-
-	private void log(String text, long start, Integer count) {
-		long end = System.currentTimeMillis();
-		String elapsed = ((end - start) / 1000) + "s";
-		String token2 = "";
-		String token3;
-		if (count == null) {
-			token3 = StringUtils.leftPad(elapsed, 30 - text.length());
-		} else {
-			String countStr = count.toString();
-			token2 = StringUtils.leftPad(countStr, 20 - text.length());
-			token3 = StringUtils.leftPad(elapsed, 10);
-		}
-		LOG.info(text + token2 + token3);
-	}
-
-	private void logInstanceBanner(String instanceUrl) {
-		LOG.info("------------------------------");
-		LOG.info(instanceUrl);
-		LOG.info("------------------------------");
 	}
 }

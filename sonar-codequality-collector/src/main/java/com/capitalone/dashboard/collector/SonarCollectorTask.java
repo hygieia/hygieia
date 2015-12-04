@@ -10,8 +10,6 @@ import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.SonarCollectorRepository;
 import com.capitalone.dashboard.repository.SonarProjectRepository;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -26,6 +24,7 @@ import java.util.Set;
 
 @Component
 public class SonarCollectorTask extends CollectorTask<SonarCollector> {
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private static final Log LOG = LogFactory.getLog(SonarCollectorTask.class);
 
     private final SonarCollectorRepository sonarCollectorRepository;
@@ -34,7 +33,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     private final SonarClient sonarClient;
     private final SonarSettings sonarSettings;
     private final ComponentRepository dbComponentRepository;
-    private final int CLEANUP_INTERVAL = 3600000;
+    private final static int CLEANUP_INTERVAL = 3600000;
 
     @Autowired
     public SonarCollectorTask(TaskScheduler taskScheduler,
@@ -77,8 +76,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
 			clean(collector);
 		}
         for (String instanceUrl : collector.getSonarServers()) {
-            logInstanceBanner(instanceUrl);
-
+            logBanner(instanceUrl);
 
 
             List<SonarProject> projects = sonarClient.getProjects(instanceUrl);
@@ -101,6 +99,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
 	 *            the {@link HudsonCollector}
 	 */
 
+    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed PMD, fixme
 	private void clean(SonarCollector collector) {
 		Set<ObjectId> uniqueIDs = new HashSet<>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
@@ -174,30 +173,5 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     private boolean isNewQualityData(SonarProject project, CodeQuality codeQuality) {
         return codeQualityRepository.findByCollectorItemIdAndTimestamp(
                 project.getId(), codeQuality.getTimestamp()) == null;
-    }
-
-    private void log(String marker, long start) {
-        log(marker, start, null);
-    }
-
-    private void log(String text, long start, Integer count) {
-        long end = System.currentTimeMillis();
-        String elapsed = ((end - start) / 1000) + "s";
-        String token2 = "";
-        String token3;
-        if (count == null) {
-            token3 = StringUtils.leftPad(elapsed, 30 - text.length());
-        } else {
-            String countStr = count.toString();
-            token2 = StringUtils.leftPad(countStr, 20 - text.length() );
-            token3 = StringUtils.leftPad(elapsed, 10 );
-        }
-        LOG.info(text + token2 + token3);
-    }
-
-    private void logInstanceBanner(String instanceUrl) {
-        LOG.info("------------------------------");
-        LOG.info(instanceUrl);
-        LOG.info("------------------------------");
     }
 }

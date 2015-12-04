@@ -16,11 +16,10 @@
 
 package com.capitalone.dashboard.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -36,13 +35,12 @@ import java.util.List;
  */
 public class ClientUtil {
 	@SuppressWarnings("unused")
-	private static Log logger = LogFactory.getLog(ClientUtil.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClientUtil.class);
 
 	/**
 	 * Default constructor
 	 */
 	public ClientUtil() {
-
 	}
 
 	/**
@@ -56,30 +54,25 @@ public class ClientUtil {
 	 *            to be sanitized
 	 * @return A UTF-8 sanitized response
 	 */
+	@SuppressWarnings("PMD.AvoidCatchingNPE")
 	public String sanitizeResponse(String nativeRs) {
-		boolean isNull = false;
 		byte[] utf8Bytes;
-		CharsetDecoder cs = Charset.forName("UTF-8").newDecoder();
-		String canonicalRs = new String();
+		CharsetDecoder cs = StandardCharsets.UTF_8.newDecoder();
 		try {
-			isNull = nativeRs.equalsIgnoreCase("null");
-			if (isNull) {
+			if ("null".equalsIgnoreCase(nativeRs)) {
 				return "";
 			}
-			isNull = nativeRs.isEmpty();
-			if (isNull) {
+			if (nativeRs.isEmpty()) {
 				return "";
 			}
-			utf8Bytes = nativeRs.getBytes("UTF-8");
+			utf8Bytes = nativeRs.getBytes(StandardCharsets.UTF_8);
 			cs.decode(ByteBuffer.wrap(utf8Bytes));
-			canonicalRs = new String(utf8Bytes, StandardCharsets.UTF_8);
+			return new String(utf8Bytes, StandardCharsets.UTF_8);
 		} catch (NullPointerException npe) {
 			return "";
 		} catch (Exception e) {
 			return "[INVALID NON UTF-8 ENCODING]";
 		}
-
-		return canonicalRs;
 	}
 
 	/**
@@ -92,12 +85,15 @@ public class ClientUtil {
 	 * @return A stringified canonical date format
 	 */
 	public String toCanonicalDate(String nativeRs) {
+		return nativeRs;
+		/** what's the point, this doesnt do anything..
 		String canonicalRs = new String();
 
 		//canonicalRs = nativeRs.replace("T", " ");
 		canonicalRs = nativeRs;
 
 		return canonicalRs;
+		 **/
 	}
 
 	/**
@@ -107,7 +103,7 @@ public class ClientUtil {
 	 * @return The sanitized, canonical List<String>
 	 */
 	public List <String> toCanonicalList(List<String> list) {
-		List<String> canonicalRs = new ArrayList<String>();
+		List<String> canonicalRs = new ArrayList<>();
 
 		Iterator<String> iterator = list.iterator();
 		while(iterator.hasNext()) {
