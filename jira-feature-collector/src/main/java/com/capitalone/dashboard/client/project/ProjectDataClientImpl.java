@@ -1,19 +1,18 @@
 package com.capitalone.dashboard.client.project;
 
-import java.util.Arrays;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ProjectRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
+import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
 
 /**
  * This is the primary implemented/extended data collector for the feature
@@ -26,12 +25,12 @@ import com.capitalone.dashboard.util.FeatureWidgetQueries;
  */
 public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 		ProjectDataClient {
-	private static Log logger = LogFactory.getLog(ProjectDataClientImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectDataClientImpl.class);
 
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
 	private final ProjectRepository projectRepo;
-	private final ClientUtil tools;
+	private final static ClientUtil TOOLS = new ClientUtil();
 
 	/**
 	 * Extends the constructor from the super class.
@@ -41,13 +40,12 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	public ProjectDataClientImpl(FeatureSettings featureSettings,
 			ProjectRepository projectRepository, FeatureCollectorRepository featureCollectorRepository) {
 		super(featureSettings, projectRepository, featureCollectorRepository);
-		logger.debug("Constructing data collection for the feature widget, project-level data...");
+		LOGGER.debug("Constructing data collection for the feature widget, project-level data...");
 
 		this.featureSettings = featureSettings;
 		this.projectRepo = projectRepository;
 		this.featureWidgetQueries = new FeatureWidgetQueries(
 				this.featureSettings);
-		tools = new ClientUtil();
 	}
 
 	/**
@@ -69,18 +67,18 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 				Scope scope = new Scope();
 
 				@SuppressWarnings("unused")
-				boolean deleted = this.removeExistingEntity(tools
-						.sanitizeResponse((String) dataMainObj.get("_oid")));
+				boolean deleted = this.removeExistingEntity(
+						TOOLS.sanitizeResponse((String) dataMainObj.get("_oid")));
 
 				// collectorId
 				scope.setCollectorId(featureCollectorRepository
 						.findByName("Jira").getId());
 
 				// ID;
-				scope.setpId(tools.sanitizeResponse(dataMainObj.get("id")));
+				scope.setpId(TOOLS.sanitizeResponse(dataMainObj.get("id")));
 
 				// name;
-				scope.setName(tools.sanitizeResponse(dataMainObj.get("name")));
+				scope.setName(TOOLS.sanitizeResponse(dataMainObj.get("name")));
 
 				// beginDate - does not exist for jira
 				scope.setBeginDate("");
@@ -98,13 +96,13 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 				scope.setIsDeleted("False");
 
 				// path - does not exist for Jira
-				scope.setProjectPath(tools.sanitizeResponse(dataMainObj
+				scope.setProjectPath(TOOLS.sanitizeResponse(dataMainObj
 						.get("name")));
 
 				try {
 					projectRepo.save(scope);
 				} catch (Exception e) {
-					logger.error("Unexpected error caused when attempting to save data\nCaused by:\n"
+					LOGGER.error("Unexpected error caused when attempting to save data\nCaused by:\n"
 							+ e.getMessage()
 							+ " : "
 							+ e.getCause()
@@ -113,7 +111,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Unexpected error caused while mapping data from source system to local data store:\n"
+			LOGGER.error("Unexpected error caused while mapping data from source system to local data store:\n"
 					+ e.getMessage()
 					+ " : "
 					+ e.getCause()
@@ -135,9 +133,8 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
 		String queryName = this.featureSettings.getProjectQuery();
 		super.query = this.featureWidgetQueries.getQuery(queryName);
-		logger.debug("updateProjectInformation: queryName = " + query + "; query = " + query);
+		LOGGER.debug("updateProjectInformation: queryName = " + query + "; query = " + query);
 		updateObjectInformation();
-
 	}
 
 	/**
@@ -159,10 +156,9 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 				deleted = true;
 			}
 		} catch (IndexOutOfBoundsException ioobe) {
-			logger.debug("Nothing matched the redundancy checking from the database");
+			LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
 		} catch (Exception e) {
-			logger.error("There was a problem validating the redundancy of the data model");
-			e.printStackTrace();
+			LOGGER.error("There was a problem validating the redundancy of the data model", e);
 		}
 
 		return deleted;

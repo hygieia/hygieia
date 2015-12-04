@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
@@ -13,9 +13,10 @@ import org.stringtemplate.v4.STGroupDir;
  * @author kfk884
  *
  */
+@SuppressWarnings("PMD.SingularField")
 public class FeatureWidgetQueries {
 	@SuppressWarnings("unused")
-	private static Log LOGGER = LogFactory.getLog(FeatureWidgetQueries.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureWidgetQueries.class);
 
 	private final FeatureSettings featureSettings;
 	private final String queryFolder;
@@ -41,12 +42,12 @@ public class FeatureWidgetQueries {
 	 * @param changeDatePara
 	 *            The change date specified from which to pull data with a given
 	 *            query template.
-	 * @param QueryName
+	 * @param queryName
 	 *            The source system query name (without the file type).
 	 * @return A given source system query, in String format.
 	 */
-	public String getQuery(String changeDatePara, String QueryName) {
-		ST st = folder.getInstanceOf(QueryName);
+	public String getQuery(String changeDatePara, String queryName) {
+		ST st = folder.getInstanceOf(queryName);
 		st.add("changeDate", changeDatePara);
 		String query = st.render();
 
@@ -57,12 +58,12 @@ public class FeatureWidgetQueries {
 	 * Retrieves source system queries based on the query name (without the file
 	 * type). This will only grab a non-parametered query.
 	 *
-	 * @param QueryName
+	 * @param queryName
 	 *            The source system query name (without the file type).
 	 * @return A given source system query, in String format.
 	 */
-	public String getQuery(String QueryName) {
-		ST st = folder.getInstanceOf(QueryName);
+	public String getQuery(String queryName) {
+		ST st = folder.getInstanceOf(queryName);
 		String query = st.render();
 
 		return query;
@@ -74,12 +75,12 @@ public class FeatureWidgetQueries {
 	 *
 	 * @param epicKeyParam
 	 *            The Epic key for a given issue.
-	 * @param QueryName
+	 * @param queryName
 	 *            The source system query name (without the file type).
 	 * @return A given source system query, in String format.
 	 */
-	public String getEpicQuery(String epicKeyParam, String QueryName) {
-		ST st = folder.getInstanceOf(QueryName);
+	public String getEpicQuery(String epicKeyParam, String queryName) {
+		ST st = folder.getInstanceOf(queryName);
 		st.add("epicKey", epicKeyParam);
 		String query = st.render();
 
@@ -96,13 +97,13 @@ public class FeatureWidgetQueries {
 	 *            The sprint end data in ISO format.
 	 * @param sprintDeltaDate
 	 *            The delta date in ISO format.
-	 * @param QueryName
+	 * @param queryName
 	 *            The source system query name (without the file type).
 	 * @return A given historical source system query, in String format.
 	 */
 	public String getTrendingQuery(String sprintStartDate,
-			String sprintEndDate, String sprintDeltaDate, String QueryName) {
-		ST st = folder.getInstanceOf(QueryName);
+			String sprintEndDate, String sprintDeltaDate, String queryName) {
+		ST st = folder.getInstanceOf(queryName);
 		st.add("sprintStartDate", sprintStartDate);
 		st.add("sprintEndDate", sprintEndDate);
 		st.add("sprintDeltaDate", sprintDeltaDate);

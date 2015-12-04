@@ -7,9 +7,9 @@ import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -25,8 +25,7 @@ import java.util.List;
  */
 @Component
 public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
-	private static Log logger = LogFactory
-			.getLog(FeatureDataClientSetupImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureDataClientSetupImpl.class);
 	protected final FeatureSettings featureSettings;
 	protected final FeatureCollectorRepository featureCollectorRepository;
 	protected final VersionOneDataFactoryImpl vOneApi;
@@ -47,7 +46,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 			FeatureRepository featureRepository,
 			FeatureCollectorRepository featureCollectorRepository, VersionOneDataFactoryImpl vOneApi) {
 		super();
-		logger.debug("Constructing data collection for the feature widget...");
+		LOGGER.debug("Constructing data collection for the feature widget...");
 
 		this.featureSettings = featureSettings;
 		this.featureRepo = featureRepository;
@@ -86,21 +85,18 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 				outPutMainArray.clear();
 				outPutMainArray = vOneApi.getPagingQueryResponse();
 				if (outPutMainArray == null) {
-					logger.info("FAILED: Script Completed with Error");
+					LOGGER.info("FAILED: Script Completed with Error");
 					throw new Exception("FAILED: Script Completed with Error");
 				}
 				tmpDetailArray = (JSONArray) outPutMainArray.get(0);
 			}
 		} catch (Exception e) {
-			logger.error("Unexpected error in VersionOne paging request of "
+			LOGGER.error("Unexpected error in VersionOne paging request of "
 					+ e.getClass().getName() + "\n[" + e.getMessage() + "]");
 		}
 
 		double elapsedTime = (System.nanoTime() - start) / 1000000000.0;
-		logger.info("Process took :" + elapsedTime + " seconds to update");
-		System.out.println("Process took :" + elapsedTime
-				+ " seconds to update");
-
+		LOGGER.info("Process took :" + elapsedTime + " seconds to update");
 	}
 
 	/**
@@ -115,7 +111,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 
 		SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
 		String date = sdf.format(unixSeconds);
-		logger.debug(unixSeconds + "==>" + date);
+		LOGGER.debug(unixSeconds + "==>" + date);
 
 		return date;
 	}
@@ -188,30 +184,27 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 	 *
 	 * @return A list object of the maximum change date
 	 */
+	@SuppressWarnings("PMD.AvoidCatchingNPE") // agreed, fixme
 	public String getMaxChangeDate() {
-		List<Feature> response = null;
 		String data = null;
 
 		try {
-			response = featureRepo
+			List<Feature> response = featureRepo
 					.getFeatureMaxChangeDate(featureCollectorRepository
 							.findByName("VersionOne").getId(), featureSettings
 							.getDeltaStartDate());
-			if (response.size() > 0) {
+			if (!response.isEmpty()) {
 				data = response.get(0).getChangeDate();
 			}
 		} catch (NullPointerException npe) {
-			logger.debug("No data was currently available in the local database that corresponded to a max change date\nReturning null");
+			LOGGER.debug("No data was currently available in the local database that corresponded" +
+					" to a max change date\nReturning null", npe);
 		} catch (Exception e) {
-			logger.error("There was a problem retrieving or parsing data from the local repository while retrieving a max change date\nReturning null");
+			LOGGER.error("There was a problem retrieving or parsing data from the local " +
+					"repository while retrieving a max change date\nReturning null", e);
 		}
 
-		if (data != null) {
-			return data;
-		} else {
-			return null;
-		}
-
+		return data;
 	}
 
 	/**

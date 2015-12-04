@@ -1,35 +1,34 @@
 package com.capitalone.dashboard.datafactory.jira.sdk.connector;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 import com.capitalone.dashboard.datafactory.jira.sdk.util.SystemInfo;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
+import org.apache.commons.lang3.NotImplementedException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * {@inheritDoc}
- * 
+ *
  * @author kfk884
- * 
+ *
  */
+
+@SuppressWarnings("PMD.AvoidCatchingNPE") // this needs to be rewritten...fixme
 public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 		GetResponseBuilder {
-	private static final Log LOGGER = LogFactory
-			.getLog(GetResponseBuilderImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GetResponseBuilderImpl.class);
 	private static final int TIMEOUT = 120000;
 
 	/**
@@ -41,7 +40,7 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * com.capitalone.jira.client.connector.GetResponseBuilder#getResponse(com
 	 * .google.api.client.http.HttpRequestFactory, java.lang.String)
@@ -53,10 +52,9 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 		HttpRequest request = null;
 		SystemInfo userAgent = new SystemInfo();
 		HttpResponse nativeRs = null;
-		GenericUrl url = new GenericUrl();
 
 		try {
-			url = new GenericUrl(super.baseUrl + super.apiContextPath + query);
+			GenericUrl url = new GenericUrl(super.baseUrl + super.apiContextPath + query);
 			request = rqFactory.buildGetRequest(url);
 			request.setHeaders(new HttpHeaders().setAuthorization(
 					"Basic " + super.credentials).setUserAgent(
@@ -64,27 +62,18 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 			request.setConnectTimeout(TIMEOUT);
 			request.setReadTimeout(TIMEOUT);
 			LOGGER.info("getResponse: url = " + url);
-			synchronized (request) {
+			synchronized (request) { // WHY are you synchronizing??
 				nativeRs = request.execute();
 			}
 		} catch (IOException | NullPointerException e) {
 			LOGGER.error("There was a problem connecting to Jira with a given query:\n"
-					+ e.getMessage()
-					+ "\n"
-					+ Arrays.toString(e.getStackTrace()));
-			return canonicalRs;
+					+ e.getMessage(), e);
 		} catch (IllegalArgumentException e) {
-			LOGGER.error("The given query was malformed\nPlease re-attempt the query without spaces or illegal HTTP characters handled by REST:\n"
-					+ e.getMessage()
-					+ "\n"
-					+ Arrays.toString(e.getStackTrace()));
-			return canonicalRs;
+			LOGGER.error("The given query was malformed\nPlease re-attempt the query without spaces or illegal HTTP characters handled by REST:"
+					+ e.getMessage(), e);
 		} catch (Exception e) {
-			LOGGER.error("An unexpected exception was caught while generating the HttpRequest artifact to talk with Jira:\n"
-					+ e.getMessage()
-					+ "\n"
-					+ Arrays.toString(e.getStackTrace()));
-			return canonicalRs;
+			LOGGER.error("An unexpected exception was caught while generating the HttpRequest artifact to talk with Jira:"
+					+ e.getMessage(), e);
 		} finally {
 			try {
 				canonicalRs = this.toCanonicalRs(nativeRs);
@@ -92,9 +81,7 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 				LOGGER.info("Jira web response message has been successfully generated and transformed");
 			} catch (IOException e) {
 				LOGGER.error("There was a problem retrieving Jira data from the input stream: "
-						+ e.getMessage()
-						+ "\n"
-						+ Arrays.toString(e.getStackTrace()));
+						+ e.getMessage(), e);
 			}
 		}
 		return canonicalRs;
@@ -107,37 +94,27 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 		HttpRequest request = null;
 		SystemInfo userAgent = new SystemInfo();
 		HttpResponse nativeRs = null;
-		GenericUrl url = new GenericUrl();
 
 		try {
-			url = new GenericUrl(super.baseUrl + super.apiContextPath + query);
+			GenericUrl url = new GenericUrl(super.baseUrl + super.apiContextPath + query);
 			request = rqFactory.buildGetRequest(url);
 			request.setHeaders(new HttpHeaders().setAuthorization(
 					"Basic " + super.credentials).setUserAgent(
 					userAgent.generateApplicationUseHeader()));
 			request.setConnectTimeout(TIMEOUT);
 			request.setReadTimeout(TIMEOUT);
-			synchronized (request) {
+			synchronized (request) { // WHY are you synchronizing??
 				nativeRs = request.execute();
 			}
 		} catch (IOException | NullPointerException e) {
 			LOGGER.error("There was a problem connecting to Jira with a given query:\n"
-					+ e.getMessage()
-					+ "\n"
-					+ Arrays.toString(e.getStackTrace()));
-			return canonicalRs;
+					+ e.getMessage(), e);
 		} catch (IllegalArgumentException e) {
 			LOGGER.error("The given query was malformed\nPlease re-attempt the query without spaces or illegal HTTP characters handled by REST:\n"
-					+ e.getMessage()
-					+ "\n"
-					+ Arrays.toString(e.getStackTrace()));
-			return canonicalRs;
+					+ e.getMessage(), e);
 		} catch (Exception e) {
 			LOGGER.error("An unexpected exception was caught while generating the HttpRequest artifact to talk with Jira:\n"
-					+ e.getMessage()
-					+ "\n"
-					+ Arrays.toString(e.getStackTrace()));
-			return canonicalRs;
+					+ e.getMessage(), e);
 		} finally {
 			try {
 				canonicalRs = this.toCanonicalRsArray(nativeRs);
@@ -145,9 +122,7 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 				LOGGER.info("Jira web response message has been successfully generated and transformed");
 			} catch (IOException e) {
 				LOGGER.error("There was a problem retrieving Jira data from the input stream: "
-						+ e.getMessage()
-						+ "\n"
-						+ Arrays.toString(e.getStackTrace()));
+						+ e.getMessage(), e);
 			}
 		}
 		return canonicalRs;
@@ -155,7 +130,7 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * com.capitalone.jira.client.connector.GetResponseBuilder#getResponseOAuth
 	 * (com .google.api.client.http.HttpRequestFactory, java.lang.String)
@@ -169,24 +144,23 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 	/**
 	 * Converts an HttpResponse message content stream into a valid JSONObject
 	 * for file consumption
-	 * 
+	 *
 	 * @param content
 	 *            HttpResponse message content as an input stream
 	 * @return A valid JSONObject from the HttpResponse message content
 	 */
 	private JSONObject toCanonicalRs(HttpResponse nativeRs) throws IOException {
-		JSONObject canonicalRs = new JSONObject();
 		StringBuilder builder = new StringBuilder();
 		InputStream content = nativeRs.getContent();
 		BufferedReader bufferedReader = new BufferedReader(
 				new InputStreamReader(content));
 
-		for (String line = null; (line = bufferedReader.readLine()) != null;) {
+		for (String line; (line = bufferedReader.readLine()) != null;) {
 			builder.append(line).append("\n");
 		}
 
 		Object obj = JSONValue.parse(builder.toString());
-		canonicalRs = (JSONObject) obj;
+		JSONObject canonicalRs = (JSONObject) obj;
 
 		return canonicalRs;
 	}
@@ -194,25 +168,23 @@ public class GetResponseBuilderImpl extends BaseConnectionImpl implements
 	/**
 	 * Converts an HttpResponse message content stream into a valid JSONArray
 	 * for file consumption
-	 * 
+	 *
 	 * @param content
 	 *            HttpResponse message content as an input stream
 	 * @return A valid JSONArray from the HttpResponse message content
 	 */
-	private JSONArray toCanonicalRsArray(HttpResponse nativeRs)
-			throws IOException {
-		JSONArray canonicalRs = new JSONArray();
+	private JSONArray toCanonicalRsArray(HttpResponse nativeRs) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		InputStream content = nativeRs.getContent();
 		BufferedReader bufferedReader = new BufferedReader(
 				new InputStreamReader(content));
 
-		for (String line = null; (line = bufferedReader.readLine()) != null;) {
+		for (String line; (line = bufferedReader.readLine()) != null;) {
 			builder.append(line).append("\n");
 		}
 
 		Object obj = JSONValue.parse(builder.toString());
-		canonicalRs = (JSONArray) obj;
+		JSONArray canonicalRs = (JSONArray) obj;
 
 		return canonicalRs;
 	}
