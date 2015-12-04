@@ -1,6 +1,5 @@
 package co.leantechniques.hygieia.rally.collector;
 
-import co.leantechniques.hygieia.rally.util.RallySettings;
 import com.capitalone.dashboard.collector.CollectorTask;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorType;
@@ -11,14 +10,13 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class RallyFeatureCollectorTaskTest {
+public class RallyCollectorTaskTest {
 
-    private RallyFeatureCollectorTask collector;
-    private RallySettings rallySettings;
+    private RallyCollectorTask collector;
 
     @Before
     public void setUp() throws Exception {
-        collector = new RallyFeatureCollectorTask(null, rallySettings);
+        collector = new RallyCollectorTask(null, null, null, null, null);
     }
 
     @Test

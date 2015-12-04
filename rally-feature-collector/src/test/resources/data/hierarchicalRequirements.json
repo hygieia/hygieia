@@ -1,0 +1,98 @@
+{
+  "QueryResult": {
+    "_rallyAPIMajor": "2",
+    "_rallyAPIMinor": "0",
+    "Errors": [],
+    "Warnings": [],
+    "TotalResultCount": 237,
+    "StartIndex": 1,
+    "PageSize": 1,
+    "Results": [
+      {
+        "_rallyAPIMajor": "2",
+        "_rallyAPIMinor": "0",
+        "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/hierarchicalrequirement/35069692433",
+        "_refObjectUUID": "98da5192-4b29-4da8-b9ba-2b8cb51e88b2",
+        "_objectVersion": "3",
+        "_refObjectName": "Grower Smoke Test - Basic Framework",
+        "FormattedID": "US8683",
+        "DirectChildrenCount": 0,
+        "Name": "Grower Smoke Test - Basic Framework",
+        "Owner": {
+          "_rallyAPIMajor": "2",
+          "_rallyAPIMinor": "0",
+          "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/user/12111654690",
+          "_refObjectUUID": "e57e7398-6014-4546-9e69-774a890a662c",
+          "_objectVersion": "865",
+          "_refObjectName": "Tegtmeier Luther",
+          "_type": "User"
+        },
+        "ScheduleState": "Accepted",
+        "Blocked": false,
+        "Iteration": {
+          "_rallyAPIMajor": "2",
+          "_rallyAPIMinor": "0",
+          "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/iteration/23831544414",
+          "_refObjectUUID": "33e8055a-e80a-43b2-9842-ad75edce7260",
+          "_objectVersion": "1",
+          "_refObjectName": "Sprint 29-1",
+          "Name": "Sprint 29-1",
+          "PlanEstimate": null,
+          "_type": "Iteration"
+        },
+        "PlanEstimate": null,
+        "Release": {
+          "_rallyAPIMajor": "2",
+          "_rallyAPIMinor": "0",
+          "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/release/23831544390",
+          "_refObjectUUID": "d72b85b5-8dbb-44f2-8365-fd145aaec874",
+          "_objectVersion": "1",
+          "_refObjectName": "PSI 29",
+          "Name": "PSI 29",
+          "PlanEstimate": null,
+          "_type": "Release"
+        },
+        "Project": {
+          "_rallyAPIMajor": "2",
+          "_rallyAPIMinor": "0",
+          "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/project/23831544379",
+          "_refObjectUUID": "ec5f2b27-3df2-46a3-a74e-00a75361c779",
+          "_refObjectName": "Herding Cats",
+          "_type": "Project"
+        },
+        "Feature": {
+          "_rallyAPIMajor": "2",
+          "_rallyAPIMinor": "0",
+          "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/portfolioitem/feature/35881646987",
+          "_refObjectUUID": "12fdfc36-3a50-4fbb-8944-62f28aeaf41c",
+          "_objectVersion": "94",
+          "_refObjectName": "Grower smoke tests",
+          "FormattedID": "F1848",
+          "DirectChildrenCount": 15,
+          "Name": "Grower smoke tests",
+          "Owner": {
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/user/5930908399",
+            "_refObjectUUID": "c6f6a50d-0e40-4893-a1a3-dde3df876884",
+            "_objectVersion": "906",
+            "_refObjectName": "Thomsen Justin",
+            "_type": "User"
+          },
+          "Release": null,
+          "Project": {
+            "_rallyAPIMajor": "2",
+            "_rallyAPIMinor": "0",
+            "_ref": "https://rally1.rallydev.com/slm/webservice/v2.0/project/23831544379",
+            "_refObjectUUID": "ec5f2b27-3df2-46a3-a74e-00a75361c779",
+            "_refObjectName": "Herding Cats",
+            "_type": "Project"
+          },
+          "_type": "PortfolioItem/Feature"
+        },
+        "_type": "HierarchicalRequirement"
+      }
+    ]
+  }
+}
+
