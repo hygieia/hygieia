@@ -84,6 +84,7 @@
 
             function upsertComponent(newComponent) {
                 // not all widgets have to have components so this may be null
+                console.log("UPsertComponent=====", newComponent);
                 if(newComponent == null) {
                     return;
                 }
@@ -106,6 +107,7 @@
             function upsertWidget(newConfig) {
                 // update the local config id
                 // widget directive handles api updates
+                console.log("UPsertWidget====", newConfig);
                 var foundMatch = false;
                 _($scope.dashboard.widgets)
                     .where(function(config) {

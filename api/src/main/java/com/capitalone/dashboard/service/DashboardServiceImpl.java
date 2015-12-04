@@ -10,10 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -98,24 +95,30 @@ public class DashboardServiceImpl implements DashboardService {
         Component component = componentRepository.findOne(componentId);
         //we can not assume what collector item is added, what is removed etc so, we will
         //refresh the association. First disable all collector items, then remove all and re-add
-        Map<CollectorType, List<CollectorItem>> existingCollectorItems = component.getCollectorItems();
-        for (Map.Entry<CollectorType, List<CollectorItem>> entry : existingCollectorItems.entrySet()) {
-            List<CollectorItem> cItems = entry.getValue();
-            if (!CollectionUtils.isEmpty(cItems)) {
-                for (CollectorItem ci : cItems) {
-                    ci.setEnabled(false);
-                    collectorItemRepository.save(ci);
+
+        //First: disable all collectorItems of the Collector TYPEs that came in with the request.
+        //Second: remove all the collectorItem association of the Collector Type  that came in
+        List<CollectorType> incomingTypes = new ArrayList<>();
+        for (ObjectId collectorItemId : collectorItemIds) {
+            CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
+            Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
+            if (!incomingTypes.contains(collector.getCollectorType())) {
+                incomingTypes.add(collector.getCollectorType());
+                List<CollectorItem> cItems = component.getCollectorItems(collector.getCollectorType());
+                if (!CollectionUtils.isEmpty(cItems)) {
+                    for (CollectorItem ci : cItems) {
+                        ci.setEnabled(false);
+                        collectorItemRepository.save(ci);
+                    }
                 }
+                component.getCollectorItems().remove(collector.getCollectorType());
             }
         }
-        //Now remove all collector items
-        component.getCollectorItems().clear();
 
         //Last step: add collector items that came in
         for (ObjectId collectorItemId : collectorItemIds) {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
-
             component.addCollectorItem(collector.getCollectorType(), collectorItem);
 
             if (!collectorItem.isEnabled()) {

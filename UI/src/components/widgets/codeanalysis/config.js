@@ -51,13 +51,30 @@
             ctrl.testConfigs = [];
             var testCollectorItems = component.collectorItems.Test;
             var testCollectorItemIds = [];
+            var testJobNamesFromWidget = [];
+            // set values from config
+            if (widgetConfig) {
+                console.log("Widget====", widgetConfig);
+                if (widgetConfig.options.testJobNames) {
+                    console.log("INSIDE");
+                    var j;
+                    for (j = 0; j < widgetConfig.options.testJobNames.length; ++j) {
+                        testJobNamesFromWidget.push(widgetConfig.options.testJobNames[j]);
+                    }
+                }
+                console.log("TestJobNamesFromWidget====", testJobNamesFromWidget);
+            }
             var index;
             for (index = 0; index < testCollectorItems.length; ++index) {
                 testCollectorItemIds.push(testCollectorItems[index].id);
             }
             for (index = 0; index < testCollectorItemIds.length; ++index) {
                 var testItem = testCollectorItemIds ? _.findWhere(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
-                ctrl.testConfigs.push({testJob: ctrl.testJobs, testCollectorItem: testItem});
+                ctrl.testConfigs.push({
+                    testJobName: testJobNamesFromWidget[index],
+                    testJob: ctrl.testJobs,
+                    testCollectorItem: testItem
+                });
             }
 
             console.log(ctrl.testConfigs);
@@ -67,21 +84,25 @@
         function submitForm(caCollectorItem, saCollectorItem, testConfigs) {
             console.log("LOOKING", ctrl.testConfigs[0].testName);
             var collectorItems = [];
+            var testJobNames = [];
             if (caCollectorItem) collectorItems.push(caCollectorItem.id);
             if (saCollectorItem) collectorItems.push(saCollectorItem.id);
             if (testConfigs) {
                 var index;
-                console.log(testConfigs);
+                console.log("TestConfigs:", testConfigs);
                 for (index = 0; index < testConfigs.length; ++index) {
                     collectorItems.push(testConfigs[index].testCollectorItem.id);
+                    testJobNames.push(testConfigs[index].testJobName);
                 }
                 console.log("****** CollectorItems=", collectorItems);
+                console.log("****** TestJobNames=", testJobNames);
             }
-
+            var form = document.configForm;
             var postObj = {
                 name: 'codeanalysis',
                 options: {
-                    id: widgetConfig.options.id
+                    id: widgetConfig.options.id,
+                    testJobNames: testJobNames
                 },
                 componentId: component.id,
                 collectorItemIds: collectorItems
@@ -94,13 +115,12 @@
 
 
         function addTestConfig() {
-            ctrl.testConfigs.push({testJob: ctrl.testJobs, testCollectorItem: null});
-            console.log(ctrl.testConfigs);
+            var newItemNo = ctrl.testConfigs.length + 1;
+            ctrl.testConfigs.push({testJobName: 'Name' + newItemNo, testJob: ctrl.testJobs, testCollectorItem: null});
         }
 
         function deleteTestConfig(item) {
             ctrl.testConfigs.pop(item);
-            console.log(ctrl.testConfigs);
         }
     }
 })();
