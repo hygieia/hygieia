@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.ParseException;
@@ -7,13 +10,18 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DateUtil {
+public final class DateUtil {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DateUtil.class);
 
 	public static final String DISPLAY_DATE_FORMAT = "dd-MMM-yyyy";
 	public static final String ISO_DATE_FORMAT = "yyyy-MM-dd";
 	public static final String ISO_TIME_FORMAT = "T00:00:00.000000";
 	public static final String ISO_DATE_TIME_FORMATZ = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS";
 	public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
+	private DateUtil() {
+		// util class.
+	}
 
 	public static Date getNextBusinessDate(Date iDate) {
 		Calendar calendar = Calendar.getInstance();
@@ -69,10 +77,7 @@ public class DateUtil {
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
-
-		// Put it back in the Date object
-		iDate = cal.getTime();
-		return iDate;
+		return cal.getTime();
 	}
 
 	public static Date getTodayNoTime() {
@@ -87,7 +92,8 @@ public class DateUtil {
 		return displayDateString;
 	}
 
-	public static Date fromISODateTimeFormat(String iString) {
+	public static Date fromISODateTimeFormat(String isoString) {
+		String iString = isoString;
 		int charIndex = iString.indexOf(".");
 		if (charIndex!=-1){
 			iString = iString.substring(0, charIndex);
@@ -99,7 +105,7 @@ public class DateUtil {
 		try {
 			dt = new SimpleDateFormat(ISO_DATE_TIME_FORMAT).parse(iString);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			LOGGER.error("Parsing ISO DateTime: "+ isoString, e);
 		}
 		return dt;
 	}
@@ -112,7 +118,7 @@ public class DateUtil {
 		try {
 			dt = new SimpleDateFormat(ISO_DATE_FORMAT).parse(iString);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			LOGGER.error("Parsing ISO DateTime: "+ iString, e);
 		}
 
 		return dt;

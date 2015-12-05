@@ -4,7 +4,6 @@ import com.capitalone.dashboard.request.AuthenticationRequest;
 import com.capitalone.dashboard.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 
@@ -19,7 +19,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private static final String JSON = MediaType.APPLICATION_JSON_VALUE;
+
 
     @Autowired
     public AuthenticationController(AuthenticationService authenticationService) {
@@ -27,7 +27,7 @@ public class AuthenticationController {
     }
 
 
-    @RequestMapping(value = "/authenticateUser", method = POST, consumes = JSON, produces = JSON)
+    @RequestMapping(value = "/authenticateUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Boolean> authenticateUser(@Valid @RequestBody AuthenticationRequest request) {
         // TODO: should return proper HTTP codes for invalid creds
         return ResponseEntity
@@ -35,13 +35,13 @@ public class AuthenticationController {
                 .body(authenticationService.authenticate(request.getUsername(), request.getPassword()));
     }
 
-    @RequestMapping(value = "/registerUser", method = POST, consumes = JSON, produces = JSON)
+    @RequestMapping(value = "/registerUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> registerUser(@Valid @RequestBody AuthenticationRequest request) {
         // TODO: should return proper HTTP codes for existing users
         return ResponseEntity.status(HttpStatus.OK).body(authenticationService.create(request.getUsername(), request.getPassword()));
     }
 
-    @RequestMapping(value = "/updateUser", method = POST, consumes = JSON, produces = JSON)
+    @RequestMapping(value = "/updateUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateUser(@Valid @RequestBody AuthenticationRequest request) {
         // TODO: should return proper HTTP codes for not found users
         // TODO: should validate revalidate current password before allowing changes?

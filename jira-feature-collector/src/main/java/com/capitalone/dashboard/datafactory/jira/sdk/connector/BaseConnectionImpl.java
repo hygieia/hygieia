@@ -1,25 +1,24 @@
 package com.capitalone.dashboard.datafactory.jira.sdk.connector;
 
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Arrays;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-
 /**
  * {@inheritDoc}
- * 
+ *
  * @author kfk884
- * 
+ *
  */
+@SuppressWarnings("PMD.AvoidCatchingNPE") // this needs to be rewritten...fixme
 public class BaseConnectionImpl implements BaseConnection {
-	private static final Log LOGGER = LogFactory
-			.getLog(BaseConnectionImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BaseConnectionImpl.class);
 	protected String proxy;
 	protected String port;
 	protected String authToken;
@@ -36,7 +35,7 @@ public class BaseConnectionImpl implements BaseConnection {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * com.capitalone.jira.client.connector.BaseConnection#setProxy(java.lang
 	 * .String, java.lang.String)
@@ -58,7 +57,7 @@ public class BaseConnectionImpl implements BaseConnection {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * com.capitalone.jira.client.connector.BaseConnection#setOAuth(java.lang
 	 * .String, java.lang.String, java.lang.String, java.lang.String)
@@ -84,7 +83,7 @@ public class BaseConnectionImpl implements BaseConnection {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * com.capitalone.jira.client.connector.BaseConnection#setBasicAuth(java
 	 * .lang.String, java.lang.String)
@@ -107,7 +106,7 @@ public class BaseConnectionImpl implements BaseConnection {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * com.capitalone.jira.client.connector.BaseConnection#setJiraURI(java.lang
 	 * .String, java.lang.String)
@@ -131,7 +130,7 @@ public class BaseConnectionImpl implements BaseConnection {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * com.capitalone.jira.client.connector.BaseConnection#generateRequestFactory
 	 * ()

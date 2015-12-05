@@ -10,7 +10,6 @@ import com.capitalone.dashboard.service.DashboardService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,11 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 public class DashboardController {
-    private static final String JSON = MediaType.APPLICATION_JSON_VALUE;
 
     private final DashboardService dashboardService;
 
@@ -33,24 +35,26 @@ public class DashboardController {
         this.dashboardService = dashboardService;
     }
 
-    @RequestMapping(value = "/dashboard", method = GET, produces = JSON)
+    @RequestMapping(value = "/dashboard", method = GET, produces = APPLICATION_JSON_VALUE)
     public Iterable<Dashboard> dashboards() {
         return dashboardService.all();
     }
 
-    @RequestMapping(value = "/dashboard", method = POST, consumes = JSON, produces = JSON)
+    @RequestMapping(value = "/dashboard", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Dashboard> createDashboard(@Valid @RequestBody DashboardRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(dashboardService.create(request.toDashboard()));
     }
 
-    @RequestMapping(value = "/dashboard/{id}", method = GET, produces = JSON)
+    @RequestMapping(value = "/dashboard/{id}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
     public Dashboard getDashboard(@PathVariable ObjectId id) {
         return dashboardService.get(id);
     }
 
-    @RequestMapping(value = "/dashboard/{id}", method = PUT, consumes = JSON)
+    @RequestMapping(value = "/dashboard/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateDashboard(@PathVariable ObjectId id,
                                                   @RequestBody DashboardRequest request) {
         dashboardService.update(request.copyTo(dashboardService.get(id)));
@@ -63,7 +67,8 @@ public class DashboardController {
         return ResponseEntity.noContent().build();
     }
 
-    @RequestMapping(value = "/dashboard/{id}/widget", method = POST, consumes = JSON)
+    @RequestMapping(value = "/dashboard/{id}/widget", method = POST,
+            consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<WidgetResponse> addWidget(@PathVariable ObjectId id, @RequestBody WidgetRequest request) {
         Component component = dashboardService.associateCollectorToComponent(
                 request.getComponentId(), request.getCollectorItemIds());
@@ -73,12 +78,14 @@ public class DashboardController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new WidgetResponse(component, widget));
     }
 
-    @RequestMapping(value = "/dashboard/{id}/widget/{widgetId}", method = PUT, consumes = JSON)
+    @RequestMapping(value = "/dashboard/{id}/widget/{widgetId}", method = PUT,
+            consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<WidgetResponse> updateWidget(@PathVariable ObjectId id,
                                                        @PathVariable ObjectId widgetId,
                                                        @RequestBody WidgetRequest request) {
         Component component = dashboardService.associateCollectorToComponent(
                 request.getComponentId(), request.getCollectorItemIds());
+
         Dashboard dashboard = dashboardService.get(id);
         Widget widget = request.updateWidget(dashboardService.getWidget(dashboard, widgetId));
         widget = dashboardService.updateWidget(dashboard, widget);
@@ -86,14 +93,16 @@ public class DashboardController {
         return ResponseEntity.ok().body(new WidgetResponse(component, widget));
     }
 
-    @RequestMapping(value = "/dashboard/mydashboard/{username}", method = GET, produces = JSON)
+    @RequestMapping(value = "/dashboard/mydashboard/{username}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
     public List<Dashboard> getOwnedDashboards(@PathVariable String username) {
         List<Dashboard> myDashboard = dashboardService.getOwnedDashboards(username);
         return myDashboard;
 
     }
 
-    @RequestMapping(value = "/dashboard/myowner/{dashboardtitle}", method = GET, produces = JSON)
+    @RequestMapping(value = "/dashboard/myowner/{dashboardtitle}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
     public String getDashboardOwner(@PathVariable String dashboardtitle) {
         String dashboardOwner = "No Owner defined";
         if (null != dashboardtitle) {

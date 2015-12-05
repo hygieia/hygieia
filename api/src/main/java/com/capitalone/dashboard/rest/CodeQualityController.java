@@ -7,7 +7,6 @@ import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.CodeQualityRequest;
 import com.capitalone.dashboard.service.CodeQualityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 public class CodeQualityController {
-
-    private static final String JSON = MediaType.APPLICATION_JSON_VALUE;
 
     private final CodeQualityService codeQualityService;
 
@@ -34,18 +32,18 @@ public class CodeQualityController {
         binder.registerCustomEditor(CodeQualityType.class, new CaseInsensitiveCodeQualityTypeEditor());
     }
 
-    @RequestMapping(value = "/quality", method = GET, produces = JSON)
+    @RequestMapping(value = "/quality", method = GET, produces = APPLICATION_JSON_VALUE)
     public DataResponse<Iterable<CodeQuality>> qualityData(@Valid CodeQualityRequest request) {
         return codeQualityService.search(request);
     }
 
-    @RequestMapping(value = "/quality/static-analysis", method = GET, produces = JSON)
+    @RequestMapping(value = "/quality/static-analysis", method = GET, produces = APPLICATION_JSON_VALUE)
     public DataResponse<Iterable<CodeQuality>> qualityStaticAnalysis(@Valid CodeQualityRequest request) {
         request.setType(CodeQualityType.StaticAnalysis);
         return codeQualityService.search(request);
     }
 
-    @RequestMapping(value = "/quality/security-analysis", method = GET, produces = JSON)
+    @RequestMapping(value = "/quality/security-analysis", method = GET, produces = APPLICATION_JSON_VALUE)
     public DataResponse<Iterable<CodeQuality>> qualitySecurityAnalysis(@Valid CodeQualityRequest request) {
         request.setType(CodeQualityType.SecurityAnalysis);
         return codeQualityService.search(request);

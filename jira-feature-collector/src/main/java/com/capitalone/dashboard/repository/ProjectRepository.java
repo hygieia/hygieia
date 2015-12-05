@@ -18,6 +18,6 @@ public interface ProjectRepository extends CrudRepository<Scope, ObjectId>,
 	List<Scope> getProjectMaxChangeDate(ObjectId collectorId,
 			String lastChangeDate);
 
-	@Query(value = "{ $query: {'pId' : ?0},{'pId' : 1}}")
+	@Query(value = " {'pId' : ?0}")
 	List<Scope> getProjectIdById(String pId);
 }
