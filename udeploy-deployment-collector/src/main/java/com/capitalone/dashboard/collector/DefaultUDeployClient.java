@@ -7,12 +7,12 @@ import com.capitalone.dashboard.model.UDeployEnvResCompData;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,14 +22,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class DefaultUDeployClient implements UDeployClient {
-	private static final Log LOG = LogFactory
-			.getLog(DefaultUDeployClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultUDeployClient.class);
 
 	private final UDeploySettings uDeploySettings;
 	private final RestOperations restOperations;
@@ -73,6 +72,7 @@ public class DefaultUDeployClient implements UDeployClient {
 		return environments;
 	}
 
+    @SuppressWarnings("PMD.AvoidCatchingNPE")
 	@Override
 	public List<EnvironmentComponent> getEnvironmentComponents(
 			UDeployApplication application, Environment environment) {
@@ -105,13 +105,14 @@ public class DefaultUDeployClient implements UDeployClient {
 				components.add(component);
 			}
 		} catch (NullPointerException npe) {
-			LOG.info("No Environment data found, No components deployed");
+			LOGGER.info("No Environment data found, No components deployed");
 		}
 
 		return components;
 	}
 
 	// Called by DefaultEnvironmentStatusUpdater
+    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, this method needs refactoring.
 	@Override
 	public List<UDeployEnvResCompData> getEnvironmentResourceStatusData(
 			UDeployApplication application, Environment environment) {
@@ -208,8 +209,8 @@ public class DefaultUDeployClient implements UDeployClient {
 					new HttpEntity<>(createHeaders()), String.class);
 
 		} catch (RestClientException re) {
-			LOG.error("Error with REST url: " + url);
-			LOG.error(re.getMessage());
+			LOGGER.error("Error with REST url: " + url);
+			LOGGER.error(re.getMessage());
 		}
 		return response;
 	}
@@ -219,16 +220,15 @@ public class DefaultUDeployClient implements UDeployClient {
 	}
 
 	private HttpHeaders createHeaders() {
-		return new HttpHeaders() {
-			{
-				String auth = uDeploySettings.getUsername() + ":"
-						+ uDeploySettings.getPassword();
-				byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset
-						.forName("US-ASCII")));
-				String authHeader = "Basic " + new String(encodedAuth);
-				set("Authorization", authHeader);
-			}
-		};
+		String auth = uDeploySettings.getUsername() + ":"
+                + uDeploySettings.getPassword();
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(
+                StandardCharsets.US_ASCII));
+        String authHeader = "Basic " + new String(encodedAuth);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authHeader);
+		return headers;
 	}
 
 	private JSONArray paresAsArray(ResponseEntity<String> response) {
@@ -237,8 +237,8 @@ public class DefaultUDeployClient implements UDeployClient {
 		try {
 			return (JSONArray) new JSONParser().parse(response.getBody());
 		} catch (ParseException pe) {
-			LOG.debug(response.getBody());
-			LOG.error(pe.getMessage());
+			LOGGER.debug(response.getBody());
+			LOGGER.error(pe.getMessage());
 		}
 		return new JSONArray();
 	}

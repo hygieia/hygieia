@@ -7,10 +7,10 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,13 +26,13 @@ import java.util.List;
  */
 public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 		StoryDataClient {
-	private static Log logger = LogFactory.getLog(StoryDataClientImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StoryDataClientImpl.class);
 
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
 	private final FeatureCollectorRepository featureCollectorRepository;
 	private final FeatureRepository featureRepo;
-	private final ClientUtil tools;
+	private static final ClientUtil TOOLS = new ClientUtil();
 
 	/**
 	 * Extends the constructor from the super class.
@@ -45,14 +45,13 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 			VersionOneDataFactoryImpl vOneApi) {
 		super(featureSettings, featureRepository, featureCollectorRepository,
 				vOneApi);
-		logger.debug("Constructing data collection for the feature widget, story-level data...");
+		LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
 		this.featureSettings = featureSettings;
 		this.featureRepo = featureRepository;
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.featureWidgetQueries = new FeatureWidgetQueries(
 				this.featureSettings);
-		tools = new ClientUtil();
 	}
 
 	/**
@@ -65,13 +64,13 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 	 * @return
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "PMD.ExcessiveMethodLength", "PMD.AvoidCatchingNPE",
+			"PMD.NPathComplexity"})
 	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
 		try {
 			JSONObject dataMainObj = new JSONObject();
 			JSONObject tmpObj = new JSONObject();
-			System.out.println("Size of PagingJSONArray: "
-					+ tmpMongoDetailArray.size());
+
 			for (int i = 0; i < tmpMongoDetailArray.size(); i++) {
 				if (dataMainObj != null) {
 					dataMainObj.clear();
@@ -80,7 +79,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 				Feature feature = new Feature();
 
 				@SuppressWarnings("unused")
-				boolean deleted = this.removeExistingEntity(tools
+				boolean deleted = this.removeExistingEntity(TOOLS
 						.sanitizeResponse((String) dataMainObj.get("_oid")));
 
 				// collectorId
@@ -88,29 +87,29 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 						"VersionOne").getId());
 
 				// ID
-				feature.setsId(tools.sanitizeResponse((String) dataMainObj
+				feature.setsId(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("_oid")));
 
 				// sNumber
-				feature.setsNumber(tools.sanitizeResponse((String) dataMainObj
+				feature.setsNumber(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("Number")));
 
 				// sName
-				feature.setsName(tools.sanitizeResponse((String) dataMainObj
+				feature.setsName(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("Name")));
 
 				// sStatus
-				feature.setsStatus(tools.sanitizeResponse((String) dataMainObj
+				feature.setsStatus(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("Status.Name")));
 
 				// sState
-				feature.setsState(tools.sanitizeResponse((String) dataMainObj
+				feature.setsState(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("AssetState")));
 
 				// sSoftwareTesting
 				try {
 					if ((String) dataMainObj.get("Custom_SoftwareTesting.Name") != null) {
-						feature.setsSoftwareTesting(tools
+						feature.setsSoftwareTesting(TOOLS
 								.sanitizeResponse((String) dataMainObj
 										.get("Custom_SoftwareTesting.Name")));
 					} else {
@@ -121,61 +120,59 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 				}
 
 				// sEstimate
-				feature.setsEstimate(tools
+				feature.setsEstimate(TOOLS
 						.sanitizeResponse((String) dataMainObj.get("Estimate")));
 
 				// sChangeDate
-				feature.setChangeDate(tools.toCanonicalDate(tools
+				feature.setChangeDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("ChangeDate"))));
 
 				// IsDeleted
-				feature.setIsDeleted(tools
+				feature.setIsDeleted(TOOLS
 						.sanitizeResponse((String) dataMainObj.get("IsDeleted")));
 
 				// sProjectID
 				tmpObj = (JSONObject) dataMainObj.get("Scope.ID");
 				if (tmpObj.containsKey("_oid")) {
-					feature.setsProjectID(tools
+					feature.setsProjectID(TOOLS
 							.sanitizeResponse((String) (tmpObj.get("_oid"))));
 				}
 
 				// sProjectName
-				feature.setsProjectName(tools
+				feature.setsProjectName(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Scope.Name")));
 
 				// sProjectBeginDate
-				feature.setsProjectBeginDate(tools.toCanonicalDate(tools
+				feature.setsProjectBeginDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Scope.BeginDate"))));
 
 				// sProjectEndDate
-				feature.setsProjectEndDate(tools.toCanonicalDate(tools
+				feature.setsProjectEndDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Scope.EndDate"))));
 
 				// sProjectChangeDate
-				feature.setsProjectChangeDate(tools.toCanonicalDate(tools
+				feature.setsProjectChangeDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Scope.ChangeDate"))));
 
 				// sProjectState
-				feature.setsProjectState(tools
+				feature.setsProjectState(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Scope.AssetState")));
 
 				// sProjectIsDeleted
-				feature.setsProjectIsDeleted(tools
+				feature.setsProjectIsDeleted(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Scope.IsDeleted")));
 
 				// sProjectPath
-				List<String> projList = new ArrayList<String>();
 				String projPath = new String(feature.getsProjectName());
-				projList = (List<String>) dataMainObj
-						.get("Scope.ParentAndUp.Name");
-				if (projList.size() > 0) {
+				List<String> projList = (List<String>) dataMainObj.get("Scope.ParentAndUp.Name");
+				if (projList != null) {
 					for (String proj : projList) {
 						projPath = proj + "-->" + projPath;
 					}
@@ -183,125 +180,125 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 				} else {
 					projPath = "All-->" + projPath;
 				}
-				feature.setsProjectPath(tools.sanitizeResponse(projPath));
+				feature.setsProjectPath(TOOLS.sanitizeResponse(projPath));
 
 				// sEpicID
 				tmpObj = (JSONObject) dataMainObj.get("Super.ID");
 				if (tmpObj.containsKey("_oid")) {
-					feature.setsEpicID(tools.sanitizeResponse((String) (tmpObj)
+					feature.setsEpicID(TOOLS.sanitizeResponse((String) (tmpObj)
 							.get("_oid")));
 				}
 
 				// sEpicNumber
-				feature.setsEpicNumber(tools
+				feature.setsEpicNumber(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.Number")));
 
 				// sEpicName
-				feature.setsEpicName(tools
+				feature.setsEpicName(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.Name")));
 
 				// sEpicPDD
-				feature.setsEpicPDD(tools.toCanonicalDate(tools
+				feature.setsEpicPDD(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.Custom_ProductionDeploymentDate"))));
 
 				// sEpicHPSMReleaseID
-				feature.setsEpicHPSMReleaseID(tools
+				feature.setsEpicHPSMReleaseID(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.Custom_HPSMReleaseID")));
 
 				// sEpicBeginDate
-				feature.setsEpicBeginDate(tools.toCanonicalDate(tools
+				feature.setsEpicBeginDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.PlannedStart"))));
 
 				// sEpicEndDate
-				feature.setsEpicEndDate(tools.toCanonicalDate(tools
+				feature.setsEpicEndDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.PlannedEnd"))));
 
 				// sEpicType
-				feature.setsEpicType(tools
+				feature.setsEpicType(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.Category.Name")));
 
 				// sEpicAssetState
-				feature.setsEpicAssetState(tools
+				feature.setsEpicAssetState(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.AssetState")));
 
 				// sEpicChangeDate
-				feature.setsEpicChangeDate(tools.toCanonicalDate(tools
+				feature.setsEpicChangeDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.ChangeDate"))));
 
 				// sEpicIsDeleted
-				feature.setsEpicIsDeleted(tools
+				feature.setsEpicIsDeleted(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.IsDeleted")));
 
 				// sSprintID
 				tmpObj = (JSONObject) dataMainObj.get("Timebox.ID");
 				if (tmpObj.containsKey("_oid")) {
-					feature.setsSprintID(tools
+					feature.setsSprintID(TOOLS
 							.sanitizeResponse((String) (tmpObj).get("_oid")));
 				}
 
 				// sSprintName
-				feature.setsSprintName(tools
+				feature.setsSprintName(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Timebox.Name")));
 
 				// sSprintBeginDate
-				feature.setsSprintBeginDate(tools.toCanonicalDate(tools
+				feature.setsSprintBeginDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Timebox.BeginDate"))));
 
 				// sSprintEndDate
-				feature.setsSprintEndDate(tools.toCanonicalDate(tools
+				feature.setsSprintEndDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Timebox.EndDate"))));
 
 				// sSprintAssetState
-				feature.setsSprintAssetState(tools
+				feature.setsSprintAssetState(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Timebox.AssetState")));
 
 				// sSprintChangeDate
-				feature.setsSprintChangeDate(tools.toCanonicalDate(tools
+				feature.setsSprintChangeDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Timebox.ChangeDate"))));
 
 				// sSprintIsDeleted
-				feature.setsSprintIsDeleted(tools
+				feature.setsSprintIsDeleted(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Timebox.IsDeleted")));
 
 				// sTeamID
 				tmpObj = (JSONObject) dataMainObj.get("Team.ID");
 				if (tmpObj.containsKey("_oid")) {
-					feature.setsTeamID(tools.sanitizeResponse((String) (tmpObj)
+					feature.setsTeamID(TOOLS.sanitizeResponse((String) (tmpObj)
 							.get("_oid")));
 				}
 
 				// sTeamName
-				feature.setsTeamName(tools
+				feature.setsTeamName(TOOLS
 						.sanitizeResponse((String) dataMainObj.get("Team.Name")));
 
 				// sTeamChangeDate
-				feature.setsTeamChangeDate(tools.toCanonicalDate(tools
+				feature.setsTeamChangeDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Team.ChangeDate"))));
 
 				// sTeamAssetState
-				feature.setsTeamAssetState(tools
+				feature.setsTeamAssetState(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Team.AssetState")));
 
 				// sTeamIsDeleted
-				feature.setsTeamIsDeleted(tools
+				feature.setsTeamIsDeleted(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Team.IsDeleted")));
 
@@ -314,52 +311,50 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 						ownersIdList.add((String) ownersID.get("_oid"));
 					}
 				} catch (NullPointerException npe) {
-					logger.debug("JSON Object field was empty, so it was filled accordingly");
+					LOGGER.debug("JSON Object field was empty, so it was filled accordingly");
 				} finally {
 					feature.setsOwnersID(ownersIdList);
 				}
 
 				// sOwnersShortName
-				feature.setsOwnersShortName(tools
+				feature.setsOwnersShortName(TOOLS
 						.toCanonicalList((List<String>) dataMainObj
 								.get("Owners.Nickname")));
 
 				// sOwnersFullName
-				feature.setsOwnersFullName(tools
+				feature.setsOwnersFullName(TOOLS
 						.toCanonicalList((List<String>) dataMainObj
 								.get("Owners.Name")));
 
 				// sOwnersUsername
-				feature.setsOwnersUsername(tools
+				feature.setsOwnersUsername(TOOLS
 						.toCanonicalList((List<String>) dataMainObj
 								.get("Owners.Username")));
 
 				// sOwnersState
-				feature.setsOwnersState(tools
+				feature.setsOwnersState(TOOLS
 						.toCanonicalList((List<String>) dataMainObj
 								.get("Owners.AssetState")));
 
 				// sOwnersChangeDate
-				feature.setsOwnersChangeDate(tools
+				feature.setsOwnersChangeDate(TOOLS
 						.toCanonicalList((List<String>) dataMainObj
 								.get("Owners.ChangeDate")));
 
 				// sOwnersIsDeleted
-				feature.setsOwnersIsDeleted(tools
+				feature.setsOwnersIsDeleted(TOOLS
 						.toCanonicalList((List<String>) dataMainObj
 								.get("Owners.IsDeleted")));
 
 				try {
 					featureRepo.save(feature);
 				} catch (Exception e) {
-					logger.error("Unexpected error caused when attempting to save data\nCaused by: "
-							+ e.getCause());
-					e.printStackTrace();
+					LOGGER.error("Unexpected error caused when attempting to save data\nCaused by: "
+							+ e.getCause(), e);
 				}
 			}
 		} catch (Exception e) {
-			logger.error("FAILED: " + e.getMessage() + ", " + e.getClass());
-			e.printStackTrace();
+			LOGGER.error("FAILED: " + e.getMessage() + ", " + e.getClass(), e);
 		}
 	}
 
@@ -395,13 +390,12 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 			for (Feature f : listOfFeature) {
 				featureRepo.delete(f.getId());
 				deleted = true;
-				logger.debug("Removed existing entities that will be replaced by newer instances");
+				LOGGER.debug("Removed existing entities that will be replaced by newer instances");
 			}
 		} catch (IndexOutOfBoundsException ioobe) {
-			logger.debug("Nothing matched the redundancy checking from the database");
+			LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
 		} catch (Exception e) {
-			logger.error("There was a problem validating the redundancy of the data model");
-			e.printStackTrace();
+			LOGGER.error("There was a problem validating the redundancy of the data model", e);
 		}
 
 		return deleted;

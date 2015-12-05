@@ -23,9 +23,9 @@ import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -41,8 +41,7 @@ import java.util.List;
  */
 @Component
 public abstract class TeamDataClientSetupImpl implements DataClientSetup {
-	private static Log logger = LogFactory
-			.getLog(TeamDataClientSetupImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientSetupImpl.class);
 	protected final FeatureSettings featureSettings;
 	protected final FeatureCollectorRepository featureCollectorRepository;
 	protected String todayDateISO;
@@ -61,7 +60,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 			TeamRepository teamRepository,
 			FeatureCollectorRepository featureCollectorRepository) {
 		super();
-		logger.debug("Constructing data collection for the feature widget...");
+		LOGGER.debug("Constructing data collection for the feature widget...");
 
 		this.featureSettings = featureSettings;
 		this.teamRepo = teamRepository;
@@ -74,7 +73,6 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 	 * This method is used to update the database with model defined in the
 	 * collector model definitions.
 	 *
-	 * @see Story
 	 */
 	public void updateObjectInformation() {
 
@@ -96,15 +94,12 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 			tmpDetailArray = (JSONArray) outPutMainArray.get(0);
 			updateMongoInfo(tmpDetailArray);
 		} catch (Exception e) {
-			logger.error("Unexpected error in Jira basic request of "
+			LOGGER.error("Unexpected error in Jira basic request of "
 					+ e.getClass().getName() + "\n[" + e.getMessage() + "]");
 		}
 
 		double elapsedTime = (System.nanoTime() - start) / 1000000000.0;
-		logger.info("Process took :" + elapsedTime + " seconds to update");
-		System.out.println("Process took :" + elapsedTime
-				+ " seconds to update");
-
+		LOGGER.info("Process took :" + elapsedTime + " seconds to update");
 	}
 
 	/**
@@ -119,7 +114,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 
 		SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
 		String date = sdf.format(unixSeconds);
-		logger.debug(unixSeconds + "==>" + date);
+		LOGGER.debug(unixSeconds + "==>" + date);
 
 		return date;
 	}
@@ -192,29 +187,26 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 	 *
 	 * @return A list object of the maximum change date
 	 */
+    @SuppressWarnings("PMD.AvoidCatchingNPE")
 	public String getMaxChangeDate() {
-		List<TeamCollectorItem> response = null;
 		String data = null;
 
 		try {
-			response = teamRepo.getTeamMaxChangeDate(featureCollectorRepository
+			List<TeamCollectorItem> response = teamRepo.getTeamMaxChangeDate
+					(featureCollectorRepository
 					.findByName("Jira").getId(), featureSettings
 					.getDeltaCollectorItemStartDate());
-			if (response.size() > 0) {
+			if (!response.isEmpty()) {
 				data = response.get(0).getChangeDate();
 			}
 		} catch (NullPointerException npe) {
-			logger.debug("No data was currently available in the local database that corresponded to a max change date\nReturning null");
+			LOGGER.debug("No data was currently available in the local database that corresponded to a max change date\nReturning null");
 		} catch (Exception e) {
-			logger.error("There was a problem retrieving or parsing data from the local repository while retrieving a max change date\nReturning null");
+			LOGGER.error("There was a problem retrieving or parsing data from the local " +
+					"repository while retrieving a max change date\nReturning null");
 		}
 
-		if (data != null) {
-			return data;
-		} else {
-			return null;
-		}
-
+		return data;
 	}
 
 	/**

@@ -1,6 +1,10 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityMetricStatus;
+import com.capitalone.dashboard.model.CodeQualityType;
+import com.capitalone.dashboard.model.SonarProject;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;

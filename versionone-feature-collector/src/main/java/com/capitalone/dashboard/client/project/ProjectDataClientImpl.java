@@ -16,15 +16,6 @@
 
 package com.capitalone.dashboard.client.project;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
@@ -32,6 +23,13 @@ import com.capitalone.dashboard.repository.ProjectRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
+import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * This is the primary implemented/extended data collector for the feature
@@ -42,15 +40,14 @@ import com.capitalone.dashboard.util.FeatureWidgetQueries;
  * @author kfk884
  *
  */
-public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
-		ProjectDataClient {
-	private static Log logger = LogFactory.getLog(ProjectDataClientImpl.class);
+public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements ProjectDataClient {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectDataClientImpl.class);
 
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
 	private final ProjectRepository projectRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
-	private final ClientUtil tools;
+	private static final ClientUtil TOOLS = new ClientUtil();
 
 	/**
 	 * Extends the constructor from the super class.
@@ -63,14 +60,13 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 			VersionOneDataFactoryImpl vOneApi) {
 		super(featureSettings, projectRepository, featureCollectorRepository,
 				vOneApi);
-		logger.debug("Constructing data collection for the feature widget, story-level data...");
+		LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
 		this.featureSettings = featureSettings;
 		this.projectRepo = projectRepository;
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.featureWidgetQueries = new FeatureWidgetQueries(
 				this.featureSettings);
-		tools = new ClientUtil();
 	}
 
 	/**
@@ -87,8 +83,6 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
 		try {
 			JSONObject dataMainObj = new JSONObject();
-			System.out.println("Size of PagingJSONArray: "
-					+ tmpMongoDetailArray.size());
 			for (int i = 0; i < tmpMongoDetailArray.size(); i++) {
 				if (dataMainObj != null) {
 					dataMainObj.clear();
@@ -97,7 +91,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 				Scope scope = new Scope();
 
 				@SuppressWarnings("unused") // ?
-				boolean deleted = this.removeExistingEntity(tools
+				boolean deleted = this.removeExistingEntity(TOOLS
 						.sanitizeResponse((String) dataMainObj.get("_oid")));
 
 				// collectorId
@@ -105,39 +99,38 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 						"VersionOne").getId());
 
 				// ID;
-				scope.setpId(tools.sanitizeResponse((String) dataMainObj
+				scope.setpId(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("_oid")));
 
 				// name;
-				scope.setName(tools.sanitizeResponse((String) dataMainObj
+				scope.setName(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("Name")));
 
 				// beginDate;
-				scope.setBeginDate(tools.toCanonicalDate(tools
+				scope.setBeginDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj.get("BeginDate"))));
 
 				// endDate;
-				scope.setEndDate(tools.toCanonicalDate(tools
+				scope.setEndDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj.get("EndDate"))));
 
 				// changeDate;
-				scope.setChangeDate(tools.toCanonicalDate(tools
+				scope.setChangeDate(TOOLS.toCanonicalDate(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("ChangeDate"))));
 
 				// assetState;
-				scope.setAssetState(tools.sanitizeResponse((String) dataMainObj
+				scope.setAssetState(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("AssetState")));
 
 				// isDeleted;
-				scope.setIsDeleted(tools.sanitizeResponse((String) dataMainObj
+				scope.setIsDeleted(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("IsDeleted")));
 
 				// path;
-				List<String> projList = new ArrayList<String>();
 				String projPath = new String(scope.getName());
-				projList = (List<String>) dataMainObj.get("ParentAndUp.Name");
-				if (projList.size() > 0) {
+				List<String> projList = (List<String>) dataMainObj.get("ParentAndUp.Name");
+				if (projList != null) {
 					for (String proj : projList) {
 						projPath = proj + "-->" + projPath;
 					}
@@ -145,19 +138,17 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 				} else {
 					projPath = "All-->" + projPath;
 				}
-				scope.setProjectPath(tools.sanitizeResponse(projPath));
+				scope.setProjectPath(TOOLS.sanitizeResponse(projPath));
 
 				try {
 					projectRepo.save(scope);
 				} catch (Exception e) {
-					logger.error("Unexpected error caused when attempting to save data\nCaused by: "
-							+ e.getCause());
-					e.printStackTrace();
+					LOGGER.error("Unexpected error caused when attempting to save data\nCaused by: "
+							+ e.getCause(), e);
 				}
 			}
 		} catch (Exception e) {
-			logger.error("FAILED: " + e.getMessage() + ", " + e.getClass());
-			e.printStackTrace();
+			LOGGER.error("FAILED: " + e.getMessage() + ", " + e.getClass());
 		}
 	}
 
@@ -197,10 +188,9 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 				deleted = true;
 			}
 		} catch (IndexOutOfBoundsException ioobe) {
-			logger.debug("Nothing matched the redundancy checking from the database");
+			LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
 		} catch (Exception e) {
-			logger.error("There was a problem validating the redundancy of the data model");
-			e.printStackTrace();
+			LOGGER.error("There was a problem validating the redundancy of the data model", e);
 		}
 
 		return deleted;

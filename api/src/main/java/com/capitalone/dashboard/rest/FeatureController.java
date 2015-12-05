@@ -3,10 +3,8 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.service.FeatureService;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,17 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * REST service managing all requests to the feature repository.
- * 
+ *
  * @author KFK884
- * 
+ *
  */
 @RestController
 public class FeatureController {
-	private static final String JSON = MediaType.APPLICATION_JSON_VALUE;
 	private final FeatureService featureService;
 
 	@Autowired
@@ -35,13 +33,13 @@ public class FeatureController {
 	/**
 	 * REST endpoint for retrieving all features for a given sprint and team
 	 * (the sprint is derived)
-	 * 
+	 *
 	 * @param teamId
 	 *            A given scope-owner's source-system ID
 	 * @return A data response list of type Feature containing all features for
 	 *         the given team and current sprint
 	 */
-	@RequestMapping(value = "/feature/{teamId}", method = GET, produces = JSON)
+	@RequestMapping(value = "/feature/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> relevantStories(
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
@@ -52,13 +50,13 @@ public class FeatureController {
 	/**
 	 * REST endpoint for retrieving all features for a given sprint and team
 	 * (the sprint is derived)
-	 * 
+	 *
 	 * @param teamId
 	 *            A given scope-owner's source-system ID
 	 * @return A data response list of type Feature containing all features for
 	 *         the given team and current sprint
 	 */
-	@RequestMapping(value = "/feature", method = GET, produces = JSON)
+	@RequestMapping(value = "/feature", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> story(
 			@RequestParam(value = "component", required = true) String cId,
 			@RequestParam(value = "number", required = true) String storyNumber) {
@@ -68,13 +66,13 @@ public class FeatureController {
 
 	/**
 	 * REST endpoint for retrieving the current sprint detail for a team
-	 * 
+	 *
 	 * @param teamId
 	 *            A given scope-owner's source-system ID
 	 * @return A response list of type Feature containing the done estimate of
 	 *         current features
 	 */
-	@RequestMapping(value = "/iteration/{teamId}", method = GET, produces = JSON)
+	@RequestMapping(value = "/iteration/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> currentSprintDetail(
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
@@ -85,14 +83,15 @@ public class FeatureController {
 	/**
 	 * REST endpoint for retrieving only the unique super features for a given
 	 * team and sprint and their related estimates
-	 * 
+	 *
 	 * @param teamId
 	 *            A given scope-owner's source-system ID
 	 * @return A response list of type Feature containing the unique features
 	 *         plus their sub features' estimates associated to the current
 	 *         sprint and team
 	 */
-	@RequestMapping(value = "/feature/estimates/super/{teamId}", method = GET, produces = JSON)
+	@RequestMapping(value = "/feature/estimates/super/{teamId}",
+			method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> featureEstimates(
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
@@ -103,13 +102,14 @@ public class FeatureController {
 	/**
 	 * REST endpoint for retrieving the current total estimate for a team and
 	 * sprint
-	 * 
+	 *
 	 * @param teamId
 	 *            A given scope-owner's source-system ID
 	 * @return A response list of type Feature containing the total estimate of
 	 *         current features
 	 */
-	@RequestMapping(value = "/feature/estimates/total/{teamId}", method = GET, produces = JSON)
+	@RequestMapping(value = "/feature/estimates/total/{teamId}", method = GET,
+			produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> featureTotalEstimate(
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
@@ -120,13 +120,14 @@ public class FeatureController {
 	/**
 	 * REST endpoint for retrieving the current in-progress estimate for a team
 	 * and sprint
-	 * 
+	 *
 	 * @param teamId
 	 *            A given scope-owner's source-system ID
 	 * @return A response list of type Feature containing the in-progress
 	 *         estimate of current features
 	 */
-	@RequestMapping(value = "/feature/estimates/wip/{teamId}", method = GET, produces = JSON)
+	@RequestMapping(value = "/feature/estimates/wip/{teamId}", method = GET,
+			produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> featureInProgressEstimate(
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
@@ -137,13 +138,14 @@ public class FeatureController {
 	/**
 	 * REST endpoint for retrieving the current done estimate for a team and
 	 * sprint
-	 * 
+	 *
 	 * @param teamId
 	 *            A given scope-owner's source-system ID
 	 * @return A response list of type Feature containing the done estimate of
 	 *         current features
 	 */
-	@RequestMapping(value = "/feature/estimates/done/{teamId}", method = GET, produces = JSON)
+	@RequestMapping(value = "/feature/estimates/done/{teamId}", method = GET,
+			produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> featureDoneEstimate(
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {

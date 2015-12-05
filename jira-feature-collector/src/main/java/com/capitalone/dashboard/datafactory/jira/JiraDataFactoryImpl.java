@@ -1,22 +1,20 @@
 package com.capitalone.dashboard.datafactory.jira;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
-import org.springframework.stereotype.Component;
-
 import com.capitalone.dashboard.datafactory.jira.sdk.connector.GetResponseBuilder;
 import com.capitalone.dashboard.datafactory.jira.sdk.connector.GetResponseBuilderImpl;
 import com.google.api.client.http.HttpRequestFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JiraDataFactoryImpl implements JiraDataFactory {
-	private static Log logger = LogFactory.getLog(JiraDataFactoryImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraDataFactoryImpl.class);
 	protected GetResponseBuilder jiraConnection = new GetResponseBuilderImpl();
 	protected int pageSize;
 	protected int pageIndex;
-	protected JSONArray jsonOutputArray;
 	protected String basicQuery;
 	protected String pagingQuery;
 
@@ -40,7 +38,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 */
 	public JiraDataFactoryImpl(String jiraCredentials, String jiraBaseUrl,
 			String jiraQueryEndpoint) {
-		logger.debug("constructor: jiraCredentials = " + jiraCredentials +
+		LOGGER.debug("constructor: jiraCredentials = " + jiraCredentials +
 		             "; jiraBaseUrl = " + jiraBaseUrl +
 		             "; jiraQueryEndpoint = " + jiraQueryEndpoint);
 		jiraConnection.setBasicAuth(jiraCredentials);
@@ -168,7 +166,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 		JSONArray mainMsg = new JSONArray();
 		JSONObject innerObj = new JSONObject();
 		HttpRequestFactory rqFactory = jiraConnection.generateRequestFactory();
-		logger.debug(this.pagingQuery);
+		LOGGER.debug(this.pagingQuery);
 		JSONObject response = jiraConnection.getResponse(rqFactory,
 				this.getPagingQuery());
 
@@ -211,7 +209,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public JSONArray getArrayQueryResponse() {
 		JSONArray mainMsg = new JSONArray();
 		HttpRequestFactory rqFactory = jiraConnection.generateRequestFactory();
-		logger.debug(this.basicQuery);
+		LOGGER.debug(this.basicQuery);
 		JSONArray response = jiraConnection.getResponseArray(rqFactory,
 				this.getBasicQuery());
 
