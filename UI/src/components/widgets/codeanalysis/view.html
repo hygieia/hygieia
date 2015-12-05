@@ -151,14 +151,10 @@
                         <td><span dash-status="{{ test.status }}" ng-if="caWidget.showStatusIcon(test)"></span></td>
                         <td class="ca-name">{{test.name}}</td>
                         <td></td>
-                        <!--
-                        <td class="ca-value" ng-class="{'widget-font-pass': test.successCount > 0}">{{test.successCount}}</td>
-                        <td class="ca-value" ng-class="{'widget-font-fail': test.failureCount > 0}">{{test.failureCount}}</td>
-                        -->
                         <td class="ca-value" ng-class="{'widget-font-fail': test.failureCount > 0}">
                             {{test.successPercent}}
                         </td>
-                        <td class="text-small-date">{{test.details.endTime | fromNow}}</td>
+                        <td class="text-small-date">{{test.details.endTime | fromNow |limitTo:3}}</td>
                     </tr>
                 </table>
 
