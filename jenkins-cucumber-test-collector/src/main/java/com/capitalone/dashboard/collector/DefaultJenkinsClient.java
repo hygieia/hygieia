@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.regex.Pattern;
 
-
+@SuppressWarnings("PMD.ExcessiveMethodLength") // getCucumberTestResult needs refactor!
 @Component
 public class DefaultJenkinsClient implements JenkinsClient {
 
@@ -105,9 +105,6 @@ public class DefaultJenkinsClient implements JenkinsClient {
     public boolean buildHasCucumberResults(String buildUrl) {
 
         JSONObject buildJson;
-        if (buildUrl.contains("cos-ui-test-chrome-priority-high")) {
-            System.out.println("Here ");
-        }
         try {
             // Get Build info
             buildJson = (JSONObject) new JSONParser().parse(getJson(buildUrl, LAST_SUCCESSFUL_BUILD_ARTIFACT_SUFFIX));
@@ -146,58 +143,57 @@ public class DefaultJenkinsClient implements JenkinsClient {
             JSONObject buildJson = (JSONObject) new JSONParser().parse(getJson(buildUrl, LAST_SUCCESSFUL_BUILD_ARTIFACT_SUFFIX));
 
             List<TestCapability> capabilities = new ArrayList<>();
-            Boolean building = (Boolean) buildJson.get("building");
 
-            if (!building) {
-                for (Object artifactObj : (JSONArray) buildJson.get("artifacts")) {
-                    JSONObject artifact = (JSONObject) artifactObj;
-                    if (cucumberJsonFilePattern.matcher(getString(artifact, "fileName")).matches()) {
-                        String cucumberJson = getCucumberJson(buildUrl, getString(artifact, "relativePath"));
-                        if (!StringUtils.isEmpty(cucumberJson)) {
-                            TestCapability cap = new TestCapability();
-                            cap.setType(TestSuiteType.Functional);
-                            List<TestSuite> testSuites = cucumberTransformer.transformer(cucumberJson);
-                            cap.setDescription(getCapabilityDescription(cucumberJsonFilePattern.pattern(), getString(artifact, "relativePath")));
-                            cap.getTestSuites().addAll(testSuites);
-                            long duration = 0;
-                            int testSuiteSkippedCount = 0, testSuiteSuccessCount = 0, testSuiteFailCount = 0, testSuiteUnknownCount = 0;
-                            for (TestSuite t : testSuites) {
-                                duration += t.getDuration();
-                                switch(t.getStatus()) {
-                                    case Success:
-                                        testSuiteSuccessCount++;
-                                        break;
-                                    case Failure:
-                                        testSuiteFailCount++;
-                                        break;
-                                    case Skipped:
-                                        testSuiteSkippedCount++;
-                                        break;
-                                    default:
-                                        testSuiteUnknownCount++;
-                                }
+            for (Object artifactObj : (JSONArray) buildJson.get("artifacts")) {
+                JSONObject artifact = (JSONObject) artifactObj;
+                if (cucumberJsonFilePattern.matcher(getString(artifact, "fileName")).matches()) {
+                    String cucumberJson = getCucumberJson(buildUrl, getString(artifact, "relativePath"));
+                    if (!StringUtils.isEmpty(cucumberJson)) {
+                        TestCapability cap = new TestCapability();
+                        cap.setType(TestSuiteType.Functional);
+                        List<TestSuite> testSuites = cucumberTransformer.transformer(cucumberJson);
+                        cap.setDescription(getCapabilityDescription(cucumberJsonFilePattern.pattern(), getString(artifact, "relativePath")));
+                        cap.getTestSuites().addAll(testSuites);
+                        long duration = 0;
+                        int testSuiteSkippedCount = 0, testSuiteSuccessCount = 0, testSuiteFailCount = 0, testSuiteUnknownCount = 0;
+                        for (TestSuite t : testSuites) {
+                            duration += t.getDuration();
+                            switch (t.getStatus()) {
+                                case Success:
+                                    testSuiteSuccessCount++;
+                                    break;
+                                case Failure:
+                                    testSuiteFailCount++;
+                                    break;
+                                case Skipped:
+                                    testSuiteSkippedCount++;
+                                    break;
+                                default:
+                                    testSuiteUnknownCount++;
+                                    break;
                             }
-                            if(testSuiteFailCount > 0) {
-                                cap.setStatus(TestCaseStatus.Failure);
-                            } else if(testSuiteSkippedCount > 0) {
-                                cap.setStatus(TestCaseStatus.Skipped);
-                            } else if (testSuiteSuccessCount > 0){
-                                cap.setStatus(TestCaseStatus.Success);
-                            } else {
-                                cap.setStatus(TestCaseStatus.Unknown);
-                            }
-                            cap.setFailedTestSuiteCount(testSuiteFailCount);
-                            cap.setSkippedTestSuiteCount(testSuiteSkippedCount);
-                            cap.setSuccessTestSuiteCount(testSuiteSuccessCount);
-                            cap.setUnknownStatusTestSuiteCount(testSuiteUnknownCount);
-                            cap.setTotalTestSuiteCount(testSuites.size());
-                            cap.setDuration(duration);
-                            cap.setExecutionId(buildJson.get("number").toString());
-                            capabilities.add(cap);
                         }
+                        if (testSuiteFailCount > 0) {
+                            cap.setStatus(TestCaseStatus.Failure);
+                        } else if (testSuiteSkippedCount > 0) {
+                            cap.setStatus(TestCaseStatus.Skipped);
+                        } else if (testSuiteSuccessCount > 0) {
+                            cap.setStatus(TestCaseStatus.Success);
+                        } else {
+                            cap.setStatus(TestCaseStatus.Unknown);
+                        }
+                        cap.setFailedTestSuiteCount(testSuiteFailCount);
+                        cap.setSkippedTestSuiteCount(testSuiteSkippedCount);
+                        cap.setSuccessTestSuiteCount(testSuiteSuccessCount);
+                        cap.setUnknownStatusTestSuiteCount(testSuiteUnknownCount);
+                        cap.setTotalTestSuiteCount(testSuites.size());
+                        cap.setDuration(duration);
+                        cap.setExecutionId(buildJson.get("number").toString());
+                        capabilities.add(cap);
                     }
                 }
             }
+
 
             if (!capabilities.isEmpty()) {
                 // There are test suites so let's construct a TestResult to encapsulate these results
@@ -216,7 +212,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
                 int testCapabilityUnknownCount = 0;
                 // Calculate counts based on test suites
                 for (TestCapability cap : capabilities) {
-                    switch(cap.getStatus()) {
+                    switch (cap.getStatus()) {
                         case Success:
                             testCapabilitySuccessCount++;
                             break;
@@ -228,13 +224,13 @@ public class DefaultJenkinsClient implements JenkinsClient {
                             break;
                         default:
                             testCapabilityUnknownCount++;
+                            break;
                     }
                 }
                 testResult.setSuccessCount(testCapabilitySuccessCount);
                 testResult.setFailureCount(testCapabilityFailCount);
                 testResult.setSkippedCount(testCapabilitySkippedCount);
                 testResult.setUnknownStatusCount(testCapabilityUnknownCount);
-
                 return testResult;
             }
         } catch (ParseException e) {
@@ -242,7 +238,6 @@ public class DefaultJenkinsClient implements JenkinsClient {
         } catch (RestClientException rce) {
             LOG.error(rce);
         }
-
         // An exception occurred or this build does not have cucumber test results
         return null;
     }

@@ -2,21 +2,18 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
+@SuppressWarnings("PMD.UnnecessaryFullyQualifiedName") // Will need to rename com.capitalone.dashboard.Component as it conflicts with Spring.
 @Component
 public class JenkinsCucumberTestCollectorTask extends
         CollectorTask<JenkinsCucumberTestCollector> {
-
-    private static final Log LOG = LogFactory
-            .getLog(JenkinsCucumberTestCollector.class);
 
     private final JenkinsCucumberTestCollectorRepository jenkinsCucumberTestCollectorRepository;
     private final JenkinsCucumberTestJobRepository jenkinsCucumberTestJobRepository;
@@ -24,7 +21,7 @@ public class JenkinsCucumberTestCollectorTask extends
     private final JenkinsClient jenkinsClient;
     private final JenkinsSettings jenkinsCucumberTestSettings;
     private final ComponentRepository dbComponentRepository;
-    private final int CLEANUP_INTERVAL = 3600000;
+    private static final int CLEANUP_INTERVAL = 3600000;
 
     @Autowired
     public JenkinsCucumberTestCollectorTask(
@@ -67,17 +64,17 @@ public class JenkinsCucumberTestCollectorTask extends
 
         // Clean up every hour
         if ((start - collector.getLastExecuted()) > CLEANUP_INTERVAL) {
-//			clean(collector);
+            clean(collector);
         }
 
         for (String instanceUrl : collector.getBuildServers()) {
-            logInstanceBanner(instanceUrl);
+            logBanner(instanceUrl);
 
             Map<JenkinsJob, Set<Build>> buildsByJob = jenkinsClient
                     .getInstanceJobs(instanceUrl);
             log("Fetched jobs", start);
 
-//			addNewJobs(buildsByJob.keySet(), collector);
+            addNewJobs(buildsByJob.keySet(), collector);
 
             addNewTestSuites(enabledJobs(collector, instanceUrl));
 
@@ -96,14 +93,12 @@ public class JenkinsCucumberTestCollectorTask extends
         Set<ObjectId> uniqueIDs = new HashSet<>();
         for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
                 .findAll()) {
-            if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
+            if (!CollectionUtils.isEmpty(comp.getCollectorItems())) {
                 List<CollectorItem> itemList = comp.getCollectorItems().get(
                         CollectorType.Test);
-                if (itemList != null) {
-                    for (CollectorItem ci : itemList) {
-                        if (ci != null && ci.getCollectorId().equals(collector.getId())) {
-                            uniqueIDs.add(ci.getId());
-                        }
+                for (CollectorItem ci : itemList) {
+                    if (ci != null && ci.getCollectorId().equals(collector.getId())) {
+                        uniqueIDs.add(ci.getId());
                     }
                 }
             }
@@ -141,9 +136,6 @@ public class JenkinsCucumberTestCollectorTask extends
         int count = 0;
 
         for (JenkinsJob job : jobs) {
-            if (job.getJobUrl().contains("cos-ui-test-chrome-priority-high")) {
-                System.out.println("here too");
-            }
             if (jenkinsClient.buildHasCucumberResults(job.getJobUrl())
                     && isNewJob(collector, job)) {
                 job.setCollectorId(collector.getId());
@@ -153,7 +145,6 @@ public class JenkinsCucumberTestCollectorTask extends
                 jenkinsCucumberTestJobRepository.save(job);
                 count++;
             }
-
         }
         log("New jobs", start, count);
     }
@@ -192,32 +183,4 @@ public class JenkinsCucumberTestCollectorTask extends
     private Set<Build> nullSafe(Set<Build> builds) {
         return builds == null ? new HashSet<Build>() : builds;
     }
-
-    // Helper Log Methods TODO: these should be moved to the super class in core
-
-//    private void log(String marker, long start) {
-//        log(marker, start, null);
-//    }
-//
-//    private void log(String text, long start, Integer count) {
-//        long end = System.currentTimeMillis();
-//        String elapsed = ((end - start) / 1000) + "s";
-//        String token2 = "";
-//        String token3;
-//        if (count == null) {
-//            token3 = StringUtils.leftPad(elapsed, 30 - text.length());
-//        } else {
-//            String countStr = count.toString();
-//            token2 = StringUtils.leftPad(countStr, 20 - text.length());
-//            token3 = StringUtils.leftPad(elapsed, 10);
-//        }
-//        LOG.info(text + token2 + token3);
-//    }
-
-    private void logInstanceBanner(String instanceUrl) {
-        LOG.info("------------------------------");
-        LOG.info(instanceUrl);
-        LOG.info("------------------------------");
-    }
-
 }
