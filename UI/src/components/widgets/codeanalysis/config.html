@@ -2,8 +2,8 @@
     <form name="configForm" role="form"
           ng-submit="caWidget.submit(caWidget.caCollectorItem, caWidget.saCollectorItem, caWidget.testConfigs)"
           novalidate="novalidate">
-        <div class="text-center form-group">Static Code Analysis:</div>
-
+        <div class="text-center form-group modal-label">Static Code Analysis:</div>
+        <div class="box">
         <div class="form-group text-center">
             <select name="caCollectorItem"
                     class="form-control"
@@ -13,8 +13,9 @@
                 <option value="">{{caWidget.caToolsDropdownPlaceholder}}</option>
             </select>
         </div>
+        </div>
 
-        <div class="text-center form-group">Security Scan:</div>
+        <div class="text-center form-group modal-label">Security Scan:</div>
         <div class="form-group text-center">
             <select name="saCollectorItem"
                     class="form-control"
@@ -26,7 +27,7 @@
         </div>
 
 
-        <div class="form-group text-center">Tests:</div>
+        <div class="form-group text-center modal-label">Functional Tests:</div>
         <div class="form-group text-center" ng-repeat="configItem in caWidget.testConfigs">
             <div class="col-sm-3">
                 <input
@@ -46,7 +47,7 @@
                     <option value="">{{caWidget.testToolsDropdownPlaceholder}}</option>
                 </select>
             </div>
-            <span class="fa fa-minus-circle fa-2x clickable" ng-click="caWidget.deleteTestConfig(item)"></span>
+            <span class="fa fa-trash fa-2x clickable" ng-click="caWidget.deleteTestConfig(item)"></span>
         </div>
         <div class="form-group text-center" ng-show="caWidget.testConfigs.length==0 || caWidget.testConfigs[caWidget.testConfigs.length-1].testCollectorItem != null">
             <span class="fa fa-plus-circle fa-2x clickable" ng-click="caWidget.addTestConfig()"></span>

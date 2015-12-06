@@ -2,7 +2,6 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -196,24 +195,24 @@ public class JenkinsCucumberTestCollectorTask extends
 
     // Helper Log Methods TODO: these should be moved to the super class in core
 
-    private void log(String marker, long start) {
-        log(marker, start, null);
-    }
-
-    private void log(String text, long start, Integer count) {
-        long end = System.currentTimeMillis();
-        String elapsed = ((end - start) / 1000) + "s";
-        String token2 = "";
-        String token3;
-        if (count == null) {
-            token3 = StringUtils.leftPad(elapsed, 30 - text.length());
-        } else {
-            String countStr = count.toString();
-            token2 = StringUtils.leftPad(countStr, 20 - text.length());
-            token3 = StringUtils.leftPad(elapsed, 10);
-        }
-        LOG.info(text + token2 + token3);
-    }
+//    private void log(String marker, long start) {
+//        log(marker, start, null);
+//    }
+//
+//    private void log(String text, long start, Integer count) {
+//        long end = System.currentTimeMillis();
+//        String elapsed = ((end - start) / 1000) + "s";
+//        String token2 = "";
+//        String token3;
+//        if (count == null) {
+//            token3 = StringUtils.leftPad(elapsed, 30 - text.length());
+//        } else {
+//            String countStr = count.toString();
+//            token2 = StringUtils.leftPad(countStr, 20 - text.length());
+//            token3 = StringUtils.leftPad(elapsed, 10);
+//        }
+//        LOG.info(text + token2 + token3);
+//    }
 
     private void logInstanceBanner(String instanceUrl) {
         LOG.info("------------------------------");
