@@ -68,6 +68,7 @@ public class CucumberJsonToTestResultTransformer implements Transformer<String, 
                     break;
                 default:
                     testCaseUnknownCount++;
+                    break;
             }
             suite.getTestCases().add(testCase);
         }
@@ -113,6 +114,7 @@ public class CucumberJsonToTestResultTransformer implements Transformer<String, 
                     break;
                 default:
                     testStepUnknownCount++;
+                    break;
 
             }
             testCase.getTestSteps().add(testCaseStep);
