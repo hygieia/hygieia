@@ -14,6 +14,7 @@ public enum CollectorType {
     CodeQuality,
     Test,
     StaticSecurityScan,
+    ChatOps,
     Cloud;
 
     public static CollectorType fromString(String value) {
