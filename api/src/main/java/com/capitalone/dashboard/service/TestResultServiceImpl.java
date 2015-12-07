@@ -40,7 +40,6 @@ public class TestResultServiceImpl implements TestResultService {
 
 
         for (CollectorItem item : component.getCollectorItems().get(CollectorType.Test)) {
-//            CollectorItem item = component.getCollectorItems().get(CollectorType.Test).get(0);
 
             QTestResult testResult = new QTestResult("testResult");
             BooleanBuilder builder = new BooleanBuilder();
