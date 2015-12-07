@@ -92,7 +92,7 @@ public class DashboardServiceImpl implements DashboardService {
             return null;
         }
 
-        Component component = componentRepository.findOne(componentId);
+        com.capitalone.dashboard.model.Component component = componentRepository.findOne(componentId);
         //we can not assume what collector item is added, what is removed etc so, we will
         //refresh the association. First disable all collector items, then remove all and re-add
 
