@@ -26,6 +26,7 @@
                     return response.data;
                 },function(response){
                 console.log("Error occured:"+JSON.stringify(response));
+                return response.data;
             });
         }
 
