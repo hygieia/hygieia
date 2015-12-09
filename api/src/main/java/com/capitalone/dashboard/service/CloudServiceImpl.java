@@ -31,8 +31,7 @@ public class CloudServiceImpl implements CloudService {
 	@Override
 	public DataResponse<CloudComputeData> getAggregatedData(ObjectId id) {
 		Component component = componentRepository.findOne(id);
-		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.Cloud).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.Cloud).get(0);
 		ObjectId collectorItemId = item.getId();
 		Cloud data = cloudRepository
 				.findByCollectorItemId(collectorItemId);
@@ -40,23 +39,16 @@ public class CloudServiceImpl implements CloudService {
 			CloudComputeData computeData = data.getCompute();
 			if (computeData != null) {
 				computeData.getDetailList().clear();
-				return new DataResponse<>(computeData,
-						computeData.getLastUpdated());
+				return new DataResponse<>(computeData, computeData.getLastUpdated());
 			}
-			return new DataResponse<>(new CloudComputeData(),
-					System.currentTimeMillis());
-		} else {
-			return new DataResponse<>(new CloudComputeData(),
-					System.currentTimeMillis());
 		}
+		return new DataResponse<>(new CloudComputeData(), System.currentTimeMillis());
 	}
 
 	@Override
-	public DataResponse<List<CloudComputeInstanceData>> getInstanceDetails(
-			ObjectId id) {
+	public DataResponse<List<CloudComputeInstanceData>> getInstanceDetails(ObjectId id) {
 		Component component = componentRepository.findOne(id);
-		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.Cloud).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.Cloud).get(0);
 		ObjectId collectorItemId = item.getId();
 		Cloud data = cloudRepository
 				.findByCollectorItemId(collectorItemId);
@@ -67,15 +59,9 @@ public class CloudServiceImpl implements CloudService {
 				list = computeData.getDetailList();
 				return new DataResponse<>(list,
 						computeData.getLastUpdated());
-			} else {
-				return new DataResponse<>(list,
-						System.currentTimeMillis());
 			}
-
-		} else {
-			return new DataResponse<>(list,
-					System.currentTimeMillis());
 		}
-
+		return new DataResponse<>(list,
+				System.currentTimeMillis());
 	}
 }

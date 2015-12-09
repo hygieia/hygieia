@@ -8,12 +8,9 @@
         .module('devops-dashboard.core')
         .factory('cloudData', cloudData);
 
-    function cloudData($http) {
-        var testDetailsRoute = 'test-data/aws_aggregate.json';
-        var testTableRoute = 'test-data/aws_raw.json';
-        var aggregatedRoute = '/api/cloud/aggregate';
-        var instanceDetailsRoute = '/api/cloud/details';
-        var authenticationRoute = '/api/cloud/config';
+    function cloudData($http, $interpolate) {
+        var aggregatedRoute = '/api/cloud/{{id}}/aggregate';
+        var instanceDetailsRoute = '/api/cloud/{{id}}/details';
         var saveConfigRoute = '/api/cloud/config';
 
 
@@ -28,15 +25,17 @@
 
         // get the latest code quality data for the component
         function aggregate(params) {
-            return $http.post(localTesting ? testDetailsRoute : aggregatedRoute, params).then(function (response) {
+            var r = $interpolate(aggregatedRoute)(params);
+            return $http.get(routeUrl(r), params).then(function (response) {
                 return response.data.result;
-            })
+            });
         }
 
         function details(params) {
-            return $http.post(localTesting ? testTableRoute : instanceDetailsRoute, params).then(function (response) {
+            var r = $interpolate(instanceDetailsRoute)(params);
+            return $http.get(routeUrl(r), params).then(function (response) {
                 return response.data.result;
-            })
+            });
         }
 
         function saveConfig(params) {

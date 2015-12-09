@@ -178,7 +178,7 @@ gulp.task('misc', function () {
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('clean', function (done) {
+gulp.task('clean', ['local-testing'], function (done) {
     $.del(['dist/', '.tmp/'], done);
 });
 

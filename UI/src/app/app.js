@@ -10,6 +10,12 @@ var localStorageSupported = (function () {
     }
 })();
 
+var routeUrl = function(url) {
+  // url to path /api/cloud/details to test-data/api-cloud-details.json
+  var localUrl = "test-data/" + url.split('/').filter(function (val) {return val;}).join('-') + ".json";
+  return localTesting ? localUrl : url;
+};
+
 (function () {
     'use strict';
 
@@ -17,7 +23,7 @@ var localStorageSupported = (function () {
     var theme = 'dash';
 
     // get theme from storage
-    if(localStorageSupported) {
+    if (localStorageSupported) {
         var tempTheme = localStorage.getItem('theme');
         if(tempTheme && tempTheme != 'undefined' ) {
             theme = tempTheme;
@@ -43,7 +49,8 @@ var localStorageSupported = (function () {
         'fitText',
         'angular-chartist',
         'ngCookies',
-        'validation.match'
+        'validation.match',
+        'ngResource'
     ])
 
     .config(function ($routeProvider) {
