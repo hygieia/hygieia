@@ -16,7 +16,8 @@
             controllerAs: 'chatOpsConfig',
             templateUrl: 'components/widgets/chatops/config.html'
         },
-        getState: getState
+        getState: getState,
+            collectors: ['chatops']
     };
 
     angular

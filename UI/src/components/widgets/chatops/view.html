@@ -16,7 +16,7 @@
 
                             <div class="media-body">
                                 <span class="chat-user">{{messFrom.from.name}}</span>
-                                <span class="chat-timestamp small pull-right" ng-hide="chatOpsView.apiErrorOccured">{{chatOpsView.getLocalTime(messFrom.date)}}</span>
+                                <span class="chat-timestamp small pull-right" ng-hide="chatOpsView.apiErrorOccured">{{messFrom.date | fromNow}} </span>
                             </div>
                                <div class="chat-message" ng-bind-html="chatOpsView.replaceURL(messFrom.message) | unsafe"></div>
 

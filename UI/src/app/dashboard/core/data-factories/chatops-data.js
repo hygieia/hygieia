@@ -20,7 +20,6 @@
 
         function details(serviceUrl) {
             console.log("ServiceURl:"+serviceUrl);
-            serviceUrl="http://"+serviceUrl;
             return $http.get(serviceUrl).then(function (response) {
 
                     return response.data;
