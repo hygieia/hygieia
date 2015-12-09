@@ -45,6 +45,7 @@
                 }
                 else {
                     processResponse(data);
+                    //deferred.resolve(data.lastUpdated);
                 }
 
             });
