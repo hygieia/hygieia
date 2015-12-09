@@ -3,7 +3,12 @@
 
     angular
         .module('devops-dashboard')
-        .controller('ChatOpsViewController', ChatOpsViewController);
+        .controller('ChatOpsViewController', ChatOpsViewController)
+        .filter('unsafe', function ($sce) {
+            return function (val) {
+                return $sce.trustAsHtml(val);
+            };
+        });
 
     ChatOpsViewController.$inject = ['$q', '$scope', 'chatOpsData'];
     function ChatOpsViewController($q, $scope, chatOpsData) {
@@ -17,6 +22,7 @@
         ctrl.chatOpsRoomName = $scope.widgetConfig.options.chatOpsRoomName;
         ctrl.messageArray = "";
         ctrl.showMessages = false;
+        ctrl.apiErrorOccured=false;
 
         var offset = new Date().getTimezoneOffset();
         console.log("Client timezone:" + offset);
@@ -31,34 +37,36 @@
             var deferred = $q.defer();
 
             chatOpsData.details(completeUrl).then(function (data) {
-                processResponse(data);
+
+                console.log("DATA GOT BACK:" + JSON.stringify(data));
+                if (typeof data.error != 'undefined') {
+                    ctrl.apiErrorOccured=true;
+                    ctrl.messageArray=data;
+                }
+                else {
+                    processResponse(data);
+                }
+
             });
             ctrl.showMessages = true;
-
-
             return deferred.promise;
         };
 
         function processResponse(data) {
 
-            console.log("Data Items:"+JSON.stringify(data.items));
+            console.log("Data Items:" + JSON.stringify(data.items));
 
             var messageArray = data.items;
-
-
- for(var i=0;i<messageArray.length;i++) {
-     console.log(ctrl.replaceURL(messageArray[i].message));
- }
             ctrl.messageArray = messageArray;
-            console.log("length of array"+messageArray.length);
+            console.log("length of array" + messageArray.length);
         };
 
 
         ctrl.replaceURL = function (mytext) {
 
-            console.log("Text received is :"+mytext);
+            console.log("Text received is :" + mytext);
             var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-            return mytext.replace(exp,"<a ng-href='$1'>Link</a>");
+            return mytext.replace(exp, "<a href='$1'><span class='chat-link'>Link</span></a>");
         };
 
         ctrl.getLocalTime = function (chatTimeStamp) {
@@ -90,7 +98,6 @@
         ctrl.getImage = function (imageRestApiUrl) {
             console.log("I am getting called for each message");
         };
-
 
 
     }
