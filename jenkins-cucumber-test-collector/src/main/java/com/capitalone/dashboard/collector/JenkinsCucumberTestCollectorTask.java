@@ -1,7 +1,16 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.JenkinsCucumberTestCollector;
+import com.capitalone.dashboard.model.JenkinsJob;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.JenkinsCucumberTestCollectorRepository;
+import com.capitalone.dashboard.repository.JenkinsCucumberTestJobRepository;
+import com.capitalone.dashboard.repository.TestResultRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,7 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 public class JenkinsCucumberTestCollectorTask extends
