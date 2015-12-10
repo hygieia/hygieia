@@ -1,14 +1,26 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.JenkinsCucumberTestCollector;
+import com.capitalone.dashboard.model.JenkinsJob;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.JenkinsCucumberTestCollectorRepository;
+import com.capitalone.dashboard.repository.JenkinsCucumberTestJobRepository;
+import com.capitalone.dashboard.repository.TestResultRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("PMD.UnnecessaryFullyQualifiedName") // Will need to rename com.capitalone.dashboard.Component as it conflicts with Spring.
 @Component
@@ -90,19 +102,27 @@ public class JenkinsCucumberTestCollectorTask extends
      */
 
     private void clean(JenkinsCucumberTestCollector collector) {
+
+        // First delete jobs that will be no longer collected because servers have moved etc.
+        deleteUnwantedJobs(collector);
+
         Set<ObjectId> uniqueIDs = new HashSet<>();
         for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
                 .findAll()) {
-            if (!CollectionUtils.isEmpty(comp.getCollectorItems())) {
-                List<CollectorItem> itemList = comp.getCollectorItems().get(
-                        CollectorType.Test);
-                for (CollectorItem ci : itemList) {
-                    if (ci != null && ci.getCollectorId().equals(collector.getId())) {
-                        uniqueIDs.add(ci.getId());
-                    }
+            if (comp.getCollectorItems() == null
+                    || comp.getCollectorItems().isEmpty()) continue;
+            List<CollectorItem> itemList = comp.getCollectorItems().get(
+                    CollectorType.Test);
+            if (itemList == null) continue;
+            for (CollectorItem ci : itemList) {
+                if (ci != null
+                        && ci.getCollectorId().equals(collector.getId())) {
+                    uniqueIDs.add(ci.getId());
                 }
+
             }
         }
+
         List<JenkinsJob> jobList = new ArrayList<>();
         Set<ObjectId> udId = new HashSet<>();
         udId.add(collector.getId());
@@ -116,6 +136,21 @@ public class JenkinsCucumberTestCollectorTask extends
         jenkinsCucumberTestJobRepository.save(jobList);
     }
 
+    private void deleteUnwantedJobs(JenkinsCucumberTestCollector collector) {
+
+        List<JenkinsJob> deleteJobList = new ArrayList<>();
+        Set<ObjectId> udId = new HashSet<>();
+        udId.add(collector.getId());
+        for (JenkinsJob job : jenkinsCucumberTestJobRepository.findByCollectorIdIn(udId)) {
+            if (!collector.getBuildServers().contains(job.getInstanceUrl()) ||
+                    (!job.getCollectorId().equals(collector.getId()))) {
+                deleteJobList.add(job);
+            }
+        }
+
+        jenkinsCucumberTestJobRepository.delete(deleteJobList);
+
+    }
     // Jenkins Helper methods
 
     private List<JenkinsJob> enabledJobs(
