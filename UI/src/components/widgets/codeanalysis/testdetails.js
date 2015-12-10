@@ -13,7 +13,6 @@
         ctrl.statuses = DASH_STATUS;
         ctrl.testResult = testResult;
         ctrl.duration = msToTime(testResult.duration);
-        console.log("In testDetails Controller", ctrl.testResult);
         ctrl.close = close;
 
         function close() {
@@ -47,7 +46,6 @@
 
         $scope.showStatusIcon =
         function showStatusIcon(item) {
-            console.log("Returning true");
             if (item.status.toLowerCase() == 'success') {
                 return 'ok';
             } else if (item.status.toLowerCase() == 'skipped') {
