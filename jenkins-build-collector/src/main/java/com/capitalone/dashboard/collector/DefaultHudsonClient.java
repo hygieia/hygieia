@@ -26,7 +26,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 
 /**
  * HudsonClient implementation that uses RestTemplate and JSONSimple to
@@ -271,7 +276,7 @@ public class DefaultHudsonClient implements HudsonClient {
         String userInfo = thisuri.getUserInfo();
 
         //get userinfo from URI or settings (in spring properties)
-        if (StringUtils.isEmpty(userInfo) &&  (this.settings.getUsername() != null) && (this.settings.getApiKey() != null)) {
+        if (StringUtils.isEmpty(userInfo) && (this.settings.getUsername() != null) && (this.settings.getApiKey() != null)) {
             userInfo = this.settings.getUsername() + ":" + this.settings.getApiKey();
         }
         // Basic Auth only.
@@ -297,12 +302,8 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     private String getLog(String buildUrl) {
-        ResponseEntity<String> responseEntity = null;
-
         try {
-            responseEntity = makeRestCall(
-                    buildUrl + "consoleText");
-            return responseEntity.getBody();
+            return makeRestCall(buildUrl + "consoleText").getBody();
         } catch (MalformedURLException mfe) {
             LOG.error(mfe);
         }
