@@ -1,0 +1,67 @@
+<widget-modal widget-modal-title="Configure ChatOps Widget">
+    <form name="configForm"
+          ng-submit="chatOpsConfig.submit(configForm.$valid, chatOpsConfig.chatOpsOption, chatOpsConfig.chatOpsRoomAuthToken,chatOpsConfig.chatOpsServerUrl, chatOpsConfig.chatOpsRoomName)"
+          novalidate="novalidate">
+
+        <div class="form-group text-center"
+             ng-class="{'has-error': configForm.roomName.$invalid && chatOpsConfig.submitted}">
+            <label class="modal-label">Chat Engine</label> <select name="chatOpsOption"
+                                                                   class="form-control"
+                                                                   ng-model="chatOpsConfig.chatOpsOption"
+                                                                   ng-options="chatOpsOption.value for chatOpsOption in chatOpsConfig.chatOpsOptions"
+                                                                   required>
+        </select>
+
+            <p class="help-block"
+               ng-if="configForm.collectorItemId.$error.required">Please select
+                a Chat Room Provider</p>
+        </div>
+
+        <div class="form-group clearfix"
+             ng-class="{'has-error': configForm.chatOpsServerUrl.$invalid && chatOpsConfig.submitted}">
+            <div class="col-sm-push-2 col-sm-8">
+                <label class="modal-label">ChatOps Server URL</label> <input type="text"
+                                                                             name="chatOpsServerUrl"
+                                                                             class="form-control"
+                                                                             ng-model="chatOpsConfig.chatOpsServerUrl"
+                                                                             placeholder="Enter URL" required>
+
+                <p class="help-block" ng-if="configForm.chatOpsServerUrl.$error.required">ChatOps Server
+                    URL is required</p>
+            </div>
+        </div>
+
+        <div class="form-group clearfix"
+             ng-class="{'has-error': configForm.chatOpsRoomName.$invalid && chatOpsConfig.submitted}">
+            <div class="col-sm-push-2 col-sm-8">
+                <label class="modal-label">Room Name</label> <input type="text"
+                                                                          name="chatOpsRoomName"
+                                                                          class="form-control"
+                                                                          ng-model="chatOpsConfig.chatOpsRoomName"
+                                                                          placeholder="Enter ChatOps Room Name" required>
+
+                <p class="help-block" ng-if="configForm.chatOpsRoomName.$error.required">ChatOps Server
+                    AuthToken is required</p>
+            </div>
+        </div>
+
+        <div class="form-group clearfix"
+             ng-class="{'has-error': configForm.chatOpsRoomAuthToken.$invalid && chatOpsConfig.submitted}">
+            <div class="col-sm-push-2 col-sm-8">
+                <label class="modal-label">Room Auth Token</label> <input type="password"
+                                                                             name="chatOpsRoomAuthToken"
+                                                                             class="form-control"
+                                                                             ng-model="chatOpsConfig.chatOpsRoomAuthToken"
+                                                                             placeholder="Enter ChatOps Room Auth Token" required>
+
+                <p class="help-block" ng-if="configForm.chatOpsRoomAuthToken.$error.required">ChatOps Server
+                   AuthToken is required</p>
+            </div>
+        </div>
+
+
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+</widget-modal>
