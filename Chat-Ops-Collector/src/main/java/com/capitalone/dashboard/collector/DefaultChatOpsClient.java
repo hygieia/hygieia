@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
 /**
- * GitHubClient implementation that uses SVNKit to fetch information about
- * Subversion repositories.
+ * ChatOpsClient
  */
 
 @Component
@@ -32,7 +31,6 @@ public class DefaultChatOpsClient implements ChatOpsClient {
 
 	
 	private ResponseEntity<String> makeRestCall(String url) {
-		// Not using github auth now. Assuming all public repos.
 		return restOperations.exchange(url, HttpMethod.GET, null, String.class);
 	}
 }
