@@ -42,9 +42,16 @@ This is how it looks like
   chatops.cron=5 * * * * *
  
  ```
+Make sure the configuration file chatops.properties is in the same folder where the collector jar is before starting.
 
 ## How to start the collector
 ```
 java -jar <chatopscollector.jar> --spring.config.name=chatops
 
+```
+
+if your properties file is in different location than your start command would look like
+
+```
+java -jar <chatopscollector.jar> --spring.config.name=chatops --spring.config.location=path to external properties file
 ```
