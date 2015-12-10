@@ -1,6 +1,13 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.*;
+
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.JenkinsJob;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.TestCaseStatus;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -10,14 +17,25 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("PMD.ExcessiveMethodLength") // getCucumberTestResult needs refactor!
@@ -30,7 +48,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
     private final Transformer<String, List<TestSuite>> cucumberTransformer;
     private final Pattern cucumberJsonFilePattern;
 
-    private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs[name,url,builds[number,url]]";
+    private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs[name,url,builds[number,url],lastSuccessfulBuild[number]]";
     private static final String LAST_SUCCESSFUL_BUILD = "/lastSuccessfulBuild";
     private static final String LAST_SUCCESSFUL_BUILD_SUFFIX = "/lastSuccessfulBuild/api/json?tree=url,timestamp,number,fullDisplayName";
     private static final String LAST_SUCCESSFUL_BUILD_ARTIFACT_SUFFIX = "/lastSuccessfulBuild/api/json?tree=timestamp,duration,number,fullDisplayName,building,artifacts[fileName,relativePath]";
@@ -52,23 +70,25 @@ public class DefaultJenkinsClient implements JenkinsClient {
 
             for (Object job : getJsonArray(object, "jobs")) {
                 JSONObject jsonJob = (JSONObject) job;
+                JSONObject lastSuccessful = (JSONObject) jsonJob.get("lastSuccessfulBuild");
+                if (lastSuccessful != null) {
+                    JenkinsJob jenkinsJob = new JenkinsJob();
+                    jenkinsJob.setInstanceUrl(instanceUrl);
+                    jenkinsJob.setJobName(getString(jsonJob, "name"));
+                    jenkinsJob.setJobUrl(getString(jsonJob, "url"));
 
-                JenkinsJob jenkinsJob = new JenkinsJob();
-                jenkinsJob.setInstanceUrl(instanceUrl);
-                jenkinsJob.setJobName(getString(jsonJob, "name"));
-                jenkinsJob.setJobUrl(getString(jsonJob, "url"));
+                    Set<Build> builds = new LinkedHashSet<>();
+                    result.put(jenkinsJob, builds);
 
-                Set<Build> builds = new LinkedHashSet<>();
-                result.put(jenkinsJob, builds);
+                    for (Object build : getJsonArray(jsonJob, "builds")) {
+                        JSONObject jsonBuild = (JSONObject) build;
 
-                for (Object build : getJsonArray(jsonJob, "builds")) {
-                    JSONObject jsonBuild = (JSONObject) build;
-
-                    // A basic Build object. This will be fleshed out later if this is a new Build.
-                    Build hudsonBuild = new Build();
-                    hudsonBuild.setNumber(jsonBuild.get("number").toString());
-                    hudsonBuild.setBuildUrl(getString(jsonBuild, "url"));
-                    builds.add(hudsonBuild);
+                        // A basic Build object. This will be fleshed out later if this is a new Build.
+                        Build hudsonBuild = new Build();
+                        hudsonBuild.setNumber(jsonBuild.get("number").toString());
+                        hudsonBuild.setBuildUrl(getString(jsonBuild, "url"));
+                        builds.add(hudsonBuild);
+                    }
                 }
             }
         } catch (ParseException e) {
@@ -242,6 +262,12 @@ public class DefaultJenkinsClient implements JenkinsClient {
         return null;
     }
 
+
+    private String getCucumberJson(String buildUrl, String artifactRelativePath) {
+        return getJson(buildUrl + LAST_SUCCESSFUL_BUILD, "/artifact/" + artifactRelativePath);
+    }
+
+
     private String getCapabilityDescription(String cucumberJsonPattern, String fileName) {
         return StringUtils.removeEnd(fileName, cucumberJsonPattern);
     }
@@ -264,10 +290,38 @@ public class DefaultJenkinsClient implements JenkinsClient {
 
     private String getJson(String baseUrl, String endpoint) {
         String url = StringUtils.removeEnd(baseUrl, "/") + endpoint;
-        return rest.getForObject(URI.create(url), String.class);
+        ResponseEntity<String> result = null;
+        try {
+            result = makeRestCall(url);
+            return result.getBody();
+        } catch (MalformedURLException mfe) {
+            LOG.error(mfe.getStackTrace());
+        }
+        return "";
     }
 
-    private String getCucumberJson(String buildUrl, String artifactRelativePath) {
-        return getJson(buildUrl + LAST_SUCCESSFUL_BUILD, "/artifact/" + artifactRelativePath);
+    private ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
+        URI thisUri = URI.create(sUrl);
+        String userInfo = thisUri.getUserInfo();
+        // Basic Auth only.
+        if (StringUtils.isNotEmpty(userInfo)) {
+            return rest.exchange(thisUri, HttpMethod.GET,
+                    new HttpEntity<>(createHeaders(userInfo)),
+                    String.class);
+        } else {
+            return rest.exchange(thisUri, HttpMethod.GET, null,
+                    String.class);
+        }
+
+    }
+
+    private HttpHeaders createHeaders(final String userInfo) {
+        byte[] encodedAuth = org.apache.commons.codec.binary.Base64.encodeBase64(
+                userInfo.getBytes(StandardCharsets.US_ASCII));
+        String authHeader = "Basic " + new String(encodedAuth);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, authHeader);
+        return headers;
     }
 }
