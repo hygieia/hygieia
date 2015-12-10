@@ -30,3 +30,21 @@ This is how it looks like
  * Need to provide hipchat server name.
  * Chat Room Name
  * API token (Only v2 style tokens are supported at this time more info [Link](https://www.hipchat.com/docs/apiv2/auth)
+ 
+## ChatOps Collector properties file
+```
+  dbname=Your Mongodb Name
+  dbusername=your mongodb username
+  dbpassword=your mongodb password
+  dbhost=your mongodb host
+  dbport=your mongodb port
+  logging.file=./logs/chatops.log
+  chatops.cron=5 * * * * *
+ 
+ ```
+
+## How to start the collector
+```
+java -jar <chatopscollector.jar> --spring.config.name=chatops
+
+```
