@@ -22,10 +22,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 
 /**
  * HudsonClient implementation that uses RestTemplate and JSONSimple to
@@ -40,7 +46,7 @@ public class DefaultHudsonClient implements HudsonClient {
 
     private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs[name,url,builds[number,url]]";
 
-    private static final String[] CHANGE_SET_ITEMS_TREE = new String[] {
+    private static final String[] CHANGE_SET_ITEMS_TREE = new String[]{
             "user",
             "author[fullName]",
             "revision",
@@ -51,7 +57,7 @@ public class DefaultHudsonClient implements HudsonClient {
             "paths[file]"
     };
 
-    private static final String[] BUILD_DETAILS_TREE = new String[] {
+    private static final String[] BUILD_DETAILS_TREE = new String[]{
             "number",
             "url",
             "timestamp",
@@ -76,7 +82,7 @@ public class DefaultHudsonClient implements HudsonClient {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
         try {
             String url = StringUtils.removeEnd(instanceUrl, "/") + JOBS_URL_SUFFIX;
-            ResponseEntity<String> responseEntity = makeRestCall(URI.create(url));
+            ResponseEntity<String> responseEntity = makeRestCall(url);
             String returnJSON = responseEntity.getBody();
             JSONParser parser = new JSONParser();
 
@@ -111,7 +117,9 @@ public class DefaultHudsonClient implements HudsonClient {
                 LOG.error("Parsing jobs on instance: " + instanceUrl, e);
             }
         } catch (RestClientException rce) {
-            LOG.error(rce);
+            LOG.error(rce.getStackTrace());
+        } catch (MalformedURLException mfe) {
+            LOG.error(mfe.getStackTrace());
         }
 
         return result;
@@ -121,7 +129,7 @@ public class DefaultHudsonClient implements HudsonClient {
     public Build getBuildDetails(String buildUrl) {
         try {
             String url = StringUtils.removeEnd(buildUrl, "/") + BUILD_DETAILS_URL_SUFFIX;
-            ResponseEntity<String> result = makeRestCall(URI.create(url));
+            ResponseEntity<String> result = makeRestCall(url);
             String returnJSON = result.getBody();
             JSONParser parser = new JSONParser();
 
@@ -153,6 +161,8 @@ public class DefaultHudsonClient implements HudsonClient {
             }
         } catch (RestClientException rce) {
             LOG.error(rce);
+        } catch (MalformedURLException mfe) {
+            LOG.error(mfe);
         }
 
         return null;
@@ -161,7 +171,7 @@ public class DefaultHudsonClient implements HudsonClient {
     /**
      * Grabs changeset information for the given build.
      *
-     * @param build a Build
+     * @param build     a Build
      * @param buildJson the build JSON object
      */
     private void addChangeSets(Build build, JSONObject buildJson) {
@@ -247,33 +257,43 @@ public class DefaultHudsonClient implements HudsonClient {
 
     private BuildStatus getBuildStatus(JSONObject buildJson) {
         String status = buildJson.get("result").toString();
-        switch(status) {
-            case "SUCCESS": return BuildStatus.Success;
-            case "UNSTABLE": return BuildStatus.Unstable;
-            case "FAILURE": return BuildStatus.Failure;
-            case "ABORTED": return BuildStatus.Aborted;
-            default: return BuildStatus.Unknown;
+        switch (status) {
+            case "SUCCESS":
+                return BuildStatus.Success;
+            case "UNSTABLE":
+                return BuildStatus.Unstable;
+            case "FAILURE":
+                return BuildStatus.Failure;
+            case "ABORTED":
+                return BuildStatus.Aborted;
+            default:
+                return BuildStatus.Unknown;
         }
     }
 
-    private ResponseEntity<String> makeRestCall(URI uri) {
+    private ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
+        URI thisuri = URI.create(sUrl);
+        String userInfo = thisuri.getUserInfo();
+
+        //get userinfo from URI or settings (in spring properties)
+        if (StringUtils.isEmpty(userInfo) && (this.settings.getUsername() != null) && (this.settings.getApiKey() != null)) {
+            userInfo = this.settings.getUsername() + ":" + this.settings.getApiKey();
+        }
         // Basic Auth only.
-        if (StringUtils.isNotEmpty(this.settings.getUsername())
-                && StringUtils.isNotEmpty(this.settings.getApiKey())) {
-            return rest.exchange(uri, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(this.settings.getUsername(), this.settings.getApiKey())),
+        if (StringUtils.isNotEmpty(userInfo)) {
+            return rest.exchange(thisuri, HttpMethod.GET,
+                    new HttpEntity<>(createHeaders(userInfo)),
                     String.class);
-
         } else {
-            return rest.exchange(uri, HttpMethod.GET, null,
+            return rest.exchange(thisuri, HttpMethod.GET, null,
                     String.class);
         }
 
     }
 
-    private HttpHeaders createHeaders(final String userId, final String password) {
+    private HttpHeaders createHeaders(final String userInfo) {
         byte[] encodedAuth = Base64.encodeBase64(
-                (userId + ":" + password).getBytes(StandardCharsets.US_ASCII));
+                userInfo.getBytes(StandardCharsets.US_ASCII));
         String authHeader = "Basic " + new String(encodedAuth);
 
         HttpHeaders headers = new HttpHeaders();
@@ -282,10 +302,12 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     private String getLog(String buildUrl) {
-        ResponseEntity<String> responseEntity = makeRestCall(
-                URI.create(buildUrl + "consoleText"));
-        String returnJSON = responseEntity.getBody();
+        try {
+            return makeRestCall(buildUrl + "consoleText").getBody();
+        } catch (MalformedURLException mfe) {
+            LOG.error(mfe);
+        }
 
-        return returnJSON;
+        return "";
     }
 }
