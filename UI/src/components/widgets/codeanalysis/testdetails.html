@@ -27,35 +27,35 @@
                 <tbody ng-repeat="capability in testDetails.testResult.testCapabilities" ng-class-odd="'alt'">
                 <tr id="capability.description" class="clickableRow"
                     ng-click="(capability.testSuites.length > 0) ? showCapabilityDetail(capability): null">
-                    <td ng-class="{'widget-font-bold' : (activeCapability==capability.description)}">
+                    <td class="pull-left" ng-class="{'widget-font-bold' : (activeCapability==capability.description)}">
                         {{capability.description}}
                     </td>
                     <td>{{capability.totalTestSuiteCount}}</td>
-                    <td ng-class="{'widget-font-pass': capability.successTestSuiteCount > 0}">
+                    <td  ng-class="{'widget-font-pass': capability.successTestSuiteCount > 0}">
                         {{capability.successTestSuiteCount}}
                     </td>
                     <td ng-class="{'widget-font-fail': capability.failedTestSuiteCount > 0}">
                         {{capability.failedTestSuiteCount}}
                     </td>
+                    <!--
                     <td ng-if="capability.duration == 0">-</td>
                     <td ng-if="capability.duration > 0">{{capability.duration | date:'hh:mm:ss'}}</td>
+                    -->
                     <td ng-hide="(activeCapability==capability.description) || (capability.testSuites.length ==0)"
-                        class="fa fa-plus fa-x clickable"></td>
+                        class="fa fa-plus fa-x clickable pull-right"></td>
                     <td ng-show="activeCapability==capability.description"
-                        class="fa fa-minus fa-x clickable"></td>
+                        class="fa fa-minus fa-x clickable pull-right"></td>
                 </tr>
                 <tr ng-show="activeCapability==capability.description">
-                    <td colspan="11">
+                    <td colspan="12">
                         <div class="dash-row">
                             <table class="table table-striped">
                                 <tbody ng-repeat="testSuite in capability.testSuites">
                                 <tr id="testSuite.description" class="clickableRow"
                                     ng-click="(testSuite.testCases.length > 0) ? showTestSuiteDetail(testSuite): null">
-                                    <td colspan="1" ng-if="(testSuite.failedTestCaseCount > 0)" dash-status='alert'>
-                                    </td>
-                                    <td colspan="1" ng-if="(testSuite.failedTestCaseCount == 0) && (testSuite.successTestCaseCount > 0)" dash-status='ok'>
-                                    </td>
-                                    <td colspan="5">{{testSuite.description}}</td>
+                                    <td class="pull-left" ng-class="{'widget-font-bold' : (activeSuite==testSuite.description)}" colspan="5">{{testSuite.description}}</td>
+                                    <td ng-if="testSuite.duration == 0">-</td>
+                                    <td ng-if="testSuite.duration > 0">{{testSuite.duration | date:'hh:mm:ss'}}</td>
                                     <td>{{testSuite.totalTestCaseCount}}</td>
                                     <td ng-class="{'widget-font-pass': testSuite.successTestCaseCount > 0}">
                                         {{testSuite.successTestCaseCount}}
@@ -63,12 +63,11 @@
                                     <td ng-class="{'widget-font-fail': testSuite.failedTestCaseCount > 0}">
                                         {{testSuite.failedTestCaseCount}}
                                     </td>
-                                    <td ng-if="testSuite.duration == 0">-</td>
-                                    <td ng-if="testSuite.duration > 0">{{testSuite.duration | date:'hh:mm:ss'}}</td>
+
                                     <td ng-hide="(activeSuite==testSuite.description) || (testSuite.testCases.length ==0)"
-                                        class="fa fa-plus fa-x clickable"></td>
+                                        class="fa fa-plus fa-x clickable pull-right"></td>
                                     <td ng-show="activeSuite==testSuite.description"
-                                        class="fa fa-minus fa-x clickable"></td>
+                                        class="fa fa-minus fa-x clickable pull-right"></td>
                                 </tr>
                                 <tr ng-show="activeSuite==testSuite.description">
                                     <td colspan="10">

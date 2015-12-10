@@ -54,15 +54,12 @@
             var testJobNamesFromWidget = [];
             // set values from config
             if (widgetConfig) {
-                console.log("Widget====", widgetConfig);
                 if (widgetConfig.options.testJobNames) {
-                    console.log("INSIDE");
                     var j;
                     for (j = 0; j < widgetConfig.options.testJobNames.length; ++j) {
                         testJobNamesFromWidget.push(widgetConfig.options.testJobNames[j]);
                     }
                 }
-                console.log("TestJobNamesFromWidget====", testJobNamesFromWidget);
             }
             var index;
             for (index = 0; index < testCollectorItems.length; ++index) {
@@ -76,26 +73,20 @@
                     testCollectorItem: testItem
                 });
             }
-
-            console.log(ctrl.testConfigs);
             ctrl.testToolsDropdownPlaceholder = data.length ? 'Select a Functional Test Job' : 'No Functional Test Jobs Found';
         }
 
         function submitForm(caCollectorItem, saCollectorItem, testConfigs) {
-            console.log("LOOKING", ctrl.testConfigs[0].testName);
             var collectorItems = [];
             var testJobNames = [];
             if (caCollectorItem) collectorItems.push(caCollectorItem.id);
             if (saCollectorItem) collectorItems.push(saCollectorItem.id);
             if (testConfigs) {
                 var index;
-                console.log("TestConfigs:", testConfigs);
                 for (index = 0; index < testConfigs.length; ++index) {
                     collectorItems.push(testConfigs[index].testCollectorItem.id);
                     testJobNames.push(testConfigs[index].testJobName);
                 }
-                console.log("****** CollectorItems=", collectorItems);
-                console.log("****** TestJobNames=", testJobNames);
             }
             var form = document.configForm;
             var postObj = {
@@ -107,8 +98,6 @@
                 componentId: component.id,
                 collectorItemIds: collectorItems
             };
-            console.log("POSTOBJECT=", postObj);
-
             // pass this new config to the modal closing so it's saved
             $modalInstance.close(postObj);
         }

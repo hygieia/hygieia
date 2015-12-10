@@ -99,7 +99,6 @@
         function processTestResponse(response) {
             var deferred = $q.defer();
 
-            console.log("Test Response:" ,response);
             ctrl.testResult = testResult;
 
             ctrl.functionalTests = [];
@@ -139,7 +138,6 @@
                     details: testResult
                 });
             }
-            console.log(ctrl.functionalTests);
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
         }
