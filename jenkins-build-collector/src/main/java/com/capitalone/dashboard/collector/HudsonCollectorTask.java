@@ -2,8 +2,6 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -17,7 +15,7 @@ import java.util.*;
 @Component
 public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     @SuppressWarnings("PMD.UnusedPrivateField")
-    private static final Log LOG = LogFactory.getLog(HudsonCollectorTask.class);
+//    private static final Log LOG = LogFactory.getLog(HudsonCollectorTask.class);
 
     private final HudsonCollectorRepository hudsonCollectorRepository;
     private final HudsonJobRepository hudsonJobRepository;
@@ -63,9 +61,9 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         long start = System.currentTimeMillis();
 
         // Clean up every hour
-//        if ((start - collector.getLastExecuted()) > CLEANUP_INTERVAL) {
-        clean(collector);
-//        }
+        if ((start - collector.getLastExecuted()) > CLEANUP_INTERVAL) {
+            clean(collector);
+        }
         for (String instanceUrl : collector.getBuildServers()) {
             logBanner(instanceUrl);
 
@@ -91,24 +89,22 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // PMD is right, fixme
     private void clean(HudsonCollector collector) {
 
-        // First delete jobs that will be no longer collected becuase servers have moved etc.
+        // First delete jobs that will be no longer collected because servers have moved etc.
         deleteUnwantedJobs(collector);
         Set<ObjectId> uniqueIDs = new HashSet<>();
         for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
                 .findAll()) {
-            if (comp.getCollectorItems() != null
-                    && !comp.getCollectorItems().isEmpty()) {
-                List<CollectorItem> itemList = comp.getCollectorItems().get(
-                        CollectorType.Build);
-                if (itemList != null) {
-                    for (CollectorItem ci : itemList) {
-                        if (ci != null
-                                && ci.getCollectorId().equals(collector.getId())) {
-                            uniqueIDs.add(ci.getId());
-                        }
-
-                    }
+            if (comp.getCollectorItems() == null
+                    || !comp.getCollectorItems().isEmpty()) continue;
+            List<CollectorItem> itemList = comp.getCollectorItems().get(
+                    CollectorType.Build);
+            if (itemList == null) continue;
+            for (CollectorItem ci : itemList) {
+                if (ci != null
+                        && ci.getCollectorId().equals(collector.getId())) {
+                    uniqueIDs.add(ci.getId());
                 }
+
             }
         }
         List<HudsonJob> jobList = new ArrayList<>();
