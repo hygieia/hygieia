@@ -1,8 +1,6 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.util.Supplier;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -15,25 +13,18 @@ import org.springframework.web.client.RestOperations;
 
 @Component
 public class DefaultChatOpsClient implements ChatOpsClient {
-	private static final Log LOG = LogFactory.getLog(DefaultChatOpsClient.class);
+    private final RestOperations restOperations;
 
-	private final ChatOpsSettings settings;
+    @Autowired
+    public DefaultChatOpsClient(Supplier<RestOperations> restOperationsSupplier) {
+        this.restOperations = restOperationsSupplier.get();
+    }
 
-	private final RestOperations restOperations;
-	
 
-	@Autowired
-	public DefaultChatOpsClient(ChatOpsSettings settings,
-			Supplier<RestOperations> restOperationsSupplier) {
-		this.settings = settings;
-		this.restOperations = restOperationsSupplier.get();
-	}
-
-	
-	private ResponseEntity<String> makeRestCall(String url) {
-		return restOperations.exchange(url, HttpMethod.GET, null, String.class);
-	}
+    private ResponseEntity<String> makeRestCall(String url) {
+        return restOperations.exchange(url, HttpMethod.GET, null, String.class);
+    }
 }
-	
+
 
 	
