@@ -34,6 +34,7 @@
             for (var v = 0; v < ctrl.chatOpsOptions.length; v++) {
                 if (ctrl.chatOpsOptions[v].name == widgetConfig.options.chatOpsOption.name) {
                     myindex = v;
+                    break;
                 }
             }
             ctrl.chatOpsOption = ctrl.chatOpsOptions[myindex];
