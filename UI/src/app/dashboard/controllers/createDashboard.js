@@ -26,7 +26,9 @@
         // TODO: dynamically register templates with script
         ctrl.templates = [
             {value: 'capone', name: 'Cap One'},
+            {value: 'caponechatops', name: 'Cap One ChatOps'},
             {value: 'splitview', name: 'Split View'},
+
         ];
 
         // public methods
