@@ -3,9 +3,10 @@ ChatOpsCollector
 
 The ChatOpsCollector works a little differently than other collectors as you only have to run it once for widget to register.
 We are working to make a robust admin module which will provide the same functionality to register as well as enable/disable a widget
+Without having to write and run collector like this one
 Stay tuned
 
-I have tested this with Enterprise Hipchat version, It is not tested against public hipchat.
+I have tested this with Enterprise Hipchat version, It is not tested against public hipchat, But should work
 
 
 ##Supported Chat Application
@@ -29,7 +30,7 @@ This is how it looks like
 ## ChatOps widget configuration parameter
  * Need to provide hipchat server name.
  * Chat Room Name
- * API token (Only v2 style tokens are supported at this time more info [Link](https://www.hipchat.com/docs/apiv2/auth)
+ * API token (Only v2 style tokens are supported at this time  for more info click the [Link](https://www.hipchat.com/docs/apiv2/auth))
  
 ## ChatOps Collector properties file
 ```
