@@ -10,7 +10,6 @@ import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitRepoRepository;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -18,7 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * CollectorTask that fetches Commit information from Git
@@ -36,12 +39,12 @@ public class GitCollectorTask extends CollectorTask<Collector> {
 
     @Autowired
     public GitCollectorTask(TaskScheduler taskScheduler,
-                                   BaseCollectorRepository<Collector> collectorRepository,
-                                   GitRepoRepository gitRepoRepository,
-                                   CommitRepository commitRepository,
-                                   GitClient gitClient,
-                                   GitSettings gitSettings,
-                                   ComponentRepository dbComponentRepository) {
+                            BaseCollectorRepository<Collector> collectorRepository,
+                            GitRepoRepository gitRepoRepository,
+                            CommitRepository commitRepository,
+                            GitClient gitClient,
+                            GitSettings gitSettings,
+                            ComponentRepository dbComponentRepository) {
         super(taskScheduler, "Stash");
         this.collectorRepository = collectorRepository;
         this.gitRepoRepository = gitRepoRepository;
@@ -71,47 +74,44 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         return gitSettings.getCron();
     }
 
-	/**
-	 * Clean up unused deployment collector items
-	 *
-	 * @param collector
-	 *            the {@link UDeployCollector}
-	 */
+    /**
+     * Clean up unused deployment collector items
+     *
+     * @param collector the {@link Collector}
+     */
 
-	private void clean(Collector collector) {
-		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
-		/**
-		 * Logic: For each component, retrieve the collector item list of the type SCM.
-		 * Store their IDs in a unique set ONLY if their collector IDs match with Stash collectors ID.
-		 */
-		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
-			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
-				List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
-				if (itemList != null) {
-					for (CollectorItem ci : itemList) {
-						if (ci != null && ci.getCollectorId().equals(collector.getId())){
-							uniqueIDs.add(ci.getId());
-						}
-					}
-				}
-			}
-		}
+    private void clean(Collector collector) {
+        Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+        /**
+         * Logic: For each component, retrieve the collector item list of the type SCM.
+         * Store their IDs in a unique set ONLY if their collector IDs match with Stash collectors ID.
+         */
+        for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
+            if (comp.getCollectorItems() == null || comp.getCollectorItems().isEmpty()) continue;
+            List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
+            if (itemList == null) continue;
+            for (CollectorItem ci : itemList) {
+                if (ci != null && ci.getCollectorId().equals(collector.getId())) {
+                    uniqueIDs.add(ci.getId());
+                }
+            }
+        }
 
-		/**
-		 * Logic: Get all the collector items from the collector_item collection for this collector.
-		 * If their id is in the unique set (above), keep them enabled; else, disable them.
-		 */
-		List<GitRepo> repoList = new ArrayList<GitRepo>();
-		Set<ObjectId> gitID = new HashSet<ObjectId>();
-		gitID.add(collector.getId());
-		for (GitRepo repo : gitRepoRepository.findByCollectorIdIn(gitID)) {
-			if (repo != null) {
-				repo.setEnabled(uniqueIDs.contains(repo.getId()));
-				repoList.add(repo);
-			}
-		}
-		gitRepoRepository.save(repoList);
-	}
+        /**
+         * Logic: Get all the collector items from the collector_item collection for this collector.
+         * If their id is in the unique set (above), keep them enabled; else, disable them.
+         */
+        List<GitRepo> repoList = new ArrayList<GitRepo>();
+        Set<ObjectId> gitID = new HashSet<ObjectId>();
+        gitID.add(collector.getId());
+        for (GitRepo repo : gitRepoRepository.findByCollectorIdIn(gitID)) {
+            if (repo != null) {
+                repo.setEnabled(uniqueIDs.contains(repo.getId()));
+                repoList.add(repo);
+            }
+        }
+        gitRepoRepository.save(repoList);
+    }
 
 
     @Override
@@ -124,13 +124,13 @@ public class GitCollectorTask extends CollectorTask<Collector> {
 
         clean(collector);
         for (GitRepo repo : enabledRepos(collector)) {
-        	boolean firstRun = false;
-        	if (repo.getLastUpdateTime() == null) firstRun = true;
-        	repo.setLastUpdateTime(new Date());
+            boolean firstRun = false;
+            if (repo.getLastUpdateTime() == null) firstRun = true;
+            repo.setLastUpdateTime(new Date());
             gitRepoRepository.save(repo);
-            LOG.debug(repo.getOptions().toString()+"::"+repo.getBranch());
+            LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
             for (Commit commit : gitClient.getCommits(repo, firstRun)) {
-            	LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
+                LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
                     commitRepository.save(commit);
@@ -158,30 +158,5 @@ public class GitCollectorTask extends CollectorTask<Collector> {
     private boolean isNewCommit(GitRepo repo, Commit commit) {
         return commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo.getId(), commit.getScmRevisionNumber()) == null;
-    }
-
-    private void log(String marker, long start) {
-        log(marker, start, null);
-    }
-
-    private void log(String text, long start, Integer count) {
-        long end = System.currentTimeMillis();
-        String elapsed = ((end - start) / 1000) + "s";
-        String token2 = "";
-        String token3;
-        if (count == null) {
-            token3 = StringUtils.leftPad(elapsed, 30 - text.length() );
-        } else {
-            String countStr = count.toString();
-            token2 = StringUtils.leftPad(countStr, 20 - text.length() );
-            token3 = StringUtils.leftPad(elapsed, 10 );
-        }
-        LOG.info(text + token2 + token3);
-    }
-
-    private void logBanner(String instanceUrl) {
-        LOG.info("------------------------------");
-        LOG.info(instanceUrl);
-        LOG.info("------------------------------");
     }
 }
