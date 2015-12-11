@@ -7,12 +7,12 @@ import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +24,7 @@ import org.springframework.web.client.RestOperations;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ import java.util.Set;
  */
 @Component
 public class DefaultHudsonClient implements HudsonClient {
-    private static final Log LOG = LogFactory.getLog(DefaultHudsonClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultHudsonClient.class);
 
     private final RestOperations rest;
     private final HudsonSettings settings;
@@ -117,9 +118,9 @@ public class DefaultHudsonClient implements HudsonClient {
                 LOG.error("Parsing jobs on instance: " + instanceUrl, e);
             }
         } catch (RestClientException rce) {
-            LOG.error(rce.getStackTrace());
+            LOG.error("client exception loading jobs", rce);
         } catch (MalformedURLException mfe) {
-            LOG.error(mfe.getStackTrace());
+            LOG.error("malformed url for loading jobs", mfe);
         }
 
         return result;
@@ -160,9 +161,9 @@ public class DefaultHudsonClient implements HudsonClient {
                 LOG.error("Parsing build: " + buildUrl, e);
             }
         } catch (RestClientException rce) {
-            LOG.error(rce);
+            LOG.error("client exception loading build details", rce);
         } catch (MalformedURLException mfe) {
-            LOG.error(mfe);
+            LOG.error("malformed url for loading build details", mfe);
         }
 
         return null;
@@ -271,7 +272,7 @@ public class DefaultHudsonClient implements HudsonClient {
         }
     }
 
-    private ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
+    protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
         URI thisuri = URI.create(sUrl);
         String userInfo = thisuri.getUserInfo();
 
@@ -291,7 +292,7 @@ public class DefaultHudsonClient implements HudsonClient {
 
     }
 
-    private HttpHeaders createHeaders(final String userInfo) {
+    protected HttpHeaders createHeaders(final String userInfo) {
         byte[] encodedAuth = Base64.encodeBase64(
                 userInfo.getBytes(StandardCharsets.US_ASCII));
         String authHeader = "Basic " + new String(encodedAuth);
@@ -301,11 +302,12 @@ public class DefaultHudsonClient implements HudsonClient {
         return headers;
     }
 
-    private String getLog(String buildUrl) {
+    protected String getLog(String buildUrl) {
         try {
-            return makeRestCall(buildUrl + "consoleText").getBody();
+            String fullUrl = (new URL(URI.create(buildUrl).toURL(), "consoleText")).toString();
+            return makeRestCall(fullUrl).getBody();
         } catch (MalformedURLException mfe) {
-            LOG.error(mfe);
+            LOG.error("malformed url for build log", mfe);
         }
 
         return "";

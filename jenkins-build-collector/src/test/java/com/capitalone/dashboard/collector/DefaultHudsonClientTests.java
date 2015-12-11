@@ -13,6 +13,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,23 +26,81 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultHudsonClientTests {
 
     @Mock private Supplier<RestOperations> restOperationsSupplier;
     @Mock private RestOperations rest;
+    private HudsonSettings settings;
     private HudsonClient hudsonClient;
+    private DefaultHudsonClient defaultHudsonClient;
 
     private static final String URL = "URL";
 
     @Before
     public void init() {
         when(restOperationsSupplier.get()).thenReturn(rest);
-        hudsonClient = new DefaultHudsonClient(restOperationsSupplier, new HudsonSettings());
+        settings = new HudsonSettings();
+        hudsonClient = defaultHudsonClient = new DefaultHudsonClient(restOperationsSupplier,
+                settings);
+    }
+
+    @Test
+    public void verifyBasicAuth() throws Exception {
+        HttpHeaders headers = defaultHudsonClient.createHeaders("Aladdin:open sesame");
+        assertEquals("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==",
+                headers.getFirst(HttpHeaders.AUTHORIZATION));
+    }
+
+    @Test
+    public void verifyAuthCredentials() throws Exception {
+        HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("user:pass"));
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
+                eq(headers), eq(String.class)))
+                .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
+
+        settings.setApiKey("doesnt");
+        settings.setUsername("matter");
+        defaultHudsonClient.makeRestCall("http://user:pass@jenkins.com");
+        verify(rest).exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
+                eq(headers), eq(String.class));
+    }
+
+    @Test
+    public void verifyAuthCredentialsBySettings() throws Exception {
+        HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("does:matter"));
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
+                eq(headers), eq(String.class)))
+                .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
+
+        settings.setApiKey("matter");
+        settings.setUsername("does");
+        defaultHudsonClient.makeRestCall("http://jenkins.com");
+        verify(rest).exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
+                eq(headers), eq(String.class));
+    }
+
+    @Test
+    public void verifyGetLogUrl() throws Exception {
+        HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("does:matter"));
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
+                eq(headers), eq(String.class)))
+                .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
+
+        settings.setApiKey("matter");
+        settings.setUsername("does");
+        defaultHudsonClient.getLog("http://jenkins.com");
+        verify(rest).exchange(eq(URI.create("http://jenkins.com/consoleText")), eq(HttpMethod.GET),
+                eq(headers), eq(String.class));
     }
 
     @Test
