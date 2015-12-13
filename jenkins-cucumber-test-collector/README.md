@@ -52,8 +52,11 @@ For Cucumber-JVM, the Cucumber Options should be similar to the following code s
 @CucumberOptions( features = "src/test/features/com/sample",
     tags = { "~@wip", "@executeThis" }, monochrome = true, 
     format = { "pretty", "html:target/cucumber", "json:target/cucumber.json" } ) 
-    public class RunCukeTest { 
-  } 
+public class RunCukeTest { 
+
+
+
+} 
 ```
 For Ruby Cucumber, the cucumber options for the ‘format’ should be set to ‘json’ and the ‘out’ should designate the correct filename. 
 
