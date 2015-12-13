@@ -255,6 +255,7 @@ console.log("AFTER UPSERTWIDGET, Component=", response);
                 if (load && load.then) {
                     load.then(function(result) {
                         var lastUpdated = angular.isArray(result) ? _.max(result) : result;
+                        console.log("Last updated :"+lastUpdated);
                         $scope.lastUpdatedDisplay = moment(lastUpdated).dash('ago');
                     });
                 }
