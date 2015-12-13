@@ -47,6 +47,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
     private final RestOperations rest;
     private final Transformer<String, List<TestSuite>> cucumberTransformer;
     private final Pattern cucumberJsonFilePattern;
+    private final JenkinsSettings settings;
 
     private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs[name,url,builds[number,url],lastSuccessfulBuild[number]]";
     private static final String LAST_SUCCESSFUL_BUILD = "/lastSuccessfulBuild";
@@ -60,6 +61,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
         this.rest = restOperationsSupplier.get();
         this.cucumberTransformer = cucumberTransformer;
         this.cucumberJsonFilePattern = Pattern.compile(settings.getCucumberJsonRegex());
+        this.settings = settings;
     }
 
     @Override
@@ -315,15 +317,20 @@ public class DefaultJenkinsClient implements JenkinsClient {
     }
 
     protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
-        URI thisUri = URI.create(sUrl);
-        String userInfo = thisUri.getUserInfo();
+        URI thisuri = URI.create(sUrl);
+        String userInfo = thisuri.getUserInfo();
+
+        //get userinfo from URI or settings (in spring properties)
+        if (StringUtils.isEmpty(userInfo) && (this.settings.getUsername() != null) && (this.settings.getApiKey() != null)) {
+            userInfo = this.settings.getUsername() + ":" + this.settings.getApiKey();
+        }
         // Basic Auth only.
         if (StringUtils.isNotEmpty(userInfo)) {
-            return rest.exchange(thisUri, HttpMethod.GET,
+            return rest.exchange(thisuri, HttpMethod.GET,
                     new HttpEntity<>(createHeaders(userInfo)),
                     String.class);
         } else {
-            return rest.exchange(thisUri, HttpMethod.GET, null,
+            return rest.exchange(thisuri, HttpMethod.GET, null,
                     String.class);
         }
 

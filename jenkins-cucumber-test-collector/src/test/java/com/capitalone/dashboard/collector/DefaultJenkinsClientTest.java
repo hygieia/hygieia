@@ -141,7 +141,7 @@ public class DefaultJenkinsClientTest {
 
 
     @Test
-    public void test_getCapabilities () throws Exception {
+    public void test_endToend () throws Exception {
 
         String artifacts = getJson("job-artifacts.json");
         JSONParser parser = new JSONParser();
