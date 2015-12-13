@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-@SuppressWarnings("PMD.ExcessiveMethodLength") // getCucumberTestResult needs refactor!
+//@SuppressWarnings("PMD.ExcessiveMethodLength") // getCucumberTestResult needs refactor!
 @Component
 public class DefaultJenkinsClient implements JenkinsClient {
 
@@ -157,103 +157,112 @@ public class DefaultJenkinsClient implements JenkinsClient {
         return false;
     }
 
+
+    protected List<TestCapability> getCapabilities (JSONObject buildJson, String buildUrl) {
+        List<TestCapability> capabilities = new ArrayList<>();
+
+        for (Object artifactObj : (JSONArray) buildJson.get("artifacts")) {
+            JSONObject artifact = (JSONObject) artifactObj;
+            if (cucumberJsonFilePattern.matcher(getString(artifact, "fileName")).matches()) {
+                String cucumberJson = getCucumberJson(buildUrl, getString(artifact, "relativePath"));
+                if (!StringUtils.isEmpty(cucumberJson)) {
+                    TestCapability cap = new TestCapability();
+                    cap.setType(TestSuiteType.Functional);
+                    List<TestSuite> testSuites = cucumberTransformer.transformer(cucumberJson);
+                    cap.setDescription(getCapabilityDescription(cucumberJsonFilePattern.pattern(), getString(artifact, "relativePath")));
+                    cap.getTestSuites().addAll(testSuites); //add test suites
+                    long duration = 0;
+                    int testSuiteSkippedCount = 0, testSuiteSuccessCount = 0, testSuiteFailCount = 0, testSuiteUnknownCount = 0;
+                    for (TestSuite t : testSuites) {
+                        duration += t.getDuration();
+                        switch (t.getStatus()) {
+                            case Success:
+                                testSuiteSuccessCount++;
+                                break;
+                            case Failure:
+                                testSuiteFailCount++;
+                                break;
+                            case Skipped:
+                                testSuiteSkippedCount++;
+                                break;
+                            default:
+                                testSuiteUnknownCount++;
+                                break;
+                        }
+                    }
+                    if (testSuiteFailCount > 0) {
+                        cap.setStatus(TestCaseStatus.Failure);
+                    } else if (testSuiteSkippedCount > 0) {
+                        cap.setStatus(TestCaseStatus.Skipped);
+                    } else if (testSuiteSuccessCount > 0) {
+                        cap.setStatus(TestCaseStatus.Success);
+                    } else {
+                        cap.setStatus(TestCaseStatus.Unknown);
+                    }
+                    cap.setFailedTestSuiteCount(testSuiteFailCount);
+                    cap.setSkippedTestSuiteCount(testSuiteSkippedCount);
+                    cap.setSuccessTestSuiteCount(testSuiteSuccessCount);
+                    cap.setUnknownStatusTestSuiteCount(testSuiteUnknownCount);
+                    cap.setTotalTestSuiteCount(testSuites.size());
+                    cap.setDuration(duration);
+                    cap.setExecutionId(buildJson.get("number").toString());
+                    capabilities.add(cap);
+                }
+            }
+        }
+        return capabilities;
+    }
+
+    protected TestResult buildTestResultObject (JSONObject buildJson, String buildUrl, List<TestCapability> capabilities) {
+        if (!capabilities.isEmpty()) {
+            // There are test suites so let's construct a TestResult to encapsulate these results
+            TestResult testResult = new TestResult();
+            testResult.setDescription(getString(buildJson, "fullDisplayName"));
+            testResult.setExecutionId(buildJson.get("number").toString());
+            testResult.setUrl(buildUrl);
+            // Using the build times for start, end and duration is not ideal but the Cucumber JSON does not capture
+            // start or end times
+            testResult.setDuration(getLong(buildJson, "duration"));
+            testResult.setEndTime(getLong(buildJson, "timestamp"));
+            testResult.setStartTime(testResult.getEndTime() - testResult.getDuration());
+            testResult.getTestCapabilities().addAll(capabilities);  //add all capabilities
+            testResult.setTotalCount(capabilities.size());
+            int testCapabilitySkippedCount = 0, testCapabilitySuccessCount = 0, testCapabilityFailCount = 0;
+            int testCapabilityUnknownCount = 0;
+            // Calculate counts based on test suites
+            for (TestCapability cap : capabilities) {
+                switch (cap.getStatus()) {
+                    case Success:
+                        testCapabilitySuccessCount++;
+                        break;
+                    case Failure:
+                        testCapabilityFailCount++;
+                        break;
+                    case Skipped:
+                        testCapabilitySkippedCount++;
+                        break;
+                    default:
+                        testCapabilityUnknownCount++;
+                        break;
+                }
+            }
+            testResult.setSuccessCount(testCapabilitySuccessCount);
+            testResult.setFailureCount(testCapabilityFailCount);
+            testResult.setSkippedCount(testCapabilitySkippedCount);
+            testResult.setUnknownStatusCount(testCapabilityUnknownCount);
+            return testResult;
+        }
+        return null;
+    }
+
+
     @Override
     public TestResult getCucumberTestResult(String buildUrl) {
         try {
             JSONObject buildJson = (JSONObject) new JSONParser().parse(getJson(buildUrl, LAST_SUCCESSFUL_BUILD_ARTIFACT_SUFFIX));
-
-            List<TestCapability> capabilities = new ArrayList<>();
-
-            for (Object artifactObj : (JSONArray) buildJson.get("artifacts")) {
-                JSONObject artifact = (JSONObject) artifactObj;
-                if (cucumberJsonFilePattern.matcher(getString(artifact, "fileName")).matches()) {
-                    String cucumberJson = getCucumberJson(buildUrl, getString(artifact, "relativePath"));
-                    if (!StringUtils.isEmpty(cucumberJson)) {
-                        TestCapability cap = new TestCapability();
-                        cap.setType(TestSuiteType.Functional);
-                        List<TestSuite> testSuites = cucumberTransformer.transformer(cucumberJson);
-                        cap.setDescription(getCapabilityDescription(cucumberJsonFilePattern.pattern(), getString(artifact, "relativePath")));
-                        cap.getTestSuites().addAll(testSuites);
-                        long duration = 0;
-                        int testSuiteSkippedCount = 0, testSuiteSuccessCount = 0, testSuiteFailCount = 0, testSuiteUnknownCount = 0;
-                        for (TestSuite t : testSuites) {
-                            duration += t.getDuration();
-                            switch (t.getStatus()) {
-                                case Success:
-                                    testSuiteSuccessCount++;
-                                    break;
-                                case Failure:
-                                    testSuiteFailCount++;
-                                    break;
-                                case Skipped:
-                                    testSuiteSkippedCount++;
-                                    break;
-                                default:
-                                    testSuiteUnknownCount++;
-                                    break;
-                            }
-                        }
-                        if (testSuiteFailCount > 0) {
-                            cap.setStatus(TestCaseStatus.Failure);
-                        } else if (testSuiteSkippedCount > 0) {
-                            cap.setStatus(TestCaseStatus.Skipped);
-                        } else if (testSuiteSuccessCount > 0) {
-                            cap.setStatus(TestCaseStatus.Success);
-                        } else {
-                            cap.setStatus(TestCaseStatus.Unknown);
-                        }
-                        cap.setFailedTestSuiteCount(testSuiteFailCount);
-                        cap.setSkippedTestSuiteCount(testSuiteSkippedCount);
-                        cap.setSuccessTestSuiteCount(testSuiteSuccessCount);
-                        cap.setUnknownStatusTestSuiteCount(testSuiteUnknownCount);
-                        cap.setTotalTestSuiteCount(testSuites.size());
-                        cap.setDuration(duration);
-                        cap.setExecutionId(buildJson.get("number").toString());
-                        capabilities.add(cap);
-                    }
-                }
-            }
-
-
-            if (!capabilities.isEmpty()) {
-                // There are test suites so let's construct a TestResult to encapsulate these results
-                TestResult testResult = new TestResult();
-                testResult.setDescription(getString(buildJson, "fullDisplayName"));
-                testResult.setExecutionId(buildJson.get("number").toString());
-                testResult.setUrl(buildUrl);
-                // Using the build times for start, end and duration is not ideal but the Cucumber JSON does not capture
-                // start or end times
-                testResult.setDuration(getLong(buildJson, "duration"));
-                testResult.setEndTime(getLong(buildJson, "timestamp"));
-                testResult.setStartTime(testResult.getEndTime() - testResult.getDuration());
-                testResult.getTestCapabilities().addAll(capabilities);
-                testResult.setTotalCount(capabilities.size());
-                int testCapabilitySkippedCount = 0, testCapabilitySuccessCount = 0, testCapabilityFailCount = 0;
-                int testCapabilityUnknownCount = 0;
-                // Calculate counts based on test suites
-                for (TestCapability cap : capabilities) {
-                    switch (cap.getStatus()) {
-                        case Success:
-                            testCapabilitySuccessCount++;
-                            break;
-                        case Failure:
-                            testCapabilityFailCount++;
-                            break;
-                        case Skipped:
-                            testCapabilitySkippedCount++;
-                            break;
-                        default:
-                            testCapabilityUnknownCount++;
-                            break;
-                    }
-                }
-                testResult.setSuccessCount(testCapabilitySuccessCount);
-                testResult.setFailureCount(testCapabilityFailCount);
-                testResult.setSkippedCount(testCapabilitySkippedCount);
-                testResult.setUnknownStatusCount(testCapabilityUnknownCount);
-                return testResult;
-            }
-        } catch (ParseException e) {
+            List<TestCapability> capabilities = getCapabilities(buildJson, buildUrl);
+            return buildTestResultObject(buildJson, buildUrl, capabilities);
+         } catch (ParseException e) {
             LOG.error("Parsing jobs on instance: " + buildUrl, e);
         } catch (RestClientException rce) {
             LOG.error(rce);
@@ -263,11 +272,16 @@ public class DefaultJenkinsClient implements JenkinsClient {
     }
 
 
-    private String getCucumberJson(String buildUrl, String artifactRelativePath) {
-        return getJson(buildUrl + LAST_SUCCESSFUL_BUILD, "/artifact/" + artifactRelativePath);
+    protected String getCucumberJson(String buildUrl, String artifactRelativePath) {
+        return getJson(StringUtils.removeEnd(buildUrl, "/") + LAST_SUCCESSFUL_BUILD, "/artifact/" + artifactRelativePath);
     }
 
 
+    /**
+     * @param cucumberJsonPattern
+     * @param fileName
+     * @return
+     */
     private String getCapabilityDescription(String cucumberJsonPattern, String fileName) {
         return StringUtils.removeEnd(fileName, cucumberJsonPattern);
     }
@@ -295,12 +309,12 @@ public class DefaultJenkinsClient implements JenkinsClient {
             result = makeRestCall(url);
             return result.getBody();
         } catch (MalformedURLException mfe) {
-            LOG.error(mfe.getStackTrace());
+            LOG.error("malformed url" + mfe.getStackTrace());
         }
         return "";
     }
 
-    private ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
+    protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
         URI thisUri = URI.create(sUrl);
         String userInfo = thisUri.getUserInfo();
         // Basic Auth only.
@@ -315,7 +329,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
 
     }
 
-    private HttpHeaders createHeaders(final String userInfo) {
+    protected HttpHeaders createHeaders(final String userInfo) {
         byte[] encodedAuth = org.apache.commons.codec.binary.Base64.encodeBase64(
                 userInfo.getBytes(StandardCharsets.US_ASCII));
         String authHeader = "Basic " + new String(encodedAuth);
