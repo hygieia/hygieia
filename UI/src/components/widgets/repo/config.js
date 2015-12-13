@@ -106,7 +106,7 @@ console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
 			if (repoTypeName.indexOf("GitHub") != -1) {
 
 				item = {
-					collectorId: _.findWhere(ctrl.collectors, {name: 'Github'}).id,
+					collectorId: _.findWhere(ctrl.collectors, {name: 'GitHub'}).id,
 					options: {
 						scm: 'Github',
 						url: url,
