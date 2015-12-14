@@ -31,7 +31,7 @@
                         {{capability.description}}
                     </td>
                     <td>{{capability.totalTestSuiteCount}}</td>
-                    <td  ng-class="{'widget-font-pass': capability.successTestSuiteCount > 0}">
+                    <td ng-class="{'widget-font-pass': capability.successTestSuiteCount > 0}">
                         {{capability.successTestSuiteCount}}
                     </td>
                     <td ng-class="{'widget-font-fail': capability.failedTestSuiteCount > 0}">
@@ -53,7 +53,10 @@
                                 <tbody ng-repeat="testSuite in capability.testSuites">
                                 <tr id="testSuite.description" class="clickableRow"
                                     ng-click="(testSuite.testCases.length > 0) ? showTestSuiteDetail(testSuite): null">
-                                    <td class="pull-left" ng-class="{'widget-font-bold' : (activeSuite==testSuite.description)}" colspan="5">{{testSuite.description}}</td>
+                                    <td class="pull-left"
+                                        ng-class="{'widget-font-bold' : (activeSuite==testSuite.description)}"
+                                        colspan="5">{{testSuite.description}}
+                                    </td>
                                     <td ng-if="testSuite.duration == 0">-</td>
                                     <td ng-if="testSuite.duration > 0">{{testSuite.duration | date:'hh:mm:ss'}}</td>
                                     <td>{{testSuite.totalTestCaseCount}}</td>
@@ -96,25 +99,23 @@
                                                 </tr>
                                                 <tr ng-show="activeSuite==testSuite.description">
                                                     <td>
-                                                        <div>
-                                                            <div class="dash-row">
-                                                                <table class="table">
-                                                                    <tbody ng-repeat="testStep in testCase.testSteps">
-                                                                    <tr id="testStep.description">
-                                                                        <td ng-if="testStep.status == 'Success'">
-                                                                            <span dash-status='ok'></span>
-                                                                        </td>
-                                                                        <td ng-if="testStep.status == 'Failure'">
-                                                                            <span dash-status='alert'></span>
-                                                                        </td>
-                                                                        <td ng-if="testStep.status == 'Skipped'">
-                                                                            <span dash-status='warning'></span>
-                                                                        </td>
-                                                                        <td>{{testStep.description}}</td>
-                                                                    </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
+                                                        <div class="dash-row">
+                                                            <table class="table">
+                                                                <tbody ng-repeat="testStep in testCase.testSteps">
+                                                                <tr id="testStep.description">
+                                                                    <td ng-if="testStep.status == 'Success'">
+                                                                        <span dash-status='ok'></span>
+                                                                    </td>
+                                                                    <td ng-if="testStep.status == 'Failure'">
+                                                                        <span dash-status='alert'></span>
+                                                                    </td>
+                                                                    <td ng-if="testStep.status == 'Skipped'">
+                                                                        <span dash-status='warning'></span>
+                                                                    </td>
+                                                                    <td>{{testStep.description}}</td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </td>
                                                 </tr>
