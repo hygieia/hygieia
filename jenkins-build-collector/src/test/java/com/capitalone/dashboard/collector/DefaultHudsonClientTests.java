@@ -22,6 +22,7 @@ import org.springframework.web.client.RestOperations;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +45,7 @@ public class DefaultHudsonClientTests {
     private HudsonClient hudsonClient;
     private DefaultHudsonClient defaultHudsonClient;
 
-    private static final String URL = "URL";
+    private static final String URL_TEST = "URL";
 
     @Before
     public void init() {
@@ -55,7 +56,29 @@ public class DefaultHudsonClientTests {
     }
 
     @Test
+    public void joinURLsTest() throws Exception {
+        String u = DefaultHudsonClient.joinURL("http://jenkins.com",
+                "/api/json?tree=jobs[name,url,builds[number,url]]");
+        assertEquals("http://jenkins.com/api/json?tree=jobs[name,url,builds[number,url]]", u);
+
+        String u4 = DefaultHudsonClient.joinURL("http://jenkins.com/", "test",
+                "/api/json?tree=jobs[name,url,builds[number,url]]");
+        assertEquals("http://jenkins.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u4);
+
+        String u2 = DefaultHudsonClient.joinURL("http://jenkins.com/", "/test/",
+                "/api/json?tree=jobs[name,url,builds[number,url]]");
+        assertEquals("http://jenkins.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u2);
+
+        String u3 = DefaultHudsonClient.joinURL("http://jenkins.com", "///test",
+                "/api/json?tree=jobs[name,url,builds[number,url]]");
+        assertEquals("http://jenkins.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u3);
+    }
+
+    @Test
     public void verifyBasicAuth() throws Exception {
+        URL u = new URL(new URL("http://jenkins.com"), "/api/json?tree=jobs[name,url," +
+                "builds[number,url]]");
+
         HttpHeaders headers = defaultHudsonClient.createHeaders("Aladdin:open sesame");
         assertEquals("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==",
                 headers.getFirst(HttpHeaders.AUTHORIZATION));
@@ -108,7 +131,7 @@ public class DefaultHudsonClientTests {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<String>("", HttpStatus.OK));
 
-        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL);
+        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
 
         assertThat(jobs.size(), is(0));
     }
@@ -118,7 +141,7 @@ public class DefaultHudsonClientTests {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<String>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
 
-        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL);
+        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
 
         assertThat(jobs.size(), is(2));
         Iterator<HudsonJob> jobIt = jobs.keySet().iterator();
@@ -147,13 +170,13 @@ public class DefaultHudsonClientTests {
     @Test
     public void buildDetails_full() throws Exception {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>(getJson("buildDetails_full.json"), HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
 
-        Build build = hudsonClient.getBuildDetails(URL);
+        Build build = hudsonClient.getBuildDetails(URL_TEST);
 
         assertThat(build.getTimestamp(), notNullValue());
         assertThat(build.getNumber(), is("2483"));
-        assertThat(build.getBuildUrl(), is(URL));
+        assertThat(build.getBuildUrl(), is(URL_TEST));
         assertThat(build.getArtifactVersionNumber(), nullValue());
         assertThat(build.getStartTime(), is(1421281415000L));
         assertThat(build.getEndTime(), is(1421284113495L));

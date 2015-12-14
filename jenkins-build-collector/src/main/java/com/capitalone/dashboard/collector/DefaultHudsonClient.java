@@ -24,7 +24,6 @@ import org.springframework.web.client.RestOperations;
 
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -82,7 +81,7 @@ public class DefaultHudsonClient implements HudsonClient {
     public Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl) {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
         try {
-            String url = StringUtils.removeEnd(instanceUrl, "/") + JOBS_URL_SUFFIX;
+            String url = joinURL(instanceUrl, JOBS_URL_SUFFIX);
             ResponseEntity<String> responseEntity = makeRestCall(url);
             String returnJSON = responseEntity.getBody();
             JSONParser parser = new JSONParser();
@@ -99,8 +98,6 @@ public class DefaultHudsonClient implements HudsonClient {
                     hudsonJob.setJobUrl(getString(jsonJob, "url"));
 
                     Set<Build> builds = new LinkedHashSet<>();
-                    result.put(hudsonJob, builds);
-
                     for (Object build : getJsonArray(jsonJob, "builds")) {
                         JSONObject jsonBuild = (JSONObject) build;
 
@@ -113,6 +110,8 @@ public class DefaultHudsonClient implements HudsonClient {
                             builds.add(hudsonBuild);
                         }
                     }
+                    // add the builds to the job
+                    result.put(hudsonJob, builds);
                 }
             } catch (ParseException e) {
                 LOG.error("Parsing jobs on instance: " + instanceUrl, e);
@@ -129,7 +128,7 @@ public class DefaultHudsonClient implements HudsonClient {
     @Override
     public Build getBuildDetails(String buildUrl) {
         try {
-            String url = StringUtils.removeEnd(buildUrl, "/") + BUILD_DETAILS_URL_SUFFIX;
+            String url = joinURL(buildUrl, BUILD_DETAILS_URL_SUFFIX);
             ResponseEntity<String> result = makeRestCall(url);
             String returnJSON = result.getBody();
             JSONParser parser = new JSONParser();
@@ -304,12 +303,24 @@ public class DefaultHudsonClient implements HudsonClient {
 
     protected String getLog(String buildUrl) {
         try {
-            String fullUrl = (new URL(URI.create(buildUrl).toURL(), "consoleText")).toString();
-            return makeRestCall(fullUrl).getBody();
+            return makeRestCall(joinURL(buildUrl, "consoleText")).getBody();
         } catch (MalformedURLException mfe) {
             LOG.error("malformed url for build log", mfe);
         }
 
         return "";
+    }
+
+    // join a base url to another path or paths - this will handle trailing or non-trailing /'s
+    public static String joinURL(String base, String ... paths) throws MalformedURLException {
+        StringBuilder result = new StringBuilder(base);
+        for (String path : paths) {
+            String p = path.replaceFirst("^(\\/)+", "");
+            if (result.lastIndexOf("/") != result.length() - 1) {
+                result.append('/');
+            }
+            result.append(p);
+        }
+        return result.toString();
     }
 }
