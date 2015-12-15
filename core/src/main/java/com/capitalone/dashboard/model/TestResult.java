@@ -194,21 +194,4 @@ public class TestResult extends BaseModel {
         return testCapabilities;
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TestResult result  = (TestResult) o;
-
-        return collectorItemId.equals(result.getCollectorItemId()) &&
-                executionId.equals(result.getExecutionId()) &&
-                url.equals(result.getUrl());
-    }
-
-    @Override
-    public int hashCode() {
-        return this.hashCode();
-    }
 }

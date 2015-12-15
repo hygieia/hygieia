@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 
@@ -69,7 +70,14 @@ public class TestResultServiceImpl implements TestResultService {
                 result.addAll(Lists.newArrayList(testResultRepository.findAll(builder.getValue(), pageRequest).getContent()));
             }
         }
-        Collector collector = collectorRepository.findOne(component.getCollectorItems().get(CollectorType.Test).get(0).getCollectorId());
-        return new DataResponse<>((Iterable<TestResult>) result, collector.getLastExecuted());
+        //One collector per Type. get(0) is hardcoded.
+        if (!CollectionUtils.isEmpty(component.getCollectorItems().get(CollectorType.Test)) && (component.getCollectorItems().get(CollectorType.Test).get(0) != null)) {
+            Collector collector = collectorRepository.findOne(component.getCollectorItems().get(CollectorType.Test).get(0).getCollectorId());
+            if (collector != null) {
+                return new DataResponse<>((Iterable<TestResult>) result, collector.getLastExecuted());
+            }
+        }
+
+        return new DataResponse<>(null, 0L);
     }
 }
