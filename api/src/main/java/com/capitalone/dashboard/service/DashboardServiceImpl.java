@@ -98,7 +98,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         //First: disable all collectorItems of the Collector TYPEs that came in with the request.
         //Second: remove all the collectorItem association of the Collector Type  that came in
-        List<CollectorType> incomingTypes = new ArrayList<>();
+        HashSet<CollectorType> incomingTypes = new HashSet<>();
         for (ObjectId collectorItemId : collectorItemIds) {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
