@@ -195,18 +195,5 @@ public class TestCapability {
         this.type = type;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        TestCapability capability  = (TestCapability) o;
-
-        return url.equals(capability.getUrl()) && executionId.equals(capability.getExecutionId());
-    }
-
-    @Override
-    public int hashCode() {
-        return this.hashCode();
-    }
 }
