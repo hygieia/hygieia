@@ -51,11 +51,10 @@ public class Component extends BaseModel {
         if (collectorItems.get(collectorType) == null) {
             collectorItems.put(collectorType, Arrays.asList(collectorItem));
         } else {
-            List<CollectorItem> existing = collectorItems.get(collectorType);
-            List<CollectorItem> newList = new ArrayList<>(existing);
+            List<CollectorItem> existing = new ArrayList<> (collectorItems.get(collectorType));
             if (isNewCollectorItem(existing, collectorItem)) {
-                newList.add(collectorItem);
-                collectorItems.replace(collectorType, newList);
+                existing.add(collectorItem);
+                collectorItems.replace(collectorType, existing);
             }
         }
     }
