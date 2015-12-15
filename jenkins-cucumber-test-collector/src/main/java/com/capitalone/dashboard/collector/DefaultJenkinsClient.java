@@ -160,7 +160,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
     }
 
 
-    protected List<TestCapability> getCapabilities (JSONObject buildJson, String buildUrl) {
+    protected List<TestCapability> getCapabilities(JSONObject buildJson, String buildUrl) {
         List<TestCapability> capabilities = new ArrayList<>();
 
         for (Object artifactObj : (JSONArray) buildJson.get("artifacts")) {
@@ -215,7 +215,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
         return capabilities;
     }
 
-    protected TestResult buildTestResultObject (JSONObject buildJson, String buildUrl, List<TestCapability> capabilities) {
+    protected TestResult buildTestResultObject(JSONObject buildJson, String buildUrl, List<TestCapability> capabilities) {
         if (!capabilities.isEmpty()) {
             // There are test suites so let's construct a TestResult to encapsulate these results
             TestResult testResult = new TestResult();
@@ -264,7 +264,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
             JSONObject buildJson = (JSONObject) new JSONParser().parse(getJson(buildUrl, LAST_SUCCESSFUL_BUILD_ARTIFACT_SUFFIX));
             List<TestCapability> capabilities = getCapabilities(buildJson, buildUrl);
             return buildTestResultObject(buildJson, buildUrl, capabilities);
-         } catch (ParseException e) {
+        } catch (ParseException e) {
             LOG.error("Parsing jobs on instance: " + buildUrl, e);
         } catch (RestClientException rce) {
             LOG.error(rce);
@@ -329,11 +329,9 @@ public class DefaultJenkinsClient implements JenkinsClient {
             return rest.exchange(thisuri, HttpMethod.GET,
                     new HttpEntity<>(createHeaders(userInfo)),
                     String.class);
-        } else {
-            return rest.exchange(thisuri, HttpMethod.GET, null,
-                    String.class);
         }
-
+        return rest.exchange(thisuri, HttpMethod.GET, null,
+                String.class);
     }
 
     protected HttpHeaders createHeaders(final String userInfo) {
