@@ -124,9 +124,4 @@ public class TestCase {
         return testSteps;
     }
 
-    @Override
-    public int hashCode() {
-        return this.hashCode();
-    }
-
 }
