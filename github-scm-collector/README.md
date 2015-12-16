@@ -16,21 +16,20 @@ for information about sourcing this properties file.
 
 ###Sample application.properties file
 --------------------------------------
-
     #Database Name 
-    spring.data.mongodb.database=dashboarddb
+    database=dashboarddb
 
     #Database HostName - default is localhost
-    spring.data.mongodb.host=10.0.1.1
+    dbhost=10.0.1.1
 
     #Database Port - default is 27017
-    spring.data.mongodb.port=9999
+    dbport=9999
 
     #Database Username - default is blank
-    spring.data.mongodb.username=db
+    dbusername=db
 
     #Database Password - default is blank
-    spring.data.mongodb.password=dbpass
+    dbpassword=dbpass
 
     #Collector schedule (required)
     github.cron=0 0/5 * * * *
