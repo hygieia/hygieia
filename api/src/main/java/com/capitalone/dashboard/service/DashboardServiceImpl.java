@@ -99,6 +99,7 @@ public class DashboardServiceImpl implements DashboardService {
         //First: disable all collectorItems of the Collector TYPEs that came in with the request.
         //Second: remove all the collectorItem association of the Collector Type  that came in
         HashSet<CollectorType> incomingTypes = new HashSet<>();
+        HashSet<CollectorItem> toSaveCollectorItemList = new HashSet<>();
         for (ObjectId collectorItemId : collectorItemIds) {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
@@ -108,7 +109,7 @@ public class DashboardServiceImpl implements DashboardService {
                 if (!CollectionUtils.isEmpty(cItems)) {
                     for (CollectorItem ci : cItems) {
                         ci.setEnabled(false);
-                        collectorItemRepository.save(ci);
+                        toSaveCollectorItemList.add(ci);
                     }
                 }
                 component.getCollectorItems().remove(collector.getCollectorType());
@@ -122,14 +123,15 @@ public class DashboardServiceImpl implements DashboardService {
             component.addCollectorItem(collector.getCollectorType(), collectorItem);
 
             if (!collectorItem.isEnabled()) {
+                toSaveCollectorItemList.remove(collectorItem);
                 collectorItem.setEnabled(true);
-                collectorItemRepository.save(collectorItem);
+                toSaveCollectorItemList.add(collectorItem);
             }
 
             // set transient collector property
             collectorItem.setCollector(collector);
         }
-
+        collectorItemRepository.save(toSaveCollectorItemList);
         componentRepository.save(component);
         return component;
     }
