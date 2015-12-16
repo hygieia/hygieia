@@ -461,7 +461,7 @@
       {
         "id": "c32a5525-e9f0-4706-8fa4-277f501b2fb9",
         "securityResourceId": "cfb5789c-94b6-4b1e-9912-bf5996019c53",
-        "name": "AA-JPetstore.war",
+        "name": "AA-JPetstore.ear",
         "path": "\/App-Infra\/DEV16\/WEB\/udagent-web\/msp_16\/AA-JPetstore.war",
         "active": true,
         "inheritTeam": true,
@@ -477,7 +477,7 @@
         "parent": {
           "id": "6b7bae94-6492-438e-b6ad-21ec7347b180",
           "securityResourceId": "8c42de88-5f7a-4e97-b36d-9b740d21e0c7",
-          "name": "msp_tetris_dws_16",
+          "name": "msp_16",
           "path": "\/App-Infra\/DEV16\/WEB\/udagent-web\/msp_16",
           "active": true,
           "inheritTeam": true,
@@ -493,7 +493,7 @@
         },
         "role": {
           "id": "b1a4b382-ae17-4add-900a-28876e823d47",
-          "name": "AA-JPetstore.war",
+          "name": "AA-JPetstore.ear",
           "specialType": "COMPONENT"
         },
         "security": {

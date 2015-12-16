@@ -3,7 +3,7 @@
     "id": "4bf56c33-90ad-483f-b4ca-646df030bcf1",
     "securityResourceId": "eac9e578-8f8f-4d94-8f96-1cef98e153a4",
     "name": "AA-JPetstore.war",
-    "path": "\/Tetris_AWS\/DEV16\/APP\/udagent-app\/msp_16\/AA-JPetstore.war",
+    "path": "\/App-Infra\/DEV16\/APP\/udagent-app\/msp_16\/AA-JPetstore.war",
     "active": true,
     "inheritTeam": true,
     "discoveryFailed": false,

@@ -134,6 +134,62 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 		uDeployApplicationRepository.save(appList);
 	}
 
+	private void saveEnvironmentComponent(UDeployEnvResCompData data, Environment environment, UDeployApplication application) {
+		EnvironmentComponent component = new EnvironmentComponent();
+		component.setComponentName(data.getComponentName());
+		component.setComponentVersion(data
+				.getComponentVersion());
+		component.setDeployed(data.isDeployed());
+		component.setEnvironmentName(data
+				.getEnvironmentName());
+
+		component.setEnvironmentName(environment.getName());
+		component.setAsOfDate(data.getAsOfDate());
+		String environmentURL = StringUtils.removeEnd(
+				application.getInstanceUrl(), "/")
+				+ "/#environment/" + environment.getId();
+		component.setEnvironmentUrl(environmentURL);
+		List<EnvironmentComponent> existingComponents = envComponentRepository
+				.findByCollectorItemId(application.getId());
+		EnvironmentComponent existing = findExistingComponent(
+				component, existingComponents);
+
+		if (existing == null) {
+			// Add new
+			component.setCollectorItemId(application.getId());
+			envComponentRepository.save(component);
+		} else if (changed(component, existing)) {
+			// Update date and deployment status of existing
+			existing.setAsOfDate(component.getAsOfDate());
+			existing.setDeployed(component.isDeployed());
+			existing.setComponentVersion(component.getComponentVersion());
+			envComponentRepository.save(existing);
+		}
+	}
+
+	private void saveEnvironmentStatus(UDeployEnvResCompData data, UDeployApplication application) {
+		EnvironmentStatus status = new EnvironmentStatus();
+		status.setCollectorItemId(data.getCollectorItemId());
+		status.setComponentID(data.getComponentID());
+		status.setComponentName(data.getComponentName());
+		status.setEnvironmentName(data.getEnvironmentName());
+		status.setOnline(data.isOnline());
+		status.setResourceName(data.getResourceName());
+		List<EnvironmentStatus> existingStatuses = environmentStatusRepository
+				.findByCollectorItemId(application.getId());
+		EnvironmentStatus existing = findExistingStatus(status,
+				existingStatuses);
+		if (existing == null) {
+			// Add new
+			status.setCollectorItemId(application.getId());
+			environmentStatusRepository.save(status);
+		} else if (changed(status, existing)) {
+			// Update online status of existing
+			existing.setOnline(status.isOnline());
+			environmentStatusRepository.save(existing);
+		}
+	}
+
 	/**
 	 * For each {@link UDeployApplication}, update the current
 	 * {@link EnvironmentComponent}s and {@link EnvironmentStatus}.
@@ -141,13 +197,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 	 * @param uDeployApplications
 	 *            list of {@link UDeployApplication}s
 	 */
-	@SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, this method needs refactoring.
 	private void updateData(List<UDeployApplication> uDeployApplications) {
-		/**
-		 * steps - 1. get environments 2. for each environment, get resources
-		 * and non-compliance resources 3. merge resources and non-compliance to
-		 * get component name, versions, resource name, health etc.
-		 */
 		for (UDeployApplication application : uDeployApplications) {
 			long startApp = System.currentTimeMillis();
 			for (Environment environment : uDeployClient
@@ -157,87 +207,9 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 								environment);
 
 				for (UDeployEnvResCompData combinedData : combinedDataList) {
-
-					EnvironmentComponent component = new EnvironmentComponent();
-					component.setComponentName(combinedData.getComponentName());
-					component.setComponentVersion(combinedData
-							.getComponentVersion());
-					component.setDeployed(combinedData.isDeployed());
-					component.setEnvironmentName(combinedData
-							.getEnvironmentName());
-
-					component.setEnvironmentName(environment.getName());
-					component.setAsOfDate(combinedData.getAsOfDate());
-					String environmentURL = StringUtils.removeEnd(
-							application.getInstanceUrl(), "/")
-							+ "/#environment/" + environment.getId();
-					component.setEnvironmentUrl(environmentURL);
-					List<EnvironmentComponent> existingComponents = envComponentRepository
-							.findByCollectorItemId(application.getId());
-					EnvironmentComponent existing = findExistingComponent(
-							component, existingComponents);
-
-					if (existing == null) {
-						// Add new
-						component.setCollectorItemId(application.getId());
-						envComponentRepository.save(component);
-					} else if (changed(component, existing)) {
-						// Update date and deployment status of existing
-						existing.setAsOfDate(component.getAsOfDate());
-						existing.setDeployed(component.isDeployed());
-						existing.setComponentVersion(component.getComponentVersion());
-						envComponentRepository.save(existing);
-					}
+					saveEnvironmentComponent(combinedData, environment, application);
+					saveEnvironmentStatus(combinedData, application);
 				}
-
-				for (UDeployEnvResCompData data : combinedDataList) {
-					EnvironmentStatus status = new EnvironmentStatus();
-					status.setCollectorItemId(data.getCollectorItemId());
-					status.setComponentID(data.getComponentID());
-					status.setComponentName(data.getComponentName());
-					status.setEnvironmentName(data.getEnvironmentName());
-					status.setOnline(data.isOnline());
-					status.setResourceName(data.getResourceName());
-					List<EnvironmentStatus> existingStatuses = environmentStatusRepository
-							.findByCollectorItemId(application.getId());
-					EnvironmentStatus existing = findExistingStatus(status,
-							existingStatuses);
-					if (existing == null) {
-						// Add new
-						status.setCollectorItemId(application.getId());
-						environmentStatusRepository.save(status);
-					} else if (changed(status, existing)) {
-						// Update online status of existing
-						existing.setOnline(status.isOnline());
-						environmentStatusRepository.save(existing);
-					}
-				}
-
-//				for (UDeployEnvResCompData data : uDeployClient
-//						.getEnvironmentResourceStatusData(application,
-//								environment)) {
-//					EnvironmentStatus status = new EnvironmentStatus();
-//					status.setCollectorItemId(data.getCollectorItemId());
-//					status.setComponentID(data.getComponentID());
-//					status.setComponentName(data.getComponentName());
-//					status.setEnvironmentName(data.getEnvironmentName());
-//					status.setOnline(data.isOnline());
-//					status.setResourceName(data.getResourceName());
-//					List<EnvironmentStatus> existingStatuses = environmentStatusRepository
-//							.findByCollectorItemId(application.getId());
-//					EnvironmentStatus existing = findExistingStatus(status,
-//							existingStatuses);
-//					if (existing == null) {
-//						// Add new
-//						status.setCollectorItemId(application.getId());
-//						environmentStatusRepository.save(status);
-//					} else if (changed(status, existing)) {
-//						// Update online status of existing
-//						existing.setOnline(status.isOnline());
-//						environmentStatusRepository.save(existing);
-//					}
-//				}
-
 			}
 
 			log(" " + application.getApplicationName(), startApp);
