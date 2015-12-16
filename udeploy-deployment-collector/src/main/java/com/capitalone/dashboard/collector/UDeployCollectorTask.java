@@ -190,9 +190,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 					}
 				}
 
-				for (UDeployEnvResCompData data : uDeployClient
-						.getEnvironmentResourceStatusData(application,
-								environment)) {
+				for (UDeployEnvResCompData data : combinedDataList) {
 					EnvironmentStatus status = new EnvironmentStatus();
 					status.setCollectorItemId(data.getCollectorItemId());
 					status.setComponentID(data.getComponentID());
@@ -214,6 +212,31 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
 						environmentStatusRepository.save(existing);
 					}
 				}
+
+//				for (UDeployEnvResCompData data : uDeployClient
+//						.getEnvironmentResourceStatusData(application,
+//								environment)) {
+//					EnvironmentStatus status = new EnvironmentStatus();
+//					status.setCollectorItemId(data.getCollectorItemId());
+//					status.setComponentID(data.getComponentID());
+//					status.setComponentName(data.getComponentName());
+//					status.setEnvironmentName(data.getEnvironmentName());
+//					status.setOnline(data.isOnline());
+//					status.setResourceName(data.getResourceName());
+//					List<EnvironmentStatus> existingStatuses = environmentStatusRepository
+//							.findByCollectorItemId(application.getId());
+//					EnvironmentStatus existing = findExistingStatus(status,
+//							existingStatuses);
+//					if (existing == null) {
+//						// Add new
+//						status.setCollectorItemId(application.getId());
+//						environmentStatusRepository.save(status);
+//					} else if (changed(status, existing)) {
+//						// Update online status of existing
+//						existing.setOnline(status.isOnline());
+//						environmentStatusRepository.save(existing);
+//					}
+//				}
 
 			}
 
