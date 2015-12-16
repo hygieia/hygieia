@@ -232,7 +232,7 @@ public class DefaultUDeployClient implements UDeployClient {
         return StringUtils.removeEnd(instanceUrl, "/") + remainder;
     }
 
-    private HttpHeaders createHeaders() {
+    protected HttpHeaders createHeaders() {
         String auth = uDeploySettings.getUsername() + ":"
                 + uDeploySettings.getPassword();
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(
