@@ -37,7 +37,6 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     private final HudsonClient hudsonClient;
     private final HudsonSettings hudsonSettings;
     private final ComponentRepository dbComponentRepository;
-    private final static int CLEANUP_INTERVAL = 3600000;
 
     @Autowired
     public HudsonCollectorTask(TaskScheduler taskScheduler,
@@ -74,10 +73,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     public void collect(HudsonCollector collector) {
         long start = System.currentTimeMillis();
 
-        // Clean up every hour
-        if ((start - collector.getLastExecuted()) > CLEANUP_INTERVAL) {
-            clean(collector);
-        }
+        clean(collector);
         for (String instanceUrl : collector.getBuildServers()) {
             logBanner(instanceUrl);
 
