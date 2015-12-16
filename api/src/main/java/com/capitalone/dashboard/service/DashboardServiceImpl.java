@@ -4,11 +4,11 @@ import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -92,22 +92,46 @@ public class DashboardServiceImpl implements DashboardService {
             return null;
         }
 
-        Component component = componentRepository.findOne(componentId);
+        com.capitalone.dashboard.model.Component component = componentRepository.findOne(componentId);
+        //we can not assume what collector item is added, what is removed etc so, we will
+        //refresh the association. First disable all collector items, then remove all and re-add
+
+        //First: disable all collectorItems of the Collector TYPEs that came in with the request.
+        //Second: remove all the collectorItem association of the Collector Type  that came in
+        HashSet<CollectorType> incomingTypes = new HashSet<>();
+        HashSet<CollectorItem> toSaveCollectorItemList = new HashSet<>();
         for (ObjectId collectorItemId : collectorItemIds) {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
+            if (!incomingTypes.contains(collector.getCollectorType())) {
+                incomingTypes.add(collector.getCollectorType());
+                List<CollectorItem> cItems = component.getCollectorItems(collector.getCollectorType());
+                if (!CollectionUtils.isEmpty(cItems)) {
+                    for (CollectorItem ci : cItems) {
+                        ci.setEnabled(false);
+                        toSaveCollectorItemList.add(ci);
+                    }
+                }
+                component.getCollectorItems().remove(collector.getCollectorType());
+            }
+        }
 
+        //Last step: add collector items that came in
+        for (ObjectId collectorItemId : collectorItemIds) {
+            CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
+            Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
             component.addCollectorItem(collector.getCollectorType(), collectorItem);
 
             if (!collectorItem.isEnabled()) {
+                toSaveCollectorItemList.remove(collectorItem);
                 collectorItem.setEnabled(true);
-                collectorItemRepository.save(collectorItem);
+                toSaveCollectorItemList.add(collectorItem);
             }
 
             // set transient collector property
             collectorItem.setCollector(collector);
         }
-
+        collectorItemRepository.save(toSaveCollectorItemList);
         componentRepository.save(component);
         return component;
     }

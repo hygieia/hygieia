@@ -1,9 +1,6 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.TestCase;
-import com.capitalone.dashboard.model.TestCaseStatus;
-import com.capitalone.dashboard.model.TestSuite;
-import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +33,6 @@ public class CucumberJsonToTestResultTransformer implements Transformer<String, 
             // Parse features
             for (Object featureObj : (JSONArray) parser.parse(json)) {
                 JSONObject feature = (JSONObject) featureObj;
-
                 suites.add(parseFeatureAsTestSuite(feature));
             }
         } catch (ParseException e) {
@@ -48,23 +44,21 @@ public class CucumberJsonToTestResultTransformer implements Transformer<String, 
 
     private TestSuite parseFeatureAsTestSuite(JSONObject featureElement) {
         TestSuite suite = new TestSuite();
+        suite.setId(getString(featureElement, "id"));
         suite.setType(TestSuiteType.Functional);
-        suite.setDescription(getString(featureElement, "name"));
+        suite.setDescription(getString(featureElement, "keyword") + ":" + getString(featureElement, "name"));
 
         long duration = 0;
 
         int testCaseTotalCount = getJsonArray(featureElement, "elements").size();
-        int testCaseSkippedCount = 0, testCaseErrorCount = 0, testCaseFailCount = 0;
+        int testCaseSkippedCount = 0, testCaseSuccessCount = 0, testCaseFailCount = 0, testCaseUnknownCount = 0;
 
         for (Object scenarioElement : getJsonArray(featureElement, "elements")) {
             TestCase testCase = parseScenarioAsTestCase((JSONObject) scenarioElement);
-
             duration += testCase.getDuration();
-
-            suite.getTestCases().add(testCase);
             switch(testCase.getStatus()) {
-                case Error:
-                    testCaseErrorCount++;
+                case Success:
+                    testCaseSuccessCount++;
                     break;
                 case Failure:
                     testCaseFailCount++;
@@ -73,45 +67,44 @@ public class CucumberJsonToTestResultTransformer implements Transformer<String, 
                     testCaseSkippedCount++;
                     break;
                 default:
+                    testCaseUnknownCount++;
                     break;
             }
+            suite.getTestCases().add(testCase);
         }
-
-        suite.setErrorCount(testCaseErrorCount);
-        suite.setFailureCount(testCaseFailCount);
-        suite.setSkippedCount(testCaseSkippedCount);
-        suite.setTotalCount(testCaseTotalCount);
+        suite.setSuccessTestCaseCount(testCaseSuccessCount);
+        suite.setFailedTestCaseCount(testCaseFailCount);
+        suite.setSkippedTestCaseCount(testCaseSkippedCount);
+        suite.setTotalTestCaseCount(testCaseTotalCount);
+        suite.setUnknownStatusCount(testCaseUnknownCount);
         suite.setDuration(duration);
-
+        if(testCaseFailCount > 0) {
+            suite.setStatus(TestCaseStatus.Failure);
+        } else if(testCaseSkippedCount > 0) {
+            suite.setStatus(TestCaseStatus.Skipped);
+        } else if (testCaseSuccessCount > 0){
+            suite.setStatus(TestCaseStatus.Success);
+        } else {
+            suite.setStatus(TestCaseStatus.Unknown);
+        }
         return suite;
     }
 
     private TestCase parseScenarioAsTestCase(JSONObject scenarioElement) {
         TestCase testCase  = new TestCase();
-        testCase.setId(getString(scenarioElement, "name"));
-        testCase.setDescription(getString(scenarioElement, "name")); //TODO determine if change is necessary
-
+        testCase.setId(getString(scenarioElement, "id"));
+        testCase.setDescription(getString(scenarioElement, "keyword") + ":" + getString(scenarioElement, "name"));
         // Parse each step as a TestCase
-        int testStepErrorCount = 0, testStepFailCount = 0, testStepSkippedCount = 0;
+        int testStepSuccessCount = 0, testStepFailCount = 0, testStepSkippedCount = 0, testStepUnknownCount = 0;
         long testDuration = 0;
 
         for (Object step : getJsonArray(scenarioElement, "steps")) {
-            TestCaseStatus stepStatus;
-
-            Object resultObj = ((JSONObject) step).get("result");
-            if (resultObj == null) {
-                stepStatus = TestCaseStatus.Unknown;
-            } else {
-                JSONObject result = (JSONObject) resultObj;
-                // Add the duration of this step to the overall duration of the test case
-                testDuration += getLong(result, "duration") / 1000l;
-                stepStatus = parseStatus(result);
-            }
-
+            TestCaseStep testCaseStep = parseStepAsTestCaseStep((JSONObject) step);
+            testDuration += testCaseStep.getDuration();
             // Count Statuses
-            switch(stepStatus) {
-                case Error:
-                    testStepErrorCount++;
+            switch(testCaseStep.getStatus()) {
+                case Success:
+                    testStepSuccessCount++;
                     break;
                 case Failure:
                     testStepFailCount++;
@@ -120,33 +113,61 @@ public class CucumberJsonToTestResultTransformer implements Transformer<String, 
                     testStepSkippedCount++;
                     break;
                 default:
+                    testStepUnknownCount++;
                     break;
-            }
-        }
 
+            }
+            testCase.getTestSteps().add(testCaseStep);
+        }
         // Set Duration
         testCase.setDuration(testDuration);
-
+        testCase.setSuccessTestStepCount(testStepSuccessCount);
+        testCase.setSkippedTestStepCount(testStepSkippedCount);
+        testCase.setFailedTestStepCount(testStepFailCount);
+        testCase.setUnknownStatusCount(testStepUnknownCount);
+        testCase.setTotalTestStepCount(testCase.getTestSteps().size());
         // Set Status
-        if(testStepErrorCount > 0) {
-            testCase.setStatus(TestCaseStatus.Error);
-        } else if(testStepFailCount > 0) {
+        if(testStepFailCount > 0) {
             testCase.setStatus(TestCaseStatus.Failure);
         } else if(testStepSkippedCount > 0) {
             testCase.setStatus(TestCaseStatus.Skipped);
-        } else {
+        } else if (testStepSuccessCount > 0){
             testCase.setStatus(TestCaseStatus.Success);
+        } else {
+            testCase.setStatus(TestCaseStatus.Unknown);
         }
-
         return testCase;
+    }
+
+    private TestCaseStep parseStepAsTestCaseStep(JSONObject stepObject) {
+        TestCaseStep step  = new TestCaseStep();
+        step.setDescription(getString(stepObject, "keyword") + ":" + getString(stepObject, "name"));
+        step.setId(stepObject.get("line").toString());
+        TestCaseStatus stepStatus = TestCaseStatus.Unknown;
+
+        Object resultObj = stepObject.get("result");
+        if (resultObj != null) {
+            JSONObject result = (JSONObject) resultObj;
+            step.setDuration(getLong(result, "duration") / 1000l);
+            stepStatus = parseStatus(result);
+        }
+        step.setStatus(stepStatus);
+        return step;
     }
 
 
     private TestCaseStatus parseStatus(JSONObject result) {
         String status = getString(result, "status");
-        return "passed".equalsIgnoreCase(status) ? TestCaseStatus.Success
-                : "failed".equalsIgnoreCase(status) ? TestCaseStatus.Failure
-                : TestCaseStatus.Unknown;
+        switch (status) {
+            case "passed" :
+                return TestCaseStatus.Success;
+            case "failed" :
+                return TestCaseStatus.Failure;
+            case "skipped" :
+                return TestCaseStatus.Skipped;
+            default:
+                return TestCaseStatus.Unknown;
+        }
     }
 
     private JSONArray getJsonArray(JSONObject json, String key) {
