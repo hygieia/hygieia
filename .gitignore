@@ -27,3 +27,7 @@ target
 UI/node
 UI/src/app/local-testing.js
 *.releaseBackup
+
+# Eclipse specific ignore settings
+.settings/
+.project
