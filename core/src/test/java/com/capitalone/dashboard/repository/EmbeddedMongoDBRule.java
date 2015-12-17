@@ -24,6 +24,8 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 
 /**
  *
@@ -40,10 +42,28 @@ public class EmbeddedMongoDBRule extends ExternalResource {
         public Proxy createProxy() {
 
             String proxy = System.getenv("HTTP_PROXY");
+            final String authUser = System.getenv("HTTPAUTH_USER");
+            final String authPassword = System.getenv("HTTPAUTH_PASS");
+            
             if (proxy == null || proxy.isEmpty()) {
                 proxy = System.getProperty("HTTP_PROXY");
             }
             try {
+            	// Case for Proxy authentication required
+                if ((proxy != null && !proxy.isEmpty()) && (authUser != null && !authUser.isEmpty()) && (authUser != null && !authPassword.isEmpty())) {
+                	Authenticator.setDefault(
+                		new Authenticator() {
+                			public PasswordAuthentication getPasswordAuthentication() {
+                				return new PasswordAuthentication(authUser, authPassword.toCharArray());
+                			}
+                		}
+                	);
+                	
+                	System.setProperty("http.proxyUser", authUser);
+                	System.setProperty("http.proxyPassword", authPassword);
+                }
+            	
+                // Configuring proxy
                 if (proxy != null && !proxy.isEmpty()) {
                     URL proxyUrl = new URL(proxy);
                     return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUrl.getHost(), proxyUrl.getPort()));
