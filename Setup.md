@@ -100,7 +100,7 @@ Update your Maven settings.xml file:
                <!-- For authenticated proxy, please set the following, as well -->
                <username>companyId999</username>
                <password>yourPassword</password>
-               <nonProxyHosts>*.local, 169.254/16, *.kdc.capitalone.com, *.ds.capitalone.com</nonProxyHosts>
+               <nonProxyHosts>*.local</nonProxyHosts>
        </proxy>
        ...
  </proxies>
