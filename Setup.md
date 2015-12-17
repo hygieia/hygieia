@@ -115,8 +115,8 @@ Additionally, set the following export variables:
 export HTTPAUTH_USER=companyId999
 export HTTPAUTH_PASS=yourPassword
 
-export HTTP_PROXY=http://proxy.kdc.capitalone.com:8099
-export HTTPS_PROXY=http://proxy.kdc.capitalone.com:8099
+export HTTP_PROXY=http://your.proxy.domain.name:8080
+export HTTPS_PROXY=http://your.proxy.domain.name:8080
 export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=$HTTPAUTH_USER -Dhttp.proxyPassword=$HTTPAUTH_PASS"
 # This option may be duplicative if you have already updated your
 # Maven settings.xml file, but will only help:
