@@ -26,10 +26,12 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.util.StringTokenizer;
 
 /**
  *
  */
+@SuppressWarnings("deprecation")
 public class EmbeddedMongoDBRule extends ExternalResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedMongoDBRule.class);
     private static final String MONGO_PORT_PROP = "MONGO_PORT";
@@ -42,13 +44,16 @@ public class EmbeddedMongoDBRule extends ExternalResource {
         public Proxy createProxy() {
 
             String proxy = System.getenv("HTTP_PROXY");
-            final String authUser = System.getenv("HTTPAUTH_USER");
-            final String authPassword = System.getenv("HTTPAUTH_PASS");
-            
+
             if (proxy == null || proxy.isEmpty()) {
                 proxy = System.getProperty("HTTP_PROXY");
             }
             try {
+            	URL proxyUrl = new URL(proxy);
+                StringTokenizer tokenizedUrl = new StringTokenizer(proxyUrl.getUserInfo().toString(),":");
+                final String authUser = tokenizedUrl.nextToken();
+				final String authPassword = tokenizedUrl.nextToken();
+				
             	// Case for Proxy authentication required
                 if ((proxy != null && !proxy.isEmpty()) && (authUser != null && !authUser.isEmpty()) && (authUser != null && !authPassword.isEmpty())) {
                 	Authenticator.setDefault(
@@ -58,18 +63,20 @@ public class EmbeddedMongoDBRule extends ExternalResource {
                 			}
                 		}
                 	);
-                	
+
                 	System.setProperty("http.proxyUser", authUser);
                 	System.setProperty("http.proxyPassword", authPassword);
                 }
-            	
+
                 // Configuring proxy
                 if (proxy != null && !proxy.isEmpty()) {
-                    URL proxyUrl = new URL(proxy);
+                    proxyUrl.getUserInfo();
                     return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUrl.getHost(), proxyUrl.getPort()));
                 }
             } catch (MalformedURLException ex) {
-                LOGGER.error("Malformed HTTP Proxy", ex);
+                LOGGER.error("Malformed HTTP Proxy for " + this.getClass().getName(), ex);
+            } catch (NullPointerException npe) {
+            	LOGGER.error("Unexpectedly, something in your proxy configuration was blank or misreferenced for " + this.getClass().getName(), npe);
             }
             return Proxy.NO_PROXY;
         }
@@ -89,7 +96,7 @@ public class EmbeddedMongoDBRule extends ExternalResource {
                     .net(new Net(port, Network.localhostIsIPv6())).build();
 
         Command command = Command.MongoD;
-        IRuntimeConfig runtimeConfig =
+		IRuntimeConfig runtimeConfig =
                 new RuntimeConfigBuilder()
                     .defaultsWithLogger(command, LOGGER)
                     .artifactStore(
