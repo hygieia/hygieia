@@ -66,8 +66,8 @@ feature.teamQuery=teaminfo
 feature.trendingQuery=trendinginfo
 
 #Jira Connection Details
-feature.jiraProxyUrl=${SPRING_DATA_JIRA_PROXY_URL:-http://proxy.com}
-feature.jiraProxyPort=${SPRING_DATA_JIRA_PROXY_PORT:-9999}
+feature.jiraProxyUrl=${SPRING_DATA_JIRA_PROXY_URL}
+feature.jiraProxyPort=${SPRING_DATA_JIRA_PROXY_PORT}
 
 # Trending Query:  Number of days in a sprint (not-required)
 feature.sprintDays=${SPRING_DATA_SPRINT_DAYS:-60}
@@ -82,10 +82,10 @@ feature.scheduledPriorMin=2
 feature.deltaCollectorItemStartDate=2008-01-01T00:00:00.000000
 
 #Jira Connection Details
-feature.jiraBaseUrl=${SPRING_DATA_JIRA_BASE_URL:-http://jira-instance.com/}
+feature.jiraBaseUrl=${SPRING_DATA_JIRA_BASE_URL:-https://jira.atlassian.com}
 feature.jiraQueryEndpoint=rest/api/2/
 #64-bit encoded credentials with the pattern username:password
-feature.jiraCredentials=YWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzOiB5b3UgYXJlIG9uIHRoZSB3YXkgdG8gZGVzdHJ1Y3Rpb246IG1ha2UgeW91ciB0aW1l
+feature.jiraCredentials=${SPRING_DATA_JIRA_CREDENTIALS:-YWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzOiB5b3UgYXJlIG9uIHRoZSB3YXkgdG8gZGVzdHJ1Y3Rpb246IG1ha2UgeW91ciB0aW1l}
 #OAuth2.0 token credentials (currently not supported in this version)
 feature.jiraOauthAuthtoken=sdfghjkl==
 feature.jiraOauthRefreshtoken=sdfagheh==
