@@ -110,17 +110,12 @@ Update your Maven settings.xml file:
 Additionally, set the following export variables:
 
 ```bash
-# Add these variables for authenticated proxy, required
-# for automated testing through an authenticated proxy:
-export HTTPAUTH_USER=companyId999
-export HTTPAUTH_PASS=yourPassword
-
-export HTTP_PROXY=http://your.proxy.domain.name:8080
-export HTTPS_PROXY=http://your.proxy.domain.name:8080
-export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=$HTTPAUTH_USER -Dhttp.proxyPassword=$HTTPAUTH_PASS"
+export HTTP_PROXY=http://companyId999:yourPassword@your.proxy.domain.name:8080
+export HTTPS_PROXY=http://companyId999:yourPassword@your.proxy.domain.name:8080
+export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=companyId999 -Dhttp.proxyPassword=yourPassword"
 # This option may be duplicative if you have already updated your
 # Maven settings.xml file, but will only help:
-export MAVEN_OPTS="$MAVEN_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=$HTTPAUTH_USER -Dhttp.proxyPassword=$HTTPAUTH_PASS"
+export MAVEN_OPTS="$MAVEN_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=companyId999 -Dhttp.proxyPassword=yourPassword"
 ```
 
 Tests should now run/pass when built from behind a corporate proxy, even if it is an authenticated proxy
