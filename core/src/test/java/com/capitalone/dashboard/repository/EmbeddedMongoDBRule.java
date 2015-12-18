@@ -33,106 +33,125 @@ import java.util.StringTokenizer;
  */
 @SuppressWarnings("deprecation")
 public class EmbeddedMongoDBRule extends ExternalResource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddedMongoDBRule.class);
-    private static final String MONGO_PORT_PROP = "MONGO_PORT";
-    private MongodExecutable mongoExec;
-    private MongodProcess mongoProc;
-    private MongoClient client;
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(EmbeddedMongoDBRule.class);
+	private static final String MONGO_PORT_PROP = "MONGO_PORT";
+	private MongodExecutable mongoExec;
+	private MongodProcess mongoProc;
+	private MongoClient client;
 
-    static class SystemProxy implements IProxyFactory {
-        @Override
-        public Proxy createProxy() {
+	static class SystemProxy implements IProxyFactory {
+		@Override
+		public Proxy createProxy() {
 
-            String proxy = System.getenv("HTTP_PROXY");
+			String proxy = System.getenv("HTTP_PROXY");
 
-            if (proxy == null || proxy.isEmpty()) {
-                proxy = System.getProperty("HTTP_PROXY");
-            }
-            try {
-            	URL proxyUrl = new URL(proxy);
-                StringTokenizer tokenizedUrl = new StringTokenizer(proxyUrl.getUserInfo().toString(),":");
-                final String authUser = tokenizedUrl.nextToken();
-				final String authPassword = tokenizedUrl.nextToken();
-				
-            	// Case for Proxy authentication required
-                if ((proxy != null && !proxy.isEmpty()) && (authUser != null && !authUser.isEmpty()) && (authUser != null && !authPassword.isEmpty())) {
-                	Authenticator.setDefault(
-                		new Authenticator() {
-                			public PasswordAuthentication getPasswordAuthentication() {
-                				return new PasswordAuthentication(authUser, authPassword.toCharArray());
-                			}
-                		}
-                	);
+			if (proxy == null || proxy.isEmpty()) {
+				proxy = System.getProperty("HTTP_PROXY");
+			}
+			try {
+				URL proxyUrl = new URL(proxy);
 
-                	System.setProperty("http.proxyUser", authUser);
-                	System.setProperty("http.proxyPassword", authPassword);
-                }
+				// Case for Proxy authentication required
+				try {
+					StringTokenizer tokenizedUrl = new StringTokenizer(proxyUrl
+							.getUserInfo().toString(), ":");
+					final String authUser = tokenizedUrl.nextToken();
+					final String authPassword = tokenizedUrl.nextToken();
+					
+					if ((proxy != null && !proxy.isEmpty())
+							&& (authUser != null && !authUser.isEmpty())
+							&& (authUser != null && !authPassword.isEmpty())) {
 
-                // Configuring proxy
-                if (proxy != null && !proxy.isEmpty()) {
-                    return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUrl.getHost(), proxyUrl.getPort()));
-                }
-            } catch (MalformedURLException ex) {
-                LOGGER.error("Malformed HTTP Proxy for " + this.getClass().getName(), ex);
-            } catch (NullPointerException npe) {
-            	LOGGER.error("Unexpectedly, something in your proxy configuration was blank or misreferenced for " + this.getClass().getName(), npe);
-            }
-            return Proxy.NO_PROXY;
-        }
-    }
+						Authenticator.setDefault(new Authenticator() {
+							public PasswordAuthentication getPasswordAuthentication() {
+								return new PasswordAuthentication(authUser,
+										authPassword.toCharArray());
+							}
+						});
 
-    @Override
-    public void before() throws Throwable {
+						System.setProperty("http.proxyUser", authUser);
+						System.setProperty("http.proxyPassword", authPassword);
 
-        int port = Network.getFreeServerPort();
-        String portProp = System.getProperty(MONGO_PORT_PROP);
-        if (portProp != null && !portProp.isEmpty()) {
-            port = Integer.valueOf(portProp);
-        }
+					}
+				} catch (NullPointerException | IllegalArgumentException e) {
+					LOGGER.warn(
+							"Malformed Proxy Authentication Credentials for HTTP Proxy in "
+									+ this.getClass().getName(), e);
+				}
 
-        IMongodConfig conf =
-                new MongodConfigBuilder().version(Version.Main.PRODUCTION)
-                    .net(new Net(port, Network.localhostIsIPv6())).build();
+				// Configuring proxy
+				if (proxy != null && !proxy.isEmpty()) {
+					return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
+							proxyUrl.getHost(), proxyUrl.getPort()));
+				}
+			} catch (MalformedURLException ex) {
+				LOGGER.error("Malformed HTTP Proxy for "
+						+ this.getClass().getName(), ex);
+			} catch (NullPointerException npe) {
+				LOGGER.error(
+						"Unexpectedly, something in your proxy configuration was blank or misreferenced for "
+								+ this.getClass().getName(), npe);
+			}
+			return Proxy.NO_PROXY;
+		}
+	}
 
-        Command command = Command.MongoD;
-		IRuntimeConfig runtimeConfig =
-                new RuntimeConfigBuilder()
-                    .defaultsWithLogger(command, LOGGER)
-                    .artifactStore(
-                            new ArtifactStoreBuilder().defaults(command).download(
-                                    new DownloadConfigBuilder().defaultsForCommand(command).proxyFactory(new SystemProxy())))
-                    .build();
+	@Override
+	public void before() throws Throwable {
 
-        MongodStarter runtime = MongodStarter.getInstance(runtimeConfig);
-        mongoExec = runtime.prepare(conf);
+		int port = Network.getFreeServerPort();
+		String portProp = System.getProperty(MONGO_PORT_PROP);
+		if (portProp != null && !portProp.isEmpty()) {
+			port = Integer.valueOf(portProp);
+		}
 
-        mongoProc = mongoExec.start();
+		IMongodConfig conf = new MongodConfigBuilder()
+				.version(Version.Main.PRODUCTION)
+				.net(new Net(port, Network.localhostIsIPv6())).build();
 
-        client = new MongoClient(new ServerAddress(conf.net().getServerAddress(), conf.net().getPort()));
+		Command command = Command.MongoD;
+		IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
+				.defaultsWithLogger(command, LOGGER)
+				.artifactStore(
+						new ArtifactStoreBuilder().defaults(command).download(
+								new DownloadConfigBuilder().defaultsForCommand(
+										command)
+										.proxyFactory(new SystemProxy())))
+				.build();
 
-        // set the property for our config...
-        System.setProperty("dbhost", conf.net().getServerAddress().getHostAddress());
-        System.setProperty("dbport", Integer.toString(conf.net().getPort()));
-    }
+		MongodStarter runtime = MongodStarter.getInstance(runtimeConfig);
+		mongoExec = runtime.prepare(conf);
 
-    @Override
-    public void after() {
-        if (client != null) {
-            client.close();
-            client = null;
-        }
+		mongoProc = mongoExec.start();
 
-        if (mongoProc != null) {
-            mongoProc.stop();
-            mongoProc = null;
-        }
-        if (mongoExec != null) {
-            mongoExec.stop();
-            mongoExec = null;
-        }
-    }
+		client = new MongoClient(new ServerAddress(conf.net()
+				.getServerAddress(), conf.net().getPort()));
 
-    public MongoClient client() {
-        return client;
-    }
+		// set the property for our config...
+		System.setProperty("dbhost", conf.net().getServerAddress()
+				.getHostAddress());
+		System.setProperty("dbport", Integer.toString(conf.net().getPort()));
+	}
+
+	@Override
+	public void after() {
+		if (client != null) {
+			client.close();
+			client = null;
+		}
+
+		if (mongoProc != null) {
+			mongoProc.stop();
+			mongoProc = null;
+		}
+		if (mongoExec != null) {
+			mongoExec.stop();
+			mongoExec = null;
+		}
+	}
+
+	public MongoClient client() {
+		return client;
+	}
 }
