@@ -5,8 +5,8 @@
         .module('devops-dashboard')
         .controller('CodeAnalysisViewController', CodeAnalysisViewController);
 
-    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', '$q', '$filter'];
-    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, $q, $filter) {
+    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', '$q', '$filter', '$modal'];
+    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, $q, $filter, $modal) {
         var ctrl = this;
 
         ctrl.pieOptions = {
@@ -18,6 +18,7 @@
         };
 
         ctrl.showStatusIcon = showStatusIcon;
+        ctrl.showDetail = showDetail;
 
         coveragePieChart({});
 
@@ -94,55 +95,49 @@
             return deferred.promise;
         }
 
+
         function processTestResponse(response) {
             var deferred = $q.defer();
-            var testResult = _.isEmpty(response.result) ? { testSuites: []} : response.result[0];
-            var allZeros = {
-                failureCount: 0, errorCount: 0, skippedCount: 0, totalCount: 0
-            };
 
-            // Aggregate the counts of all Functional test suites
-            var aggregate = _.reduce(_.filter(testResult.testSuites, { type: "Functional" }), function(result, suite) {
-                result.failureCount += suite.failureCount;
-                result.errorCount += suite.errorCount;
-                result.skippedCount += suite.skippedCount;
-                result.totalCount += suite.totalCount;
-                return result;
-            }, allZeros);
-            var passed = aggregate.totalCount - aggregate.failureCount - aggregate.errorCount - aggregate.skippedCount;
-            var allPassed = aggregate.errorCount === 0 && aggregate.failureCount === 0;
-            var success = allPassed ? 100 : ((passed / (aggregate.totalCount)) * 100);
+            ctrl.testResult = testResult;
 
             ctrl.functionalTests = [];
+            var index;
+            var totalSize = _.isEmpty(response.result) ? 0 : response.result.length;
+            for (index = 0; index < totalSize; ++index) {
 
-            ctrl.functionalTests.push({
-                name: 'Success',
-                formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(success, 1) + '%',
-                status: allPassed ? 'Ok' : 'Alert',
-                statusMessage: allPassed ? '' : 'Success percent < 100'
-            });
+                var testResult = _.isEmpty(response.result) ? {testCapabilities: []} : response.result[index];
+                var allZeros = {
+                    failureCount: 0, successCount: 0, skippedCount: 0, totalCount: 0
+                };
+                // Aggregate the counts of all Functional test suites
+                var aggregate = _.reduce(_.filter(testResult.testCapabilities, {type: "Functional"}), function (result, capability) {
+                    var ind;
+                    for (ind = 0; ind < capability.testSuites.length; ++ind) {
+                        var testSuite = capability.testSuites[ind];
+                        result.failureCount += testSuite.failedTestCaseCount;
+                        result.successCount += testSuite.successTestCaseCount;
+                        result.skippedCount += testSuite.skippedTestCaseCount;
+                        result.totalCount += testSuite.totalTestCaseCount;
+                    }
+                    return result;
+                }, allZeros);
+                var passed = aggregate.totalCount - aggregate.failureCount - aggregate.failureCount - aggregate.skippedCount;
+                var allPassed = aggregate.successCount === aggregate.totalCount;
+                var success = allPassed ? 100 : ((passed / (aggregate.totalCount)) * 100);
 
-            ctrl.functionalTests.push({
-                name: 'Failures',
-                formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.failureCount, 0),
-                status: aggregate.failureCount === 0 ? 'Ok' : 'Alert',
-                statusMessage: aggregate.failureCount === 0 ? '' : 'Failure count > 0'
-            });
 
-            ctrl.functionalTests.push({
-                name: 'Errors',
-                formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.errorCount, 0),
-                status: aggregate.errorCount === 0 ? 'Ok' : 'Alert',
-                statusMessage: aggregate.errorCount === 0 ? '' : 'Error count > 0'
-            });
-
-            ctrl.functionalTests.push({
-                name: 'Tests',
-                formattedValue: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
-                status: 'Ok',
-                statusMessage: ''
-            });
-
+                ctrl.executionId = _.isEmpty(response.result) ? "-" : response.result[index].executionId;
+                ctrl.functionalTests.push({
+                    name: $scope.widgetConfig.options.testJobNames[index],
+                    totalCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.totalCount, 0),
+                    successCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.successCount, 0),
+                    failureCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.failureCount, 0),
+                    skippedCount: aggregate.totalCount === 0 ? '-' : $filter('number')(aggregate.skippedCount, 0),
+                    successPercent: aggregate.totalCount === 0 ? '-' : $filter('number')(success, 0) + '%',
+                    details: testResult
+                });
+            }
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
         }
@@ -154,6 +149,7 @@
                 series: [ lineCoverage.value, (100 - lineCoverage.value) ]
             };
         }
+
 
         function getMetric(metrics, metricName, title) {
             title = title || metricName;
@@ -181,6 +177,21 @@
 
         function showStatusIcon(item) {
             return item.status && item.status.toLowerCase() != 'ok';
+        }
+
+
+        function showDetail(test) {
+            $modal.open({
+                controller: 'TestDetailsController',
+                controllerAs: 'testDetails',
+                templateUrl: 'components/widgets/codeanalysis/testdetails.html',
+                size: 'lg',
+                resolve: {
+                    testResult: function() {
+                        return test;
+                    }
+                }
+            });
         }
     }
 })();

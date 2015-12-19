@@ -42,8 +42,27 @@ public class Component extends BaseModel {
         return collectorItems;
     }
 
+    public List<CollectorItem> getCollectorItems(CollectorType type) {
+        return collectorItems.get(type);
+    }
+
     public void addCollectorItem(CollectorType collectorType, CollectorItem collectorItem) {
         // Currently only one collectorItem per collectorType is supported
-        collectorItems.put(collectorType, Arrays.asList(collectorItem));
+        if (collectorItems.get(collectorType) == null) {
+            collectorItems.put(collectorType, Arrays.asList(collectorItem));
+        } else {
+            List<CollectorItem> existing = new ArrayList<> (collectorItems.get(collectorType));
+            if (isNewCollectorItem(existing, collectorItem)) {
+                existing.add(collectorItem);
+                collectorItems.replace(collectorType, existing);
+            }
+        }
+    }
+
+    private boolean isNewCollectorItem (List<CollectorItem> existing, CollectorItem item) {
+        for (CollectorItem ci : existing) {
+            if (ci.getId().equals(item.getId())) return false;
+        }
+        return true;
     }
 }

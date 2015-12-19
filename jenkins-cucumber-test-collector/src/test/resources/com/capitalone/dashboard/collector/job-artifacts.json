@@ -1,0 +1,17 @@
+{
+  "artifacts": [
+    {
+      "fileName": "tag-overview.html",
+      "relativePath": "job1/test1/report/web/tag-overview.html"
+    },
+    {
+      "fileName": "cucumber.json",
+      "relativePath": "job1/test1/report/web/cucumber.json"
+    }
+  ],
+  "building": false,
+  "duration": 11193406,
+  "fullDisplayName": "job1 #176",
+  "number": 176,
+  "timestamp": 1449831529581
+}

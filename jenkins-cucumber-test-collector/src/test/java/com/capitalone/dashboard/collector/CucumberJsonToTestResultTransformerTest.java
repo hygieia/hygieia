@@ -30,17 +30,18 @@ public class CucumberJsonToTestResultTransformerTest {
 
         suite = suiteIt.next();
         testCaseIt = suite.getTestCases().iterator();
-        assertSuite(suite, "eCUKE Feature", 0, 0, 0, 4, 15019839l);
-        assertTestCase(testCaseIt.next(), "I say hi", 4001555l, TestCaseStatus.Success);
+        assertSuite(suite, "Feature:eCUKE Feature", 4, 0, 0, 4, 15019839l);
+
+        assertTestCase(testCaseIt.next(), "ecuke-feature;i-say-hi", "Scenario:I say hi", 4001555l, TestCaseStatus.Success);
         assertThat(testCaseIt.hasNext(), is(true));
 
-        assertTestCase(testCaseIt.next(), "You say hi", 1001212l, TestCaseStatus.Success);
+        assertTestCase(testCaseIt.next(), "ecuke-feature;you-say-hi", "Scenario:You say hi", 1001212l, TestCaseStatus.Success);
         assertThat(testCaseIt.hasNext(), is(true));
 
-        assertTestCase(testCaseIt.next(), "Eating Cucumbers", 2013197l, TestCaseStatus.Success);
+        assertTestCase(testCaseIt.next(), "ecuke-feature;eating-cucumbers", "Scenario Outline:Eating Cucumbers", 2013197l, TestCaseStatus.Success);
         assertThat(testCaseIt.hasNext(), is(true));
 
-        assertTestCase(testCaseIt.next(), "Eating Cucumbers", 8003875l, TestCaseStatus.Success);
+        assertTestCase(testCaseIt.next(), "ecuke-feature;eating-cucumbers", "Scenario Outline:Eating Cucumbers", 8003875l, TestCaseStatus.Success);
         assertThat(testCaseIt.hasNext(), is(false));
 
         //TODO get data with two feature files
@@ -76,20 +77,20 @@ public class CucumberJsonToTestResultTransformerTest {
         */
     }
 
-    private void assertSuite(TestSuite suite, String desc, int fail, int error, int skip, int total, long duration) {
+    private void assertSuite(TestSuite suite, String desc, int success, int fail, int skip, int total, long duration) {
         assertThat(suite.getType(), is(TestSuiteType.Functional));
         assertThat(suite.getDescription(), is(desc));
-        assertThat(suite.getFailureCount(), is(fail));
-        assertThat(suite.getErrorCount(), is(error));
-        assertThat(suite.getSkippedCount(), is(skip));
-        assertThat(suite.getTotalCount(), is(total));
+        assertThat(suite.getFailedTestCaseCount(), is(fail));
+        assertThat(suite.getSuccessTestCaseCount(), is(success));
+        assertThat(suite.getSkippedTestCaseCount(), is(skip));
+        assertThat(suite.getTotalTestCaseCount(), is(total));
         assertThat(suite.getDuration(), is(duration));
         assertThat(suite.getStartTime(), is(0l));
         assertThat(suite.getEndTime(), is(0l));
     }
 
-    private void assertTestCase(TestCase tc, String name, long duration, TestCaseStatus status) {
-        assertThat(tc.getId(), is(name));
+    private void assertTestCase(TestCase tc, String id, String name, long duration, TestCaseStatus status) {
+        assertThat(tc.getId(), is(id));
         assertThat(tc.getDescription(), is(name));
         assertThat(tc.getDuration(), is(duration));
         assertThat(tc.getStatus(), is(status));

@@ -24,8 +24,8 @@ public interface JenkinsClient {
 
     /**
      *
-     * @param buildUrl
-     * @return
+     * @param buildUrl the build url
+     * @return boolean
      */
     boolean buildHasCucumberResults(String buildUrl);
 
@@ -37,4 +37,6 @@ public interface JenkinsClient {
      * @return a TestResult
      */
     TestResult getCucumberTestResult(String buildUrl);
+
+    Build getLastSuccessfulBuild (String buildUrl);
 }
