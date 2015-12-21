@@ -14,15 +14,12 @@
 		<version>1.5.0-SNAPSHOT</version>
 	</parent>
 
-
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.7</java.version>
 		<junit.version>4.11</junit.version>
 		<final.name>versionone-feature-collector</final.name>
 	</properties>
-
 
 	<distributionManagement>
 		<snapshotRepository>
@@ -92,7 +89,6 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
@@ -112,8 +108,6 @@
 		</dependency>
 
 		<!-- V1APIConnector -->
-		<!-- dependency> <groupId>com.capitalone.versionone</groupId> <artifactId>v1apiconnector</artifactId>
-			<version>01.03.00.03</version> </dependency -->
 		<dependency>
 			<groupId>com.versionone</groupId>
 			<artifactId>VersionOne.SDK.Java.APIClient</artifactId>
