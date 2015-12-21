@@ -56,25 +56,37 @@ public class EmbeddedMongoDBRule extends ExternalResource {
 				try {
 					StringTokenizer tokenizedUrl = new StringTokenizer(proxyUrl
 							.getUserInfo().toString(), ":");
-					final String authUser = tokenizedUrl.nextToken();
-					final String authPassword = tokenizedUrl.nextToken();
-					
-					if ((proxy != null && !proxy.isEmpty())
-							&& (authUser != null && !authUser.isEmpty())
-							&& (authUser != null && !authPassword.isEmpty())) {
+					if (tokenizedUrl.hasMoreTokens()) {
+						final String authUser = tokenizedUrl.nextToken();
+						if (tokenizedUrl.hasMoreTokens()) {
+							final String authPassword = tokenizedUrl
+									.nextToken();
 
-						Authenticator.setDefault(new Authenticator() {
-							public PasswordAuthentication getPasswordAuthentication() {
-								return new PasswordAuthentication(authUser,
-										authPassword.toCharArray());
+							if ((proxy != null && !proxy.isEmpty())
+									&& (authUser != null && !authUser.isEmpty())
+									&& (authUser != null && !authPassword
+											.isEmpty())) {
+
+								Authenticator.setDefault(new Authenticator() {
+									public PasswordAuthentication getPasswordAuthentication() {
+										return new PasswordAuthentication(
+												authUser, authPassword
+														.toCharArray());
+									}
+								});
+
+								System.setProperty("http.proxyUser", authUser);
+								System.setProperty("http.proxyPassword",
+										authPassword);
+
 							}
-						});
-
-						System.setProperty("http.proxyUser", authUser);
-						System.setProperty("http.proxyPassword", authPassword);
-
+						} else {
+							LOGGER.warn("Proxy Authentication did not contain a valid password parameter\nSkipping Authenticated proxy step.");
+						}
+					} else {
+						LOGGER.info("Proxy did not contain authentication parameters - assuming non-authenticated proxy");
 					}
-				} catch (NullPointerException | IllegalArgumentException e) {
+				} catch (IllegalArgumentException e) {
 					LOGGER.warn(
 							"Malformed Proxy Authentication Credentials for HTTP Proxy in "
 									+ this.getClass().getName(), e);
