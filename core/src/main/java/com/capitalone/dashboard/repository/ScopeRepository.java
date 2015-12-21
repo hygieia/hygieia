@@ -14,16 +14,16 @@ import com.capitalone.dashboard.model.Scope;
  */
 public interface ScopeRepository extends CrudRepository<Scope, ObjectId>,
 		QueryDslPredicateExecutor<Scope> {
-	@Query(value = "{ $query: { 'collectorId' : ?0, 'changeDate' : {$gt: ?1}}, $orderby: { 'changeDate' :-1 }}", fields = "{'changeDate' : 1, '_id' : 0}")
-	List<Scope> getScopeMaxChangeDate(ObjectId collectorId,
+	@Query(value = "{ 'collectorId' : ?0, 'changeDate' : {$gt: ?1}}", fields = "{'changeDate' : 1, '_id' : 0}")
+	List<Scope> findTopByOrderByChangeDateDesc(ObjectId collectorId,
 			String lastChangeDate);
 
-	@Query(value = "{ $query: {'pId' : ?0},{'pId' : 1}}")
+	@Query(value = "{'pId' : ?0}", fields="{'pId' : 1}")
 	List<Scope> getScopeIdById(String pId);
 
-	@Query(value = "{ $query: {}, $orderby: { 'projectPath' :-1 }}")
-	List<Scope> getAllScopes();
+	@Query
+	List<Scope> findByOrderByProjectPathDesc();
 
-	@Query(value = "{ $query: {'pId' : ?0 }}")
+	@Query(value = "{'pId' : ?0 }")
 	List<Scope> getScopeById(String pId);
 }

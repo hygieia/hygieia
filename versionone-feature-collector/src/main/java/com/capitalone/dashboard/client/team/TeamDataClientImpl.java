@@ -17,9 +17,9 @@
 package com.capitalone.dashboard.client.team;
 
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
-import com.capitalone.dashboard.model.TeamCollectorItem;
+import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.TeamRepository;
+import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
@@ -45,7 +45,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
-	private final TeamRepository teamRepo;
+	private final ScopeOwnerRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
 
 	/**
@@ -55,7 +55,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	 */
 	public TeamDataClientImpl(
 			FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings, TeamRepository teamRepository,
+			FeatureSettings featureSettings, ScopeOwnerRepository teamRepository,
 			VersionOneDataFactoryImpl vOneApi) {
 		super(featureSettings, teamRepository, featureCollectorRepository,
 				vOneApi);
@@ -86,7 +86,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 					dataMainObj.clear();
 				}
 				dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
-				TeamCollectorItem team = new TeamCollectorItem();
+				ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
 
 				@SuppressWarnings("unused")
 				boolean deleted = this.removeExistingEntity(TOOLS
@@ -134,7 +134,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	 * update to MongoDB from those calls.
 	 */
 	public void updateTeamInformation() {
-		super.objClass = TeamCollectorItem.class;
+		super.objClass = ScopeOwnerCollectorItem.class;
 		super.returnDate = this.featureSettings
 				.getDeltaCollectorItemStartDate();
 		if (super.getMaxChangeDate() != null) {

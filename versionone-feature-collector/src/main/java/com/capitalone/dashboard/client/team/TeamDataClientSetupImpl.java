@@ -2,9 +2,9 @@ package com.capitalone.dashboard.client.team;
 
 import com.capitalone.dashboard.client.DataClientSetup;
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
-import com.capitalone.dashboard.model.TeamCollectorItem;
+import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.TeamRepository;
+import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.json.simple.JSONArray;
@@ -33,7 +33,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 	protected String query;
 	protected Class<?> objClass;
 	protected String returnDate;
-	protected TeamRepository teamRepo;
+	protected ScopeOwnerRepository teamRepo;
 
 	/**
 	 * Constructs the feature data collection based on system settings.
@@ -43,7 +43,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 	 * @param vOneApi
 	 */
 	public TeamDataClientSetupImpl(FeatureSettings featureSettings,
-			TeamRepository teamRepository,
+			ScopeOwnerRepository teamRepository,
 			FeatureCollectorRepository featureCollectorRepository, VersionOneDataFactoryImpl vOneApi) {
 		super();
 		LOGGER.debug("Constructing data collection for the feature widget...");
@@ -189,7 +189,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 		String data = null;
 
 		try {
-			List<TeamCollectorItem> response = teamRepo.getTeamMaxChangeDate
+			List<ScopeOwnerCollectorItem> response = teamRepo.getTeamMaxChangeDate
 					(featureCollectorRepository
 					.findByName("VersionOne").getId(), featureSettings
 					.getDeltaCollectorItemStartDate());

@@ -1,4 +1,28 @@
-package com.capitalone.dashboard.repository;
+package com.capitalone.dashboard.rest;
+
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.service.FeatureService;
+
+import org.bson.types.ObjectId;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -7,30 +31,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.capitalone.dashboard.config.MongoConfig;
-import com.capitalone.dashboard.model.Feature;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.bson.types.ObjectId;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-@ContextConfiguration(classes = { MongoConfig.class })
 @RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-public class FeatureRepositoryTest {
+@ContextConfiguration(classes = { TestConfig.class, WebMVCConfig.class })
+@WebAppConfiguration
+public class TestFeatureController {
 	private static Feature mockV1Feature;
 	private static Feature mockJiraFeature;
 	private static Feature mockJiraFeature2;
+	private static Component mockComponent;
+	private static Collector mockCollector;
+	private static CollectorItem mockItem;
 	private static final String generalUseDate = "2015-11-01T00:00:00Z";
 	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	private static Calendar cal = Calendar.getInstance();
@@ -40,22 +54,27 @@ public class FeatureRepositoryTest {
 	private static final ObjectId jiraCollectorId = new ObjectId();
 	private static final ObjectId jiraCollectorId2 = new ObjectId();
 	private static final ObjectId v1CollectorId = new ObjectId();
+	private static final ObjectId mockComponentId = new ObjectId();
+	private static final ObjectId mockCollectorItemId = new ObjectId();
 
-	@ClassRule
-	public static final EmbeddedMongoDBRule RULE = new EmbeddedMongoDBRule();
+	private MockMvc mockMvc;
 
 	@Autowired
-	private FeatureRepository featureRepo;
+	private WebApplicationContext wac;
+	@Autowired
+	private FeatureService featureService;
 
 	@Before
-	public void setUp() {
+	public void before() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+
 		// Date-time modifications
 		cal.setTime(new Date());
-		cal.add(Calendar.DAY_OF_YEAR,-1);
+		cal.add(Calendar.DAY_OF_YEAR, -1);
 		maxDateLoser = df.format(cal.getTime());
-		cal.add(Calendar.DAY_OF_YEAR,+13);
+		cal.add(Calendar.DAY_OF_YEAR, +13);
 		currentSprintEndDate = df.format(cal.getTime());
-		
+
 		// Helper mock data
 		List<String> sOwnerNames = new ArrayList<String>();
 		sOwnerNames.add("Goku");
@@ -181,7 +200,7 @@ public class FeatureRepositoryTest {
 		mockJiraFeature.setsTeamID("08374321");
 		mockJiraFeature.setsTeamIsDeleted("False");
 		mockJiraFeature.setsTeamName("Saiya-jin Warriors");
-		
+
 		// Mock feature 2
 		mockJiraFeature2 = new Feature();
 		mockJiraFeature2.setCollectorId(jiraCollectorId2);
@@ -232,64 +251,50 @@ public class FeatureRepositoryTest {
 		mockJiraFeature2.setsTeamID("08374329");
 		mockJiraFeature2.setsTeamIsDeleted("False");
 		mockJiraFeature2.setsTeamName("Interlopers");
+
+		// Creating Collector and Component relationship artifacts
+		mockCollector = new Collector();
+		mockCollector.setCollectorType(CollectorType.Feature);
+		mockCollector.setEnabled(true);
+		mockCollector.setName("VersionOne Collector");
+		mockCollector.setOnline(true);
+		mockCollector.setId(v1CollectorId);
+
+		mockItem = new CollectorItem();
+		mockItem.setCollectorId(v1CollectorId);
+		mockItem.setDescription("Sample Dashboard Collector Item");
+		mockItem.setEnabled(true);
+		mockItem.setId(mockCollectorItemId);
+		mockItem.setCollector(mockCollector);
+
+		mockComponent = new Component();
+		mockComponent.addCollectorItem(CollectorType.Feature, mockItem);
 	}
 
 	@After
-	public void tearDown() {
+	public void after() {
 		mockV1Feature = null;
 		mockJiraFeature = null;
 		mockJiraFeature2 = null;
-		featureRepo.deleteAll();
+		mockCollector = null;
+		mockItem = null;
+		mockComponent = null;
+		mockMvc = null;
 	}
+	
+	@Test
+	public void testRelevantStories_HappyPath() throws Exception {
+		String testTeamId = "Team:124127";
+		List<Feature> features = new ArrayList<Feature>();
+		features.add(mockV1Feature);
+		features.add(mockJiraFeature);
+		features.add(mockJiraFeature2);
+		DataResponse<List<Feature>> response = new DataResponse<>(features,
+				mockCollector.getLastExecuted());
 
-	@Test
-	public void validateConnectivity_HappyPath() {
-		featureRepo.save(mockV1Feature);
-		featureRepo.save(mockJiraFeature);
-		featureRepo.save(mockJiraFeature2);
-		
-		assertTrue("Happy-path MongoDB connectivity validation for the FeatureRepository has failed",featureRepo.findAll().iterator().hasNext());
+		when(featureService.getFeatureEstimates(v1CollectorId, testTeamId)).thenReturn(response);
+		mockMvc.perform(
+				get("/feature/{teamId}", testTeamId).param("component",
+						mockComponentId.toString())).andExpect(status().isOk());
 	}
-	
-	@Test
-	public void testGetFeatureIdById_HappyPath() {
-		featureRepo.save(mockV1Feature);
-		featureRepo.save(mockJiraFeature);
-		featureRepo.save(mockJiraFeature2);
-		String testStoryId = "0812345";
-		
-		assertEquals("Expected feature ID did not match actual feature ID",testStoryId,featureRepo.getFeatureIdById(testStoryId).get(0).getsId().toString());
-	}
-	
-	@Test
-	public void testFindTopByOrderByChangeDateDesc_HappyPath() {
-		featureRepo.save(mockV1Feature);
-		featureRepo.save(mockJiraFeature);
-		featureRepo.save(mockJiraFeature2);
-		
-		assertEquals("Expected feature max change date did not match actual feature max change date",maxDateWinner,featureRepo.findTopByOrderByChangeDateDesc(jiraCollectorId,maxDateLoser).get(0).getChangeDate().toString());
-	}
-	
-	@Test
-	public void testGetSprintStoriesByTeamId_HappyPath() {
-		featureRepo.save(mockV1Feature);
-		featureRepo.save(mockJiraFeature);
-		featureRepo.save(mockJiraFeature2);
-		String testTeamID = "08374321";
-		String testStoryId = "0812345";
-		
-		assertEquals("Expected top ordered sprint story ID did not match actual top ordered sprint story ID",testStoryId,featureRepo.queryByOrderBySStatusDesc(testTeamID,maxDateWinner).get(0).getsId().toString());
-	}
-	
-	@Test
-	public void testGetCurrentSprintDetail_HappyPath() {
-		featureRepo.save(mockV1Feature);
-		featureRepo.save(mockJiraFeature);
-		featureRepo.save(mockJiraFeature2);
-		String testTeamId = "08374321";
-		String testSprintName = "Test Sprint 2";
-		assertEquals("Expected current sprint detail did not match actual current sprint detail",testSprintName,featureRepo.getCurrentSprintDetail(testTeamId,maxDateWinner).get(0).getsSprintName());
-	}
-	
-	
 }
