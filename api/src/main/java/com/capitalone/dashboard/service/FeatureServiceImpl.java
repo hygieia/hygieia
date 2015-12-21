@@ -116,7 +116,7 @@ public class FeatureServiceImpl implements FeatureService {
 			// Get teamId first from available collector item, based on
 			// component
 			List<Feature> relevantStories = featureRepository
-					.getSprintStoriesByTeamId(teamId, getCurrentISODateTime());
+					.queryByOrderBySStatusDesc(teamId, getCurrentISODateTime());
 
 			Collector collector = collectorRepository.findOne(item
 					.getCollectorId());

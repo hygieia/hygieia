@@ -4,7 +4,7 @@ import com.capitalone.dashboard.client.DataClientSetup;
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.ProjectRepository;
+import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.json.simple.JSONArray;
@@ -34,7 +34,7 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 	protected String query;
 	protected Class<?> objClass;
 	protected String returnDate;
-	protected ProjectRepository projectRepo;
+	protected ScopeRepository projectRepo;
 
 	/**
 	 * Constructs the feature data collection based on system settings.
@@ -43,7 +43,7 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 	 *            Feature collector system settings
 	 */
 	public ProjectDataClientSetupImpl(FeatureSettings featureSettings,
-			ProjectRepository projectRepository,
+			ScopeRepository projectRepository,
 			FeatureCollectorRepository featureCollectorRepository, VersionOneDataFactoryImpl vOneApi) {
 		super();
 		LOGGER.debug("Constructing data collection for the feature widget...");
@@ -188,7 +188,7 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 		String data = null;
 
 		try {
-			List<Scope> response = projectRepo.getProjectMaxChangeDate(featureCollectorRepository
+			List<Scope> response = projectRepo.findTopByOrderByChangeDateDesc(featureCollectorRepository
 							.findByName("VersionOne").getId(), featureSettings
 							.getDeltaStartDate());
 			if (!response.isEmpty()) {

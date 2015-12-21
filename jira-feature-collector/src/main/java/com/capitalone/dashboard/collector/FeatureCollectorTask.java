@@ -7,8 +7,8 @@ import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
-import com.capitalone.dashboard.repository.ProjectRepository;
-import com.capitalone.dashboard.repository.TeamRepository;
+import com.capitalone.dashboard.repository.ScopeRepository;
+import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +26,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 
 	private final FeatureRepository featureRepository;
-	private final TeamRepository teamRepository;
-	private final ProjectRepository projectRepository;
+	private final ScopeOwnerRepository teamRepository;
+	private final ScopeRepository projectRepository;
 	private final FeatureCollectorRepository featureCollectorRepository;
 	private final FeatureSettings featureSettings;
 
@@ -46,8 +46,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 */
 	@Autowired
 	public FeatureCollectorTask(TaskScheduler taskScheduler,
-			FeatureRepository featureRepository, TeamRepository teamRepository,
-			ProjectRepository projectRepository,
+			FeatureRepository featureRepository, ScopeOwnerRepository teamRepository,
+			ScopeRepository projectRepository,
 			FeatureCollectorRepository featureCollectorRepository,
 			FeatureSettings featureSettings) {
 		super(taskScheduler, "Jira");

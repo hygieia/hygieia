@@ -190,7 +190,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 
 		try {
 			List<Feature> response = featureRepo
-					.getFeatureMaxChangeDate(featureCollectorRepository
+					.findTopByOrderByChangeDateDesc(featureCollectorRepository
 							.findByName("VersionOne").getId(), featureSettings
 							.getDeltaStartDate());
 			if (!response.isEmpty()) {
