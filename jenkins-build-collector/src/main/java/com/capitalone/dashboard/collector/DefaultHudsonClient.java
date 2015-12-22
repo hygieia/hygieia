@@ -7,12 +7,12 @@ import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,10 +22,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 
 /**
  * HudsonClient implementation that uses RestTemplate and JSONSimple to
@@ -33,14 +39,14 @@ import java.util.*;
  */
 @Component
 public class DefaultHudsonClient implements HudsonClient {
-    private static final Log LOG = LogFactory.getLog(DefaultHudsonClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultHudsonClient.class);
 
     private final RestOperations rest;
     private final HudsonSettings settings;
 
     private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs[name,url,builds[number,url]]";
 
-    private static final String[] CHANGE_SET_ITEMS_TREE = new String[] {
+    private static final String[] CHANGE_SET_ITEMS_TREE = new String[]{
             "user",
             "author[fullName]",
             "revision",
@@ -51,7 +57,7 @@ public class DefaultHudsonClient implements HudsonClient {
             "paths[file]"
     };
 
-    private static final String[] BUILD_DETAILS_TREE = new String[] {
+    private static final String[] BUILD_DETAILS_TREE = new String[]{
             "number",
             "url",
             "timestamp",
@@ -75,8 +81,8 @@ public class DefaultHudsonClient implements HudsonClient {
     public Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl) {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
         try {
-            String url = StringUtils.removeEnd(instanceUrl, "/") + JOBS_URL_SUFFIX;
-            ResponseEntity<String> responseEntity = makeRestCall(URI.create(url));
+            String url = joinURL(instanceUrl, JOBS_URL_SUFFIX);
+            ResponseEntity<String> responseEntity = makeRestCall(url);
             String returnJSON = responseEntity.getBody();
             JSONParser parser = new JSONParser();
 
@@ -92,8 +98,6 @@ public class DefaultHudsonClient implements HudsonClient {
                     hudsonJob.setJobUrl(getString(jsonJob, "url"));
 
                     Set<Build> builds = new LinkedHashSet<>();
-                    result.put(hudsonJob, builds);
-
                     for (Object build : getJsonArray(jsonJob, "builds")) {
                         JSONObject jsonBuild = (JSONObject) build;
 
@@ -106,12 +110,16 @@ public class DefaultHudsonClient implements HudsonClient {
                             builds.add(hudsonBuild);
                         }
                     }
+                    // add the builds to the job
+                    result.put(hudsonJob, builds);
                 }
             } catch (ParseException e) {
                 LOG.error("Parsing jobs on instance: " + instanceUrl, e);
             }
         } catch (RestClientException rce) {
-            LOG.error(rce);
+            LOG.error("client exception loading jobs", rce);
+        } catch (MalformedURLException mfe) {
+            LOG.error("malformed url for loading jobs", mfe);
         }
 
         return result;
@@ -120,8 +128,8 @@ public class DefaultHudsonClient implements HudsonClient {
     @Override
     public Build getBuildDetails(String buildUrl) {
         try {
-            String url = StringUtils.removeEnd(buildUrl, "/") + BUILD_DETAILS_URL_SUFFIX;
-            ResponseEntity<String> result = makeRestCall(URI.create(url));
+            String url = joinURL(buildUrl, BUILD_DETAILS_URL_SUFFIX);
+            ResponseEntity<String> result = makeRestCall(url);
             String returnJSON = result.getBody();
             JSONParser parser = new JSONParser();
 
@@ -152,7 +160,9 @@ public class DefaultHudsonClient implements HudsonClient {
                 LOG.error("Parsing build: " + buildUrl, e);
             }
         } catch (RestClientException rce) {
-            LOG.error(rce);
+            LOG.error("client exception loading build details", rce);
+        } catch (MalformedURLException mfe) {
+            LOG.error("malformed url for loading build details", mfe);
         }
 
         return null;
@@ -161,7 +171,7 @@ public class DefaultHudsonClient implements HudsonClient {
     /**
      * Grabs changeset information for the given build.
      *
-     * @param build a Build
+     * @param build     a Build
      * @param buildJson the build JSON object
      */
     private void addChangeSets(Build build, JSONObject buildJson) {
@@ -247,33 +257,43 @@ public class DefaultHudsonClient implements HudsonClient {
 
     private BuildStatus getBuildStatus(JSONObject buildJson) {
         String status = buildJson.get("result").toString();
-        switch(status) {
-            case "SUCCESS": return BuildStatus.Success;
-            case "UNSTABLE": return BuildStatus.Unstable;
-            case "FAILURE": return BuildStatus.Failure;
-            case "ABORTED": return BuildStatus.Aborted;
-            default: return BuildStatus.Unknown;
+        switch (status) {
+            case "SUCCESS":
+                return BuildStatus.Success;
+            case "UNSTABLE":
+                return BuildStatus.Unstable;
+            case "FAILURE":
+                return BuildStatus.Failure;
+            case "ABORTED":
+                return BuildStatus.Aborted;
+            default:
+                return BuildStatus.Unknown;
         }
     }
 
-    private ResponseEntity<String> makeRestCall(URI uri) {
+    protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
+        URI thisuri = URI.create(sUrl);
+        String userInfo = thisuri.getUserInfo();
+
+        //get userinfo from URI or settings (in spring properties)
+        if (StringUtils.isEmpty(userInfo) && (this.settings.getUsername() != null) && (this.settings.getApiKey() != null)) {
+            userInfo = this.settings.getUsername() + ":" + this.settings.getApiKey();
+        }
         // Basic Auth only.
-        if (StringUtils.isNotEmpty(this.settings.getUsername())
-                && StringUtils.isNotEmpty(this.settings.getApiKey())) {
-            return rest.exchange(uri, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders(this.settings.getUsername(), this.settings.getApiKey())),
+        if (StringUtils.isNotEmpty(userInfo)) {
+            return rest.exchange(thisuri, HttpMethod.GET,
+                    new HttpEntity<>(createHeaders(userInfo)),
                     String.class);
-
         } else {
-            return rest.exchange(uri, HttpMethod.GET, null,
+            return rest.exchange(thisuri, HttpMethod.GET, null,
                     String.class);
         }
 
     }
 
-    private HttpHeaders createHeaders(final String userId, final String password) {
+    protected HttpHeaders createHeaders(final String userInfo) {
         byte[] encodedAuth = Base64.encodeBase64(
-                (userId + ":" + password).getBytes(StandardCharsets.US_ASCII));
+                userInfo.getBytes(StandardCharsets.US_ASCII));
         String authHeader = "Basic " + new String(encodedAuth);
 
         HttpHeaders headers = new HttpHeaders();
@@ -281,11 +301,26 @@ public class DefaultHudsonClient implements HudsonClient {
         return headers;
     }
 
-    private String getLog(String buildUrl) {
-        ResponseEntity<String> responseEntity = makeRestCall(
-                URI.create(buildUrl + "consoleText"));
-        String returnJSON = responseEntity.getBody();
+    protected String getLog(String buildUrl) {
+        try {
+            return makeRestCall(joinURL(buildUrl, "consoleText")).getBody();
+        } catch (MalformedURLException mfe) {
+            LOG.error("malformed url for build log", mfe);
+        }
 
-        return returnJSON;
+        return "";
+    }
+
+    // join a base url to another path or paths - this will handle trailing or non-trailing /'s
+    public static String joinURL(String base, String ... paths) throws MalformedURLException {
+        StringBuilder result = new StringBuilder(base);
+        for (String path : paths) {
+            String p = path.replaceFirst("^(\\/)+", "");
+            if (result.lastIndexOf("/") != result.length() - 1) {
+                result.append('/');
+            }
+            result.append(p);
+        }
+        return result.toString();
     }
 }

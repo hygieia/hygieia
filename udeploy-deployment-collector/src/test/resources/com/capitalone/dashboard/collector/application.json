@@ -1,0 +1,25 @@
+[
+  {
+    "id": "ad88482e-3577-44cd-a6d8-00056062260b",
+    "securityResourceId": "3503bc85-fe5c-4a2e-901f-999b4c3d3bc5",
+    "name": "AA-JPetstore",
+    "description": "JPetstore Sample",
+    "created": 1426794907175,
+    "enforceCompleteSnapshots": false,
+    "active": true,
+    "tags": [],
+    "deleted": false,
+    "user": "Ops Guy"
+  },
+  {
+    "id": "758dd8cd-2c9d-4ade-a5e4-696b171bfffb",
+    "securityResourceId": "a8e548e9-69fc-404b-9c5b-260719a81e59",
+    "name": "AAA",
+    "created": 1445291363432,
+    "enforceCompleteSnapshots": false,
+    "active": true,
+    "tags": [],
+    "deleted": false,
+    "user": "Ops Guy"
+  }
+]

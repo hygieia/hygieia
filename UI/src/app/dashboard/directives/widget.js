@@ -121,7 +121,6 @@
             {
 
                 $scope.owner=data;
-                console.log($scope.owner);
                 if ($scope.owner == $cookies.username || $cookies.username == "admin")
                 {
                     configModal();
@@ -177,7 +176,6 @@
 
                                 // save the widget locally
                                 $scope.container.upsertWidget($scope.widgetConfig);
-
                                 $scope.container.upsertComponent(response.component);
 
                                 // TODO: should probably call back to the widget's getState method
@@ -255,7 +253,6 @@
                 if (load && load.then) {
                     load.then(function(result) {
                         var lastUpdated = angular.isArray(result) ? _.max(result) : result;
-                        console.log("Last updated :"+lastUpdated);
                         $scope.lastUpdatedDisplay = moment(lastUpdated).dash('ago');
                     });
                 }

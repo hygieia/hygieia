@@ -13,6 +13,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,27 +22,108 @@ import org.springframework.web.client.RestOperations;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultHudsonClientTests {
 
     @Mock private Supplier<RestOperations> restOperationsSupplier;
     @Mock private RestOperations rest;
+    private HudsonSettings settings;
     private HudsonClient hudsonClient;
+    private DefaultHudsonClient defaultHudsonClient;
 
-    private static final String URL = "URL";
+    private static final String URL_TEST = "URL";
 
     @Before
     public void init() {
         when(restOperationsSupplier.get()).thenReturn(rest);
-        hudsonClient = new DefaultHudsonClient(restOperationsSupplier, new HudsonSettings());
+        settings = new HudsonSettings();
+        hudsonClient = defaultHudsonClient = new DefaultHudsonClient(restOperationsSupplier,
+                settings);
+    }
+
+    @Test
+    public void joinURLsTest() throws Exception {
+        String u = DefaultHudsonClient.joinURL("http://jenkins.com",
+                "/api/json?tree=jobs[name,url,builds[number,url]]");
+        assertEquals("http://jenkins.com/api/json?tree=jobs[name,url,builds[number,url]]", u);
+
+        String u4 = DefaultHudsonClient.joinURL("http://jenkins.com/", "test",
+                "/api/json?tree=jobs[name,url,builds[number,url]]");
+        assertEquals("http://jenkins.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u4);
+
+        String u2 = DefaultHudsonClient.joinURL("http://jenkins.com/", "/test/",
+                "/api/json?tree=jobs[name,url,builds[number,url]]");
+        assertEquals("http://jenkins.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u2);
+
+        String u3 = DefaultHudsonClient.joinURL("http://jenkins.com", "///test",
+                "/api/json?tree=jobs[name,url,builds[number,url]]");
+        assertEquals("http://jenkins.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u3);
+    }
+
+    @Test
+    public void verifyBasicAuth() throws Exception {
+        URL u = new URL(new URL("http://jenkins.com"), "/api/json?tree=jobs[name,url," +
+                "builds[number,url]]");
+
+        HttpHeaders headers = defaultHudsonClient.createHeaders("Aladdin:open sesame");
+        assertEquals("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==",
+                headers.getFirst(HttpHeaders.AUTHORIZATION));
+    }
+
+    @Test
+    public void verifyAuthCredentials() throws Exception {
+        HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("user:pass"));
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
+                eq(headers), eq(String.class)))
+                .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
+
+        settings.setApiKey("doesnt");
+        settings.setUsername("matter");
+        defaultHudsonClient.makeRestCall("http://user:pass@jenkins.com");
+        verify(rest).exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
+                eq(headers), eq(String.class));
+    }
+
+    @Test
+    public void verifyAuthCredentialsBySettings() throws Exception {
+        HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("does:matter"));
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
+                eq(headers), eq(String.class)))
+                .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
+
+        settings.setApiKey("matter");
+        settings.setUsername("does");
+        defaultHudsonClient.makeRestCall("http://jenkins.com");
+        verify(rest).exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
+                eq(headers), eq(String.class));
+    }
+
+    @Test
+    public void verifyGetLogUrl() throws Exception {
+        HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("does:matter"));
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
+                eq(headers), eq(String.class)))
+                .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
+
+        settings.setApiKey("matter");
+        settings.setUsername("does");
+        defaultHudsonClient.getLog("http://jenkins.com");
+        verify(rest).exchange(eq(URI.create("http://jenkins.com/consoleText")), eq(HttpMethod.GET),
+                eq(headers), eq(String.class));
     }
 
     @Test
@@ -49,7 +131,7 @@ public class DefaultHudsonClientTests {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<String>("", HttpStatus.OK));
 
-        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL);
+        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
 
         assertThat(jobs.size(), is(0));
     }
@@ -59,7 +141,7 @@ public class DefaultHudsonClientTests {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<String>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
 
-        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL);
+        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
 
         assertThat(jobs.size(), is(2));
         Iterator<HudsonJob> jobIt = jobs.keySet().iterator();
@@ -88,13 +170,13 @@ public class DefaultHudsonClientTests {
     @Test
     public void buildDetails_full() throws Exception {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>(getJson("buildDetails_full.json"), HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
 
-        Build build = hudsonClient.getBuildDetails(URL);
+        Build build = hudsonClient.getBuildDetails(URL_TEST);
 
         assertThat(build.getTimestamp(), notNullValue());
         assertThat(build.getNumber(), is("2483"));
-        assertThat(build.getBuildUrl(), is(URL));
+        assertThat(build.getBuildUrl(), is(URL_TEST));
         assertThat(build.getArtifactVersionNumber(), nullValue());
         assertThat(build.getStartTime(), is(1421281415000L));
         assertThat(build.getEndTime(), is(1421284113495L));

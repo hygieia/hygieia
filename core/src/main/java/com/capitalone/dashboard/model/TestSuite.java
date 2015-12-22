@@ -8,6 +8,7 @@ import java.util.Collection;
  */
 public class TestSuite {
 
+    private String id;
     /**
      * Description of the test suite that might make sense to a human
      */
@@ -33,30 +34,40 @@ public class TestSuite {
      */
     private long duration;
 
+    private int totalTestCaseCount;
     /**
      * Count of test cases that failed
      */
-    private int failureCount;
+    private int failedTestCaseCount;
 
     /**
      * Count of test cases that generated an error
      */
-    private int errorCount;
+    private int successTestCaseCount;
 
     /**
      * Count of test cases that were skipped
      */
-    private int skippedCount;
+    private int skippedTestCaseCount;
 
-    /**
-     * The total number of test cases
-     */
-    private int totalCount;
+
+    private int unknownStatusCount;
+
+    private TestCaseStatus status;
 
     /**
      * Collection of {@link TestCase}s associated with this suite
      */
     private Collection<TestCase> testCases = new ArrayList<>();
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getDescription() {
         return description;
@@ -98,36 +109,52 @@ public class TestSuite {
         this.duration = duration;
     }
 
-    public int getFailureCount() {
-        return failureCount;
+    public TestCaseStatus getStatus() {
+        return status;
     }
 
-    public void setFailureCount(int failureCount) {
-        this.failureCount = failureCount;
+    public void setStatus(TestCaseStatus status) {
+        this.status = status;
     }
 
-    public int getErrorCount() {
-        return errorCount;
+    public int getFailedTestCaseCount() {
+        return failedTestCaseCount;
     }
 
-    public void setErrorCount(int errorCount) {
-        this.errorCount = errorCount;
+    public int getTotalTestCaseCount() {
+        return totalTestCaseCount;
     }
 
-    public int getSkippedCount() {
-        return skippedCount;
+    public void setTotalTestCaseCount(int totalTestCaseCount) {
+        this.totalTestCaseCount = totalTestCaseCount;
     }
 
-    public void setSkippedCount(int skippedCount) {
-        this.skippedCount = skippedCount;
+    public void setFailedTestCaseCount(int failedTestCaseCount) {
+        this.failedTestCaseCount = failedTestCaseCount;
     }
 
-    public int getTotalCount() {
-        return totalCount;
+    public int getSuccessTestCaseCount() {
+        return successTestCaseCount;
     }
 
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
+    public void setSuccessTestCaseCount(int successTestCaseCount) {
+        this.successTestCaseCount = successTestCaseCount;
+    }
+
+    public int getSkippedTestCaseCount() {
+        return skippedTestCaseCount;
+    }
+
+    public void setSkippedTestCaseCount(int skippedTestCaseCount) {
+        this.skippedTestCaseCount = skippedTestCaseCount;
+    }
+
+    public int getUnknownStatusCount() {
+        return unknownStatusCount;
+    }
+
+    public void setUnknownStatusCount(int unknownStatusCount) {
+        this.unknownStatusCount = unknownStatusCount;
     }
 
     public Collection<TestCase> getTestCases() {

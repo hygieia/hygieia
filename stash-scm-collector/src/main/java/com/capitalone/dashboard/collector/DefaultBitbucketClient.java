@@ -24,7 +24,7 @@ import org.springframework.web.client.RestOperations;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -55,6 +55,7 @@ public class DefaultBitbucketClient implements GitClient {
 	}
 
 	@Override
+	@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"}) // agreed, fixme
 	public List<Commit> getCommits(GitRepo repo, boolean firstRun) {
 
 		List<Commit> commits = new ArrayList<>();
@@ -202,15 +203,13 @@ public class DefaultBitbucketClient implements GitClient {
 	}
 
 	private HttpHeaders createHeaders(final String userId, final String password) {
-		return new HttpHeaders() {
-			{
-				String auth = userId + ":" + password;
-				byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset
-						.forName("US-ASCII")));
-				String authHeader = "Basic " + new String(encodedAuth);
-				set("Authorization", authHeader);
-			}
-		};
+		String auth = userId + ":" + password;
+		byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
+		String authHeader = "Basic " + new String(encodedAuth);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", authHeader);
+		return headers;
 	}
 	
 	private JSONObject paresAsObject(ResponseEntity<String> response) {

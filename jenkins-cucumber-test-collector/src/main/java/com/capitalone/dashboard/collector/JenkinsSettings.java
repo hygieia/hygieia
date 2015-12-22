@@ -16,6 +16,8 @@ public class JenkinsSettings {
     private String cron;
     private List<String> servers;
     private String cucumberJsonRegex = "cucumber.json";
+    private String username;
+    private String apiKey;
 
     public String getCron() {
         return cron;
@@ -39,5 +41,21 @@ public class JenkinsSettings {
 
     public void setCucumberJsonRegex(String cucumberJsonRegex) {
         this.cucumberJsonRegex = cucumberJsonRegex;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }

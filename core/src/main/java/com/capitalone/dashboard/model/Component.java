@@ -2,7 +2,11 @@ package com.capitalone.dashboard.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A self-contained, independently deployable piece of the larger application. Each component of an application
@@ -42,8 +46,27 @@ public class Component extends BaseModel {
         return collectorItems;
     }
 
+    public List<CollectorItem> getCollectorItems(CollectorType type) {
+        return collectorItems.get(type);
+    }
+
     public void addCollectorItem(CollectorType collectorType, CollectorItem collectorItem) {
         // Currently only one collectorItem per collectorType is supported
-        collectorItems.put(collectorType, Arrays.asList(collectorItem));
+        if (collectorItems.get(collectorType) == null) {
+            collectorItems.put(collectorType, Arrays.asList(collectorItem));
+        } else {
+            List<CollectorItem> existing = new ArrayList<> (collectorItems.get(collectorType));
+            if (isNewCollectorItem(existing, collectorItem)) {
+                existing.add(collectorItem);
+                collectorItems.put(collectorType, existing);
+            }
+        }
+    }
+
+    private boolean isNewCollectorItem (List<CollectorItem> existing, CollectorItem item) {
+        for (CollectorItem ci : existing) {
+            if (ci.getId().equals(item.getId())) return false;
+        }
+        return true;
     }
 }

@@ -16,29 +16,34 @@ for information about sourcing this properties file.
 --------------------------------------
 
     #Database Name 
-    spring.data.mongodb.database=dashboarddb
+    dbname=dashboarddb
 
     #Database HostName - default is localhost
-    spring.data.mongodb.host=10.0.1.1
+    dbhost=localhost
 
     #Database Port - default is 27017
-    spring.data.mongodb.port=9999
+    dbport=9999
 
     #Database Username - default is blank
-    spring.data.mongodb.username=db
+    dbusername=db
 
     #Database Password - default is blank
-    spring.data.mongodb.password=dbpass
+    dbpassword=dbpass
 
     #Collector schedule (required)
     jenkins.cron=0 0/5 * * * *
 
-    #Hudson server (required) - Can provide multiple
-    jenkins.servers[0]=http://hudson.company.com
-
+    #Jenkins server (required) - Can provide multiple
+    jenkins.servers[0]=http://jenkins.company.com
+    
+    #If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
+    jenkins.servers[1]=http://username:token@jenkins.company.com
+    
+    #Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
+    jenkins.username=
+    jenkins.apiKey=
+  
     #Determines if build console log is collected - defaults to false
     jenkins.saveLog=true
 
-    #Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
-    jenkins.username=
-    jenkins.apiKey=
+
