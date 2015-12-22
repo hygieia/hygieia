@@ -192,7 +192,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 		String data = null;
 
 		try {
-			List<ScopeOwnerCollectorItem> response = teamRepo.getTeamMaxChangeDate
+			List<ScopeOwnerCollectorItem> response = teamRepo.findTopByOrderByChangeDateDesc
 					(featureCollectorRepository
 					.findByName("Jira").getId(), featureSettings
 					.getDeltaCollectorItemStartDate());
