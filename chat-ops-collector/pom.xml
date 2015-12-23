@@ -32,18 +32,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.3</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>nexus</serverId>
-                    <nexusUrl></nexusUrl>
-                    <stagingProgressTimeoutMinutes>15</stagingProgressTimeoutMinutes>
-                    <stagingProgressPauseDurationSeconds>15</stagingProgressPauseDurationSeconds>
-                </configuration>
-            </plugin>
         </plugins>
 
         <testResources>
