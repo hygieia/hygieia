@@ -15,8 +15,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.util.Date;
 import java.util.List;
 
@@ -46,7 +44,6 @@ public class DefaultStashClientTest {
     private static final Resource API_RESPONSE = pathResource("stash/response.json");
     private static final Resource PAGED_API_RESPONSE = pathResource("stash/response-with-pagination.json");
 
-    private int port;
     private RequestHit requestHit;
     private HttpServer server;
     private Runner runner;
@@ -56,10 +53,9 @@ public class DefaultStashClientTest {
 
     @Before
     public void setup() throws EncryptionException {
-        port = port();
         requestHit = requestHit();
 
-        server = httpServer(port, requestHit);
+        server = httpServer(requestHit);
         runner = runner(server);
         runner.start();
 
@@ -155,28 +151,6 @@ public class DefaultStashClientTest {
         return settings;
     }
 
-    private int port() {
-        int port = 12306;
-
-        for (int i = 0; i < 100; i++) {
-            if (portAvailable(port)) {
-                return port;
-            }
-
-            port++;
-        }
-
-        throw new IllegalStateException("Unable to find a free port");
-    }
-
-    private boolean portAvailable(int port) {
-        try (final Socket ignored = new Socket("localhost", port)) {
-            return false;
-        } catch (final IOException ignored) {
-            return true;
-        }
-    }
-
     private GitRepo gitRepo() {
         final String repoUrl = repoUrl();
 
@@ -187,7 +161,7 @@ public class DefaultStashClientTest {
     }
 
     private String repoUrl() {
-        return String.format("http://localhost:%d/repo.git", port);
+        return String.format("http://localhost:%d/repo.git", server.port());
     }
 
     private void assertCommits(final List<Commit> commits) {
