@@ -2,9 +2,12 @@ package com.capitalone.dashboard.collector;
 
 import static com.github.dreamhead.moco.Moco.by;
 import static com.github.dreamhead.moco.Moco.eq;
+import static com.github.dreamhead.moco.Moco.exist;
 import static com.github.dreamhead.moco.Moco.header;
 import static com.github.dreamhead.moco.Moco.httpServer;
+import static com.github.dreamhead.moco.Moco.not;
 import static com.github.dreamhead.moco.Moco.pathResource;
+import static com.github.dreamhead.moco.Moco.query;
 import static com.github.dreamhead.moco.Moco.uri;
 import static com.github.dreamhead.moco.MocoRequestHit.once;
 import static com.github.dreamhead.moco.MocoRequestHit.requestHit;
@@ -29,7 +32,6 @@ import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import com.github.dreamhead.moco.HttpServer;
 import com.github.dreamhead.moco.RequestHit;
-import com.github.dreamhead.moco.ResponseHandler;
 import com.github.dreamhead.moco.Runner;
 import com.github.dreamhead.moco.resource.Resource;
 
@@ -99,9 +101,8 @@ public class DefaultStashClientTest {
     @Ignore("Implementation is different than documentation. Enable this test case after fixing the implementation.")
     @Test
     public void pagination() {
-        final ResponseHandler firstRequest = responseHandler(PAGED_API_RESPONSE);
-        final ResponseHandler secondRequest = responseHandler(API_RESPONSE);
-        server.response(firstRequest, secondRequest);
+        server.get(not(exist(query("start")))).response(responseHandler(PAGED_API_RESPONSE)); // first request
+        server.get(eq(query("start"), "2")).response(responseHandler(API_RESPONSE)); // second request
 
         final List<Commit> commits = client.getCommits(gitRepo(), true);
 
