@@ -57,7 +57,7 @@ public class DefaultStashClientTest {
         runner.start();
 
         final GitSettings settings = new GitSettings();
-        settings.setHost("localhost:12306/");
+        settings.setHost("localhost:");
         settings.setKey(Encryption.getStringKey());
         settings.setApi(":"); // TODO unfortunately the current implementation doesn't support host with port, so
                               // abusing the api settings for now to get this work. Fix the implementation to support
