@@ -7,11 +7,11 @@
       "id": "01f9c8680e9db9888463b61e423b7b1d18a5c2c1",
       "displayId": "01f9c86",
       "author": {
-        "name": "Seb Ruiz",
-        "emailAddress": "sruiz@atlassian.com"
+        "name": "Author1",
+        "emailAddress": "author1@company.com"
       },
       "authorTimestamp": 1334730200000,
-      "message": "NONE: Add groovy as java synhi\n+review @aahmed",
+      "message": "Commit message 1",
       "parents": [
         {
           "id": "06a499d51107533a4f24a3620280edbb342d89b7",
@@ -24,11 +24,11 @@
       "id": "c9d6630b88143dab6a922c5cffe931dae68a612a",
       "displayId": "c9d6630",
       "author": {
-        "name": "Pierre-Etienne Poirot",
-        "emailAddress": "pepoirot@atlassian.com"
+        "name": "Author2",
+        "emailAddress": "author2@company.com"
       },
       "authorTimestamp": 1334639525000,
-      "message": "STASH-2121: fix typo (CR-STASH-1199)",
+      "message": "Commit message 2",
       "parents": [
         {
           "id": "2a58a084fef5b2246c996924d38e0d236c855794",
