@@ -32,7 +32,7 @@ import com.github.dreamhead.moco.resource.Resource;
 public class DefaultStashClientTest {
 
     /**
-     * This JSON response is an example response based on Atlassian documentation page.
+     * This JSON response is an example based on Atlassian documentation page.
      * 
      * @see <a href="https://developer.atlassian.com/stash/docs/latest/how-tos/command-line-rest.html">Atlassian
      *      documentation page</a>
@@ -56,12 +56,7 @@ public class DefaultStashClientTest {
         runner = runner(server);
         runner.start();
 
-        final GitSettings settings = new GitSettings();
-        settings.setHost("localhost:");
-        settings.setKey(Encryption.getStringKey());
-        settings.setApi(":"); // TODO unfortunately the current implementation doesn't support host with port, so
-                              // abusing the api settings for now to get this work. Fix the implementation to support
-                              // URL with port
+        final GitSettings settings = gitSettings();
 
         encryptedPassword = Encryption.encryptString("secret", settings.getKey());
 
@@ -115,8 +110,21 @@ public class DefaultStashClientTest {
         client.getCommits(gitRepo(), true);
     }
 
+    private GitSettings gitSettings() throws EncryptionException {
+        final GitSettings settings = new GitSettings();
+        settings.setHost("localhost:");
+        settings.setKey(Encryption.getStringKey());
+
+        // TODO unfortunately the current implementation doesn't support host with port, so abusing the api settings for
+        // now to get this work. Fix the implementation to support URL with port
+        settings.setApi(":");
+
+        return settings;
+    }
+
     private int port() {
         int port = 12306;
+
         for (int i = 0; i < 100; i++) {
             if (portAvailable(port)) {
                 return port;
@@ -166,11 +174,11 @@ public class DefaultStashClientTest {
         assertThat(commit.getScmCommitTimestamp(), is(timestamp));
         assertThat(commit.getScmAuthor(), is(author));
         assertThat(commit.getScmCommitLog(), is(message));
-        assertThat(commit.getNumberOfChanges(), is(1L)); // TODO This value is hardcoded to 1. Seems like Stash API
-                                                         // doesn't provide this information. But to avoid confusion can
-                                                         // we hardcode this to '-1' a non valid value to distinguish
-                                                         // it from a valid value. Also not sure what it means by number
-                                                         // of changes. Can it be number of files modified in a commit ?
-                                                         // Anyways this should be discussed.
+
+        // TODO This value is hardcoded to 1. Seems like Stash API doesn't provide this information. But to avoid
+        // confusion can we hardcode this to '-1' a non valid value to distinguish it from a valid value. Also not sure
+        // what it means by number of changes. Can it be number of files modified in a commit ? Anyways this should be
+        // discussed.
+        assertThat(commit.getNumberOfChanges(), is(1L));
     }
 }
