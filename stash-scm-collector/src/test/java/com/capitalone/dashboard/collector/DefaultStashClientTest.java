@@ -11,6 +11,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +49,7 @@ public class DefaultStashClientTest {
 
     @Before
     public void setup() throws EncryptionException {
-        port = 12306;
+        port = port();
         requestHit = requestHit();
 
         server = httpServer(port, requestHit);
@@ -111,6 +113,27 @@ public class DefaultStashClientTest {
         server.response("{}");
 
         client.getCommits(gitRepo(), true);
+    }
+
+    private int port() {
+        int port = 12306;
+        for (int i = 0; i < 100; i++) {
+            if (portAvailable(port)) {
+                return port;
+            }
+
+            port++;
+        }
+
+        throw new IllegalStateException("Unable to find a free port");
+    }
+
+    private boolean portAvailable(int port) {
+        try (final Socket ignored = new Socket("localhost", port)) {
+            return false;
+        } catch (final IOException ignored) {
+            return true;
+        }
     }
 
     private GitRepo gitRepo() {
