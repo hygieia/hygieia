@@ -98,6 +98,8 @@ public class GitCollectorTaskTest {
         verify(baseCollectorRepositoryMock, times(1)).save(collector);
     }
 
+    // TODO This test case is too big. Is it just me or does it do more stuff ? Maybe the implementation needs a
+    // refactoring ?
     @Test
     public void afterFirstRun() {
         final ObjectId id = new ObjectId();
