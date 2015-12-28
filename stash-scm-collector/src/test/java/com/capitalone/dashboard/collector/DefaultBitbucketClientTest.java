@@ -35,22 +35,23 @@ import com.github.dreamhead.moco.RequestHit;
 import com.github.dreamhead.moco.Runner;
 import com.github.dreamhead.moco.resource.Resource;
 
-public class DefaultStashClientTest {
+public class DefaultBitbucketClientTest {
 
     /**
-     * This JSON response is an example based on Atlassian Stash documentation page.
+     * This JSON response is an example based on Atlassian Bitbucket documentation page.
      * 
-     * @see <a href="https://developer.atlassian.com/stash/docs/latest/how-tos/command-line-rest.html">Atlassian Stash
-     *      documentation page</a>
+     * @see <a
+     *      href="https://confluence.atlassian.com/bitbucket/commits-or-commit-resource-389775478.html#commitsorcommitResource-GETacommitslistforarepositoryorcomparecommitsacrossbranches">Atlassian
+     *      Bitbucket documentation page</a>
      */
-    private static final Resource API_RESPONSE = pathResource("stash/response.json");
-    private static final Resource PAGED_API_RESPONSE = pathResource("stash/response-with-pagination.json");
+    private static final Resource API_RESPONSE = pathResource("bitbucket/response.json");
+    private static final Resource PAGED_API_RESPONSE = pathResource("bitbucket/response-with-pagination.json");
 
     private RequestHit requestHit;
     private HttpServer server;
     private Runner runner;
 
-    private DefaultStashClient stashClient;
+    private DefaultBitbucketClient bitbucketClient;
     private String encryptedPassword;
 
     @Before
@@ -65,7 +66,7 @@ public class DefaultStashClientTest {
 
         encryptedPassword = Encryption.encryptString("secret", settings.getKey());
 
-        stashClient = new DefaultStashClient(settings, new RestOperationsSupplier());
+        bitbucketClient = new DefaultBitbucketClient(settings, new RestOperationsSupplier());
     }
 
     @After
@@ -77,7 +78,7 @@ public class DefaultStashClientTest {
     public void firstRun() {
         server.response(API_RESPONSE);
 
-        final List<Commit> commits = stashClient.getCommits(gitRepo(), true);
+        final List<Commit> commits = bitbucketClient.getCommits(gitRepo(), true);
 
         requestHit.verify(by(uri("/repo/commits")), once());
         assertCommits(commits);
@@ -90,21 +91,22 @@ public class DefaultStashClientTest {
         final GitRepo repo = gitRepo();
         repo.setLastUpdateTime(new Date());
 
-        final List<Commit> commits = stashClient.getCommits(repo, false);
+        final List<Commit> commits = bitbucketClient.getCommits(repo, false);
 
         requestHit.verify(by(uri("/repo/commits")), once());
         assertCommits(commits);
     }
 
     // TODO Pagination doesn't work has documented.
-    // See https://developer.atlassian.com/static/rest/stash/3.11.3/stash-rest.html#paging-params for more info.
+    // See https://confluence.atlassian.com/bitbucket/version-2-423626329.html#Version2-Pagingthroughobjectcollections
+    // for more info.
     @Ignore("Implementation is different than documentation. Enable this test case after fixing the implementation.")
     @Test
     public void pagination() {
-        server.get(not(exist(query("start")))).response(responseHandler(PAGED_API_RESPONSE)); // first request
-        server.get(eq(query("start"), "2")).response(responseHandler(API_RESPONSE)); // second request
+        server.get(not(exist(query("page")))).response(responseHandler(PAGED_API_RESPONSE)); // first request
+        server.get(eq(query("page"), "2")).response(responseHandler(API_RESPONSE)); // second request
 
-        final List<Commit> commits = stashClient.getCommits(gitRepo(), true);
+        final List<Commit> commits = bitbucketClient.getCommits(gitRepo(), true);
 
         requestHit.verify(by(uri("/repo/commits")), times(2));
         assertThat(commits, hasSize(3));
@@ -117,7 +119,7 @@ public class DefaultStashClientTest {
         final GitRepo repo = gitRepo();
         repo.setPassword(encryptedPassword);
 
-        final List<Commit> commits = stashClient.getCommits(repo, true);
+        final List<Commit> commits = bitbucketClient.getCommits(repo, true);
 
         requestHit.verify(by(uri("/repo/commits")), once());
         requestHit.verify(eq(header("Authorization"), "Basic bnVsbDpzZWNyZXQ="), once());
@@ -129,7 +131,7 @@ public class DefaultStashClientTest {
     public void unexpectedResponse() {
         server.response("{}");
 
-        stashClient.getCommits(gitRepo(), true);
+        bitbucketClient.getCommits(gitRepo(), true);
     }
 
     // TODO Throwing NPE doesn't seem right. Maybe this scenario (implementation) has to be handled properly.
@@ -137,7 +139,7 @@ public class DefaultStashClientTest {
     public void invalidResponse() {
         server.response("{");
 
-        stashClient.getCommits(gitRepo(), true);
+        bitbucketClient.getCommits(gitRepo(), true);
     }
 
     private GitSettings gitSettings() throws EncryptionException {
@@ -169,10 +171,12 @@ public class DefaultStashClientTest {
         final String repoUrl = repoUrl();
 
         assertThat(commits, hasSize(2));
-        assertCommit(commits.get(0), repoUrl, "01f9c8680e9db9888463b61e423b7b1d18a5c2c1", 1334730200000L, "Author1",
-            "Commit message 1");
-        assertCommit(commits.get(1), repoUrl, "c9d6630b88143dab6a922c5cffe931dae68a612a", 1334639525000L, "Author2",
-            "Commit message 2");
+
+        // TODO the author name also has the email address, not sure if that is expected ?
+        assertCommit(commits.get(0), repoUrl, "c42c17400a5d306abeb6eeaac76eb805826d838e", 1447798038000L,
+            "Author1 <author1@company.com>", "Commit message 1");
+        assertCommit(commits.get(1), repoUrl, "b3a68d4c82d638d9a9d66da9799e70c87126aa43", 1447797970000L,
+            "Author2 <author2@company.com>", "Commit message 2");
     }
 
     private void assertCommit(final Commit commit, final String scmUrl, final String revisionNumber,
@@ -183,7 +187,7 @@ public class DefaultStashClientTest {
         assertThat(commit.getScmAuthor(), is(author));
         assertThat(commit.getScmCommitLog(), is(message));
 
-        // TODO This value is hardcoded to 1. Seems like Stash API doesn't provide this information. But to avoid
+        // TODO This value is hardcoded to 1. Seems like Bitbucket API doesn't provide this information. But to avoid
         // confusion can we hardcode this to '-1' a non valid value to distinguish it from a valid value. Also not sure
         // what it means by number of changes. Can it be number of files modified in a commit ? Anyways this should be
         // discussed.
