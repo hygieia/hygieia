@@ -84,7 +84,7 @@ public class DefaultStashClientTest {
     }
 
     @Test
-    public void notFirstRun() {
+    public void afterFirstRun() {
         server.response(API_RESPONSE);
 
         final GitRepo repo = gitRepo();
