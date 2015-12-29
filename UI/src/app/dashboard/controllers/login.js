@@ -97,16 +97,17 @@
             $http.get(url)
                 .success(function(data, status, headers, config) {
 
-                    if(status == 404)
-                    {
-                        console.log("API layer down");
-
-
-                    }
                     if(status == 200)
                     {
                         console.log("API layer up");
                         login.apiup=true;
+
+                    }
+                    //we will add explicit code to check if we we secure the api layer.
+                    else
+                    {
+                        console.log("API layer down");
+
                     }
 
                 })
