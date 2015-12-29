@@ -82,3 +82,15 @@ mvn clean package -pl UI docker:build
 ```bash
 docker run -t -p 8088:80 --link hygieia-api -i hygieia-ui:latest
 ```
+
+### API check
+ 
+#### API layer successfully connected
+![Image](/media/images/apiup.png)
+
+#### API layer connection unsuccessful
+![Image](/media/images/apidown.png)
+
+
+### ScreenShot of login page with API Layer up
+![Image](/media/images/loginpage.png)
