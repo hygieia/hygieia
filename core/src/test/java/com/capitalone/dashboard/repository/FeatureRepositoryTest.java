@@ -17,11 +17,13 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(classes = { MongoConfig.class })
@@ -31,7 +33,11 @@ public class FeatureRepositoryTest {
 	private static Feature mockV1Feature;
 	private static Feature mockJiraFeature;
 	private static Feature mockJiraFeature2;
+	private static Feature mockJiraFeature3;
+	private static Feature mockJiraFeature4;
 	private static final String generalUseDate = "2015-11-01T00:00:00Z";
+	private static final String generalUseDate2 = "2015-12-01T00:00:00Z";
+	private static final String generalUseDate3 = "2015-12-15T00:00:00Z";
 	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	private static Calendar cal = Calendar.getInstance();
 	private static final String maxDateWinner = df.format(new Date());
@@ -39,6 +45,8 @@ public class FeatureRepositoryTest {
 	private static String currentSprintEndDate = new String();
 	private static final ObjectId jiraCollectorId = new ObjectId();
 	private static final ObjectId jiraCollectorId2 = new ObjectId();
+	private static final ObjectId jiraCollectorId3 = new ObjectId();
+	private static final ObjectId jiraCollectorId4 = new ObjectId();
 	private static final ObjectId v1CollectorId = new ObjectId();
 
 	@ClassRule
@@ -51,11 +59,11 @@ public class FeatureRepositoryTest {
 	public void setUp() {
 		// Date-time modifications
 		cal.setTime(new Date());
-		cal.add(Calendar.DAY_OF_YEAR,-1);
+		cal.add(Calendar.DAY_OF_YEAR, -1);
 		maxDateLoser = df.format(cal.getTime());
-		cal.add(Calendar.DAY_OF_YEAR,+13);
+		cal.add(Calendar.DAY_OF_YEAR, +13);
 		currentSprintEndDate = df.format(cal.getTime());
-		
+
 		// Helper mock data
 		List<String> sOwnerNames = new ArrayList<String>();
 		sOwnerNames.add("Goku");
@@ -181,7 +189,7 @@ public class FeatureRepositoryTest {
 		mockJiraFeature.setsTeamID("08374321");
 		mockJiraFeature.setsTeamIsDeleted("False");
 		mockJiraFeature.setsTeamName("Saiya-jin Warriors");
-		
+
 		// Mock feature 2
 		mockJiraFeature2 = new Feature();
 		mockJiraFeature2.setCollectorId(jiraCollectorId2);
@@ -232,6 +240,108 @@ public class FeatureRepositoryTest {
 		mockJiraFeature2.setsTeamID("08374329");
 		mockJiraFeature2.setsTeamIsDeleted("False");
 		mockJiraFeature2.setsTeamName("Interlopers");
+
+		// Mock feature 3
+		mockJiraFeature3 = new Feature();
+		mockJiraFeature3.setCollectorId(jiraCollectorId3);
+		mockJiraFeature3.setIsDeleted("False");
+		mockJiraFeature3.setChangeDate(generalUseDate2);
+		mockJiraFeature3.setsEpicAssetState("Active");
+		mockJiraFeature3.setsEpicBeginDate("");
+		mockJiraFeature3.setsEpicChangeDate(maxDateLoser);
+		mockJiraFeature3.setsEpicEndDate("");
+		mockJiraFeature3.setsEpicHPSMReleaseID("");
+		mockJiraFeature3.setsEpicID("32112345");
+		mockJiraFeature3.setsEpicIsDeleted("");
+		mockJiraFeature3.setsEpicName("Test Epic 1");
+		mockJiraFeature3.setsEpicNumber("12938715");
+		mockJiraFeature3.setsEpicPDD("");
+		mockJiraFeature3.setsEpicType("");
+		mockJiraFeature3.setsEstimate("80");
+		mockJiraFeature3.setsId("0812342");
+		mockJiraFeature3.setsName("Test Story 4");
+		mockJiraFeature3.setsNumber("12345412");
+		mockJiraFeature3.setsOwnersChangeDate(sOwnerDates);
+		mockJiraFeature3.setsOwnersFullName(sOwnerNames);
+		mockJiraFeature3.setsOwnersID(sOwnerIds);
+		mockJiraFeature3.setsOwnersIsDeleted(sOwnerBools);
+		mockJiraFeature3.setsOwnersShortName(sOwnerNames);
+		mockJiraFeature3.setsOwnersState(sOwnerStates);
+		mockJiraFeature3.setsOwnersUsername(sOwnerNames);
+		mockJiraFeature3.setsProjectBeginDate(maxDateLoser);
+		mockJiraFeature3.setsProjectChangeDate(maxDateLoser);
+		mockJiraFeature3.setsProjectEndDate(maxDateLoser);
+		mockJiraFeature3.setsProjectID("583483");
+		mockJiraFeature3.setsProjectIsDeleted("False");
+		mockJiraFeature3.setsProjectName("Not Cell!");
+		mockJiraFeature3.setsProjectPath("");
+		mockJiraFeature3.setsProjectState("Active");
+		mockJiraFeature3.setsSoftwareTesting("");
+		mockJiraFeature3.setsSprintAssetState("Active");
+		mockJiraFeature3.setsSprintBeginDate(maxDateLoser);
+		mockJiraFeature3.setsSprintChangeDate(maxDateWinner);
+		mockJiraFeature3.setsSprintEndDate(currentSprintEndDate);
+		mockJiraFeature3.setsSprintID("1232512");
+		mockJiraFeature3.setsSprintIsDeleted("False");
+		mockJiraFeature3.setsSprintName("Test Sprint 3");
+		mockJiraFeature3.setsState("Active");
+		mockJiraFeature3.setsStatus("In Progress");
+		mockJiraFeature3.setsTeamAssetState("Active");
+		mockJiraFeature3.setsTeamChangeDate(maxDateLoser);
+		mockJiraFeature3.setsTeamID("08374329");
+		mockJiraFeature3.setsTeamIsDeleted("False");
+		mockJiraFeature3.setsTeamName("Interlopers");
+
+		// Mock feature 4
+		mockJiraFeature4 = new Feature();
+		mockJiraFeature4.setCollectorId(jiraCollectorId4);
+		mockJiraFeature4.setIsDeleted("False");
+		mockJiraFeature4.setChangeDate(generalUseDate3);
+		mockJiraFeature4.setsEpicAssetState("Active");
+		mockJiraFeature4.setsEpicBeginDate("");
+		mockJiraFeature4.setsEpicChangeDate(maxDateLoser);
+		mockJiraFeature4.setsEpicEndDate("");
+		mockJiraFeature4.setsEpicHPSMReleaseID("");
+		mockJiraFeature4.setsEpicID("32112345");
+		mockJiraFeature4.setsEpicIsDeleted("");
+		mockJiraFeature4.setsEpicName("Test Epic 1");
+		mockJiraFeature4.setsEpicNumber("12938715");
+		mockJiraFeature4.setsEpicPDD("");
+		mockJiraFeature4.setsEpicType("");
+		mockJiraFeature4.setsEstimate("45");
+		mockJiraFeature4.setsId("0812344");
+		mockJiraFeature4.setsName("Test Story 4");
+		mockJiraFeature4.setsNumber("12345414");
+		mockJiraFeature4.setsOwnersChangeDate(sOwnerDates);
+		mockJiraFeature4.setsOwnersFullName(sOwnerNames);
+		mockJiraFeature4.setsOwnersID(sOwnerIds);
+		mockJiraFeature4.setsOwnersIsDeleted(sOwnerBools);
+		mockJiraFeature4.setsOwnersShortName(sOwnerNames);
+		mockJiraFeature4.setsOwnersState(sOwnerStates);
+		mockJiraFeature4.setsOwnersUsername(sOwnerNames);
+		mockJiraFeature4.setsProjectBeginDate(maxDateLoser);
+		mockJiraFeature4.setsProjectChangeDate(maxDateLoser);
+		mockJiraFeature4.setsProjectEndDate(maxDateLoser);
+		mockJiraFeature4.setsProjectID("583483");
+		mockJiraFeature4.setsProjectIsDeleted("False");
+		mockJiraFeature4.setsProjectName("Not Cell!");
+		mockJiraFeature4.setsProjectPath("");
+		mockJiraFeature4.setsProjectState("Active");
+		mockJiraFeature4.setsSoftwareTesting("");
+		mockJiraFeature4.setsSprintAssetState("Active");
+		mockJiraFeature4.setsSprintBeginDate(maxDateLoser);
+		mockJiraFeature4.setsSprintChangeDate(maxDateWinner);
+		mockJiraFeature4.setsSprintEndDate(currentSprintEndDate);
+		mockJiraFeature4.setsSprintID("1232512");
+		mockJiraFeature4.setsSprintIsDeleted("False");
+		mockJiraFeature4.setsSprintName("Test Sprint 3");
+		mockJiraFeature4.setsState("Active");
+		mockJiraFeature4.setsStatus("In Progress");
+		mockJiraFeature4.setsTeamAssetState("Active");
+		mockJiraFeature4.setsTeamChangeDate(maxDateLoser);
+		mockJiraFeature4.setsTeamID("08374329");
+		mockJiraFeature4.setsTeamIsDeleted("False");
+		mockJiraFeature4.setsTeamName("Interlopers");
 	}
 
 	@After
@@ -239,6 +349,8 @@ public class FeatureRepositoryTest {
 		mockV1Feature = null;
 		mockJiraFeature = null;
 		mockJiraFeature2 = null;
+		mockJiraFeature3 = null;
+		mockJiraFeature4 = null;
 		featureRepo.deleteAll();
 	}
 
@@ -247,29 +359,75 @@ public class FeatureRepositoryTest {
 		featureRepo.save(mockV1Feature);
 		featureRepo.save(mockJiraFeature);
 		featureRepo.save(mockJiraFeature2);
-		
-		assertTrue("Happy-path MongoDB connectivity validation for the FeatureRepository has failed",featureRepo.findAll().iterator().hasNext());
+
+		assertTrue(
+				"Happy-path MongoDB connectivity validation for the FeatureRepository has failed",
+				featureRepo.findAll().iterator().hasNext());
 	}
-	
+
 	@Test
 	public void testGetFeatureIdById_HappyPath() {
 		featureRepo.save(mockV1Feature);
 		featureRepo.save(mockJiraFeature);
 		featureRepo.save(mockJiraFeature2);
 		String testStoryId = "0812345";
-		
-		assertEquals("Expected feature ID did not match actual feature ID",testStoryId,featureRepo.getFeatureIdById(testStoryId).get(0).getsId().toString());
+
+		assertEquals("Expected feature ID did not match actual feature ID", testStoryId,
+				featureRepo.getFeatureIdById(testStoryId).get(0).getsId().toString());
 	}
-	
+
 	@Test
 	public void testFindTopByOrderByChangeDateDesc_HappyPath() {
 		featureRepo.save(mockV1Feature);
 		featureRepo.save(mockJiraFeature);
 		featureRepo.save(mockJiraFeature2);
-		
-		assertEquals("Expected feature max change date did not match actual feature max change date",maxDateWinner,featureRepo.findTopByOrderByChangeDateDesc(jiraCollectorId,maxDateLoser).get(0).getChangeDate().toString());
+		featureRepo.save(mockJiraFeature3);
+		featureRepo.save(mockJiraFeature4);
+
+		assertEquals(
+				"Expected feature max change date did not match actual feature max change date",
+				maxDateWinner,
+				featureRepo.findTopByOrderByChangeDateDesc(jiraCollectorId, maxDateLoser).get(0)
+						.getChangeDate().toString());
 	}
-	
+
+	@Test
+	public void testFindTopByOrderByChangeDateDesc_SameMaxDateResultsError() {
+		featureRepo.save(mockV1Feature);
+		featureRepo.save(mockJiraFeature);
+		featureRepo.save(mockJiraFeature2);
+		featureRepo.save(mockJiraFeature3);
+		featureRepo.save(mockJiraFeature4);
+		// Setting slight differences in testable values for last change date
+		int lastDigit = Integer.parseInt(maxDateWinner.substring(maxDateWinner.length() - 3,
+				maxDateWinner.length() - 1));
+		int biggerThanDigit = lastDigit + 1;
+		int smallerThanDigit = lastDigit - 1;
+		String biggerThanDigitConv;
+		String smallerThanDigitConv;
+		if (biggerThanDigit < 10) {
+			biggerThanDigitConv = "0" + Integer.toString(biggerThanDigit);
+		} else {
+			biggerThanDigitConv = Integer.toString(biggerThanDigit);
+		}
+		if (smallerThanDigit < 10) {
+			smallerThanDigitConv = "0" + Integer.toString(smallerThanDigit);
+		} else {
+			smallerThanDigitConv = Integer.toString(smallerThanDigit);
+		}
+		String biggerThanWinner = maxDateWinner.substring(0, maxDateWinner.length() - 3)
+				+ biggerThanDigitConv + "Z";
+		String smallerThanWinner = maxDateWinner.substring(0, maxDateWinner.length() - 3)
+				+ smallerThanDigitConv + "Z";
+
+		assertEquals("Actual size should result in a size of 0", 0, featureRepo
+				.findTopByOrderByChangeDateDesc(jiraCollectorId, maxDateWinner).size());
+		assertEquals("Actual size should result in a size of 0", 0, featureRepo
+				.findTopByOrderByChangeDateDesc(jiraCollectorId, biggerThanWinner).size());
+		assertEquals("Actual size should result in a size of 1", 1, featureRepo
+				.findTopByOrderByChangeDateDesc(jiraCollectorId, smallerThanWinner).size());
+	}
+
 	@Test
 	public void testGetSprintStoriesByTeamId_HappyPath() {
 		featureRepo.save(mockV1Feature);
@@ -277,10 +435,13 @@ public class FeatureRepositoryTest {
 		featureRepo.save(mockJiraFeature2);
 		String testTeamID = "08374321";
 		String testStoryId = "0812345";
-		
-		assertEquals("Expected top ordered sprint story ID did not match actual top ordered sprint story ID",testStoryId,featureRepo.queryByOrderBySStatusDesc(testTeamID,maxDateWinner).get(0).getsId().toString());
+
+		assertEquals(
+				"Expected top ordered sprint story ID did not match actual top ordered sprint story ID",
+				testStoryId, featureRepo.queryByOrderBySStatusDesc(testTeamID, maxDateWinner)
+						.get(0).getsId().toString());
 	}
-	
+
 	@Test
 	public void testGetCurrentSprintDetail_HappyPath() {
 		featureRepo.save(mockV1Feature);
@@ -288,8 +449,9 @@ public class FeatureRepositoryTest {
 		featureRepo.save(mockJiraFeature2);
 		String testTeamId = "08374321";
 		String testSprintName = "Test Sprint 2";
-		assertEquals("Expected current sprint detail did not match actual current sprint detail",testSprintName,featureRepo.getCurrentSprintDetail(testTeamId,maxDateWinner).get(0).getsSprintName());
+		assertEquals("Expected current sprint detail did not match actual current sprint detail",
+				testSprintName, featureRepo.getCurrentSprintDetail(testTeamId, maxDateWinner)
+						.get(0).getsSprintName());
 	}
-	
-	
+
 }
