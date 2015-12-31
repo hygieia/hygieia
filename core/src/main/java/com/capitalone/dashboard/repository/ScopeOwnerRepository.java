@@ -5,7 +5,6 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 
 /**
