@@ -36,7 +36,6 @@ public class ScopeRepositoryTest {
 	private static String maxDateLoser = new String();
 	private static String currentScopeEndDate = new String();
 	private static final ObjectId jiraCollectorId = new ObjectId();
-	private static final ObjectId jiraCollectorId2 = new ObjectId();
 	private static final ObjectId v1CollectorId = new ObjectId();
 
 	@ClassRule
@@ -160,11 +159,11 @@ public class ScopeRepositoryTest {
 	public void testGetScopeMaxChangeDate_HappyPath() {
 		scopeRepo.save(mockJiraScope);
 		scopeRepo.save(mockJiraScope2);
-
+		
 		assertEquals(
 				"Expected max change dated scope ID did not match actual max change dated scope ID",
 				mockJiraScope.getChangeDate(),
-				scopeRepo.findTopByOrderByChangeDateDesc(jiraCollectorId, maxDateLoser).get(0)
+				scopeRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateLoser).get(0)
 						.getChangeDate().toString());
 	}
 }

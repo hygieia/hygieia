@@ -5,6 +5,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 
+import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 
 /**
@@ -18,8 +19,19 @@ BaseCollectorItemRepository<ScopeOwnerCollectorItem> {
     @Query(value="{ 'collectorId' : ?0, options.teamId : ?1, enabled: true}")
     List<ScopeOwnerCollectorItem> findEnabledTeamCollectors(ObjectId collectorId, String teamId);
 
-	@Query(value = "{ 'collectorId' : ?0, 'options.changeDate' : {$gt: ?1}, '_class' : 'com.capitalone.dashboard.model.ScopeOwnerCollectorItem'}", fields="{'options.changeDate' : 1, '_id' : 0}")
-	List<ScopeOwnerCollectorItem> findTopByOrderByChangeDateDesc(ObjectId collectorId, String lastChangeDate);
+    /**
+	 * This essentially returns the max change date from the collection, based
+	 * on the last change date (or default delta change date property) available
+	 * 
+	 * @param collectorId
+	 *            Collector ID of source system collector
+	 * @param changeDate
+	 *            Last available change date or delta begin date property
+	 * @return A single Change Date value that is the maximum value of the
+	 *         existing collection
+	 */
+	@Query(value = "{ 'collectorId' : ?0, 'options.changeDate' : {$gt: ?1}, '_class' : 'com.capitalone.dashboard.model.ScopeOwnerCollectorItem'}")
+	List<ScopeOwnerCollectorItem> findTopByChangeDateDesc(ObjectId collectorId, String changeDate);
 
 	@Query(value = "{'options.teamId' : ?0}", fields = "{'options.teamId' : 1}")
 	List<ScopeOwnerCollectorItem> getTeamIdById(String teamId);

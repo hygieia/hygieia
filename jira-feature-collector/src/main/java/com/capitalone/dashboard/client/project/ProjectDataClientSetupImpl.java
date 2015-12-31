@@ -190,7 +190,7 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 	public String getMaxChangeDate() {
 		String data = null;
 		try {
-			List<Scope> response = projectRepo.findTopByOrderByChangeDateDesc(
+			List<Scope> response = projectRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
 					featureCollectorRepository.findByName("Jira").getId(),
 					featureSettings.getDeltaStartDate());
 			if (!response.isEmpty()) {

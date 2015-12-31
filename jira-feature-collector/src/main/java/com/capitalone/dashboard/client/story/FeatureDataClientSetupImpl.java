@@ -209,7 +209,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 		String data = null;
 
 		try {
-			List<Feature> response = featureRepo.findTopByOrderByChangeDateDesc(
+			List<Feature> response = featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
 					featureCollectorRepository.findByName("Jira").getId(),
 					featureSettings.getDeltaStartDate());
 			if (!response.isEmpty()) {

@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 import com.capitalone.dashboard.config.MongoConfig;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 
 import org.bson.types.ObjectId;
@@ -30,13 +32,14 @@ public class ScopeOwnerRepositoryTest {
 	private static ScopeOwnerCollectorItem mockV1ScopeOwner;
 	private static ScopeOwnerCollectorItem mockJiraScopeOwner;
 	private static ScopeOwnerCollectorItem mockJiraScopeOwner2;
+	private static CollectorItem mockBadItem;
 	private static final String generalUseDate = "2015-11-01T00:00:00Z";
+	private static final String olderThanGeneralUseDate = "2015-10-30T00:00:00Z";
 	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	private static Calendar cal = Calendar.getInstance();
 	private static final String maxDateWinner = df.format(new Date());
 	private static String maxDateLoser = new String();
 	private static final ObjectId jiraCollectorId = new ObjectId();
-	private static final ObjectId jiraCollectorId2 = new ObjectId();
 	private static final ObjectId v1CollectorId = new ObjectId();
 
 	@ClassRule
@@ -44,6 +47,8 @@ public class ScopeOwnerRepositoryTest {
 
 	@Autowired
 	private ScopeOwnerRepository scopeOwnerRepo;
+	@Autowired
+	private CollectorItemRepository badItemRepo;
 
 	@Before
 	public void setUp() {
@@ -79,7 +84,7 @@ public class ScopeOwnerRepositoryTest {
 
 		// Mock Scope 2
 		mockJiraScopeOwner2 = new ScopeOwnerCollectorItem();
-		mockJiraScopeOwner2.setCollectorId(jiraCollectorId2);
+		mockJiraScopeOwner2.setCollectorId(jiraCollectorId);
 		mockJiraScopeOwner2.setIsDeleted("False");
 		mockJiraScopeOwner2.setChangeDate(generalUseDate);
 		mockJiraScopeOwner2.setAssetState("Inactive");
@@ -88,6 +93,14 @@ public class ScopeOwnerRepositoryTest {
 		mockJiraScopeOwner2.setName("Jedi Knights");
 		mockJiraScopeOwner2.setDescription(mockJiraScopeOwner2.getName());
 		mockJiraScopeOwner2.setEnabled(false);
+
+		// Mock Alternative Collector Item
+		mockBadItem = new CollectorItem();
+		mockBadItem.setCollector(new Collector());
+		mockBadItem.setCollectorId(jiraCollectorId);
+		mockBadItem.setDescription("THIS SHOULD NOT SHOW UP");
+		mockBadItem.setEnabled(true);
+		mockBadItem.setId(ObjectId.get());
 	}
 
 	@After
@@ -95,6 +108,8 @@ public class ScopeOwnerRepositoryTest {
 		mockV1ScopeOwner = null;
 		mockJiraScopeOwner = null;
 		mockJiraScopeOwner2 = null;
+		mockBadItem = null;
+		badItemRepo.deleteAll();
 		scopeOwnerRepo.deleteAll();
 	}
 
@@ -142,8 +157,33 @@ public class ScopeOwnerRepositoryTest {
 				"Expected number of enabled team collectors did not match actual number of enabled team collectors",
 				mockJiraScopeOwner.getChangeDate(),
 				scopeOwnerRepo
-						.findTopByOrderByChangeDateDesc(mockJiraScopeOwner.getCollectorId(),
-								maxDateLoser).get(0).getChangeDate().toString());
+						.findTopByChangeDateDesc(mockJiraScopeOwner.getCollectorId(), maxDateLoser)
+						.get(0).getChangeDate().toString());
+		assertEquals(
+				"Expected number of enabled team collectors did not match actual number of enabled team collectors",
+				maxDateWinner,
+				scopeOwnerRepo
+						.findTopByChangeDateDesc(mockJiraScopeOwner.getCollectorId(),
+								olderThanGeneralUseDate).get(0).getChangeDate().toString());
+	}
+
+	@Test
+	public void testGetTeamMaxChangeDate_WithOtherCollectorItemClasses() {
+		scopeOwnerRepo.save(mockV1ScopeOwner);
+		scopeOwnerRepo.save(mockJiraScopeOwner);
+		scopeOwnerRepo.save(mockJiraScopeOwner2);
+		badItemRepo.save(mockBadItem);
+
+		assertTrue(
+				"A wild CollectorItem class appeared!",
+				scopeOwnerRepo
+						.findTopByChangeDateDesc(mockJiraScopeOwner.getCollectorId(),
+								olderThanGeneralUseDate)
+						.get(0)
+						.getClass()
+						.toString()
+						.equalsIgnoreCase(
+								"class com.capitalone.dashboard.model.ScopeOwnerCollectorItem"));
 	}
 
 	@Test

@@ -30,8 +30,20 @@ import com.capitalone.dashboard.model.Feature;
  */
 public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 		QueryDslPredicateExecutor<Feature> {
-	@Query(value = "{ 'collectorId' : ?0, 'changeDate' : {$gt: ?1}}", fields = "{'changeDate' : 1, '_id' : 0}")
-	List<Feature> findTopByOrderByChangeDateDesc(ObjectId collectorId, String lastChangeDate);
+	/**
+	 * This essentially returns the max change date from the collection, based
+	 * on the last change date (or default delta change date property) available
+	 * 
+	 * @param collectorId
+	 *            Collector ID of source system collector
+	 * @param changeDate
+	 *            Last available change date or delta begin date property
+	 * @return A single Change Date value that is the maximum value of the
+	 *         existing collection
+	 */
+	@Query
+	List<Feature> findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+			ObjectId collectorId, String changeDate);
 
 	@Query(value = "{'sId' : ?0}", fields = "{'sId' : 1}")
 	List<Feature> getFeatureIdById(String sId);

@@ -17,13 +17,11 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(classes = { MongoConfig.class })
@@ -44,9 +42,6 @@ public class FeatureRepositoryTest {
 	private static String maxDateLoser = new String();
 	private static String currentSprintEndDate = new String();
 	private static final ObjectId jiraCollectorId = new ObjectId();
-	private static final ObjectId jiraCollectorId2 = new ObjectId();
-	private static final ObjectId jiraCollectorId3 = new ObjectId();
-	private static final ObjectId jiraCollectorId4 = new ObjectId();
 	private static final ObjectId v1CollectorId = new ObjectId();
 
 	@ClassRule
@@ -192,7 +187,7 @@ public class FeatureRepositoryTest {
 
 		// Mock feature 2
 		mockJiraFeature2 = new Feature();
-		mockJiraFeature2.setCollectorId(jiraCollectorId2);
+		mockJiraFeature2.setCollectorId(jiraCollectorId);
 		mockJiraFeature2.setIsDeleted("False");
 		mockJiraFeature2.setChangeDate(maxDateLoser);
 		mockJiraFeature2.setsEpicAssetState("Active");
@@ -243,7 +238,7 @@ public class FeatureRepositoryTest {
 
 		// Mock feature 3
 		mockJiraFeature3 = new Feature();
-		mockJiraFeature3.setCollectorId(jiraCollectorId3);
+		mockJiraFeature3.setCollectorId(jiraCollectorId);
 		mockJiraFeature3.setIsDeleted("False");
 		mockJiraFeature3.setChangeDate(generalUseDate2);
 		mockJiraFeature3.setsEpicAssetState("Active");
@@ -294,7 +289,7 @@ public class FeatureRepositoryTest {
 
 		// Mock feature 4
 		mockJiraFeature4 = new Feature();
-		mockJiraFeature4.setCollectorId(jiraCollectorId4);
+		mockJiraFeature4.setCollectorId(jiraCollectorId);
 		mockJiraFeature4.setIsDeleted("False");
 		mockJiraFeature4.setChangeDate(generalUseDate3);
 		mockJiraFeature4.setsEpicAssetState("Active");
@@ -383,16 +378,16 @@ public class FeatureRepositoryTest {
 		featureRepo.save(mockJiraFeature2);
 		featureRepo.save(mockJiraFeature3);
 		featureRepo.save(mockJiraFeature4);
-
+		
 		assertEquals(
 				"Expected feature max change date did not match actual feature max change date",
 				maxDateWinner,
-				featureRepo.findTopByOrderByChangeDateDesc(jiraCollectorId, maxDateLoser).get(0)
+				featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateLoser).get(0)
 						.getChangeDate().toString());
 	}
 
 	@Test
-	public void testFindTopByOrderByChangeDateDesc_SameMaxDateResultsError() {
+	public void testFindTopByOrderByChangeDateDesc_BVA() {
 		featureRepo.save(mockV1Feature);
 		featureRepo.save(mockJiraFeature);
 		featureRepo.save(mockJiraFeature2);
@@ -419,13 +414,34 @@ public class FeatureRepositoryTest {
 				+ biggerThanDigitConv + "Z";
 		String smallerThanWinner = maxDateWinner.substring(0, maxDateWinner.length() - 3)
 				+ smallerThanDigitConv + "Z";
-
+		
 		assertEquals("Actual size should result in a size of 0", 0, featureRepo
-				.findTopByOrderByChangeDateDesc(jiraCollectorId, maxDateWinner).size());
+				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateWinner).size());
 		assertEquals("Actual size should result in a size of 0", 0, featureRepo
-				.findTopByOrderByChangeDateDesc(jiraCollectorId, biggerThanWinner).size());
+				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, biggerThanWinner).size());
 		assertEquals("Actual size should result in a size of 1", 1, featureRepo
-				.findTopByOrderByChangeDateDesc(jiraCollectorId, smallerThanWinner).size());
+				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, smallerThanWinner).size());
+	}
+
+	@Test
+	public void testFindTopByOrderByChangeDateDesc_RealisticDeltaStartDate() {
+		featureRepo.save(mockV1Feature);
+		featureRepo.save(mockJiraFeature);
+		featureRepo.save(mockJiraFeature2);
+		featureRepo.save(mockJiraFeature3);
+		featureRepo.save(mockJiraFeature4);
+		
+		Object obj = featureRepo
+				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateLoser);
+		
+		assertTrue("Actual size should result in a size of 1",
+				featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, "2015-10-01T00:00:00Z")
+						.size() == 1);
+		assertTrue("Actual size should result in a size of 0", featureRepo
+				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateWinner).size() == 0);
+		assertTrue("Expected response of the maximum change date did not match the actual match change date", featureRepo
+				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateLoser).get(0)
+				.getChangeDate().toString().equalsIgnoreCase(maxDateWinner));
 	}
 
 	@Test

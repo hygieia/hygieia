@@ -188,7 +188,7 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 		String data = null;
 
 		try {
-			List<Scope> response = projectRepo.findTopByOrderByChangeDateDesc(featureCollectorRepository
+			List<Scope> response = projectRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(featureCollectorRepository
 							.findByName("VersionOne").getId(), featureSettings
 							.getDeltaStartDate());
 			if (!response.isEmpty()) {
