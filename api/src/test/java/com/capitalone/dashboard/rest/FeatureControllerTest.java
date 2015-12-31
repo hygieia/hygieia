@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class, WebMVCConfig.class })
 @WebAppConfiguration
-public class TestFeatureController {
+public class FeatureControllerTest {
 	private static Feature mockV1Feature;
 	private static Feature mockJiraFeature;
 	private static Feature mockJiraFeature2;
