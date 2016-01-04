@@ -1,3 +1,6 @@
+[![Docker Stars](https://img.shields.io/docker/stars/capitalone/hygieia-ui.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
+[![Docker Stars](https://img.shields.io/docker/pulls/capitalone/hygieia-ui.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
+
 ## Hygieia UI
 
 ### Requirements
