@@ -15,7 +15,7 @@
         };
 
         function details(serviceUrl) {
-            return $http.get(serviceUrl).then(function (response) {
+            return $http.get(localTesting ? testDetailRoute : serviceUrl).then(function (response) {
 
                 return response.data;
             }, function (response) {
