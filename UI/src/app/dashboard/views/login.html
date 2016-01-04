@@ -69,22 +69,17 @@
         </div>
         <div class="auth-modal-footer">
             <div class="col-md-8 col-md-push-2 top-buffer">
-                <div class="col-md-2  col-md-push-4">
+                <div class="col-md-4  col-md-push-3">
+                    <div  class="animate-hide">
+                        <span class="text-center">API Connectivity</span>
+                    </div>
+                    </div>
+                <div class="col-md-2 col-md-push-2">
                     <div ng-show="login.apiup" class="animate-hide">
-                    <span class="fa fa-2x fa-check-circle text-success"></span>
-                    </div>
-                    <div ng-hide="login.apiup" class="animate-hide">
-                        <span class="fa fa-2x fa-times-circle text-danger"></span>
-                    </div>
-                    </div>
-
-
-                <div class="col-md-4 col-md-push-4">
-                    <div ng-show="login.apiup" class="animate-hide">
-                    <span class="text-center">API Layer Up</span>
+                        <span class="fa fa-2x fa-check-circle text-success"></span>
                 </div>
                 <div ng-hide="login.apiup" class="animate-hide">
-                    <span class="text-center">API Layer Down</span>
+                    <span class="fa fa-2x fa-times-circle text-danger"></span>
                     </div>
 
             </div>

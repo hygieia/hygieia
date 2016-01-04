@@ -99,7 +99,7 @@
 
                     if(status == 200)
                     {
-                        console.log("API layer up");
+                        console.log("API Connectivity");
                         login.apiup=true;
 
                     }
