@@ -1,3 +1,5 @@
+[![Docker Stars](https://img.shields.io/docker/stars/capitalone/hygieia-api.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
+
 # Hygieia API
 
 This contains all common REST api services that work with source data system data, which has already
