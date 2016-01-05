@@ -378,12 +378,13 @@ public class FeatureRepositoryTest {
 		featureRepo.save(mockJiraFeature2);
 		featureRepo.save(mockJiraFeature3);
 		featureRepo.save(mockJiraFeature4);
-		
+
 		assertEquals(
 				"Expected feature max change date did not match actual feature max change date",
 				maxDateWinner,
-				featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateLoser).get(0)
-						.getChangeDate().toString());
+				featureRepo
+						.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+								jiraCollectorId, maxDateLoser).get(0).getChangeDate().toString());
 	}
 
 	@Test
@@ -414,13 +415,22 @@ public class FeatureRepositoryTest {
 				+ biggerThanDigitConv + "Z";
 		String smallerThanWinner = maxDateWinner.substring(0, maxDateWinner.length() - 3)
 				+ smallerThanDigitConv + "Z";
-		
-		assertEquals("Actual size should result in a size of 0", 0, featureRepo
-				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateWinner).size());
-		assertEquals("Actual size should result in a size of 0", 0, featureRepo
-				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, biggerThanWinner).size());
-		assertEquals("Actual size should result in a size of 1", 1, featureRepo
-				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, smallerThanWinner).size());
+
+		assertEquals(
+				"Actual size should result in a size of 0",
+				0,
+				featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+						jiraCollectorId, maxDateWinner).size());
+		assertEquals(
+				"Actual size should result in a size of 0",
+				0,
+				featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+						jiraCollectorId, biggerThanWinner).size());
+		assertEquals(
+				"Actual size should result in a size of 1",
+				1,
+				featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+						jiraCollectorId, smallerThanWinner).size());
 	}
 
 	@Test
@@ -430,18 +440,24 @@ public class FeatureRepositoryTest {
 		featureRepo.save(mockJiraFeature2);
 		featureRepo.save(mockJiraFeature3);
 		featureRepo.save(mockJiraFeature4);
-		
-		Object obj = featureRepo
-				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateLoser);
-		
-		assertTrue("Actual size should result in a size of 1",
-				featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, "2015-10-01T00:00:00Z")
-						.size() == 1);
-		assertTrue("Actual size should result in a size of 0", featureRepo
-				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateWinner).size() == 0);
-		assertTrue("Expected response of the maximum change date did not match the actual match change date", featureRepo
-				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateLoser).get(0)
-				.getChangeDate().toString().equalsIgnoreCase(maxDateWinner));
+
+		Object obj = featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+				jiraCollectorId, maxDateLoser);
+
+		assertTrue(
+				"Actual size should result in a size of 1",
+				featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+						jiraCollectorId, "2015-10-01T00:00:00Z").size() == 1);
+		assertTrue(
+				"Actual size should result in a size of 0",
+				featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+						jiraCollectorId, maxDateWinner).size() == 0);
+		assertTrue(
+				"Expected response of the maximum change date did not match the actual match change date",
+				featureRepo
+						.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+								jiraCollectorId, maxDateLoser).get(0).getChangeDate().toString()
+						.equalsIgnoreCase(maxDateWinner));
 	}
 
 	@Test
@@ -470,4 +486,17 @@ public class FeatureRepositoryTest {
 						.get(0).getsSprintName());
 	}
 
+	@Test
+	public void testGetInProgressFeaturesEstimatesByTeamId_MultipleValidStories() {
+		featureRepo.save(mockJiraFeature);
+		featureRepo.save(mockJiraFeature2);
+		featureRepo.save(mockJiraFeature3);
+		featureRepo.save(mockJiraFeature4);
+
+		assertEquals(
+				"The size of the actual response was not expected",
+				3,
+				featureRepo.getInProgressFeaturesEstimatesByTeamId(mockJiraFeature3.getsTeamID(),
+						currentSprintEndDate).size());
+	}
 }

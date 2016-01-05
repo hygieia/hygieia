@@ -87,7 +87,7 @@ public class ScopeOwnerRepositoryTest {
 		mockJiraScopeOwner2.setCollectorId(jiraCollectorId);
 		mockJiraScopeOwner2.setIsDeleted("False");
 		mockJiraScopeOwner2.setChangeDate(generalUseDate);
-		mockJiraScopeOwner2.setAssetState("Inactive");
+		mockJiraScopeOwner2.setAssetState("Active");
 		mockJiraScopeOwner2.setId(ObjectId.get());
 		mockJiraScopeOwner2.setTeamId("078123416");
 		mockJiraScopeOwner2.setName("Jedi Knights");
@@ -197,5 +197,17 @@ public class ScopeOwnerRepositoryTest {
 				mockJiraScopeOwner2.getTeamId(),
 				scopeOwnerRepo.getTeamIdById(mockJiraScopeOwner2.getTeamId()).get(0).getTeamId()
 						.toString());
+	}
+
+	@Test
+	public void testGetTeamIdById_ValidTeamId_ZeroResponse() {
+		scopeOwnerRepo.save(mockV1ScopeOwner);
+		assertEquals("An unexpected inactive team was included with the response", 1,
+				scopeOwnerRepo.getTeamIdById(mockV1ScopeOwner.getTeamId()).size());
+		scopeOwnerRepo.deleteAll();
+		mockV1ScopeOwner.setAssetState("InActive");
+		scopeOwnerRepo.save(mockV1ScopeOwner);
+		assertEquals("An unexpected inactive team was included with the response", 0,
+				scopeOwnerRepo.getTeamIdById(mockV1ScopeOwner.getTeamId()).size());
 	}
 }

@@ -13,7 +13,6 @@ import com.capitalone.dashboard.service.FeatureService;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class, WebMVCConfig.class })
@@ -43,8 +44,11 @@ public class FeatureControllerTest {
 	private static Feature mockJiraFeature;
 	private static Feature mockJiraFeature2;
 	private static Component mockComponent;
-	private static Collector mockCollector;
+	private static Collector mockV1Collector;
+	private static Collector mockJiraCollector;
 	private static CollectorItem mockItem;
+	private static CollectorItem mockItem2;
+	private static CollectorItem mockItem3;
 	private static final String generalUseDate = "2015-11-01T00:00:00Z";
 	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	private static Calendar cal = Calendar.getInstance();
@@ -55,7 +59,6 @@ public class FeatureControllerTest {
 	private static final ObjectId jiraCollectorId2 = new ObjectId();
 	private static final ObjectId v1CollectorId = new ObjectId();
 	private static final ObjectId mockComponentId = new ObjectId();
-	private static final ObjectId mockCollectorItemId = new ObjectId();
 
 	private MockMvc mockMvc;
 
@@ -99,7 +102,7 @@ public class FeatureControllerTest {
 
 		// VersionOne Mock Feature
 		mockV1Feature = new Feature();
-		mockV1Feature.setCollectorId(jiraCollectorId);
+		mockV1Feature.setCollectorId(v1CollectorId);
 		mockV1Feature.setIsDeleted("True");
 		mockV1Feature.setChangeDate(generalUseDate);
 		mockV1Feature.setsEpicAssetState("Active");
@@ -247,28 +250,54 @@ public class FeatureControllerTest {
 		mockJiraFeature2.setsState("Active");
 		mockJiraFeature2.setsStatus("In Progress");
 		mockJiraFeature2.setsTeamAssetState("Active");
-		mockJiraFeature2.setsTeamChangeDate(maxDateLoser);
-		mockJiraFeature2.setsTeamID("08374329");
+		mockJiraFeature2.setsTeamChangeDate(maxDateWinner);
+		mockJiraFeature2.setsTeamID("108374321");
 		mockJiraFeature2.setsTeamIsDeleted("False");
-		mockJiraFeature2.setsTeamName("Interlopers");
+		mockJiraFeature2.setsTeamName("Saiya-jin Warriors");
 
 		// Creating Collector and Component relationship artifacts
-		mockCollector = new Collector();
-		mockCollector.setCollectorType(CollectorType.Feature);
-		mockCollector.setEnabled(true);
-		mockCollector.setName("VersionOne Collector");
-		mockCollector.setOnline(true);
-		mockCollector.setId(v1CollectorId);
+		mockV1Collector = new Collector();
+		mockV1Collector.setCollectorType(CollectorType.Feature);
+		mockV1Collector.setEnabled(true);
+		mockV1Collector.setName("VersionOne Collector");
+		mockV1Collector.setOnline(true);
+		mockV1Collector.setId(v1CollectorId);
+
+		mockJiraCollector = new Collector();
+		mockJiraCollector.setCollectorType(CollectorType.Feature);
+		mockJiraCollector.setEnabled(true);
+		mockJiraCollector.setName("Jira Collector");
+		mockJiraCollector.setOnline(true);
+		mockJiraCollector.setId(jiraCollectorId);
 
 		mockItem = new CollectorItem();
+		mockItem.setId(new ObjectId());
 		mockItem.setCollectorId(v1CollectorId);
-		mockItem.setDescription("Sample Dashboard Collector Item");
+		mockItem.setDescription(mockV1Feature.getsTeamName());
 		mockItem.setEnabled(true);
-		mockItem.setId(mockCollectorItemId);
-		mockItem.setCollector(mockCollector);
+		mockItem.setCollector(mockV1Collector);
+
+		mockItem2 = new CollectorItem();
+		mockItem2.setId(new ObjectId());
+		mockItem2.setCollectorId(jiraCollectorId);
+		mockItem2.setDescription(mockJiraFeature.getsTeamName());
+		mockItem2.setEnabled(true);
+		mockItem2.setCollector(mockJiraCollector);
+
+		mockItem3 = new CollectorItem();
+		mockItem3.setId(new ObjectId());
+		mockItem3.setCollectorId(jiraCollectorId);
+		mockItem3.setDescription(mockJiraFeature2.getsTeamName());
+		mockItem3.setEnabled(true);
+		mockItem3.setCollector(mockJiraCollector);
 
 		mockComponent = new Component();
 		mockComponent.addCollectorItem(CollectorType.Feature, mockItem);
+		mockComponent.addCollectorItem(CollectorType.Feature, mockItem2);
+		mockComponent.addCollectorItem(CollectorType.Feature, mockItem3);
+		mockComponent.setId(mockComponentId);
+		mockComponent.setName("Feature Widget Test");
+		mockComponent.setOwner("kfk884");
 	}
 
 	@After
@@ -276,25 +305,59 @@ public class FeatureControllerTest {
 		mockV1Feature = null;
 		mockJiraFeature = null;
 		mockJiraFeature2 = null;
-		mockCollector = null;
+		mockV1Collector = null;
 		mockItem = null;
 		mockComponent = null;
 		mockMvc = null;
 	}
-	
+
 	@Test
 	public void testRelevantStories_HappyPath() throws Exception {
-		String testTeamId = "Team:124127";
+		String testTeamId = mockV1Feature.getsTeamID();
 		List<Feature> features = new ArrayList<Feature>();
 		features.add(mockV1Feature);
 		features.add(mockJiraFeature);
 		features.add(mockJiraFeature2);
 		DataResponse<List<Feature>> response = new DataResponse<>(features,
-				mockCollector.getLastExecuted());
+				mockV1Collector.getLastExecuted());
 
-		when(featureService.getFeatureEstimates(v1CollectorId, testTeamId)).thenReturn(response);
+		when(featureService.getFeatureEstimates(mockComponentId, testTeamId)).thenReturn(response);
+		mockMvc.perform(get("/feature/" + testTeamId + "?component=" + mockComponentId.toString()))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	public void testFeatureEstimates_HappyPath() throws Exception {
+		String testTeamId = mockV1Feature.getsTeamID();
+		List<Feature> features = new ArrayList<Feature>();
+		features.add(mockV1Feature);
+		features.add(mockJiraFeature);
+		features.add(mockJiraFeature2);
+		DataResponse<List<Feature>> response = new DataResponse<>(features,
+				mockV1Collector.getLastExecuted());
+
+		when(featureService.getFeatureEstimates(mockComponentId, testTeamId)).thenReturn(response);
 		mockMvc.perform(
-				get("/feature/{teamId}", testTeamId).param("component",
-						mockComponentId.toString())).andExpect(status().isOk());
+				get("/feature/estimates/super/" + testTeamId + "?component="
+						+ mockComponentId.toString())).andExpect(status().isOk());
+	}
+
+	@Test
+	public void testFeatureEstimates_SameEpicWithEstimates_UniqueResponse() throws Exception {
+		String testTeamId = mockV1Feature.getsTeamID();
+		List<Feature> features = new ArrayList<Feature>();
+		features.add(mockV1Feature);
+		features.add(mockJiraFeature);
+		features.add(mockJiraFeature2);
+		DataResponse<List<Feature>> response = new DataResponse<>(features,
+				mockV1Collector.getLastExecuted());
+
+		when(featureService.getFeatureEstimates(mockComponentId, testTeamId)).thenReturn(response);
+		mockMvc.perform(
+				get("/feature/estimates/super/" + testTeamId + "?component="
+						+ mockComponentId.toString()))
+				.andExpect(jsonPath("$result[0].sEpicNumber", is(mockV1Feature.getsEpicNumber())))
+				.andExpect(jsonPath("$result[0].sEstimate", is(mockV1Feature.getsEstimate())))
+				.andExpect(jsonPath("$result", hasSize(3)));
 	}
 }
