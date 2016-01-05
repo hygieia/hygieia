@@ -73,6 +73,14 @@ for information about sourcing this properties file.
     feature.jiraOauthRefreshtoken=sdfagheh==
     feature.jiraOauthRedirecturi=uri.this.is.test:uri
     feature.jiraOauthExpiretime=234567890987
+    # In Jira, general IssueType IDs are associated to various "issue"
+	# attributes. However, there is one attribute which this collector's
+	# queries rely on that change between different instantiations of Jira.
+	# Please provide a numerical ID reference to your instance's IssueType for
+	# the lowest level of Issues (e.g., "user story") specific to your Jira
+	# instance.  Note:  You can retrieve your instance's IssueType ID
+	# listings via the following URI:  https://[your-jira-domain-name]/rest/api/2/issuetype/
+    feature.jiraIssueTypeId=7
 
     #Start dates from which to begin collector data, if no other data is present - usually, a month back is appropriate (required)
     feature.deltaStartDate=2015-03-01T00:00:00.000000

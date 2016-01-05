@@ -5,6 +5,7 @@ import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.ClientUtil;
+import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import org.json.simple.JSONArray;
@@ -84,7 +85,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 
 				// collectorId
 				feature.setCollectorId(featureCollectorRepository.findByName(
-						"VersionOne").getId());
+						Constants.VERSIONONE).getId());
 
 				// ID
 				feature.setsId(TOOLS.sanitizeResponse((String) dataMainObj

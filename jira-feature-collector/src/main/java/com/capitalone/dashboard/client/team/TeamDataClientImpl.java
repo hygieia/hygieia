@@ -4,6 +4,7 @@ import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
+import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import org.bson.types.ObjectId;
@@ -68,7 +69,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 
 				// collectorId
 				team.setCollectorId(featureCollectorRepository.findByName(
-						"Jira").getId());
+						Constants.JIRA).getId());
 
 				// teamId
 				team.setTeamId(TOOLS.sanitizeResponse(dataMainObj.get("id")));

@@ -53,6 +53,20 @@ public class FeatureSettings {
 	private String jiraOauthExpiretime;
 	private String jiraProxyUrl;
 	private String jiraProxyPort;
+	/**
+	 * In Jira, general IssueType IDs are associated to various "issue"
+	 * attributes. However, there is one attribute which this collector's
+	 * queries rely on that change between different instantiations of Jira.
+	 * Please provide a numerical ID reference to your instance's IssueType for
+	 * the lowest level of Issues (e.g., "user story") specific to your Jira
+	 * instance.
+	 * <p>
+	 * </p>
+	 * <strong>Note:</strong> You can retrieve your instance's IssueType ID
+	 * listings via the following URI:
+	 * https://[your-jira-domain-name]/rest/api/2/issuetype/
+	 */
+	private String jiraIssueTypeId;
 
 	public String getCron() {
 		return this.cron;
@@ -78,8 +92,7 @@ public class FeatureSettings {
 		this.deltaStartDate = deltaStartDate;
 	}
 
-	public void setDeltaCollectorItemStartDate(
-			String deltaCollectorItemStartDate) {
+	public void setDeltaCollectorItemStartDate(String deltaCollectorItemStartDate) {
 		this.deltaCollectorItemStartDate = deltaCollectorItemStartDate;
 	}
 
@@ -253,5 +266,13 @@ public class FeatureSettings {
 
 	public void setJiraProxyPort(String jiraProxyPort) {
 		this.jiraProxyPort = jiraProxyPort;
+	}
+	
+	public String getJiraIssueTypeId() {
+		return jiraIssueTypeId;
+	}
+
+	public void setJiraIssueTypeId(String jiraIssueTypeId) {
+		this.jiraIssueTypeId = jiraIssueTypeId;
 	}
 }

@@ -21,6 +21,7 @@ import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.util.ClientUtil;
+import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import org.bson.types.ObjectId;
@@ -96,7 +97,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 
 				// collectorId
 				scope.setCollectorId(featureCollectorRepository.findByName(
-						"VersionOne").getId());
+						Constants.VERSIONONE).getId());
 
 				// ID;
 				scope.setpId(TOOLS.sanitizeResponse((String) dataMainObj

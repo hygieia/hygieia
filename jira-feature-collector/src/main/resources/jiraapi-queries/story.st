@@ -1,1 +1,1 @@
-story(changeDate) ::= "search?jql=updatedDate%3E%3D%27$changeDate$%27+AND+issueType%3D%277%27+ORDER+BY+updated"
+story(changeDate,issueType) ::= "search?jql=updatedDate%3E%3D%27$changeDate$%27+AND+issueType%3D%27$issueType$%27+ORDER+BY+updated"
