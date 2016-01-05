@@ -67,6 +67,24 @@ public class FeatureSettings {
 	 * https://[your-jira-domain-name]/rest/api/2/issuetype/
 	 */
 	private String jiraIssueTypeId;
+	/**
+	 * In Jira, your instance will have its own custom field created for "sprint" or "timebox" details, which includes a list of information.  This field allows you to specify that data field for your instance of Jira.
+	 * <p>
+	 * </p>
+	 * <strong>Note:</strong> You can retrieve your instance's sprint data field name
+	 * via the following URI, and look for a package name <em>com.atlassian.greenhopper.service.sprint.Sprint</em>; your custom field name describes the values in this field:
+	 * https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
+	 */
+	private String jiraSprintDataFieldName;
+	/**
+	 * In Jira, your instance will have its own custom field created for "super story" or "epic" back-end ID, which includes a list of information.  This field allows you to specify that data field for your instance of Jira.
+	 * <p>
+	 * </p>
+     * <strong>Note:</strong> You can retrieve your instance's epic ID field name
+	 * via the following URI where your queried user story issue has a super issue (e.g., epic) tied to it; your custom field name describes the epic value you expect to see, and is the only field that does this for a given issue:
+	 *  https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
+	 */
+	private String jiraEpicIdFieldName;
 
 	public String getCron() {
 		return this.cron;
@@ -274,5 +292,21 @@ public class FeatureSettings {
 
 	public void setJiraIssueTypeId(String jiraIssueTypeId) {
 		this.jiraIssueTypeId = jiraIssueTypeId;
+	}
+
+	public String getJiraSprintDataFieldName() {
+		return jiraSprintDataFieldName;
+	}
+
+	public void setJiraSprintDataFieldName(String jiraSprintDataFieldName) {
+		this.jiraSprintDataFieldName = jiraSprintDataFieldName;
+	}
+
+	public String getJiraEpicIdFieldName() {
+		return jiraEpicIdFieldName;
+	}
+
+	public void setJiraEpicIdFieldName(String jiraEpicIdFieldName) {
+		this.jiraEpicIdFieldName = jiraEpicIdFieldName;
 	}
 }

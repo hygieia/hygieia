@@ -93,7 +93,8 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 					JSONObject assignee = (JSONObject) fields.get("assignee");
 					JSONObject status = (JSONObject) fields.get("status");
 					JSONObject statusCategory = (JSONObject) status.get("statusCategory");
-					JSONArray sprint = (JSONArray) fields.get("customfield_10007");
+					JSONArray sprint = (JSONArray) fields.get(super.featureSettings
+							.getJiraSprintDataFieldName());
 					Feature feature = new Feature();
 
 					@SuppressWarnings("unused")
@@ -174,7 +175,8 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 					 * Epic Data
 					 */
 					try {
-						String epicKey = TOOLS.sanitizeResponse(fields.get("customfield_10400"));
+						String epicKey = TOOLS.sanitizeResponse(fields.get(super.featureSettings
+								.getJiraEpicIdFieldName()));
 						if (epicKey == null || epicKey.isEmpty()) {
 							throw new NullPointerException();
 						}
