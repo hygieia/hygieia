@@ -2,7 +2,19 @@
 
 # mongo container provides the HOST/PORT
 # api container provided DB Name, ID & PWD
-PROP_FILE=hygieia-github-scm-collector.properties
+
+if [ "$TEST_SCRIPT" != "" ]
+then
+        #for testing locally
+        PROP_FILE=application.properties
+else 
+	PROP_FILE=hygieia-github-scm-collector.properties
+fi
+  
+if [ ! -d logs ]
+then
+        mkdir logs
+fi
 LOG=logs/$PROP_FILE.log
 
 
@@ -38,9 +50,9 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-github.cron=0 0/5 * * * *
+github.cron=${GITHUB_CRON:-0 0/5 * * * *}
 
-github.host=github.com
+github.host=${GITHUB_HOST:-github.com}
 
 #Maximum number of days to go back in time when fetching commits
 github.commitThresholdDays=15
@@ -52,8 +64,13 @@ cp $PROP_FILE application.properties
 echo "
 
 ===========================================
-Properties file created:  $PROP_FILE
+Properties file created `date`:  $PROP_FILE
 `cat $PROP_FILE`
 ===========================================
 
  " >>$LOG
+
+if [ "$DEBUG" != "" ]
+then
+	cp $PROP_FILE logs/$PROP_FILE
+fi
