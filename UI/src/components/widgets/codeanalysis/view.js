@@ -122,7 +122,7 @@
                     }
                     return result;
                 }, allZeros);
-                var passed = aggregate.totalCount - aggregate.failureCount - aggregate.failureCount - aggregate.skippedCount;
+                var passed = aggregate.successCount;
                 var allPassed = aggregate.successCount === aggregate.totalCount;
                 var success = allPassed ? 100 : ((passed / (aggregate.totalCount)) * 100);
 
