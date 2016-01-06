@@ -39,6 +39,7 @@ hygieia-github-scm-collector:
 hygieia-jira-feature-collector:
   image: hygieia-jira-feature-collector:latest
   container_name: hygieia-jira
+  env_file: ./jira-settings.env
   volumes:
   - ./logs:/hygieia/logs
   links:
