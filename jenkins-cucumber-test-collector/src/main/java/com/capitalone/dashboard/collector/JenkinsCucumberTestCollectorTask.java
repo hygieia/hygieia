@@ -34,7 +34,6 @@ public class JenkinsCucumberTestCollectorTask extends
     private final JenkinsClient jenkinsClient;
     private final JenkinsSettings jenkinsCucumberTestSettings;
     private final ComponentRepository dbComponentRepository;
-    private static final int CLEANUP_INTERVAL = 3600000;
 
     @Autowired
     public JenkinsCucumberTestCollectorTask(
