@@ -40,7 +40,7 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-github.cron=${GITHUB_CRON:-"0 0/5 * * * *"}
+github.cron=${GITHUB_CRON:-0 0/5 * * * *}
 
 github.host=${GITHUB_HOST:-github.com}
 
@@ -52,7 +52,12 @@ EOF
 echo "
 
 ===========================================
-Properties file created:  $PROP_FILE
+Properties file created `date`:  $PROP_FILE
 ===========================================
 
  " >>$LOG
+
+if [ "$DEBUG" != "" ]
+then
+	cp $PROP_FILE logs/$PROP_FILE
+fi

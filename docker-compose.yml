@@ -25,7 +25,8 @@ hygieia-ui:
   - hygieia-api
 hygieia-github-scm-collector:
   image: hygieia-github-scm-collector:latest
-  container_name: hygieia-github-scm-collector
+  container_name: hygieia-github
+  env_file: ./github-settings.env
   volumes:
   - ./logs:/hygieia/logs
   links:
@@ -33,10 +34,8 @@ hygieia-github-scm-collector:
   - mongodb:mongo
 hygieia-jira-feature-collector:
   image: hygieia-jira-feature-collector:latest
-  container_name: hygieia-jira-feature-collector
+  container_name: hygieia-jira
   env_file: ./jira-settings.env
-  environment:
-  - DEBUG=1
   volumes:
   - ./logs:/hygieia/logs
   links:
