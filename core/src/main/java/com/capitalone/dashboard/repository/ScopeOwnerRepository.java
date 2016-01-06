@@ -31,6 +31,6 @@ public interface ScopeOwnerRepository extends BaseCollectorItemRepository<ScopeO
 	@Query(value = "{ 'collectorId' : ?0, 'options.changeDate' : {$gt: ?1}, '_class' : 'com.capitalone.dashboard.model.ScopeOwnerCollectorItem', options.assetState: 'Active'}")
 	List<ScopeOwnerCollectorItem> findTopByChangeDateDesc(ObjectId collectorId, String changeDate);
 
-	@Query(value = "{'options.teamId' : ?0, options.assetState: 'Active'}", fields = "{'options.teamId' : 1}")
+	@Query(value = "{'options.teamId' : ?0, 'options.assetState': 'Active'}", fields = "{'options.teamId' : 1}")
 	List<ScopeOwnerCollectorItem> getTeamIdById(String teamId);
 }

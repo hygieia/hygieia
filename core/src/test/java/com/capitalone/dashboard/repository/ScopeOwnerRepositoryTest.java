@@ -199,6 +199,13 @@ public class ScopeOwnerRepositoryTest {
 						.toString());
 	}
 
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void testGetTeamIdById_IndexOutOfBoundsException() {
+		String testValue = "This does not exist";
+		assertEquals("Something returned that was not an IndexOutOfBoundsException", testValue,
+				scopeOwnerRepo.getTeamIdById(testValue).get(0).getTeamId().toString());
+	}
+
 	@Test
 	public void testGetTeamIdById_ValidTeamId_ZeroResponse() {
 		scopeOwnerRepo.save(mockV1ScopeOwner);
