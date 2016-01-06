@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("PMD.UnnecessaryFullyQualifiedName") // Will need to rename com.capitalone.dashboard.Component as it conflicts with Spring.
+@SuppressWarnings("PMD.UnnecessaryFullyQualifiedName")
+// Will need to rename com.capitalone.dashboard.Component as it conflicts with Spring.
 @Component
 public class JenkinsCucumberTestCollectorTask extends
         CollectorTask<JenkinsCucumberTestCollector> {
@@ -74,10 +75,7 @@ public class JenkinsCucumberTestCollectorTask extends
 
         long start = System.currentTimeMillis();
 
-        // Clean up every hour
-        if ((start - collector.getLastExecuted()) > CLEANUP_INTERVAL) {
-            clean(collector);
-        }
+        clean(collector);
 
         for (String instanceUrl : collector.getBuildServers()) {
             logBanner(instanceUrl);
