@@ -23,3 +23,21 @@ hygieia-ui:
   - "8088:80"
   links:
   - hygieia-api
+hygieia-github-scm-collector:
+  image: hygieia-github-scm-collector:latest
+  container_name: hygieia-github
+  env_file: ./github-settings.env
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - hygieia-api
+  - mongodb:mongo
+hygieia-jira-feature-collector:
+  image: hygieia-jira-feature-collector:latest
+  container_name: hygieia-jira
+  env_file: ./jira-settings.env
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - hygieia-api
+  - mongodb:mongo
