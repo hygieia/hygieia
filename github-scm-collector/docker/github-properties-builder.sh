@@ -15,10 +15,7 @@ if [ ! -d logs ]
 then
         mkdir logs
 fi
-LOG=logs/$PROP_FILE.log
 
-
-# if we are linked, use that info
 if [ "$MONGO_PORT" != "" ]; then
   # Sample: MONGO_PORT=tcp://172.17.0.20:27017
   export SPRING_DATA_MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
@@ -41,7 +38,7 @@ database=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
 dbhost=${SPRING_DATA_MONGODB_HOST:-10.0.1.1}
 
 #Database Port - default is 27017
-dbport=${SPRING_DATA_MONGODB_PORT:-9999}
+dbport=${MONGODB_PORT:-27017}
 
 #Database Username - default is blank
 dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
@@ -55,7 +52,7 @@ github.cron=${GITHUB_CRON:-"0 0/5 * * * *"}
 github.host=github.com
 
 #Maximum number of days to go back in time when fetching commits
-github.commitThresholdDays=15
+github.commitThresholdDays=${GITHUB_COMMIT_THRESHOLD_DAYS:-15}
 
 EOF
 
@@ -65,12 +62,9 @@ echo "
 
 ===========================================
 Properties file created `date`:  $PROP_FILE
-`cat $PROP_FILE`
+Note: passwords hidden
 ===========================================
+`cat $PROP_FILE |egrep -vi password`
+ "
 
- " >>$LOG
-
-if [ "$DEBUG" != "" ]
-then
-	cp $PROP_FILE logs/$PROP_FILE
-fi
+exit 0
