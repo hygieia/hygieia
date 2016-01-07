@@ -26,4 +26,6 @@ core/src/generated
 target
 UI/node
 UI/src/app/local-testing.js
-*.releaseBackup
+docker-compose.override.yml
+logs
+
