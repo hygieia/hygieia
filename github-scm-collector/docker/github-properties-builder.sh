@@ -11,18 +11,13 @@ else
 	PROP_FILE=hygieia-github-scm-collector.properties
 fi
   
-if [ ! -d logs ]
-then
-        mkdir logs
-fi
-
 if [ "$MONGO_PORT" != "" ]; then
-  # Sample: MONGO_PORT=tcp://172.17.0.20:27017
-  export SPRING_DATA_MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
-  export SPRING_DATA_MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
+	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
+	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
+	MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
 else
-	env >>$LOG
-	echo "ERROR: MONGO_PORT not defined" > logs/$0.log
+	env
+	echo "ERROR: MONGO_PORT not defined"
 	exit 1
 fi
 

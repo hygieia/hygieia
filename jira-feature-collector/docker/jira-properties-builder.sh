@@ -10,25 +10,18 @@ else
 	PROP_FILE=hygieia-jira-feature-collector.properties
 fi
 
-if [ ! -d logs ] 
-then
-	mkdir logs
-fi
-LOG=logs/$PROP_FILE.log
-
-# if we are linked, use that info
 if [ "$MONGO_PORT" != "" ]; then
-  # Sample: MONGO_PORT=tcp://172.17.0.20:27017
-  export SPRING_DATA_MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
-  export SPRING_DATA_MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
+	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
+	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
+	MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
 else
-	env >>$LOG
-	echo "ERROR: MONGO_PORT not defined" > $LOG
+	env 
+	echo "ERROR: MONGO_PORT not defined"
 	exit 1
 fi
 
-echo "SPRING_DATA_MONGODB_HOST: $SPRING_DATA_MONGODB_HOST"
-echo "SPRING_DATA_MONGODB_PORT: $SPRING_DATA_MONGODB_PORT"
+echo "MONGODB_HOST: $MONGODB_HOST"
+echo "MONGODB_PORT: $MONGODB_PORT"
 
 
 cat > $PROP_FILE <<EOF
@@ -36,10 +29,11 @@ cat > $PROP_FILE <<EOF
 database=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
 
 #Database HostName - default is localhost
-dbhost=${SPRING_DATA_MONGODB_HOST:-10.0.1.1}
+dbhost=${MONGODB_HOST:-10.0.1.1}
 
 #Database Port - default is 27017
-dbport=${SPRING_DATA_MONGODB_PORT:-9999}
+dbport=${MONGODB_PORT:-27017}
+
 
 #Database Username - default is blank
 dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
@@ -99,10 +93,9 @@ feature.masterStartDate=2008-01-01T00:00:00.000000
 EOF
 
 echo "
-
 ===========================================
 Properties file created:  $PROP_FILE
-`cat $PROP_FILE`
+Note: passwords hidden
 ===========================================
-
- " >>$LOG
+`cat $PROP_FILE |egrep -vi password`
+" 
