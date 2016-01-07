@@ -5,6 +5,7 @@ import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
+import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.json.simple.JSONArray;
@@ -189,7 +190,7 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 
 		try {
 			List<Scope> response = projectRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(featureCollectorRepository
-							.findByName("VersionOne").getId(), featureSettings
+							.findByName(Constants.VERSIONONE).getId(), featureSettings
 							.getDeltaStartDate());
 			if (!response.isEmpty()) {
 				data = response.get(0).getChangeDate();

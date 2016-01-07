@@ -5,6 +5,7 @@ import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
+import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.json.simple.JSONArray;
@@ -192,7 +193,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 		try {
 			List<ScopeOwnerCollectorItem> response = teamRepo
 					.findTopByChangeDateDesc(
-							featureCollectorRepository.findByName("VersionOne").getId(),
+							featureCollectorRepository.findByName(Constants.VERSIONONE).getId(),
 							featureSettings.getDeltaCollectorItemStartDate());
 			if (!response.isEmpty()) {
 				data = response.get(0).getChangeDate();
