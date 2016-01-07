@@ -17,12 +17,18 @@ then
 fi
 LOG=logs/$PROP_FILE.log
 
-
 if [ "$MONGO_PORT" != "" ]; then
   # Sample: MONGO_PORT=tcp://172.17.0.20:27017
   MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
   MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
+else
+	env >>$LOG
+	echo "ERROR: MONGO_PORT not defined" > $LOG
+	exit 1
 fi
+
+echo "SPRING_DATA_MONGODB_HOST: $SPRING_DATA_MONGODB_HOST"
+echo "SPRING_DATA_MONGODB_PORT: $SPRING_DATA_MONGODB_PORT"
 
 
 cat > $PROP_FILE <<EOF
@@ -30,10 +36,8 @@ cat > $PROP_FILE <<EOF
 database=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
 
 #Database HostName - default is localhost
-dbhost=${MONGODB_HOST:-10.0.1.1}
 
 #Database Port - default is 27017
-dbport=${MONGODB_PORT:-9999}
 
 #Database Username - default is blank
 dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
@@ -42,7 +46,7 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-feature.cron=${JIRA_CRON:-"0 * * * * *"}
+feature.cron=${JIRA_CRON:-0 * * * * *}
 
 #Page size for data calls (Jira maxes at 1000)
 feature.pageSize=${JIRA_PAGE_SIZE:-1000}
@@ -100,6 +104,7 @@ echo "
 
 ===========================================
 Properties file created:  $PROP_FILE
+`cat $PROP_FILE`
 ===========================================
 
  " >>$LOG

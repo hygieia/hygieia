@@ -12,7 +12,6 @@ ENV GITHUB_HOST=
 #Maximum number of days to go back in time when fetching commits, default: 15
 ENV GITHUB_COMMIT_THREASHOLD_DAYS=
 
-
 RUN \
   mkdir /hygieia
 
