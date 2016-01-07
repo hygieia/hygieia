@@ -207,14 +207,14 @@ public class ScopeOwnerRepositoryTest {
 	}
 
 	@Test
-	public void testGetTeamIdById_ValidTeamId_ZeroResponse() {
+	public void testGetTeamIdById_InActiveValidTeamId_OneResponse() {
 		scopeOwnerRepo.save(mockV1ScopeOwner);
 		assertEquals("An unexpected inactive team was included with the response", 1,
 				scopeOwnerRepo.getTeamIdById(mockV1ScopeOwner.getTeamId()).size());
 		scopeOwnerRepo.deleteAll();
 		mockV1ScopeOwner.setAssetState("InActive");
 		scopeOwnerRepo.save(mockV1ScopeOwner);
-		assertEquals("An unexpected inactive team was included with the response", 0,
+		assertEquals("Teams which are inactive should also return to be updated", 1,
 				scopeOwnerRepo.getTeamIdById(mockV1ScopeOwner.getTeamId()).size());
 	}
 }
