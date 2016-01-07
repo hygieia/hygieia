@@ -30,7 +30,7 @@ cat > $PROP_FILE <<EOF
 database=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
 
 #Database HostName - default is localhost
-dbhost=${SPRING_DATA_MONGODB_HOST:-10.0.1.1}
+dbhost=${MONGODB_HOST:-10.0.1.1}
 
 #Database Port - default is 27017
 dbport=${MONGODB_PORT:-27017}
@@ -42,9 +42,9 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-github.cron=${GITHUB_CRON:-"0 0/5 * * * *"}
+github.cron=${GITHUB_CRON:-0 0/5 * * * *}
 
-github.host=github.com
+github.host=${GITHUB_HOST:-github.com}
 
 #Maximum number of days to go back in time when fetching commits
 github.commitThresholdDays=${GITHUB_COMMIT_THRESHOLD_DAYS:-15}
