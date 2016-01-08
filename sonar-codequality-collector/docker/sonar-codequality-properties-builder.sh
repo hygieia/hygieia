@@ -8,7 +8,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-github-scm-collector.properties
+	PROP_FILE=hygieia-sonar-codequality-collector.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then
@@ -42,12 +42,12 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-github.cron=${GITHUB_CRON:-0 0/5 * * * *}
+sonar.cron=${SONAR_CRON:-0 0/5 * * * *}
 
-github.host=${GITHUB_HOST:-github.com}
+sonar.servers[0]=${SONAR_URL:-http://sonar.company.com}
 
-#Maximum number of days to go back in time when fetching commits
-github.commitThresholdDays=${GITHUB_COMMIT_THRESHOLD_DAYS:-15}
+#Sonar Metrics
+sonar.metrics=${SONAR_METRICS:-ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,sqale_index,test_success_density,test_failures,test_errors,tests}
 
 EOF
 

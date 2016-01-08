@@ -23,9 +23,11 @@ hygieia-ui:
   - "8088:80"
   links:
   - hygieia-api
+
+
 hygieia-github-scm-collector:
   image: hygieia-github-scm-collector:latest
-  container_name: hygieia-github-scm-collector
+  container_name: hygieia-github
   volumes:
   - ./logs:/hygieia/logs
   links:
@@ -36,6 +38,8 @@ hygieia-github-scm-collector:
 #  - GITHUB_HOST=github.com
 #  - GITHUB_CRON='0 0/5 * * * *'
 #  - GITHUB_COMMIT_THREASHOLD_DAYS=15
+
+
 hygieia-jira-feature-collector:
   image: hygieia-jira-feature-collector:latest
   container_name: hygieia-jira
@@ -81,4 +85,46 @@ hygieia-jira-feature-collector:
 #  - JIRA_OAUTH_REDIRECT_URL=uri.this.is.test:uri
 #  - JIRA_OAUTH_EXPIRE_TIME=234567890987
 
+
+hygieia-jenkins-build-collector:
+  image: hygieia-jenkins-build-collector:latest
+  container_name: hygieia-jenkins-build
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+# place any values you want to change in docker-compose.override.yml
+#  environment:
+#Jenkins server (required) - Can provide multiple
+#  - JENKINS_MASTER=ttp://jenkins.company.com
+#If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
+#  - JENKINS_OP_CENTER=http://username:token@jenkins.company.com
+#Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
+#  - JENKINS_USERNAME
+#  - JENKINS_API_KEY
+#  - JENKINS_CRON=0 0/5 * * * *
+#Determines if build console log is collected - defaults to false
+#  - JENKINS_SAVE_LOG=true
+
+hygieia-jenkins-cucumber-test-collector:
+  image: hygieia-jenkins-cucumber-test-collector:latest
+  container_name: hygieia-jenkins-cucumber
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+# place any values you want to change in docker-compose.override.yml
+#  environment:
+#Jenkins server (required) - Can provide multiple
+#  - JENKINS_MASTER=ttp://jenkins.company.com
+#If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
+#  - JENKINS_OP_CENTER=http://username:token@jenkins.company.com
+#Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
+#  - JENKINS_USERNAME
+#  - JENKINS_API_KEY
+#  - JENKINS_CRON=0 0/5 * * * *
+#Determines if build console log is collected - defaults to false
+#  - JENKINS_SAVE_LOG=true
 

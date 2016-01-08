@@ -28,4 +28,8 @@ UI/node
 UI/src/app/local-testing.js
 docker-compose.override.yml
 logs
-
+.project
+.settings
+.pmd
+.pmdruleset.xml
+.classpath
