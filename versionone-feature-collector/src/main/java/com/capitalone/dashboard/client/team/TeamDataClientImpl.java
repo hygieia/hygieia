@@ -35,12 +35,11 @@ import org.slf4j.LoggerFactory;
  * collector. This will get data from the source system, but will grab the
  * majority of needed data and aggregate it in a single, flat MongoDB collection
  * for consumption.
- *
+ * 
  * @author kfk884
- *
+ * 
  */
-public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
-		TeamDataClient {
+public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientImpl.class);
 	private static final ClientUtil TOOLS = new ClientUtil();
 
@@ -49,30 +48,30 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	private final ScopeOwnerRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
 
+	private ObjectId oldTeamId;
+	private boolean oldTeamEnabledState;
+
 	/**
 	 * Extends the constructor from the super class.
-	 *
+	 * 
 	 * @param teamRepository
 	 */
-	public TeamDataClientImpl(
-			FeatureCollectorRepository featureCollectorRepository,
+	public TeamDataClientImpl(FeatureCollectorRepository featureCollectorRepository,
 			FeatureSettings featureSettings, ScopeOwnerRepository teamRepository,
 			VersionOneDataFactoryImpl vOneApi) {
-		super(featureSettings, teamRepository, featureCollectorRepository,
-				vOneApi);
+		super(featureSettings, teamRepository, featureCollectorRepository, vOneApi);
 		LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
 		this.featureSettings = featureSettings;
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepo = teamRepository;
-		this.featureWidgetQueries = new FeatureWidgetQueries(
-				this.featureSettings);
+		this.featureWidgetQueries = new FeatureWidgetQueries(this.featureSettings);
 	}
 
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
-	 *
+	 * 
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
 	 * @param featureCollector
@@ -89,40 +88,40 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 				dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
 				ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
 
-				@SuppressWarnings("unused")
 				boolean deleted = this.removeExistingEntity(TOOLS
 						.sanitizeResponse((String) dataMainObj.get("_oid")));
+				// Id
+				if (deleted) {
+					team.setId(this.getOldTeamId());
+					team.setEnabled(this.isOldTeamEnabledState());
+				}
 
 				// collectorId
-				team.setCollectorId(featureCollectorRepository.findByName(
-						Constants.VERSIONONE).getId());
+				team.setCollectorId(featureCollectorRepository.findByName(Constants.VERSIONONE)
+						.getId());
 
 				// teamId
-				team.setTeamId(TOOLS.sanitizeResponse((String) dataMainObj
-						.get("_oid")));
+				team.setTeamId(TOOLS.sanitizeResponse((String) dataMainObj.get("_oid")));
 
 				// name
-				team.setName(TOOLS.sanitizeResponse((String) dataMainObj
-						.get("Name")));
+				team.setName(TOOLS.sanitizeResponse((String) dataMainObj.get("Name")));
 
 				// changeDate;
 				team.setChangeDate(TOOLS.toCanonicalDate(TOOLS
-						.sanitizeResponse((String) dataMainObj
-								.get("ChangeDate"))));
+						.sanitizeResponse((String) dataMainObj.get("ChangeDate"))));
 
 				// assetState
-				team.setAssetState(TOOLS.sanitizeResponse((String) dataMainObj
-						.get("AssetState")));
+				team.setAssetState(TOOLS.sanitizeResponse((String) dataMainObj.get("AssetState")));
 
 				// isDeleted;
-				team.setIsDeleted(TOOLS.sanitizeResponse((String) dataMainObj
-						.get("IsDeleted")));
+				team.setIsDeleted(TOOLS.sanitizeResponse((String) dataMainObj.get("IsDeleted")));
 
 				try {
 					teamRepo.save(team);
 				} catch (Exception e) {
-					LOGGER.error("Unexpected error caused when attempting to save data\nCaused by: "
-							+ e.getCause(), e);
+					LOGGER.error(
+							"Unexpected error caused when attempting to save data\nCaused by: "
+									+ e.getCause(), e);
 				}
 			}
 		} catch (Exception e) {
@@ -136,8 +135,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	 */
 	public void updateTeamInformation() {
 		super.objClass = ScopeOwnerCollectorItem.class;
-		super.returnDate = this.featureSettings
-				.getDeltaCollectorItemStartDate();
+		super.returnDate = this.featureSettings.getDeltaCollectorItemStartDate();
 		if (super.getMaxChangeDate() != null) {
 			super.returnDate = super.getMaxChangeDate();
 		}
@@ -151,7 +149,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	/**
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
-	 *
+	 * 
 	 * @param A
 	 *            local repository item ID (not the precise mongoID)
 	 */
@@ -160,8 +158,10 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 
 		try {
 			ObjectId tempEntId = teamRepo.getTeamIdById(localId).get(0).getId();
-			if (localId.equalsIgnoreCase(teamRepo.getTeamIdById(localId).get(0)
-					.getTeamId())) {
+			if (localId.equalsIgnoreCase(teamRepo.getTeamIdById(localId).get(0).getTeamId())) {
+				this.setOldTeamId(tempEntId);
+				this.setOldTeamEnabledState(teamRepo.getTeamIdById(localId).get(0).isEnabled());
+
 				teamRepo.delete(tempEntId);
 				deleted = true;
 			}
@@ -172,5 +172,21 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 		}
 
 		return deleted;
+	}
+
+	private ObjectId getOldTeamId() {
+		return oldTeamId;
+	}
+
+	private void setOldTeamId(ObjectId oldTeamId) {
+		this.oldTeamId = oldTeamId;
+	}
+
+	private boolean isOldTeamEnabledState() {
+		return oldTeamEnabledState;
+	}
+
+	private void setOldTeamEnabledState(boolean oldTeamEnabledState) {
+		this.oldTeamEnabledState = oldTeamEnabledState;
 	}
 }
