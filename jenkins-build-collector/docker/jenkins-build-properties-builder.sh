@@ -38,6 +38,18 @@ then
 	JENKINS_MASTER=$MAPPED_URL	
 fi
 
+echo $JENKINS_OP_CENTER|egrep localhost >>/dev/null
+if [ $? -ne 1 ]
+then
+	#this seems to give a access to the VM of the dockermachine
+	#LOCALHOST=`ip route|egrep '^default via'|cut -f3 -d' '`
+	#see http://superuser.com/questions/144453/virtualbox-guest-os-accessing-local-server-on-host-os
+	LOCALHOST=10.0.2.2
+	MAPPED_URL=`echo "$JENKINS_OP_CENTER"|sed "s|localhost|$LOCALHOST|"`
+	echo "Mapping localhost -> $MAPPED_URL"
+	JENKINS_OP_CENTER=$MAPPED_URL	
+fi
+
 cat > $PROP_FILE <<EOF
 #Database Name
 database=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
