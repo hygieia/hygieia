@@ -55,21 +55,21 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-jenkins.cron=${JENKINS_CRON:-0 0/5 * * * *}
+jenkins-cucumber.cron=${JENKINS_CRON:-0 0/5 * * * *}
 
 #Jenkins server (required) - Can provide multiple
-jenkins.servers[0]=${JENKINS_MASTER:-http://jenkins.company.com}
+jenkins-cucumber.servers[0]=${JENKINS_MASTER:-http://jenkins.company.com}
 
 #If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
-#jenkins.servers[1]=${JENKINS_OP_CENTER:-http://username:token@jenkins.company.com}
-jenkins.servers[1]=${JENKINS_OP_CENTER}
+#jenkins-cucumber.servers[1]=${JENKINS_OP_CENTER:-http://username:token@jenkins.company.com}
+#jenkins-cucumber.servers[1]=${JENKINS_OP_CENTER}
 
 #Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
-jenkins.username=${JENKINS_USERNAME}
-jenkins.apiKey=${JENKINS_API_KEY}
+jenkins-cucumber.username=${JENKINS_USERNAME}
+jenkins-cucumber.apiKey=${JENKINS_API_KEY}
 
 #Determines if build console log is collected - defaults to false
-jenkins.saveLog=${JENKINS_SAVE_LOG:-true}
+jenkins-cucumber.saveLog=${JENKINS_SAVE_LOG:-true}
 
 EOF
 
