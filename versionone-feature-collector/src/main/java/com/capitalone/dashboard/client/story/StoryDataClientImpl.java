@@ -107,19 +107,6 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 				feature.setsState(TOOLS.sanitizeResponse((String) dataMainObj
 						.get("AssetState")));
 
-				// sSoftwareTesting
-				try {
-					if ((String) dataMainObj.get("Custom_SoftwareTesting.Name") != null) {
-						feature.setsSoftwareTesting(TOOLS
-								.sanitizeResponse((String) dataMainObj
-										.get("Custom_SoftwareTesting.Name")));
-					} else {
-						feature.setsSoftwareTesting("");
-					}
-				} catch (NullPointerException npe) {
-					feature.setsSoftwareTesting("");
-				}
-
 				// sEstimate
 				feature.setsEstimate(TOOLS
 						.sanitizeResponse((String) dataMainObj.get("Estimate")));
@@ -199,16 +186,6 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements
 				feature.setsEpicName(TOOLS
 						.sanitizeResponse((String) dataMainObj
 								.get("Super.Name")));
-
-				// sEpicPDD
-				feature.setsEpicPDD(TOOLS.toCanonicalDate(TOOLS
-						.sanitizeResponse((String) dataMainObj
-								.get("Super.Custom_ProductionDeploymentDate"))));
-
-				// sEpicHPSMReleaseID
-				feature.setsEpicHPSMReleaseID(TOOLS
-						.sanitizeResponse((String) dataMainObj
-								.get("Super.Custom_HPSMReleaseID")));
 
 				// sEpicBeginDate
 				feature.setsEpicBeginDate(TOOLS.toCanonicalDate(TOOLS

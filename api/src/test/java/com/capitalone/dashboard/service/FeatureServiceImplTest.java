@@ -12,7 +12,6 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 
 import org.bson.types.ObjectId;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -104,12 +103,10 @@ public class FeatureServiceImplTest {
 		mockV1Feature.setsEpicBeginDate(generalUseDate);
 		mockV1Feature.setsEpicChangeDate(generalUseDate);
 		mockV1Feature.setsEpicEndDate(generalUseDate);
-		mockV1Feature.setsEpicHPSMReleaseID("CO312615921");
 		mockV1Feature.setsEpicID("E-12345");
 		mockV1Feature.setsEpicIsDeleted("False");
 		mockV1Feature.setsEpicName("Test Epic 1");
 		mockV1Feature.setsEpicNumber("12938715");
-		mockV1Feature.setsEpicPDD(generalUseDate);
 		mockV1Feature.setsEpicType("Portfolio Feature");
 		mockV1Feature.setsEstimate("5");
 		mockV1Feature.setsId("B-12345");
@@ -131,7 +128,6 @@ public class FeatureServiceImplTest {
 		mockV1Feature.setsProjectPath("Top -> Middle -> Bottome -> "
 				+ mockV1Feature.getsProjectName());
 		mockV1Feature.setsProjectState("Active");
-		mockV1Feature.setsSoftwareTesting("True");
 		mockV1Feature.setsSprintAssetState("Inactive");
 		mockV1Feature.setsSprintBeginDate(generalUseDate);
 		mockV1Feature.setsSprintChangeDate(generalUseDate);
@@ -157,12 +153,10 @@ public class FeatureServiceImplTest {
 		mockJiraFeature.setsEpicBeginDate("");
 		mockJiraFeature.setsEpicChangeDate(maxDateWinner);
 		mockJiraFeature.setsEpicEndDate("");
-		mockJiraFeature.setsEpicHPSMReleaseID("");
 		mockJiraFeature.setsEpicID("32112345");
 		mockJiraFeature.setsEpicIsDeleted("");
 		mockJiraFeature.setsEpicName("Test Epic 1");
 		mockJiraFeature.setsEpicNumber("12938715");
-		mockJiraFeature.setsEpicPDD("");
 		mockJiraFeature.setsEpicType("");
 		mockJiraFeature.setsEstimate("40");
 		mockJiraFeature.setsId("0812345");
@@ -183,7 +177,6 @@ public class FeatureServiceImplTest {
 		mockJiraFeature.setsProjectName("Saiya-jin Warriors");
 		mockJiraFeature.setsProjectPath("");
 		mockJiraFeature.setsProjectState("Active");
-		mockJiraFeature.setsSoftwareTesting("");
 		mockJiraFeature.setsSprintAssetState("Active");
 		mockJiraFeature.setsSprintBeginDate(maxDateLoser);
 		mockJiraFeature.setsSprintChangeDate(maxDateWinner);
@@ -208,12 +201,10 @@ public class FeatureServiceImplTest {
 		mockJiraFeature2.setsEpicBeginDate("");
 		mockJiraFeature2.setsEpicChangeDate(maxDateLoser);
 		mockJiraFeature2.setsEpicEndDate("");
-		mockJiraFeature2.setsEpicHPSMReleaseID("");
 		mockJiraFeature2.setsEpicID("32112345");
 		mockJiraFeature2.setsEpicIsDeleted("");
 		mockJiraFeature2.setsEpicName("Test Epic 1");
 		mockJiraFeature2.setsEpicNumber("12938715");
-		mockJiraFeature2.setsEpicPDD("");
 		mockJiraFeature2.setsEpicType("");
 		mockJiraFeature2.setsEstimate("40");
 		mockJiraFeature2.setsId("0812346");
@@ -234,7 +225,6 @@ public class FeatureServiceImplTest {
 		mockJiraFeature2.setsProjectName("Not Cell!");
 		mockJiraFeature2.setsProjectPath("");
 		mockJiraFeature2.setsProjectState("Active");
-		mockJiraFeature2.setsSoftwareTesting("");
 		mockJiraFeature2.setsSprintAssetState("Active");
 		mockJiraFeature2.setsSprintBeginDate(maxDateLoser);
 		mockJiraFeature2.setsSprintChangeDate(maxDateWinner);

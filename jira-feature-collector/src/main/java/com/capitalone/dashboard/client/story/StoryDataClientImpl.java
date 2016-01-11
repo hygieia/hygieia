@@ -122,10 +122,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 
 					// sState
 					feature.setsState(TOOLS.sanitizeResponse(statusCategory.get("name")));
-
-					// sSoftwareTesting - does not exist for Jira
-					feature.setsSoftwareTesting("");
-
+					
 					// sEstimate, in seconds, converted to hours, rounded down:
 					// 8 hours = 1 day; 5 days = 1 week
 					String hours = "";
@@ -211,11 +208,6 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 						feature.setsEpicAssetState("");
 						feature.setsEpicChangeDate("");
 					}
-					// sEpicPDD - does not exist in Jira
-					feature.setsEpicPDD("");
-
-					// sEpicHPSMReleaseID - does not exist in Jira
-					feature.setsEpicHPSMReleaseID("");
 
 					// sEpicType - does not exist in jira
 					feature.setsEpicType("");

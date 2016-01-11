@@ -90,12 +90,10 @@ public class FeatureRepositoryTest {
 		mockV1Feature.setsEpicBeginDate(generalUseDate);
 		mockV1Feature.setsEpicChangeDate(generalUseDate);
 		mockV1Feature.setsEpicEndDate(generalUseDate);
-		mockV1Feature.setsEpicHPSMReleaseID("CO312615921");
 		mockV1Feature.setsEpicID("E-12345");
 		mockV1Feature.setsEpicIsDeleted("False");
 		mockV1Feature.setsEpicName("Test Epic 1");
 		mockV1Feature.setsEpicNumber("12938715");
-		mockV1Feature.setsEpicPDD(generalUseDate);
 		mockV1Feature.setsEpicType("Portfolio Feature");
 		mockV1Feature.setsEstimate("5");
 		mockV1Feature.setsId("B-12345");
@@ -117,7 +115,6 @@ public class FeatureRepositoryTest {
 		mockV1Feature.setsProjectPath("Top -> Middle -> Bottome -> "
 				+ mockV1Feature.getsProjectName());
 		mockV1Feature.setsProjectState("Active");
-		mockV1Feature.setsSoftwareTesting("True");
 		mockV1Feature.setsSprintAssetState("Inactive");
 		mockV1Feature.setsSprintBeginDate(generalUseDate);
 		mockV1Feature.setsSprintChangeDate(generalUseDate);
@@ -143,12 +140,10 @@ public class FeatureRepositoryTest {
 		mockJiraFeature.setsEpicBeginDate("");
 		mockJiraFeature.setsEpicChangeDate(maxDateWinner);
 		mockJiraFeature.setsEpicEndDate("");
-		mockJiraFeature.setsEpicHPSMReleaseID("");
 		mockJiraFeature.setsEpicID("32112345");
 		mockJiraFeature.setsEpicIsDeleted("");
 		mockJiraFeature.setsEpicName("Test Epic 1");
 		mockJiraFeature.setsEpicNumber("12938715");
-		mockJiraFeature.setsEpicPDD("");
 		mockJiraFeature.setsEpicType("");
 		mockJiraFeature.setsEstimate("40");
 		mockJiraFeature.setsId("0812345");
@@ -169,7 +164,6 @@ public class FeatureRepositoryTest {
 		mockJiraFeature.setsProjectName("Saiya-jin Warriors");
 		mockJiraFeature.setsProjectPath("");
 		mockJiraFeature.setsProjectState("Active");
-		mockJiraFeature.setsSoftwareTesting("");
 		mockJiraFeature.setsSprintAssetState("Active");
 		mockJiraFeature.setsSprintBeginDate(maxDateLoser);
 		mockJiraFeature.setsSprintChangeDate(maxDateWinner);
@@ -194,12 +188,10 @@ public class FeatureRepositoryTest {
 		mockJiraFeature2.setsEpicBeginDate("");
 		mockJiraFeature2.setsEpicChangeDate(maxDateLoser);
 		mockJiraFeature2.setsEpicEndDate("");
-		mockJiraFeature2.setsEpicHPSMReleaseID("");
 		mockJiraFeature2.setsEpicID("32112345");
 		mockJiraFeature2.setsEpicIsDeleted("");
 		mockJiraFeature2.setsEpicName("Test Epic 1");
 		mockJiraFeature2.setsEpicNumber("12938715");
-		mockJiraFeature2.setsEpicPDD("");
 		mockJiraFeature2.setsEpicType("");
 		mockJiraFeature2.setsEstimate("40");
 		mockJiraFeature2.setsId("0812346");
@@ -220,7 +212,6 @@ public class FeatureRepositoryTest {
 		mockJiraFeature2.setsProjectName("Not Cell!");
 		mockJiraFeature2.setsProjectPath("");
 		mockJiraFeature2.setsProjectState("Active");
-		mockJiraFeature2.setsSoftwareTesting("");
 		mockJiraFeature2.setsSprintAssetState("Active");
 		mockJiraFeature2.setsSprintBeginDate(maxDateLoser);
 		mockJiraFeature2.setsSprintChangeDate(maxDateWinner);
@@ -245,12 +236,10 @@ public class FeatureRepositoryTest {
 		mockJiraFeature3.setsEpicBeginDate("");
 		mockJiraFeature3.setsEpicChangeDate(maxDateLoser);
 		mockJiraFeature3.setsEpicEndDate("");
-		mockJiraFeature3.setsEpicHPSMReleaseID("");
 		mockJiraFeature3.setsEpicID("32112345");
 		mockJiraFeature3.setsEpicIsDeleted("");
 		mockJiraFeature3.setsEpicName("Test Epic 1");
 		mockJiraFeature3.setsEpicNumber("12938715");
-		mockJiraFeature3.setsEpicPDD("");
 		mockJiraFeature3.setsEpicType("");
 		mockJiraFeature3.setsEstimate("80");
 		mockJiraFeature3.setsId("0812342");
@@ -271,7 +260,6 @@ public class FeatureRepositoryTest {
 		mockJiraFeature3.setsProjectName("Not Cell!");
 		mockJiraFeature3.setsProjectPath("");
 		mockJiraFeature3.setsProjectState("Active");
-		mockJiraFeature3.setsSoftwareTesting("");
 		mockJiraFeature3.setsSprintAssetState("Active");
 		mockJiraFeature3.setsSprintBeginDate(maxDateLoser);
 		mockJiraFeature3.setsSprintChangeDate(maxDateWinner);
@@ -296,12 +284,10 @@ public class FeatureRepositoryTest {
 		mockJiraFeature4.setsEpicBeginDate("");
 		mockJiraFeature4.setsEpicChangeDate(maxDateLoser);
 		mockJiraFeature4.setsEpicEndDate("");
-		mockJiraFeature4.setsEpicHPSMReleaseID("");
 		mockJiraFeature4.setsEpicID("32112345");
 		mockJiraFeature4.setsEpicIsDeleted("");
 		mockJiraFeature4.setsEpicName("Test Epic 1");
 		mockJiraFeature4.setsEpicNumber("12938715");
-		mockJiraFeature4.setsEpicPDD("");
 		mockJiraFeature4.setsEpicType("");
 		mockJiraFeature4.setsEstimate("45");
 		mockJiraFeature4.setsId("0812344");
@@ -322,7 +308,6 @@ public class FeatureRepositoryTest {
 		mockJiraFeature4.setsProjectName("Not Cell!");
 		mockJiraFeature4.setsProjectPath("");
 		mockJiraFeature4.setsProjectState("Active");
-		mockJiraFeature4.setsSoftwareTesting("");
 		mockJiraFeature4.setsSprintAssetState("Active");
 		mockJiraFeature4.setsSprintBeginDate(maxDateLoser);
 		mockJiraFeature4.setsSprintChangeDate(maxDateWinner);
@@ -440,10 +425,7 @@ public class FeatureRepositoryTest {
 		featureRepo.save(mockJiraFeature2);
 		featureRepo.save(mockJiraFeature3);
 		featureRepo.save(mockJiraFeature4);
-
-		Object obj = featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
-				jiraCollectorId, maxDateLoser);
-
+		
 		assertTrue(
 				"Actual size should result in a size of 1",
 				featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
