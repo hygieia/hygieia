@@ -33,4 +33,7 @@ public interface ScopeOwnerRepository extends BaseCollectorItemRepository<ScopeO
 
 	@Query(value = "{'options.teamId' : ?0}", fields = "{'options.teamId' : 1}")
 	List<ScopeOwnerCollectorItem> getTeamIdById(String teamId);
+
+	@Query(value = "{'options.assetState' : ?0}", delete = true)
+	List<ScopeOwnerCollectorItem> delete(String assetState);
 }

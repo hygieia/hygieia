@@ -66,6 +66,12 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepo = teamRepository;
 		this.featureWidgetQueries = new FeatureWidgetQueries(this.featureSettings);
+
+		/*
+		 * Removes all existing inactive teams from previous versions that may
+		 * have inactive teams loaded erroneously.
+		 */
+		teamRepo.delete("Closed");
 	}
 
 	/**
@@ -88,44 +94,74 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 				dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
 				ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
 
-				boolean deleted = this.removeExistingEntity(TOOLS
-						.sanitizeResponse((String) dataMainObj.get("_oid")));
-				// Id
-				if (deleted) {
-					team.setId(this.getOldTeamId());
-					team.setEnabled(this.isOldTeamEnabledState());
-				}
+				/*
+				 * Checks to see if the available asset state is not active from
+				 * the V1 Response and removes it if it exists and not active:
+				 */
+				if (!TOOLS.sanitizeResponse((String) dataMainObj.get("AssetState"))
+						.equalsIgnoreCase("Active")) {
 
-				// collectorId
-				team.setCollectorId(featureCollectorRepository.findByName(Constants.VERSIONONE)
-						.getId());
+					this.removeInactiveScopeOwnerByTeamId(TOOLS
+							.sanitizeResponse((String) dataMainObj.get("_oid")));
 
-				// teamId
-				team.setTeamId(TOOLS.sanitizeResponse((String) dataMainObj.get("_oid")));
+				} else {
+					boolean deleted = this.removeExistingEntity(TOOLS
+							.sanitizeResponse((String) dataMainObj.get("_oid")));
+					// Id
+					if (deleted) {
+						team.setId(this.getOldTeamId());
+						team.setEnabled(this.isOldTeamEnabledState());
+					}
 
-				// name
-				team.setName(TOOLS.sanitizeResponse((String) dataMainObj.get("Name")));
+					// collectorId
+					team.setCollectorId(featureCollectorRepository.findByName(Constants.VERSIONONE)
+							.getId());
 
-				// changeDate;
-				team.setChangeDate(TOOLS.toCanonicalDate(TOOLS
-						.sanitizeResponse((String) dataMainObj.get("ChangeDate"))));
+					// teamId
+					team.setTeamId(TOOLS.sanitizeResponse((String) dataMainObj.get("_oid")));
 
-				// assetState
-				team.setAssetState(TOOLS.sanitizeResponse((String) dataMainObj.get("AssetState")));
+					// name
+					team.setName(TOOLS.sanitizeResponse((String) dataMainObj.get("Name")));
 
-				// isDeleted;
-				team.setIsDeleted(TOOLS.sanitizeResponse((String) dataMainObj.get("IsDeleted")));
+					// changeDate;
+					team.setChangeDate(TOOLS.toCanonicalDate(TOOLS
+							.sanitizeResponse((String) dataMainObj.get("ChangeDate"))));
 
-				try {
-					teamRepo.save(team);
-				} catch (Exception e) {
-					LOGGER.error(
-							"Unexpected error caused when attempting to save data\nCaused by: "
-									+ e.getCause(), e);
+					// assetState
+					team.setAssetState(TOOLS.sanitizeResponse((String) dataMainObj
+							.get("AssetState")));
+
+					// isDeleted;
+					team.setIsDeleted(TOOLS.sanitizeResponse((String) dataMainObj.get("IsDeleted")));
+
+					try {
+						teamRepo.save(team);
+					} catch (Exception e) {
+						LOGGER.error(
+								"Unexpected error caused when attempting to save data\nCaused by: "
+										+ e.getCause(), e);
+					}
 				}
 			}
 		} catch (Exception e) {
 			LOGGER.error("FAILED: " + e.getMessage() + ", " + e.getClass(), e);
+		}
+	}
+
+	/**
+	 * Removes scope-owners (teams) from the collection which have went to an
+	 * non-active state
+	 * 
+	 * @param teamId
+	 *            A given Team ID that went inactive and should be removed from
+	 *            the data collection
+	 */
+	private void removeInactiveScopeOwnerByTeamId(String teamId) {
+		if ((!teamId.isEmpty()) && (teamRepo.getTeamIdById(teamId).size() > 0)) {
+			ObjectId inactiveTeamId = teamRepo.getTeamIdById(teamId).get(0).getId();
+			if (inactiveTeamId != null) {
+				teamRepo.delete(inactiveTeamId);
+			}
 		}
 	}
 
