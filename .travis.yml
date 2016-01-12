@@ -13,3 +13,4 @@ after_success:
 branches:
   only:
     - master
+    - hygieia-2.0
