@@ -16,8 +16,16 @@
 
                         <div class="form-group">
 
-                            <input type="text" class="form-control text-center" ng-model="signup.id" name="myusername"
+                            <input type="text"
+                                   class="form-control text-center"
+                                   ng-model="signup.id"
+                                   name="myusername"
+                                   required
+                                   minLength="4"
                                    placeholder="Enter your login Id"/>
+                        </div>
+                        <div class="error-container" ng-show="suf.myusername.$error.minlength">Username should be min
+                            length of 4 container
                         </div>
 
                         <div class="form-group">
@@ -49,32 +57,32 @@
                             </div>
 
                         </div>
-                </div>
-                </div>
-            <div class="container-fluid>">
-                <div class="row-fluid">
-
-                    <div class="col-xs-2 col-md-push-4">
-
-                        <Button type="submit" class="btn btn-default btn-wide">
-                            <i class="fa fa-stack fa-lg fa fa-thumbs-o-up"></i><br/>Signup
-                        </Button>
-
                     </div>
+                </div>
+                <div class="container-fluid>">
+                    <div class="row-fluid">
 
-                    <div class="col-xs-2 col-md-push-4">
-                        <div class="btn btn-default btn-wide" ng-click="signup.doReset()">
+                        <div class="col-xs-2 col-md-push-4">
+
+                            <Button type="submit" class="btn btn-default btn-wide">
+                                <i class="fa fa-stack fa-lg fa fa-thumbs-o-up"></i><br/>Signup
+                            </Button>
+
+                        </div>
+
+                        <div class="col-xs-2 col-md-push-4">
+                            <div class="btn btn-default btn-wide" ng-click="signup.doReset()">
                             <span class="fa fa-stack fa-lg">
                                 <span class="fa fa-undo"></span>
                             </span>
-                            <br/>
-                            Reset
+                                <br/>
+                                Reset
+                            </div>
                         </div>
+
+
                     </div>
-
-
                 </div>
-            </div>
             </form>
         </div>
     </div>
