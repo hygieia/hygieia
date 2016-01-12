@@ -7,12 +7,12 @@
         </div>
         <div class="auth-modal-body">
             <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-            <form name="suf" class="form" ng-controller="SignupController" ng-submit="signup.doSignup(suf.$valid)"
+            <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2" name="suf" class="form" ng-controller="SignupController" ng-submit="signup.doSignup(suf.$valid)"
                   role="form" novalidate>
-                <div class="row">
 
 
-                    <div class="col-xs-8 col-md-push-2">
+
+
 
                         <div class="form-group">
 
@@ -49,31 +49,17 @@
                             </div>
 
                         </div>
-                </div>
-                </div>
-            <div class="container-fluid>">
-                <div class="row-fluid">
 
-                    <div class="col-xs-2 col-md-push-4">
+            <div class="text-center">
+                    <Button type="submit" class="btn btn-default btn-wide">
+                        <i class="fa fa-stack fa-lg fa fa-thumbs-o-up"></i><br/>Signup
+                    </Button>
 
-                        <Button type="submit" class="btn btn-default btn-wide">
-                            <i class="fa fa-stack fa-lg fa fa-thumbs-o-up"></i><br/>Signup
-                        </Button>
-
+                    <div class="btn btn-default btn-wide" ng-click="signup.doReset()">
+                        <span class="fa fa-stack fa-lg fa-undo"></span>
+                        <br/>
+                        Reset
                     </div>
-
-                    <div class="col-xs-2 col-md-push-4">
-                        <div class="btn btn-default btn-wide" ng-click="signup.doReset()">
-                            <span class="fa fa-stack fa-lg">
-                                <span class="fa fa-undo"></span>
-                            </span>
-                            <br/>
-                            Reset
-                        </div>
-                    </div>
-
-
-                </div>
             </div>
             </form>
         </div>
