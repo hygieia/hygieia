@@ -16,6 +16,7 @@ branches:
   - hygieia-2.0
 addons:
   artifacts: true
+  debug: true
   paths:
   - UI/dist
   - api/target/api.jar
