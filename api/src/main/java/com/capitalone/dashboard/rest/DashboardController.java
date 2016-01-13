@@ -70,10 +70,13 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard/{id}/widget", method = POST,
             consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<WidgetResponse> addWidget(@PathVariable ObjectId id, @RequestBody WidgetRequest request) {
+
+        Dashboard dashboard = dashboardService.get(id);
+
         Component component = dashboardService.associateCollectorToComponent(
                 request.getComponentId(), request.getCollectorItemIds());
 
-        Widget widget = dashboardService.addWidget(dashboardService.get(id), request.widget());
+        Widget widget = dashboardService.addWidget(dashboard, request.widget());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new WidgetResponse(component, widget));
     }

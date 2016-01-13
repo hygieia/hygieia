@@ -47,7 +47,7 @@ public class DashboardControllerTest {
 
     @Test
     public void dashboards() throws Exception {
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit");
+        Dashboard d1 = makeTeamDashboard("t1", "title", "app", "comp","amit");
         when(dashboardService.all()).thenReturn(Arrays.asList(d1));
 
         mockMvc.perform(get("/dashboard"))
@@ -60,8 +60,8 @@ public class DashboardControllerTest {
     }
 
     @Test
-    public void createDashboard() throws Exception {
-        DashboardRequest request = makeDashboardRequest("template", "title", "app", "comp","amit");
+    public void createTeamDashboard() throws Exception {
+        DashboardRequest request = makeTeamDashboardRequest("template", "title", "app", "comp","amit", "team");
         mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
@@ -83,7 +83,7 @@ public class DashboardControllerTest {
     @Test
     public void getDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit");
+        Dashboard d1 = makeTeamDashboard("t1", "title", "app", "comp","amit");
         d1.setId(objectId);
 
         when(dashboardService.get(objectId)).thenReturn(d1);
@@ -94,10 +94,10 @@ public class DashboardControllerTest {
     }
 
     @Test
-    public void updateDashboard() throws Exception {
+    public void updateTeamDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "title", "app", "comp","amit");
-        DashboardRequest request = makeDashboardRequest("template", "title", "app", "comp","amit");
+        Dashboard orig = makeTeamDashboard("t1", "title", "app", "comp","amit");
+        DashboardRequest request = makeTeamDashboardRequest("template", "title", "app", "comp","amit", "team");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
         when(dashboardService.update(Matchers.any(Dashboard.class))).thenReturn(orig);
@@ -123,7 +123,7 @@ public class DashboardControllerTest {
         List<ObjectId> collIds = Arrays.asList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 1).put("option2", "2").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit");
+        Dashboard d1 = makeTeamDashboard("t1", "title", "app", "comp","amit");
         Widget widgetWithId = request.widget();
         widgetWithId.setId(ObjectId.get());
         Component component = makeComponent(compId, "Component", CollectorType.Build, collId);
@@ -156,7 +156,7 @@ public class DashboardControllerTest {
         List<ObjectId> collIds = Arrays.asList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 2).put("option2", "3").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit");
+        Dashboard d1 = makeTeamDashboard("t1", "title", "app", "comp","amit");
         Widget widget = makeWidget(widgetId, "build", compId, options);
 
         when(dashboardService.get(dashId)).thenReturn(d1);
@@ -169,21 +169,22 @@ public class DashboardControllerTest {
                 .andExpect(status().isOk());
     }
 
-    private DashboardRequest makeDashboardRequest(String template, String title, String appName, String compName,String owner) {
+    private DashboardRequest makeTeamDashboardRequest(String template, String title, String appName, String compName, String owner, String type) {
         DashboardRequest request = new DashboardRequest();
         request.setTemplate(template);
         request.setTitle(title);
         request.setApplicationName(appName);
         request.setComponentName(compName);
         request.setOwner(owner);
+        request.setType(type);
         return request;
     }
 
-    private Dashboard makeDashboard(String template, String title, String appName, String compName,String owner) {
+    private Dashboard makeTeamDashboard(String template, String title, String appName, String compName,String owner) {
         Component component = new Component();
         component.setName(compName);
         Application app = new Application(appName, component);
-        return new Dashboard(template, title, app,owner);
+        return new Dashboard(template, title, app,owner, DashboardType.Team);
     }
 
     private Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {

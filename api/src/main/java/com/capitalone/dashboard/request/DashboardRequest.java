@@ -1,8 +1,6 @@
 package com.capitalone.dashboard.request;
 
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.*;
 
 import javax.validation.constraints.NotNull;
 
@@ -21,6 +19,9 @@ public class DashboardRequest {
     
     @NotNull
     private String owner;
+
+    @NotNull
+    private String type;
 
     public String getTemplate() {
         return template;
@@ -53,7 +54,10 @@ public class DashboardRequest {
     public void setComponentName(String componentName) {
         this.componentName = componentName;
     }
-    
+
+    public String getType() { return type; }
+
+    public void setType(String type) { this.type = type; }
 
     public String getOwner() {
 		return owner;
@@ -64,7 +68,12 @@ public class DashboardRequest {
 	}
 
 	public Dashboard toDashboard() {
-        return new Dashboard(template, title, new Application(applicationName, new Component(componentName)),owner);
+        DashboardType type = DashboardType.fromString(this.type);
+        if(type.equals(DashboardType.Program)){
+            //TODO: this needs to change
+            return new ProgramDashboard(template, title, null ,owner, null, type);
+        }
+        return new Dashboard(template, title, new Application(applicationName, new Component(componentName)),owner, type);
     }
 
     public Dashboard copyTo(Dashboard dashboard) {
