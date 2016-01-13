@@ -4,6 +4,7 @@ import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
+import com.capitalone.dashboard.util.SuperFeatureComparator;
 import com.mysema.query.BooleanBuilder;
 
 import org.bson.types.ObjectId;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
@@ -39,8 +41,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 */
 	@Autowired
 	public FeatureServiceImpl(ComponentRepository componentRepository,
-			CollectorRepository collectorRepository,
-			FeatureRepository featureRepository) {
+			CollectorRepository collectorRepository, FeatureRepository featureRepository) {
 		this.componentRepository = componentRepository;
 		this.featureRepository = featureRepository;
 		this.collectorRepository = collectorRepository;
@@ -58,24 +59,20 @@ public class FeatureServiceImpl implements FeatureService {
 	 * @return A data response list of type Feature containing a single story
 	 */
 	@Override
-	public DataResponse<List<Feature>> getStory(ObjectId componentId,
-			String storyNumber) {
+	public DataResponse<List<Feature>> getStory(ObjectId componentId, String storyNumber) {
 		Component component = componentRepository.findOne(componentId);
 		DataResponse<List<Feature>> rs;
 		try {
-			CollectorItem item = component.getCollectorItems()
-					.get(CollectorType.ScopeOwner).get(0);
+			CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 			QScopeOwner team = new QScopeOwner("team");
 			BooleanBuilder builder = new BooleanBuilder();
 
 			builder.and(team.collectorItemId.eq(item.getId()));
 
 			// Get one story based on story number, based on component
-			List<Feature> story = featureRepository
-					.getStoryByNumber(storyNumber);
+			List<Feature> story = featureRepository.getStoryByNumber(storyNumber);
 
-			Collector collector = collectorRepository.findOne(item
-					.getCollectorId());
+			Collector collector = collectorRepository.findOne(item.getCollectorId());
 			rs = new DataResponse<>(story, collector.getLastExecuted());
 		} catch (NullPointerException e) {
 			long x = 0;
@@ -101,13 +98,11 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         the given team and current sprint
 	 */
 	@Override
-	public DataResponse<List<Feature>> getRelevantStories(ObjectId componentId,
-			String teamId) {
+	public DataResponse<List<Feature>> getRelevantStories(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
 		DataResponse<List<Feature>> rs;
 		try {
-			CollectorItem item = component.getCollectorItems()
-					.get(CollectorType.ScopeOwner).get(0);
+			CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 			QScopeOwner team = new QScopeOwner("team");
 			BooleanBuilder builder = new BooleanBuilder();
 
@@ -115,14 +110,12 @@ public class FeatureServiceImpl implements FeatureService {
 
 			// Get teamId first from available collector item, based on
 			// component
-			List<Feature> relevantStories = featureRepository
-					.queryByOrderBySStatusDesc(teamId, getCurrentISODateTime());
+			List<Feature> relevantStories = featureRepository.queryByOrderBySStatusDesc(teamId,
+					getCurrentISODateTime());
 
-			Collector collector = collectorRepository.findOne(item
-					.getCollectorId());
+			Collector collector = collectorRepository.findOne(item.getCollectorId());
 
-			rs = new DataResponse<>(relevantStories,
-					collector.getLastExecuted());
+			rs = new DataResponse<>(relevantStories, collector.getLastExecuted());
 		} catch (NullPointerException e) {
 			long x = 0;
 			Feature f = new Feature();
@@ -148,11 +141,9 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         current sprint and team
 	 */
 	@Override
-	public DataResponse<List<Feature>> getFeatureEstimates(
-			ObjectId componentId, String teamId) {
+	public DataResponse<List<Feature>> getFeatureEstimates(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
-		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		QScopeOwner team = new QScopeOwner("team");
 		BooleanBuilder builder = new BooleanBuilder();
 
@@ -160,15 +151,15 @@ public class FeatureServiceImpl implements FeatureService {
 
 		// Get teamId first from available collector item, based on component
 		List<Feature> relevantFeatureEstimates = featureRepository
-				.getInProgressFeaturesEstimatesByTeamId(teamId,
-						getCurrentISODateTime());
+				.getInProgressFeaturesEstimatesByTeamId(teamId, getCurrentISODateTime());
+		Collections.sort(relevantFeatureEstimates, new SuperFeatureComparator());
 
 		List<Feature> relevantSuperFeatureEstimates = new ArrayList<Feature>();
 		String lastEpicID = "";
 		int lineTotalEstimate = 0;
 		try {
-			for (ListIterator<Feature> iter = relevantFeatureEstimates
-					.listIterator(); iter.hasNext();) {
+			for (ListIterator<Feature> iter = relevantFeatureEstimates.listIterator(); iter
+					.hasNext();) {
 				Feature f = new Feature();
 				Feature tempRs = iter.next();
 
@@ -176,35 +167,26 @@ public class FeatureServiceImpl implements FeatureService {
 					try {
 						if (tempRs.getsEpicID().equalsIgnoreCase(lastEpicID)) {
 							try {
-								lineTotalEstimate += Integer.valueOf((tempRs
-										.getsEstimate()));
-							} catch (NumberFormatException
-									| ArrayIndexOutOfBoundsException
+								lineTotalEstimate += Integer.valueOf((tempRs.getsEstimate()));
+							} catch (NumberFormatException | ArrayIndexOutOfBoundsException
 									| NullPointerException e) {
 								lineTotalEstimate += 0;
 							}
 
 							try {
-								relevantSuperFeatureEstimates
-										.get(relevantSuperFeatureEstimates
-												.size() - 1)
-										.setsEstimate(
-												Integer.toString(lineTotalEstimate));
-							} catch (ArrayIndexOutOfBoundsException
-									| NullPointerException e) {
-								relevantSuperFeatureEstimates
-										.get(0)
-										.setsEstimate(
-												Integer.toString(lineTotalEstimate));
+								relevantSuperFeatureEstimates.get(
+										relevantSuperFeatureEstimates.size() - 1).setsEstimate(
+										Integer.toString(lineTotalEstimate));
+							} catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
+								relevantSuperFeatureEstimates.get(0).setsEstimate(
+										Integer.toString(lineTotalEstimate));
 							}
 						} else {
 							lastEpicID = tempRs.getsEpicID();
 							lineTotalEstimate = 0;
 							try {
-								lineTotalEstimate += Integer.valueOf((tempRs
-										.getsEstimate()));
-							} catch (NumberFormatException
-									| ArrayIndexOutOfBoundsException
+								lineTotalEstimate += Integer.valueOf((tempRs.getsEstimate()));
+							} catch (NumberFormatException | ArrayIndexOutOfBoundsException
 									| NullPointerException e) {
 								lineTotalEstimate += 0;
 							}
@@ -217,8 +199,7 @@ public class FeatureServiceImpl implements FeatureService {
 
 							relevantSuperFeatureEstimates.add(f);
 						}
-					} catch (ArrayIndexOutOfBoundsException
-							| NullPointerException e) {
+					} catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
 						// Error case - this is an unexpected scenario
 						relevantSuperFeatureEstimates.add(f);
 					}
@@ -229,11 +210,9 @@ public class FeatureServiceImpl implements FeatureService {
 			relevantSuperFeatureEstimates.add(f);
 		}
 
-		Collector collector = collectorRepository
-				.findOne(item.getCollectorId());
+		Collector collector = collectorRepository.findOne(item.getCollectorId());
 
-		return new DataResponse<>(relevantSuperFeatureEstimates,
-				collector.getLastExecuted());
+		return new DataResponse<>(relevantSuperFeatureEstimates, collector.getLastExecuted());
 	}
 
 	/**
@@ -250,34 +229,29 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         estimate number for all features
 	 */
 	@Override
-	public DataResponse<List<Feature>> getTotalEstimate(ObjectId componentId,
-			String teamId) {
+	public DataResponse<List<Feature>> getTotalEstimate(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
-		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		QScopeOwner team = new QScopeOwner("team");
 		BooleanBuilder builder = new BooleanBuilder();
 
 		builder.and(team.collectorItemId.eq(item.getId()));
 
 		// Get teamId first from available collector item, based on component
-		List<Feature> storyEstimates = featureRepository.getSprintBacklogTotal(
-				teamId, getCurrentISODateTime());
+		List<Feature> storyEstimates = featureRepository.getSprintBacklogTotal(teamId,
+				getCurrentISODateTime());
 
 		List<Feature> cumulativeEstimate = new ArrayList<Feature>();
 		Feature f = new Feature();
 		int lineTotalEstimate = 0;
 		try {
-			for (ListIterator<Feature> iter = storyEstimates.listIterator(); iter
-					.hasNext();) {
+			for (ListIterator<Feature> iter = storyEstimates.listIterator(); iter.hasNext();) {
 				Feature tempRs = iter.next();
 
 				if (tempRs.getsEstimate().isEmpty() == false) {
 					try {
-						lineTotalEstimate += Integer.parseInt(tempRs
-								.getsEstimate());
-					} catch (NumberFormatException
-							| ArrayIndexOutOfBoundsException
+						lineTotalEstimate += Integer.parseInt(tempRs.getsEstimate());
+					} catch (NumberFormatException | ArrayIndexOutOfBoundsException
 							| NullPointerException e) {
 						lineTotalEstimate += 0;
 					}
@@ -289,11 +263,9 @@ public class FeatureServiceImpl implements FeatureService {
 		f.setsEstimate(Integer.toString(lineTotalEstimate));
 		cumulativeEstimate.add(f);
 
-		Collector collector = collectorRepository
-				.findOne(item.getCollectorId());
+		Collector collector = collectorRepository.findOne(item.getCollectorId());
 
-		return new DataResponse<>(cumulativeEstimate,
-				collector.getLastExecuted());
+		return new DataResponse<>(cumulativeEstimate, collector.getLastExecuted());
 	}
 
 	/**
@@ -310,34 +282,29 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         estimate number for all features
 	 */
 	@Override
-	public DataResponse<List<Feature>> getInProgressEstimate(
-			ObjectId componentId, String teamId) {
+	public DataResponse<List<Feature>> getInProgressEstimate(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
-		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		QScopeOwner team = new QScopeOwner("team");
 		BooleanBuilder builder = new BooleanBuilder();
 
 		builder.and(team.collectorItemId.eq(item.getId()));
 
 		// Get teamId first from available collector item, based on component
-		List<Feature> storyEstimates = featureRepository
-				.getSprintBacklogInProgress(teamId, getCurrentISODateTime());
+		List<Feature> storyEstimates = featureRepository.getSprintBacklogInProgress(teamId,
+				getCurrentISODateTime());
 
 		List<Feature> cumulativeEstimate = new ArrayList<Feature>();
 		Feature f = new Feature();
 		int lineTotalEstimate = 0;
 		try {
-			for (ListIterator<Feature> iter = storyEstimates.listIterator(); iter
-					.hasNext();) {
+			for (ListIterator<Feature> iter = storyEstimates.listIterator(); iter.hasNext();) {
 				Feature tempRs = iter.next();
 
 				if (tempRs.getsEstimate().isEmpty() == false) {
 					try {
-						lineTotalEstimate += Integer.parseInt(tempRs
-								.getsEstimate());
-					} catch (NumberFormatException
-							| ArrayIndexOutOfBoundsException
+						lineTotalEstimate += Integer.parseInt(tempRs.getsEstimate());
+					} catch (NumberFormatException | ArrayIndexOutOfBoundsException
 							| NullPointerException e) {
 						lineTotalEstimate += 0;
 					}
@@ -349,11 +316,9 @@ public class FeatureServiceImpl implements FeatureService {
 		f.setsEstimate(Integer.toString(lineTotalEstimate));
 		cumulativeEstimate.add(f);
 
-		Collector collector = collectorRepository
-				.findOne(item.getCollectorId());
+		Collector collector = collectorRepository.findOne(item.getCollectorId());
 
-		return new DataResponse<>(cumulativeEstimate,
-				collector.getLastExecuted());
+		return new DataResponse<>(cumulativeEstimate, collector.getLastExecuted());
 	}
 
 	/**
@@ -370,34 +335,29 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         number for all features
 	 */
 	@Override
-	public DataResponse<List<Feature>> getDoneEstimate(ObjectId componentId,
-			String teamId) {
+	public DataResponse<List<Feature>> getDoneEstimate(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
-		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		QScopeOwner team = new QScopeOwner("team");
 		BooleanBuilder builder = new BooleanBuilder();
 
 		builder.and(team.collectorItemId.eq(item.getId()));
 
 		// Get teamId first from available collector item, based on component
-		List<Feature> storyEstimates = featureRepository.getSprintBacklogDone(
-				teamId, getCurrentISODateTime());
+		List<Feature> storyEstimates = featureRepository.getSprintBacklogDone(teamId,
+				getCurrentISODateTime());
 
 		List<Feature> cumulativeEstimate = new ArrayList<Feature>();
 		Feature f = new Feature();
 		int lineTotalEstimate = 0;
 		try {
-			for (ListIterator<Feature> iter = storyEstimates.listIterator(); iter
-					.hasNext();) {
+			for (ListIterator<Feature> iter = storyEstimates.listIterator(); iter.hasNext();) {
 				Feature tempRs = iter.next();
 
 				if (tempRs.getsEstimate().isEmpty() == false) {
 					try {
-						lineTotalEstimate += Integer.parseInt(tempRs
-								.getsEstimate());
-					} catch (NumberFormatException
-							| ArrayIndexOutOfBoundsException
+						lineTotalEstimate += Integer.parseInt(tempRs.getsEstimate());
+					} catch (NumberFormatException | ArrayIndexOutOfBoundsException
 							| NullPointerException e) {
 						lineTotalEstimate += 0;
 					}
@@ -409,11 +369,9 @@ public class FeatureServiceImpl implements FeatureService {
 		f.setsEstimate(Integer.toString(lineTotalEstimate));
 		cumulativeEstimate.add(f);
 
-		Collector collector = collectorRepository
-				.findOne(item.getCollectorId());
+		Collector collector = collectorRepository.findOne(item.getCollectorId());
 
-		return new DataResponse<>(cumulativeEstimate,
-				collector.getLastExecuted());
+		return new DataResponse<>(cumulativeEstimate, collector.getLastExecuted());
 	}
 
 	/**
@@ -429,19 +387,17 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         sprint fields for the current team's sprint
 	 */
 	@Override
-	public DataResponse<List<Feature>> getCurrentSprintDetail(
-			ObjectId componentId, String teamId) {
+	public DataResponse<List<Feature>> getCurrentSprintDetail(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
-		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		QScopeOwner team = new QScopeOwner("team");
 		BooleanBuilder builder = new BooleanBuilder();
 
 		builder.and(team.collectorItemId.eq(item.getId()));
 
 		// Get teamId first from available collector item, based on component
-		List<Feature> sprintResponse = featureRepository
-				.getCurrentSprintDetail(teamId, getCurrentISODateTime());
+		List<Feature> sprintResponse = featureRepository.getCurrentSprintDetail(teamId,
+				getCurrentISODateTime());
 
 		List<Feature> sprintDetail = new ArrayList<Feature>();
 		Feature f = new Feature();
@@ -455,13 +411,12 @@ public class FeatureServiceImpl implements FeatureService {
 				f.setsSprintEndDate(tempRs.getsSprintEndDate());
 				sprintDetail.add(f);
 			}
-		} catch (NoSuchElementException | NumberFormatException
-				| ArrayIndexOutOfBoundsException | NullPointerException e) {
+		} catch (NoSuchElementException | NumberFormatException | ArrayIndexOutOfBoundsException
+				| NullPointerException e) {
 			sprintDetail.add(f);
 		}
 
-		Collector collector = collectorRepository
-				.findOne(item.getCollectorId());
+		Collector collector = collectorRepository.findOne(item.getCollectorId());
 
 		return new DataResponse<>(sprintDetail, collector.getLastExecuted());
 	}
@@ -474,8 +429,8 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         format from the current time zone
 	 */
 	private String getCurrentISODateTime() {
-		String currentISODateTime = DatatypeConverter.printDateTime(Calendar
-				.getInstance(TimeZone.getTimeZone("UTC")));
+		String currentISODateTime = DatatypeConverter.printDateTime(Calendar.getInstance(TimeZone
+				.getTimeZone("UTC")));
 		return currentISODateTime;
 	}
 }
