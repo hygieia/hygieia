@@ -77,6 +77,7 @@ public class DefaultHudsonClient implements HudsonClient {
         this.settings = settings;
     }
 
+    @SuppressWarnings("PMD.D")
     @Override
     public Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl) {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
@@ -104,7 +105,7 @@ public class DefaultHudsonClient implements HudsonClient {
                 	//Docker NATs the real host localhost to 10.0.2.2 when running in docker
     				//as localhost is stored in the JSON payload from jenkins we need
                 	//this hack to fix the addresses
-                    final String dockerLocalHostIP = "10.0.2.2";
+                    final String dockerLocalHostIP = "10.0.2.2";  //NOPMD
                     Boolean dockerNattedLocalhost =  instanceUrl.contains(dockerLocalHostIP);
 
                     Set<Build> builds = new LinkedHashSet<>();

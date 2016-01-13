@@ -225,7 +225,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         Boolean foundJob =  hudsonJobRepository.findHudsonJob(collector.getId(),
                 job.getInstanceUrl(), job.getJobName()) == null;
         
-;       return foundJob;
+       return foundJob;
     }
 
     private boolean isNewBuild(HudsonJob job, Build build) {
