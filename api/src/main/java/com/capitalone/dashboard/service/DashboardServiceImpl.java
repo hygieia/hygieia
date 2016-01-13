@@ -77,7 +77,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         // Remove this Dashboard's services and service dependencies
         serviceRepository.delete(serviceRepository.findByDashboardId(id));
-        for (com.capitalone.dashboard.model.Service service : serviceRepository.findByDependedBy(id)) {
+        for (Service service : serviceRepository.findByDependedBy(id)) {
             service.getDependedBy().remove(id);
             serviceRepository.save(service);
         }
@@ -92,7 +92,7 @@ public class DashboardServiceImpl implements DashboardService {
             return null;
         }
 
-        com.capitalone.dashboard.model.Component component = componentRepository.findOne(componentId);
+        Component component = componentRepository.findOne(componentId);
         //we can not assume what collector item is added, what is removed etc so, we will
         //refresh the association. First disable all collector items, then remove all and re-add
 
