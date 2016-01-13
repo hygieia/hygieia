@@ -92,20 +92,24 @@ public class DefaultHudsonClient implements HudsonClient {
                 for (Object job : getJsonArray(object, "jobs")) {
                     JSONObject jsonJob = (JSONObject) job;
 
+                    final String jobName = getString(jsonJob, "name");
+                    final String jobURL = getString(jsonJob, "url");
+                    LOG.info("Job:" + jobName);
+                    LOG.info("jobURL: " + jobURL);
                     HudsonJob hudsonJob = new HudsonJob();
                     hudsonJob.setInstanceUrl(instanceUrl);
-                    hudsonJob.setJobName(getString(jsonJob, "name"));
-                    hudsonJob.setJobUrl(getString(jsonJob, "url"));
-       
+                    hudsonJob.setJobName(jobName);
+                    hudsonJob.setJobUrl(jobURL);
+
+                	//Docker NATs the real host localhost to 10.0.2.2 when running in docker
+    				//as localhost is stored in the JSON payload from jenkins we need
+                	//this hack to fix the addresses
+                    final String dockerLocalHostIP = "10.0.2.2";
+                    Boolean dockerNattedLocalhost =  instanceUrl.contains(dockerLocalHostIP);
+
                     Set<Build> builds = new LinkedHashSet<>();
                     for (Object build : getJsonArray(jsonJob, "builds")) {
                         JSONObject jsonBuild = (JSONObject) build;
-
-                        	//Docker NATs the real host localhost to 10.0.2.2 when running in docker
-            				//as localhost is stored in the JSON payload from jenkins we need
-                        	//this hack to fix the addresses
-                        final String dockerLocalHostIP = "10.0.2.2";
-                        Boolean dockerNattedLocalhost =  instanceUrl.contains(dockerLocalHostIP);
 
                         // A basic Build object. This will be fleshed out later if this is a new Build.
                         String buildNumber = jsonBuild.get("number").toString();
@@ -115,10 +119,16 @@ public class DefaultHudsonClient implements HudsonClient {
                             String buildURL = getString(jsonBuild, "url");
                             
                             	//Modify localhost if Docker Natting is being done
-		                    if ( instanceUrl.contains(dockerLocalHostIP) )
+		                    if ( dockerNattedLocalhost )
 		                    {
-		                    	//buildURL = buildURL.replace("localhost", dockerLocalHostIP);
+		                    	buildURL = buildURL.replace("localhost", dockerLocalHostIP);
+		                        LOG.info("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
 		                    }
+		                    else
+		                    {
+		                    	LOG.info(" Adding Build: " + buildURL);
+		                    }
+		                    
                             hudsonBuild.setBuildUrl(buildURL);
                             builds.add(hudsonBuild);
                         }

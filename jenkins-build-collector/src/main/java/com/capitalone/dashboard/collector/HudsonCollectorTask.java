@@ -86,8 +86,15 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 	
 	            addNewJobs(buildsByJob.keySet(), collector);
 	
-	            addNewBuilds(enabledJobs(collector, instanceUrl), buildsByJob);
-	
+	            List<HudsonJob> enabledJobs = enabledJobs(collector, instanceUrl);
+	            if ( !enabledJobs.isEmpty() )
+	            {
+	            	addNewBuilds(enabledJobs, buildsByJob);
+	            }
+	            else
+	            {
+	            	log("WARNING: No Enabled Jobs Found, no builds added");
+	            }
 	            log("Finished", start);
             }
         }
@@ -215,8 +222,10 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     }
 
     private boolean isNewJob(HudsonCollector collector, HudsonJob job) {
-        return hudsonJobRepository.findHudsonJob(collector.getId(),
+        Boolean foundJob =  hudsonJobRepository.findHudsonJob(collector.getId(),
                 job.getInstanceUrl(), job.getJobName()) == null;
+        
+;       return foundJob;
     }
 
     private boolean isNewBuild(HudsonJob job, Build build) {
