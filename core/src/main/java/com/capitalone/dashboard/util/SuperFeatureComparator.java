@@ -26,9 +26,9 @@ public class SuperFeatureComparator implements Comparator<Feature> {
 	 */
 	@Override
 	public int compare(Feature f, Feature ff) {
-		if (f.getsEpicID().compareToIgnoreCase(ff.getsEpicID()) == -1) {
+		if (f.getsEpicID().compareToIgnoreCase(ff.getsEpicID()) <= -1) {
 			return -1;
-		} else if (f.getsEpicID().compareToIgnoreCase(ff.getsEpicID()) == 1) {
+		} else if (f.getsEpicID().compareToIgnoreCase(ff.getsEpicID()) >= 1) {
 			return 1;
 		} else {
 			return 0;
