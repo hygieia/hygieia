@@ -17,41 +17,61 @@
         ctrl.myadmin = '';
         ctrl.username=$cookies.username;
         ctrl.showAuthentication = $cookies.authenticated;
+        ctrl.templateUrl = 'app/dashboard/views/navheader.html';
 
+        ctrl.dashboardTypeEnum = {
+            TEAM: 1,
+            PRODUCT: 2
+        };
 
-        //   ctrl.dashboards = []; //don't default since it's used to determine loading
-        // ctrl.mydash = [];
         // public methods
         ctrl.createDashboard = createDashboard;
         ctrl.deleteDashboard = deleteDashboard;
         ctrl.open = open;
         ctrl.logout= logout;
         ctrl.admin = admin;
-        ctrl.templateUrl = "app/dashboard/views/navheader.html";
+        ctrl.setType = setType;
         ctrl.filterNotOwnedList = filterNotOwnedList;
-
-
+        ctrl.filterDashboards = filterDashboards;
 
         if (ctrl.username === 'admin') {
             ctrl.myadmin = true;
         }
 
-
-
         // request dashboards
-        dashboardData.search().then(processResponse);
+        dashboardData.search().then(processDashboardResponse, processDashboardError);
 
         //find dashboard I own
-        dashboardData.mydashboard(ctrl.username).then(processDashResponse);
+        dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
+
+        dashboardData.types().then(function(response) {
+            // add item icon
+            response.forEach(function (item) {
+                if(item.id == 2) {
+                    item.icon = 'fa-cubes';
+                }
+            });
+
+            ctrl.dashboardTypes = response;
+        });
+
+        function setType(type) {
+            ctrl.dashboardType = type;
+        }
+
+        function filterDashboards(item) {
+            return (!ctrl.search || item.name.toLowerCase().indexOf(ctrl.search.toLowerCase()) !== -1)
+                && (!ctrl.dashboardType || item.type === ctrl.dashboardType);
+        }
 
         function admin() {
-            console.log("sending to admin page");
-            $location.path("/admin");
+            console.log('sending to admin page');
+            $location.path('/admin');
         }
 
         function logout()
         {
-$cookieStore.remove("username");
+            $cookieStore.remove("username");
             $cookieStore.remove("authenticated");
             $location.path("/");
         }
@@ -70,29 +90,43 @@ $cookieStore.remove("username");
             $location.path('/dashboard/' + dashboardId);
         }
 
-        function processResponse(data) {
+        function processError() {
+            alert("An error occurred");
+        }
+
+        function processDashboardResponse(data) {
             // add dashboards to list
             ctrl.dashboards = [];
             for (var x = 0; x < data.length; x++) {
                 ctrl.dashboards.push({
                     id: data[x].id,
-                    name: data[x].title
+                    name: data[x].title,
+                    type: data[x].type
                 });
             }
         }
 
-        function processDashResponse(mydata) {
+        function processDashboardError(data) {
+            ctrl.dashboards = [];
+        }
+
+        function processMyDashboardResponse(mydata) {
+
             // add dashboards to list
             ctrl.mydash = [];
             for (var x = 0; x < mydata.length; x++) {
 
                 ctrl.mydash.push({
                     id: mydata[x].id,
-                    name: mydata[x].title
+                    name: mydata[x].title,
+                    type: mydata[x].type
                 });
 
             }
+        }
 
+        function processMyDashboardError(data) {
+            ctrl.mydash = [];
         }
 
 
@@ -100,6 +134,13 @@ $cookieStore.remove("username");
             dashboardData.delete(id).then(function () {
                 _.remove(ctrl.dashboards, {id: id});
                 _.remove(ctrl.mydash, {id: id});
+            }, function(response) {
+                var msg = 'An error occurred';
+                if (response.data && response.data.message) {
+                    msg = response.data.message;
+                }
+
+                alert(msg);
             });
         }
 
@@ -117,11 +158,7 @@ $cookieStore.remove("username");
 
             console.log("size after reduction  is:" + uniqueArray.length);
             ctrl.dashboards = uniqueArray;
-
-        };
-
-
-
+        }
     }
 
 

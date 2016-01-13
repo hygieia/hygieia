@@ -33,11 +33,12 @@ var localStorageSupported = (function () {
 
     document.getElementsByTagName('head')[0].appendChild(link);
 
-    // creat the angular app
+    // create the angular app
     angular.module('devops-dashboard', [
         'ngAnimate',
         'ngSanitize',
         'ngRoute',
+        'typeaheadDropdown.tpl',
         'devops-dashboard.core',
         'ui.bootstrap',
         'fitText',

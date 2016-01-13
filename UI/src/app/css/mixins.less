@@ -87,6 +87,25 @@
     }
 }
 
+.transform(@transform) {
+    -ms-transform: @transform;
+    -webkit-transform: @transform;
+    -moz-transform: @transform;
+    transform: @transform;
+}
+
+.center-y() {
+    position: absolute;
+    top: 50%;
+    .transform(translateY(-50%));
+}
+
+.center-x() {
+    position: absolute;
+    left: 50%;
+    .transform(translateX(-50%));
+}
+
 .text(@font-size; @line-height:1.5) {
     font-size: @font-size * 1rem;
     line-height: @line-height * 1rem

@@ -7,63 +7,56 @@
         </div>
         <div class="auth-modal-body">
             <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-            <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2" name="suf" class="form" ng-controller="SignupController" ng-submit="signup.doSignup(suf.$valid)"
-                  role="form" novalidate>
+            <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2" name="suf" class="form"
+                  ng-controller="SignupController" ng-submit="signup.doSignup(suf.$valid)" role="form" novalidate>
+                <div class="form-group">
 
+                    <input type="text" class="form-control text-center" ng-model="signup.id" name="myusername"
+                           placeholder="Enter your login Id"/>
+                </div>
 
+                <div class="form-group">
 
+                    <input type="password" class="form-control text-center"
+                           ng-model="signup.password"
+                           required
+                           minLength=6
+                           name="mypassword"
+                           placeholder="Enter your Password"/>
+                </div>
+                <div class="error-container" ng-show="suf.mypassword.$error.minlength">Password should be min
+                    length of 6 container
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control text-center"
+                           ng-model="signup.passwordConfirm"
+                           required
+                           minLength=6
+                           match="signup.password"
+                           name="myConfirmPassword"
+                           placeholder="Enter your Password Again"/>
 
+                    <div class="error-container" ng-show="suf.myConfirmPassword.$error.minlength">Password
+                        should be min length of 6 container
+                    </div>
+                    <div class="error-container" ng-show="suf.myConfirmPassword.$error.match">Passwords do not
+                        match!
+                    </div>
 
-                        <div class="form-group">
+                </div>
 
-                            <input type="text" class="form-control text-center" ng-model="signup.id" name="myusername"
-                                   placeholder="Enter your login Id"/>
-                        </div>
-
-                        <div class="form-group">
-
-                            <input type="password" class="form-control text-center"
-                                   ng-model="signup.password"
-                                   required
-                                   minLength=6
-                                   name="mypassword"
-                                   placeholder="Enter your Password"/>
-                        </div>
-                        <div class="error-container" ng-show="suf.mypassword.$error.minlength">Password should be min
-                            length of 6 container
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-control text-center"
-                                   ng-model="signup.passwordConfirm"
-                                   required
-                                   minLength=6
-                                   match="signup.password"
-                                   name="myConfirmPassword"
-                                   placeholder="Enter your Password Again"/>
-
-                            <div class="error-container" ng-show="suf.myConfirmPassword.$error.minlength">Password
-                                should be min length of 6 container
-                            </div>
-                            <div class="error-container" ng-show="suf.myConfirmPassword.$error.match">Passwords do not
-                                match!
-                            </div>
-
-                        </div>
-
-            <div class="text-center">
+                <div class="text-center">
                     <Button type="submit" class="btn btn-default btn-wide">
                         <i class="fa fa-stack fa-lg fa fa-thumbs-o-up"></i><br/>Signup
                     </Button>
-
+                    &nbsp;
                     <div class="btn btn-default btn-wide" ng-click="signup.doReset()">
                         <span class="fa fa-stack fa-lg fa-undo"></span>
                         <br/>
                         Reset
                     </div>
-            </div>
+                </div>
             </form>
         </div>
     </div>
-</div>
-</div>
 </div>

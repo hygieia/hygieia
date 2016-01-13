@@ -4,13 +4,22 @@
     </div>
     <div class="widget-modal-body">
         <form name="cdf" class="form" ng-submit="ctrl.submit(cdf.$valid)" novalidate>
+            <div class="form-group" ng-class="{'has-error': cdf.dashboardType.$invalid && ctrl.submitted}">
+                <select name="dashboardType"
+                        class="form-control"
+                        ng-model="ctrl.dashboardType"
+                        ng-options="item.text for item in ctrl.dashboardTypes track by item.id"
+                        required>
+                    <option value="" disabled>Select a type</option>
+                </select>
+            </div>
             <div class="form-group" ng-class="{'has-error': cdf.templateName.$invalid && ctrl.submitted}">
                 <select name="templateName"
                         class="form-control"
                         ng-model="ctrl.templateName"
                         ng-options="item.name for item in ctrl.templates track by item.value"
                         required>
-                    <option value="">Select a template</option>
+                    <option value="" disabled>Select a template</option>
                 </select>
 
                 <p class="help-block" ng-if="cdf.dashboardName.$error.required">Please select a template</p>
@@ -34,7 +43,7 @@
                 <p class="help-block" ng-if="cdf.dashboardName.$error.maxlength">Max length of 50 characters</p>
             </div>
 
-            <div class="form-group" ng-class="{'has-error': cdf.applicationName.$invalid && ctrl.submitted}">
+            <div class="form-group" ng-class="{'has-error': cdf.applicationName.$invalid && ctrl.submitted}" ng-if="ctrl.isTeamDashboardSelected()">
                 <input
                         type="text"
                         name="applicationName"
@@ -42,7 +51,7 @@
                         placeholder="Application name"
                         ng-model="ctrl.applicationName"
                         maxlength="50"
-                        required/>
+                        required />
 
                 <p class="help-block" ng-if="cdf.applicationName.$error.required">Application name is required</p>
 

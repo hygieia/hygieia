@@ -7,7 +7,8 @@
         <div class="auth-modal-body">
             <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}
             </alert>
-            <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2" id="lg" name="lg" class="form" ng-controller="LoginController"
+            <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2" id="lg" name="lg" class="form"
+                  ng-controller="LoginController"
                   ng-submit="login.doLogin(lg.$valid)" ng-init="login.doCheckState()" role="form" novalidate>
                 <div class="form-group">
                     <input
@@ -17,7 +18,7 @@
                         ng-model="login.id"
                         required
                         minlength="4"
-                        placeholder="Enter your login Id" />
+                        placeholder="Enter your login Id"/>
 
                     <p ng-show="lg.loginfield.$invalid && !lg.loginfield.$pristine"
                        class="help-block">login id is required.</p>
@@ -44,7 +45,7 @@
                     <Button type="submit" class="btn btn-default btn-wide">
                         <i class="fa fa-stack fa-lg fa fa-thumbs-o-up"></i><br/>Login
                     </Button>
-
+                    &nbsp;
                     <div class="btn btn-default btn-wide" ng-click="login.doSignup()">
                         <span class="fa fa-stack fa-lg fa-key"></span>
                         <br/>
@@ -61,21 +62,23 @@
         <div class="auth-modal-footer">
             <div class="col-md-8 col-md-push-2 top-buffer">
                 <div class="col-md-4  col-md-push-3">
-                    <div  class="animate-hide">
+                    <div class="animate-hide">
                         <span class="text-center">API Connectivity</span>
                     </div>
-                    </div>
+                </div>
                 <div class="col-md-2 col-md-push-2">
                     <div ng-show="login.apiup" class="animate-hide">
                         <span class="fa fa-2x fa-check-circle text-success"></span>
-                </div>
-                <div ng-hide="login.apiup" class="animate-hide">
-                    <span class="fa fa-2x fa-times-circle text-danger"></span>
+                    </div>
+                    <div ng-hide="login.apiup" class="animate-hide">
+                        <span class="fa fa-2x fa-times-circle text-danger"></span>
                     </div>
 
+                </div>
+
+
             </div>
-
-
+        </div>
     </div>
 </div>
 

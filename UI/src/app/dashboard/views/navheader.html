@@ -2,34 +2,32 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
 
-            <img class="mycenter pull-left" alt="Hygieia" src="assets/images/Hygieia_w.png">
+            <img class="mycenter pull-left" alt="Hygieia" src="assets/images/Hygieia_w.png"/>
 
 
             <div ng-show="ctrl.showAuthentication">
-            <div ng-controller="SiteController" style="color: white" class="nav navbar-nav navbar-right">
-                <div class="divider"></div>
-                <div class="divider"></div>
-               <span style="position: relative; top: 10px" alt="">Welcome  {{ ctrl.username  | uppercase}}
-
-
-                   <a href>
-                   <span class="fa-stack fa-lg" ng-show="ctrl.myadmin" ng-click="ctrl.admin()">
-                   <i class="fa fa-circle fa-stack-2x"></i>
-                   <i class="fa fa-cog fa-stack-1x fa-inverse"></i>
-                   </span>]</a>
-
-
-                   <a href>
-                   <span class="fa-stack fa-lg" ng-click="ctrl.logout()">
-                   <i class="fa fa-circle fa-stack-2x"></i>
-                   <i class="fa fa-power-off fa-stack-1x fa-inverse"></i>
-                   </span>
-                   </a>
+                <div ng-controller="SiteController" style="color: white" class="nav navbar-nav navbar-right">
                     <div class="divider"></div>
-            </div>
-            </div>
-        </div>
+                    <div class="divider"></div>
 
+                    <span class="welcome-header">
+                    Welcome  {{ ctrl.username  | uppercase}}
+
+                       <span class="fa-stack fa-lg" ng-show="ctrl.myadmin" ng-click="ctrl.admin()">
+                           <i class="fa fa-circle fa-stack-2x"></i>
+                           <i class="fa fa-cog fa-stack-1x"></i>
+                       </span>
+
+
+                       <span class="fa-stack fa-lg" ng-click="ctrl.logout()">
+                           <i class="fa fa-circle fa-stack-2x"></i>
+                           <i class="fa fa-power-off fa-stack-1x"></i>
+                       </span>
+
+                        <div class="divider"></div>
+                   </span>
+                </div>
+            </div>
         </div>
     </nav>
 </div>

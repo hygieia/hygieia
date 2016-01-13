@@ -24,7 +24,8 @@
             detail: detail,
             create: create,
             delete: deleteDashboard,
-            upsertWidget: upsertWidget
+            upsertWidget: upsertWidget,
+            types: types
         };
 
         // reusable helper
@@ -44,7 +45,7 @@
           return getPromise(localTesting ? testOwnedRoute : mydashboardRoute+ "/" + username);
         }
 
-        //gets dashboard owner from dashboard titile
+        //gets dashboard owner from dashboard title
         function myowner(title)
         {
             return getPromise(localTesting ? testOwnedRoute : myownerRoute + "/" + title );
@@ -69,6 +70,10 @@
                 .then(function (response) {
                     return response.data;
             });
+        }
+
+        function types() {
+            return getPromise('test-data/dashboard_types.json');
         }
 
         // can be used to add a new widget or update an existing one

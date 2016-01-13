@@ -3,6 +3,7 @@
     "template": "capone",
     "title": "Topo's Dashboard",
     "componentName": "API",
+    "type": 1,
     "application": {
         "name": "DevOps Dashboard",
         "components": [

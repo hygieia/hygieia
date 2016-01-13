@@ -4,6 +4,8 @@
 @import '../chartist/chartist-settings.less';
 @import '../chartist/chartist.less';
 @import '../../../bower_components/components-font-awesome/less/font-awesome.less';
+
+@import 'site';
 @import '../../../src/app/index.less';
 
 // TODO: remove
@@ -29,6 +31,10 @@
 
 .modal-lg {
     width: 960px;
+}
+
+.typeahead-dropdown .dropdown-menu {
+    width: 100%;
 }
 
 // CHARTIST VARIABLES
@@ -110,13 +116,51 @@ body {
     .animate-appear();
 }
 
-// a little bigger button
-.btn-wide {
-    padding-left: @padding-base-horizontal * 2;
-    padding-right: @padding-base-horizontal * 2;
+.list-group-item-right {
+    font-size: 2em;
+    .center-y;
+    right: @padding-base-horizontal;
 }
 
-.button-row {
+// a little bigger button
+.btn-wide {
+    padding-left: @dash-btn-wide;
+    padding-right: @dash-btn-wide;
+}
+
+.btn-wide-2x {
+    padding-left: @dash-btn-wide-2x;
+    padding-right: @dash-btn-wide-2x;
+}
+
+// Success appears as green
+.btn-default {
+    .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+}
+.btn-secondary {
+    .button-variant(@dash-btn-secondary-color; @dash-btn-secondary-bg; @dash-btn-secondary-border);
+}
+.btn-primary {
+    .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+}
+// Success appears as green
+.btn-success {
+    .button-variant(@btn-success-color; @btn-success-bg; @btn-success-border);
+}
+// Info appears as blue-green
+.btn-info {
+    .button-variant(@btn-info-color; @btn-info-bg; @btn-info-border);
+}
+// Warning appears as orange
+.btn-warning {
+    .button-variant(@btn-warning-color; @btn-warning-bg; @btn-warning-border);
+}
+// Danger and error appear as red
+.btn-danger {
+    .button-variant(@btn-danger-color; @btn-danger-bg; @btn-danger-border);
+}
+
+.gap, .button-row {
     margin-top: 3.5rem;
 }
 
@@ -134,6 +178,27 @@ body {
         opacity: 1;
         .transition-delay(@fade-timing);
     }
+}
+
+.welcome-header {
+    position: relative;
+    top: 10px;
+
+    .fa-stack {
+        .fa-circle {
+            color: darken(@navbar-inverse-bg, 20%);
+            opacity: 0;
+            .transition(opacity .2s linear);
+        }
+
+        &:hover {
+            .fa-circle {
+                opacity: 1;
+            }
+        }
+    }
+
+
 }
 
 // FORMS
@@ -350,6 +415,10 @@ body {
         text-align: center;
     }
 
+    .text-danger {
+        color: @state-danger-text !important;
+    }
+
     .fa, .glyphicon {
         color: @dash-modal-icon-text;
     }
@@ -549,20 +618,6 @@ tr.dash-row > td {
 
 .widget-font-bold{
     font-weight: bolder;
-}
-
-// SITE
-// ========================================
-#site {
-    padding-top: 5rem;
-
-    #filter {
-        margin-bottom: 1rem;
-    }
-
-    .lstDashboards {
-        .animate-appear();
-    }
 }
 
 // ADMIN

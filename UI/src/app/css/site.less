@@ -1,0 +1,33 @@
+/* markup specific to site.html view */
+@import 'mixins';
+@import '../../../bower_components/bootstrap/less/variables.less';
+
+#site {
+    padding-top: 5rem;
+
+    #filter {
+        margin-bottom: 1rem;
+    }
+
+    .lstDashboards {
+        .animate-appear();
+    }
+
+    .dashboard-type-list {
+
+        .btn {
+            .transition(~"color .2s linear, background-color .2s linear");
+        }
+    }
+
+    .create-dashboard-button {
+        margin-bottom: 2.5em;
+    }
+}
+
+@media(min-width: @screen-sm-min) {
+    .create-dashboard-button {
+        margin-top: 2.5em;
+        margin-bottom: 0;
+    }
+}

@@ -26,6 +26,11 @@
 @dash-header-text:                  @panel-primary-text;
 @dash-header-font-size:             2.5rem;
 
+// dash secondary styles
+@dash-btn-secondary-bg:             darken(@body-bg, 10%);
+@dash-btn-secondary-border:         lighten(@btn-default-border, 20%);
+@dash-btn-secondary-color:          lighten(@text-color, 20%);
+
 // logo
 @dash-header-logo-url: '@{dash-image-path}hygieia_H.png';
 @dash-header-logo-width:            135px;
@@ -98,3 +103,6 @@
 
 @dash-text-standard-size:           1.1;
 @dash-text-standard-line-height:    1.2;
+
+@dash-btn-wide: @padding-base-horizontal * 2;
+@dash-btn-wide-2x: @dash-btn-wide * 2;
