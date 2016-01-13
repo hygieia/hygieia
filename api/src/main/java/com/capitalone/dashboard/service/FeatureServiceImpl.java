@@ -172,7 +172,7 @@ public class FeatureServiceImpl implements FeatureService {
 				Feature f = new Feature();
 				Feature tempRs = iter.next();
 
-				if ( ! tempRs.getsEpicID().isEmpty()) {
+				if (tempRs.getsEpicID().isEmpty() == false) {
 					try {
 						if (tempRs.getsEpicID().equalsIgnoreCase(lastEpicID)) {
 							try {
@@ -272,7 +272,7 @@ public class FeatureServiceImpl implements FeatureService {
 					.hasNext();) {
 				Feature tempRs = iter.next();
 
-				if ( !tempRs.getsEstimate().isEmpty() ) {
+				if (tempRs.getsEstimate().isEmpty() == false) {
 					try {
 						lineTotalEstimate += Integer.parseInt(tempRs
 								.getsEstimate());
@@ -332,7 +332,7 @@ public class FeatureServiceImpl implements FeatureService {
 					.hasNext();) {
 				Feature tempRs = iter.next();
 
-				if ( !tempRs.getsEstimate().isEmpty() ) {
+				if (tempRs.getsEstimate().isEmpty() == false) {
 					try {
 						lineTotalEstimate += Integer.parseInt(tempRs
 								.getsEstimate());
@@ -392,7 +392,7 @@ public class FeatureServiceImpl implements FeatureService {
 					.hasNext();) {
 				Feature tempRs = iter.next();
 
-				if ( !tempRs.getsEstimate().isEmpty() ) {
+				if (tempRs.getsEstimate().isEmpty() == false) {
 					try {
 						lineTotalEstimate += Integer.parseInt(tempRs
 								.getsEstimate());
