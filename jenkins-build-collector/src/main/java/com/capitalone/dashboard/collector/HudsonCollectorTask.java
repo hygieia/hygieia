@@ -75,17 +75,21 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
         clean(collector);
         for (String instanceUrl : collector.getBuildServers()) {
-            logBanner(instanceUrl);
-
-            Map<HudsonJob, Set<Build>> buildsByJob = hudsonClient
-                    .getInstanceJobs(instanceUrl);
-            log("Fetched jobs", start);
-
-            addNewJobs(buildsByJob.keySet(), collector);
-
-            addNewBuilds(enabledJobs(collector, instanceUrl), buildsByJob);
-
-            log("Finished", start);
+        	
+        		//Handle if config file has an extra empty entry ignore it
+        		//Currently the recommended config file has 2 entries but many of us only need one
+            if ( ! instanceUrl.isEmpty() ) {
+	            logBanner(instanceUrl);
+	            Map<HudsonJob, Set<Build>> buildsByJob = hudsonClient
+	                    .getInstanceJobs(instanceUrl);
+	            log("Fetched jobs", start);
+	
+	            addNewJobs(buildsByJob.keySet(), collector);
+	
+	            addNewBuilds(enabledJobs(collector, instanceUrl), buildsByJob);
+	
+	            log("Finished", start);
+            }
         }
 
     }
