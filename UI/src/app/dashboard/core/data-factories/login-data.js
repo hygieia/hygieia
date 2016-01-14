@@ -33,7 +33,7 @@
     				'username': id,
     				'password': passwd
     			};
-          if(localTesting)
+          if(HygieiaConfig.localTesting)
           {
             return getPromise(id,passwd,testDetailRoute);
           }

@@ -97,6 +97,7 @@ gulp.task('injector:js', ['local-testing', 'scripts', 'injector:css'], function 
     return gulp.src(['src/index.html', '.tmp/index.html'])
         .pipe($.inject(gulp.src([
             'src/{app,components}/**/*.js',
+            '!src/app/config.js',
             '!src/app/local-testing.js',
             '!src/{app,components}/**/*.spec.js',
             '!src/{app,components}/**/*.mock.js'

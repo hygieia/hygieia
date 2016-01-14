@@ -5,37 +5,41 @@
             Please Login
         </div>
         <div class="auth-modal-body">
-            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}
-            </alert>
-            <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2" id="lg" name="lg" class="form"
+            <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2"
+                  id="lg"
+                  name="lg"
+                  class="form"
                   ng-controller="LoginController"
-                  ng-submit="login.doLogin(lg.$valid)" ng-init="login.doCheckState()" role="form" novalidate>
-                <div class="form-group">
+                  ng-submit="login.doLogin(lg.$valid)"
+                  ng-init="login.doCheckState()"
+                  role="form"
+                  novalidate>
+
+                <div class="form-group" ng-class="{'has-error': lg.$submitted && lg.login.$invalid}">
                     <input
                         type="text"
-                        name="loginfield"
+                        name="login"
                         class="form-control text-center"
                         ng-model="login.id"
                         required
                         minlength="4"
-                        placeholder="Enter your login Id"/>
+                        placeholder="Enter your email"/>
 
-                    <p ng-show="lg.loginfield.$invalid && !lg.loginfield.$pristine"
-                       class="help-block">login id is required.</p>
+                    <p class="help-block" ng-if="lg.login.$error.required">Email is required</p>
+                    <p class="help-block" ng-if="lg.login.$error.email">Invalid email address</p>
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" ng-class="{'has-error': lg.$submitted && lg.password.$invalid}">
                     <input
                         type="password"
-                        name="passwordfield"
+                        name="password"
                         class="form-control text-center"
-                        ng-model="login.passwd"
+                        ng-model="login.password"
                         required
-                        placeholder="Enter your Password">
+                        placeholder="Enter your password">
 
-                    <p ng-show="lg.passwordfield.$invalid && !lg.passwordfield.$pristine"
-                       class="help-block">password is required.</p>
+                    <p class="help-block" ng-if="lg.password.$error.required">Password is required</p>
 
                 </div>
 

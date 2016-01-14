@@ -7,10 +7,6 @@
 
     angular
         .module('devops-dashboard')
-        .constant('DashboardType', {
-            TEAM: 1,
-            PRODUCT: 2
-        })
         .controller('CreateDashboardController', CreateDashboardController);
 
     CreateDashboardController.$inject = ['$location', '$modalInstance', 'dashboardData', '$cookies', 'DashboardType'];
@@ -38,10 +34,11 @@
         ctrl.templateFilter = templateFilter;
 
 
-        dashboardData.types().then(function(response) {
+        (function() {
+            var types = dashboardData.types();
             ctrl.dashboardTypes = [];
 
-            _(response).forEach(function(i) {
+            _(types).forEach(function(i) {
                 ctrl.dashboardTypes.push({
                     id: i.id,
                     text: i.name + ' dashboard'
@@ -51,7 +48,7 @@
             if(ctrl.dashboardTypes.length) {
                 ctrl.dashboardType = ctrl.dashboardTypes[0];
             }
-        });
+        })();
 
         function templateFilter(item) {
             return !ctrl.dashboardType || item.type == ctrl.dashboardType.id;
@@ -63,16 +60,15 @@
 
             // perform basic validation and send to the api
             if (valid) {
-                var submitData = {
-                    template: document.cdf.templateName.value,
-                    title: document.cdf.dashboardName.value,
-                    applicationName: document.cdf.applicationName ? document.cdf.applicationName.value : null,
-                    componentName: document.cdf.applicationName.value,
-                    type: document.cdf.dashboardType.value,
-                    owner: $cookies.username
-                };
+                var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
+                    submitData = {
+                        template: document.cdf.templateName.value,
+                        title: document.cdf.dashboardName.value,
+                        applicationName: appName,
+                        componentName: appName,
+                        owner: $cookies.username
+                    };
 
-                console.log(submitData);
                 dashboardData
                     .create(submitData)
                     .then(function (data) {

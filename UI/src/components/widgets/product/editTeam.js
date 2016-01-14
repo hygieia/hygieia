@@ -82,7 +82,7 @@
             if(valid) {
                 $modalInstance.close( !!ctrl.dashboard ? {
                     dashboardId: ctrl.dashboard,
-                    alternateName: ctrl.alternateName
+                    name: ctrl.alternateName
                 } : false);
             }
         }

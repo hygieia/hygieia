@@ -20,8 +20,6 @@
         ctrl.buildDurationThreshold = 3;
         ctrl.buildConsecutiveFailureThreshold = 5;
 
-        ctrl.submitted = false;
-
         // set values from config
         if (widgetConfig) {
             if (widgetConfig.options.buildDurationThreshold) {
@@ -87,9 +85,8 @@
         }
 
         function submitForm(valid) {
-            ctrl.submitted = true;
             if (valid) {
-                var form = document.configForm;
+                var form = document.buildConfigForm;
                 var postObj = {
                     name: 'build',
                     options: {

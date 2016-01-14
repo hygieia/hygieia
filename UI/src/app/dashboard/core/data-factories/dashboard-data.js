@@ -6,6 +6,10 @@
 
     angular
         .module('devops-dashboard.core')
+        .constant('DashboardType', {
+            PRODUCT: 'product',
+            TEAM: 'team'
+        })
         .factory('dashboardData', dashboardData);
 
     function dashboardData($http) {
@@ -37,23 +41,23 @@
 
         // gets list of dashboards
         function search() {
-            return getPromise(localTesting ? testSearchRoute : dashboardRoute);
+            return getPromise(HygieiaConfig.localTesting ? testSearchRoute : dashboardRoute);
         }
 
         //gets list of owned dashboard
         function mydashboard(username){
-          return getPromise(localTesting ? testOwnedRoute : mydashboardRoute+ "/" + username);
+          return getPromise(HygieiaConfig.localTesting ? testOwnedRoute : mydashboardRoute+ "/" + username);
         }
 
         //gets dashboard owner from dashboard title
         function myowner(title)
         {
-            return getPromise(localTesting ? testOwnedRoute : myownerRoute + "/" + title );
+            return getPromise(HygieiaConfig.localTesting ? testOwnedRoute : myownerRoute + "/" + title );
         }
 
         // gets info for a single dashboard including available widgets
         function detail(id) {
-            return getPromise(localTesting ? testDetailRoute : dashboardRoute + '/' + id);
+            return getPromise(HygieiaConfig.localTesting ? testDetailRoute : dashboardRoute + '/' + id);
         }
 
         // creates a new dashboard
@@ -73,13 +77,29 @@
         }
 
         function types() {
-            return getPromise('test-data/dashboard_types.json');
+            return [
+                {
+                    "id": "team",
+                    "name": "Team"
+                },
+                {
+                    "id": "product",
+                    "name": "Product"
+                }
+            ];
+
         }
 
         // can be used to add a new widget or update an existing one
         function upsertWidget(dashboardId, widget) {
             // create a copy so we don't modify the original
             widget = angular.copy(widget);
+
+            // in 2.0 component ids now need to be an array.
+            // catch any previous scenarios that exist where they may still be a string
+            if(!Array.isArray(widget.componentId)) {
+                widget.componentId = [widget.componentId];
+            }
 
             var widgetId = widget.id;
 

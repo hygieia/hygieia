@@ -31,6 +31,6 @@
     }
 
     function getState(widgetConfig) {
-        return localTesting || (widgetConfig.id) ? widget_state.READY : widget_state.CONFIGURE;
+        return HygieiaConfig.localTesting || (widgetConfig.id) ? widget_state.READY : widget_state.CONFIGURE;
     }
 })();

@@ -32,6 +32,6 @@
 
     function getState(widgetConfig) {
         // make sure config values are set
-        return localTesting || (widgetConfig.id) ? widget_state.READY : widget_state.CONFIGURE;
+        return HygieiaConfig.localTesting || (widgetConfig.id) ? widget_state.READY : widget_state.CONFIGURE;
     }
 })();

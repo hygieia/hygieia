@@ -18,7 +18,7 @@
 
         // search for test suite data
         function details(params) {
-            return $http.get(localTesting ? testDetailRoute : caDetailRoute, { params: params })
+            return $http.get(HygieiaConfig.localTesting ? testDetailRoute : caDetailRoute, { params: params })
                 .then(function (response) {
                     return response.data;
                 });

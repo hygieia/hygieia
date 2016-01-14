@@ -10,12 +10,12 @@
                 <div class="text-center">
                     <div class="btn-group dashboard-type-list" role="group" aria-label="Basic example">
                         <button type="button"
-                                class="btn btn-secondary btn-wide-2x"
+                                class="btn btn-secondary"
                                 ng-class="{'btn-info': ctrl.dashboardType == undefined}"
                                 ng-click="ctrl.setType()">All dashboards</button>
 
                         <button type="button"
-                                class="btn btn-secondary btn-wide-2x"
+                                class="btn btn-secondary"
                                 ng-repeat="item in ctrl.dashboardTypes"
                                 ng-class="{'btn-info': ctrl.dashboardType == item.id}"
                                 ng-click="ctrl.setType(item.id)">
@@ -56,30 +56,30 @@
 
                             <ul class="list-animate list-group text-left">
                                 <li class="list-group-item" ng-repeat="myitem in mydashboards = (ctrl.mydash | filter:ctrl.filterDashboards | orderBy: 'name')">
-                                    <a href ng-click="ctrl.open(myitem.id)">
-                                        <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : myitem.type == ctrl.dashboardTypeEnum.PRODUCT}"></span>
+                                    <span class="pull-right">
+                                       <a href ng-click="ctrl.deleteDashboard(myitem.id)">
+                                           <span class="fa fa-lg fa-trash text-danger"></span>
+                                       </a>
+                                    </span>
+
+                                    <a class="visible-xs-block" ng-click="ctrl.open(myitem.id)">
+                                        <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : myitem.isProduct}"></span>
                                         {{ myitem.name }}
                                     </a>
-                                <span class="pull-right">
-                                   <a href ng-click="ctrl.deleteDashboard(myitem.id)">
-                                       <span class="fa fa-lg fa-trash text-danger"></span>
-                                   </a>
-                                </span>
-
                                 </li>
                             </ul>
                             <p>{{ctrl.filter}}</p>
                         </div>
 
                         <div class="gap">
-                            <div class="text-2x">All Dashboard's</span></div>
+                            <div class="text-2x">All Dashboards</span></div>
 
                             <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
 
                             <ul class="list-animate list-group text-left">
                                 <li class="list-group-item clickable" ng-click="ctrl.open(item.id)"
                                     ng-repeat="item in filteredDashboards = (ctrl.dashboards | filter: ctrl.filterDashboards | orderBy:'name')">
-                                    <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : item.type == ctrl.dashboardTypeEnum.PRODUCT}"></span>
+                                    <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : item.isProduct}"></span>
 
                                     <span class="fa fa-angle-right list-group-item-right"></span>
 

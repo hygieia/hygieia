@@ -16,8 +16,6 @@
         login.showAuthentication = $cookies.authenticated;
         login.id = '';
         login.passwd = '';
-        login.submitted = false;
-        $scope.alerts = [];
         login.apiup = false;
 
 
@@ -29,15 +27,10 @@
         login.checkApi = checkApi;
 
 
-        //function for closing alerts
-        $scope.closeAlert = function (index) {
-            $scope.alerts.splice(index, 1);
-        };
-
-
         function doCheckState() {
             //Call the method to make sure api layer is up
             checkApi();
+
             if ($cookies.authenticated) {
                 $location.path('/site');
 
@@ -48,27 +41,19 @@
         }
 
         function doLogin(valid) {
-
-            login.submitted = true;
             if (valid) {
-                loginData.login(document.lg.loginfield.value, document.lg.passwordfield.value).then(processResponse);
+                loginData.login(document.lg.login.value, document.lg.password.value).then(processResponse);
             }
-            else {
-                $scope.alerts.splice(0, $scope.alerts.length);
-                $scope.alerts.push({type: 'info', msg: "Please fill all the form fields correctly"});
-            }
-
         }
 
 
         function processResponse(data) {
 
-
             console.log("Authentication is:" + data);
 
             if (data) {
                 $cookies.authenticated = true;
-                $cookies.username = document.lg.loginfield.value;
+                $cookies.username = document.lg.login.value;
 
                 $location.path('/site');
 
@@ -93,14 +78,11 @@
                     if (status == 200) {
                         console.log("API Connectivity");
                         login.apiup = true;
-
                     }
-                    //we will add explicit code to check if we we secure the api layer.
+                    // we will add explicit code to check if we we secure the api layer.
                     else {
                         console.log("API layer down");
-
                     }
-
                 })
                 .error(function (data, status, headers, config) {
 

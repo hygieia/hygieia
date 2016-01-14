@@ -6,42 +6,65 @@
             Please Signup
         </div>
         <div class="auth-modal-body">
-            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-            <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2" name="suf" class="form"
-                  ng-controller="SignupController" ng-submit="signup.doSignup(suf.$valid)" role="form" novalidate>
-                <div class="form-group">
+            <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2"
+                  name="suf"
+                  class="form"
+                  ng-controller="SignupController"
+                  ng-submit="signup.doSignup(suf.$valid)"
+                  role="form"
+                  novalidate>
 
-                    <input type="text" class="form-control text-center" ng-model="signup.id" name="myusername"
-                           placeholder="Enter your login Id"/>
+                <div class="alert alert-success" ng-if="signup.userCreated">
+                    User created successfully
                 </div>
 
                 <div class="form-group">
+
+                    <input type="email"
+                           class="form-control text-center"
+                           ng-model="signup.id"
+                           name="email"
+                           placeholder="Enter your email"
+                           required />
+
+                    <p class="help-block" ng-show="suf.email.$error.required">
+                        Password should be min length of 6 container
+                    </p>
+                    <p class="help-block" ng-show="suf.email.$error.email">
+                        Email address is invalid
+                    </p>
+                </div>
+
+                <div class="form-group" ng-class="{'has-errors': suf.password.$invalid}">
 
                     <input type="password" class="form-control text-center"
                            ng-model="signup.password"
                            required
                            minLength=6
-                           name="mypassword"
+                           name="password"
                            placeholder="Enter your Password"/>
+
+                    <p class="help-block" ng-show="suf.password.$error.minlength">
+                        Password should be min length of 6 container
+                    </p>
                 </div>
-                <div class="error-container" ng-show="suf.mypassword.$error.minlength">Password should be min
-                    length of 6 container
-                </div>
+
+
                 <div class="form-group">
                     <input type="password" class="form-control text-center"
                            ng-model="signup.passwordConfirm"
                            required
                            minLength=6
                            match="signup.password"
-                           name="myConfirmPassword"
+                           name="confirm"
                            placeholder="Enter your Password Again"/>
 
-                    <div class="error-container" ng-show="suf.myConfirmPassword.$error.minlength">Password
-                        should be min length of 6 container
-                    </div>
-                    <div class="error-container" ng-show="suf.myConfirmPassword.$error.match">Passwords do not
-                        match!
-                    </div>
+                    <p class="help-block" ng-show="suf.confirm.$error.minlength">
+                        Password should be min length of 6 container
+                    </p>
+                    <p class="help-block" ng-show="suf.confirm.$error.match">
+                        Passwords do not match!
+                    </p>
 
                 </div>
 

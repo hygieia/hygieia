@@ -30,7 +30,7 @@
     }
 
     function getState(widgetConfig) {
-        return localTesting ?
+        return HygieiaConfig.localTesting ?
             widget_state.READY :
             (widgetConfig.id ? widget_state.READY : widget_state.CONFIGURE);
     }

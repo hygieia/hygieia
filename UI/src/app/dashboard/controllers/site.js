@@ -8,27 +8,23 @@
         .module('devops-dashboard')
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', '$timeout'];
-    function SiteController($scope, $modal, dashboardData, $location, $cookies, $cookieStore, $timeout) {
+    SiteController.$inject = ['$scope', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
+    function SiteController($scope, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
         var ctrl = this;
 
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
-        ctrl.username=$cookies.username;
+        ctrl.username = $cookies.username;
         ctrl.showAuthentication = $cookies.authenticated;
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
-
-        ctrl.dashboardTypeEnum = {
-            TEAM: 1,
-            PRODUCT: 2
-        };
+        ctrl.dashboardTypeEnum = DashboardType;
 
         // public methods
         ctrl.createDashboard = createDashboard;
         ctrl.deleteDashboard = deleteDashboard;
         ctrl.open = open;
-        ctrl.logout= logout;
+        ctrl.logout = logout;
         ctrl.admin = admin;
         ctrl.setType = setType;
         ctrl.filterNotOwnedList = filterNotOwnedList;
@@ -44,24 +40,32 @@
         //find dashboard I own
         dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
 
-        dashboardData.types().then(function(response) {
-            // add item icon
-            response.forEach(function (item) {
-                if(item.id == 2) {
+        (function() {
+            var types = dashboardData.types();
+            _(types).forEach(function (item) {
+                if(item.id == DashboardType.PRODUCT) {
                     item.icon = 'fa-cubes';
                 }
             });
 
-            ctrl.dashboardTypes = response;
-        });
+            ctrl.dashboardTypes = types;
+        })();
 
         function setType(type) {
             ctrl.dashboardType = type;
         }
 
         function filterDashboards(item) {
-            return (!ctrl.search || item.name.toLowerCase().indexOf(ctrl.search.toLowerCase()) !== -1)
-                && (!ctrl.dashboardType || item.type === ctrl.dashboardType);
+            var matchesSearch = (!ctrl.search || item.name.toLowerCase().indexOf(ctrl.search.toLowerCase()) !== -1);
+            if (ctrl.dashboardType == DashboardType.PRODUCT) {
+                return item.isProduct && matchesSearch;
+            }
+
+            if (ctrl.dashboardType == DashboardType.TEAM) {
+                return !item.isProduct && matchesSearch;
+            }
+
+            return matchesSearch;
         }
 
         function admin() {
@@ -90,10 +94,6 @@
             $location.path('/dashboard/' + dashboardId);
         }
 
-        function processError() {
-            alert("An error occurred");
-        }
-
         function processDashboardResponse(data) {
             // add dashboards to list
             ctrl.dashboards = [];
@@ -101,9 +101,11 @@
                 ctrl.dashboards.push({
                     id: data[x].id,
                     name: data[x].title,
-                    type: data[x].type
+                    isProduct: data[x].applicationName == DashboardType.PRODUCT
                 });
             }
+
+            console.log(ctrl.dashboards);
         }
 
         function processDashboardError(data) {
@@ -121,7 +123,6 @@
                     name: mydata[x].title,
                     type: mydata[x].type
                 });
-
             }
         }
 
@@ -135,7 +136,7 @@
                 _.remove(ctrl.dashboards, {id: id});
                 _.remove(ctrl.mydash, {id: id});
             }, function(response) {
-                var msg = 'An error occurred';
+                var msg = 'An error occurred while deleting the dashboard';
                 if (response.data && response.data.message) {
                     msg = response.data.message;
                 }

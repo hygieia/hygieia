@@ -48,7 +48,26 @@ var localStorageSupported = (function () {
         'apg.typeaheadDropdown',
         'typeahead-focus'
     ])
+    .config(['$httpProvider',
+        function ($httpProvider) {
+            $httpProvider.interceptors.push(function () {
+                return {
+                    request: function (config) {
+                        var path = config.url;
+                        if(config.url.substr(0, 1) != '/') {
+                            path = '/' + config.url;
+                        }
 
+                        if(!!HygieiaConfig.remoteApiHost && path.substr(0, 5) == '/api/') {
+                            config.url = HygieiaConfig.remoteApiHost + path;
+                        }
+
+                        console.log(config);
+                        return config;
+                    }
+                };
+            });
+        }])
     .config(function ($routeProvider) {
             $routeProvider
                 // main dashboard page

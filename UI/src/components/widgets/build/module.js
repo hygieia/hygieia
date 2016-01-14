@@ -32,7 +32,7 @@
 
     function getState(config) {
         // make sure config values are set
-        return localTesting || (config.id && config.options.buildDurationThreshold && config.options.consecutiveFailureThreshold) ?
+        return HygieiaConfig.localTesting || (config.id && config.options.buildDurationThreshold && config.options.consecutiveFailureThreshold) ?
             widget_state.READY :
             widget_state.CONFIGURE;
     }

@@ -34,7 +34,7 @@
     				'username': id,
     				'password': passwd
     			};
-          if(localTesting)
+          if(HygieiaConfig.localTesting)
           {
             console.log("In local testing");
             return getPromise(id,passwd,testDetailRoute);

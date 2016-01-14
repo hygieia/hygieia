@@ -17,7 +17,7 @@
         };
 
         function details(componentId) {
-            return $http.get(localTesting ? testDetailRoute : deployDetailRoute + componentId)
+            return $http.get(HygieiaConfig.localTesting ? testDetailRoute : deployDetailRoute + componentId)
                 .then(function (response) {
                     return response.data;
                 });
