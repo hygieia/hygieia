@@ -11,10 +11,8 @@ public class DashboardRequest {
     @NotNull
     private String title;
 
-    @NotNull
     private String applicationName;
 
-    @NotNull
     private String componentName;
     
     @NotNull
@@ -69,11 +67,11 @@ public class DashboardRequest {
 
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
-        if(type.equals(DashboardType.Program)){
-            //TODO: this needs to change
-            return new ProgramDashboard(template, title, null ,owner, null, type);
+        Application application = null;
+        if(type.equals(DashboardType.Team)){
+            application = new Application(applicationName, new Component(componentName));
         }
-        return new Dashboard(template, title, new Application(applicationName, new Component(componentName)),owner, type);
+        return new Dashboard(template, title, application, owner, type);
     }
 
     public Dashboard copyTo(Dashboard dashboard) {

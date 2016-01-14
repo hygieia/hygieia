@@ -17,10 +17,10 @@ public class Dashboard extends BaseModel {
     private List<Widget> widgets = new ArrayList<>();
     private String owner;
     private DashboardType type;
+    private List<TeamDashboard> teamDashboards = new ArrayList<>();
 
     //Only used for team dashboards
     private Application application;
-
 
     Dashboard() {
     }
@@ -72,6 +72,14 @@ public class Dashboard extends BaseModel {
     public DashboardType getType(){ return this.type; }
 
     public void setType(DashboardType type) { this.type = type; }
+
+    public List<TeamDashboard> getTeamDashboards() { return this.teamDashboards; }
+
+    public void setTeamDashboards(List<TeamDashboard> teamDashboards) { this.teamDashboards = teamDashboards; }
+
+    public void addTeamDashboard(TeamDashboard teamDashboard){
+        this.teamDashboards.add(teamDashboard);
+    }
 
 
 }

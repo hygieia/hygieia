@@ -212,6 +212,13 @@ public class DashboardServiceImpl implements DashboardService {
 		return dashboardOwner;
 	}
 
+    @Override
+    public TeamDashboard addTeamDashboard(Dashboard productDashboard, TeamDashboard teamDashboard) {
+        productDashboard.addTeamDashboard(teamDashboard);
+        dashboardRepository.save(productDashboard);
+        return teamDashboard;
+    }
+
     private DashboardType getDashboardType(Dashboard dashboard){
         if(dashboard.getType() != null){
             return dashboard.getType();
