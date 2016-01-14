@@ -13,7 +13,6 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,6 +26,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+
+import javax.xml.bind.DatatypeConverter;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -43,10 +45,11 @@ public class FeatureServiceImplTest {
 	private static CollectorItem mockItem;
 	private static CollectorItem mockItem2;
 	private static CollectorItem mockItem3;
-	private static final String generalUseDate = "2015-11-01T00:00:00Z";
-	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	private static final String generalUseDate = "2015-11-01T00:00:00.000-00:00";
+	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.000-00:00");
 	private static Calendar cal = Calendar.getInstance();
-	private static final String maxDateWinner = df.format(new Date());
+	private static final String maxDateWinner = DatatypeConverter.printDateTime(Calendar
+			.getInstance(TimeZone.getTimeZone("UTC")));
 	private static String maxDateLoser = new String();
 	private static String currentSprintEndDate = new String();
 	private static final ObjectId jiraCollectorId = new ObjectId();
@@ -306,14 +309,13 @@ public class FeatureServiceImplTest {
 	 * This test is valuable and should be completed - however, it is not
 	 * currently working as expected and has thus been ignored for now
 	 */
-	@Ignore
 	@Test
 	public void testGetFeatureEstimates_ManySameSuperFeatures_OneSuperFeatureRs() {
 		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
 		when(collectorRepository.findOne(mockItem2.getCollectorId())).thenReturn(mockJiraCollector);
 		when(
-				featureRepository.getInProgressFeaturesEstimatesByTeamId(
-						mockJiraFeature.getsTeamID(), maxDateWinner)).thenReturn(
+				featureRepository.getInProgressFeaturesEstimatesByTeamId((String) notNull(),
+						(String) notNull())).thenReturn(
 				Arrays.asList(mockJiraFeature, mockJiraFeature2));
 
 		DataResponse<List<Feature>> result = featureService.getFeatureEstimates(mockComponentId,
@@ -321,7 +323,8 @@ public class FeatureServiceImplTest {
 		assertThat(
 				"There should only be one result even with multiple same super features over several sub features",
 				result.getResult(), hasSize(1));
-		assertThat(Integer.getInteger(result.getResult().get(0).getsEstimate()),
-				org.hamcrest.Matchers.equalTo(80));
+		assertThat(
+				"The total super feature estimate should be the sum total of any similar super features present in the response",
+				Integer.valueOf(result.getResult().get(0).getsEstimate()), equalTo(80));
 	}
 }
