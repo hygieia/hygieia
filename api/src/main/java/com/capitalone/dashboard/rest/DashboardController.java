@@ -1,10 +1,8 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Widget;
-import com.capitalone.dashboard.model.WidgetResponse;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.request.DashboardRequest;
+import com.capitalone.dashboard.request.TeamDashboardRequest;
 import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
 import org.bson.types.ObjectId;
@@ -70,12 +68,30 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard/{id}/widget", method = POST,
             consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<WidgetResponse> addWidget(@PathVariable ObjectId id, @RequestBody WidgetRequest request) {
+
+        Dashboard dashboard = dashboardService.get(id);
+
         Component component = dashboardService.associateCollectorToComponent(
                 request.getComponentId(), request.getCollectorItemIds());
 
-        Widget widget = dashboardService.addWidget(dashboardService.get(id), request.widget());
+        Widget widget = dashboardService.addWidget(dashboard, request.widget());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new WidgetResponse(component, widget));
+    }
+
+    @RequestMapping(value = "/dashboard/{id}/teamdashboard", method = POST,
+            consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<TeamDashboard> addTeamDashboard(@PathVariable ObjectId id, @RequestBody TeamDashboardRequest request) {
+
+        Dashboard programDashboard  = dashboardService.get(id);
+        if(!programDashboard.getType().equals(DashboardType.Program)){
+            throw new UnsupportedOperationException("Dashboard "+id+ "is not a Program Dashboard");
+        }
+
+        Dashboard dashboardToAdd = dashboardService.get(request.getDashboardId());
+        TeamDashboard teamDashboard = new TeamDashboard(request.getName(), dashboardToAdd);
+        TeamDashboard addedTeamDashboard = dashboardService.addTeamDashboard(programDashboard, teamDashboard);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addedTeamDashboard);
     }
 
     @RequestMapping(value = "/dashboard/{id}/widget/{widgetId}", method = PUT,

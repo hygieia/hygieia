@@ -14,18 +14,23 @@ import java.util.List;
 public class Dashboard extends BaseModel {
     private String template;
     private String title;
-    private Application application;
     private List<Widget> widgets = new ArrayList<>();
     private String owner;
+    private DashboardType type;
+    private List<TeamDashboard> teamDashboards = new ArrayList<>();
+
+    //Only used for team dashboards
+    private Application application;
 
     Dashboard() {
     }
 
-    public Dashboard(String template, String title, Application application,String owner) {
+    public Dashboard(String template, String title, Application application,String owner, DashboardType type) {
         this.template = template;
         this.title = title;
         this.application = application;
         this.owner = owner;
+        this.type = type;
     }
 
     public String getTemplate() {
@@ -63,5 +68,18 @@ public class Dashboard extends BaseModel {
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
-    
+
+    public DashboardType getType(){ return this.type; }
+
+    public void setType(DashboardType type) { this.type = type; }
+
+    public List<TeamDashboard> getTeamDashboards() { return this.teamDashboards; }
+
+    public void setTeamDashboards(List<TeamDashboard> teamDashboards) { this.teamDashboards = teamDashboards; }
+
+    public void addTeamDashboard(TeamDashboard teamDashboard){
+        this.teamDashboards.add(teamDashboard);
+    }
+
+
 }

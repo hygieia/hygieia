@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.repository;
 
+import com.capitalone.dashboard.model.*;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,10 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.capitalone.dashboard.config.MongoConfig;
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Widget;
 
 @ContextConfiguration(classes={ MongoConfig.class })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,7 +28,7 @@ public class DashboardCreateTests {
     private ComponentRepository componentRepository;
 
     @Test
-    public void createDashboardTest() {
+    public void createTeamDashboardTest() {
         Component component = new Component("Jay's component");
         component.setOwner("Jay");
 
@@ -40,7 +37,7 @@ public class DashboardCreateTests {
 
         Application application = new Application("Jay's App", component);
 
-        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application,"amit");
+        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application,"amit", DashboardType.Team);
 
         Widget build = new Widget();
         build.setName("build");

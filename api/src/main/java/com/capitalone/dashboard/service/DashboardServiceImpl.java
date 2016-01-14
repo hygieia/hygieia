@@ -43,15 +43,17 @@ public class DashboardServiceImpl implements DashboardService {
     public Dashboard get(ObjectId id) {
         Dashboard dashboard = dashboardRepository.findOne(id);
 
-        if (!dashboard.getApplication().getComponents().isEmpty()) {
-            // Add transient Collector instance to each CollectorItem
-            Map<CollectorType, List<CollectorItem>> itemMap = dashboard.getApplication().getComponents().get(0).getCollectorItems();
+        if(getDashboardType(dashboard).equals(DashboardType.Team)){
+            if (!dashboard.getApplication().getComponents().isEmpty()) {
+                // Add transient Collector instance to each CollectorItem
+                Map<CollectorType, List<CollectorItem>> itemMap = dashboard.getApplication().getComponents().get(0).getCollectorItems();
 
-            Iterable<Collector> collectors = collectorsFromItems(itemMap);
+                Iterable<Collector> collectors = collectorsFromItems(itemMap);
 
-            for (List<CollectorItem> collectorItems : itemMap.values()) {
-                for (CollectorItem collectorItem : collectorItems) {
-                    collectorItem.setCollector(getCollector(collectorItem.getCollectorId(), collectors));
+                for (List<CollectorItem> collectorItems : itemMap.values()) {
+                    for (CollectorItem collectorItem : collectorItems) {
+                        collectorItem.setCollector(getCollector(collectorItem.getCollectorId(), collectors));
+                    }
                 }
             }
         }
@@ -61,7 +63,9 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Dashboard create(Dashboard dashboard) {
-        componentRepository.save(dashboard.getApplication().getComponents());
+        if(getDashboardType(dashboard).equals(DashboardType.Team)){
+            componentRepository.save(dashboard.getApplication().getComponents());
+        }
         return dashboardRepository.save(dashboard);
     }
 
@@ -73,7 +77,9 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public void delete(ObjectId id) {
         Dashboard dashboard = dashboardRepository.findOne(id);
-        componentRepository.delete(dashboard.getApplication().getComponents());
+        if(getDashboardType(dashboard).equals(DashboardType.Team)) {
+            componentRepository.delete(dashboard.getApplication().getComponents());
+        }
 
         // Remove this Dashboard's services and service dependencies
         serviceRepository.delete(serviceRepository.findByDashboardId(id));
@@ -200,10 +206,23 @@ public class DashboardServiceImpl implements DashboardService {
 
 	@Override
 	public String getDashboardOwner(String dashboardName) {
-		
-		
+
 		String dashboardOwner=dashboardRepository.findByTitle(dashboardName).get(0).getOwner();
 		
 		return dashboardOwner;
 	}
+
+    @Override
+    public TeamDashboard addTeamDashboard(Dashboard productDashboard, TeamDashboard teamDashboard) {
+        productDashboard.addTeamDashboard(teamDashboard);
+        dashboardRepository.save(productDashboard);
+        return teamDashboard;
+    }
+
+    private DashboardType getDashboardType(Dashboard dashboard){
+        if(dashboard.getType() != null){
+            return dashboard.getType();
+        }
+        return DashboardType.Team;
+    }
 }

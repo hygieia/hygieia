@@ -1,9 +1,6 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Service;
-import com.capitalone.dashboard.model.ServiceStatus;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.ServiceRepository;
 import org.bson.types.ObjectId;
@@ -54,7 +51,7 @@ public class ServiceServiceTest {
     public void create() {
         final ObjectId id = ObjectId.get();
         final String name = "service";
-        final Dashboard dashboard = new Dashboard("template", "title", new Application("app"), "amit");
+        final Dashboard dashboard = new Dashboard("template", "title", new Application("app"), "amit", DashboardType.Team);
         when(dashboardRepository.findOne(id)).thenReturn(dashboard);
 
         serviceService.create(id, name);
