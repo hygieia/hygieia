@@ -1,12 +1,12 @@
-@import '../../../bower_components/bootstrap/less/bootstrap.less';
-@import 'variables.less';
-@import 'mixins.less';
-@import '../chartist/chartist-settings.less';
-@import '../chartist/chartist.less';
-@import '../../../bower_components/components-font-awesome/less/font-awesome.less';
+@import '../../../bower_components/components-font-awesome/less/font-awesome';
+@import '../../../bower_components/bootstrap/less/bootstrap';
+@import 'variables';
+@import 'mixins';
+@import '../chartist/chartist-settings';
+@import '../chartist/chartist';
 
 @import 'site';
-@import '../../../src/app/index.less';
+@import '../../../src/app/index';
 
 // TODO: remove
 #__bs_notify__ { display: none !important;}
@@ -31,10 +31,6 @@
 
 .modal-lg {
     width: 960px;
-}
-
-.typeahead-dropdown .dropdown-menu {
-    width: 100%;
 }
 
 // CHARTIST VARIABLES
@@ -122,6 +118,7 @@ body {
     right: @padding-base-horizontal;
 }
 
+
 // a little bigger button
 .btn-wide {
     padding-left: @dash-btn-wide;
@@ -160,6 +157,10 @@ body {
     .button-variant(@btn-danger-color; @btn-danger-bg; @btn-danger-border);
 }
 
+.btn-input {
+    .button-variant(@input-color; @input-bg; @input-border);
+}
+
 .gap, .button-row {
     margin-top: 3.5rem;
 }
@@ -181,8 +182,10 @@ body {
 }
 
 .welcome-header {
+    color: @dash-text-inverse;
+    font-size: 1.5rem;
     position: relative;
-    top: 10px;
+    top: 5px;
 
     .fa-stack {
         .fa-circle {
@@ -197,8 +200,6 @@ body {
             }
         }
     }
-
-
 }
 
 // FORMS
@@ -231,23 +232,27 @@ body {
 //
 // ========================================
 #header {
+    color: @dash-header-text;
     display: block !important;
     background: @dash-header-bg;
-    color: @dash-header-text;
     font-size: @dash-header-font-size;
-    line-height: 2.5*@dash-header-font-size;
     margin-bottom: @grid-gutter-width / 2;
     text-align: center;
     position: relative;
 
-    a {
-        background: #fff url(@dash-header-logo-url) no-repeat center center;
+    .dashboard-logo {
+        background: url(@dash-header-logo-url) no-repeat center center;
+        background-size: contain;
         display: inline-block;
         position: absolute;
         left: @dash-header-logo-left;
         top: @dash-header-logo-top;
         width: @dash-header-logo-width;
         height: @dash-header-logo-height;
+
+        &.dashboard-logo-inverse {
+            background-image: url(@dash-header-logo-inverse-url);
+        }
     }
 
     // switch between pipeline view
@@ -260,25 +265,6 @@ body {
         width: 5px;
         height: auto;
         display: inline-block;
-    }
-
-    .mycenter {
-        max-width: 180px;
-        display: block;
-        vertical-align: middle;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        margin: auto;
-    }
-}
-
-@media (max-width: @screen-sm-max) {
-    #header a {
-        background-image: url(@dash-header-icon-url);
-        width: @dash-header-icon-width;
-        height: @dash-header-icon-height;
     }
 }
 
@@ -696,27 +682,6 @@ tr.dash-row > td {
             position: absolute;
         }
     }
-}
-
-#hgheader {
-
-    .divider {
-        width: 5px;
-        height: auto;
-        display: inline-block;
-    }
-
-    .mycenter {
-        max-width: 180px;
-        display: block;
-        vertical-align: middle;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        margin: auto;
-    }
-
 }
 
 #auth {

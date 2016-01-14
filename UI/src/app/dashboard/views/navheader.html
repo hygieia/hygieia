@@ -1,14 +1,11 @@
-<div id="hgheader">
+<div id="header">
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
 
-            <img class="mycenter pull-left" alt="Hygieia" src="assets/images/Hygieia_w.png"/>
-
+            <a ng-href="#/" class="dashboard-logo dashboard-logo-inverse"></a>
 
             <div ng-show="ctrl.showAuthentication">
-                <div ng-controller="SiteController" style="color: white" class="nav navbar-nav navbar-right">
-                    <div class="divider"></div>
-                    <div class="divider"></div>
+                <div ng-controller="SiteController" class="pull-right">
 
                     <span class="welcome-header">
                     Welcome  {{ ctrl.username  | uppercase}}

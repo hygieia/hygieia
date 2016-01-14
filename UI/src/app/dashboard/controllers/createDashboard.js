@@ -7,10 +7,14 @@
 
     angular
         .module('devops-dashboard')
+        .constant('DashboardType', {
+            TEAM: 1,
+            PRODUCT: 2
+        })
         .controller('CreateDashboardController', CreateDashboardController);
 
-    CreateDashboardController.$inject = ['$location', '$modalInstance', 'dashboardData', '$cookies'];
-    function CreateDashboardController($location, $modalInstance, dashboardData, $cookies) {
+    CreateDashboardController.$inject = ['$location', '$modalInstance', 'dashboardData', '$cookies', 'DashboardType'];
+    function CreateDashboardController($location, $modalInstance, dashboardData, $cookies, DashboardType) {
         var ctrl = this;
 
         // public variables
@@ -22,14 +26,16 @@
 
         // TODO: dynamically register templates with script
         ctrl.templates = [
-            {value: 'capone', name: 'Cap One'},
-            {value: 'caponechatops', name: 'Cap One ChatOps'},
-            {value: 'splitview', name: 'Split View'}
+            {value: 'capone', name: 'Cap One', type: DashboardType.TEAM},
+            {value: 'caponechatops', name: 'Cap One ChatOps', type: DashboardType.TEAM},
+            {value: 'splitview', name: 'Split View', type: DashboardType.TEAM},
+            {value: 'product-dashboard', name: 'Product Dashboard', type: DashboardType.PRODUCT}
         ];
 
         // public methods
         ctrl.submit = submit;
         ctrl.isTeamDashboardSelected = isTeamDashboardSelected;
+        ctrl.templateFilter = templateFilter;
 
 
         dashboardData.types().then(function(response) {
@@ -46,6 +52,10 @@
                 ctrl.dashboardType = ctrl.dashboardTypes[0];
             }
         });
+
+        function templateFilter(item) {
+            return !ctrl.dashboardType || item.type == ctrl.dashboardType.id;
+        }
 
         // method implementations
         function submit(valid) {

@@ -5,12 +5,12 @@
         .module('devops-dashboard')
         .controller('RepoDetailController', RepoDetailController);
 
-    RepoDetailController.$inject = ['$modalInstance', 'commits', 'DASH_STATUS'];
-    function RepoDetailController($modalInstance, commits, DASH_STATUS) {
+    RepoDetailController.$inject = ['$modalInstance', 'commits', 'DashStatus'];
+    function RepoDetailController($modalInstance, commits, DashStatus) {
         /*jshint validthis:true */
         var ctrl = this;
 
-        ctrl.statuses = DASH_STATUS;
+        ctrl.statuses = DashStatus;
         ctrl.commits = commits;
 
         ctrl.close = close;

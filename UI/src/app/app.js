@@ -44,7 +44,9 @@ var localStorageSupported = (function () {
         'fitText',
         'angular-chartist',
         'ngCookies',
-        'validation.match'
+        'validation.match',
+        'apg.typeaheadDropdown',
+        'typeahead-focus'
     ])
 
     .config(function ($routeProvider) {

@@ -43,16 +43,19 @@
                 <div class="text-center">
 
                     <Button type="submit" class="btn btn-default btn-wide">
-                        <i class="fa fa-stack fa-lg fa fa-thumbs-o-up"></i><br/>Login
+                        <i class="fa fa-stack fa-lg fa fa-thumbs-o-up"></i>
+                        Log in
                     </Button>
-                    &nbsp;
-                    <div class="btn btn-default btn-wide" ng-click="login.doSignup()">
-                        <span class="fa fa-stack fa-lg fa-key"></span>
-                        <br/>
-                        Signup
-                    </div>
+
                 </div>
 
+                <div class="gap text-center">
+                    <p>Don't have an account?</p>
+                    <div class="btn btn-link btn-wide" ng-click="login.doSignup()">
+                        <span class="fa fa-stack fa-lg fa-key"></span>
+                        Sign up
+                    </div>
+                </div>
 
             </form>
 
@@ -67,11 +70,8 @@
                     </div>
                 </div>
                 <div class="col-md-2 col-md-push-2">
-                    <div ng-show="login.apiup" class="animate-hide">
-                        <span class="fa fa-2x fa-check-circle text-success"></span>
-                    </div>
-                    <div ng-hide="login.apiup" class="animate-hide">
-                        <span class="fa fa-2x fa-times-circle text-danger"></span>
+                    <div class="animate-hide">
+                        <span class="fa fa-2x" ng-class="login.apiup ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"></span>
                     </div>
 
                 </div>

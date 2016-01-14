@@ -1,0 +1,60 @@
+<div id="product-dashboard">
+
+    <div class="text-center">
+        Average Times are over a 90 Day period.
+    </div>
+
+    <div>
+        <table class="product-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Commits</th>
+                    <th>Builds</th>
+                    <th>DEV</th>
+                    <th>QA</th>
+                    <th>INT</th>
+                    <th>PERF</th>
+                    <th>PROD</th>
+                    <th>Summary</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="team-row"
+                    ng-repeat="item in ctrl.configuredTeams">
+                    <td class="team-name-cell">
+                        {{item.alternateName || item.dashboardId}}
+
+                        <span class="fa fa-cog" ng-click="ctrl.editTeam(item)"></span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr
+                    class="new-team-row"
+                    ng-class="{'no-teams': !ctrl.configuredTeams.length}"
+                    ng-click="ctrl.editTeam()">
+                    <td>
+                        <span class="fa fa-plus fa-thin-border"></span>
+                        <div>Add a team</div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

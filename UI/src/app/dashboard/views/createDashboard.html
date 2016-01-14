@@ -17,7 +17,7 @@
                 <select name="templateName"
                         class="form-control"
                         ng-model="ctrl.templateName"
-                        ng-options="item.name for item in ctrl.templates track by item.value"
+                        ng-options="item.name for item in tmpls = (ctrl.templates | filter:ctrl.templateFilter) track by item.value"
                         required>
                     <option value="" disabled>Select a template</option>
                 </select>

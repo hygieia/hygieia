@@ -8,8 +8,8 @@
         .module('devops-dashboard')
         .controller('BuildWidgetViewController', BuildWidgetViewController);
 
-    BuildWidgetViewController.$inject = ['$scope', 'buildData', 'DISPLAY_STATE', '$q', '$modal'];
-    function BuildWidgetViewController($scope, buildData, DISPLAY_STATE, $q, $modal) {
+    BuildWidgetViewController.$inject = ['$scope', 'buildData', 'DisplayState', '$q', '$modal'];
+    function BuildWidgetViewController($scope, buildData, DisplayState, $q, $modal) {
         var ctrl = this;
         var builds = [];
 
@@ -373,7 +373,7 @@
 
             worker.setDisplayToErrorState(data, $scope.widgetConfig.options.consecutiveFailureThreshold, function (displayAsErrorState) {
                 //$scope.$apply(function () {
-                    $scope.display = displayAsErrorState ? DISPLAY_STATE.ERROR : DISPLAY_STATE.DEFAULT;
+                    $scope.display = displayAsErrorState ? DisplayState.ERROR : DisplayState.DEFAULT;
                 //});
             });
 

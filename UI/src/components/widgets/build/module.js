@@ -24,9 +24,9 @@
         .module('devops-dashboard')
         .config(register);
 
-    register.$inject = ['widgetManagerProvider', 'WIDGET_STATE'];
-    function register(widgetManagerProvider, WIDGET_STATE) {
-        widget_state = WIDGET_STATE;
+    register.$inject = ['widgetManagerProvider', 'WidgetState'];
+    function register(widgetManagerProvider, WidgetState) {
+        widget_state = WidgetState;
         widgetManagerProvider.register('build', config);
     }
 

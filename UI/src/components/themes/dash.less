@@ -1,9 +1,4 @@
-@import '../../../bower_components/bootstrap/less/bootstrap.less';
-@import '../../../bower_components/bootstrap/less/mixins/gradients.less';
-@import '../../app/css/variables.less';
 @import '../../app/css/common.less';
-@import '../../app/css/mixins.less';
-@import '../../app/index.less';
 
 // Google fonts is blocked by vpn so the files are downloaded locally.
 // On the google fonts site you can only download formats for your current
@@ -37,6 +32,8 @@
 @tooltip-bg: @white;
 @tooltip-arrow-color: @white;
 
+@dropdown-link-active-bg: @btn-default-bg;
+
 
 // BOOTSTRAP OVERRIDES
 // ========================================
@@ -67,6 +64,16 @@
         color: @white;
         background-color: @btn-default-bg;
         border-color: @btn-default-bg;
+    }
+}
+
+.btn-link {
+    color: rgba(255, 255, 255, .7);
+    line-height: 2em;
+    .transition(color .2s linear);
+
+    &:hover {
+        color: @white;
     }
 }
 

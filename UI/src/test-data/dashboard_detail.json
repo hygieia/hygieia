@@ -1,9 +1,9 @@
 {
     "id": "54b819e203643678fd9343f8",
-    "template": "capone",
+    "template": "product-dashboard",
     "title": "Topo's Dashboard",
     "componentName": "API",
-    "type": 1,
+    "type": 2,
     "application": {
         "name": "DevOps Dashboard",
         "components": [
@@ -32,13 +32,25 @@
     },
     "widgets": [
         {
-            "name": "build",
+            "name": "product",
             "title": "My build widget",
             "componentId": "54b82510036424717345cccf",
             "options": {
-                "id": "build0",
-                "buildDurationThreshold": 5.5,
-                "consecutiveFailureThreshold": 10
+                "id": "product0",
+                "teams": [
+                    {
+                        "dashboardId": "98239852jlkasdjfa78",
+                        "alternateName": "Some alternate name"
+                    },
+                    {
+                        "dashboardId": "ASKDFIASDGJLKWEJKLG",
+                        "alternateName": "Another board"
+                    },
+                    {
+                        "dashboardId": "a987sio298dljk2d8",
+                        "alternateName": ""
+                    }
+                ]
             }
         }
     ]

@@ -1,0 +1,122 @@
+@import (reference) '../../../app/css/variables.less';
+@import (reference) '../../../app/css/mixins.less';
+
+
+#product-dashboard {
+    margin-top: -2.5em;
+
+    .product-table {
+        width: 100%;
+        margin-top: 30px;
+
+        tbody {
+            tr {
+                &:nth-child(odd) {
+                    background-color: @dash-widget-section-highlight;
+                }
+
+                &.new-team-row {
+                    opacity: .3;
+                    cursor: pointer;
+                    background: transparent;
+
+                    .transition(~"opacity .2s linear, background .2s linear");
+
+                    &.no-teams, &:hover {
+                        background-color: @dash-widget-section-highlight;
+                        outline: 2px dashed;
+                        opacity: 1;
+                    }
+
+                    &:hover:nth-child(even) {
+                        background-color: transparent;
+                    }
+
+                    &.no-teams {
+                        td {
+                            font-size: 1.5em;
+                        }
+                    }
+
+                    td {
+                        padding-top: 30px;
+                        padding-bottom: 30px;
+                        .text-standard-lg;
+
+                        div {
+                            margin-top: .5em;
+                            font-weight: bold;
+                            white-space: nowrap;
+                        }
+
+                        .fa {
+                            font-size: 1.2em;
+                            border: 2px solid @dash-state-config-text;
+                            width: 1.5em;
+                            height: 1.5em;
+
+                            .border-radius(50%);
+
+                            .transition(border-color 300ms linear);
+
+                            &:before {
+                                position: relative;
+                                top: .2em;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .team-name-cell {
+            position: relative;
+
+            .fa-cog {
+                position: absolute;
+                font-size: .8em;
+                cursor: pointer;
+                top: .5em;
+                right: .5em;
+                opacity: .3;
+
+                .transition(opacity .2s linear);
+
+                &:hover {
+                    opacity: .8;
+                }
+            }
+        }
+
+        td, th {
+            border-left: 1px solid @dash-divider;
+            text-align: center;
+            font-weight: normal;
+            padding: 10px;
+            width: 10%;
+
+            &:first-of-type {
+                border-left: 0;
+                width: 20%;
+            }
+        }
+
+        td {
+            height: 100px;
+        }
+
+
+    }
+}
+
+#add-team {
+    .form-control-feedback {
+        margin-top: -.15em;
+    }
+
+    .typeahead-dropdown .dropdown-menu {
+        width: 100%;
+        max-height: 10.2em;
+        overflow-y: scroll;
+    }
+}

@@ -73,7 +73,7 @@
         {
             $cookieStore.remove("username");
             $cookieStore.remove("authenticated");
-            $location.path("/");
+            $location.path('/');
         }
 
         // method implementations
