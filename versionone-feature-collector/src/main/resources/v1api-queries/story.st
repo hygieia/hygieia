@@ -4,7 +4,6 @@ select:
  - Name
  - Status.Name
  - AssetState
- - Custom_SoftwareTesting.Name
  - Estimate
  - IsDeleted
  - ChangeDate
@@ -19,8 +18,6 @@ select:
  - Super.ID
  - Super.Name
  - Super.Number
- - Super.Custom_ProductionDeploymentDate
- - Super.Custom_HPSMReleaseID
  - Super.PlannedStart
  - Super.PlannedEnd
  - Super.Category.Name

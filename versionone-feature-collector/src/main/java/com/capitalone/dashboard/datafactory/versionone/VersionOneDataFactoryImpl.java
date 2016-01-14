@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.Map;
 
 @Component
@@ -106,23 +105,17 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 			LOGGER.error("There was a problem connecting and authenticating with VersionOne:\n"
 					+ e.getMessage()
 					+ " | "
-					+ e.getCause()
-					+ " | "
-					+ Arrays.toString(e.getStackTrace()));
+					+ e.getCause());
 		} catch (URISyntaxException e) {
 			LOGGER.error("There was a problem connecting and authenticating with VersionOne while creating a proxy:\n"
 					+ e.getMessage()
 					+ " | "
-					+ e.getCause()
-					+ " | "
-					+ Arrays.toString(e.getStackTrace()));
+					+ e.getCause());
 		} catch (Exception e) {
 			LOGGER.error("There was an unexpected problem connecting and authenticating with VersionOne:\n"
 					+ e.getMessage()
 					+ " | "
-					+ e.getCause()
-					+ " | "
-					+ Arrays.toString(e.getStackTrace()));
+					+ e.getCause());
 		}
 
 		return connector;
@@ -242,9 +235,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 			LOGGER.error("There was a problem parsing the JSONArray response value from the source system:\n"
 					+ e.getMessage()
 					+ " | "
-					+ e.getCause()
-					+ " | "
-					+ Arrays.toString(e.getStackTrace()));
+					+ e.getCause());
 		}
 		JSONArray canonicalRs = (JSONArray) nativeRs;
 		this.jsonOutputArray = canonicalRs;

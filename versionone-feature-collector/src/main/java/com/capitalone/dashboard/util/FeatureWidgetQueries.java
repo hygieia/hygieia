@@ -1,7 +1,5 @@
 package com.capitalone.dashboard.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
@@ -16,8 +14,6 @@ import org.stringtemplate.v4.STGroupDir;
  */
 @SuppressWarnings("PMD.SingularField")
 public class FeatureWidgetQueries {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureWidgetQueries.class);
-
 	private final FeatureSettings featureSettings;
 	private final String queryFolder;
 	private final STGroup folder;
@@ -50,8 +46,7 @@ public class FeatureWidgetQueries {
 		ST st = folder.getInstanceOf(queryName);
 		st.add("changeDate", changeDatePara);
 		String query = st.render();
-		LOGGER.debug(query);
-
+		
 		return query;
 	}
 
@@ -76,8 +71,7 @@ public class FeatureWidgetQueries {
 		st.add("sprintEndDate", sprintEndDate);
 		st.add("sprintDeltaDate", sprintDeltaDate);
 		String query = st.render();
-		LOGGER.debug(query);
-
+		
 		return query;
 	}
 }

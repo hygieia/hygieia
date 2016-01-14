@@ -16,6 +16,8 @@
 
 package com.capitalone.dashboard.model;
 
+import com.capitalone.dashboard.util.Constants;
+
 /**
  * Collector implementation for Feature that stores system configuration
  * settings required for source system data connection (e.g., API tokens, etc.)
@@ -32,7 +34,7 @@ public class FeatureCollector extends Collector {
 	 */
 	public static FeatureCollector prototype() {
 		FeatureCollector protoType = new FeatureCollector();
-		protoType.setName("VersionOne");
+		protoType.setName(Constants.VERSIONONE);
 		protoType.setOnline(true);
         protoType.setEnabled(true);
 		protoType.setCollectorType(CollectorType.ScopeOwner);

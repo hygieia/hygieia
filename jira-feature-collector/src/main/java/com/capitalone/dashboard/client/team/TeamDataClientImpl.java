@@ -1,9 +1,10 @@
 package com.capitalone.dashboard.client.team;
 
-import com.capitalone.dashboard.model.TeamCollectorItem;
+import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.TeamRepository;
+import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
+import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import org.bson.types.ObjectId;
@@ -17,28 +18,29 @@ import org.slf4j.LoggerFactory;
  * collector. This will get data from the source system, but will grab the
  * majority of needed data and aggregate it in a single, flat MongoDB collection
  * for consumption.
- *
+ * 
  * @author kfk884
- *
+ * 
  */
-public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
-		TeamDataClient {
+public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientImpl.class);
 	private static final ClientUtil TOOLS = new ClientUtil();
 
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
-	private final TeamRepository teamRepo;
+	private final ScopeOwnerRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
+
+	private ObjectId oldTeamId;
+	private boolean oldTeamEnabledState;
 
 	/**
 	 * Extends the constructor from the super class.
-	 *
+	 * 
 	 * @param teamRepository
 	 */
-	public TeamDataClientImpl(
-			FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings, TeamRepository teamRepository) {
+	public TeamDataClientImpl(FeatureCollectorRepository featureCollectorRepository,
+			FeatureSettings featureSettings, ScopeOwnerRepository teamRepository) {
 		super(featureSettings, teamRepository, featureCollectorRepository);
 		LOGGER.debug("Constructing data collection for the feature widget, team-level data...");
 
@@ -51,7 +53,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
-	 *
+	 * 
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
 	 * @param featureCollector
@@ -60,15 +62,20 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 		try {
 			for (int i = 0; i < tmpMongoDetailArray.size(); i++) {
 				JSONObject dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
-				TeamCollectorItem team = new TeamCollectorItem();
+				ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
+				
+				// ?
+				boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(dataMainObj
+						.get("id")));
 
-				@SuppressWarnings("unused") //?
-				boolean deleted = this.removeExistingEntity(TOOLS
-						.sanitizeResponse(dataMainObj.get("id")));
+				// Id
+				if (deleted) {
+					team.setId(this.getOldTeamId());
+					team.setEnabled(this.isOldTeamEnabledState());
+				}
 
 				// collectorId
-				team.setCollectorId(featureCollectorRepository.findByName(
-						"Jira").getId());
+				team.setCollectorId(featureCollectorRepository.findByName(Constants.JIRA).getId());
 
 				// teamId
 				team.setTeamId(TOOLS.sanitizeResponse(dataMainObj.get("id")));
@@ -88,13 +95,15 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 				try {
 					teamRepo.save(team);
 				} catch (Exception e) {
-					LOGGER.error("Unexpected error caused when attempting to save data\nCaused by: "
-							+ e.getMessage() + " : " + e.getCause(), e);
+					LOGGER.error(
+							"Unexpected error caused when attempting to save data\nCaused by: "
+									+ e.getMessage() + " : " + e.getCause(), e);
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("Unexpected error caused while mapping data from source system to local data store:\n"
-					+ e.getMessage() + " : " + e.getCause(), e);
+			LOGGER.error(
+					"Unexpected error caused while mapping data from source system to local data store:\n"
+							+ e.getMessage() + " : " + e.getCause(), e);
 		}
 	}
 
@@ -103,9 +112,8 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	 * update to MongoDB from those calls.
 	 */
 	public void updateTeamInformation() {
-		super.objClass = TeamCollectorItem.class;
-		super.returnDate = this.featureSettings
-				.getDeltaCollectorItemStartDate();
+		super.objClass = ScopeOwnerCollectorItem.class;
+		super.returnDate = this.featureSettings.getDeltaCollectorItemStartDate();
 		if (super.getMaxChangeDate() != null) {
 			super.returnDate = super.getMaxChangeDate();
 		}
@@ -119,7 +127,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	/**
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
-	 *
+	 * 
 	 * @param A
 	 *            local repository item ID (not the precise mongoID)
 	 */
@@ -128,8 +136,10 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 
 		try {
 			ObjectId tempEntId = teamRepo.getTeamIdById(localId).get(0).getId();
-			if (localId.equalsIgnoreCase(teamRepo.getTeamIdById(localId).get(0)
-					.getTeamId())) {
+			if (localId.equalsIgnoreCase(teamRepo.getTeamIdById(localId).get(0).getTeamId())) {
+				this.setOldTeamId(tempEntId);
+				this.setOldTeamEnabledState(teamRepo.getTeamIdById(localId).get(0).isEnabled());
+
 				teamRepo.delete(tempEntId);
 				deleted = true;
 			}
@@ -140,5 +150,21 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 		}
 
 		return deleted;
+	}
+
+	private ObjectId getOldTeamId() {
+		return oldTeamId;
+	}
+
+	private void setOldTeamId(ObjectId oldTeamId) {
+		this.oldTeamId = oldTeamId;
+	}
+
+	private boolean isOldTeamEnabledState() {
+		return oldTeamEnabledState;
+	}
+
+	private void setOldTeamEnabledState(boolean oldTeamEnabledState) {
+		this.oldTeamEnabledState = oldTeamEnabledState;
 	}
 }

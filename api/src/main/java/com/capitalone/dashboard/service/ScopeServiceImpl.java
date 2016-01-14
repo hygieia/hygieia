@@ -59,7 +59,7 @@ public class ScopeServiceImpl implements ScopeService {
 		builder.and(team.collectorItemId.eq(item.getId()));
 
 		// Get all available scopes
-		List<Scope> scope = scopeRepository.getAllScopes();
+		List<Scope> scope = scopeRepository.findByOrderByProjectPathDesc();
 
 		Collector collector = collectorRepository
 				.findOne(item.getCollectorId());

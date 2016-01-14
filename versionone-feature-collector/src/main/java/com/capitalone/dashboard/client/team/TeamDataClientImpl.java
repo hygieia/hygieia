@@ -17,10 +17,11 @@
 package com.capitalone.dashboard.client.team;
 
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
-import com.capitalone.dashboard.model.TeamCollectorItem;
+import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.TeamRepository;
+import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
+import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import org.bson.types.ObjectId;
@@ -34,44 +35,49 @@ import org.slf4j.LoggerFactory;
  * collector. This will get data from the source system, but will grab the
  * majority of needed data and aggregate it in a single, flat MongoDB collection
  * for consumption.
- *
+ * 
  * @author kfk884
- *
+ * 
  */
-public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
-		TeamDataClient {
+public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientImpl.class);
 	private static final ClientUtil TOOLS = new ClientUtil();
 
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
-	private final TeamRepository teamRepo;
+	private final ScopeOwnerRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
+
+	private ObjectId oldTeamId;
+	private boolean oldTeamEnabledState;
 
 	/**
 	 * Extends the constructor from the super class.
-	 *
+	 * 
 	 * @param teamRepository
 	 */
-	public TeamDataClientImpl(
-			FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings, TeamRepository teamRepository,
+	public TeamDataClientImpl(FeatureCollectorRepository featureCollectorRepository,
+			FeatureSettings featureSettings, ScopeOwnerRepository teamRepository,
 			VersionOneDataFactoryImpl vOneApi) {
-		super(featureSettings, teamRepository, featureCollectorRepository,
-				vOneApi);
+		super(featureSettings, teamRepository, featureCollectorRepository, vOneApi);
 		LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
 		this.featureSettings = featureSettings;
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepo = teamRepository;
-		this.featureWidgetQueries = new FeatureWidgetQueries(
-				this.featureSettings);
+		this.featureWidgetQueries = new FeatureWidgetQueries(this.featureSettings);
+
+		/*
+		 * Removes all existing inactive teams from previous versions that may
+		 * have inactive teams loaded erroneously.
+		 */
+		teamRepo.delete("Closed");
 	}
 
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
-	 *
+	 * 
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
 	 * @param featureCollector
@@ -86,42 +92,55 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 					dataMainObj.clear();
 				}
 				dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
-				TeamCollectorItem team = new TeamCollectorItem();
+				ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
 
-				@SuppressWarnings("unused")
-				boolean deleted = this.removeExistingEntity(TOOLS
-						.sanitizeResponse((String) dataMainObj.get("_oid")));
+				/*
+				 * Checks to see if the available asset state is not active from
+				 * the V1 Response and removes it if it exists and not active:
+				 */
+				if (!TOOLS.sanitizeResponse((String) dataMainObj.get("AssetState"))
+						.equalsIgnoreCase("Active")) {
 
-				// collectorId
-				team.setCollectorId(featureCollectorRepository.findByName(
-						"VersionOne").getId());
+					this.removeInactiveScopeOwnerByTeamId(TOOLS
+							.sanitizeResponse((String) dataMainObj.get("_oid")));
 
-				// teamId
-				team.setTeamId(TOOLS.sanitizeResponse((String) dataMainObj
-						.get("_oid")));
+				} else {
+					boolean deleted = this.removeExistingEntity(TOOLS
+							.sanitizeResponse((String) dataMainObj.get("_oid")));
+					// Id
+					if (deleted) {
+						team.setId(this.getOldTeamId());
+						team.setEnabled(this.isOldTeamEnabledState());
+					}
 
-				// name
-				team.setName(TOOLS.sanitizeResponse((String) dataMainObj
-						.get("Name")));
+					// collectorId
+					team.setCollectorId(featureCollectorRepository.findByName(Constants.VERSIONONE)
+							.getId());
 
-				// changeDate;
-				team.setChangeDate(TOOLS.toCanonicalDate(TOOLS
-						.sanitizeResponse((String) dataMainObj
-								.get("ChangeDate"))));
+					// teamId
+					team.setTeamId(TOOLS.sanitizeResponse((String) dataMainObj.get("_oid")));
 
-				// assetState
-				team.setAssetState(TOOLS.sanitizeResponse((String) dataMainObj
-						.get("AssetState")));
+					// name
+					team.setName(TOOLS.sanitizeResponse((String) dataMainObj.get("Name")));
 
-				// isDeleted;
-				team.setIsDeleted(TOOLS.sanitizeResponse((String) dataMainObj
-						.get("IsDeleted")));
+					// changeDate;
+					team.setChangeDate(TOOLS.toCanonicalDate(TOOLS
+							.sanitizeResponse((String) dataMainObj.get("ChangeDate"))));
 
-				try {
-					teamRepo.save(team);
-				} catch (Exception e) {
-					LOGGER.error("Unexpected error caused when attempting to save data\nCaused by: "
-							+ e.getCause(), e);
+					// assetState
+					team.setAssetState(TOOLS.sanitizeResponse((String) dataMainObj
+							.get("AssetState")));
+
+					// isDeleted;
+					team.setIsDeleted(TOOLS.sanitizeResponse((String) dataMainObj.get("IsDeleted")));
+
+					try {
+						teamRepo.save(team);
+					} catch (Exception e) {
+						LOGGER.error(
+								"Unexpected error caused when attempting to save data\nCaused by: "
+										+ e.getCause(), e);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -130,13 +149,29 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	}
 
 	/**
+	 * Removes scope-owners (teams) from the collection which have went to an
+	 * non-active state
+	 * 
+	 * @param teamId
+	 *            A given Team ID that went inactive and should be removed from
+	 *            the data collection
+	 */
+	private void removeInactiveScopeOwnerByTeamId(String teamId) {
+		if ((!teamId.isEmpty()) && (teamRepo.getTeamIdById(teamId).size() > 0)) {
+			ObjectId inactiveTeamId = teamRepo.getTeamIdById(teamId).get(0).getId();
+			if (inactiveTeamId != null) {
+				teamRepo.delete(inactiveTeamId);
+			}
+		}
+	}
+
+	/**
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
 	 */
 	public void updateTeamInformation() {
-		super.objClass = TeamCollectorItem.class;
-		super.returnDate = this.featureSettings
-				.getDeltaCollectorItemStartDate();
+		super.objClass = ScopeOwnerCollectorItem.class;
+		super.returnDate = this.featureSettings.getDeltaCollectorItemStartDate();
 		if (super.getMaxChangeDate() != null) {
 			super.returnDate = super.getMaxChangeDate();
 		}
@@ -150,7 +185,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	/**
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
-	 *
+	 * 
 	 * @param A
 	 *            local repository item ID (not the precise mongoID)
 	 */
@@ -159,8 +194,10 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 
 		try {
 			ObjectId tempEntId = teamRepo.getTeamIdById(localId).get(0).getId();
-			if (localId.equalsIgnoreCase(teamRepo.getTeamIdById(localId).get(0)
-					.getTeamId())) {
+			if (localId.equalsIgnoreCase(teamRepo.getTeamIdById(localId).get(0).getTeamId())) {
+				this.setOldTeamId(tempEntId);
+				this.setOldTeamEnabledState(teamRepo.getTeamIdById(localId).get(0).isEnabled());
+
 				teamRepo.delete(tempEntId);
 				deleted = true;
 			}
@@ -171,5 +208,21 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 		}
 
 		return deleted;
+	}
+
+	private ObjectId getOldTeamId() {
+		return oldTeamId;
+	}
+
+	private void setOldTeamId(ObjectId oldTeamId) {
+		this.oldTeamId = oldTeamId;
+	}
+
+	private boolean isOldTeamEnabledState() {
+		return oldTeamEnabledState;
+	}
+
+	private void setOldTeamEnabledState(boolean oldTeamEnabledState) {
+		this.oldTeamEnabledState = oldTeamEnabledState;
 	}
 }

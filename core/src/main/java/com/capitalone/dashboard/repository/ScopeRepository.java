@@ -14,16 +14,27 @@ import com.capitalone.dashboard.model.Scope;
  */
 public interface ScopeRepository extends CrudRepository<Scope, ObjectId>,
 		QueryDslPredicateExecutor<Scope> {
-	@Query(value = "{ $query: { 'collectorId' : ?0, 'changeDate' : {$gt: ?1}}, $orderby: { 'changeDate' :-1 }}", fields = "{'changeDate' : 1, '_id' : 0}")
-	List<Scope> getScopeMaxChangeDate(ObjectId collectorId,
-			String lastChangeDate);
+	/**
+	 * This essentially returns the max change date from the collection, based
+	 * on the last change date (or default delta change date property) available
+	 * 
+	 * @param collectorId
+	 *            Collector ID of source system collector
+	 * @param changeDate
+	 *            Last available change date or delta begin date property
+	 * @return A single Change Date value that is the maximum value of the
+	 *         existing collection
+	 */
+	@Query
+	List<Scope> findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+			ObjectId collectorId, String changeDate);
 
-	@Query(value = "{ $query: {'pId' : ?0},{'pId' : 1}}")
+	@Query(value = "{'pId' : ?0}", fields="{'pId' : 1}")
 	List<Scope> getScopeIdById(String pId);
 
-	@Query(value = "{ $query: {}, $orderby: { 'projectPath' :-1 }}")
-	List<Scope> getAllScopes();
+	@Query
+	List<Scope> findByOrderByProjectPathDesc();
 
-	@Query(value = "{ $query: {'pId' : ?0 }}")
+	@Query(value = "{'pId' : ?0 }")
 	List<Scope> getScopeById(String pId);
 }

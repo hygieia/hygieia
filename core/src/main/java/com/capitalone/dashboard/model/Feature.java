@@ -42,7 +42,6 @@ public class Feature extends BaseModel {
 	private String sName;
 	private String sStatus;
 	private String sState;
-	private String sSoftwareTesting;
 	private String sEstimate;
 	@Indexed
 	private String changeDate;
@@ -92,8 +91,6 @@ public class Feature extends BaseModel {
 	private String sEpicType;
 	private String sEpicEndDate;
 	private String sEpicBeginDate;
-	private String sEpicHPSMReleaseID;
-	private String sEpicPDD;
 	private String sEpicName;
 	private String sEpicNumber;
 	private String sEpicID;
@@ -156,14 +153,6 @@ public class Feature extends BaseModel {
 
 	public void setsState(String sState) {
 		this.sState = sState;
-	}
-
-	public String getsSoftwareTesting() {
-		return sSoftwareTesting;
-	}
-
-	public void setsSoftwareTesting(String sSoftwareTesting) {
-		this.sSoftwareTesting = sSoftwareTesting;
 	}
 
 	public String getsEstimate() {
@@ -300,22 +289,6 @@ public class Feature extends BaseModel {
 
 	public String getsEpicName() {
 		return this.sEpicName;
-	}
-
-	public void setsEpicPDD(String sEpicPDD) {
-		this.sEpicPDD = sEpicPDD;
-	}
-
-	public String getsEpicPDD() {
-		return this.sEpicPDD;
-	}
-
-	public void setsEpicHPSMReleaseID(String sEpicHPSMReleaseID) {
-		this.sEpicHPSMReleaseID = sEpicHPSMReleaseID;
-	}
-
-	public String getsEpicHPSMReleaseID() {
-		return this.sEpicHPSMReleaseID;
 	}
 
 	public void setsEpicBeginDate(String sEpicBeginDate) {
