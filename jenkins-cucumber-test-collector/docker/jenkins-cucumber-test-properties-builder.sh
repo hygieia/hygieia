@@ -26,14 +26,15 @@ echo "MONGODB_PORT: $MONGODB_PORT"
 
 
 #update local host to bridge ip if used for a URL
+DOCKER_LOCALHOST=
 echo $JENKINS_MASTER|egrep localhost >>/dev/null
 if [ $? -ne 1 ]
 then
 	#this seems to give a access to the VM of the dockermachine
 	#LOCALHOST=`ip route|egrep '^default via'|cut -f3 -d' '`
 	#see http://superuser.com/questions/144453/virtualbox-guest-os-accessing-local-server-on-host-os
-	LOCALHOST=10.0.2.2
-	MAPPED_URL=`echo "$JENKINS_MASTER"|sed "s|localhost|$LOCALHOST|"`
+	DOCKER_LOCALHOST=10.0.2.2
+	MAPPED_URL=`echo "$JENKINS_MASTER"|sed "s|localhost|$DOCKER_LOCALHOST|"`
 	echo "Mapping localhost -> $MAPPED_URL"
 	JENKINS_MASTER=$MAPPED_URL	
 fi
@@ -57,6 +58,9 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 #Collector schedule (required)
 jenkins-cucumber.cron=${JENKINS_CRON:-0 0/5 * * * *}
 
+#pattern used for finding cucumber.json files 
+# note: failed builds will not be picked up, the collector looks for lastSucessfulArtifacts
+
 #Jenkins server (required) - Can provide multiple
 jenkins-cucumber.servers[0]=${JENKINS_MASTER:-http://jenkins.company.com}
 
@@ -70,6 +74,15 @@ jenkins-cucumber.apiKey=${JENKINS_API_KEY}
 
 #Determines if build console log is collected - defaults to false
 jenkins-cucumber.saveLog=${JENKINS_SAVE_LOG:-true}
+
+#pattern to find cucubmer reports
+jenkins-cucumber.cucumberJsonRegex=${JENKINS_CUCUMBER_JSON_FILENAME:-cucumber.json}
+
+#map the entry localhost so URLS in jenkins resolve properly
+# Docker NATs the real host localhost to 10.0.2.2 when running in docker
+# as localhost is stored in the JSON payload from jenkins we need
+# this hack to fix the addresses
+jenkins-cucumber.dockerLocalHostIP=${DOCKER_LOCALHOST}
 
 EOF
 
