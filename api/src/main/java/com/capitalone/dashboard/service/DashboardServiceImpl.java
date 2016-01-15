@@ -10,7 +10,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -43,17 +46,15 @@ public class DashboardServiceImpl implements DashboardService {
     public Dashboard get(ObjectId id) {
         Dashboard dashboard = dashboardRepository.findOne(id);
 
-        if(getDashboardType(dashboard).equals(DashboardType.Team)){
-            if (!dashboard.getApplication().getComponents().isEmpty()) {
-                // Add transient Collector instance to each CollectorItem
-                Map<CollectorType, List<CollectorItem>> itemMap = dashboard.getApplication().getComponents().get(0).getCollectorItems();
+        if (!dashboard.getApplication().getComponents().isEmpty()) {
+            // Add transient Collector instance to each CollectorItem
+            Map<CollectorType, List<CollectorItem>> itemMap = dashboard.getApplication().getComponents().get(0).getCollectorItems();
 
-                Iterable<Collector> collectors = collectorsFromItems(itemMap);
+            Iterable<Collector> collectors = collectorsFromItems(itemMap);
 
-                for (List<CollectorItem> collectorItems : itemMap.values()) {
-                    for (CollectorItem collectorItem : collectorItems) {
-                        collectorItem.setCollector(getCollector(collectorItem.getCollectorId(), collectors));
-                    }
+            for (List<CollectorItem> collectorItems : itemMap.values()) {
+                for (CollectorItem collectorItem : collectorItems) {
+                    collectorItem.setCollector(getCollector(collectorItem.getCollectorId(), collectors));
                 }
             }
         }
@@ -63,9 +64,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Dashboard create(Dashboard dashboard) {
-        if(getDashboardType(dashboard).equals(DashboardType.Team)){
-            componentRepository.save(dashboard.getApplication().getComponents());
-        }
+        componentRepository.save(dashboard.getApplication().getComponents());
         return dashboardRepository.save(dashboard);
     }
 
@@ -211,13 +210,6 @@ public class DashboardServiceImpl implements DashboardService {
 		
 		return dashboardOwner;
 	}
-
-    @Override
-    public TeamDashboard addTeamDashboard(Dashboard productDashboard, TeamDashboard teamDashboard) {
-        productDashboard.addTeamDashboard(teamDashboard);
-        dashboardRepository.save(productDashboard);
-        return teamDashboard;
-    }
 
     private DashboardType getDashboardType(Dashboard dashboard){
         if(dashboard.getType() != null){

@@ -4,14 +4,12 @@ import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.config.WebMVCConfig;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.request.DashboardRequest;
-import com.capitalone.dashboard.request.TeamDashboardRequest;
 import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.util.TestUtil;
 import com.capitalone.dashboard.util.WidgetOptionsBuilder;
 import org.bson.types.ObjectId;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -20,7 +18,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -29,9 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
@@ -161,46 +159,6 @@ public class DashboardControllerTest {
                 .andExpect(jsonPath("$.component.collectorItems.Build[0].id", is(collId.toString())))
         ;
     }
-
-    @Test
-    public void addTeamDashboard() throws Exception {
-
-        //The dashboard request for the existing team dashboard to add to our "program dashboard"
-        ObjectId teamDashboardId = ObjectId.get();
-        TeamDashboardRequest dashboardRequestToAdd = makeTeamDashboardRequest("dashboard one", teamDashboardId);
-        Dashboard dashboardToAdd = makeDashboard("t1", "title", "app", "comp","owner", DashboardType.Team);
-
-        //The Program dashboard creation
-        ObjectId programDashboardId = ObjectId.get();
-        Dashboard programDashboard = makeDashboard("t1", "program dashboard", null, null,"owner", DashboardType.Program);
-
-        //The team dashboard object
-        TeamDashboard teamDashboard = new TeamDashboard("dashboard one", dashboardToAdd);
-        dashboardToAdd.setId(teamDashboardId);
-
-        when(dashboardService.get(programDashboardId)).thenReturn(programDashboard);
-        when(dashboardService.get(teamDashboardId)).thenReturn(dashboardToAdd);
-        when(dashboardService.addTeamDashboard(Matchers.any(Dashboard.class), Matchers.any(TeamDashboard.class))).thenReturn(teamDashboard);
-
-        ResultActions actions = mockMvc.perform(post("/dashboard/" + programDashboardId.toString() + "/teamdashboard")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(dashboardRequestToAdd)));
-
-        actions.andExpect(status().isCreated())
-                .andExpect(jsonPath("$.teamName", is(teamDashboard.getTeamName())))
-                .andExpect(jsonPath("$.dashboard.id", is(teamDashboard.getDashboard().getId().toString())))
-                .andExpect(jsonPath("$.dashboard.title", is(teamDashboard.getDashboard().getTitle())))
-                ;
-    }
-
-    private TeamDashboardRequest makeTeamDashboardRequest(String name, ObjectId dashboardId){
-        TeamDashboardRequest teamDashboardRequest = new TeamDashboardRequest();
-        teamDashboardRequest.setName(name);
-        teamDashboardRequest.setDashboardId(dashboardId);
-        return teamDashboardRequest;
-    }
-
-
 
     @Test
     public void updateWidget() throws Exception {

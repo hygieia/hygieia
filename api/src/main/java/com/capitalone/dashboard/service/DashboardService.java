@@ -2,7 +2,6 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.TeamDashboard;
 import com.capitalone.dashboard.model.Widget;
 import org.bson.types.ObjectId;
 
@@ -103,12 +102,6 @@ public interface DashboardService {
      */
     
     String getDashboardOwner(String dashboardName);
-
-    /**
-     * Add a Team Dashboard to Product Dashboard
-     */
-
-    TeamDashboard addTeamDashboard(Dashboard productDashboard, TeamDashboard teamDashboard);
 }
 
 
