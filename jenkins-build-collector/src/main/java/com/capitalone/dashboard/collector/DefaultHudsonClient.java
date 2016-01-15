@@ -123,11 +123,11 @@ public class DefaultHudsonClient implements HudsonClient {
 		                    if ( dockerNattedLocalhost )
 		                    {
 		                    	buildURL = buildURL.replace("localhost", dockerLocalHostIP);
-		                        LOG.info("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
+		                        LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
 		                    }
 		                    else
 		                    {
-		                    	LOG.info(" Adding Build: " + buildURL);
+		                    	LOG.debug(" Adding Build: " + buildURL);
 		                    }
 		                    
                             hudsonBuild.setBuildUrl(buildURL);
