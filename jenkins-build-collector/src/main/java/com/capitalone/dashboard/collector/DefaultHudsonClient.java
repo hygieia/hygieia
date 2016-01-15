@@ -102,25 +102,20 @@ public class DefaultHudsonClient implements HudsonClient {
                     hudsonJob.setJobName(jobName);
                     hudsonJob.setJobUrl(jobURL);
 
-                	//Docker NATs the real host localhost to 10.0.2.2 when running in docker
-    				//as localhost is stored in the JSON payload from jenkins we need
-                	//this hack to fix the addresses
-                    final String dockerLocalHostIP = "10.0.2.2";  //NOPMD
-                    Boolean dockerNattedLocalhost =  instanceUrl.contains(dockerLocalHostIP);
-
                     Set<Build> builds = new LinkedHashSet<>();
                     for (Object build : getJsonArray(jsonJob, "builds")) {
                         JSONObject jsonBuild = (JSONObject) build;
 
                         // A basic Build object. This will be fleshed out later if this is a new Build.
-                        String buildNumber = jsonBuild.get("number").toString();
+                        String dockerLocalHostIP = settings.getDockerLocalHostIP();
+                        String buildNumber = jsonBuild.get("number").toString();                        
                         if (!buildNumber.equals("0")) {
                             Build hudsonBuild = new Build();
                             hudsonBuild.setNumber(buildNumber);
                             String buildURL = getString(jsonBuild, "url");
                             
                             	//Modify localhost if Docker Natting is being done
-		                    if ( dockerNattedLocalhost )
+		                    if ( ! dockerLocalHostIP.isEmpty() )
 		                    {
 		                    	buildURL = buildURL.replace("localhost", dockerLocalHostIP);
 		                        LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
