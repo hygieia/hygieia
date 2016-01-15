@@ -87,12 +87,18 @@ public class JenkinsCucumberTestCollectorTask extends
             log("Fetched jobs", start);
 
             addNewJobs(buildsByJob.keySet(), collector);
-
-            addNewTestSuites(enabledJobs(collector, instanceUrl));
-
+            
+            List<JenkinsJob> enabledJobs = enabledJobs(collector, instanceUrl);
+            if ( ! enabledJobs.isEmpty())
+            {
+                addNewTestSuites(enabledJobs); 
+            }
+            else
+            {
+            	log("WARNING: No Enabled Jobs found with artifacts pattern: " + jenkinsCucumberTestSettings.getCucumberJsonRegex());
+            }
             log("Finished", start);
         }
-
     }
 
     /**
@@ -189,7 +195,7 @@ public class JenkinsCucumberTestCollectorTask extends
         int count = 0;
         for (JenkinsJob job : enabledJobs) {
             Build buildSummary = jenkinsClient.getLastSuccessfulBuild(job.getJobUrl());
-            if (isNewCucumberResult(job, buildSummary)) {
+			if (isNewCucumberResult(job, buildSummary)) {
                 // Obtain the Test Result
                 TestResult result = jenkinsClient
                         .getCucumberTestResult(job.getJobUrl());
