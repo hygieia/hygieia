@@ -95,8 +95,8 @@ public class DefaultHudsonClient implements HudsonClient {
 
                     final String jobName = getString(jsonJob, "name");
                     final String jobURL = getString(jsonJob, "url");
-                    LOG.info("Job:" + jobName);
-                    LOG.info("jobURL: " + jobURL);
+                    LOG.debug("Job:" + jobName);
+                    LOG.debug("jobURL: " + jobURL);
                     HudsonJob hudsonJob = new HudsonJob();
                     hudsonJob.setInstanceUrl(instanceUrl);
                     hudsonJob.setJobName(jobName);
