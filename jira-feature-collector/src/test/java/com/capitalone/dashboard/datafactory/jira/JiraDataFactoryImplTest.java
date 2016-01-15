@@ -21,7 +21,6 @@ import static org.junit.Assert.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Properties;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
-import com.capitalone.dashboard.datafactory.jira.sdk.config.ApiPropertiesSupplier;
 
 /**
  * Tests all facets of the VerisonOneDataFactoryImpl class, which is responsible
@@ -45,16 +43,16 @@ import com.capitalone.dashboard.datafactory.jira.sdk.config.ApiPropertiesSupplie
  * 
  */
 public class JiraDataFactoryImplTest {
-	private static Log logger = LogFactory
-			.getLog(JiraDataFactoryImplTest.class);
-	// For Jira Connection properties while running test cases
-	private ApiPropertiesSupplier propSupplier = new ApiPropertiesSupplier();
-	private Properties properties = propSupplier.get();
+	private static Log logger = LogFactory.getLog(JiraDataFactoryImplTest.class);
 	protected static String queryName;
 	protected static String query;
 	protected static String yesterday;
-	protected static DateFormat dateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm");
+	protected static String jiraCredentials;
+	protected static String jiraBaseUri;
+	protected static String jiraApiContext;
+	protected static String proxyUri;
+	protected static String proxyPort;
+	protected static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	protected static JiraDataFactoryImpl jiraDataFactory;
 
 	/**
@@ -70,6 +68,12 @@ public class JiraDataFactoryImplTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		jiraCredentials = "dW5pY286c3BhcmtsZXMK";
+		jiraBaseUri = "http://jira.com/";
+		jiraApiContext = "rest/api/2";
+		proxyUri = "http://proxy.com";
+		proxyPort = "8080";
+
 		logger.info("Beginning tests for com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl");
 
 		Calendar cal = Calendar.getInstance();
@@ -78,8 +82,7 @@ public class JiraDataFactoryImplTest {
 		StringBuilder canonicalYesterday = new StringBuilder(yesterday);
 		canonicalYesterday.replace(10, 11, "%20");
 
-		query = "search?jql=updatedDate%3E=%22" + canonicalYesterday
-				+ "%22+order+by+updated";
+		query = "search?jql=updatedDate%3E=%22" + canonicalYesterday + "%22+order+by+updated";
 	}
 
 	/**
@@ -89,6 +92,11 @@ public class JiraDataFactoryImplTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		jiraCredentials = null;
+		jiraBaseUri = null;
+		jiraApiContext = null;
+		proxyUri = null;
+		proxyPort = null;
 		yesterday = null;
 		query = null;
 	}
@@ -117,15 +125,11 @@ public class JiraDataFactoryImplTest {
 	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#JiraDataFactoryImpl()}
 	 * .
 	 */
-	@Ignore
 	@Test
-	public void testJiraDataFactoryImpl() {
-		jiraDataFactory = new JiraDataFactoryImpl(
-				properties.getProperty("jira.credentials"),
-				properties.getProperty("jira.base.url"),
-				properties.getProperty("jira.query.endpoint"));
-		assertEquals("The compared contructed page size values did not match",
-				1000, jiraDataFactory.getPageSize());
+	public void testJiraDataFactoryImpl_StandardInit() {
+		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, jiraApiContext);
+		assertEquals("The compared contructed page size values did not match", 1000,
+				jiraDataFactory.getPageSize());
 	}
 
 	/**
@@ -133,15 +137,37 @@ public class JiraDataFactoryImplTest {
 	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#JiraDataFactoryImpl(int)}
 	 * .
 	 */
-	@Ignore
 	@Test
-	public void testJiraDataFactoryImplInt() {
-		jiraDataFactory = new JiraDataFactoryImpl(500,
-				properties.getProperty("jira.credentials"),
-				properties.getProperty("jira.base.url"),
-				properties.getProperty("jira.query.endpoint"));
-		assertEquals("The compared contructed page size values did not match",
-				500, jiraDataFactory.getPageSize());
+	public void testJiraDataFactoryImpl_InitWithExplicitPageSize() {
+		jiraDataFactory = new JiraDataFactoryImpl(500, jiraCredentials, jiraBaseUri, jiraApiContext);
+		assertEquals("The compared contructed page size values did not match", 500,
+				jiraDataFactory.getPageSize());
+	}
+
+	/**
+	 * Test method for
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#JiraDataFactoryImpl()}
+	 * .
+	 */
+	@Test
+	public void testJiraDataFactoryImpl_InitWithAuthProxy() {
+		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, jiraApiContext,
+				proxyUri, proxyPort);
+		assertEquals("The compared contructed page size values did not match", 1000,
+				jiraDataFactory.getPageSize());
+	}
+
+	/**
+	 * Test method for
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#JiraDataFactoryImpl()}
+	 * .
+	 */
+	@Test
+	public void testJiraDataFactoryImpl_InitWithNonAuthProxy() {
+		jiraDataFactory = new JiraDataFactoryImpl(null, jiraBaseUri, jiraApiContext, proxyUri,
+				proxyPort);
+		assertEquals("The compared contructed page size values did not match", 1000,
+				jiraDataFactory.getPageSize());
 	}
 
 	/**
@@ -149,20 +175,13 @@ public class JiraDataFactoryImplTest {
 	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#buildBasicQuery(java.lang.String)}
 	 * .
 	 */
-	@Ignore
 	@Test
-	public void testBuildBasicQuery() {
-		jiraDataFactory = new JiraDataFactoryImpl(1,
-				properties.getProperty("jira.credentials"),
-				properties.getProperty("jira.base.url"),
-				properties.getProperty("jira.query.endpoint"));
+	public void testBuildBasicQuery_ConstructorPageSize_SelectedPageSize() {
+		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri, jiraApiContext);
 		jiraDataFactory.buildBasicQuery(query);
-		assertNotNull("The basic query was created",
-				jiraDataFactory.getBasicQuery());
-		assertEquals("The page size was accurate", 1,
-				jiraDataFactory.getPageSize());
-		assertEquals("The page index was accurate", 0,
-				jiraDataFactory.getPageIndex());
+		assertNotNull("The basic query was created", jiraDataFactory.getBasicQuery());
+		assertEquals("The page size was accurate", 1, jiraDataFactory.getPageSize());
+		assertEquals("The page index was accurate", 0, jiraDataFactory.getPageIndex());
 	}
 
 	/**
@@ -170,20 +189,13 @@ public class JiraDataFactoryImplTest {
 	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#buildPagingQuery(int)}
 	 * .
 	 */
-	@Ignore
 	@Test
-	public void testBuildPagingQuery() {
-		jiraDataFactory = new JiraDataFactoryImpl(1,
-				properties.getProperty("jira.credentials"),
-				properties.getProperty("jira.base.url"),
-				properties.getProperty("jira.query.endpoint"));
+	public void testBuildPagingQuery_OverrideConstructorPageSize_OverriddenPageSize() {
+		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri, jiraApiContext);
 		jiraDataFactory.buildPagingQuery(30);
-		assertNotNull("The basic query was created",
-				jiraDataFactory.getPagingQuery());
-		assertEquals("The page size was accurate", 1,
-				jiraDataFactory.getPageSize());
-		assertEquals("The page index was accurate", 30,
-				jiraDataFactory.getPageIndex());
+		assertNotNull("The basic query was created", jiraDataFactory.getPagingQuery());
+		assertEquals("The page size was accurate", 1, jiraDataFactory.getPageSize());
+		assertEquals("The page index was accurate", 30, jiraDataFactory.getPageIndex());
 	}
 
 	/**
@@ -191,14 +203,10 @@ public class JiraDataFactoryImplTest {
 	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#getPagingQueryResponse()}
 	 * .
 	 */
-	@Ignore
 	@Test
 	public void testGetPagingQueryResponse() {
 		logger.debug("RUNNING TEST FOR PAGING QUERY RESPONSE");
-		jiraDataFactory = new JiraDataFactoryImpl(1,
-				properties.getProperty("jira.credentials"),
-				properties.getProperty("jira.base.url"),
-				properties.getProperty("jira.query.endpoint"));
+		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri, jiraApiContext);
 		jiraDataFactory.buildBasicQuery(query);
 		jiraDataFactory.buildPagingQuery(0);
 		try {
@@ -212,11 +220,10 @@ public class JiraDataFactoryImplTest {
 			dataMainArry = (JSONArray) rs.get(0);
 			dataMainObj = (JSONObject) dataMainArry.get(0);
 
-			logger.info("Paging query response: "
-					+ dataMainObj.get("fields").toString());
+			logger.info("Paging query response: " + dataMainObj.get("fields").toString());
 			// fields
-			assertTrue("No valid Number was found", dataMainObj.get("fields")
-					.toString().length() >= 1);
+			assertTrue("No valid Number was found",
+					dataMainObj.get("fields").toString().length() >= 1);
 		} catch (NullPointerException npe) {
 			fail("There was a problem with an object used to connect to Jira during the test:\n"
 					+ npe.getMessage() + " caused by: " + npe.getCause());
@@ -253,10 +260,7 @@ public class JiraDataFactoryImplTest {
 	@Test
 	public void testGetQueryResponse() {
 		logger.debug("RUNNING TEST FOR BASIC QUERY RESPONSE");
-		jiraDataFactory = new JiraDataFactoryImpl(
-				properties.getProperty("jira.credentials"),
-				properties.getProperty("jira.base.url"),
-				properties.getProperty("jira.query.endpoint"));
+		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, jiraApiContext);
 		jiraDataFactory.buildBasicQuery(query);
 		try {
 			JSONArray rs = jiraDataFactory.getQueryResponse();
@@ -269,11 +273,10 @@ public class JiraDataFactoryImplTest {
 			dataMainArry = (JSONArray) rs.get(0);
 			dataMainObj = (JSONObject) dataMainArry.get(0);
 
-			logger.info("Basic query response: "
-					+ dataMainObj.get("fields").toString());
+			logger.info("Basic query response: " + dataMainObj.get("fields").toString());
 			// fields
-			assertTrue("No valid Number was found", dataMainObj.get("fields")
-					.toString().length() >= 1);
+			assertTrue("No valid Number was found",
+					dataMainObj.get("fields").toString().length() >= 1);
 		} catch (NullPointerException npe) {
 			fail("There was a problem with an object used to connect to Jira during the test\n"
 					+ npe.getMessage() + " caused by: " + npe.getCause());
