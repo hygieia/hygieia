@@ -59,8 +59,11 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
         for ( Map.Entry entry : createdTeamDashboards.entrySet()) {
             //if collectoritem for the dashboard in the repository exists
             // as a collector item, remove it
-            if(existingTeamDashboardCollectorItems.contains(entry.getKey())){
-               createdTeamDashboards.remove(entry.getKey());
+            if(existingTeamDashboardCollectorItems.contains(entry.getKey())) {
+                createdTeamDashboards.remove(entry.getKey());
+            }
+            else{
+                ((TeamDashboardCollectorItem)entry.getKey()).setCollectorId(collector.getId());
             }
         }
 
