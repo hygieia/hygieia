@@ -26,14 +26,15 @@ echo "MONGODB_PORT: $MONGODB_PORT"
 
 
 #update local host to bridge ip if used for a URL
+DOCKER_LOCALHOST=
 echo $JENKINS_MASTER|egrep localhost >>/dev/null
 if [ $? -ne 1 ]
 then
-	#this seems to give a access to the VM of the dockermachine
+	#this seems to give a access to the VM of the docker-machine
 	#LOCALHOST=`ip route|egrep '^default via'|cut -f3 -d' '`
 	#see http://superuser.com/questions/144453/virtualbox-guest-os-accessing-local-server-on-host-os
-	LOCALHOST=10.0.2.2
-	MAPPED_URL=`echo "$JENKINS_MASTER"|sed "s|localhost|$LOCALHOST|"`
+	DOCKER_LOCALHOST=10.0.2.2
+	MAPPED_URL=`echo "$JENKINS_MASTER"|sed "s|localhost|$DOCKER_LOCALHOST|"`
 	echo "Mapping localhost -> $MAPPED_URL"
 	JENKINS_MASTER=$MAPPED_URL	
 fi
@@ -41,7 +42,7 @@ fi
 echo $JENKINS_OP_CENTER|egrep localhost >>/dev/null
 if [ $? -ne 1 ]
 then
-	#this seems to give a access to the VM of the dockermachine
+	#this seems to give a access to the VM of the docker-machine
 	#LOCALHOST=`ip route|egrep '^default via'|cut -f3 -d' '`
 	#see http://superuser.com/questions/144453/virtualbox-guest-os-accessing-local-server-on-host-os
 	LOCALHOST=10.0.2.2
@@ -78,6 +79,12 @@ jenkins.apiKey=${JENKINS_API_KEY}
 
 #Determines if build console log is collected - defaults to false
 jenkins.saveLog=${JENKINS_SAVE_LOG:-true}
+
+#map the entry localhost so URLS in jenkins resolve properly
+# Docker NATs the real host localhost to 10.0.2.2 when running in docker
+# as localhost is stored in the JSON payload from jenkins we need
+# this hack to fix the addresses
+jenkins.dockerLocalHostIP=${DOCKER_LOCALHOST}
 
 EOF
 
