@@ -2,70 +2,89 @@
     <ng-include src="login.templateUrl"></ng-include>
     <div class="col-md-8 col-md-push-2">
         <div class="auth-modal-heading">
-                Please Login
-            </div>
+            Please Login
+        </div>
         <div class="auth-modal-body">
-                <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}
-                </alert>
-              <form id="lg" name="lg" class="form" ng-controller="LoginController"
-                    ng-submit="login.doLogin(lg.$valid)" ng-init="login.doCheckState()" role="form" novalidate>
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}
+            </alert>
+            <form id="lg" name="lg" class="form" ng-controller="LoginController"
+                  ng-submit="login.doLogin(lg.$valid)" ng-init="login.doCheckState()" role="form" novalidate>
                 <div class="row">
 
                     <div class="col-xs-8 col-md-push-2">
-                      <div class="form-group">
-                        <input
-                           type="text"
-                           name="loginfield"
-                           class="form-control text-center"
-                           ng-model="login.id"
-                           required
-                           minlength="4"
-                          placeholder="Enter your login Id">
+                        <div class="form-group">
+                            <input
+                                    type="text"
+                                    name="loginfield"
+                                    class="form-control text-center"
+                                    ng-model="login.id"
+                                    required
+                                    minlength="4"
+                                    placeholder="Enter your login Id">
 
-                          <p ng-show="lg.loginfield.$invalid && !lg.loginfield.$pristine"
-                            class="help-block">login id is required.</p>
-
+                            <p ng-show="lg.loginfield.$invalid && !lg.loginfield.$pristine"
+                               class="help-block">login id is required.</p>
                         </div>
 
                         <div class="form-group">
-                         <input
-                         type="password"
-                         name="passwordfield"
-                        class="form-control text-center"
-                        ng-model="login.passwd"
-                        required
-                        placeholder="Enter your Password">
-                        <p ng-show="lg.passwordfield.$invalid && !lg.passwordfield.$pristine"
-                          class="help-block">password is required.</p>
+                            <input
+                                    type="password"
+                                    name="passwordfield"
+                                    class="form-control text-center"
+                                    ng-model="login.passwd"
+                                    required
+                                    placeholder="Enter your Password">
 
-                        </div>
-                      </div>
-                    </div>
+                            <p ng-show="lg.passwordfield.$invalid && !lg.passwordfield.$pristine"
+                               class="help-block">password is required.</p>
 
-
-                  <div class="col-sm-6 col-md-push-4">
-
-
-                      <Button type="submit" class="btn btn-lg  btn-default"
-                      value="login">
-                      <i class="fa fa-stack fa-lg fa fa-thumbs-o-up"></i><br/>Click to Login</Button>
-
-                  </div>
-
-
-                  <div class="col-sm-6 col-md-2">
-                        <div class="btn btn-lg btn-default" ng-click="login.doSignup()">
-                            <span class="fa fa-stack fa-lg">
-                                <span class="fa fa-key"></span>
-                            </span>
-                            <br/>
-                            Click to Signup
                         </div>
                     </div>
                 </div>
-              </form>
-            </div>
+
+
+                <div class="col-sm-6 col-md-push-4">
+                    <Button type="submit" class="btn btn-lg  btn-default"
+                            value="login">
+                        <i class="fa fa-stack fa-lg fa fa-thumbs-o-up"></i><br/>Click to Login
+                    </Button>
+                </div>
+
+
+                <div class="col-sm-6 col-md-2">
+                    <div class="btn btn-lg btn-default" ng-click="login.doSignup()">
+                            <span class="fa fa-stack fa-lg">
+                                <span class="fa fa-key"></span>
+                            </span>
+                        <br/>
+                        Click to Signup
+                    </div>
+                </div>
+
+
+            </form>
+
+
         </div>
+        <div class="auth-modal-footer">
+            <div class="col-md-8 col-md-push-2 top-buffer">
+                <div class="col-md-4  col-md-push-3">
+                    <div  class="animate-hide">
+                        <span class="text-center">API Connectivity</span>
+                    </div>
+                    </div>
+                <div class="col-md-2 col-md-push-2">
+                    <div ng-show="login.apiup" class="animate-hide">
+                        <span class="fa fa-2x fa-check-circle text-success"></span>
+                </div>
+                <div ng-hide="login.apiup" class="animate-hide">
+                    <span class="fa fa-2x fa-times-circle text-danger"></span>
+                    </div>
+
+            </div>
+
+
     </div>
+</div>
 
 

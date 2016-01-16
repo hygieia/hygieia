@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
  *
  * @author KFK884
  */
-public class TeamCollectorItem extends CollectorItem {
+public class ScopeOwnerCollectorItem extends CollectorItem {
 	@Indexed
 	private static final String TEAM_ID = "teamId";
 	private static final String CHANGE_DATE = "changeDate";
@@ -60,7 +60,7 @@ public class TeamCollectorItem extends CollectorItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TeamCollectorItem that = (TeamCollectorItem) o;
+        ScopeOwnerCollectorItem that = (ScopeOwnerCollectorItem) o;
         return getTeamId().equals(that.getTeamId()) && getTeamId().equals(that.getTeamId());
     }
 

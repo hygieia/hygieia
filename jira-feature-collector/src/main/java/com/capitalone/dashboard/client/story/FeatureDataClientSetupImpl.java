@@ -21,6 +21,7 @@ import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
+import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.json.simple.JSONArray;
@@ -209,8 +210,8 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 		String data = null;
 
 		try {
-			List<Feature> response = featureRepo.getFeatureMaxChangeDate(
-					featureCollectorRepository.findByName("Jira").getId(),
+			List<Feature> response = featureRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+					featureCollectorRepository.findByName(Constants.JIRA).getId(),
 					featureSettings.getDeltaStartDate());
 			if (!response.isEmpty()) {
 				data = response.get(0).getChangeDate();

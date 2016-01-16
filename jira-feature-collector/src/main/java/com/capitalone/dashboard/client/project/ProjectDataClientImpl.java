@@ -2,8 +2,9 @@ package com.capitalone.dashboard.client.project;
 
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.ProjectRepository;
+import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.util.ClientUtil;
+import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import org.bson.types.ObjectId;
@@ -29,7 +30,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
-	private final ProjectRepository projectRepo;
+	private final ScopeRepository projectRepo;
 	private final static ClientUtil TOOLS = new ClientUtil();
 
 	/**
@@ -38,7 +39,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	 * @param teamRepository
 	 */
 	public ProjectDataClientImpl(FeatureSettings featureSettings,
-			ProjectRepository projectRepository, FeatureCollectorRepository featureCollectorRepository) {
+			ScopeRepository projectRepository, FeatureCollectorRepository featureCollectorRepository) {
 		super(featureSettings, projectRepository, featureCollectorRepository);
 		LOGGER.debug("Constructing data collection for the feature widget, project-level data...");
 
@@ -72,7 +73,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 
 				// collectorId
 				scope.setCollectorId(featureCollectorRepository
-						.findByName("Jira").getId());
+						.findByName(Constants.JIRA).getId());
 
 				// ID;
 				scope.setpId(TOOLS.sanitizeResponse(dataMainObj.get("id")));
@@ -148,9 +149,9 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 		boolean deleted = false;
 
 		try {
-			ObjectId tempEntId = projectRepo.getProjectIdById(localId).get(0)
+			ObjectId tempEntId = projectRepo.getScopeIdById(localId).get(0)
 					.getId();
-			if (localId.equalsIgnoreCase(projectRepo.getProjectIdById(localId)
+			if (localId.equalsIgnoreCase(projectRepo.getScopeIdById(localId)
 					.get(0).getpId())) {
 				projectRepo.delete(tempEntId);
 				deleted = true;

@@ -1,3 +1,6 @@
+[![Docker Stars](https://img.shields.io/docker/stars/capitalone/hygieia-ui.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
+[![Docker Stars](https://img.shields.io/docker/pulls/capitalone/hygieia-ui.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
+
 ## Hygieia UI
 
 ### Requirements
@@ -82,3 +85,15 @@ mvn clean package -pl UI docker:build
 ```bash
 docker run -t -p 8088:80 --link hygieia-api -i hygieia-ui:latest
 ```
+
+### API check
+ 
+#### API layer successfully connected
+![Image](/media/images/apiup.png)
+
+#### API layer connection unsuccessful
+![Image](/media/images/apidown.png)
+
+
+### ScreenShot of login page with API Layer up
+![Image](/media/images/loginpage.png)

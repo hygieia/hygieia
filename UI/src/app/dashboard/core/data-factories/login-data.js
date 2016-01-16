@@ -24,7 +24,6 @@
               'passwd': passwd
             };
             return $http.get(route).then(function (response) {
-              console.log("Data="+ JSON.stringify(response.data));
                 return response.data;
             });
         }
@@ -36,7 +35,6 @@
     			};
           if(localTesting)
           {
-            console.log("In local testing");
             return getPromise(id,passwd,testDetailRoute);
           }
           else
