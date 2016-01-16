@@ -23,3 +23,11 @@ hygieia-ui:
   - "8088:80"
   links:
   - hygieia-api
+hygieia-github-scm-collector:
+  image: hygieia-github-scm-collector:latest
+  container_name: hygieia-github-scm-collector
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - hygieia-api
+  - mongodb:mongo
