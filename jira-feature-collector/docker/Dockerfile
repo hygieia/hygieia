@@ -4,6 +4,7 @@ FROM docker.io/java:openjdk-8-jdk
 MAINTAINER Hygieia@capitalone.com
 
 RUN \
+
   mkdir  /hygieia
 
 COPY *.jar /hygieia/
