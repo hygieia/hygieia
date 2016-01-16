@@ -51,7 +51,7 @@ public class DefaultUDeployClientTest {
         String appListUrl = "http://udeploy.com/rest/deploy/application";
 
         when(rest.exchange(eq(appListUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>(appJson, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(appJson, HttpStatus.OK));
         List<UDeployApplication> apps = defaultUDeployClient.getApplications(instanceUrl);
         assertThat(apps.size(), is(2));
         assertThat(apps.get(0).getApplicationName(), is("AA-JPetstore"));
@@ -66,20 +66,20 @@ public class DefaultUDeployClientTest {
         String appListUrl = "http://udeploy.com/rest/deploy/application";
 
         when(rest.exchange(eq(appListUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>(appJson, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(appJson, HttpStatus.OK));
         List<UDeployApplication> apps = defaultUDeployClient.getApplications(instanceUrl);
 
         String environments = getJson("environments.json");
         String envUrl = "http://udeploy.com/rest/deploy/application/ad88482e-3577-44cd-a6d8-00056062260b/environments/false";
 
         when(rest.exchange(eq(envUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>(environments, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(environments, HttpStatus.OK));
 
         List<Environment> envs = defaultUDeployClient.getEnvironments(apps.get(0));
 
         assertThat(envs.size(), is(6));
         assertThat(envs.get(0).getName(), is("Team1"));
-        assertThat(envs.get(0).getId().toString(), is("e32de740-160b-4ffb-a63f-0690607d9903"));
+        assertThat(envs.get(0).getId(), is("e32de740-160b-4ffb-a63f-0690607d9903"));
     }
 
 
@@ -95,7 +95,7 @@ public class DefaultUDeployClientTest {
         String appListUrl = "http://udeploy.com/rest/deploy/application";
 
         when(rest.exchange(eq(appListUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>(appJson, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(appJson, HttpStatus.OK));
         List<UDeployApplication> apps = defaultUDeployClient.getApplications(instanceUrl);
 
         String resourceUrl = "http://udeploy.com/rest/deploy/environment/e32de740-160b-4ffb-a63f-0690607d9903/resources";
@@ -105,28 +105,39 @@ public class DefaultUDeployClientTest {
         String environments = getJson("environments.json");
         String envUrl = "http://udeploy.com/rest/deploy/application/ad88482e-3577-44cd-a6d8-00056062260b/environments/false";
 
+        String fileTree1 = getJson("fileTree1.json");
+        String fileTree2 = getJson("fileTree2.json");
+        String fileTree1url = "http://udeploy.com/rest/deploy/version/b9f9ccee-8f08-4c0f-bc22-c68cf4e2089a/fileTree";
+        String fileTree2url = "http://udeploy.com/rest/deploy/version/d5fcb7b2-60d5-478a-a4cd-1ec6660e60b9/fileTree";
+
         when(rest.exchange(eq(envUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>(environments, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(environments, HttpStatus.OK));
 
         List<Environment> envs = defaultUDeployClient.getEnvironments(apps.get(0));
 
 
         when(rest.exchange(eq(resourceUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>(resourceJson, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(resourceJson, HttpStatus.OK));
 
         when(rest.exchange(eq(nonCompUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>(nonComplianceJson, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(nonComplianceJson, HttpStatus.OK));
+
+        when(rest.exchange(eq(fileTree1url), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(fileTree1, HttpStatus.OK));
+
+        when(rest.exchange(eq(fileTree2url), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(fileTree2, HttpStatus.OK));
 
         List<UDeployEnvResCompData> data = defaultUDeployClient.getEnvironmentResourceStatusData(apps.get(0), envs.get(0));
 
 
         assertThat(data.size(), is(2));
-        assertThat(data.get(0).getComponentName(), is("AA-JPetstore.war"));
+        assertThat(data.get(0).getComponentName(), is("jpetstore.war"));
         assertThat(data.get(0).getResourceName(), is("msp_16"));
         assertThat(data.get(0).isDeployed(), is(false));
         assertThat(data.get(0).isOnline(), is(true));
         assertThat(data.get(0).getEnvironmentName(), is("Team1"));
-        assertThat(data.get(1).getComponentName(), is("AA-JPetstore.ear"));
+        assertThat(data.get(1).getComponentName(), is("jpetstore.ear"));
         assertThat(data.get(1).getResourceName(), is("msp_16"));
         assertThat(data.get(1).isDeployed(), is(true));
         assertThat(data.get(1).isOnline(), is(true));

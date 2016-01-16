@@ -226,8 +226,8 @@
       {
         "id": "4bf56c33-90ad-483f-b4ca-646df030bcf1",
         "securityResourceId": "eac9e578-8f8f-4d94-8f96-1cef98e153a4",
-        "name": "AA-JPetstore.war",
-        "path": "\/App-Infra\/DEV16\/APP\/udagent-app\/msp_16\/AA-JPetstore.war",
+        "name": "AA-JPetstore_Comp1.war",
+        "path": "\/App-Infra\/DEV16\/APP\/udagent-app\/msp_16\/AA-JPetstore_Comp1.war",
         "active": true,
         "inheritTeam": true,
         "discoveryFailed": false,
@@ -258,7 +258,7 @@
         },
         "role": {
           "id": "e5a5a9ea-0762-4ee9-b806-d8ce0287d147",
-          "name": "AA-JPetstore.war",
+          "name": "AA-JPetstore-Comp1.war",
           "specialType": "COMPONENT"
         },
         "security": {
@@ -461,8 +461,8 @@
       {
         "id": "c32a5525-e9f0-4706-8fa4-277f501b2fb9",
         "securityResourceId": "cfb5789c-94b6-4b1e-9912-bf5996019c53",
-        "name": "AA-JPetstore.ear",
-        "path": "\/App-Infra\/DEV16\/WEB\/udagent-web\/msp_16\/AA-JPetstore.war",
+        "name": "AA-JPetstore-Comp2.ear",
+        "path": "\/App-Infra\/DEV16\/WEB\/udagent-web\/msp_16\/AA-JPetstore-Comp2.war",
         "active": true,
         "inheritTeam": true,
         "discoveryFailed": false,
