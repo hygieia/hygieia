@@ -25,6 +25,7 @@ public class CollectorItem extends BaseModel {
 
     private String description;
     private boolean enabled;
+    private boolean pushed;
     private ObjectId collectorId;
     private Map<String,Object> options = new HashMap<>();
 
@@ -66,5 +67,12 @@ public class CollectorItem extends BaseModel {
     public Map<String, Object> getOptions() {
         return options;
     }
-    
+
+    public boolean isPushed() {
+        return pushed;
+    }
+
+    public void setPushed(boolean pushed) {
+        this.pushed = pushed;
+    }
 }

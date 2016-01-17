@@ -4,10 +4,12 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.request.BuildRequest;
+import com.capitalone.dashboard.request.BuildDataCreateRequest;
+import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.mysema.query.types.Predicate;
 import org.bson.types.ObjectId;
 import org.hamcrest.Description;
@@ -38,7 +40,7 @@ public class BuildServiceTest {
         ObjectId collectorItemId = ObjectId.get();
         ObjectId collectorId = ObjectId.get();
 
-        BuildRequest request = new BuildRequest();
+        BuildSearchRequest request = new BuildSearchRequest();
         request.setComponentId(componentId);
 
         when(componentRepository.findOne(request.getComponentId())).thenReturn(makeComponent(collectorItemId, collectorId));
@@ -49,13 +51,14 @@ public class BuildServiceTest {
         verify(buildRepository, times(1)).findAll(argThat(hasPredicate("build.collectorItemId = " + collectorItemId.toString())));
     }
 
+
     @Test
     public void search_14days() {
         ObjectId componentId = ObjectId.get();
         ObjectId collectorItemId = ObjectId.get();
         ObjectId collectorId = ObjectId.get();
 
-        BuildRequest request = new BuildRequest();
+        BuildSearchRequest request = new BuildSearchRequest();
         request.setComponentId(componentId);
         request.setNumberOfDays(14);
 
@@ -90,5 +93,31 @@ public class BuildServiceTest {
                 description.appendText("a Predicate equal to " + value);
             }
         };
+    }
+
+    private SCM makeScm() {
+        SCM scm = new SCM();
+        scm.setScmUrl("scmUrl");
+        scm.setScmRevisionNumber("revNum");
+        scm.setNumberOfChanges(20);
+        scm.setScmCommitTimestamp(200);
+        scm.setScmCommitLog("Log message");
+        scm.setScmAuthor("bob");
+        return scm;
+    }
+
+
+    private BuildDataCreateRequest makeBuildRequest() {
+        BuildDataCreateRequest build = new BuildDataCreateRequest();
+        build.setNumber("1");
+        build.setBuildUrl("buildUrl");
+        build.setStartTime(3);
+        build.setEndTime(8);
+        build.setDuration(5);
+        build.setBuildStatus("Success");
+        build.setStartedBy("foo");
+        build.setJobName("MyJob");
+        build.getSourceChangeSet().add(makeScm());
+        return build;
     }
 }

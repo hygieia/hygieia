@@ -20,8 +20,11 @@ public class BinaryArtifact extends BaseModel {
     private long timestamp;
 
     private String artifactName;
-    private String groupId;
-    private String version;
+    private String canonicalName;
+    private String artifactGroupId;
+    private String artifactVersion;
+
+    private ObjectId artifactBuildId;
 
     public ObjectId getCollectorItemId() {
         return collectorItemId;
@@ -47,19 +50,35 @@ public class BinaryArtifact extends BaseModel {
         this.artifactName = artifactName;
     }
 
-    public String getGroupId() {
-        return groupId;
+    public String getArtifactGroupId() {
+        return artifactGroupId;
     }
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
+    public void setArtifactGroupId(String artifactGroupId) {
+        this.artifactGroupId = artifactGroupId;
     }
 
-    public String getVersion() {
-        return version;
+    public String getArtifactVersion() {
+        return artifactVersion;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public void setArtifactVersion(String artifactVersion) {
+        this.artifactVersion = artifactVersion;
+    }
+
+    public ObjectId getArtifactBuildId() {
+        return artifactBuildId;
+    }
+
+    public void setArtifactBuildId(ObjectId artifactBuildId) {
+        this.artifactBuildId = artifactBuildId;
+    }
+
+    public String getCanonicalName() {
+        return canonicalName;
+    }
+
+    public void setCanonicalName(String canonicalName) {
+        this.canonicalName = canonicalName;
     }
 }

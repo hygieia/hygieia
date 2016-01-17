@@ -42,4 +42,12 @@ public interface CollectorService {
      * @return created CollectorItem
      */
     CollectorItem createCollectorItem(CollectorItem item);
+
+
+    /**
+     * Creates a new Collector.
+     * @param collector Collector to create
+     * @return created Collector
+     */
+    Collector createCollector(Collector collector);
 }

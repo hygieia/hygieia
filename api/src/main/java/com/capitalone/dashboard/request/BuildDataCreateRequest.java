@@ -1,58 +1,34 @@
-package com.capitalone.dashboard.model;
+package com.capitalone.dashboard.request;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.capitalone.dashboard.model.SCM;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The result of a Continuous Integration build execution. Typically produces binary artifacts.
- * Often triggered by one or more SCM commits.
- *
- * Possible collectors:
- *  Hudson (in scope)
- *  Team City
- *  TFS
- *  Go
- *  Bamboo
- *  TravisCI
- *
- */
-@Document(collection="builds")
-public class Build extends BaseModel {
-    private ObjectId collectorItemId;
-    private long timestamp;
 
+public class BuildDataCreateRequest {
+
+    @NotNull
     private String number;
+    @NotNull
     private String buildUrl;
+    @NotNull
+    private String jobName;
+    @NotNull
+    private String buildStatus;
+    @NotNull
     private long startTime;
+    @NotNull
+    private String jobUrl;
+    @NotNull
+    private String instanceUrl;
+
     private long endTime;
     private long duration;
-    private BuildStatus buildStatus;
     private String startedBy;
     private String log;
     private List<SCM> sourceChangeSet = new ArrayList<>();
-
-    public ObjectId getCollectorItemId() {
-        return collectorItemId;
-    }
-
-    public void setCollectorItemId(ObjectId collectorItemId) {
-        this.collectorItemId = collectorItemId;
-    }
-
-    public void setSourceChangeSet(List<SCM> sourceChangeSet) {
-        this.sourceChangeSet = sourceChangeSet;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
 
     public String getNumber() {
         return number;
@@ -94,11 +70,11 @@ public class Build extends BaseModel {
         this.duration = duration;
     }
 
-    public BuildStatus getBuildStatus() {
+    public String getBuildStatus() {
         return buildStatus;
     }
 
-    public void setBuildStatus(BuildStatus buildStatus) {
+    public void setBuildStatus(String buildStatus) {
         this.buildStatus = buildStatus;
     }
 
@@ -122,7 +98,32 @@ public class Build extends BaseModel {
         return sourceChangeSet;
     }
 
-    public void addSourceChangeSet(SCM scm) {
-        getSourceChangeSet().add(scm);
+    public void setSourceChangeSet(List<SCM> sourceChangeSet) {
+        this.sourceChangeSet = sourceChangeSet;
+    }
+
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public String getJobUrl() {
+        return jobUrl;
+    }
+
+    public void setJobUrl(String jobUrl) {
+        this.jobUrl = jobUrl;
+    }
+
+    public String getInstanceUrl() {
+        return instanceUrl;
+    }
+
+    public void setInstanceUrl(String instanceUrl) {
+        this.instanceUrl = instanceUrl;
     }
 }
