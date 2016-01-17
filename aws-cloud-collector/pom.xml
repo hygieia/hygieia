@@ -37,7 +37,7 @@
             <dependency>
               <groupId>com.amazonaws</groupId>
               <artifactId>aws-java-sdk-bom</artifactId>
-              <version>1.10.39</version>
+              <version>1.10.46</version>
               <type>pom</type>
               <scope>import</scope>
             </dependency>
@@ -108,6 +108,10 @@
                 </dependency>
                 <dependency>
                     <groupId>com.amazonaws</groupId>
+                    <artifactId>aws-java-sdk-s3</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.amazonaws</groupId>
                     <artifactId>aws-java-sdk-cloudwatch</artifactId>
                 </dependency>
 
@@ -116,7 +120,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.6.0-rc4</version>
+			<version>${jackson.version}</version>
 		</dependency>
 
 		<dependency>
@@ -125,17 +129,6 @@
 			<version>${jackson.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-			<version>1.9.13</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.13</version>
-		</dependency>
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j-cypher-compiler-2.1</artifactId>

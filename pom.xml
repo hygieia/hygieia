@@ -112,6 +112,7 @@
       <modules>
         <module>core</module>
         <module>api</module>
+        <module>aws-cloud-collector</module>
         <module>jenkins-build-collector</module>
         <module>sonar-codequality-collector</module>
         <module>subversion-scm-collector</module>
@@ -143,6 +144,7 @@
       <modules>
         <module>core</module>
         <module>api</module>
+        <module>aws-cloud-collector</module>
         <module>jenkins-build-collector</module>
         <module>sonar-codequality-collector</module>
         <module>subversion-scm-collector</module>
