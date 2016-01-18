@@ -6,7 +6,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('DashboardController', DashboardController);
 
     DashboardController.$inject = ['dashboard', '$location'];

@@ -1,5 +1,5 @@
 angular
-    .module('devops-dashboard.core')
+    .module(HygieiaConfig.module + '.core')
     .directive('selectOnClick', function () {
     return {
         restrict: 'A',

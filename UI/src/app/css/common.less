@@ -13,7 +13,7 @@
 
 // FONT AWESOME
 // ========================================
-@fa-font-path: '../fonts';
+@fa-font-path: '/fonts';
 
 // BOOTSTRAP VARIABLES
 // ========================================
@@ -236,9 +236,10 @@ body {
     display: block !important;
     background: @dash-header-bg;
     font-size: @dash-header-font-size;
-    margin-bottom: @grid-gutter-width / 2;
+    line-height: 48px;
     text-align: center;
     position: relative;
+    margin-bottom: 50px;
 
     .dashboard-logo {
         background: url(@dash-header-logo-url) no-repeat center center;
@@ -249,6 +250,7 @@ body {
         top: @dash-header-logo-top;
         width: @dash-header-logo-width;
         height: @dash-header-logo-height;
+
 
         &.dashboard-logo-inverse {
             background-image: url(@dash-header-logo-inverse-url);

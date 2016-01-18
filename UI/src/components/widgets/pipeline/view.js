@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('pipelineViewController', pipelineViewController);
 
     pipelineViewController.$inject = ['$scope', 'deployData', 'WidgetState', '$q'];

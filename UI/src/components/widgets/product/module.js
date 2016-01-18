@@ -17,7 +17,7 @@
         };
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .config(register);
 
     register.$inject = ['widgetManagerProvider', 'WidgetState'];

@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('TestDetailsController', TestDetailsController);
 
     TestDetailsController.$inject = ['$scope','$modalInstance', 'testResult', 'DashStatus'];

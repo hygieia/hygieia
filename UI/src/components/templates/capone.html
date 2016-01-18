@@ -1,24 +1,26 @@
 <div ng-controller="CapOneTemplateController as template">
     <div id="header">
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
 
-        <a ng-href="#/" class="dashboard-logo"></a>
+                <a ng-href="#/" class="dashboard-logo"></a>
 
-        {{::ctrl.dashboard.title}}
+                {{::ctrl.dashboard.title}}
 
-        <div class="pipeline-toggle btn-group"
-             ng-click="template.toggleView()"
-             ng-show="template.hasComponents(ctrl.dashboard, ['Deployment'])">
-            <span class="btn" ng-class="{'btn-primary':template.widgetView, 'btn-default': !template.widgetView}">
-                <span class="fa fa-th"></span>
-                Widget
-            </span>
-            <span class="btn" ng-class="{'btn-primary':!template.widgetView, 'btn-default': template.widgetView}">
-                <span class="fa fa-tasks"></span>
-                Pipeline
-            </span>
-        </div>
-
-        <div class="clear"></div>
+                <div class="pipeline-toggle btn-group"
+                     ng-click="template.toggleView()"
+                     ng-show="template.hasComponents(ctrl.dashboard, ['Deployment'])">
+                    <span class="btn" ng-class="{'btn-primary':template.widgetView, 'btn-default': !template.widgetView}">
+                        <span class="fa fa-th"></span>
+                        Widget
+                    </span>
+                    <span class="btn" ng-class="{'btn-primary':!template.widgetView, 'btn-default': template.widgetView}">
+                        <span class="fa fa-tasks"></span>
+                        Pipeline
+                    </span>
+                </div>
+            </div>
+        </nav>
     </div>
 
     <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView">

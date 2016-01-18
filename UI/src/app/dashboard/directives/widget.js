@@ -6,7 +6,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard.core')
+        .module(HygieiaConfig.module + '.core')
 
         // used by widgets to set their current state
         // CONFIGURE will render the common config screen instead of the widget content

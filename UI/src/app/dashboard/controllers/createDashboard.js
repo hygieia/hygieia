@@ -6,7 +6,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('CreateDashboardController', CreateDashboardController);
 
     CreateDashboardController.$inject = ['$location', '$modalInstance', 'dashboardData', '$cookies', 'DashboardType'];
@@ -83,7 +83,7 @@
         }
 
         function isTeamDashboardSelected() {
-            return ctrl.dashboardType && ctrl.dashboardType.id == 1;
+            return ctrl.dashboardType && ctrl.dashboardType.id == DashboardType.TEAM;
         }
     }
 })();

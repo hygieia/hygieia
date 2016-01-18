@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
     SiteController.$inject = ['$scope', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
@@ -104,8 +104,6 @@
                     isProduct: data[x].applicationName == DashboardType.PRODUCT
                 });
             }
-
-            console.log(ctrl.dashboards);
         }
 
         function processDashboardError(data) {

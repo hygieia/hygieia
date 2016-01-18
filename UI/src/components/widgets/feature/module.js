@@ -19,7 +19,7 @@
     };
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .config(register);
 
     register.$inject = ['widgetManagerProvider', 'WidgetState'];
@@ -30,7 +30,7 @@
 
     function getState(widgetConfig) {
         //return widget_state.READY;
-        return HygieiaConfig.localTesting || widgetConfig.id ?
+        return HygieiaConfig.local || widgetConfig.id ?
                 widget_state.READY :
                 widget_state.CONFIGURE;
     }

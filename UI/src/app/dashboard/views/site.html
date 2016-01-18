@@ -1,4 +1,4 @@
-<div id="site">
+<div id="site" class="main-content">
     <ng-include src="ctrl.templateUrl"></ng-include>
 
     <div class="col-md-8 col-md-push-2">
@@ -47,7 +47,7 @@
                     </div>
                     <div class="col-sm-8 col-sm-pull-4">
                         <div>
-                            <div class="text-2x">My Dashboard's <span class="label label-default"></span></div>
+                            <div class="text-2x">My Dashboards <span class="label label-default"></span></div>
 
                             <div class="text-center" ng-hide="ctrl.mydash">Loading Your Dashboards...</div>
                             <div class="text-center" ng-show="ctrl.mydash && !mydashboards.length">
@@ -62,7 +62,7 @@
                                        </a>
                                     </span>
 
-                                    <a class="visible-xs-block" ng-click="ctrl.open(myitem.id)">
+                                    <a class="btn-block clickable" ng-click="ctrl.open(myitem.id)">
                                         <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : myitem.isProduct}"></span>
                                         {{ myitem.name }}
                                     </a>

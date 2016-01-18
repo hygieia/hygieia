@@ -1,7 +1,7 @@
 /**
  * Directive to support placing html in a popover
  */
-angular.module('devops-dashboard.core')
+angular.module(HygieiaConfig.module + '.core')
     .directive('popoverHtmlUnsafePopup', function () {
         return {
             restrict: 'EA',

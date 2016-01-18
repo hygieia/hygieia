@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard.core')
+        .module(HygieiaConfig.module + '.core')
         .constant('DashboardType', {
             PRODUCT: 'product',
             TEAM: 'team'
@@ -41,23 +41,23 @@
 
         // gets list of dashboards
         function search() {
-            return getPromise(HygieiaConfig.localTesting ? testSearchRoute : dashboardRoute);
+            return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardRoute);
         }
 
         //gets list of owned dashboard
         function mydashboard(username){
-          return getPromise(HygieiaConfig.localTesting ? testOwnedRoute : mydashboardRoute+ "/" + username);
+          return getPromise(HygieiaConfig.local ? testOwnedRoute : mydashboardRoute+ "/" + username);
         }
 
         //gets dashboard owner from dashboard title
         function myowner(title)
         {
-            return getPromise(HygieiaConfig.localTesting ? testOwnedRoute : myownerRoute + "/" + title );
+            return getPromise(HygieiaConfig.local ? testOwnedRoute : myownerRoute + "/" + title );
         }
 
         // gets info for a single dashboard including available widgets
         function detail(id) {
-            return getPromise(HygieiaConfig.localTesting ? testDetailRoute : dashboardRoute + '/' + id);
+            return getPromise(HygieiaConfig.local ? testDetailRoute : dashboardRoute + '/' + id);
         }
 
         // creates a new dashboard

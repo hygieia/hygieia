@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    angular.module('devops-dashboard')
+    angular.module(HygieiaConfig.module)
         .directive('typeaheadFocus', function () {
             return {
                 require: 'ngModel',
@@ -37,7 +37,7 @@
         });
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
     productViewController.$inject = ['$scope', '$modal', 'dashboardData'];

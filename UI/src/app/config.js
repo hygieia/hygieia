@@ -1,4 +1,4 @@
 var HygieiaConfig = {
-    localTesting: false,
-    remoteApiHost: ''
+    local: false,
+    api: ''
 };

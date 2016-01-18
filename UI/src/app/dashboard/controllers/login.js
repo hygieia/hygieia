@@ -4,7 +4,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('LoginController', LoginController);
 
 

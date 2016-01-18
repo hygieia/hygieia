@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('RepoViewController', RepoViewController);
 
     RepoViewController.$inject = ['$q', '$scope','codeRepoData', '$modal'];

@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('editTeamController', editTeamController);
 
     editTeamController.$inject = ['$scope', '$modalInstance', 'dashboardData', 'editTeamConfig'];
@@ -14,6 +14,7 @@
         ctrl.submitted = false;
         ctrl.dashboards = [];
         ctrl.modalTitle = editTeamConfig.team ? 'Edit team' : 'Add team';
+        ctrl.submitText = editTeamConfig.team ? 'Save this team' : 'Add this team';
 
         if(editTeamConfig.team && editTeamConfig.team.alternateName) {
             ctrl.alternateName = editTeamConfig.team.alternateName;

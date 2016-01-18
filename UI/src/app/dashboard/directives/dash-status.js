@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard.core')
+        .module(HygieiaConfig.module + '.core')
 
         // status constant so widgets can use the same values as an enum
         .constant('DashStatus', {

@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('RepoDetailController', RepoDetailController);
 
     RepoDetailController.$inject = ['$modalInstance', 'commits', 'DashStatus'];

@@ -4,7 +4,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('SignupController', SignupController);
 
     SignupController.$inject = ['$scope', 'signupData', '$location', '$cookies'];

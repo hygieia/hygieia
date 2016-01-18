@@ -34,12 +34,12 @@ var localStorageSupported = (function () {
     document.getElementsByTagName('head')[0].appendChild(link);
 
     // create the angular app
-    angular.module('devops-dashboard', [
+    angular.module(HygieiaConfig.module, [
         'ngAnimate',
         'ngSanitize',
         'ngRoute',
         'typeaheadDropdown.tpl',
-        'devops-dashboard.core',
+        HygieiaConfig.module + '.core',
         'ui.bootstrap',
         'fitText',
         'angular-chartist',
@@ -58,11 +58,10 @@ var localStorageSupported = (function () {
                             path = '/' + config.url;
                         }
 
-                        if(!!HygieiaConfig.remoteApiHost && path.substr(0, 5) == '/api/') {
-                            config.url = HygieiaConfig.remoteApiHost + path;
+                        if(!!HygieiaConfig.api && path.substr(0, 5) == '/api/') {
+                            config.url = HygieiaConfig.api + path;
                         }
 
-                        console.log(config);
                         return config;
                     }
                 };

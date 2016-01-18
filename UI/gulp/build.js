@@ -89,7 +89,7 @@ gulp.task('local-testing', function() {
   var options = $.minimist(process.argv.slice(2), localOption);
 
   return gulp.src(['src/app/local-testing.js'])
-    .pipe($.replace(/localTesting.*=.*/, 'localTesting = '+ options.local.toString() + ';'))
+    .pipe($.replace(/local.*=.*/, 'local = '+ options.local.toString() + ';'))
     .pipe(gulp.dest('src/app'));
 })
 
@@ -183,4 +183,4 @@ gulp.task('clean', function (done) {
     $.del(['dist/', '.tmp/'], done);
 });
 
-gulp.task('build', ['html', 'themes', 'images', 'fonts', 'misc']);
+gulp.task('build', ['clean', 'html', 'themes', 'images', 'fonts', 'misc']);
