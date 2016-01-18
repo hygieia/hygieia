@@ -116,6 +116,7 @@ public class BuildServiceImpl implements BuildService {
         CollectorItem tempCi = new CollectorItem();
         tempCi.setCollectorId(collector.getId());
         tempCi.setDescription(request.getJobName());
+        tempCi.setPushed(true);
         Map<String, Object> option = new HashMap<>();
         option.put("jobName", request.getJobName());
         option.put("jobUrl", request.getJobUrl());
@@ -136,6 +137,7 @@ public class BuildServiceImpl implements BuildService {
         build.setBuildStatus(BuildStatus.fromString(request.getBuildStatus()));
         build.setCollectorItemId(collectorItem.getId());
         build.setSourceChangeSet(request.getSourceChangeSet());
+        build.setTimestamp(System.currentTimeMillis());
         Build existingBuild = buildRepository.findByCollectorItemIdAndNumber(collectorItem.getId(),
                 build.getNumber());
 

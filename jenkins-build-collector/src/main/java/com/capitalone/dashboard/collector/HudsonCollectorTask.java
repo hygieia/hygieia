@@ -135,6 +135,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         Set<ObjectId> udId = new HashSet<>();
         udId.add(collector.getId());
         for (HudsonJob job : hudsonJobRepository.findByCollectorIdIn(udId)) {
+            if (job.isPushed()) continue;
             if (!collector.getBuildServers().contains(job.getInstanceUrl()) ||
                     (!job.getCollectorId().equals(collector.getId()))) {
                 deleteJobList.add(job);
@@ -157,9 +158,8 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         int count = 0;
 
         for (HudsonJob job : enabledJobs) {
-
+            if (job.isPushed()) continue;
             for (Build buildSummary : nullSafe(buildsByJob.get(job))) {
-
                 if (isNewBuild(job, buildSummary)) {
                     Build build = hudsonClient.getBuildDetails(buildSummary
                             .getBuildUrl());
@@ -169,7 +169,6 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
                         count++;
                     }
                 }
-
             }
         }
         log("New builds", start, count);
