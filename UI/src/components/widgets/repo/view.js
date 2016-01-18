@@ -52,6 +52,7 @@
         };
 
         function showDetail() {
+            console.log('here');
             $modal.open({
                 controller: 'RepoDetailController',
                 controllerAs: 'detail',
