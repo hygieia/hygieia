@@ -64,6 +64,7 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
             }
             else{
                 ((TeamDashboardCollectorItem)entry.getKey()).setCollectorId(collector.getId());
+                ((TeamDashboardCollectorItem)entry.getKey()).setDescription(((Dashboard)entry.getValue()).getTitle());
             }
         }
 
