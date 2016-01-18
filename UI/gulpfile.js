@@ -3,9 +3,9 @@
 // require what we need
 var browserSync = require('browser-sync'),
     chalk = require('chalk'),
-    del = require('del'),
     gulp = require('gulp'),
     tmplCache = require('gulp-angular-templatecache'),
+    clean = require('gulp-clean'),
     consolidate = require('gulp-consolidate'),
     filter = require('gulp-filter'),
     flatten = require('gulp-flatten'),
@@ -76,8 +76,8 @@ for(var field in config) {
 gulp.task('default', ['build']);
 
 // moves everything to the build folder
-gulp.task('build', function(cb) {
-    runSequence('clean', 'assets', 'themes', 'fonts', 'js', 'views', 'test-data', 'html', cb);
+gulp.task('build', function() {
+    runSequence('clean', 'assets', 'themes', 'fonts', 'js', 'views', 'test-data', 'html');
 });
 
 // run the build task, start up a browser, then
@@ -151,9 +151,7 @@ gulp.task('serve', function() {
  *******************************/
 // delete our distribution folder
 gulp.task('clean', function() {
-    return del([
-        hygieia.dist
-    ]);
+    return gulp.src(hygieia.dist).pipe(clean());
 });
 
 // move everything in the assets folder to distribution

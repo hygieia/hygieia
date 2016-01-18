@@ -6,7 +6,6 @@
     "url": "https://github.com/capitalone/Hygieia"
   },
   "license": "Apache-2.0",
-  "dependencies": {},
   "devDependencies": {
     "bower": "^1.4.1",
     "browser-sync": "~1.7.1",
@@ -16,6 +15,7 @@
     "gulp-angular-filesort": "~1.0.4",
     "gulp-angular-templatecache": "~1.4.2",
     "gulp-autoprefixer": "~2.0.0",
+    "gulp-clean": "^0.3.1",
     "gulp-connect": "~2.3.1",
     "gulp-consolidate": "~0.1.2",
     "gulp-csso": "~0.2.9",
