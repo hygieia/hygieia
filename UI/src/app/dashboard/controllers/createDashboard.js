@@ -58,12 +58,14 @@
         function submit(valid) {
             ctrl.submitted = true;
 
+
             // perform basic validation and send to the api
             if (valid) {
                 var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
                     submitData = {
                         template: document.cdf.templateName.value,
                         title: document.cdf.dashboardName.value,
+                        type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
                         owner: $cookies.username

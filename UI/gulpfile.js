@@ -41,6 +41,10 @@ var browserSync = require('browser-sync'),
         'src/{app,components}/**/*.html'
     ],
 
+    widgetStyleFiles = [
+        'src/{app,components}/**/*.less'
+    ],
+
     // look for local json files
     testDataFiles = [
         'src/test-data/*'
@@ -130,7 +134,7 @@ gulp.task('serve', function() {
         });
 
         // watch the less files in addition to the themes
-        gulp.watch(themeFiles.concat(['src/{app,components}/**/*.less'])).on('change', function() {
+        gulp.watch(themeFiles.concat(widgetStyleFiles)).on('change', function() {
             runSequence('themes', browserSync.reload);
         });
 
@@ -169,13 +173,20 @@ gulp.task('assets', function() {
 // on user preferences so there is no need to inject the
 // files in to the UI directly
 gulp.task('themes', function() {
-    return gulp
-        .src(themeFiles.concat([
+    gulp.src(['src/app/css/widgets.less'])
+        .pipe(inject(gulp.src(['src/components/widgets/**/*.less']), {
+            starttag: '/* inject:imports */',
+            endtag: '/* endinject */',
+            transform: function (filepath) {
+                return '@import "' + filepath.replace('/src', '../..') + '";';
+            }
+        }))
+        .pipe(gulp.dest('src/app/css'));
 
-        ]))
+    return gulp.src(themeFiles)
         .pipe(less({
             paths: [
-                hygieia.src + '/components'
+                hygieia.src + 'components'
             ]
         }))
         .pipe(gulp.dest(hygieia.dist + 'styles'));

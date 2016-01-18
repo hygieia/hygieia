@@ -43,5 +43,6 @@ bower_components
 
 # Project specific artifacts
 src/**/*.css
+src/app/css/widgets.less
 /bin
 /target/

@@ -8,7 +8,7 @@
                 <select name="dashboardType"
                         class="form-control"
                         ng-model="ctrl.dashboardType"
-                        ng-options="item.text for item in ctrl.dashboardTypes"
+                        ng-options="item.text for item in ctrl.dashboardTypes track by item.id"
                         required>
                     <option value="" disabled>Select a type</option>
                 </select>

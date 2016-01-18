@@ -97,13 +97,21 @@
         function processDashboardResponse(data) {
             // add dashboards to list
             ctrl.dashboards = [];
+            var dashboards = [];
             for (var x = 0; x < data.length; x++) {
-                ctrl.dashboards.push({
+                var board = {
                     id: data[x].id,
                     name: data[x].title,
-                    isProduct: data[x].applicationName == DashboardType.PRODUCT
-                });
+                    isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
+                };
+
+                if(board.isProduct) {
+                    console.log(board);
+                }
+                dashboards.push(board);
             }
+
+            ctrl.dashboards = dashboards;
         }
 
         function processDashboardError(data) {
@@ -114,14 +122,18 @@
 
             // add dashboards to list
             ctrl.mydash = [];
+            var dashboards = [];
             for (var x = 0; x < mydata.length; x++) {
 
-                ctrl.mydash.push({
+                dashboards.push({
                     id: mydata[x].id,
                     name: mydata[x].title,
-                    type: mydata[x].type
+                    type: mydata[x].type,
+                    isProduct: mydata[x].type && mydata[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
                 });
             }
+
+            ctrl.mydash = dashboards;
         }
 
         function processMyDashboardError(data) {
