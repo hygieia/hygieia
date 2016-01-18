@@ -61,8 +61,8 @@ public class DashboardControllerTest {
     }
 
     @Test
-    public void createProgramDashboard() throws Exception {
-        DashboardRequest request = makeDashboardRequest("template", "title", null, null,"amit", null, "program");
+    public void createProductDashboard() throws Exception {
+        DashboardRequest request = makeDashboardRequest("template", "title", null, null,"amit", null, "product");
         mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))

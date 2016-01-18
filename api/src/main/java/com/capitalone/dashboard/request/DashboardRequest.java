@@ -67,10 +67,7 @@ public class DashboardRequest {
 
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
-        Application application = null;
-        if(type.equals(DashboardType.Team)){
-            application = new Application(applicationName, new Component(componentName));
-        }
+        Application application = new Application(applicationName, new Component(componentName));
         return new Dashboard(template, title, application, owner, type);
     }
 
