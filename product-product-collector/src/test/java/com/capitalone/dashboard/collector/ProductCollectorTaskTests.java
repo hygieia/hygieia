@@ -60,7 +60,7 @@ public class ProductCollectorTaskTests {
 
     private TeamDashboardCollectorItem createTeamDashboard(ObjectId id) {
         TeamDashboardCollectorItem teamDashboardCollectorItem = new TeamDashboardCollectorItem();
-        teamDashboardCollectorItem.setDashboardId(id);
+        teamDashboardCollectorItem.setDashboardId(id.toString());
         return teamDashboardCollectorItem;
     }
 }

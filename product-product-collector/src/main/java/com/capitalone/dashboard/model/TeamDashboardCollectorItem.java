@@ -1,20 +1,18 @@
 package com.capitalone.dashboard.model;
 
-import org.bson.types.ObjectId;
-
 public class TeamDashboardCollectorItem extends CollectorItem {
-    private ObjectId dashboardId;
+    private static final String DASHBOARD_ID = "dashboardId";
 
-    public ObjectId getDashboardId() {
-        return dashboardId;
+    public String getDashboardId() {
+        return (String) getOptions().get(DASHBOARD_ID);
     }
 
-    public void setDashboardId(ObjectId dashboardId) {
-        this.dashboardId = dashboardId;
+    public void setDashboardId(String dashboardId) {
+        this.getOptions().put(DASHBOARD_ID, dashboardId);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return ((TeamDashboardCollectorItem)obj).getDashboardId().equals(this.dashboardId);
+        return ((TeamDashboardCollectorItem)obj).getDashboardId().equals(getDashboardId());
     }
 }

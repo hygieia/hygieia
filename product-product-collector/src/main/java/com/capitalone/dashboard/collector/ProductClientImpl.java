@@ -27,7 +27,7 @@ public class ProductClientImpl implements ProductClient {
         Iterable<Dashboard> dashboardList = dashboardRepository.findAll();
         for (Dashboard dashboard: dashboardList) {
             TeamDashboardCollectorItem teamDashboardCollectorItem = new TeamDashboardCollectorItem();
-            teamDashboardCollectorItem.setDashboardId(dashboard.getId());
+            teamDashboardCollectorItem.setDashboardId(dashboard.getId().toString());
             teamDashboards.put(teamDashboardCollectorItem, dashboard);
         }
         return teamDashboards;
