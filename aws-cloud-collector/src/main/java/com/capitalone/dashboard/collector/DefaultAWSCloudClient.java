@@ -1,23 +1,36 @@
 package com.capitalone.dashboard.collector;
 
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.*;
+import com.amazonaws.services.ec2.model.DescribeImagesResult;
+import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.DescribeVolumesResult;
+import com.amazonaws.services.ec2.model.GroupIdentifier;
+import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.InstanceState;
+import com.amazonaws.services.ec2.model.Reservation;
+import com.amazonaws.services.ec2.model.Tag;
+import com.amazonaws.services.ec2.model.Volume;
+import com.amazonaws.services.ec2.model.VolumeAttachment;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.*;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.util.Encryption;
-import com.capitalone.dashboard.util.EncryptionException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.Bucket;
+import com.capitalone.dashboard.model.AWSConfig;
+import com.capitalone.dashboard.model.CloudComputeData;
+import com.capitalone.dashboard.model.CloudComputeInstanceData;
+import com.capitalone.dashboard.model.CloudStorageBucket;
+import com.capitalone.dashboard.model.CloudStorageData;
+import com.capitalone.dashboard.util.ProxySettings;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,16 +42,15 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Collects the instance specific data from AWS.
- * 
+ *
  */
 @Component
 public class DefaultAWSCloudClient implements AWSCloudClient {
 
-	private final AWSCloudSettings settings;
-	private static final Log logger = LogFactory
-			.getLog(AWSCloudCollectorTask.class);
-	private static long ONE_HOUR_MILLI_SECOND = 60 * 60 * 1000;
-	private static long ONE_DAY_MILLI_SECOND = 24 * 60 * 60 * 1000;
+	private static final Logger LOGGER = LoggerFactory.getLogger(AWSCloudCollectorTask.class);
+	private static final long ONE_DAY_MILLI_SECOND = TimeUnit.DAYS.toMillis(1);
+    private final AWSCloudSettings settings;
+
 
 	@Autowired
 	public DefaultAWSCloudClient(AWSCloudSettings settings) {
@@ -48,87 +60,83 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	@Override
 	public CloudComputeData getCloudComputeData(AWSConfig config) {
 		CloudComputeData computeData = null;
-		String proxyPassword;
-		try {
-			proxyPassword = Encryption.decryptString(
-					settings.getProxyPassword(), settings.getKey());
+        // proxy can be set using the standard properties or system env variables.
+        ProxySettings httpsProxy = ProxySettings.buildHTTPS();
+        ClientConfiguration clientConfig = new ClientConfiguration();
 
-			ClientConfiguration clientConfig = new ClientConfiguration()
-					.withProxyHost(settings.getProxyURL())
-					.withProxyPort(settings.getProxyPort())
-					.withPreemptiveBasicProxyAuth(true)
-					.withProxyUsername(settings.getProxyUser())
-					.withProxyPassword(proxyPassword);
+        if (httpsProxy.isProxySet()) {
+            clientConfig = clientConfig.withProxyHost(httpsProxy.host())
+                    .withProxyPort(Integer.valueOf(httpsProxy.port()))
+                    .withPreemptiveBasicProxyAuth(true)
+                    .withProxyUsername(httpsProxy.user())
+                    .withProxyPassword(httpsProxy.password());
+        }
 
-			String accessKey = Encryption.decryptString(config.getAccessKey(),
-					settings.getKey());
-			String secretKey = Encryption.decryptString(config.getSecretKey(),
-					settings.getKey());
 
-			AWSCredentials creds = new BasicAWSCredentials(accessKey, secretKey);
-			AmazonEC2Client ec2Client = new AmazonEC2Client(creds, clientConfig);
+        DefaultAWSCredentialsProviderChain creds = new DefaultAWSCredentialsProviderChain();
+        AmazonEC2Client ec2Client = new AmazonEC2Client(creds, clientConfig);
 
-			AmazonCloudWatchClient cwClient = new AmazonCloudWatchClient(creds,
-					clientConfig);
-			DescribeInstancesResult instanceResult = ec2Client.describeInstances();
-			DescribeImagesResult imageResult = ec2Client.describeImages();
+        // TODO: this needs to be thought out some more, it appears to not be paginating and
+        // loading everything to memory.
 
-			DescribeVolumesResult volumeResult = ec2Client.describeVolumes();
-			List<Instance> instanceList = new ArrayList<>();
-			List<Reservation> reservations = instanceResult.getReservations();
-			for (Reservation currRes : reservations) {
-				List<Instance> currInstanceList = currRes.getInstances();
-				instanceList.addAll(currInstanceList);
-			}
+        AmazonCloudWatchClient cwClient = new AmazonCloudWatchClient(creds,
+                clientConfig);
+        DescribeInstancesResult instanceResult = ec2Client.describeInstances();
+        DescribeImagesResult imageResult = ec2Client.describeImages();
 
-			List<Volume> volumes = volumeResult.getVolumes();
-			HashMap<String, Volume> instanceVolMap = new HashMap<>();
-			for (Volume volume : volumes) {
-				List<VolumeAttachment> attaches = volume.getAttachments();
-				for (VolumeAttachment volumeAttachment : attaches) {
-					instanceVolMap
-							.put(volumeAttachment.getInstanceId(), volume);
-				}
-			}
-			ArrayList<CloudComputeInstanceData> rawDataList = new ArrayList<>();
-			int i = 0;
-			for (Instance currInstance : instanceList) {
-				i = i + 1;
-				logger.info("Collecting instance details for " + i + " of "
-						+ instanceList.size());
-				CloudComputeInstanceData object = getComputeInstanceDetails(
-						currInstance, instanceVolMap, cwClient,
-						config.getLastUpdateTime());
-				rawDataList.add(object);
-			} 
+        DescribeVolumesResult volumeResult = ec2Client.describeVolumes();
+        List<Instance> instanceList = new ArrayList<>();
+        List<Reservation> reservations = instanceResult.getReservations();
+        for (Reservation currRes : reservations) {
+            List<Instance> currInstanceList = currRes.getInstances();
+            instanceList.addAll(currInstanceList);
+        }
 
-			computeData = new CloudComputeData();
-			AWSCloudComptuteStatistics stat = new AWSCloudComptuteStatistics(rawDataList);
-			computeData.setAgeWarning(stat.getAgeWarningCount());
-			computeData.setAgeExpired(stat.getAgeExpireCount());
-			computeData.setAgeGood(stat.getAgeGoodCount());
-			computeData.setCpuHigh(stat.getCpuHighCount());
-			computeData.setCpuMid(stat.getCpuMidCount());
-			computeData.setCpuLow(stat.getCpuLowCount());
-			computeData.setNonEncryptedCount(stat.getUnEcryptedCount());
-			computeData.setNonTaggedCount(stat.getUnTaggedCount());
-			computeData.setStoppedCount(stat.getStoppedCount());
-			computeData.setTotalInstanceCount(stat.getTotalCount());
-			computeData.setDetailList(rawDataList);
-			computeData.setLastUpdated(System.currentTimeMillis());
-			computeData
-					.setEstimatedCharge(get24HourInstanceEstimatedCharge(cwClient));
+        List<Volume> volumes = volumeResult.getVolumes();
+        HashMap<String, Volume> instanceVolMap = new HashMap<>();
+        for (Volume volume : volumes) {
+            List<VolumeAttachment> attaches = volume.getAttachments();
+            for (VolumeAttachment volumeAttachment : attaches) {
+                instanceVolMap
+                        .put(volumeAttachment.getInstanceId(), volume);
+            }
+        }
+        ArrayList<CloudComputeInstanceData> rawDataList = new ArrayList<>();
+        int i = 0;
+        for (Instance currInstance : instanceList) {
+            i = i + 1;
+            LOGGER.info("Collecting instance details for " + i + " of "
+                    + instanceList.size());
+            CloudComputeInstanceData object = getComputeInstanceDetails(
+                    currInstance, instanceVolMap, cwClient,
+                    config.getLastUpdateTime());
+            rawDataList.add(object);
+        }
 
-		} catch (EncryptionException e) {
-			logger.fatal("Error Decrypting one or more required data fields", e);
-		}
+        computeData = new CloudComputeData();
+        AWSCloudComptuteStatistics stat = new AWSCloudComptuteStatistics(rawDataList);
+        computeData.setAgeWarning(stat.getAgeWarningCount());
+        computeData.setAgeExpired(stat.getAgeExpireCount());
+        computeData.setAgeGood(stat.getAgeGoodCount());
+        computeData.setCpuHigh(stat.getCpuHighCount());
+        computeData.setCpuMid(stat.getCpuMidCount());
+        computeData.setCpuLow(stat.getCpuLowCount());
+        computeData.setNonEncryptedCount(stat.getUnEcryptedCount());
+        computeData.setNonTaggedCount(stat.getUnTaggedCount());
+        computeData.setStoppedCount(stat.getStoppedCount());
+        computeData.setTotalInstanceCount(stat.getTotalCount());
+        computeData.setDetailList(rawDataList);
+        computeData.setLastUpdated(System.currentTimeMillis());
+        computeData
+                .setEstimatedCharge(get24HourInstanceEstimatedCharge(cwClient));
+
 		return computeData;
 	}
 
 	private CloudComputeInstanceData getComputeInstanceDetails(
 			Instance currInstance, HashMap<String, Volume> instanceVolMap,
 			AmazonCloudWatchClient cwClient, long lastUpdated) {
-		
+
 		CloudComputeInstanceData object = new CloudComputeInstanceData();
 		object.setTimestamp(new Date());
 		object.setAge(getInstanceAge(currInstance));
@@ -187,6 +195,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	/* Averages CPUUtil every minute for the last hour */
 	private static Double getInstanceCPUSinceLastRun(String instanceId,
 			AmazonCloudWatchClient ec2Client, long lastUpdated) {
+
 		long offsetInMilliseconds = Math.min(ONE_DAY_MILLI_SECOND,
 				System.currentTimeMillis() - lastUpdated);
 		Dimension instanceDimension = new Dimension().withName("InstanceId")
@@ -280,8 +289,12 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	/* Averages CPUUtil every minute for the last hour */
 	private static Double getLastHourInstanceDiskRead(String instanceId,
 			AmazonCloudWatchClient ec2Client, long lastUpdated) {
+
+
+
 		long offsetInMilliseconds = Math.min(ONE_DAY_MILLI_SECOND,
 				System.currentTimeMillis() - lastUpdated);
+
 		Dimension instanceDimension = new Dimension().withName("InstanceId")
 				.withValue(instanceId);
 		GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
@@ -312,7 +325,6 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 	/* Averages CPUUtil every minute for the last hour */
 	private static Double getLastInstanceHourDiskWrite(String instanceId,
 			AmazonCloudWatchClient ec2Client) {
-		long offsetInMilliseconds = 1000 * 60 * 60; // one hour in msec
 		Dimension instanceDimension = new Dimension().withName("InstanceId")
 				.withValue(instanceId);
 		GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
@@ -324,8 +336,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 				// to get metrics a specific
 				// instance
 				.withStatistics("Average")
-				.withStartTime(
-						new Date(new Date().getTime() - offsetInMilliseconds))
+				.withStartTime(DateTime.now().minusHours(1).toDate())
 				.withEndTime(new Date());
 		GetMetricStatisticsResult result = ec2Client
 				.getMetricStatistics(request);
@@ -344,6 +355,8 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 			AmazonCloudWatchClient ec2Client) {
 		Dimension instanceDimension = new Dimension().withName("Currency")
 				.withValue("USD");
+
+
 		GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
 				.withMetricName("EstimatedCharges")
 				.withNamespace("AWS/Billing")
@@ -354,8 +367,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 				// to get metrics a specific
 				// instance
 				.withStatistics("Average")
-				.withStartTime(
-						new Date(new Date().getTime() - ONE_DAY_MILLI_SECOND))
+				.withStartTime(DateTime.now().minusDays(1).toDate())
 				.withEndTime(new Date());
 		GetMetricStatisticsResult result = ec2Client
 				.getMetricStatistics(request);
@@ -395,28 +407,24 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
 	@Override
 	public CloudStorageData getCloudStorageData(AWSConfig config) {
-		String proxyPassword;
-		logger.info("Collecting AWS Cloud Storage Data...");
+		LOGGER.info("Collecting AWS Cloud Storage Data...");
 		try {
-			proxyPassword = Encryption.decryptString(
-					settings.getProxyPassword(), settings.getKey());
+            // proxy can be set using the standard properties or system env variables.
+            ProxySettings httpsProxy = ProxySettings.buildHTTPS();
+            ClientConfiguration clientConfig = new ClientConfiguration();
 
-			ClientConfiguration clientConfig = new ClientConfiguration()
-					.withProxyHost(settings.getProxyURL())
-					.withProxyPort(settings.getProxyPort())
-					.withPreemptiveBasicProxyAuth(true)
-					.withProxyUsername(settings.getProxyUser())
-					.withProxyPassword(proxyPassword);
+            if (httpsProxy.isProxySet()) {
+                clientConfig = clientConfig.withProxyHost(httpsProxy.host())
+                        .withProxyPort(Integer.valueOf(httpsProxy.port()))
+                        .withPreemptiveBasicProxyAuth(true)
+                        .withProxyUsername(httpsProxy.user())
+                        .withProxyPassword(httpsProxy.password());
+            }
 
-			String accessKey = Encryption.decryptString(config.getAccessKey(),
-					settings.getKey());
-			String secretKey = Encryption.decryptString(config.getSecretKey(),
-					settings.getKey());
 
-			AWSCredentials creds = new BasicAWSCredentials(accessKey, secretKey);
-
+            DefaultAWSCredentialsProviderChain creds = new DefaultAWSCredentialsProviderChain();
 			AmazonS3 s3Client = new AmazonS3Client(creds, clientConfig);
-			
+
 			List<Bucket> buckets = s3Client.listBuckets();
 			CloudStorageData storageData = new CloudStorageData();
 			ArrayList<CloudStorageBucket> bucketList = new ArrayList<>();
@@ -451,7 +459,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 					}
 
 				} catch (AmazonS3Exception s3e) {
-					logger.debug(s3e);
+					LOGGER.debug(s3e);
 				} finally {
 					buk.setObjects(objectList);
 				}
@@ -461,8 +469,8 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 			storageData.setBucketList(bucketList);
 
 
-		} catch (AmazonS3Exception | EncryptionException se) {
-			logger.error("Error collecting storage data for access key=" + config.getAccessKey(), se);
+		} catch (AmazonS3Exception se) {
+			LOGGER.error("Error collecting storage data", se);
 		}
 		return null;
 	}

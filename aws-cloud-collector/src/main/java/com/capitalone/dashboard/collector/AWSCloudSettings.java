@@ -28,12 +28,8 @@ import java.util.List;
 @ConfigurationProperties(prefix = "aws")
 public class AWSCloudSettings {
 	private String cron;
-	private String proxyURL;
-	private int proxyPort;
-	private String proxyUser;
-	private String proxyPassword;
-	private String key;
-	private List<String>  validTagKey;
+
+	private List<String> validTagKey;
 
 	public List<String> getValidTagKey() {
 		return validTagKey;
@@ -43,52 +39,12 @@ public class AWSCloudSettings {
 		this.validTagKey = validTagKey;
 	}
 
-	public int getProxyPort() {
-		return proxyPort;
-	}
-
-	public void setProxyPort(int proxyPort) {
-		this.proxyPort = proxyPort;
-	}
-
-	public String getProxyURL() {
-		return proxyURL;
-	}
-
-	public void setProxyURL(String proxyURL) {
-		this.proxyURL = proxyURL;
-	}
-
-	public String getProxyUser() {
-		return proxyUser;
-	}
-
-	public void setProxyUser(String proxyUser) {
-		this.proxyUser = proxyUser;
-	}
-
-	public String getProxyPassword() {
-		return proxyPassword;
-	}
-
-	public void setProxyPassword(String proxyPassword) {
-		this.proxyPassword = proxyPassword;
-	}
-
 	public String getCron() {
 		return cron;
 	}
 
 	public void setCron(String cron) {
 		this.cron = cron;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
 	}
 
 }

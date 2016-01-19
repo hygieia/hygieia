@@ -1,8 +1,6 @@
 package com.capitalone.dashboard.model;
 
 public class AWSConfig extends CollectorItem {
-    private static final String ACCESS_KEY = "accessKey";
-    private static final String SECRET_KEY = "secretKey";
     private static final String CLOUD_PROVIDER = "cloudProvider";
     private static final String LAST_UPDATE_TIME = "lastUpdate";
 
@@ -13,22 +11,6 @@ public class AWSConfig extends CollectorItem {
 
     public void setCloudProvider(String cloudProvider) {
         getOptions().put(CLOUD_PROVIDER, cloudProvider);
-    }
-
-    public void setAccessKey(String accessKey) {
-        getOptions().put(ACCESS_KEY, accessKey);
-    }
-
-    public String getAccessKey() {
-        return (String) getOptions().get(ACCESS_KEY);
-    }
-
-    public void setSecretKey(String secretKey) {
-        getOptions().put(SECRET_KEY, secretKey);
-    }
-
-    public String getSecretKey() {
-        return (String) getOptions().get(SECRET_KEY);
     }
 
     public long getLastUpdateTime() {
@@ -48,8 +30,7 @@ public class AWSConfig extends CollectorItem {
             return false;
 
         AWSConfig that = (AWSConfig) o;
-        return getAccessKey().equals(that.getAccessKey())
-                && getSecretKey().equals(that.getSecretKey()) && getCloudProvider().equals(that.getCloudProvider());
+        return getCloudProvider().equals(that.getCloudProvider());
     }
 
 }
