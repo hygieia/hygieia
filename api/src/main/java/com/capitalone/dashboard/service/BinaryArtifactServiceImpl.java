@@ -66,7 +66,7 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
             if (savedArt == null) return "";
             return savedArt.getId().toString();
         }
-        return existing.getId().toHexString();
+        return existing.getId().toString();
     }
 
 

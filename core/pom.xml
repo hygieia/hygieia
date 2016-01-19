@@ -142,5 +142,10 @@
       <version>1.50.0</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>javax.validation</groupId>
+          <artifactId>validation-api</artifactId>
+          <version>1.1.0.Beta3</version>
+      </dependency>
   </dependencies>
 </project>
