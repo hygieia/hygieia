@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,22 +55,22 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
         //find all team dashboards collector items that exist
         List<TeamDashboardCollectorItem> existingTeamDashboardCollectorItems = teamDashboardRepository.findTeamDashboards(collector.getId());
         Map<TeamDashboardCollectorItem, Dashboard> createdTeamDashboards = productClient.getTeamDashboards();
+        List<TeamDashboardCollectorItem> toUpdate = new ArrayList<>();
 
         //find all collector items that are new
         for ( Map.Entry entry : createdTeamDashboards.entrySet()) {
-            //if collectoritem for the dashboard in the repository exists
-            // as a collector item, remove it
-            if(existingTeamDashboardCollectorItems.contains(entry.getKey())) {
-                createdTeamDashboards.remove(entry.getKey());
-            }
-            else{
-                ((TeamDashboardCollectorItem)entry.getKey()).setCollectorId(collector.getId());
-                ((TeamDashboardCollectorItem)entry.getKey()).setDescription(((Dashboard)entry.getValue()).getTitle());
+            //if collectoritem for the dashboard in the repository doesnt exist
+            // as a collector item add it to the list of items to save
+            if(!existingTeamDashboardCollectorItems.contains(entry.getKey())) {
+                TeamDashboardCollectorItem collectorItem = ((TeamDashboardCollectorItem)entry.getKey());
+                collectorItem.setCollectorId(collector.getId());
+                collectorItem.setDescription(((Dashboard)entry.getValue()).getTitle());
+                toUpdate.add(collectorItem);
             }
         }
 
-        //the remaining entries in the map don't exist as collector items.  save them
-        teamDashboardRepository.save(createdTeamDashboards.keySet());
+        //then, save our list of new entries
+        teamDashboardRepository.save(toUpdate);
 
         //TODO: collect data
     }

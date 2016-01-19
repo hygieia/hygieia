@@ -13,4 +13,8 @@ public class TeamDashboardCollectorItem extends CollectorItem {
         this.dashboardId = dashboardId;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return ((TeamDashboardCollectorItem)obj).getDashboardId().equals(this.dashboardId);
+    }
 }
