@@ -27,6 +27,6 @@ public class TeamDashboardCollectorItem extends CollectorItem {
 
     @Override
     public int hashCode() {
-        return getDashboardId().hashCode() + getDateEnabled().hashCode();
+        return getDashboardId().hashCode();
     }
 }
