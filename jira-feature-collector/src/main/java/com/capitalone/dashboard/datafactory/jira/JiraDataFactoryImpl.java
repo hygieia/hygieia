@@ -11,11 +11,19 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.domain.BasicIssue;
+import com.atlassian.jira.rest.client.domain.SearchResult;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import com.atlassian.util.concurrent.Promise;
+import com.google.common.collect.Lists;
+
 import org.apache.commons.codec.binary.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -118,7 +126,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 			LOGGER.error("There was a problem reading the provide Jira base URI syntax");
 			jiraUri = null;
 		}
-		client = factory.createWithBasicHttpAuthentication(jiraUri,
+		this.client = factory.createWithBasicHttpAuthentication(jiraUri,
 				this.decodeCredentials(jiraCredentials).get("username"),
 				this.decodeCredentials(jiraCredentials).get("password"));
 
@@ -149,7 +157,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 		URI jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
 				this.decodeCredentials(jiraCredentials).get("username"),
 				this.decodeCredentials(jiraCredentials).get("password"));
-		client = factory.createWithBasicHttpAuthentication(jiraUri,
+		this.client = factory.createWithBasicHttpAuthentication(jiraUri,
 				this.decodeCredentials(jiraCredentials).get("username"),
 				this.decodeCredentials(jiraCredentials).get("password"));
 
@@ -178,10 +186,10 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 *            A given query's current page index, from 0-oo
 	 * @return A JSON-formatted response
 	 */
+	@Deprecated
 	public String buildPagingQuery(int pageIndex) {
 		this.setPageIndex(pageIndex);
-		String pageFilter = "&maxResults=" + this.pageSize + "&startAt=" + pageIndex;
-		this.setPagingQuery(this.getBasicQuery() + pageFilter);
+		this.setPagingQuery(this.getBasicQuery());
 		return this.getPagingQuery();
 	}
 
@@ -196,18 +204,26 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public JSONArray getPagingQueryResponse() {
 		JSONArray mainMsg = new JSONArray();
 		JSONObject innerObj = new JSONObject();
-		JSONObject response = (JSONObject) client.getSearchClient().searchJql(
-				this.getPagingQuery(), this.getPageSize(), this.getPageIndex());
-		// HttpRequestFactory rqFactory =
-		// jiraConnection.generateRequestFactory();
-		LOGGER.debug(this.pagingQuery);
-		// JSONObject response = jiraConnection.getResponse(rqFactory,
-		// this.getPagingQuery());
+		JSONArray response = new JSONArray();
+		Iterable<BasicIssue> jiraRawRs = null;
+		List<BasicIssue> issues = new LinkedList<BasicIssue>();
+		Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(this.getBasicQuery(),
+				this.getPageSize(), this.getPageIndex());
+		try {
+			jiraRawRs = promisedRs.claim().getIssues();
+			issues = Lists.newArrayList(jiraRawRs);
 
-		innerObj.put("issues", response.get("issues"));
+			if (!issues.isEmpty() || (issues != null)) {
+				response.addAll(issues);
+			}
+		} catch (Exception e) {
+			response = new JSONArray();
+			LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
+					+ e.getCause());
+		}
+
+		innerObj.put("issues", response);
 		mainMsg.add(innerObj.get("issues"));
-
-		mainMsg.add(response);
 		return mainMsg;
 	}
 
@@ -221,13 +237,24 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public JSONArray getQueryResponse() {
 		JSONArray mainMsg = new JSONArray();
 		JSONObject innerObj = new JSONObject();
-		// HttpRequestFactory rqFactory =
-		// jiraConnection.generateRequestFactory();
-		// JSONObject response = jiraConnection.getResponse(rqFactory,
-		// this.getBasicQuery());
-		JSONObject response = (JSONObject) client.getSearchClient().searchJql(this.getBasicQuery());
+		JSONArray response = new JSONArray();
+		Iterable<BasicIssue> jiraRawRs = null;
+		Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(this.getBasicQuery());
+		List<BasicIssue> issues = new LinkedList<BasicIssue>();
+		try {
+			jiraRawRs = promisedRs.claim().getIssues();
+			issues = Lists.newArrayList(jiraRawRs);
 
-		innerObj.put("issues", response.get("issues"));
+			if (!issues.isEmpty() || (issues != null)) {
+				response.addAll(issues);
+			}
+		} catch (Exception e) {
+			response = new JSONArray();
+			LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
+					+ e.getCause());
+		}
+
+		innerObj.put("issues", response);
 		mainMsg.add(innerObj.get("issues"));
 
 		return mainMsg;
@@ -244,12 +271,22 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	@SuppressWarnings("unchecked")
 	public JSONArray getArrayQueryResponse() {
 		JSONArray mainMsg = new JSONArray();
-		// HttpRequestFactory rqFactory =
-		// jiraConnection.generateRequestFactory();
-		LOGGER.debug(this.basicQuery);
-		// JSONArray response = jiraConnection.getResponseArray(rqFactory,
-		// this.getBasicQuery());
-		JSONArray response = (JSONArray) client.getSearchClient().searchJql(this.getBasicQuery());
+		JSONArray response = new JSONArray();
+		Iterable<BasicIssue> jiraRawRs = null;
+		Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(this.getBasicQuery());
+		List<BasicIssue> issues = new LinkedList<BasicIssue>();
+		try {
+			jiraRawRs = promisedRs.claim().getIssues();
+			issues = Lists.newArrayList(jiraRawRs);
+
+			if (!issues.isEmpty() || (issues != null)) {
+				response.addAll(issues);
+			}
+		} catch (Exception e) {
+			response = new JSONArray();
+			LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
+					+ e.getCause());
+		}
 
 		mainMsg.add(response);
 
@@ -266,11 +303,22 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	@SuppressWarnings("unchecked")
 	public JSONArray getEpicQueryResponse() {
 		JSONArray mainMsg = new JSONArray();
-		// HttpRequestFactory rqFactory =
-		// jiraConnection.generateRequestFactory();
-		// JSONObject response = jiraConnection.getResponse(rqFactory,
-		// this.getBasicQuery());
-		JSONObject response = (JSONObject) client.getSearchClient().searchJql(this.getBasicQuery());
+		JSONObject response = new JSONObject();
+		Iterable<BasicIssue> jiraRawRs = null;
+		Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(this.getBasicQuery());
+		Map<String, List<BasicIssue>> issues = new LinkedHashMap<String, List<BasicIssue>>();
+		try {
+			jiraRawRs = promisedRs.claim().getIssues();
+			issues.put("issues", Lists.newArrayList(jiraRawRs));
+
+			if (!issues.isEmpty() || (issues != null)) {
+				response.putAll(issues);
+			}
+		} catch (Exception e) {
+			response = new JSONObject();
+			LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
+					+ e.getCause());
+		}
 
 		mainMsg.add(response);
 
@@ -320,6 +368,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 * 
 	 * @return The paged REST query
 	 */
+	@Deprecated
 	public String getPagingQuery() {
 		return this.pagingQuery;
 	}
@@ -330,6 +379,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 * @param pagingQuery
 	 *            The paged REST query
 	 */
+	@Deprecated
 	private void setPagingQuery(String pagingQuery) {
 		this.pagingQuery = pagingQuery;
 	}

@@ -15,7 +15,7 @@
 		<junit.version>4.11</junit.version>
 		<final.name>jira-feature-collector</final.name>
 		<httpasyncclient.version>4.0-beta3-atlassian-1</httpasyncclient.version>
-    <httpclient.version>4.2.1-atlassian-2</httpclient.version>
+		<httpclient.version>4.2.1-atlassian-2</httpclient.version>
 	</properties>
 
 	<parent>
@@ -111,9 +111,13 @@
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>14.0</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>

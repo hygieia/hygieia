@@ -28,7 +28,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,7 +68,7 @@ public class JiraDataFactoryImplTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		jiraCredentials = "dW5pY286c3BhcmtsZXMK";
-		jiraBaseUri = "http://jira.com/";
+		jiraBaseUri = "http://fake.jira.com/";
 		jiraApiContext = "rest/api/2";
 		proxyUri = "http://proxy.com";
 		proxyPort = "8080";
@@ -80,9 +79,9 @@ public class JiraDataFactoryImplTest {
 		cal.add(Calendar.DATE, -3);
 		yesterday = dateFormat.format(cal.getTime());
 		StringBuilder canonicalYesterday = new StringBuilder(yesterday);
-		canonicalYesterday.replace(10, 11, "%20");
+		// canonicalYesterday.replace(10, 11, "%20");
 
-		query = "search?jql=updatedDate%3E=%22" + canonicalYesterday + "%22+order+by+updated";
+		query = "updatedDate >= '" + canonicalYesterday + "' ORDER BY updated";
 	}
 
 	/**
@@ -192,6 +191,7 @@ public class JiraDataFactoryImplTest {
 	@Test
 	public void testBuildPagingQuery_OverrideConstructorPageSize_OverriddenPageSize() {
 		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri, jiraApiContext);
+		jiraDataFactory.buildBasicQuery(query);
 		jiraDataFactory.buildPagingQuery(30);
 		assertNotNull("The basic query was created", jiraDataFactory.getPagingQuery());
 		assertEquals("The page size was accurate", 1, jiraDataFactory.getPageSize());
@@ -206,7 +206,8 @@ public class JiraDataFactoryImplTest {
 	@Test
 	public void testGetPagingQueryResponse() {
 		logger.debug("RUNNING TEST FOR PAGING QUERY RESPONSE");
-		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri, jiraApiContext);
+		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri, jiraApiContext,
+				proxyUri, proxyPort);
 		jiraDataFactory.buildBasicQuery(query);
 		jiraDataFactory.buildPagingQuery(0);
 		try {
@@ -256,11 +257,11 @@ public class JiraDataFactoryImplTest {
 	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#getQueryResponse(java.lang.String)}
 	 * .
 	 */
-	@Ignore
 	@Test
 	public void testGetQueryResponse() {
 		logger.debug("RUNNING TEST FOR BASIC QUERY RESPONSE");
-		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, jiraApiContext);
+		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, jiraApiContext,
+				proxyUri, proxyPort);
 		jiraDataFactory.buildBasicQuery(query);
 		try {
 			JSONArray rs = jiraDataFactory.getQueryResponse();
