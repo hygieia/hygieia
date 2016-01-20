@@ -3,6 +3,9 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Binary artifacts produced by build jobs and stored in an artifact repository.
  *
@@ -25,6 +28,8 @@ public class BinaryArtifact extends BaseModel {
     private String artifactVersion;
 
     private ObjectId artifactBuildId;
+
+    private List<SCM> sourceChangeSet = new ArrayList<>();
 
     public ObjectId getCollectorItemId() {
         return collectorItemId;
@@ -80,5 +85,9 @@ public class BinaryArtifact extends BaseModel {
 
     public void setCanonicalName(String canonicalName) {
         this.canonicalName = canonicalName;
+    }
+
+    public List<SCM> getSourceChangeSet() {
+        return sourceChangeSet;
     }
 }

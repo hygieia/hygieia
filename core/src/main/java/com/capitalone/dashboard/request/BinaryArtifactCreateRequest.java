@@ -1,6 +1,10 @@
 package com.capitalone.dashboard.request;
 
+import com.capitalone.dashboard.model.SCM;
+
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BinaryArtifactCreateRequest {
 
@@ -16,6 +20,8 @@ public class BinaryArtifactCreateRequest {
     private String buildId;
 
     private long timestamp;
+
+    private List<SCM> sourceChangeSet = new ArrayList<>();
 
     public String getArtifactName() {
         return artifactName;
@@ -63,5 +69,9 @@ public class BinaryArtifactCreateRequest {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public List<SCM> getSourceChangeSet() {
+        return sourceChangeSet;
     }
 }

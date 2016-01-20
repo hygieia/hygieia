@@ -60,6 +60,7 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
         ba.setArtifactBuildId(objId);
         ba.setArtifactVersion(request.getArtifactVersion());
         ba.setTimestamp(request.getTimestamp());
+        ba.getSourceChangeSet().addAll(request.getSourceChangeSet());
         BinaryArtifact existing = existing(ba, objId);
         if (existing == null) {
             BinaryArtifact savedArt = artifactRepository.save(ba);

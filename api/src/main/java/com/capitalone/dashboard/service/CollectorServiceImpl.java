@@ -64,7 +64,7 @@ public class CollectorServiceImpl implements CollectorService {
     @Override
     public Collector createCollector(Collector collector) {
         Collector existing = collectorRepository.findByName(collector.getName());
-        return existing == null ? collectorRepository.save(existing) : existing;
+        return existing == null ? collectorRepository.save(collector) : existing;
     }
 
     private Collector collectorById(ObjectId collectorId, List<Collector> collectors) {

@@ -149,6 +149,7 @@ public class TestResultServiceImpl implements TestResultService {
     private TestResult createTest(CollectorItem collectorItem, TestDataCreateRequest request) {
         TestResult testResult = new TestResult();
         testResult.setCollectorItemId(collectorItem.getId());
+        testResult.setType(request.getType());
         testResult.setDescription(request.getDescription());
         testResult.setDuration(request.getDuration());
         testResult.setEndTime(request.getEndTime());
