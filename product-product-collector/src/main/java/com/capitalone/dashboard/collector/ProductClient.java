@@ -1,14 +1,14 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.TeamDashboardCollectorItem;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Team
  */
 public interface ProductClient {
-    Map<TeamDashboardCollectorItem, Dashboard> getTeamDashboards();
+
+    List<Dashboard> getAllTeamDashboards();
 
 }

@@ -3,6 +3,15 @@ package com.capitalone.dashboard.model;
 public class TeamDashboardCollectorItem extends CollectorItem {
     private static final String DASHBOARD_ID = "dashboardId";
     private static final String DATE_ENABLED = "dateEnabled";
+    private static final String LAST_PROCESSED_DATE = "lastProcessedDate";
+
+    public Long getLastProcessedDate() {
+        return (Long) getOptions().get(LAST_PROCESSED_DATE);
+    }
+
+    public void setLastProcessedDate(Long lastProcessedTimestamp){
+        getOptions().put(LAST_PROCESSED_DATE, lastProcessedTimestamp);
+    }
 
     public String getDashboardId() {
         return (String) getOptions().get(DASHBOARD_ID);

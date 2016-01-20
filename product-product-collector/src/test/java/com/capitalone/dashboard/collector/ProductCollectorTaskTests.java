@@ -3,8 +3,7 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.ProductDashboardCollector;
 import com.capitalone.dashboard.model.TeamDashboardCollectorItem;
-import com.capitalone.dashboard.repository.ProductDashboardRepository;
-import com.capitalone.dashboard.repository.TeamDashboardRepository;
+import com.capitalone.dashboard.repository.*;
 import org.bson.types.ObjectId;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,6 +25,12 @@ public class ProductCollectorTaskTests {
     private ProductDashboardRepository productDashboardRepository;
     @Mock
     private TeamDashboardRepository teamDashboardRepository;
+    @Mock
+    private PipelineRepository pipelineRepository;
+    @Mock
+    private BuildRepository buildRepository;
+    @Mock
+    private CommitRepository commitRepository;
     @Mock
     private ProductClient productClient;
     @Mock

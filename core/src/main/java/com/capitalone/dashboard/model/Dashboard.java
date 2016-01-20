@@ -18,7 +18,6 @@ public class Dashboard extends BaseModel {
     private String owner;
     private DashboardType type;
 
-    //Only used for team dashboards
     private Application application;
 
     Dashboard() {

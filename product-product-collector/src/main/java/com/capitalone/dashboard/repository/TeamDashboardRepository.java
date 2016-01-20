@@ -11,4 +11,7 @@ public interface TeamDashboardRepository extends BaseCollectorItemRepository<Tea
     @Query(value="{ 'collectorId' : ?0}")
     List<TeamDashboardCollectorItem> findTeamDashboards(ObjectId collectorId);
 
+    @Query(value="{ 'collectorId' : ?0, enabled: true}")
+    List<TeamDashboardCollectorItem> findByEnabled(ObjectId collectorId);
+
 }
