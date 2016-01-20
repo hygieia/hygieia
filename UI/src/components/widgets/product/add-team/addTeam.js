@@ -3,18 +3,16 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('editTeamController', editTeamController);
+        .controller('addTeamController', addTeamController);
 
-    editTeamController.$inject = ['$scope', '$modalInstance', 'collectorData', 'editTeamConfig'];
-    function editTeamController($scope, $modalInstance, collectorData, editTeamConfig) {
+    addTeamController.$inject = ['$scope', '$modalInstance', 'collectorData'];
+    function addTeamController($scope, $modalInstance, collectorData) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // public properties
-        ctrl.submitted = false;
         ctrl.dashboards = [];
-        ctrl.modalTitle = editTeamConfig.team ? 'Edit team' : 'Add team';
-        ctrl.submitText = editTeamConfig.team ? 'Save this team' : 'Add this team';
+
         ctrl.dropdownConfig = {
             optionLabel: 'title',
             btnClass: 'btn-input',
@@ -58,11 +56,6 @@
 
         // init
         (function() {
-            if(editTeamConfig.team) {
-                ctrl.alternateName = editTeamConfig.team.alternateName;
-                ctrl.collectorItemId = editTeamConfig.team.collectorItemId;
-            }
-
             collectorData.itemsByType('product').then(function(result) {
 
                 // limit to team dashboards
@@ -90,8 +83,6 @@
         })();
 
         function submit(valid) {
-            ctrl.submitted = true;
-
             if(valid) {
                 // get the normal display name
                 var name = 'Unknown';
@@ -107,8 +98,7 @@
                     obj = {
                         collectorItemId: ctrl.collectorItemId,
                         name: name,
-                        alternateName: ctrl.alternateName,
-                        forCollectorItemId: ctrl.team ? ctrl.team.collectorId : false
+                        customName: ctrl.customName
                     };
                 }
 
