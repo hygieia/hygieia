@@ -95,11 +95,7 @@
             // create a copy so we don't modify the original
             widget = angular.copy(widget);
 
-            // in 2.0 component ids now need to be an array.
-            // catch any previous scenarios that exist where they may still be a string
-            if(!Array.isArray(widget.componentId)) {
-                widget.componentId = [widget.componentId];
-            }
+            console.log('New Widget Config', widget);
 
             var widgetId = widget.id;
 

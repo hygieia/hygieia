@@ -9,15 +9,17 @@
                         class="form-control"
                         ng-model="ctrl.dashboardType"
                         ng-options="item.text for item in ctrl.dashboardTypes track by item.id"
+                        ng-change="ctrl.setAvailableTemplates()"
                         required>
                     <option value="" disabled>Select a type</option>
                 </select>
             </div>
+
             <div class="form-group" ng-class="{'has-error': cdf.templateName.$invalid && ctrl.submitted}">
-                <select name="templateName"
+                <select name="selectedTemplate"
                         class="form-control"
-                        ng-model="ctrl.templateName"
-                        ng-options="item.name for item in tmpls = (ctrl.templates | filter:ctrl.templateFilter) track by item.value"
+                        ng-model="ctrl.selectedTemplate"
+                        ng-options="item.name for item in ctrl.availableTemplates track by item.value"
                         required>
                     <option value="" disabled>Select a template</option>
                 </select>
@@ -34,6 +36,7 @@
                         ng-model="ctrl.dashboardName"
                         required
                         maxlength="50"
+                        autocomplete="off"
                         minlength="6"/>
 
                 <p class="help-block" ng-if="cdf.dashboardName.$error.required">Template name is required</p>
@@ -51,6 +54,7 @@
                         placeholder="Application name"
                         ng-model="ctrl.applicationName"
                         maxlength="50"
+                        autocomplete="off"
                         required />
 
                 <p class="help-block" ng-if="cdf.applicationName.$error.required">Application name is required</p>

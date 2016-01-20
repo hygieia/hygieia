@@ -57,7 +57,7 @@
                             <ul class="list-animate list-group text-left">
                                 <li class="list-group-item" ng-repeat="myitem in mydashboards = (ctrl.mydash | filter:ctrl.filterDashboards | orderBy: 'name')">
                                     <span class="pull-right">
-                                       <a href ng-click="ctrl.deleteDashboard(myitem.id)">
+                                       <a href ng-click="ctrl.deleteDashboard(myitem)">
                                            <span class="fa fa-lg fa-trash text-danger"></span>
                                        </a>
                                     </span>
@@ -68,7 +68,6 @@
                                     </a>
                                 </li>
                             </ul>
-                            <p>{{ctrl.filter}}</p>
                         </div>
 
                         <div class="gap">

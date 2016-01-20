@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
-    function SiteController($scope, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
+    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
+    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
         var ctrl = this;
 
         // public variables
@@ -34,13 +34,8 @@
             ctrl.myadmin = true;
         }
 
-        // request dashboards
-        dashboardData.search().then(processDashboardResponse, processDashboardError);
-
-        //find dashboard I own
-        dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
-
         (function() {
+            // set up the different types of dashboards with a custom icon
             var types = dashboardData.types();
             _(types).forEach(function (item) {
                 if(item.id == DashboardType.PRODUCT) {
@@ -49,6 +44,12 @@
             });
 
             ctrl.dashboardTypes = types;
+
+            // request dashboards
+            dashboardData.search().then(processDashboardResponse, processDashboardError);
+
+            // request my dashboards
+            dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
         })();
 
         function setType(type) {
@@ -141,7 +142,12 @@
         }
 
 
-        function deleteDashboard(id) {
+        function deleteDashboard(item) {
+            if(!canBeDeleted(item)) {
+                return;
+            }
+
+            var id = item.id;
             dashboardData.delete(id).then(function () {
                 _.remove(ctrl.dashboards, {id: id});
                 _.remove(ctrl.mydash, {id: id});

@@ -14,10 +14,10 @@
         var ctrl = this;
 
         // public variables
-        ctrl.templateName = '';
         ctrl.dashboardName = '';
         ctrl.applicationName = '';
         ctrl.submitted = false;
+        ctrl.availableTemplates = [];
 
 
         // TODO: dynamically register templates with script
@@ -32,6 +32,7 @@
         ctrl.submit = submit;
         ctrl.isTeamDashboardSelected = isTeamDashboardSelected;
         ctrl.templateFilter = templateFilter;
+        ctrl.setAvailableTemplates = setAvailableTemplates;
 
 
         (function() {
@@ -47,11 +48,32 @@
 
             if(ctrl.dashboardTypes.length) {
                 ctrl.dashboardType = ctrl.dashboardTypes[0];
+                ctrl.setAvailableTemplates();
             }
         })();
 
         function templateFilter(item) {
             return !ctrl.dashboardType || item.type == ctrl.dashboardType.id;
+        }
+
+        function setAvailableTemplates()
+        {
+            var templates = [];
+            ctrl.selectedTemplate = null;
+
+            if(!!ctrl.dashboardType) {
+                _(ctrl.templates).forEach(function(tmpl) {
+                    if(tmpl.type === ctrl.dashboardType.id) {
+                        templates.push(tmpl);
+                    }
+                });
+            }
+
+            if(templates.length == 1) {
+                ctrl.selectedTemplate = templates[0];
+            }
+
+            ctrl.availableTemplates = templates;
         }
 
         // method implementations
@@ -63,7 +85,7 @@
             if (valid) {
                 var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
                     submitData = {
-                        template: document.cdf.templateName.value,
+                        template: document.cdf.selectedTemplate.value,
                         title: document.cdf.dashboardName.value,
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,

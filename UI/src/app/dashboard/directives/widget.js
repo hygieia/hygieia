@@ -164,6 +164,7 @@
                         delete $scope.widgetConfig.collectorItemId;
                     }
 
+                    console.log('New Widget Config', $scope.widgetConfig);
                     dashboardData
                         .upsertWidget($scope.dashboard.id, $scope.widgetConfig)
                         .then(function (response) {

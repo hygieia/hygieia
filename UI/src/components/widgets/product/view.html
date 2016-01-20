@@ -1,7 +1,7 @@
 <div id="product-dashboard">
 
     <div class="text-center">
-        Average Times are over a 90 Day period.
+        Averages and trends are calculated over a 90 Day period.
     </div>
 
     <div>
@@ -16,19 +16,23 @@
                     <th>INT</th>
                     <th>PERF</th>
                     <th>PROD</th>
-                    <th>Summary</th>
                 </tr>
             </thead>
             <tbody>
                 <tr class="team-row"
                     ng-repeat="item in ctrl.configuredTeams">
                     <td class="team-name-cell">
-                        {{item.alternateName || item.dashboardId}}
-
                         <span class="fa fa-cog" ng-click="ctrl.editTeam(item)"></span>
+
+                        <a class="team-name" ng-click="ctrl.openDashboard(item)">
+                            {{item.alternateName || item.name}}
+                        </a>
+
+
                     </td>
-                    <td></td>
-                    <td></td>
+                    <td class="team-data-cell">
+
+                    </td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -44,7 +48,6 @@
                         <span class="fa fa-plus fa-thin-border"></span>
                         <div>Add a team</div>
                     </td>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>

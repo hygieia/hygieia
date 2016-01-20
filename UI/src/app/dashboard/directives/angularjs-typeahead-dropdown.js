@@ -12,8 +12,8 @@ angular.module("typeaheadDropdown.tpl", [])
             a.put("templates/typeaheadDropdown.tpl.html",
                 "<div class='typeahead-dropdown'>" +
                 "    <div ng-if=options class=dropdown dropdown>" +
-                "        <div class=input-group>" +
-                "            <input class=form-control placeholder=\"{{config.placeholder || 'Select or type...'}}\" ng-model=mdl[config.optionLabel] typeahead=\"op[config.optionLabel] for op in options | filter:$viewValue\" typeahead-editable=false typeahead-on-select=\"onSelect($item, $model, $label)\" ng-required=\"required\" ng-disabled=\"disabled\"> " +
+                "        <div class=input-group><div ng-if='noResults'>No Results</div>" +
+                "            <input class=\"form-control typeahead-dropdown-input\" placeholder=\"{{config.placeholder}}\" ng-model=mdl typeahead=\"op[config.optionLabel] for op in options | filter:$viewValue | orderBy:config.optionLabel\" typeahead-no-results=\"noResults\" typeahead-editable=false typeahead-on-select=\"onSelect($item, $model, $label)\" ng-required=\"required\" ng-disabled=\"disabled\" ng-blur=\"onBlur($viewValue)\"> " +
                 "            <span class=input-group-btn>" +
                 "                <button class=\"btn {{config.btnClass}} dropdown-toggle\" dropdown-toggle ng-disabled=\"disabled\">" +
                 "                    <span class=caret></span>" +
@@ -34,7 +34,7 @@ angular.module("typeaheadDropdown.tpl", [])
         .directive("typeaheadDropdown", function() {
             return {
                 templateUrl: "templates/typeaheadDropdown.tpl.html",
-                scope: { mdl: "=ngModel", options: "=",  config: "=?", events: "=", required: "=?ngRequired", disabled: "=?ngDisabled" },
+                scope: { mdl: "=ngModel", options: "=",  config: "=?", events: "=", required: "=?ngRequired", disabled: "=?ngDisabled"},
                 require: "ngModel",
                 replace: true,
                 link: function($scope, $element, $attrs) {
@@ -42,9 +42,9 @@ angular.module("typeaheadDropdown.tpl", [])
                         onItemSelect: angular.noop
                     };
                     var defaults = {
-                        modelLabel: 'id',
                         optionLabel: 'label',
-                        btnClass: 'btn-default'
+                        btnClass: 'btn-default',
+                        placeholder: 'Select or type...'
                     };
                     angular.extend(defaults, $scope.config);
                     $scope.config = defaults;
@@ -53,10 +53,18 @@ angular.module("typeaheadDropdown.tpl", [])
 
                 controller: ["$scope",
                     function (a) {
+                        a.noResults = false;
+
                         a.onSelect = function (i) {
                             a.mdl = i;
                             if (a.events !== undefined) {
                                 a.events.onItemSelect(i);
+                            }
+                        };
+
+                        a.onBlur = function (val) {
+                            for(var x=0;x<a.options.length;x++) {
+
                             }
                         }
                     }

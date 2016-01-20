@@ -13,6 +13,8 @@
         var ctrl = this;
         var builds = [];
 
+        console.log($scope.widgetConfig);
+
         //region Chart Configuration
         // line chart config
         ctrl.lineData = {
