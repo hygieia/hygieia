@@ -24,13 +24,82 @@
                     <td class="team-name-cell">
                         <span class="fa fa-cog" ng-click="ctrl.editTeam(item)"></span>
 
-                        <a class="team-name" ng-click="ctrl.openDashboard(item)">
-                            {{item.alternateName || item.name}}
+                        <a title="{{item.customName || item.name}}" class="team-name" ng-click="ctrl.openDashboard(item)">
+                            {{item.customName || item.name}}
                         </a>
 
+                        <div class="team-quality">
+                            <div class="team-quality-desc">
+                                90-day Quality Metrics
+                            </div>
 
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <span class="quality-cell-wrapper">
+                                        <div class="quality-num">
+                                            <span class="fa fa-long-arrow-up text-success"></span>
+                                            80%
+                                        </div>
+                                        <div class="quality-text">
+                                            Func tests passed
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="col-xs-4 text-center">
+                                    <span class="quality-cell-wrapper">
+                                        <div class="quality-num">
+                                            <span class="fa fa-long-arrow-down text-danger"></span>
+                                            92%
+                                        </div>
+                                        <div class="quality-text">
+                                            Build success rate
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="col-xs-4 text-right">
+                                    <span class="quality-cell-wrapper">
+                                        <div class="quality-num">
+                                            <span class="fa fa-long-arrow-up text-success"></span>
+                                            0:43
+                                        </div>
+                                        <div class="quality-text">
+                                            Avg time to fix
+                                        </div>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </td>
                     <td class="team-data-cell">
+                        <div class="team-data-cell-header">
+                            <div class="clearfix">
+                                <span>00</span>
+                                <span class="team-time-colon">:</span>
+                                <span>00</span>
+                                <span class="team-time-colon">:</span>
+                                <span class="team-time-lg">04</span>
+                            </div>
+                            <div class="clearfix team-time-average">
+                                <span class="pull-left">Average</span>
+                                <span class="pull-right">
+                                    <span>+/-</span>
+                                    <span class="team-time-average-num">1</span>
+                                    <span>MIN</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="team-data-cell-body">
+                            <div class="team-data-cell-last-updated">
+                                Updated: <span class="team-last-updated-num">6m ago</span>
+                            </div>
+
+                            <commit-blocks commit-fail="1200" commit-pass="37"></commit-blocks>
+                        </div>
+
+                        <div class="team-data-cell-last-build">
+                            Latest build #: <span class="team-data-cell-last-build-num">73</span>
+                        </div>
 
                     </td>
                     <td></td>
@@ -38,12 +107,26 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
+                    <td class="team-prod-cell">
+                        <div class="clearfix team-prod-average-header">
+                            <span class="pull-left team-prod-arrow fa fa-long-arrow-down text-danger"></span>
+                            <span class="pull-left product-text-active">10</span>
+                            <span class="pull-left team-prod-average-days">DAY</span>
+                        </div>
+                        <div class="team-prod-average-desc">
+                            average from commit to production
+                        </div>
+
+                        <div class="team-prod-last-90">
+                            <span class="team-prod-last-90-num">90</span>
+                            commits in the last <span class="widget-font-bold">3 days
+                        </div>
+                    </td>
                 </tr>
                 <tr
                     class="new-team-row"
                     ng-class="{'no-teams': !ctrl.configuredTeams.length}"
-                    ng-click="ctrl.editTeam()">
+                    ng-click="ctrl.addTeam()">
                     <td>
                         <span class="fa fa-plus fa-thin-border"></span>
                         <div>Add a team</div>

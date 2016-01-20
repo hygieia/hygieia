@@ -1,0 +1,56 @@
+@import (reference) 'variables';
+@import (reference) 'mixins';
+
+.town-city {
+    margin: 5px 0;
+    min-width: 120px;
+
+    .village,
+    .town,
+    .city,
+    .state {
+        float: left;
+        display: inline-block;
+        margin-right: 2px;
+        margin-bottom: 2px;
+    }
+
+    .commit-fail {
+        background-color: @state-danger-text;
+
+        @line: rgba(122, 122, 122, .15);
+        background: repeating-linear-gradient(
+            135deg,
+            @line,
+            @line 2px,
+            @state-danger-text 2px,
+            @state-danger-text 4px
+        );
+    }
+
+    .commit-pass {
+        background-color: @state-success-text;
+    }
+
+    .village {
+        width: 10px;
+        height: 10px;
+    }
+
+    .town {
+        width: 22px;
+        height: 10px;
+    }
+
+    .city {
+        width: 22px;
+        height: 22px;
+        border-radius: 4px;
+    }
+
+    .state {
+        width: 22px;
+        height: 46px;
+        border-radius: 4px;
+    }
+}

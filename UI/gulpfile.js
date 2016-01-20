@@ -186,6 +186,7 @@ gulp.task('themes', function() {
         .pipe(gulp.dest('src/app/css'));
 
     return gulp.src(themeFiles)
+        .on('error', function() {})
         .pipe(less({
             paths: [
                 hygieia.src + 'components'
