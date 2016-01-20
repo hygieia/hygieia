@@ -1,11 +1,20 @@
 <widget-modal widget-modal-title="{{ctrl.modalTitle}}" class="add-team-modal" id="add-team">
     <form name="addTeamForm" ng-submit="ctrl.submit(addTeamForm.$valid)" novalidate="novalidate">
+        <!--<div class="form-group">-->
+            <!--{{ctrl.collectorItem}}-->
+            <!--<typeahead-dropdown-->
+                <!--ng-model="ctrl.collectorItem"-->
+                <!--config="ctrl.dropdownConfig"-->
+                <!--options="ctrl.dropdownOptions"></typeahead-dropdown>-->
+        <!--</div>-->
+
         <div class="form-group has-feedback typeahead-dropdown">
             <input placeholder="Select a team dashboard"
                    type="text"
-                   name="dashboard"
+                   name="collectorItemId"
                    class="form-control"
-                   ng-model="ctrl.dashboard"
+                   autocomplete="off"
+                   ng-model="ctrl.collectorItemId"
                    typeahead-focus
                    select-on-click
                    typeahead="item.id as item.title for item in items = (ctrl.dashboards | filter:ctrl.filterDashboards($viewValue)) | orderBy: 'title'"
@@ -16,7 +25,12 @@
             <span class="fa fa-sort-down form-control-feedback" aria-hidden="true"></span>
         </div>
         <div class="form-group">
-            <input class="form-control" type="text" name="teamName" ng-model="ctrl.alternateName" placeholder="Custom team name"/>
+            <input class="form-control"
+                   type="text"
+                   name="teamName"
+                   ng-model="ctrl.alternateName"
+                   placeholder="Custom team name (optional)"
+                   autocomplete="off" />
         </div>
         <div class="button-row text-center">
             <button type="submit" class="btn btn-primary btn-wide">{{ctrl.submitText}}</button>

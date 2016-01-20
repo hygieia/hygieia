@@ -17,6 +17,7 @@
         login.id = '';
         login.passwd = '';
         login.apiup = false;
+        login.invalidUsernamePassword = false;
 
 
         //public methods
@@ -52,6 +53,8 @@
             console.log("Authentication is:" + data);
 
             if (data) {
+                login.invalidUsernamePassword = false;
+
                 $cookies.authenticated = true;
                 $cookies.username = document.lg.login.value;
 
@@ -59,8 +62,7 @@
 
             }
             else {
-                $scope.alerts.splice(0, $scope.alerts.length);
-                $scope.alerts.push({type: 'danger', msg: 'Incorrect Username and Password please check'});
+                login.invalidUsernamePassword = true;
             }
         }
 

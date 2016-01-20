@@ -15,7 +15,7 @@
                   role="form"
                   novalidate>
 
-                <div class="form-group" ng-class="{'has-error': lg.$submitted && lg.login.$invalid}">
+                <div class="form-group" ng-class="{'has-error': (lg.$submitted && lg.login.$invalid) || login.invalidUsernamePassword}">
                     <input
                         type="text"
                         name="login"
@@ -23,10 +23,12 @@
                         ng-model="login.id"
                         required
                         minlength="4"
+                        autocomplete="off"
                         placeholder="Enter your email"/>
 
                     <p class="help-block" ng-if="lg.login.$error.required">Email is required</p>
                     <p class="help-block" ng-if="lg.login.$error.email">Invalid email address</p>
+                    <p class="help-block" ng-if="login.invalidUsernamePassword">Incorrect Username and password</p>
 
                 </div>
 

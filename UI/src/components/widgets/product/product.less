@@ -2,9 +2,11 @@
 @import (reference) '../../../app/css/mixins.less';
 
 
+
 #product-dashboard {
     margin-top: -2.5em;
 
+    @team-cell-padding: 10px;
     .product-table {
         width: 100%;
         margin-top: 30px;
@@ -14,77 +16,12 @@
                 &:nth-child(odd) {
                     background-color: @dash-widget-section-highlight;
                 }
-
-                &.new-team-row {
-                    opacity: .3;
-                    cursor: pointer;
-                    background: transparent;
-
-                    .transition(~"opacity .2s linear, background .2s linear");
-
-                    &.no-teams, &:hover {
-                        background-color: @dash-widget-section-highlight;
-                        outline: 2px dashed;
-                        opacity: 1;
-                    }
-
-                    &:hover:nth-child(even) {
-                        background-color: transparent;
-                    }
-
-                    &.no-teams {
-                        td {
-                            font-size: 1.5em;
-                        }
-                    }
-
-                    td {
-                        padding-top: 30px;
-                        padding-bottom: 30px;
-                        .text-standard-lg;
-
-                        div {
-                            margin-top: .5em;
-                            font-weight: bold;
-                            white-space: nowrap;
-                        }
-
-                        .fa {
-                            font-size: 1.2em;
-                            border: 2px solid @dash-state-config-text;
-                            width: 1.5em;
-                            height: 1.5em;
-
-                            .border-radius(50%);
-
-                            .transition(border-color 300ms linear);
-
-                            &:before {
-                                position: relative;
-                                top: .2em;
-                            }
-                        }
-                    }
-                }
             }
-        }
 
-        .team-name-cell {
-            position: relative;
-
-            .fa-cog {
-                position: absolute;
-                font-size: .8em;
-                cursor: pointer;
-                top: .5em;
-                right: .5em;
-                opacity: .3;
-
-                .transition(opacity .2s linear);
-
-                &:hover {
-                    opacity: .8;
-                }
+            td {
+                height: 180px;
+                text-align: left;
+                vertical-align: top;
             }
         }
 
@@ -92,20 +29,147 @@
             border-left: 1px solid @dash-divider;
             text-align: center;
             font-weight: normal;
-            padding: 10px;
+            padding: 0;
             width: 10%;
+            min-width: 150px;
 
             &:first-of-type {
                 border-left: 0;
-                width: 20%;
             }
         }
 
-        td {
-            height: 100px;
+        .product-text {
+            color: @dash-dashboard-text-light;
         }
 
+        .product-text-active {
+            color: @dash-dashboard-text;
+        }
 
+        .new-team-row {
+            opacity: .3;
+            cursor: pointer;
+            background: transparent;
+
+            .transition(~"opacity .2s linear, background .2s linear");
+
+            &.no-teams, &:hover {
+                background-color: @dash-widget-section-highlight;
+                outline: 2px dashed;
+                opacity: 1;
+            }
+
+            &:hover:nth-child(even) {
+                background-color: transparent;
+            }
+
+            &.no-teams {
+                td {
+                    font-size: 1.5em;
+                }
+            }
+
+            td {
+                padding-top: 30px;
+                padding-bottom: 30px;
+                text-align: center;
+                vertical-align: middle;
+                font-size: 1.7em;
+
+                div {
+                    margin-top: .5em;
+                    white-space: nowrap;
+                }
+
+                .fa {
+                    font-size: 1.4em;
+                    border: 2px solid @dash-state-config-text;
+                    width: 1.5em;
+                    height: 1.5em;
+
+                    .border-radius(50%);
+
+                    .transition(border-color 300ms linear);
+
+                    &:before {
+                        position: relative;
+                        top: .2em;
+                    }
+                }
+            }
+        }
+
+        .team-name-cell {
+            position: relative;
+            width: 20%;
+            min-width: 300px;
+            padding: 10px;
+
+            @team-line-height: 1.5em;
+            .team-name {
+                color: @dash-dashboard-text-hover;
+                float: left;
+                font-size: 1.5em;
+                font-weight: bold;
+                line-height: @team-line-height;
+            }
+
+            .fa-cog {
+                color: @dash-dashboard-text-light;
+                float: right;
+                font-size: 1.5em;
+                line-height: @team-line-height;
+                cursor: pointer;
+
+                .transition(color .2s linear);
+
+                &:hover {
+                    color: @dash-dashboard-text-hover;
+                }
+            }
+
+            .team-quality {
+                position: absolute;
+                bottom: @team-cell-padding;
+                left: @team-cell-padding;
+                right: @team-cell-padding;
+                text-align: left;
+
+                .team-quality-desc {
+                    color: @dash-dashboard-text-light;
+                }
+
+                .quality-cell-wrapper {
+                    display: inline-block;
+                    text-align: left;
+                }
+
+                .quality-num {
+                    .text-2x;
+                    color: @dash-dashboard-text-hover;
+                }
+
+                .quality-text {
+                    .text(1, 1);
+                    white-space: nowrap;
+                }
+
+                .quality-good {
+                    color: @dash-status-pass;
+                }
+
+                .quality-bad {
+                    color: @dash-status-fail;
+                }
+            }
+        }
+
+        .team-data-cell {
+            .team-time {
+                padding: @team-cell-padding/2;
+                border-bottom: 1px solid @dash-dashboard-text;
+            }
+        }
     }
 }
 
@@ -114,9 +178,15 @@
         margin-top: -.15em;
     }
 
-    .typeahead-dropdown .dropdown-menu {
-        width: 100%;
-        max-height: 10.2em;
-        overflow-y: scroll;
+    .typeahead-dropdown {
+        .dropdown-menu {
+            width: 100%;
+            max-height: 10.2em;
+            overflow-y: scroll;
+        }
+
+        button {
+            border-left: none;
+        }
     }
 }

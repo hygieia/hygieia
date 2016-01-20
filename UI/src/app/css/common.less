@@ -158,7 +158,12 @@ body {
 }
 
 .btn-input {
-    .button-variant(@input-color; @input-bg; @input-border);
+    //.button-variant(@input-color; @input-bg; @input-border);
+    color: @input-color !important;
+    background-color: @input-bg !important;
+    border-color: @input-border !important;
+
+    .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
 }
 
 .gap, .button-row {
@@ -282,12 +287,12 @@ body {
 // WIDGET
 // ========================================
 .widget {
+    padding: 2.5rem 3rem;
+    .border-radius(@dash-widget-border-radius);
+
     .widget {
         margin-bottom: 2rem;
     }
-
-    padding: 2.5rem 3rem;
-    .border-radius(@dash-widget-border-radius);
 
     // heading in a widget
     .widget-heading {

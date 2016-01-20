@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('editTeamController', editTeamController);
 
-    editTeamController.$inject = ['$scope', '$modalInstance', 'dashboardData', 'editTeamConfig'];
-    function editTeamController($scope, $modalInstance, dashboardData, editTeamConfig) {
+    editTeamController.$inject = ['$scope', '$modalInstance', 'collectorData', 'editTeamConfig'];
+    function editTeamController($scope, $modalInstance, collectorData, editTeamConfig) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -15,10 +15,11 @@
         ctrl.dashboards = [];
         ctrl.modalTitle = editTeamConfig.team ? 'Edit team' : 'Add team';
         ctrl.submitText = editTeamConfig.team ? 'Save this team' : 'Add this team';
-
-        if(editTeamConfig.team && editTeamConfig.team.alternateName) {
-            ctrl.alternateName = editTeamConfig.team.alternateName;
-        }
+        ctrl.dropdownConfig = {
+            optionLabel: 'title',
+            btnClass: 'btn-input',
+            placeholder: 'Select a team dashboard'
+        };
 
         // only match dashboards with
         ctrl.filterDashboards = function(val) {
@@ -31,12 +32,12 @@
         };
 
         // if we didn't select a value that matches an item in the list, clear the field.
-        // since the id will actually be stored in ctrl.dashboard when it matches
+        // since the id will actually be stored in ctrl.collectorItemId when it matches
         // an item even though the title is displayed this lets us compare the two. When
         // they match it means the dashboard id wasn't in the list
         ctrl.onBlur = function(event) {
-            var field = document.addTeamForm.dashboard;
-            if(!!field.value && field.value == ctrl.dashboard) {
+            var field = document.addTeamForm.collectorItemId;
+            if(!!field.value && field.value == ctrl.collectorItemId) {
                 field.value = '';
             }
         };
@@ -54,37 +55,64 @@
         ctrl.submit = submit;
 
 
-        // methods
-        // get all dashboards
-        dashboardData.search().then(function(result) {
-            // limit to team dashboards
-            var boards = [];
-            _(result)
-                .filter(function(i) {
-                    return i.type != 2;
-                })
-                .forEach(function(item) {
-                    boards.push({
-                        id: item.id,
-                        title: item.title
-                    })
+
+        // init
+        (function() {
+            if(editTeamConfig.team) {
+                ctrl.alternateName = editTeamConfig.team.alternateName;
+                ctrl.collectorItemId = editTeamConfig.team.collectorItemId;
+            }
+
+            collectorData.itemsByType('product').then(function(result) {
+
+                // limit to team dashboards
+                var boards = [];
+
+                _(result).forEach(function(item) {
+                    if(item.description) {
+                        boards.push({
+                            id: item.id,
+                            title: item.description,
+                            dashboardId: item.options.dashboardId
+                        });
+
+                        // if we are editing a team, try to match text
+                        // up with the passed collectorItemId
+                        if(ctrl.collectorItemId && ctrl.collectorItemId == item.id) {
+                            document.addTeamForm.collectorItemId.value = item.description;
+                        }
+                    }
                 });
 
-            ctrl.dashboards = boards;
-
-            //if(editTeamConfig.team) {
-            //    ctrl.dashboard = editTeamConfig.team;
-            //}
-        });
+                ctrl.dropdownOptions = boards;
+                ctrl.dashboards = boards;
+            });
+        })();
 
         function submit(valid) {
             ctrl.submitted = true;
 
             if(valid) {
-                $modalInstance.close( !!ctrl.dashboard ? {
-                    dashboardId: ctrl.dashboard,
-                    name: ctrl.alternateName
-                } : false);
+                // get the normal display name
+                var name = 'Unknown';
+                _(ctrl.dashboards).forEach(function(item) {
+                    if(ctrl.collectorItemId == item.id) {
+                        name = item.title;
+                    }
+                });
+
+                var obj = false;
+
+                if (!!ctrl.collectorItemId) {
+                    obj = {
+                        collectorItemId: ctrl.collectorItemId,
+                        name: name,
+                        alternateName: ctrl.alternateName,
+                        forCollectorItemId: ctrl.team ? ctrl.team.collectorId : false
+                    };
+                }
+
+                $modalInstance.close(obj);
             }
         }
     }
