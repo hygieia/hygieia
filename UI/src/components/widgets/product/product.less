@@ -1,7 +1,6 @@
 @import (reference) '../../../app/css/variables.less';
 @import (reference) '../../../app/css/mixins.less';
-
-
+@import (reference) '../../../../bower_components/bootstrap/less/mixins/buttons';
 
 #product-dashboard {
     margin-top: -2.5em;
@@ -11,6 +10,14 @@
         width: 100%;
         margin-top: 30px;
 
+        .product-text-active {
+            color: @dash-dashboard-text-hover;
+        }
+
+        thead th {
+            .text(1.4, 2.4);
+        }
+
         tbody {
             tr {
                 &:nth-child(odd) {
@@ -19,6 +26,7 @@
             }
 
             td {
+                color: @dash-dashboard-text-light;
                 height: 180px;
                 text-align: left;
                 vertical-align: top;
@@ -30,7 +38,7 @@
             text-align: center;
             font-weight: normal;
             padding: 0;
-            width: 10%;
+            width: 12%;
             min-width: 150px;
 
             &:first-of-type {
@@ -38,24 +46,17 @@
             }
         }
 
-        .product-text {
-            color: @dash-dashboard-text-light;
-        }
-
-        .product-text-active {
-            color: @dash-dashboard-text;
-        }
-
         .new-team-row {
             opacity: .3;
             cursor: pointer;
             background: transparent;
+            outline: 3px dashed;
 
             .transition(~"opacity .2s linear, background .2s linear");
 
             &.no-teams, &:hover {
                 background-color: @dash-widget-section-highlight;
-                outline: 2px dashed;
+
                 opacity: 1;
             }
 
@@ -101,25 +102,34 @@
 
         .team-name-cell {
             position: relative;
-            width: 20%;
-            min-width: 300px;
+            width: 16%;
+            min-width: 260px;
             padding: 10px;
 
             @team-line-height: 1.5em;
             .team-name {
                 color: @dash-dashboard-text-hover;
-                float: left;
-                font-size: 1.5em;
                 font-weight: bold;
                 line-height: @team-line-height;
+                .text(3, 3);
+
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3;  /* number of lines to show */
+                line-height: 1em;       /* fallback */
+                max-height: 3em;        /* fallback */
             }
 
             .fa-cog {
                 color: @dash-dashboard-text-light;
-                float: right;
                 font-size: 1.5em;
                 line-height: @team-line-height;
                 cursor: pointer;
+
+                position: absolute;
+                top: @team-cell-padding;
+                right: @team-cell-padding;
 
                 .transition(color .2s linear);
 
@@ -151,23 +161,106 @@
 
                 .quality-text {
                     .text(1, 1);
+                    color: @dash-dashboard-text-hover;
                     white-space: nowrap;
-                }
-
-                .quality-good {
-                    color: @dash-status-pass;
-                }
-
-                .quality-bad {
-                    color: @dash-status-fail;
                 }
             }
         }
 
         .team-data-cell {
-            .team-time {
+            position: relative;
+
+            .team-data-cell-header {
                 padding: @team-cell-padding/2;
                 border-bottom: 1px solid @dash-dashboard-text;
+                .text(1.5, 1.5);
+
+                .team-time-colon {
+                    margin: 0 -.25em;
+                }
+
+                .team-time-lg {
+                    .text(2.5, 2.5);
+                    color: @dash-dashboard-text-hover;
+                    font-weight: bold;
+                }
+
+                .team-time-average {
+                    .text(1.1, 1.4);
+                    margin-top: 3px;
+                }
+
+                .team-time-average-num {
+                    .text(1.4, 1.4);
+                    color: @dash-dashboard-text-hover;
+                    font-weight: bold;
+                }
+            }
+
+            .team-data-cell-body {
+                padding: 10px 15px;
+
+                .team-data-cell-last-updated {
+                    text-align: center;
+                    .text(1.1, 1.1);
+
+                    .team-data-cell-last-updated-num {
+                        .text(1.4, 1.4);
+                        color: @dash-dashboard-text-hover;
+                    }
+                }
+            }
+
+            .team-data-cell-last-build {
+                position: absolute;
+                bottom: @team-cell-padding;
+                left: @team-cell-padding;
+                right: @team-cell-padding;
+                text-align: center;
+
+                .text(1.2, 2);
+                
+                .team-data-cell-last-build-num {
+                    .text(1.5, 2);
+                    color: @dash-dashboard-text-hover;
+                }
+            }
+        }
+
+        .team-prod-cell {
+            @prod-cell-num-size: 3;
+            @prod-cell-padding: 10px;
+
+            padding: @prod-cell-padding;
+            position: relative;
+
+            .team-prod-average-header {
+                .text(@prod-cell-num-size, @prod-cell-num-size);
+            }
+
+            .team-prod-arrow {
+                margin: 0;
+                font-size: .8em;
+                position: relative;
+                bottom: -.2em;
+            }
+
+            .team-prod-average-days {
+                font-size: .5em;
+                bottom: -.4em;
+                position: relative;
+            }
+
+            .team-prod-last-90 {
+                position: absolute;
+                bottom: @prod-cell-padding;
+                left: @prod-cell-padding;
+                right: @prod-cell-padding;
+
+                .team-prod-last-90-num {
+                    font-size: @prod-cell-num-size;
+
+                }
             }
         }
     }
@@ -187,6 +280,23 @@
 
         button {
             border-left: none;
+        }
+    }
+}
+
+#edit-team {
+    .team-delete {
+        .text(1, 1);
+        color: @state-danger-text;
+        position: relative;
+        top: -25px;
+        cursor: pointer;
+        opacity: .8;
+
+        .transition(opacity .2s linear);
+
+        .fa {
+            color: @state-danger-text;
         }
     }
 }

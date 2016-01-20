@@ -43,10 +43,10 @@
                            required
                            minLength=6
                            name="password"
-                           placeholder="Enter your Password"/>
+                           placeholder="Enter your password"/>
 
                     <p class="help-block" ng-show="suf.password.$error.minlength">
-                        Password should be min length of 6 container
+                        Password should be min length of 6 characters
                     </p>
                 </div>
 
@@ -58,10 +58,10 @@
                            minLength=6
                            match="signup.password"
                            name="confirm"
-                           placeholder="Enter your Password Again"/>
+                           placeholder="Confirm password"/>
 
                     <p class="help-block" ng-show="suf.confirm.$error.minlength">
-                        Password should be min length of 6 container
+                        Password should be min length of 6 characters
                     </p>
                     <p class="help-block" ng-show="suf.confirm.$error.match">
                         Passwords do not match!

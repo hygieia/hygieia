@@ -143,10 +143,6 @@
 
 
         function deleteDashboard(item) {
-            if(!canBeDeleted(item)) {
-                return;
-            }
-
             var id = item.id;
             dashboardData.delete(id).then(function () {
                 _.remove(ctrl.dashboards, {id: id});

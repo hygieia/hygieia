@@ -50,6 +50,7 @@
         // public methods
         ctrl.load = load;
         ctrl.editTeam = editTeam;
+        ctrl.addTeam = addTeam;
         ctrl.openDashboard = openDashboard;
 
         function openDashboard(item) {
@@ -75,7 +76,7 @@
         function editTeam(team) {
 
             $modal.open({
-                templateUrl: 'components/widgets/product/edit-team.html',
+                templateUrl: 'components/widgets/product/edit-team/edit-team.html',
                 controller: 'editTeamController',
                 controllerAs: 'ctrl',
                 resolve: {
@@ -90,59 +91,76 @@
                     return;
                 }
 
-                // prepare our response for the widget upsert
-                var collectorItemIds = [],
-                    component = $scope.dashboard.application.components[0],
-                    forCollectorItemId = config.forCollectorItemId;
+                var options = $scope.widgetConfig.options;
 
-                // add to our existing collector ids if they exist
-                if(component.collectorItems && component.collectorItems.Product)
-                {
-                    for(var item in component.collectorItems.Product) {
-                        // make sure item exists and isn't the collector we are editing
-                        if(item.collectorId && (!forCollectorItemId || forCollectorItemId != item.collectorId))
-                        {
-                            collectorItemIds.push(item.collectorId);
+                // take the collector item out of the team array
+                if(config.remove) {
+                    // do remove
+                    var keepTeams = [];
+
+                    _(options.teams).forEach(function(team) {
+                        if(team.collectorItemId != config.collectorItemId) {
+                            keepTeams.push(team);
+                        }
+                    });
+
+                    options.teams = keepTeams;
+                }
+                else {
+                    for(var x=0;x<options.teams.length;x++) {
+                        if(options.teams[x].collectorItemId == config.collectorItemId) {
+                            options.teams[x] = config;
                         }
                     }
                 }
 
-                // add the dashboard we chose to the collector item id list
-                collectorItemIds.push(config.collectorItemId);
+                updateWidgetOptions(options);
+            });
+        }
 
+        function addTeam() {
+
+            $modal.open({
+                templateUrl: 'components/widgets/product/add-team/add-team.html',
+                controller: 'addTeamController',
+                controllerAs: 'ctrl'
+            }).result.then(function(config) {
+                if(!config) {
+                    return;
+                }
+
+                // prepare our response for the widget upsert
                 var options = $scope.widgetConfig.options;
 
+                // make sure it's an array
                 if(!options.teams || !options.teams.length) {
                     options.teams = [];
                 }
 
-                // try to update an existing dashbaord
-                var found = false;
+                // add our new config to the array
+                options.teams.push(config);
 
-                delete config.forCollectorItemId;
-
-                for(var x=0; x<options.teams.length;x++) {
-                    if(options.teams[x].collectorItemId == forCollectorItemId) {
-                        found = true;
-                        options.teams[x] = config;
-                    }
-                }
-
-                // if it didn't already exist it was new so just add it
-                if(!found) {
-                    options.teams.push(config);
-                }
-
-                var data = {
-                    name: 'product',
-                    componentId: component.id,
-                    collectorItemIds: collectorItemIds,
-                    options: options
-                };
-
-                console.log('Upsert widget', data);
-                $scope.upsertWidget(data);
+                updateWidgetOptions(options);
             });
+        }
+
+        function updateWidgetOptions(options)
+        {
+            // get a list of collector ids
+            var collectorItemIds = [];
+            _(options.teams).forEach(function(team) {
+                collectorItemIds.push(team.collectorItemId);
+            });
+
+            var data = {
+                name: 'product',
+                componentId: $scope.dashboard.application.components[0].id,
+                collectorItemIds: collectorItemIds,
+                options: options
+            };
+
+            console.log('Upsert widget', data);
+            $scope.upsertWidget(data);
         }
     }
 })();

@@ -16,7 +16,6 @@
         // public variables
         ctrl.dashboardName = '';
         ctrl.applicationName = '';
-        ctrl.submitted = false;
         ctrl.availableTemplates = [];
 
 
@@ -78,8 +77,6 @@
 
         // method implementations
         function submit(valid) {
-            ctrl.submitted = true;
-
 
             // perform basic validation and send to the api
             if (valid) {
