@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.ErrorResponse;
+import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller advice to handle exceptions globally.
@@ -55,5 +58,13 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse response = new ErrorResponse();
         response.addFieldError(ex.getPropertyName(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(UnsafeDeleteException.class)
+    protected ResponseEntity<?> handleUnsafeDelete(UnsafeDeleteException ex,  HttpServletRequest request) {
+        LOGGER.error(ex.getMessage());
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("errorMessage", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }

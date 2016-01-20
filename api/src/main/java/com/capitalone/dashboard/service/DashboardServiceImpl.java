@@ -2,6 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import org.bson.types.ObjectId;
@@ -10,10 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -76,9 +74,12 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public void delete(ObjectId id) {
         Dashboard dashboard = dashboardRepository.findOne(id);
-        if(getDashboardType(dashboard).equals(DashboardType.Team)) {
-            componentRepository.delete(dashboard.getApplication().getComponents());
+
+        if(!isSafeDelete(dashboard)){
+            throw new UnsafeDeleteException("Cannot delete team dashboard "+dashboard.getTitle()+" as it is referenced by program dashboards.");
         }
+
+        componentRepository.delete(dashboard.getApplication().getComponents());
 
         // Remove this Dashboard's services and service dependencies
         serviceRepository.delete(serviceRepository.findByDashboardId(id));
@@ -88,6 +89,17 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         dashboardRepository.delete(dashboard);
+    }
+
+    public boolean isSafeDelete(Dashboard dashboard){
+        boolean isSafe = false;
+        Collector productCollector = collectorRepository.findByCollectorType(CollectorType.Product).get(0);
+
+        CollectorItem teamDashboardCollectorItem = collectorItemRepository.findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(productCollector.getId(), dashboard.getId().toString());
+        if(dashboardRepository.findProductDashboardsByTeamDashboardCollectorItemId(teamDashboardCollectorItem.getId().toString()).isEmpty()) {
+            isSafe = true;
+        }
+        return isSafe;
     }
 
     @Override
