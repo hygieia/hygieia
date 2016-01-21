@@ -9,13 +9,12 @@
                   id="lg"
                   name="lg"
                   class="form"
-                  ng-controller="LoginController"
                   ng-submit="login.doLogin(lg.$valid)"
                   ng-init="login.doCheckState()"
                   role="form"
                   novalidate>
 
-                <div class="form-group" ng-class="{'has-error': (lg.$submitted && lg.login.$invalid) || login.invalidUsernamePassword}">
+                <div class="form-group" ng-class="{'has-error': (lg.$submitted && lg.login.$invalid)}">
                     <input
                         type="text"
                         name="login"
@@ -28,7 +27,7 @@
 
                     <p class="help-block" ng-if="lg.login.$error.required">Email is required</p>
                     <p class="help-block" ng-if="lg.login.$error.email">Invalid email address</p>
-                    <p class="help-block" ng-if="login.invalidUsernamePassword">Incorrect Username and password</p>
+                    <p class="help-block" ng-if="lg.login.$error.invalidUsernamePassword">Incorrect username and password</p>
 
                 </div>
 

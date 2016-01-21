@@ -40,8 +40,8 @@
         }
 
         function processResponse(data) {
-            var exists = data == 'User already Exist';
-            lg.email.$setValidity('exists', exists);
+            var exists = data == 'User already exists';
+            $scope.suf.email.$setValidity('exists', !exists);
             signup.userCreated = !exists;
         }
 

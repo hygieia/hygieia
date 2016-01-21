@@ -9,7 +9,6 @@
             <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2"
                   name="suf"
                   class="form"
-                  ng-controller="SignupController"
                   ng-submit="signup.doSignup(suf.$valid)"
                   role="form"
                   novalidate>
@@ -18,7 +17,7 @@
                     User created successfully
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" ng-class="{'has-error': suf.email.$invalid && suf.$submitted}">
 
                     <input type="email"
                            class="form-control text-center"
@@ -28,31 +27,39 @@
                            autocomplete="off"
                            required />
 
-                    <p class="help-block" ng-show="suf.email.$error.required">
-                        Password should be min length of 6 container
+                    <p class="help-block" ng-if="suf.email.$error.exists">
+                        User already exists
                     </p>
-                    <p class="help-block" ng-show="suf.email.$error.email">
-                        Email address is invalid
+                    <p class="help-block" ng-if="suf.email.$error.required">
+                        Email address is required
+                    </p>
+                    <p class="help-block" ng-if="suf.email.$error.email">
+                        Please enter a valid email address
                     </p>
                 </div>
 
-                <div class="form-group" ng-class="{'has-errors': suf.password.$invalid}">
+                <div class="form-group" ng-class="{'has-error': suf.password.$invalid && suf.$submitted}">
 
                     <input type="password" class="form-control text-center"
                            ng-model="signup.password"
-                           required
                            minLength=6
                            name="password"
-                           placeholder="Enter your password"/>
+                           placeholder="Enter your password"
+                           required />
 
-                    <p class="help-block" ng-show="suf.password.$error.minlength">
+                    <p class="help-block" ng-if="suf.password.$error.required">
+                        Password is required
+                    </p>
+
+                    <p class="help-block" ng-if="suf.password.$error.minlength">
                         Password should be min length of 6 characters
                     </p>
                 </div>
 
 
-                <div class="form-group">
-                    <input type="password" class="form-control text-center"
+                <div class="form-group" ng-class="{'has-error': suf.confirm.$invalid && suf.$submitted}">
+                    <input type="password"
+                           class="form-control text-center"
                            ng-model="signup.passwordConfirm"
                            required
                            minLength=6
@@ -60,9 +67,6 @@
                            name="confirm"
                            placeholder="Confirm password"/>
 
-                    <p class="help-block" ng-show="suf.confirm.$error.minlength">
-                        Password should be min length of 6 characters
-                    </p>
                     <p class="help-block" ng-show="suf.confirm.$error.match">
                         Passwords do not match!
                     </p>
@@ -70,10 +74,10 @@
                 </div>
 
                 <div class="text-center">
-                    <Button type="submit" class="btn btn-default btn-wide">
+                    <button type="submit" class="btn btn-default btn-wide">
                         <i class="fa fa-lg fa fa-thumbs-o-up"></i>
                         Sign up
-                    </Button>
+                    </button>
 
 
                 </div>

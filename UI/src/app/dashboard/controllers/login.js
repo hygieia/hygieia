@@ -52,17 +52,14 @@
 
             console.log("Authentication is:" + data);
 
+            $scope.lg.login.$setValidity('invalidUsernamePassword', data);
+
             if (data) {
-                login.invalidUsernamePassword = false;
 
                 $cookies.authenticated = true;
                 $cookies.username = document.lg.login.value;
 
                 $location.path('/site');
-
-            }
-            else {
-                login.invalidUsernamePassword = true;
             }
         }
 
@@ -89,7 +86,6 @@
                 .error(function (data, status, headers, config) {
 
                     login.apiup = false;
-
                 });
         }
 
