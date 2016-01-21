@@ -2,7 +2,6 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
