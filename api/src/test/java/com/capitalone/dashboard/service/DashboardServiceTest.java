@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -302,6 +303,7 @@ public class DashboardServiceTest {
         depService.getDependedBy().add(id);
         when(serviceRepository.findByDashboardId(id)).thenReturn(services);
         when(serviceRepository.findByDependedBy(id)).thenReturn(Arrays.asList(depService));
+        when(collectorRepository.findByCollectorType(CollectorType.Product)).thenReturn(new ArrayList<Collector>());
 
         dashboardService.delete(id);
 

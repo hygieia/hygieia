@@ -91,11 +91,33 @@ public class DashboardServiceImpl implements DashboardService {
         dashboardRepository.delete(dashboard);
     }
 
-    public boolean isSafeDelete(Dashboard dashboard){
+    private boolean isSafeDelete(Dashboard dashboard){
         boolean isSafe = false;
-        Collector productCollector = collectorRepository.findByCollectorType(CollectorType.Product).get(0);
+
+        if(dashboard.getType() == null || dashboard.getType().equals(DashboardType.Team)){
+            isSafe = isSafeTeamDashboardDelete(dashboard);
+        }else {
+            isSafe = true;
+        }
+        return isSafe;
+    }
+
+    private boolean isSafeTeamDashboardDelete(Dashboard dashboard){
+        boolean isSafe = false;
+        List<Collector> productCollectors = collectorRepository.findByCollectorType(CollectorType.Product);
+        if(productCollectors.isEmpty()){
+            return true;
+        }
+
+        Collector productCollector = productCollectors.get(0);
 
         CollectorItem teamDashboardCollectorItem = collectorItemRepository.findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(productCollector.getId(), dashboard.getId().toString());
+
+        //// TODO: 1/21/16 Is this safe? What if we add a new team dashbaord and quickly add it to a product and then delete it? 
+        if(teamDashboardCollectorItem == null){
+            return true;
+        }
+        
         if(dashboardRepository.findProductDashboardsByTeamDashboardCollectorItemId(teamDashboardCollectorItem.getId().toString()).isEmpty()) {
             isSafe = true;
         }
