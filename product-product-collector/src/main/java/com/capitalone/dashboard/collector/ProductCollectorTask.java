@@ -2,6 +2,7 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -53,11 +54,32 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
         return productDashboardRepository;
     }
 
+    private void doCleanUp(List<TeamDashboardCollectorItem> collectorItems, List<Dashboard> dashboards){
+        //get all collectorItems where there aren't dashboards'
+        if(dashboards.isEmpty()){
+            return;
+        }
+
+        List<String> dashboardIdsForCollectorItemsToRemove = new ArrayList<>();
+
+        for(TeamDashboardCollectorItem collectorItem : collectorItems){
+            dashboardIdsForCollectorItemsToRemove.add(collectorItem.getDashboardId());
+        }
+        for(Dashboard d :dashboards){
+            dashboardIdsForCollectorItemsToRemove.remove(d.getId().toString());
+        }
+
+        List<TeamDashboardCollectorItem> collectorItemsToDelete = (List) teamDashboardRepository.findByDashboardIdIn(dashboardIdsForCollectorItemsToRemove);
+        teamDashboardRepository.delete(collectorItemsToDelete);
+    }
+
     @Override
     public void collect(ProductDashboardCollector collector) {
-        //find all team dashboards collector items that exist
+        List<TeamDashboardCollectorItem> existingTeamDashboardCollectorItems = teamDashboardRepository.findTeamDashboards(collector.getId());
+        List<Dashboard> allTeamDashboards = productClient.getAllTeamDashboards();
 
-        addNewCollectorItemsForNewDashboards(collector);
+        doCleanUp(existingTeamDashboardCollectorItems, allTeamDashboards);
+        addNewCollectorItemsForNewDashboards(existingTeamDashboardCollectorItems, allTeamDashboards, collector);
 
         Map<TeamDashboardCollectorItem, Dashboard> enabledTeamDashboardsMap = findAllEnabledTeamDashboards(collector);
 
@@ -158,9 +180,7 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
         return commitPipelineStage;
     }
 
-    private void addNewCollectorItemsForNewDashboards(ProductDashboardCollector collector) {
-        List<TeamDashboardCollectorItem> existingTeamDashboardCollectorItems = teamDashboardRepository.findTeamDashboards(collector.getId());
-        List<Dashboard> allTeamDashboards = productClient.getAllTeamDashboards();
+    private void addNewCollectorItemsForNewDashboards(List<TeamDashboardCollectorItem> existingTeamDashboardCollectorItems, List<Dashboard> allTeamDashboards, ProductDashboardCollector collector) {
 
         if(allTeamDashboards.isEmpty()){
             return;

@@ -113,7 +113,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         CollectorItem teamDashboardCollectorItem = collectorItemRepository.findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(productCollector.getId(), dashboard.getId().toString());
 
-        //// TODO: 1/21/16 Is this safe? What if we add a new team dashbaord and quickly add it to a product and then delete it? 
+        //// TODO: 1/21/16 Is this safe? What if we add a new team dashbaord and quickly add it to a product and then delete it?
         if(teamDashboardCollectorItem == null){
             return true;
         }
