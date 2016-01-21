@@ -149,11 +149,12 @@
                 _.remove(ctrl.mydash, {id: id});
             }, function(response) {
                 var msg = 'An error occurred while deleting the dashboard';
-                if (response.data && response.data.message) {
-                    msg = response.data.message;
+
+                if(response.status > 204) {
+                    msg = response.data.errorMessage;
                 }
 
-                alert(msg);
+                swal(msg);
             });
         }
 
