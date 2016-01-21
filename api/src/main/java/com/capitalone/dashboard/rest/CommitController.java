@@ -4,7 +4,11 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.CommitRequest;
 import com.capitalone.dashboard.service.CommitService;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +16,7 @@ import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 public class CommitController {
@@ -28,5 +33,20 @@ public class CommitController {
     @RequestMapping(value = "/commit", method = GET, produces = APPLICATION_JSON_VALUE)
     public DataResponse<Iterable<Commit>> builds(@Valid CommitRequest request) {
         return commitService.search(request);
+    }
+
+
+    @RequestMapping(value = "/commit/github/v3", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createGitHubv3(@RequestBody JSONObject request) {
+        System.out.println(request);
+        String response = commitService.createFromGitHubv3(request);
+        if ("".equals(response)) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST).body("");
+        }
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 }

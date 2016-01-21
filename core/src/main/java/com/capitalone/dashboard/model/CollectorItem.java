@@ -27,6 +27,7 @@ public class CollectorItem extends BaseModel {
     private boolean enabled;
     private boolean pushed;
     private ObjectId collectorId;
+    private long lastUpdated;
     private Map<String,Object> options = new HashMap<>();
 
     @Transient
@@ -74,5 +75,13 @@ public class CollectorItem extends BaseModel {
 
     public void setPushed(boolean pushed) {
         this.pushed = pushed;
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 }

@@ -18,7 +18,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -127,9 +126,10 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
         clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
+            if (repo.isPushed()) continue;
         	boolean firstRun = false;
-        	if (repo.getLastUpdateTime() == null) firstRun = true;
-        	repo.setLastUpdateTime(new Date());
+        	if (repo.getLastUpdated() == 0) firstRun = true;
+        	repo.setLastUpdated(System.currentTimeMillis());
             gitHubRepoRepository.save(repo);
             LOG.debug(repo.getOptions().toString()+"::"+repo.getBranch());
             for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
@@ -149,10 +149,6 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         log("Finished", start);
     }
 
-    @SuppressWarnings("unused")
-    private Date lastUpdated(GitHubRepo repo) {
-        return repo.getLastUpdateTime();
-    }
 
     private List<GitHubRepo> enabledRepos(Collector collector) {
         return gitHubRepoRepository.findEnabledGitHubRepos(collector.getId());

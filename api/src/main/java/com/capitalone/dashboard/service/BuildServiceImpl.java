@@ -122,6 +122,7 @@ public class BuildServiceImpl implements BuildService {
         option.put("jobUrl", request.getJobUrl());
         option.put("instanceUrl", request.getInstanceUrl());
         tempCi.getOptions().putAll(option);
+
         CollectorItem collectorItem = collectorService.createCollectorItem(tempCi);
         return collectorItem;
     }
