@@ -10,23 +10,24 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Set;
 
-import com.atlassian.jira.rest.client.JiraRestClient;
-import com.atlassian.jira.rest.client.JiraRestClientFactory;
-import com.atlassian.jira.rest.client.domain.BasicIssue;
-import com.atlassian.jira.rest.client.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.atlassian.util.concurrent.Promise;
 import com.google.common.collect.Lists;
 
 import org.apache.commons.codec.binary.Base64;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -56,10 +57,8 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 *            details)
 	 * @param jiraBaseUrl
 	 *            Jira base URL
-	 * @param jiraQueryEndpoint
-	 *            Jira API query endpoint/context
 	 */
-	public JiraDataFactoryImpl(String jiraCredentials, String jiraBaseUrl, String jiraQueryEndpoint) {
+	public JiraDataFactoryImpl(String jiraCredentials, String jiraBaseUrl) {
 		URI jiraUri;
 		try {
 			jiraUri = new URI(jiraBaseUrl);
@@ -83,15 +82,13 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 *            details)
 	 * @param jiraBaseUrl
 	 *            Jira base URL
-	 * @param jiraQueryEndpoint
-	 *            Jira API query endpoint/context
 	 * @param jiraProxyUrl
 	 *            Jira proxy URL
 	 * @param jiraProxyUrl
 	 *            Jira proxy port number
 	 */
-	public JiraDataFactoryImpl(String jiraCredentials, String jiraBaseUrl,
-			String jiraQueryEndpoint, String jiraProxyUrl, String jiraProxyPort) {
+	public JiraDataFactoryImpl(String jiraCredentials, String jiraBaseUrl, String jiraProxyUrl,
+			String jiraProxyPort) {
 		URI jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
 				this.decodeCredentials(jiraCredentials).get("username"),
 				this.decodeCredentials(jiraCredentials).get("password"));
@@ -114,11 +111,8 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 *            details)
 	 * @param jiraBaseUrl
 	 *            Jira base URL
-	 * @param jiraQueryEndpoint
-	 *            Jira API query endpoint/context
 	 */
-	public JiraDataFactoryImpl(int inPageSize, String jiraCredentials, String jiraBaseUrl,
-			String jiraQueryEndpoint) {
+	public JiraDataFactoryImpl(int inPageSize, String jiraCredentials, String jiraBaseUrl) {
 		URI jiraUri;
 		try {
 			jiraUri = new URI(jiraBaseUrl);
@@ -145,15 +139,13 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 *            details)
 	 * @param jiraBaseUrl
 	 *            Jira base URL
-	 * @param jiraQueryEndpoint
-	 *            Jira API query endpoint/context
 	 * @param jiraProxyUrl
 	 *            Jira proxy URL
 	 * @param jiraProxyUrl
 	 *            Jira proxy port number
 	 */
 	public JiraDataFactoryImpl(int inPageSize, String jiraCredentials, String jiraBaseUrl,
-			String jiraQueryEndpoint, String jiraProxyUrl, String jiraProxyPort) {
+			String jiraProxyUrl, String jiraProxyPort) {
 		URI jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
 				this.decodeCredentials(jiraCredentials).get("username"),
 				this.decodeCredentials(jiraCredentials).get("password"));
@@ -172,25 +164,9 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 *            A query in REST syntax as a String
 	 * @return The saved REST-syntax basic query
 	 */
-	public String buildBasicQuery(String query) {
+	public String setQuery(String query) {
 		this.setBasicQuery(query);
 		return this.getBasicQuery();
-	}
-
-	/**
-	 * Creates a query on demand based on a given basic query and a specified
-	 * page index value. It is recommended to use this method in a loop to
-	 * ensure all pages are covered.
-	 * 
-	 * @param pageIndex
-	 *            A given query's current page index, from 0-oo
-	 * @return A JSON-formatted response
-	 */
-	@Deprecated
-	public String buildPagingQuery(int pageIndex) {
-		this.setPageIndex(pageIndex);
-		this.setPagingQuery(this.getBasicQuery());
-		return this.getPagingQuery();
 	}
 
 	/**
@@ -200,129 +176,53 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 * 
 	 * @return A formatted JSONArray response
 	 */
-	@SuppressWarnings("unchecked")
-	public JSONArray getPagingQueryResponse() {
-		JSONArray mainMsg = new JSONArray();
-		JSONObject innerObj = new JSONObject();
-		JSONArray response = new JSONArray();
-		Iterable<BasicIssue> jiraRawRs = null;
-		List<BasicIssue> issues = new LinkedList<BasicIssue>();
+	public List<Issue> getJiraIssues() {
+		Iterable<Issue> jiraRawRs = null;
+		List<Issue> issues = new ArrayList<Issue>();
+		Set<String> fields = new LinkedHashSet<String>();
+		fields.add("*all");
 		Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(this.getBasicQuery(),
-				this.getPageSize(), this.getPageIndex());
+				this.getPageSize(), this.getPageIndex(), fields);
 		try {
 			jiraRawRs = promisedRs.claim().getIssues();
-			issues = Lists.newArrayList(jiraRawRs);
-
-			if (!issues.isEmpty() || (issues != null)) {
-				response.addAll(issues);
+			if (jiraRawRs != null) {
+				issues = Lists.newArrayList(jiraRawRs);
+			} else {
+				issues = new ArrayList<Issue>();
 			}
 		} catch (Exception e) {
-			response = new JSONArray();
+			issues = new ArrayList<Issue>();
 			LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
 					+ e.getCause());
 		}
 
-		innerObj.put("issues", response);
-		mainMsg.add(innerObj.get("issues"));
-		return mainMsg;
+		return issues;
 	}
 
 	/**
 	 * Runs the jira-client library tools against a given REST-formatted query.
-	 * This requires a pre-formatted basic query (single-use).
+	 * This works only for project/team-style values.
 	 * 
-	 * @return A formatted JSONArray response
+	 * @return A list of Jira projects/teams
 	 */
-	@SuppressWarnings("unchecked")
-	public JSONArray getQueryResponse() {
-		JSONArray mainMsg = new JSONArray();
-		JSONObject innerObj = new JSONObject();
-		JSONArray response = new JSONArray();
-		Iterable<BasicIssue> jiraRawRs = null;
-		Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(this.getBasicQuery());
-		List<BasicIssue> issues = new LinkedList<BasicIssue>();
+	public List<BasicProject> getJiraTeams() {
+		Iterable<BasicProject> jiraRawRs = null;
+		List<BasicProject> issues = new ArrayList<BasicProject>();
+		Promise<Iterable<BasicProject>> promisedRs = client.getProjectClient().getAllProjects();
 		try {
-			jiraRawRs = promisedRs.claim().getIssues();
-			issues = Lists.newArrayList(jiraRawRs);
-
-			if (!issues.isEmpty() || (issues != null)) {
-				response.addAll(issues);
+			jiraRawRs = promisedRs.claim();
+			if (jiraRawRs != null) {
+				issues = Lists.newArrayList(jiraRawRs);
+			} else {
+				issues = new ArrayList<BasicProject>();
 			}
 		} catch (Exception e) {
-			response = new JSONArray();
+			issues = new ArrayList<BasicProject>();
 			LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
 					+ e.getCause());
 		}
 
-		innerObj.put("issues", response);
-		mainMsg.add(innerObj.get("issues"));
-
-		return mainMsg;
-	}
-
-	/**
-	 * Runs the jira-client library tools against a given REST-formatted query.
-	 * This requires a pre-formatted paged query to run, and will not perform
-	 * the paging for you - there are other helper methods for this. This is
-	 * designed to work explicitly for team-related queries
-	 * 
-	 * @return A formatted JSONArray response
-	 */
-	@SuppressWarnings("unchecked")
-	public JSONArray getArrayQueryResponse() {
-		JSONArray mainMsg = new JSONArray();
-		JSONArray response = new JSONArray();
-		Iterable<BasicIssue> jiraRawRs = null;
-		Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(this.getBasicQuery());
-		List<BasicIssue> issues = new LinkedList<BasicIssue>();
-		try {
-			jiraRawRs = promisedRs.claim().getIssues();
-			issues = Lists.newArrayList(jiraRawRs);
-
-			if (!issues.isEmpty() || (issues != null)) {
-				response.addAll(issues);
-			}
-		} catch (Exception e) {
-			response = new JSONArray();
-			LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
-					+ e.getCause());
-		}
-
-		mainMsg.add(response);
-
-		return mainMsg;
-	}
-
-	/**
-	 * Runs the jira-client library tools against a given REST-formatted query.
-	 * This requires a pre-formatted basic query (single-use) and works only for
-	 * Epic-style values.
-	 * 
-	 * @return A formatted JSONArray response
-	 */
-	@SuppressWarnings("unchecked")
-	public JSONArray getEpicQueryResponse() {
-		JSONArray mainMsg = new JSONArray();
-		JSONObject response = new JSONObject();
-		Iterable<BasicIssue> jiraRawRs = null;
-		Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(this.getBasicQuery());
-		Map<String, List<BasicIssue>> issues = new LinkedHashMap<String, List<BasicIssue>>();
-		try {
-			jiraRawRs = promisedRs.claim().getIssues();
-			issues.put("issues", Lists.newArrayList(jiraRawRs));
-
-			if (!issues.isEmpty() || (issues != null)) {
-				response.putAll(issues);
-			}
-		} catch (Exception e) {
-			response = new JSONObject();
-			LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
-					+ e.getCause());
-		}
-
-		mainMsg.add(response);
-
-		return mainMsg;
+		return issues;
 	}
 
 	/**
@@ -364,27 +264,6 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	}
 
 	/**
-	 * Accessor method for retrieving paged query.
-	 * 
-	 * @return The paged REST query
-	 */
-	@Deprecated
-	public String getPagingQuery() {
-		return this.pagingQuery;
-	}
-
-	/**
-	 * Mutator method for setting paged query
-	 * 
-	 * @param pagingQuery
-	 *            The paged REST query
-	 */
-	@Deprecated
-	private void setPagingQuery(String pagingQuery) {
-		this.pagingQuery = pagingQuery;
-	}
-
-	/**
 	 * Used for testing: Accessor Method to get currently set page size
 	 */
 	public int getPageSize() {
@@ -403,9 +282,8 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 *            response (e.g., nothing gets decoded)
 	 * @return Decoded username/password map of strings
 	 */
-	protected LinkedHashMap<String, String> decodeCredentials(
-			String jiraBasicAuthCredentialsInBase64) {
-		LinkedHashMap<String, String> credMap = new LinkedHashMap<String, String>();
+	protected Map<String, String> decodeCredentials(String jiraBasicAuthCredentialsInBase64) {
+		Map<String, String> credMap = new LinkedHashMap<String, String>();
 		if (jiraBasicAuthCredentialsInBase64 != null) {
 			StringTokenizer tokenizer = new StringTokenizer(new String(
 					Base64.decodeBase64(jiraBasicAuthCredentialsInBase64)), ":");
@@ -485,6 +363,17 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 				LOGGER.error("Correction:  The Jira connection base URI cannot be read!");
 				return null;
 			}
+		}
+	}
+
+	/**
+	 * Destroys current Jira Client connection during asynchronous connection
+	 */
+	public void destroy() {
+		try {
+			this.client.close();
+		} catch (IOException e) {
+			LOGGER.error("There was a problem closing your Jira connection during query collection");
 		}
 	}
 }

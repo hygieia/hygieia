@@ -16,6 +16,11 @@
 
 package com.capitalone.dashboard.client.story;
 
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.atlassian.jira.rest.client.api.domain.IssueType;
+import com.atlassian.jira.rest.client.api.domain.User;
 import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
@@ -24,14 +29,16 @@ import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is the primary implemented/extended data collector for the feature
@@ -70,294 +77,304 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
 	 * 
-	 * @param tmpMongoDetailArray
-	 *            A JSON response in JSONArray format from the source system
-	 * @return
+	 * @param currentPagedJiraRs
+	 *            A list response of Jira issues from the source system
 	 */
-	// need to rewrite this method.. fixme
-	@SuppressWarnings({ "unchecked", "PMD.ExcessiveMethodLength", "PMD.AvoidCatchingNPE",
-			"PMD.NPathComplexity", "PMD.ExceptionAsFlowControl", "PMD.NcssMethodCount" })
-	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
+	@Override
+	@SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.NcssMethodCount", "PMD.NPathComplexity",
+			"PMD.AvoidDeeplyNestedIfStmts" })
+	protected void updateMongoInfo(List<Issue> currentPagedJiraRs) {
 		try {
-			JSONObject dataMainObj = new JSONObject();
-			LOGGER.debug("Size of PagingJSONArray: {}", tmpMongoDetailArray.size());
-			for (int i = 0; i < tmpMongoDetailArray.size(); i++) {
-				try {
-					if (dataMainObj != null) {
-						dataMainObj.clear();
-					}
-					dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
-					JSONObject fields = (JSONObject) dataMainObj.get("fields");
-					JSONObject issueType = (JSONObject) fields.get("issuetype");
-					JSONObject project = (JSONObject) fields.get("project");
-					JSONObject assignee = (JSONObject) fields.get("assignee");
-					JSONObject status = (JSONObject) fields.get("status");
-					JSONObject statusCategory = (JSONObject) status.get("statusCategory");
-					JSONArray sprint = (JSONArray) fields.get(super.featureSettings
-							.getJiraSprintDataFieldName());
+			LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
+			if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
+				Iterator<Issue> globalResponseItr = currentPagedJiraRs.iterator();
+				while (globalResponseItr.hasNext()) {
+					/*
+					 * Initialize DOMs
+					 */
 					Feature feature = new Feature();
-
+					Issue issue = globalResponseItr.next();
+					Iterable<IssueField> rawFields = issue.getFields();
+					HashMap<String, IssueField> fields = new LinkedHashMap<String, IssueField>();
+					if (rawFields != null) {
+						Iterator<IssueField> itr = rawFields.iterator();
+						while (itr.hasNext()) {
+							IssueField field = itr.next();
+							fields.put(field.getId(), field);
+						}
+					}
+					IssueType issueType = issue.getIssueType();
+					BasicProject project = issue.getProject();
+					User assignee = issue.getAssignee();
+					String status = issue.getStatus().getName();
+					String estimate = String.valueOf(issue.getTimeTracking()
+							.getRemainingEstimateMinutes());
+					IssueField epic = fields.get(super.featureSettings.getJiraEpicIdFieldName());
+					String changeDate = issue.getUpdateDate().toString();
+					IssueField sprint = fields.get(super.featureSettings
+							.getJiraSprintDataFieldName());
+					/*
+					 * Removing any existing entities where they exist in the
+					 * local DB store...
+					 */
 					@SuppressWarnings("unused")
-					boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(dataMainObj
-							.get("id")));
-					if (!TOOLS.sanitizeResponse(issueType.get("name")).equalsIgnoreCase("Story")) {
-						throw new IllegalArgumentException();
-					}
+					boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(issue
+							.getId()));
+					if (TOOLS.sanitizeResponse(issueType.getName()).equalsIgnoreCase(
+							super.featureSettings.getJiraIssueTypeId())) {
+						// collectorId
+						feature.setCollectorId(featureCollectorRepository
+								.findByName(Constants.JIRA).getId());
 
-					// collectorId
-					feature.setCollectorId(featureCollectorRepository.findByName(Constants.JIRA)
-							.getId());
+						// ID
+						feature.setsId(TOOLS.sanitizeResponse(issue.getId()));
 
-					// ID
-					feature.setsId(TOOLS.sanitizeResponse(dataMainObj.get("id")));
+						// sNumber
+						feature.setsNumber(TOOLS.sanitizeResponse(issue.getKey()));
 
-					// sNumber
-					feature.setsNumber(TOOLS.sanitizeResponse(dataMainObj.get("key")));
+						// sName
+						feature.setsName(TOOLS.sanitizeResponse(issue.getSummary()));
 
-					// sName
-					feature.setsName(TOOLS.sanitizeResponse(fields.get("summary")));
+						// sStatus
+						feature.setsStatus(TOOLS.sanitizeResponse(status));
 
-					// sStatus
-					feature.setsStatus(TOOLS.sanitizeResponse(statusCategory.get("name")));
+						// sState
+						feature.setsState(TOOLS.sanitizeResponse(status));
 
-					// sState
-					feature.setsState(TOOLS.sanitizeResponse(statusCategory.get("name")));
-					
-					// sEstimate, in seconds, converted to hours, rounded down:
-					// 8 hours = 1 day; 5 days = 1 week
-					String hours = "";
-					long seconds = 0;
-					try {
-						seconds = (long) fields.get("timeestimate");
-						hours = Integer.toString((int) (seconds / 3600));
-						feature.setsEstimate(TOOLS.sanitizeResponse(hours));
-					} catch (Exception e) {
-						feature.setsEstimate("0");
-					}
+						// sEstimate,
+						feature.setsEstimate(this.toHours(estimate));
 
-					// sChangeDate
-					feature.setChangeDate(TOOLS.toCanonicalDate(TOOLS.sanitizeResponse(fields
-							.get("updated"))));
+						// sChangeDate
+						feature.setChangeDate(TOOLS.toCanonicalDate(TOOLS
+								.sanitizeResponse(changeDate)));
 
-					// IsDeleted - does not exist for Jira
-					feature.setIsDeleted("False");
+						// IsDeleted - does not exist for Jira
+						feature.setIsDeleted("False");
 
-					// sProjectID
-					feature.setsProjectID(TOOLS.sanitizeResponse(project.get("id")));
+						// sProjectID
+						feature.setsProjectID(TOOLS.sanitizeResponse(project.getKey()));
 
-					// sProjectName
-					feature.setsProjectName(TOOLS.sanitizeResponse(project.get("name")));
+						// sProjectName
+						feature.setsProjectName(TOOLS.sanitizeResponse(project.getName()));
 
-					// sProjectBeginDate - does not exist in Jira
-					feature.setsProjectBeginDate("");
+						// sProjectBeginDate - does not exist in Jira
+						feature.setsProjectBeginDate("");
 
-					// sProjectEndDate - does not exist in Jira
-					feature.setsProjectEndDate("");
+						// sProjectEndDate - does not exist in Jira
+						feature.setsProjectEndDate("");
 
-					// sProjectChangeDate - does not exist for this asset level
-					// in
-					// Jira
-					feature.setsProjectChangeDate("");
+						// sProjectChangeDate - does not exist for this asset
+						// level in Jira
+						feature.setsProjectChangeDate("");
 
-					// sProjectState - does not exist in Jira
-					feature.setsProjectState("");
+						// sProjectState - does not exist in Jira
+						feature.setsProjectState("");
 
-					// sProjectIsDeleted - does not exist in Jira
-					feature.setsProjectIsDeleted("False");
+						// sProjectIsDeleted - does not exist in Jira
+						feature.setsProjectIsDeleted("False");
 
-					// sProjectPath - does not exist in Jira
-					feature.setsProjectPath("");
+						// sProjectPath - does not exist in Jira
+						feature.setsProjectPath("");
 
-					/*
-					 * Epic Data
-					 */
-					try {
-						String epicKey = TOOLS.sanitizeResponse(fields.get(super.featureSettings
-								.getJiraEpicIdFieldName()));
-						if (epicKey == null || epicKey.isEmpty()) {
-							throw new NullPointerException();
+						/*
+						 * Epic Data - Note: Will only grab first epic
+						 * associated
+						 */
+						if ((epic.getName() != null) && !(epic.getName().isEmpty())) {
+							List<Issue> epicData = this.getEpicData(TOOLS.sanitizeResponse(epic
+									.getValue()));
+							Iterable<IssueField> rawEpicFields = epicData.get(0).getFields();
+							HashMap<String, IssueField> epicFields = new LinkedHashMap<String, IssueField>();
+							if (rawEpicFields != null) {
+								Iterator<IssueField> itr = rawFields.iterator();
+								while (itr.hasNext()) {
+									IssueField epicField = itr.next();
+									epicFields.put(epicField.getId(), epicField);
+								}
+							}
+							String epicId = epicData.get(0).getId().toString();
+							String epicNumber = epicData.get(0).getKey().toString();
+							String epicName = epicData.get(0).getSummary().toString();
+							String epicBeginDate = epicData.get(0).getCreationDate().toString();
+							IssueField epicEndDate = epicFields.get("duedate");
+							String epicStatus = epicData.get(0).getStatus().getName();
+
+							// sEpicID
+							feature.setsEpicID(TOOLS.sanitizeResponse(epicId));
+
+							// sEpicNumber
+							feature.setsEpicNumber(TOOLS.sanitizeResponse(epicNumber));
+
+							// sEpicName
+							feature.setsEpicName(TOOLS.sanitizeResponse(epicName));
+
+							// sEpicBeginDate - mapped to create date
+							if ((epicBeginDate != null) && !(epicBeginDate.isEmpty())) {
+								feature.setsEpicBeginDate(TOOLS.toCanonicalDate(TOOLS
+										.sanitizeResponse(epicBeginDate)));
+							} else {
+								feature.setsEpicBeginDate("");
+							}
+
+							// sEpicEndDate
+							if (epicEndDate != null) {
+								feature.setsEpicEndDate(TOOLS.toCanonicalDate(TOOLS
+										.sanitizeResponse(epicEndDate.getValue())));
+							} else {
+								feature.setsEpicEndDate("");
+							}
+
+							// sEpicAssetState
+							if (epicStatus != null) {
+								feature.setsEpicAssetState(TOOLS.sanitizeResponse(epicStatus));
+							} else {
+								feature.setsEpicAssetState("");
+							}
+						} else {
+							feature.setsEpicID("");
+							feature.setsEpicNumber("");
+							feature.setsEpicName("");
+							feature.setsEpicBeginDate("");
+							feature.setsEpicEndDate("");
+							feature.setsEpicType("");
+							feature.setsEpicAssetState("");
+							feature.setsEpicChangeDate("");
 						}
-						JSONObject epicData = this.getEpicData(epicKey);
 
-						// sEpicID
-						feature.setsEpicID(TOOLS.sanitizeResponse(epicData.get("id")));
-
-						// sEpicNumber
-						feature.setsEpicNumber(TOOLS.sanitizeResponse(epicData.get("key")));
-
-						// sEpicName
-						feature.setsEpicName(TOOLS.sanitizeResponse(epicData.get("name")));
-
-						// sEpicBeginDate - mapped to create date
-						feature.setsEpicBeginDate(TOOLS.toCanonicalDate(TOOLS
-								.sanitizeResponse(epicData.get("created"))));
-
-						// sEpicEndDate
-						feature.setsEpicEndDate(TOOLS.toCanonicalDate(TOOLS
-								.sanitizeResponse(epicData.get("dueDate"))));
-
-						// sEpicAssetState
-						feature.setsEpicAssetState(TOOLS.sanitizeResponse(epicData.get("status")));
-					} catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
-						feature.setsEpicID("");
-						feature.setsEpicNumber("");
-						feature.setsEpicName("");
-						feature.setsEpicBeginDate("");
-						feature.setsEpicEndDate("");
+						// sEpicType - does not exist in jira
 						feature.setsEpicType("");
-						feature.setsEpicAssetState("");
+
+						// sEpicChangeDate - does not exist in jira
 						feature.setsEpicChangeDate("");
-					}
 
-					// sEpicType - does not exist in jira
-					feature.setsEpicType("");
+						// sEpicIsDeleted - does not exist in Jira
+						feature.setsEpicIsDeleted("False");
 
-					// sEpicChangeDate - does not exist in jira
-					feature.setsEpicChangeDate("");
+						/*
+						 * Sprint Data
+						 */
+						Map<String, Object> canonicalSprint = TOOLS.toCanonicalSprintPOJO(sprint
+								.getValue().toString());
+						if (canonicalSprint != null && !(canonicalSprint.isEmpty())) {
+							// sSprintID
+							if (canonicalSprint.get("id") != null) {
+								feature.setsSprintID(canonicalSprint.get("id").toString());
+							} else {
+								feature.setsSprintID("");
+							}
 
-					// sEpicIsDeleted - does not exist in Jira
-					feature.setsEpicIsDeleted("False");
+							// sSprintName
+							if (canonicalSprint.get("name") != null) {
+								feature.setsSprintName(canonicalSprint.get("name").toString());
+							} else {
+								feature.setsSprintName("");
+							}
 
-					/*
-					 * Sprint Data
-					 */
-					try {
-						JSONObject canonicalSprint = TOOLS.toCanonicalSprint(sprint.get(0)
-								.toString());
+							// sSprintBeginDate
+							if (canonicalSprint.get("startDate") != null) {
+								feature.setsSprintBeginDate(TOOLS.toCanonicalDate(canonicalSprint
+										.get("startDate").toString()));
+							} else {
+								feature.setsSprintBeginDate("");
+							}
 
-						// sSprintID
-						try {
-							feature.setsSprintID(canonicalSprint.get("id").toString());
-						} catch (NullPointerException e) {
+							// sSprintEndDate
+							if (canonicalSprint.get("endDate") != null) {
+								feature.setsSprintEndDate(TOOLS.toCanonicalDate(canonicalSprint
+										.get("endDate").toString()));
+							} else {
+								feature.setsSprintEndDate("");
+							}
+
+							// sSprintAssetState
+							if (canonicalSprint.get("state") != null) {
+								feature.setsSprintAssetState(canonicalSprint.get("state")
+										.toString());
+							} else {
+								feature.setsSprintAssetState("");
+							}
+						} else {
 							feature.setsSprintID("");
-						}
-
-						// sSprintName
-						try {
-							feature.setsSprintName(canonicalSprint.get("name").toString());
-						} catch (NullPointerException e) {
 							feature.setsSprintName("");
-						}
-
-						// sSprintBeginDate
-						try {
-							feature.setsSprintBeginDate(TOOLS.toCanonicalDate(canonicalSprint.get(
-									"startDate").toString()));
-						} catch (NullPointerException e) {
 							feature.setsSprintBeginDate("");
-						}
-
-						// sSprintEndDate
-						try {
-							feature.setsSprintEndDate(TOOLS.toCanonicalDate(canonicalSprint.get(
-									"endDate").toString()));
-						} catch (NullPointerException e) {
 							feature.setsSprintEndDate("");
-						}
-
-						// sSprintAssetState
-						try {
-							feature.setsSprintAssetState(canonicalSprint.get("state").toString());
-						} catch (NullPointerException e) {
 							feature.setsSprintAssetState("");
 						}
-					} catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
-						feature.setsSprintID("");
-						feature.setsSprintName("");
-						feature.setsSprintBeginDate("");
-						feature.setsSprintEndDate("");
-						feature.setsSprintAssetState("");
+
+						// sSprintChangeDate - does not exist in Jira
+						feature.setsSprintChangeDate("");
+
+						// sSprintIsDeleted - does not exist in Jira
+						feature.setsSprintIsDeleted("False");
+
+						// sTeamID
+						feature.setsTeamID(TOOLS.sanitizeResponse(project.getId()));
+
+						// sTeamName
+						feature.setsTeamName(TOOLS.sanitizeResponse(project.getName()));
+
+						// sTeamChangeDate - not able to retrieve at this asset
+						// level
+						// from Jira
+						feature.setsTeamChangeDate("");
+
+						// sTeamAssetState
+						feature.setsTeamAssetState("");
+
+						// sTeamIsDeleted
+						feature.setsTeamIsDeleted("False");
+
+						if (assignee != null) {
+							// sOwnersID
+							List<String> assigneeKey = new ArrayList<String>();
+							// sOwnersShortName
+							// sOwnersUsername
+							List<String> assigneeName = new ArrayList<String>();
+							if (!assignee.getName().isEmpty() && (assignee.getName() != null)) {
+								assigneeKey.add(TOOLS.sanitizeResponse(assignee.getName()));
+								assigneeName.add(TOOLS.sanitizeResponse(assignee.getName()));
+
+							} else {
+								assigneeKey = new ArrayList<String>();
+								assigneeName = new ArrayList<String>();
+							}
+							feature.setsOwnersShortName(assigneeName);
+							feature.setsOwnersUsername(assigneeName);
+							feature.setsOwnersID(assigneeKey);
+
+							// sOwnersFullName
+							List<String> assigneeDisplayName = new ArrayList<String>();
+							if (!assignee.getDisplayName().isEmpty()
+									&& (assignee.getDisplayName() != null)) {
+								assigneeDisplayName.add(TOOLS.sanitizeResponse(assignee
+										.getDisplayName()));
+							} else {
+								assigneeDisplayName.add("");
+							}
+							feature.setsOwnersFullName(assigneeDisplayName);
+						} else {
+							feature.setsOwnersUsername(new ArrayList<String>());
+							feature.setsOwnersShortName(new ArrayList<String>());
+							feature.setsOwnersID(new ArrayList<String>());
+							feature.setsOwnersFullName(new ArrayList<String>());
+						}
+
+						// sOwnersState - does not exist in Jira at this level
+						List<String> assigneeActive = new ArrayList<String>();
+						assigneeActive.add("Active");
+						feature.setsOwnersState(assigneeActive);
+
+						// sOwnersChangeDate - does not exist in Jira
+						feature.setsOwnersChangeDate(TOOLS.toCanonicalList(new ArrayList<String>()));
+
+						// sOwnersIsDeleted - does not exist in Jira
+						feature.setsOwnersIsDeleted(TOOLS.toCanonicalList(new ArrayList<String>()));
 					}
 
-					// sSprintChangeDate - does not exist in Jira at this asset
-					// level
-					feature.setsSprintChangeDate("");
-
-					// sSprintIsDeleted - does not exist in Jira
-					feature.setsSprintIsDeleted("False");
-
-					// sTeamID
-					feature.setsTeamID(TOOLS.sanitizeResponse(project.get("id")));
-
-					// sTeamName
-					feature.setsTeamName(TOOLS.sanitizeResponse(project.get("name")));
-
-					// sTeamChangeDate - not able to retrieve at this asset
-					// level
-					// from Jira
-					feature.setsTeamChangeDate("");
-
-					// sTeamAssetState
-					feature.setsTeamAssetState("");
-
-					// sTeamIsDeleted
-					feature.setsTeamIsDeleted("False");
-
-					// sOwnersID
-					List<String> assigneeKey = new ArrayList<String>();
-					try {
-						assigneeKey.add(TOOLS.sanitizeResponse(assignee.get("key")));
-					} catch (NullPointerException e) {
-						assigneeKey.add("");
-					}
-					feature.setsOwnersID(assigneeKey);
-
-					// sOwnersShortName
-					List<String> assigneeName = new ArrayList<String>();
-					try {
-						assigneeName.add(TOOLS.sanitizeResponse(assignee.get("name")));
-					} catch (NullPointerException e) {
-						assigneeName.add("");
-					}
-					feature.setsOwnersShortName(assigneeName);
-
-					// sOwnersFullName
-					List<String> assigneeDisplayName = new ArrayList<String>();
-					try {
-						assigneeDisplayName
-								.add(TOOLS.sanitizeResponse(assignee.get("displayName")));
-					} catch (NullPointerException e) {
-						assigneeDisplayName.add("");
-					}
-					feature.setsOwnersFullName(assigneeDisplayName);
-
-					// sOwnersUsername
-					feature.setsOwnersUsername(assigneeName);
-
-					// sOwnersState
-					List<String> assigneeActive = new ArrayList<String>();
-					try {
-						assigneeActive.add(TOOLS.sanitizeResponse(assignee.get("active")));
-					} catch (NullPointerException e) {
-						assigneeActive.add("");
-					}
-					feature.setsOwnersState(assigneeActive);
-
-					// sOwnersChangeDate - does not exist in Jira
-					List<String> temp = null;
-					feature.setsOwnersChangeDate(TOOLS.toCanonicalList(temp));
-
-					// sOwnersIsDeleted - does not exist in Jira
-					feature.setsOwnersIsDeleted(TOOLS.toCanonicalList(temp));
-
-					try {
-						featureRepo.save(feature);
-					} catch (Exception e) {
-						LOGGER.error("Unexpected error caused when attempting to save data\nCaused by:\n"
-								+ e.getMessage()
-								+ " : "
-								+ e.getCause()
-								+ "\n"
-								+ Arrays.toString(e.getStackTrace()));
-					}
-				} catch (IllegalArgumentException e) {
-					LOGGER.info("Ignoring data entry for non-feature entity");
+					// Saving back to MongoDB
+					featureRepo.save(feature);
 				}
 			}
-		} catch (NullPointerException e) {
-			LOGGER.error(
-					"A object, likely an array, was found to be null upon sanitization and thus the main object was skipped and not added to the source system.\nThis is an error that should be resolved by a developer if it continues to occur (essentially, you are now missing data):\n"
-							+ e.getMessage() + " : " + e.getCause(), e);
 		} catch (Exception e) {
 			LOGGER.error(
 					"Unexpected error caused while mapping data from source system to local data store:\n"
@@ -371,45 +388,33 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	 * 
 	 * @param epicKey
 	 *            A given Epic Key
-	 * @return A valid JSONObject with Epic data held within
+	 * @return A valid Jira Epic issue object
 	 */
-	@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingNPE" })
-	protected JSONObject getEpicData(String epicKey) {
-		JSONObject canonicalRs = new JSONObject();
+	protected List<Issue> getEpicData(String epicKey) {
+		List<Issue> epicRs = new ArrayList<Issue>();
 		String jiraCredentials = this.featureSettings.getJiraCredentials();
 		String jiraBaseUrl = this.featureSettings.getJiraBaseUrl();
-		String jiraQueryEndpoint = this.featureSettings.getJiraQueryEndpoint();
 		String query = this.featureWidgetQueries.getEpicQuery(epicKey, "epic");
-
+		String proxyUri = null;
+		String proxyPort = null;
 		try {
-			JiraDataFactoryImpl jiraConnect = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUrl,
-					jiraQueryEndpoint);
-			jiraConnect.buildBasicQuery(query);
-			JSONArray nativeRs = jiraConnect.getEpicQueryResponse();
-
-			try {
-				JSONObject innerRs = (JSONObject) nativeRs.get(0);
-				JSONObject fields = (JSONObject) innerRs.get("fields");
-				JSONObject status = (JSONObject) fields.get("status");
-				canonicalRs.put("id", innerRs.get("id"));
-				canonicalRs.put("key", innerRs.get("key"));
-				canonicalRs.put("name", fields.get("summary"));
-				canonicalRs.put("created", fields.get("created"));
-				canonicalRs.put("dueDate", fields.get("dueDate"));
-				canonicalRs.put("status", status.get("name"));
-				canonicalRs.put("updated", fields.get("updated"));
-			} catch (NullPointerException | StringIndexOutOfBoundsException
-					| ArrayIndexOutOfBoundsException e) {
-				canonicalRs.clear();
+			if (!this.featureSettings.getJiraProxyUrl().isEmpty()
+					&& (this.featureSettings.getJiraProxyPort() != null)) {
+				proxyUri = this.featureSettings.getJiraProxyUrl();
+				proxyPort = this.featureSettings.getJiraProxyPort();
 			}
+			JiraDataFactoryImpl jiraConnect = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUrl,
+					proxyUri, proxyPort);
+			jiraConnect.setQuery(query);
+			epicRs = jiraConnect.getJiraIssues();
 		} catch (Exception e) {
 			LOGGER.error(
 					"There was a problem connecting to Jira while getting sub-relationships to epics:"
 							+ e.getMessage() + " : " + e.getCause(), e);
-			canonicalRs.clear();
+			epicRs = new ArrayList<Issue>();
 		}
 
-		return canonicalRs;
+		return epicRs;
 	}
 
 	/**
@@ -430,6 +435,27 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 		LOGGER.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
 		updateObjectInformation();
 
+	}
+
+	/**
+	 * Jira story estimate in minutes, converted to hours, rounded down: For
+	 * Jira, 8 hours = 1 day; 5 days = 1 week
+	 * 
+	 * @param estimate
+	 *            Minute representation of estimate content
+	 * @return Hour representation of minutes, rounded down
+	 */
+	protected String toHours(String estimate) {
+		String hours = "";
+		long minutes = 0;
+		if ((estimate != null) && !(estimate.isEmpty())) {
+			minutes = Long.valueOf(estimate);
+			hours = TOOLS.sanitizeResponse(Integer.toString((int) (minutes / 60)));
+		} else {
+			hours = "0";
+		}
+
+		return hours;
 	}
 
 	/**

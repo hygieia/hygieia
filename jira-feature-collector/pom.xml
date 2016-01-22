@@ -117,7 +117,11 @@
 			<artifactId>guava</artifactId>
 			<version>14.0</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -149,8 +153,8 @@
 		<!-- Jira Connection Transient Dependencies -->
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
-			<artifactId>jira-rest-java-client</artifactId>
-			<version>2.0.0-m2</version>
+			<artifactId>jira-rest-java-client-core</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>

@@ -20,18 +20,18 @@ import static org.junit.Assert.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
 
 /**
@@ -48,7 +48,6 @@ public class JiraDataFactoryImplTest {
 	protected static String yesterday;
 	protected static String jiraCredentials;
 	protected static String jiraBaseUri;
-	protected static String jiraApiContext;
 	protected static String proxyUri;
 	protected static String proxyPort;
 	protected static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -66,10 +65,9 @@ public class JiraDataFactoryImplTest {
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUp() throws Exception {
 		jiraCredentials = "dW5pY286c3BhcmtsZXMK";
 		jiraBaseUri = "http://fake.jira.com/";
-		jiraApiContext = "rest/api/2";
 		proxyUri = "http://proxy.com";
 		proxyPort = "8080";
 
@@ -79,7 +77,6 @@ public class JiraDataFactoryImplTest {
 		cal.add(Calendar.DATE, -3);
 		yesterday = dateFormat.format(cal.getTime());
 		StringBuilder canonicalYesterday = new StringBuilder(yesterday);
-		// canonicalYesterday.replace(10, 11, "%20");
 
 		query = "updatedDate >= '" + canonicalYesterday + "' ORDER BY updated";
 	}
@@ -90,33 +87,14 @@ public class JiraDataFactoryImplTest {
 	 * @throws java.lang.Exception
 	 */
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDown() throws Exception {
+		jiraDataFactory = null;
 		jiraCredentials = null;
 		jiraBaseUri = null;
-		jiraApiContext = null;
 		proxyUri = null;
 		proxyPort = null;
 		yesterday = null;
 		query = null;
-	}
-
-	/**
-	 * Performs these actions before each test.
-	 * 
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	/**
-	 * Performs these actions after each test completes.
-	 * 
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-		jiraDataFactory = null;
 	}
 
 	/**
@@ -126,7 +104,7 @@ public class JiraDataFactoryImplTest {
 	 */
 	@Test
 	public void testJiraDataFactoryImpl_StandardInit() {
-		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, jiraApiContext);
+		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri);
 		assertEquals("The compared contructed page size values did not match", 1000,
 				jiraDataFactory.getPageSize());
 	}
@@ -138,7 +116,7 @@ public class JiraDataFactoryImplTest {
 	 */
 	@Test
 	public void testJiraDataFactoryImpl_InitWithExplicitPageSize() {
-		jiraDataFactory = new JiraDataFactoryImpl(500, jiraCredentials, jiraBaseUri, jiraApiContext);
+		jiraDataFactory = new JiraDataFactoryImpl(500, jiraCredentials, jiraBaseUri);
 		assertEquals("The compared contructed page size values did not match", 500,
 				jiraDataFactory.getPageSize());
 	}
@@ -150,8 +128,7 @@ public class JiraDataFactoryImplTest {
 	 */
 	@Test
 	public void testJiraDataFactoryImpl_InitWithAuthProxy() {
-		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, jiraApiContext,
-				proxyUri, proxyPort);
+		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, proxyUri, proxyPort);
 		assertEquals("The compared contructed page size values did not match", 1000,
 				jiraDataFactory.getPageSize());
 	}
@@ -163,21 +140,20 @@ public class JiraDataFactoryImplTest {
 	 */
 	@Test
 	public void testJiraDataFactoryImpl_InitWithNonAuthProxy() {
-		jiraDataFactory = new JiraDataFactoryImpl(null, jiraBaseUri, jiraApiContext, proxyUri,
-				proxyPort);
+		jiraDataFactory = new JiraDataFactoryImpl(null, jiraBaseUri, proxyUri, proxyPort);
 		assertEquals("The compared contructed page size values did not match", 1000,
 				jiraDataFactory.getPageSize());
 	}
 
 	/**
 	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#buildBasicQuery(java.lang.String)}
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#setQuery(java.lang.String)}
 	 * .
 	 */
 	@Test
 	public void testBuildBasicQuery_ConstructorPageSize_SelectedPageSize() {
-		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri, jiraApiContext);
-		jiraDataFactory.buildBasicQuery(query);
+		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri);
+		jiraDataFactory.setQuery(query);
 		assertNotNull("The basic query was created", jiraDataFactory.getBasicQuery());
 		assertEquals("The page size was accurate", 1, jiraDataFactory.getPageSize());
 		assertEquals("The page index was accurate", 0, jiraDataFactory.getPageIndex());
@@ -190,62 +166,36 @@ public class JiraDataFactoryImplTest {
 	 */
 	@Test
 	public void testBuildPagingQuery_OverrideConstructorPageSize_OverriddenPageSize() {
-		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri, jiraApiContext);
-		jiraDataFactory.buildBasicQuery(query);
-		jiraDataFactory.buildPagingQuery(30);
-		assertNotNull("The basic query was created", jiraDataFactory.getPagingQuery());
+		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri);
+		jiraDataFactory.setQuery(query);
+		jiraDataFactory.setPageIndex(30);
+		assertNotNull("The basic query was created", jiraDataFactory.getBasicQuery());
 		assertEquals("The page size was accurate", 1, jiraDataFactory.getPageSize());
 		assertEquals("The page index was accurate", 30, jiraDataFactory.getPageIndex());
 	}
 
 	/**
 	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#getPagingQueryResponse()}
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#getJiraIssues()}
 	 * .
 	 */
 	@Test
-	public void testGetPagingQueryResponse() {
-		logger.debug("RUNNING TEST FOR PAGING QUERY RESPONSE");
-		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri, jiraApiContext,
-				proxyUri, proxyPort);
-		jiraDataFactory.buildBasicQuery(query);
-		jiraDataFactory.buildPagingQuery(0);
+	public void testGetJiraIssues_StandardInputOnePage_ValidIssueRs() {
+		logger.debug("RUNNING TEST FOR SINGLE RESPONSE");
+		jiraDataFactory = new JiraDataFactoryImpl(1, jiraCredentials, jiraBaseUri, proxyUri,
+				proxyPort);
+		jiraDataFactory.setQuery(query);
 		try {
-			JSONArray rs = jiraDataFactory.getPagingQueryResponse();
+			List<Issue> rs = jiraDataFactory.getJiraIssues();
 
-			/*
-			 * Testing actual JSON for values
-			 */
-			JSONArray dataMainArry = new JSONArray();
-			JSONObject dataMainObj = new JSONObject();
-			dataMainArry = (JSONArray) rs.get(0);
-			dataMainObj = (JSONObject) dataMainArry.get(0);
-
-			logger.info("Paging query response: " + dataMainObj.get("fields").toString());
-			// fields
-			assertTrue("No valid Number was found",
-					dataMainObj.get("fields").toString().length() >= 1);
-		} catch (NullPointerException npe) {
-			fail("There was a problem with an object used to connect to Jira during the test:\n"
-					+ npe.getMessage() + " caused by: " + npe.getCause());
-		} catch (ArrayIndexOutOfBoundsException aioobe) {
-			fail("The object returned from Jira had no JSONObjects in it during the test; try increasing the scope of your test case query and try again.\n"
-					+ aioobe.getMessage() + " caused by: " + aioobe.getCause());
-		} catch (IndexOutOfBoundsException ioobe) {
-			logger.info("JSON artifact may be empty - re-running test to prove this out...");
-
-			JSONArray rs = jiraDataFactory.getPagingQueryResponse();
-
-			/*
-			 * Testing actual JSON for values
-			 */
-			String strRs = new String();
-			strRs = rs.toString();
-
-			logger.info("Paging query response: " + strRs);
-			assertEquals(
-					"There was nothing returned from Jira that is consistent with a valid response.",
-					"[[]]", strRs);
+			if (!rs.isEmpty()) {
+				logger.info("basic query response: " + rs.get(0));
+				assertTrue("No valid data set was found", rs.size() >= 0);
+			} else {
+				// Check blank response
+				assertTrue("Response object was unexpectedly null",
+						rs.equals(new ArrayList<Issue>()));
+			}
 		} catch (Exception e) {
 			fail("There was an unexpected problem while connecting to Jira during the test:\n"
 					+ e.getMessage() + " caused by: " + e.getCause());
@@ -254,52 +204,61 @@ public class JiraDataFactoryImplTest {
 
 	/**
 	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#getQueryResponse(java.lang.String)}
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#getJiraIssues()}
 	 * .
 	 */
 	@Test
-	public void testGetQueryResponse() {
-		logger.debug("RUNNING TEST FOR BASIC QUERY RESPONSE");
-		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, jiraApiContext,
-				proxyUri, proxyPort);
-		jiraDataFactory.buildBasicQuery(query);
+	public void testGetJiraIssues_MultiplePages_ValidIssueRs() {
+		logger.debug("RUNNING TEST FOR PAGING QUERY RESPONSE");
+		jiraDataFactory = new JiraDataFactoryImpl(1000, jiraCredentials, jiraBaseUri, proxyUri,
+				proxyPort);
+		jiraDataFactory.setQuery(query);
+		boolean hasMore = true;
 		try {
-			JSONArray rs = jiraDataFactory.getQueryResponse();
+			for (int i = 0; hasMore; i += 1000) {
+				jiraDataFactory.setPageIndex(i);
+				List<Issue> rs = jiraDataFactory.getJiraIssues();
+				if (rs.isEmpty()) {
+					hasMore = false;
+					// Check blank response
+					assertTrue("Response object was unexpectedly null",
+							rs.equals(new ArrayList<Issue>()));
+				}
 
-			/*
-			 * Testing actual JSON for values
-			 */
-			JSONArray dataMainArry = new JSONArray();
-			JSONObject dataMainObj = new JSONObject();
-			dataMainArry = (JSONArray) rs.get(0);
-			dataMainObj = (JSONObject) dataMainArry.get(0);
-
-			logger.info("Basic query response: " + dataMainObj.get("fields").toString());
-			// fields
-			assertTrue("No valid Number was found",
-					dataMainObj.get("fields").toString().length() >= 1);
-		} catch (NullPointerException npe) {
-			fail("There was a problem with an object used to connect to Jira during the test\n"
-					+ npe.getMessage() + " caused by: " + npe.getCause());
-		} catch (ArrayIndexOutOfBoundsException aioobe) {
-			fail("The object returned from Jira had no JSONObjects in it during the test; try increasing the scope of your test case query and try again\n"
-					+ aioobe.getMessage() + " caused by: " + aioobe.getCause());
-		} catch (IndexOutOfBoundsException ioobe) {
-			logger.info("JSON artifact may be empty - re-running test to prove this out...");
-			JSONArray rs = jiraDataFactory.getQueryResponse();
-
-			/*
-			 * Testing actual JSON for values
-			 */
-			String strRs = new String();
-			strRs = rs.toString();
-
-			logger.info("Basic query response: " + strRs);
-			assertEquals(
-					"There was nothing returned from Jira that is consistent with a valid response.",
-					"[[]]", strRs);
+				if (hasMore) {
+					// Only validate if there are no more responses
+					logger.info("Paging query response: " + rs.get(0));
+					assertTrue("No valid data set was found", rs.size() >= 0);
+				}
+			}
 		} catch (Exception e) {
-			fail("There was an unexpected problem while connecting to Jira during the test\n"
+			fail("There was an unexpected problem while connecting to Jira during the test:\n"
+					+ e.getMessage() + " caused by: " + e.getCause());
+		}
+	}
+
+	/**
+	 * Test method for
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#getJiraIssues()}
+	 * .
+	 */
+	@Test
+	public void testGetJiraTeams_StandardInput_AllTeamRs() {
+		logger.debug("RUNNING TEST FOR All TEAM RESPONSE");
+		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, proxyUri, proxyPort);
+		try {
+			List<BasicProject> rs = jiraDataFactory.getJiraTeams();
+
+			if (!rs.isEmpty()) {
+				logger.info("basic query response: " + rs.get(0));
+				assertTrue("No valid data set was found", !rs.isEmpty());
+			} else {
+				// Check blank response
+				assertTrue("Response object was unexpectedly null",
+						rs.equals(new ArrayList<Issue>()));
+			}
+		} catch (Exception e) {
+			fail("There was an unexpected problem while connecting to Jira during the test:\n"
 					+ e.getMessage() + " caused by: " + e.getCause());
 		}
 	}

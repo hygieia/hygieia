@@ -36,9 +36,9 @@ import static org.junit.Assert.assertNotNull;
  * Tests key facets of the ClientUtilTest class, which is responsible for
  * orchestrating updates to the local repositories based on data from the source
  * system.
- *
+ * 
  * @author KFK884
- *
+ * 
  */
 public class ClientUtilTest {
 	private static Logger logger = LoggerFactory.getLogger("ClientUtilTest");
@@ -68,7 +68,6 @@ public class ClientUtilTest {
 	public void tearDown() throws Exception {
 	}
 
-
 	/**
 	 * Tests capabilities of string sanitizing method to, in fact, sanitize data
 	 */
@@ -78,8 +77,8 @@ public class ClientUtilTest {
 		byte[] b = { (byte) 0xc3, (byte) 0x28 };
 		badEncoding = new String(b);
 
-		assertEquals("Santized test object did not match expected output",
-				"Happy Path", classUnderTest.sanitizeResponse("Happy Path"));
+		assertEquals("Santized test object did not match expected output", "Happy Path",
+				classUnderTest.sanitizeResponse("Happy Path"));
 		assertEquals("Santized test object did not match expected output", "",
 				classUnderTest.sanitizeResponse(""));
 		assertEquals("Santized test object did not match expected output", "",
@@ -93,8 +92,7 @@ public class ClientUtilTest {
 		// This test is slightly misleading - there is no good way natively to
 		// handle for removal of character set mapping tests in Java
 		assertNotEquals("Santized test object did not match expected output",
-				"[INVALID NON UTF-8 ENCODING]",
-				classUnderTest.sanitizeResponse(badEncoding));
+				"[INVALID NON UTF-8 ENCODING]", classUnderTest.sanitizeResponse(badEncoding));
 	}
 
 	/**
@@ -104,24 +102,18 @@ public class ClientUtilTest {
 	@Test
 	public void testToCanonicalDate() {
 		String testLongDateFormat = new String("2015-01-03T00:00:00.0000000");
-		String testLongDateFormatJira = new String(
-				"2015-06-15T12:49:08.005-0400");
+		String testLongDateFormatJira = new String("2015-06-15T12:49:08.005-0400");
 		String testBlank = "";
 
-		assertEquals(
-				"Actual date format did not match expected date format output",
-				"2015-01-03T00:00:00.0000000",
-				classUnderTest.toCanonicalDate(testLongDateFormat));
-		assertEquals(
-				"Actual date format did not match expected date format output",
+		assertEquals("Actual date format did not match expected date format output",
+				"2015-01-03T00:00:00.0000000", classUnderTest.toCanonicalDate(testLongDateFormat));
+		assertEquals("Actual date format did not match expected date format output",
 				"2015-06-15T12:49:08.0050000",
 				classUnderTest.toCanonicalDate(testLongDateFormatJira));
-		assertEquals(
-				"Actual date format did not match expected date format output",
-				"", classUnderTest.toCanonicalDate(testBlank));
-		assertEquals(
-				"Actual date format did not match expected date format output",
-				"", classUnderTest.toCanonicalDate(null));
+		assertEquals("Actual date format did not match expected date format output", "",
+				classUnderTest.toCanonicalDate(testBlank));
+		assertEquals("Actual date format did not match expected date format output", "",
+				classUnderTest.toCanonicalDate(null));
 	}
 
 	/**
@@ -131,13 +123,11 @@ public class ClientUtilTest {
 	public void testToCanonicalList() {
 		List<String> testStr = null;
 
-		assertNotNull("Canonical list was null",
-				classUnderTest.toCanonicalList(testStr));
+		assertNotNull("Canonical list was null", classUnderTest.toCanonicalList(testStr));
 
 		testStr = new ArrayList<String>();
 		testStr.add("This is a test value");
-		assertNotNull("Canonical list was null",
-				classUnderTest.toCanonicalList(testStr));
+		assertNotNull("Canonical list was null", classUnderTest.toCanonicalList(testStr));
 	}
 
 	/**
@@ -146,7 +136,7 @@ public class ClientUtilTest {
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testToCanonicalSprint() {
+	public void testToCanonicalSprintJSON() {
 		String testSprint = new String(
 				"com.atlassian.greenhopper.service.sprint.Sprint@2e1b47d5[id=561,rapidViewId=244,state=ACTIVE,name=Sharknado- Sprint 12,startDate=2015-06-04T09:22:11.525-04:00,endDate=2015-06-16T19:00:00.000-04:00,completeDate=<null>,sequence=561]");
 		JSONObject expectedBlank = new JSONObject();
@@ -160,46 +150,32 @@ public class ClientUtilTest {
 		expectedFull.put("completeDate", "<null>");
 		expectedFull.put("sequence", "561");
 
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				expectedBlank, classUnderTest.toCanonicalSprint(null));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				expectedFull.size(),
-				classUnderTest.toCanonicalSprint(testSprint).size());
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				expectedFull.get("id"),
-				classUnderTest.toCanonicalSprint(testSprint).get("id"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				expectedFull.get("rapidViewId"), classUnderTest
-						.toCanonicalSprint(testSprint).get("rapidViewId"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
+		assertEquals("Actual sprint format did not match expected sprint format", expectedBlank,
+				classUnderTest.toCanonicalSprintJSON(null));
+		assertEquals("Actual sprint format did not match expected sprint format",
+				expectedFull.size(), classUnderTest.toCanonicalSprintJSON(testSprint).size());
+		assertEquals("Actual sprint format did not match expected sprint format",
+				expectedFull.get("id"), classUnderTest.toCanonicalSprintJSON(testSprint).get("id"));
+		assertEquals("Actual sprint format did not match expected sprint format",
+				expectedFull.get("rapidViewId"), classUnderTest.toCanonicalSprintJSON(testSprint)
+						.get("rapidViewId"));
+		assertEquals("Actual sprint format did not match expected sprint format",
 				expectedFull.get("state"),
-				classUnderTest.toCanonicalSprint(testSprint).get("state"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
+				classUnderTest.toCanonicalSprintJSON(testSprint).get("state"));
+		assertEquals("Actual sprint format did not match expected sprint format",
 				expectedFull.get("name"),
-				classUnderTest.toCanonicalSprint(testSprint).get("name"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				expectedFull.get("startDate"), classUnderTest
-						.toCanonicalSprint(testSprint).get("startDate"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
+				classUnderTest.toCanonicalSprintJSON(testSprint).get("name"));
+		assertEquals("Actual sprint format did not match expected sprint format",
+				expectedFull.get("startDate"), classUnderTest.toCanonicalSprintJSON(testSprint)
+						.get("startDate"));
+		assertEquals("Actual sprint format did not match expected sprint format",
 				expectedFull.get("endDate"),
-				classUnderTest.toCanonicalSprint(testSprint).get("endDate"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				"",
-				classUnderTest.toCanonicalSprint(testSprint)
-						.get("completeDate"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
+				classUnderTest.toCanonicalSprintJSON(testSprint).get("endDate"));
+		assertEquals("Actual sprint format did not match expected sprint format", "",
+				classUnderTest.toCanonicalSprintJSON(testSprint).get("completeDate"));
+		assertEquals("Actual sprint format did not match expected sprint format",
 				expectedFull.get("sequence"),
-				classUnderTest.toCanonicalSprint(testSprint).get("sequence"));
+				classUnderTest.toCanonicalSprintJSON(testSprint).get("sequence"));
 
 		testSprint = new String(
 				"com.atlassian.greenhopper.service.sprint.Sprint@78d510cf[id=590,rapidViewId=265,state=FUTURE,name=Chassis Sprint 1.1,startDate=2015-06-04T09:22:11.525-04:00,endDate=<null>,completeDate=<null>,sequence=590]");
@@ -216,45 +192,31 @@ public class ClientUtilTest {
 		expectedFull.put("completeDate", "<null>");
 		expectedFull.put("sequence", "590");
 
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				expectedBlank, classUnderTest.toCanonicalSprint(null));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				expectedFull.size(),
-				classUnderTest.toCanonicalSprint(testSprint).size());
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				expectedFull.get("id"),
-				classUnderTest.toCanonicalSprint(testSprint).get("id"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				expectedFull.get("rapidViewId"), classUnderTest
-						.toCanonicalSprint(testSprint).get("rapidViewId"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
+		assertEquals("Actual sprint format did not match expected sprint format", expectedBlank,
+				classUnderTest.toCanonicalSprintJSON(null));
+		assertEquals("Actual sprint format did not match expected sprint format",
+				expectedFull.size(), classUnderTest.toCanonicalSprintJSON(testSprint).size());
+		assertEquals("Actual sprint format did not match expected sprint format",
+				expectedFull.get("id"), classUnderTest.toCanonicalSprintJSON(testSprint).get("id"));
+		assertEquals("Actual sprint format did not match expected sprint format",
+				expectedFull.get("rapidViewId"), classUnderTest.toCanonicalSprintJSON(testSprint)
+						.get("rapidViewId"));
+		assertEquals("Actual sprint format did not match expected sprint format",
 				expectedFull.get("state"),
-				classUnderTest.toCanonicalSprint(testSprint).get("state"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
+				classUnderTest.toCanonicalSprintJSON(testSprint).get("state"));
+		assertEquals("Actual sprint format did not match expected sprint format",
 				expectedFull.get("name"),
-				classUnderTest.toCanonicalSprint(testSprint).get("name"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				expectedFull.get("startDate"), classUnderTest
-						.toCanonicalSprint(testSprint).get("startDate"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				"", classUnderTest.toCanonicalSprint(testSprint).get("endDate"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
-				"",
-				classUnderTest.toCanonicalSprint(testSprint)
-						.get("completeDate"));
-		assertEquals(
-				"Actual sprint format did not match expected sprint format",
+				classUnderTest.toCanonicalSprintJSON(testSprint).get("name"));
+		assertEquals("Actual sprint format did not match expected sprint format",
+				expectedFull.get("startDate"), classUnderTest.toCanonicalSprintJSON(testSprint)
+						.get("startDate"));
+		assertEquals("Actual sprint format did not match expected sprint format", "",
+				classUnderTest.toCanonicalSprintJSON(testSprint).get("endDate"));
+		assertEquals("Actual sprint format did not match expected sprint format", "",
+				classUnderTest.toCanonicalSprintJSON(testSprint).get("completeDate"));
+		assertEquals("Actual sprint format did not match expected sprint format",
 				expectedFull.get("sequence"),
-				classUnderTest.toCanonicalSprint(testSprint).get("sequence"));
+				classUnderTest.toCanonicalSprintJSON(testSprint).get("sequence"));
 	}
 
 	/**
@@ -265,21 +227,21 @@ public class ClientUtilTest {
 	public void testToNativeDate() {
 		String testCanonicalDate = "2015-03-01T00:00:00.000000";
 
-		assertEquals("Transformed date does not meet expected output: "
-				+ classUnderTest.toNativeDate(testCanonicalDate),
-				"2015-03-01%2000:00",
+		assertEquals(
+				"Transformed date does not meet expected output: "
+						+ classUnderTest.toNativeDate(testCanonicalDate), "2015-03-01 00:00",
 				classUnderTest.toNativeDate(testCanonicalDate));
 
 		testCanonicalDate = "2015-03-01";
-		assertEquals("Transformed date does not meet expected output: "
-				+ classUnderTest.toNativeDate(testCanonicalDate),
-				"2015-03-01%2000:00",
+		assertEquals(
+				"Transformed date does not meet expected output: "
+						+ classUnderTest.toNativeDate(testCanonicalDate), "2015-03-01 00:00",
 				classUnderTest.toNativeDate(testCanonicalDate));
 
 		testCanonicalDate = null;
-		assertEquals("Transformed date does not meet expected output: "
-				+ classUnderTest.toNativeDate(testCanonicalDate),
-				"1900-01-01%2000:00",
+		assertEquals(
+				"Transformed date does not meet expected output: "
+						+ classUnderTest.toNativeDate(testCanonicalDate), "1900-01-01 00:00",
 				classUnderTest.toNativeDate(testCanonicalDate));
 	}
 }

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Collects {@link FeatureCollector} data from feature content source system.
- *
+ * 
  * @author KFK884
  */
 @Component
@@ -36,7 +36,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 * Default constructor for the collector task. This will construct this
 	 * collector task with all repository, scheduling, and settings
 	 * configurations custom to this collector.
-	 *
+	 * 
 	 * @param taskScheduler
 	 *            A task scheduler artifact
 	 * @param teamRepository
@@ -46,11 +46,9 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 *            system
 	 */
 	@Autowired
-	public FeatureCollectorTask(TaskScheduler taskScheduler,
-			FeatureRepository featureRepository, ScopeOwnerRepository teamRepository,
-			ScopeRepository projectRepository,
-			FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings) {
+	public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureRepository featureRepository,
+			ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
+			FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings) {
 		super(taskScheduler, Constants.JIRA);
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepository = teamRepository;
@@ -92,19 +90,16 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	public void collect(FeatureCollector collector) {
 		LOGGER.info("Starting Feature collection...");
 
-		TeamDataClientImpl teamData = new TeamDataClientImpl(
-				this.featureCollectorRepository, this.featureSettings,
-				this.teamRepository);
+		TeamDataClientImpl teamData = new TeamDataClientImpl(this.featureCollectorRepository,
+				this.featureSettings, this.teamRepository);
 		teamData.updateTeamInformation();
 
-		ProjectDataClientImpl projectData = new ProjectDataClientImpl(
-				this.featureSettings, this.projectRepository,
-				this.featureCollectorRepository);
+		ProjectDataClientImpl projectData = new ProjectDataClientImpl(this.featureSettings,
+				this.projectRepository, this.featureCollectorRepository);
 		projectData.updateProjectInformation();
 
-		StoryDataClientImpl storyData = new StoryDataClientImpl(
-				this.featureSettings, this.featureRepository,
-				this.featureCollectorRepository);
+		StoryDataClientImpl storyData = new StoryDataClientImpl(this.featureSettings,
+				this.featureRepository, this.featureCollectorRepository);
 		storyData.updateStoryInformation();
 
 		LOGGER.info("Feature Data Collection Finished");

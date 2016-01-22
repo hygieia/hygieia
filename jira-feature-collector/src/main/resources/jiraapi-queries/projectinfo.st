@@ -1,1 +1,0 @@
-projectinfo() ::= "project?jql=+order+by+name"

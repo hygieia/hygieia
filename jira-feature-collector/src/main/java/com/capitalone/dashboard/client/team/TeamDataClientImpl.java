@@ -1,15 +1,16 @@
 package com.capitalone.dashboard.client.team;
 
+import java.util.Iterator;
+import java.util.List;
+
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.FeatureSettings;
-import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import org.bson.types.ObjectId;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,6 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 	private static final ClientUtil TOOLS = new ClientUtil();
 
 	private final FeatureSettings featureSettings;
-	private final FeatureWidgetQueries featureWidgetQueries;
 	private final ScopeOwnerRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
 
@@ -47,57 +47,65 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 		this.featureSettings = featureSettings;
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepo = teamRepository;
-		this.featureWidgetQueries = new FeatureWidgetQueries(this.featureSettings);
 	}
 
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
 	 * 
-	 * @param tmpMongoDetailArray
-	 *            A JSON response in JSONArray format from the source system
-	 * @param featureCollector
+	 * @param currentPagedJiraRs
+	 *            A list response of Jira issues from the source system
 	 */
-	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
+	@Override
+	protected void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
 		try {
-			for (int i = 0; i < tmpMongoDetailArray.size(); i++) {
-				JSONObject dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
-				ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
-				
-				// ?
-				boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(dataMainObj
-						.get("id")));
+			LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
+			if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
+				Iterator<BasicProject> globalResponseItr = currentPagedJiraRs.iterator();
+				while (globalResponseItr.hasNext()) {
+					/*
+					 * Initialize DOMs
+					 */
+					ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
+					BasicProject jiraTeam = globalResponseItr.next();
 
-				// Id
-				if (deleted) {
-					team.setId(this.getOldTeamId());
-					team.setEnabled(this.isOldTeamEnabledState());
-				}
+					/*
+					 * Removing any existing entities where they exist in the
+					 * local DB store...
+					 */
+					boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(jiraTeam
+							.getId()));
 
-				// collectorId
-				team.setCollectorId(featureCollectorRepository.findByName(Constants.JIRA).getId());
+					/*
+					 * Team Data
+					 */
+					// Id
+					if (deleted) {
+						team.setId(this.getOldTeamId());
+						team.setEnabled(this.isOldTeamEnabledState());
+					}
 
-				// teamId
-				team.setTeamId(TOOLS.sanitizeResponse(dataMainObj.get("id")));
+					// collectorId
+					team.setCollectorId(featureCollectorRepository.findByName(Constants.JIRA)
+							.getId());
 
-				// name
-				team.setName(TOOLS.sanitizeResponse(dataMainObj.get("name")));
+					// teamId
+					team.setTeamId(TOOLS.sanitizeResponse(jiraTeam.getId()));
 
-				// changeDate - does not exist for jira
-				team.setChangeDate("");
+					// name
+					team.setName(TOOLS.sanitizeResponse(jiraTeam.getName()));
 
-				// assetState - does not exist for jira
-				team.setAssetState("Active");
+					// changeDate - does not exist for jira
+					team.setChangeDate("");
 
-				// isDeleted - does not exist for jira
-				team.setIsDeleted("False");
+					// assetState - does not exist for jira
+					team.setAssetState("Active");
 
-				try {
+					// isDeleted - does not exist for jira
+					team.setIsDeleted("False");
+
+					// Saving back to MongoDB
 					teamRepo.save(team);
-				} catch (Exception e) {
-					LOGGER.error(
-							"Unexpected error caused when attempting to save data\nCaused by: "
-									+ e.getMessage() + " : " + e.getCause(), e);
 				}
 			}
 		} catch (Exception e) {
@@ -118,9 +126,6 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 			super.returnDate = super.getMaxChangeDate();
 		}
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
-		String queryName = this.featureSettings.getTeamQuery();
-		super.query = this.featureWidgetQueries.getQuery(queryName);
-		LOGGER.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
 		updateObjectInformation();
 	}
 
