@@ -65,7 +65,6 @@ for information about sourcing this properties file.
 
     #Jira Connection Details
     feature.jiraBaseUrl=http://jira-instance.com/
-    feature.jiraQueryEndpoint=rest/api/2/
     #64-bit encoded credentials with the pattern username:password
     feature.jiraCredentials=YWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzOiB5b3UgYXJlIG9uIHRoZSB3YXkgdG8gZGVzdHJ1Y3Rpb246IG1ha2UgeW91ciB0aW1l
     #OAuth2.0 token credentials (currently not supported in this version)
