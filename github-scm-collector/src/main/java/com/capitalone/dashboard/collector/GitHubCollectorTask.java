@@ -77,7 +77,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 	 * Clean up unused deployment collector items
 	 *
 	 * @param collector
-	 *            the {@link UDeployCollector}
+	 *            the {@link Collector}
 	 */
     @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, fixme
 	private void clean(Collector collector) {
@@ -126,10 +126,10 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
         clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
-            if (repo.isPushed()) continue;
         	boolean firstRun = false;
         	if (repo.getLastUpdated() == 0) firstRun = true;
         	repo.setLastUpdated(System.currentTimeMillis());
+            repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
             gitHubRepoRepository.save(repo);
             LOG.debug(repo.getOptions().toString()+"::"+repo.getBranch());
             for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
