@@ -12,11 +12,4 @@ after_success:
   - codecov
 branches:
   only:
-#  - master
-  - hygieia-2.0
-addons:
-  artifacts: true
-  debug: true
-  paths:
-  - UI/dist
-  - api/target/api.jar
+  - master
