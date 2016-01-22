@@ -7,7 +7,6 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.QCommit;
-import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -33,19 +32,16 @@ public class CommitServiceImpl implements CommitService {
     private final CommitRepository commitRepository;
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
-    private final CollectorItemRepository collectorItemRepository;
     private final CollectorService collectorService;
 
     @Autowired
     public CommitServiceImpl(CommitRepository commitRepository,
                              ComponentRepository componentRepository,
                              CollectorRepository collectorRepository,
-                             CollectorItemRepository collectorItemRepository,
                              CollectorService colllectorService) {
         this.commitRepository = commitRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
-        this.collectorItemRepository = collectorItemRepository;
         this.collectorService = colllectorService;
     }
 
@@ -86,10 +82,9 @@ public class CommitServiceImpl implements CommitService {
     }
 
     @Override
-    public String createFromGitHubv3(JSONObject request) {
+    public String createFromGitHubv3(JSONObject request) throws ParseException {
         StringBuffer buffer = new StringBuffer();
         GitHubv3 gitHubv3 = null;
-        try {
             gitHubv3 = new GitHubv3(request);
 
             if ((gitHubv3.getCollector() == null) || (gitHubv3.getCollectorItem() == null) || (CollectionUtils.isEmpty(gitHubv3.getCommits())))
@@ -112,10 +107,7 @@ public class CommitServiceImpl implements CommitService {
                 }
             }
             return col.getId() + ":" + colItem.getId() + ":" + count + " new commits inserted.";
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return "";
+
     }
 
 
@@ -190,7 +182,7 @@ public class CommitServiceImpl implements CommitService {
 //            JSONArray commitArray = paresAsArray(commitsObject.toJSONString());
 
             JSONObject repoObject = (JSONObject) jsonObject.get("repository");
-            url = str(repoObject, "url");
+            url = str(repoObject, "url"); // Repo can be null, but ok to throw NPE.
             branch = str(jsonObject, "ref").replace("refs/heads/", ""); //wow!
             if (CollectionUtils.isEmpty(commitArray)) return;
             for (Object c : commitArray) {
@@ -204,9 +196,7 @@ public class CommitServiceImpl implements CommitService {
                         ((JSONArray) cObj.get("removed")).size() +
                         ((JSONArray) cObj.get("modified")).size();
                 Commit commit = new Commit();
-
                 commit.setScmUrl(url);
-
                 commit.setTimestamp(System.currentTimeMillis()); // this is hygieia timestamp.
                 commit.setScmRevisionNumber(str(cObj, "id"));
                 commit.setScmAuthor(author);
@@ -221,16 +211,6 @@ public class CommitServiceImpl implements CommitService {
         private String str(JSONObject json, String key) {
             Object value = json.get(key);
             return (value == null) ? null : value.toString();
-        }
-
-        private JSONArray paresAsArray(String json) {
-            try {
-                return (JSONArray) new JSONParser().parse(json);
-            } catch (ParseException pe) {
-                System.out.println(pe);
-//                LOG.error(pe.getMessage());
-            }
-            return new JSONArray();
         }
 
     }

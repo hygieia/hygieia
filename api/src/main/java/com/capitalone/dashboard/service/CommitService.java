@@ -4,6 +4,7 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.CommitRequest;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 public interface CommitService {
 
@@ -15,5 +16,5 @@ public interface CommitService {
      */
     DataResponse<Iterable<Commit>> search(CommitRequest request);
 
-    String createFromGitHubv3(JSONObject request);
+    String createFromGitHubv3(JSONObject request) throws ParseException;
 }
