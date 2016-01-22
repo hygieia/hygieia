@@ -15,11 +15,11 @@
                    class="form-control"
                    autocomplete="off"
                    ng-model="ctrl.collectorItemId"
-                   typeahead-focus
                    select-on-click
                    typeahead="item.id as item.title for item in items = (ctrl.dashboards | filter:ctrl.filterDashboards($viewValue)) | orderBy: 'title'"
                    typeahead-input-formatter="ctrl.formatLabel($model)"
-                   ng-blur="ctrl.onBlur($event)"
+                   typeahead-editable="false"
+                   ng-blur="ctrl.onBlur(addTeamForm)"
                    required />
 
             <span class="fa fa-sort-down form-control-feedback" aria-hidden="true"></span>

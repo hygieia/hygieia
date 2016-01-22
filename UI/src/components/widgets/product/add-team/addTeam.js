@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('addTeamController', addTeamController);
 
-    addTeamController.$inject = ['$scope', '$modalInstance', 'collectorData'];
-    function addTeamController($scope, $modalInstance, collectorData) {
+    addTeamController.$inject = ['$scope', '$modalInstance', 'collectorData', '$timeout'];
+    function addTeamController($scope, $modalInstance, collectorData, $timeout) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -29,15 +29,14 @@
             }
         };
 
-        // if we didn't select a value that matches an item in the list, clear the field.
-        // since the id will actually be stored in ctrl.collectorItemId when it matches
-        // an item even though the title is displayed this lets us compare the two. When
-        // they match it means the dashboard id wasn't in the list
-        ctrl.onBlur = function(event) {
-            var field = document.addTeamForm.collectorItemId;
-            if(!!field.value && field.value == ctrl.collectorItemId) {
-                field.value = '';
-            }
+        // this is a workaround to clear out values that are not valid team dashboard names
+        ctrl.onBlur = function(form) {
+            $timeout(function () {
+                if (!ctrl.collectorItemId) {   //the model was not set by the typeahead
+                    form.collectorItemId.$setViewValue('');
+                    form.collectorItemId.$render();
+                }
+            }, 250);    //a 250 ms delay should be safe enough
         };
 
         // workaround to allow the dashboard to store the id, but display the title

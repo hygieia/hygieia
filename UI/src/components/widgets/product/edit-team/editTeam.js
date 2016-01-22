@@ -11,6 +11,7 @@
         var ctrl = this,
             team = editTeamConfig.team;
 
+        ctrl.teamName = team.name;
         ctrl.customName = team.customName;
         if(team.customName) {
             ctrl.customName = team.customName;

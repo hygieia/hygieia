@@ -46,7 +46,7 @@
 
         //gets list of owned dashboard
         function mydashboard(username){
-          return getPromise(HygieiaConfig.local ? testOwnedRoute : mydashboardRoute+ "/" + username);
+          return getPromise(HygieiaConfig.local ? testOwnedRoute : mydashboardRoute+ '/?username=' + username);
         }
 
         //gets dashboard owner from dashboard title
