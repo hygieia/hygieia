@@ -150,8 +150,8 @@
             }, function(response) {
                 var msg = 'An error occurred while deleting the dashboard';
 
-                if(response.status > 204) {
-                    msg = response.data.errorMessage;
+                if(response.status > 204 && response.status < 500) {
+                    msg = 'The Team Dashboard is currently being used by a Product Dashboard/s. You cannot delete at this time.';
                 }
 
                 swal(msg);

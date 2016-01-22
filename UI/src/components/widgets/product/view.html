@@ -21,6 +21,7 @@
             <tbody>
                 <tr class="team-row"
                     ng-repeat="item in ctrl.configuredTeams">
+
                     <td class="team-name-cell">
                         <span class="fa fa-cog" ng-click="ctrl.editTeam(item)"></span>
 
@@ -35,41 +36,42 @@
 
                             <div class="row">
                                 <div class="col-xs-4">
-                                    <span class="quality-cell-wrapper">
-                                        <div class="quality-num">
-                                            <span class="fa fa-long-arrow-up text-success"></span>
-                                            80%
-                                        </div>
-                                        <div class="quality-text">
-                                            Func tests passed
-                                        </div>
-                                    </span>
+                <span class="quality-cell-wrapper">
+                    <div class="quality-num">
+                        <span class="fa fa-long-arrow-up text-success"></span>
+                        80%
+                    </div>
+                    <div class="quality-text">
+                        Func tests passed
+                    </div>
+                </span>
                                 </div>
                                 <div class="col-xs-4 text-center">
-                                    <span class="quality-cell-wrapper">
-                                        <div class="quality-num">
-                                            <span class="fa fa-long-arrow-down text-danger"></span>
-                                            92%
-                                        </div>
-                                        <div class="quality-text">
-                                            Build success rate
-                                        </div>
-                                    </span>
+                <span class="quality-cell-wrapper">
+                    <div class="quality-num">
+                        <span class="fa fa-long-arrow-down text-danger"></span>
+                        92%
+                    </div>
+                    <div class="quality-text">
+                        Build success rate
+                    </div>
+                </span>
                                 </div>
                                 <div class="col-xs-4 text-right">
-                                    <span class="quality-cell-wrapper">
-                                        <div class="quality-num">
-                                            <span class="fa fa-long-arrow-up text-success"></span>
-                                            0:43
-                                        </div>
-                                        <div class="quality-text">
-                                            Avg time to fix
-                                        </div>
-                                    </span>
+                <span class="quality-cell-wrapper">
+                    <div class="quality-num">
+                        <span class="fa fa-long-arrow-up text-success"></span>
+                        0:43
+                    </div>
+                    <div class="quality-text">
+                        Avg time to fix
+                    </div>
+                </span>
                                 </div>
                             </div>
                         </div>
                     </td>
+
                     <td class="team-data-cell">
                         <div class="team-data-cell-header">
                             <div class="clearfix">
@@ -97,9 +99,9 @@
                             <commit-blocks commit-fail="1200" commit-pass="37"></commit-blocks>
                         </div>
 
-                        <div class="team-data-cell-last-build">
-                            Latest build #: <span class="team-data-cell-last-build-num">73</span>
-                        </div>
+                        <!--<div class="team-data-cell-last-build">-->
+                            <!--Latest build #: <span class="team-data-cell-last-build-num">73</span>-->
+                        <!--</div>-->
 
                     </td>
                     <td></td>

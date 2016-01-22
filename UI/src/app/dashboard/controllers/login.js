@@ -29,16 +29,13 @@
 
 
         function doCheckState() {
-            //Call the method to make sure api layer is up
-            checkApi();
-
             if ($cookies.authenticated) {
                 $location.path('/site');
+                return;
+            }
 
-            }
-            else {
-                $location.path('/');
-            }
+            //Call the method to make sure api layer is up
+            checkApi();
         }
 
         function doLogin(valid) {
