@@ -5,6 +5,7 @@ var browserSync = require('browser-sync'),
     chalk = require('chalk'),
     gulp = require('gulp'),
     tmplCache = require('gulp-angular-templatecache'),
+    change = require('gulp-change'),
     clean = require('gulp-clean'),
     consolidate = require('gulp-consolidate'),
     filter = require('gulp-filter'),
@@ -16,7 +17,7 @@ var browserSync = require('browser-sync'),
     rename = require('gulp-rename'),
     replace = require('gulp-replace'),
     httpProxy = require('http-proxy'),
-    cssGlobbing = require('gulp-css-globbing'),
+    glob = require('glob'),
     runSequence = require('run-sequence'),
     wiredep = require('wiredep'),
     argv = require('yargs').argv,
@@ -82,71 +83,69 @@ for(var field in config) {
 gulp.task('default', ['build']);
 
 // moves everything to the build folder
-gulp.task('build', function() {
-    runSequence('clean', 'assets', 'themes', 'fonts', 'js', 'views', 'test-data', 'html');
+gulp.task('build', function(callback) {
+    runSequence('clean', ['assets', 'themes', 'fonts', 'js', 'views', 'test-data', 'html'], callback);
 });
 
 // run the build task, start up a browser, then
 // watch the different file locations and execute
 // the relevant tasks
-gulp.task('serve', function() {
-    runSequence('build', function() {
-        /*
-         * Location of your backend server
-         */
-        var proxyTarget = config.api || 'http://localhost:8080';
+gulp.task('serve', ['build'], function() {
+    /*
+     * Location of your backend server
+     */
+    var proxyTarget = config.api || 'http://localhost:8080';
 
-        var proxy = httpProxy.createProxyServer({
-            target: proxyTarget
+    var proxy = httpProxy.createProxyServer({
+        target: proxyTarget
+    });
+
+    proxy.on('error', function(error, req, res) {
+        res.writeHead(500, {
+            'Content-Type': 'text/plain'
         });
 
-        proxy.on('error', function(error, req, res) {
-            res.writeHead(500, {
-                'Content-Type': 'text/plain'
-            });
+        console.error(chalk.red('[Proxy]'), error);
+    });
 
-            console.error(chalk.red('[Proxy]'), error);
-        });
-
+    /*
+     * The proxy middleware is an Express middleware added to BrowserSync to
+     * handle backend request and proxy them to your backend.
+     */
+    function proxyMiddleware(req, res, next) {
         /*
-         * The proxy middleware is an Express middleware added to BrowserSync to
-         * handle backend request and proxy them to your backend.
+         * Proxy the REST API.
          */
-        function proxyMiddleware(req, res, next) {
-            /*
-             * Proxy the REST API.
-             */
-            if (/^\/api\/.*/.test(req.url)) {
-                proxy.web(req, res);
-            } else {
-                next();
-            }
+        if (/^\/api\/.*/.test(req.url)) {
+            proxy.web(req, res);
+        } else {
+            next();
         }
+    }
 
-        browserSync.init({
-            server: {
-                baseDir: hygieia.dist,
-                startPath: '/',
-                middleware: [proxyMiddleware]
-            }
-        });
+    browserSync.init({
+        server: {
+            baseDir: hygieia.dist,
+            startPath: '/',
+            middleware: [proxyMiddleware]
+        }
+    });
 
-        gulp.watch(jsFiles).on('change', function() {
-            runSequence('js', browserSync.reload);
-        });
+    gulp.watch(jsFiles).on('change', function() {
+        runSequence('js', browserSync.reload);
+    });
 
-        // watch the less files in addition to the themes
-        gulp.watch(themeFiles.concat(widgetStyleFiles)).on('change', function() {
-            runSequence('themes', browserSync.reload);
-        });
+    // watch the less files in addition to the themes
+    gulp.watch(themeFiles.concat(widgetStyleFiles)).on('change', function() {
+        runSequence('themes', browserSync.reload);
+    });
 
-        gulp.watch(viewFiles).on('change', function() {
-            runSequence('views', browserSync.reload);
-        });
+    gulp.watch(viewFiles).on('change', function() {
+        runSequence('views', browserSync.reload);
+    });
 
-        gulp.watch(testDataFiles).on('change', function() {
-            runSequence('test-data', browserSync.reload);
-        });
+    gulp.watch(testDataFiles).on('change', function() {
+        runSequence('test-data', browserSync.reload);
     });
 });
 
@@ -175,18 +174,17 @@ gulp.task('assets', function() {
 // on user preferences so there is no need to inject the
 // files in to the UI directly
 gulp.task('themes', function() {
-    gulp.src(['src/app/css/widgets.less'])
-        .pipe(inject(gulp.src(['src/components/widgets/**/*.less']), {
-            starttag: '/* inject:imports */',
-            endtag: '/* endinject */',
-            transform: function (filepath) {
-                return '@import "' + filepath.replace('/src', '../..') + '";';
-            }
-        }))
-        .pipe(gulp.dest('src/app/css'));
+    // get a list of widget files to import. this will only work if the theme
+    // file directly has the insert:widgets code. it will not work as part of an
+    // imported less file
+    var widgetLessFiles = glob.sync('src/components/widgets/**/*.less', null);
+    widgetLessFiles = widgetLessFiles.map(function(file) {
+        return "@import '" + file.replace(hygieia.src, '../../') + "';";
+    });
 
     return gulp.src(themeFiles)
         .on('error', function() {})
+        .pipe(replace('/** insert:widgets **/', widgetLessFiles.join('')))
         .pipe(less({
             paths: [
                 hygieia.src + 'components'
@@ -264,3 +262,10 @@ gulp.task('test-data', function() {
         .pipe(gulpIf(config.local, gulp.dest(hygieia.dist + 'test-data')));
 });
 
+
+gulp.task('chartist', function() {
+    return gulp
+        .src(['src/app/chartist/chartist.less'])
+        .pipe(less())
+        .pipe(gulp.dest('./'));
+});

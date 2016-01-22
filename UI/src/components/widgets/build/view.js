@@ -13,14 +13,8 @@
         var ctrl = this;
         var builds = [];
 
-        console.log($scope.widgetConfig);
-
         //region Chart Configuration
         // line chart config
-        ctrl.lineData = {
-            labels: [],
-            series: []
-        };
 
         ctrl.lineOptions = {
             plugins: [
@@ -33,10 +27,10 @@
             lineSmooth: false,
             fullWidth: true,
             chartPadding: 7,
+            axisX: {
+                showLabel: false
+            },
             axisY: {
-                offset: 30,
-                //showGrid: false,
-                showLabel: true,
                 labelInterpolationFnc: function(value) {
                     return value === 0 ? 0 : ((Math.round(value * 100) / 100) + '');
                 }
@@ -44,18 +38,22 @@
         };
 
         // bar chart config
-        ctrl.buildDurationData = {
-            labels: [],
-            series: [[]]
-        };
-
         ctrl.buildDurationOptions = {
             plugins: [
                 Chartist.plugins.threshold({
                     threshold: $scope.widgetConfig.options.buildDurationThreshold || 10
                 }),
                 Chartist.plugins.gridBoundaries(),
-                Chartist.plugins.tooltip()
+                Chartist.plugins.tooltip(),
+                Chartist.plugins.axisLabels({
+                    axisX: {
+                        labels: [
+                            moment().subtract(14, 'days').format('MMM DD'),
+                            moment().subtract(7, 'days').format('MMM DD'),
+                            moment().format('MMM DD')
+                        ]
+                    }
+                })
             ],
             stackBars: true,
             centerLabels: true,
@@ -111,12 +109,12 @@
         // the custom class, 'ct-point-halo' can be used to style the outline
         function draw(data) {
             if (data.type === 'bar') {
-                if (data.value > 0) {
+                if (data.value.y > 0) {
                     data.group.append(new Chartist.Svg('circle', {
                         cx: data.x2,
                         cy: data.y2,
                         r: 7
-                    }, 'ct-slice'));
+                    }, 'ct-slice-pie'));
                     data.y2 -= 7;
                 }
             }
@@ -144,17 +142,8 @@
             function averageBuildDuration(data, buildThreshold, cb) {
 
                 cb({
-                    labels: getLabels(),
                     series: getSeries()
                 });
-
-                function getLabels() {
-                    return [
-                        moment().subtract(14, 'days').format('MMM DD'),
-                        moment().subtract(7, 'days').format('MMM DD'),
-                        moment().format('MMM DD')
-                    ];
-                }
 
                 function getSeries() {
                     var result = getPassFail(simplify(group(filter(data))));
@@ -346,17 +335,22 @@
             // call to webworker methods nad set the controller variables with the processed values
             worker.buildsPerDay(data, function (data) {
                 //$scope.$apply(function () {
-                    console.log(data);
 
-                    ctrl.lineData.series = [
-                        {
-                            name: 'success',
-                            data: data.passed
-                        }, {
-                            name: 'failures',
-                            data: data.failed
-                        }
-                    ];
+                var labels = [];
+                _(data.passed).forEach(function() {
+                    labels.push(1);
+                });
+
+                ctrl.lineData = {
+                    labels: labels,
+                    series: [{
+                        name: 'success',
+                        data: data.passed
+                    }, {
+                        name: 'failures',
+                        data: data.failed
+                    }]
+                };
                 //});
             });
 
@@ -368,8 +362,13 @@
 
             worker.averageBuildDuration(data, $scope.widgetConfig.options.buildDurationThreshold, function (buildDurationData) {
                 //$scope.$apply(function () {
-                    ctrl.buildDurationData.labels = buildDurationData.labels;
-                    ctrl.buildDurationData.series = buildDurationData.series;
+                var labels = [];
+                _(buildDurationData.series[0]).forEach(function() {
+                    labels.push('');
+                });
+                buildDurationData.labels = labels;
+                //_(buildDurationData.series).forEach
+                ctrl.buildDurationData = buildDurationData;
                 //});
             });
 

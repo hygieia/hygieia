@@ -1,4 +1,5 @@
 @import '../../app/css/common.less';
+/** insert:widgets **/
 
 // Google fonts is blocked by vpn so the files are downloaded locally.
 // On the google fonts site you can only download formats for your current
@@ -178,10 +179,14 @@
         }
     }
 
+    .ct-grid {
+        stroke-dasharray: 2px;
+    }
+
     // chart overrides
     .ct-grid-right-y {
         stroke: @white;
-        stroke-width: 2px;
+        stroke-width: 1px;
         stroke-dasharray: none;
     }
 

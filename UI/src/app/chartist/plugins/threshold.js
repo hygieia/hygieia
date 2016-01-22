@@ -38,13 +38,17 @@
             chart.on('created', function (data) {
                 if (points.length == 2 && options.threshold) {
                     // calculate slope
-                    var a = (points[1][1] - points[0][1]) / (points[1][0] - points[0][0]);
 
-                    // calculate intersect
-                    var b = points[0][1] - a * points[0][0];
+                    var minY = data.bounds.min,
+                        maxY = data.bounds.max;
 
-                    // solve for y
-                    var y = a * options.threshold + b;
+                    // don't draw it if we don't need to
+                    if(minY > options.threshold || maxY < options.threshold) {
+                        return;
+                    }
+
+                    var height = data.chartRect.height();
+                    var y = (height - height * options.threshold / (maxY - minY)) + data.chartRect.padding.top;
 
                     // draw line
                     data.svg.elem('line', {
