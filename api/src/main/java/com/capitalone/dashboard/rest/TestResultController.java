@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.editors.CaseInsensitiveTestSuiteTypeEditor;
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.TestResult;
@@ -43,12 +44,8 @@ public class TestResultController {
 
     @RequestMapping(value = "/quality/test", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createTest(@Valid @RequestBody TestDataCreateRequest request) {
+    public ResponseEntity<String> createTest(@Valid @RequestBody TestDataCreateRequest request) throws HygieiaException {
         String response = testResultService.create(request);
-        if ("".equals(response)) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST).body("");
-        }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);

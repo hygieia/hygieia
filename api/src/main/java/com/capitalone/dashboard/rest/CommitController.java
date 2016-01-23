@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.rest;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.CommitRequest;
@@ -32,19 +33,15 @@ public class CommitController {
     }
 
     @RequestMapping(value = "/commit", method = GET, produces = APPLICATION_JSON_VALUE)
-    public DataResponse<Iterable<Commit>> builds(@Valid CommitRequest request) {
+    public DataResponse<Iterable<Commit>> search(@Valid CommitRequest request) {
         return commitService.search(request);
     }
 
 
     @RequestMapping(value = "/commit/github/v3", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createGitHubv3(@RequestBody JSONObject request) throws ParseException {
+    public ResponseEntity<String> createGitHubv3(@RequestBody JSONObject request) throws ParseException, HygieiaException {
         String response = commitService.createFromGitHubv3(request);
-        if ("".equals(response)) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST).body("");
-        }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);

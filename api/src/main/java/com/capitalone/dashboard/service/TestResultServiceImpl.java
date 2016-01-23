@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -95,29 +96,30 @@ public class TestResultServiceImpl implements TestResultService {
     }
 
     @Override
-    public String create(TestDataCreateRequest request) {
+    public String create(TestDataCreateRequest request) throws HygieiaException {
         /**
          * Step 1: create Collector if not there
          * Step 2: create Collector item if not there
-         * Step 3: Insert build data if new. If existing, delete old one and insert new one.
+         * Step 3: Insert test data if new. If existing, update it
          */
         Collector collector = createCollector();
 
         if (collector == null) {
-            return "";
+            throw new HygieiaException("Failed creating collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
         }
 
         CollectorItem collectorItem = createCollectorItem(collector, request);
 
         if (collectorItem == null) {
-            return "";
+            throw new HygieiaException("Failed creating collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
         }
+
 
         TestResult testResult = createTest(collectorItem, request);
 
 
         if (testResult == null) {
-            return "";
+            throw new HygieiaException("Failed creating collector item.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
         return testResult.getId().toString();
@@ -147,7 +149,12 @@ public class TestResultServiceImpl implements TestResultService {
     }
 
     private TestResult createTest(CollectorItem collectorItem, TestDataCreateRequest request) {
-        TestResult testResult = new TestResult();
+        TestResult testResult = testResultRepository.findByCollectorItemIdAndExecutionId(collectorItem.getId(),
+                request.getExecutionId());
+        if (testResult == null) {
+            testResult = new TestResult();
+        }
+
         testResult.setCollectorItemId(collectorItem.getId());
         testResult.setType(request.getType());
         testResult.setDescription(request.getDescription());
@@ -164,12 +171,6 @@ public class TestResultServiceImpl implements TestResultService {
         testResult.setUrl(request.getTestJobUrl());
         testResult.getTestCapabilities().addAll(request.getTestCapabilities());
         testResult.setBuildId(request.getTestJobId());
-        TestResult existingTest = testResultRepository.findByCollectorItemIdAndExecutionId(collectorItem.getId(),
-                testResult.getExecutionId());
-
-        if (existingTest != null) {
-            testResultRepository.delete(existingTest);
-        }
 
         return testResultRepository.save(testResult);
     }

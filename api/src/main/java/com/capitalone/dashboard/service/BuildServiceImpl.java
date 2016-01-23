@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.Collector;
@@ -76,28 +77,28 @@ public class BuildServiceImpl implements BuildService {
     }
 
     @Override
-    public String create(BuildDataCreateRequest request) {
+    public String create(BuildDataCreateRequest request) throws HygieiaException {
         /**
          * Step 1: create Collector if not there
          * Step 2: create Collector item if not there
-         * Step 3: Insert build data if new. If existing, delete old one and insert new one.
+         * Step 3: Insert build data if new. If existing, update it.
          */
         Collector collector = createCollector();
 
         if (collector == null) {
-            return "";
+            throw new HygieiaException("Failed creating collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
         }
 
         CollectorItem collectorItem = createCollectorItem(collector, request);
 
         if (collectorItem == null) {
-            return "";
+            throw new HygieiaException("Failed creating collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
         }
 
         Build build = createBuild(collectorItem, request);
 
         if (build == null) {
-            return "";
+            throw new HygieiaException("Failed inserting/updating build information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
         return build.getId().toString();
@@ -128,7 +129,11 @@ public class BuildServiceImpl implements BuildService {
     }
 
     private Build createBuild(CollectorItem collectorItem, BuildDataCreateRequest request) {
-        Build build = new Build();
+        Build build = buildRepository.findByCollectorItemIdAndNumber(collectorItem.getId(),
+                request.getNumber());
+        if (build == null) {
+             build = new Build();
+        }
         build.setNumber(request.getNumber());
         build.setBuildUrl(request.getBuildUrl());
         build.setStartTime(request.getStartTime());
@@ -139,13 +144,6 @@ public class BuildServiceImpl implements BuildService {
         build.setCollectorItemId(collectorItem.getId());
         build.setSourceChangeSet(request.getSourceChangeSet());
         build.setTimestamp(System.currentTimeMillis());
-        Build existingBuild = buildRepository.findByCollectorItemIdAndNumber(collectorItem.getId(),
-                build.getNumber());
-
-        if (existingBuild != null) {
-            buildRepository.delete(existingBuild);
-        }
-
-        return buildRepository.save(build);
+        return buildRepository.save(build); // Save = Update (if ID present) or Insert (if ID not there)
     }
 }

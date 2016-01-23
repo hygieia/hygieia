@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.CommitRequest;
@@ -16,5 +17,5 @@ public interface CommitService {
      */
     DataResponse<Iterable<Commit>> search(CommitRequest request);
 
-    String createFromGitHubv3(JSONObject request) throws ParseException;
+    String createFromGitHubv3(JSONObject request) throws ParseException, HygieiaException;
 }

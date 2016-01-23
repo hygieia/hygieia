@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -47,7 +48,7 @@ public class CommitServiceImpl implements CommitService {
 
     @Override
     public DataResponse<Iterable<Commit>> search(CommitRequest request) {
-        QCommit commit = new QCommit("commit");
+        QCommit commit = new QCommit("search");
         BooleanBuilder builder = new BooleanBuilder();
 
         Component component = componentRepository.findOne(request.getComponentId());
@@ -82,31 +83,29 @@ public class CommitServiceImpl implements CommitService {
     }
 
     @Override
-    public String createFromGitHubv3(JSONObject request) throws ParseException {
-        StringBuffer buffer = new StringBuffer();
-        GitHubv3 gitHubv3 = null;
-            gitHubv3 = new GitHubv3(request);
+    public String createFromGitHubv3(JSONObject request) throws ParseException, HygieiaException {
+        GitHubv3 gitHubv3 = new GitHubv3(request.toJSONString());
 
-            if ((gitHubv3.getCollector() == null) || (gitHubv3.getCollectorItem() == null) || (CollectionUtils.isEmpty(gitHubv3.getCommits())))
-                return "";
+        if ((gitHubv3.getCollector() == null) || (gitHubv3.getCollectorItem() == null) || (CollectionUtils.isEmpty(gitHubv3.getCommits())))
+            throw new HygieiaException("Nothing to update.", HygieiaException.NOTHING_TO_UPDATE);
 
-            Collector col = collectorService.createCollector(gitHubv3.getCollector());
-            if (col == null) return "";
+        Collector col = collectorService.createCollector(gitHubv3.getCollector());
+        if (col == null) throw new HygieiaException("Failed creating collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
 
-            CollectorItem item = gitHubv3.getCollectorItem();
-            item.setCollectorId(col.getId());
-            CollectorItem colItem = collectorService.createCollectorItem(item);
-            if (colItem == null) return "";
+        CollectorItem item = gitHubv3.getCollectorItem();
+        item.setCollectorId(col.getId());
+        CollectorItem colItem = collectorService.createCollectorItem(item);
+        if (colItem == null) throw new HygieiaException("Failed creating collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
 
-            int count = 0;
-            for (Commit c : gitHubv3.getCommits()) {
-                if (isNewCommit(colItem, c)) {
-                    c.setCollectorItemId(colItem.getId());
-                    commitRepository.save(c);
-                    count = count + 1;
-                }
+        int count = 0;
+        for (Commit c : gitHubv3.getCommits()) {
+            if (isNewCommit(colItem, c)) {
+                c.setCollectorItemId(colItem.getId());
+                commitRepository.save(c);
+                count = count + 1;
             }
-            return col.getId() + ":" + colItem.getId() + ":" + count + " new commits inserted.";
+        }
+        return col.getId() + ":" + colItem.getId() + ":" + count + " new commit(s) inserted.";
 
     }
 
@@ -131,9 +130,9 @@ public class CommitServiceImpl implements CommitService {
         JSONParser parser = new JSONParser();
 
 
-        public GitHubv3(JSONObject json) throws ParseException {
+        public GitHubv3(String json) throws ParseException, HygieiaException {
 
-            this.jsonObject = (JSONObject) parser.parse(json.toJSONString());
+            this.jsonObject = (JSONObject) parser.parse(json);
             this.jsonString = jsonObject.toJSONString();
             buildCommits();
             if (!CollectionUtils.isEmpty(commits)) {
@@ -176,11 +175,9 @@ public class CommitServiceImpl implements CommitService {
             return commits;
         }
 
-        private void buildCommits() {
+        private void buildCommits() throws HygieiaException {
 
             JSONArray commitArray = (JSONArray) jsonObject.get("commits");
-//            JSONArray commitArray = paresAsArray(commitsObject.toJSONString());
-
             JSONObject repoObject = (JSONObject) jsonObject.get("repository");
             url = str(repoObject, "url"); // Repo can be null, but ok to throw NPE.
             branch = str(jsonObject, "ref").replace("refs/heads/", ""); //wow!
@@ -201,14 +198,17 @@ public class CommitServiceImpl implements CommitService {
                 commit.setScmRevisionNumber(str(cObj, "id"));
                 commit.setScmAuthor(author);
                 commit.setScmCommitLog(message);
-                commit.setScmCommitTimestamp(timestamp); // actual commit timestamp
+                commit.setScmCommitTimestamp(timestamp); // actual search timestamp
                 commit.setNumberOfChanges(numberChanges);
                 commit.setScmBranch(branch);
                 commits.add(commit);
             }
         }
 
-        private String str(JSONObject json, String key) {
+        private String str(JSONObject json, String key) throws HygieiaException {
+            if (json == null) {
+                throw new HygieiaException("Field '" + key + "' cannot be missing or null or empty", HygieiaException.JSON_FORMAT_ERROR);
+            }
             Object value = json.get(key);
             return (value == null) ? null : value.toString();
         }
