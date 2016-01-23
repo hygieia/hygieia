@@ -5,6 +5,7 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.request.CollectorItemRequest;
+import com.capitalone.dashboard.request.CollectorRequest;
 import com.capitalone.dashboard.service.CollectorService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +41,12 @@ public class CollectorController {
         binder.registerCustomEditor(CollectorType.class, new CaseInsensitiveCollectorTypeEditor());
     }
 
-//    @RequestMapping(value = "/collector/{itemId}/{collectorType}", method = POST,
-//            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-//    public ResponseEntity<Void> collectorItemsIngest(@PathVariable ObjectId itemId,
-//                                                     @PathVariable CollectorType collectorType,
-//                                                     InputStream collectorData) {
-//
-//
-//        return ResponseEntity.noContent().build();
-//    }
+    @RequestMapping(value = "/collector", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public Collector createCollector(@Valid @RequestBody CollectorRequest request) {
+        return collectorService.createCollector(request.toCollector());
+    }
+
 
     @RequestMapping(value = "/collector/type/{collectorType}",
             method = GET, produces = APPLICATION_JSON_VALUE)
