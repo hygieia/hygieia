@@ -51,7 +51,7 @@ public class CodeQualityController {
 
     @RequestMapping(value = "/quality/static-analysis", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createBuild(@Valid @RequestBody CodeQualityCreateRequest request) throws HygieiaException {
+    public ResponseEntity<String> createStaticAnanlysis(@Valid @RequestBody CodeQualityCreateRequest request) throws HygieiaException {
         String response = codeQualityService.create(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
