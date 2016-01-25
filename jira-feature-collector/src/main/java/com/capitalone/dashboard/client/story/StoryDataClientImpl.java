@@ -448,7 +448,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	protected String toHours(String estimate) {
 		String hours = "";
 		long minutes = 0;
-		if ((estimate != null) && !(estimate.isEmpty())) {
+		if ((estimate != null) && !(estimate.isEmpty()) || estimate.equalsIgnoreCase("null")) {
 			minutes = Long.valueOf(estimate);
 			hours = TOOLS.sanitizeResponse(Integer.toString((int) (minutes / 60)));
 		} else {
