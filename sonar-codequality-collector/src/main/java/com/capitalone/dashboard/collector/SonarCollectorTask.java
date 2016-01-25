@@ -96,7 +96,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
 	 * Clean up unused sonar collector items
 	 *
 	 * @param collector
-	 *            the {@link HudsonCollector}
+	 *            the {@link SonarCollector}
 	 */
 
     @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed PMD, fixme

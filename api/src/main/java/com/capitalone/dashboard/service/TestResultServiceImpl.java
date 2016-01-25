@@ -16,6 +16,7 @@ import com.capitalone.dashboard.request.TestDataCreateRequest;
 import com.capitalone.dashboard.request.TestResultRequest;
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -105,13 +106,13 @@ public class TestResultServiceImpl implements TestResultService {
         Collector collector = createCollector();
 
         if (collector == null) {
-            throw new HygieiaException("Failed creating collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
+            throw new HygieiaException("Failed creating Test collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
         }
 
         CollectorItem collectorItem = createCollectorItem(collector, request);
 
         if (collectorItem == null) {
-            throw new HygieiaException("Failed creating collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
+            throw new HygieiaException("Failed creating Test collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
         }
 
 
@@ -119,7 +120,7 @@ public class TestResultServiceImpl implements TestResultService {
 
 
         if (testResult == null) {
-            throw new HygieiaException("Failed creating collector item.", HygieiaException.ERROR_INSERTING_DATA);
+            throw new HygieiaException("Failed inserting/updating Test information.", HygieiaException.ERROR_INSERTING_DATA);
         }
 
         return testResult.getId().toString();
@@ -130,8 +131,11 @@ public class TestResultServiceImpl implements TestResultService {
         CollectorRequest collectorReq = new CollectorRequest();
         collectorReq.setName("JenkinsCucumberTest");
         collectorReq.setCollectorType(CollectorType.Test);
-        Collector collector = collectorService.createCollector(collectorReq.toCollector());
-        return collector;
+        Collector col = collectorReq.toCollector();
+        col.setEnabled(true);
+        col.setOnline(true);
+        col.setLastExecuted(System.currentTimeMillis());
+        return collectorService.createCollector(col);
     }
 
     private CollectorItem createCollectorItem(Collector collector, TestDataCreateRequest request) {
@@ -139,6 +143,7 @@ public class TestResultServiceImpl implements TestResultService {
         tempCi.setCollectorId(collector.getId());
         tempCi.setDescription(request.getDescription());
         tempCi.setPushed(true);
+        tempCi.setLastUpdated(System.currentTimeMillis());
         Map<String, Object> option = new HashMap<>();
         option.put("jobName", request.getTestJobName());
         option.put("jobUrl", request.getTestJobUrl());
@@ -170,7 +175,7 @@ public class TestResultServiceImpl implements TestResultService {
         testResult.setUnknownStatusCount(request.getUnknownStatusCount());
         testResult.setUrl(request.getTestJobUrl());
         testResult.getTestCapabilities().addAll(request.getTestCapabilities());
-        testResult.setBuildId(request.getTestJobId());
+        testResult.setBuildId(new ObjectId(request.getTestJobId()));
 
         return testResultRepository.save(testResult);
     }

@@ -35,7 +35,7 @@ public class TestResult extends BaseModel {
     private String executionId;
 
     //Object ID of the build event - if say build happens via Jenkins
-    private String buildId;
+    private ObjectId buildId;
     /**
      * Description of the test result that might make sense to a human
      */
@@ -200,11 +200,11 @@ public class TestResult extends BaseModel {
         return testCapabilities;
     }
 
-    public String getBuildId() {
+    public ObjectId getBuildId() {
         return buildId;
     }
 
-    public void setBuildId(String buildId) {
+    public void setBuildId(ObjectId buildId) {
         this.buildId = buildId;
     }
 

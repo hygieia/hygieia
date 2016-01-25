@@ -17,9 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,7 +41,7 @@ public class ArtifactControllerTest {
 
     @Test
     public void insertArtifactGoodRequest() throws Exception {
-        List<BinaryArtifactCreateRequest> request = makeGoodArtifactRequest();
+        BinaryArtifactCreateRequest request = makeGoodArtifactRequest();
         when(artifactService.create((BinaryArtifactCreateRequest) Matchers.any(BinaryArtifactCreateRequest.class))).thenReturn("1234");
         mockMvc.perform(post("/artifact")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -55,7 +52,7 @@ public class ArtifactControllerTest {
 
     @Test
     public void insertBuildBadRequest1() throws Exception {
-        List<BinaryArtifactCreateRequest> request = makeMissingBuildIdArtifactRequest();
+        BinaryArtifactCreateRequest request = makeMissingBuildIdArtifactRequest();
         when(artifactService.create((BinaryArtifactCreateRequest) Matchers.any(BinaryArtifactCreateRequest.class))).thenReturn("");
                 mockMvc.perform(post("/artifact")
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -64,25 +61,22 @@ public class ArtifactControllerTest {
 
     }
 
-    private List<BinaryArtifactCreateRequest> makeGoodArtifactRequest() {
-        List<BinaryArtifactCreateRequest> artifacts = new ArrayList<>();
+    private BinaryArtifactCreateRequest makeGoodArtifactRequest() {
         BinaryArtifactCreateRequest artifact = new BinaryArtifactCreateRequest();
         artifact.setArtifactName("MyArtifact");
+        artifact.setCanonicalName("MyArtifact-1.1.0.0");
         artifact.setBuildId("1234");
         artifact.setArtifactGroup("Mygroup.com");
         artifact.setArtifactVersion("1.1.0.0");
-        artifacts.add(artifact);
-        return artifacts;
+        return artifact;
     }
 
-    private List<BinaryArtifactCreateRequest> makeMissingBuildIdArtifactRequest() {
-        List<BinaryArtifactCreateRequest> artifacts = new ArrayList<>();
+    private BinaryArtifactCreateRequest makeMissingBuildIdArtifactRequest() {
         BinaryArtifactCreateRequest artifact = new BinaryArtifactCreateRequest();
         artifact.setArtifactName("MyArtifact");
         artifact.setArtifactGroup("Mygroup.com");
         artifact.setArtifactVersion("1.1.0.0");
-        artifacts.add(artifact);
-        return artifacts;
+        return artifact;
     }
 
     private int intVal(long value) {
