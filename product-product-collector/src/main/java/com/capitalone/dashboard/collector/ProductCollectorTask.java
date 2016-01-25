@@ -2,6 +2,7 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -87,30 +88,36 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
             TeamDashboardCollectorItem dashboardCollectorItem = entryItem.getKey();
 
             List<CollectorItem> scmCollectorItems = dashboard.getApplication().getComponents().get(0).getCollectorItems(CollectorType.SCM);
-            Long dateThreshold = (dashboardCollectorItem.getLastProcessedDate() != null) ? dashboardCollectorItem.getLastProcessedDate() : dashboardCollectorItem.getDateEnabled();
+            if(scmCollectorItems != null && !scmCollectorItems.isEmpty()){
+                Calendar calendar = new GregorianCalendar();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DAY_OF_MONTH, -productSettings.getCommitDateThreshold());
+                Long dateThreshold = calendar.getTimeInMillis();
+                Set<Commit> commitsForDashboard = new HashSet<>();
+                for(CollectorItem scmCollectorItem : scmCollectorItems){
+                    commitsForDashboard.addAll(commitRepository.findByCollectorItemIdAndScmCommitTimestamp(scmCollectorItem.getId(), dateThreshold));
+                }
 
-            Set<Commit> commitsForDashboard = new HashSet<>();
-            for(CollectorItem scmCollectorItem : scmCollectorItems){
-                commitsForDashboard.addAll(commitRepository.findByCollectorItemIdAndScmCommitTimestamp(scmCollectorItem.getId(), dateThreshold));
+                Pipeline teamDashboardPipeline = pipelineRepository.findByCollectorItemId(dashboardCollectorItem.getId());
+                if(teamDashboardPipeline == null){
+                    teamDashboardPipeline = new Pipeline();
+                    teamDashboardPipeline.setName(dashboard.getTitle());
+                    teamDashboardPipeline.setCollectorItemId(dashboardCollectorItem.getId());
+                }
+
+                //Build pipelines for the commits
+                teamDashboardPipeline.getStages().put(PipelineStageType.Commit, buildCommitPipelineStage(commitsForDashboard, dashboard));
+                pipelineRepository.save(teamDashboardPipeline);
+
+                //set the last processed timestamp
+                dashboardCollectorItem.setLastProcessedDate(new Date().getTime());
+                teamDashboardRepository.save(dashboardCollectorItem);
             }
 
-            Pipeline teamDashboardPipeline = pipelineRepository.findByCollectorItemId(dashboardCollectorItem.getId());
-            if(teamDashboardPipeline == null){
-                teamDashboardPipeline = new Pipeline();
-                teamDashboardPipeline.setName(dashboard.getTitle());
-                teamDashboardPipeline.setCollectorItemId(dashboardCollectorItem.getId());
-            }
-
-            //Build pipelines for the commits
-            teamDashboardPipeline.getStages().put(PipelineStageType.Commit, buildCommitPipelineStage(commitsForDashboard));
-            pipelineRepository.save(teamDashboardPipeline);
-
-            //set the last processed timestamp
-            dashboardCollectorItem.setLastProcessedDate(new Date().getTime());
-            teamDashboardRepository.save(dashboardCollectorItem);
 
         }
     }
+
 
     private Map<TeamDashboardCollectorItem, Dashboard> findAllEnabledTeamDashboards(ProductDashboardCollector collector) {
         Map<TeamDashboardCollectorItem, Dashboard> enabledTeamDashboardsMap = new HashMap<>();
@@ -137,7 +144,7 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
      * @param commitsAfterDashboardCreated
      * @return {@link PipelineStage}
      */
-    private PipelineStage buildCommitPipelineStage(Set<Commit> commitsAfterDashboardCreated){
+    private PipelineStage buildCommitPipelineStage(Set<Commit> commitsAfterDashboardCreated, Dashboard dashboard){
         List<String> revisionNumbers = new ArrayList<>();
 
         /**
@@ -150,31 +157,41 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
         PipelineStage commitPipelineStage = new PipelineStage();
         Map<Commit, List<Build>> commitBuildMap = new HashMap<>();
 
-        /**
-         * Get all of the builds for all of the revision numbers
-         */
-        List<Build> successfulBuildsForCommits = buildRepository.findBuildsForRevisionNumbers(revisionNumbers);
-        List<Build> buildsForCommit;
+        //Get the build collector items for this particular dashboard
+        List<CollectorItem> collectorItems = dashboard.getApplication().getComponents().get(0).getCollectorItems(CollectorType.Build);
+        List<ObjectId> collectorItemIds = new ArrayList<>();
+        for(CollectorItem collectorItem : collectorItems){
+            collectorItemIds.add(collectorItem.getId());
+        }
+        //get all the builds for the revision numbers of the commits above and the
+        List<Build> buildsForCommits = buildRepository.findBuildsForRevisionNumbersAndBuildCollectorItemIds(revisionNumbers, collectorItemIds);
+        List<Build> successfulBuildsForCommits;
 
         /**
          * Or all of the commits, build a list of builds that included the commit
          * (pivoting the relationship that currently exists for Build to Commits)
          */
         for(Commit c : commitsAfterDashboardCreated){
-            buildsForCommit = new ArrayList<>();
-            for(Build build : successfulBuildsForCommits){
-                if(build.getSourceChangeSet().contains(c)){  //probably wont work
-                    buildsForCommit.add(build);
+            successfulBuildsForCommits = new ArrayList<>();
+            for(Build build : buildsForCommits){
+                //if build was successful and its changeset includes the commit, add to the list
+                if(build.getBuildStatus().equals(BuildStatus.Success) && build.getSourceChangeSet().contains(c)){
+                    successfulBuildsForCommits.add(build);
                 }
             }
 
             /**
              * If this commit didn't exist in any successful builds it is considered to be in the commit phase
              */
-            if(buildsForCommit.isEmpty()){
-                commitPipelineStage.getCommits().add(c);
+            if(successfulBuildsForCommits.isEmpty()){
+                PipelineCommit pipelineCommit = new PipelineCommit();
+                pipelineCommit.setCommit(c);
+                pipelineCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Commit, c.getScmCommitTimestamp());
+                commitPipelineStage.getCommits().add(pipelineCommit);
             }
-            commitBuildMap.put(c, buildsForCommit);
+            //this commit did exist in a successful build, so it is in at least the build stage...
+
+            commitBuildMap.put(c, successfulBuildsForCommits);
         }
         return commitPipelineStage;
     }

@@ -20,6 +20,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
     private final CollectorItemRepository collectorItemRepository;
+    private final PipelineRepository pipelineRepository;
     private final ServiceRepository serviceRepository;
 
     @Autowired
@@ -27,12 +28,14 @@ public class DashboardServiceImpl implements DashboardService {
                                 ComponentRepository componentRepository,
                                 CollectorRepository collectorRepository,
                                 CollectorItemRepository collectorItemRepository,
-                                ServiceRepository serviceRepository) {
+                                ServiceRepository serviceRepository,
+                                PipelineRepository pipelineRepository) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
         this.serviceRepository = serviceRepository;
+        this.pipelineRepository = pipelineRepository;
     }
 
     @Override
@@ -250,5 +253,10 @@ public class DashboardServiceImpl implements DashboardService {
             return dashboard.getType();
         }
         return DashboardType.Team;
+    }
+
+    @Override
+    public Iterable<Pipeline> getPipelinesForTeamDashboardCollectorItemIds(List<ObjectId> collectorItemIds) {
+        return pipelineRepository.findByCollectorItemIdIn(collectorItemIds);
     }
 }

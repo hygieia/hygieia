@@ -1,15 +1,14 @@
 package com.capitalone.dashboard.model;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class representing any stage of a {@link Pipeline}
  */
 public class PipelineStage {
     private String name;
-    private Set<SCM> commits = new HashSet<>();
-    private long lastCommitTimestamp;
+    private List<PipelineCommit> commits = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -19,19 +18,11 @@ public class PipelineStage {
         this.name = name;
     }
 
-    public Set<SCM> getCommits() {
+    public List<PipelineCommit> getCommits() {
         return commits;
     }
 
-    public void setCommits(Set<SCM> commits) {
+    public void setCommits(List<PipelineCommit> commits) {
         this.commits = commits;
-    }
-
-    public long getLastCommitTimestamp() {
-        return lastCommitTimestamp;
-    }
-
-    public void setLastCommitTimestamp(long lastCommitTimestamp) {
-        this.lastCommitTimestamp = lastCommitTimestamp;
     }
 }

@@ -1,9 +1,6 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Widget;
-import com.capitalone.dashboard.model.WidgetResponse;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
@@ -14,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -106,5 +104,10 @@ public class DashboardController {
             dashboardOwner = dashboardService.getDashboardOwner(dashboardtitle);
         }
         return dashboardOwner;
+    }
+
+    @RequestMapping(value = "/dashboard/{id}/pipeline", method = GET, produces = APPLICATION_JSON_VALUE)
+    public Iterable<Pipeline> pipelinesForProductDashboard(@RequestParam(value="collectorItemId") ObjectId[] collectorItemIds) {
+        return dashboardService.getPipelinesForTeamDashboardCollectorItemIds(Arrays.asList(collectorItemIds));
     }
 }
