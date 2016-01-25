@@ -132,7 +132,8 @@
             $modal.open({
                 templateUrl: 'components/widgets/product/environment-commits/environment-commits.html',
                 controller: 'productEnvironmentCommitController',
-                controllerAs: 'ctrl'
+                controllerAs: 'ctrl',
+                size: 'lg'
             });
         }
     }

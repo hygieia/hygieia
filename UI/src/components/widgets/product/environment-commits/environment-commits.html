@@ -10,8 +10,8 @@
             17
         </span>
         <div class="heading-num-details">
-            <div class="from-team">commits from Tetris</div>
-            <div class="in-environment">in INT</div>
+            <div class="from-team">commits</div>
+            <div class="in-environment">from <span class="in-environment-team-name">Tetrjkl asdfkjl askjl dfa kljsdfkl jasdfklasd lkfis</span> in INT</div>
         </div>
     </div>
 
@@ -25,7 +25,10 @@
                     <span class="dash-status-lg" dash-status="false" ng-if="commit.failState"></span>
                 </div>
                 <div class="team-environment-detail-text">
-                    <div class="team-environment-detail-text-name">{{commit.message}}</div>
+                    <span class="team-environment-detail-text-name-link" ng-click="ctrl.viewCommitInRepo(commit, $event)">View in repo</span>
+                    <div class="team-environment-detail-text-name">
+                        {{commit.message}}
+                    </div>
                     <div class="team-environment-detail-text-from">From {{commit.user}} {{commit.age}} <span>#{{commit.commitNumber}}</span></div>
                 </div>
                 <div class="team-environment-detail-toggle">

@@ -75,9 +75,10 @@
                     <td class="team-data-cell pointer" ng-click="ctrl.viewTeamEnvDetails()">
                         <div class="team-data-cell-header">
                             <div class="clearfix">
+                                <!-- only leading zeros get small size -->
                                 <span>00</span>
                                 <span class="team-time-colon">:</span>
-                                <span>00</span>
+                                <span class="team-time-lg">12</span>
                                 <span class="team-time-colon">:</span>
                                 <span class="team-time-lg">04</span>
                             </div>
@@ -96,7 +97,7 @@
                                 Updated: <span class="team-last-updated-num">6m ago</span>
                             </div>
 
-                            <commit-blocks commit-fail="1200" commit-pass="37"></commit-blocks>
+                            <commit-blocks commit-fail="2200" commit-pass="99"></commit-blocks>
                         </div>
 
                         <!--<div class="team-data-cell-last-build">-->

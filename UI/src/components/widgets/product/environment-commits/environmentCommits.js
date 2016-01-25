@@ -77,7 +77,7 @@
                     }
                 ]
             }, {
-                message: 'Some bug fix lkaj sdfklj  asdlkjf alksj dfjkl asd kljfjkl asdf jklasjkl df jlaksdfkl jasdf kajkls df',
+                message: 'Some bug fix lkaj sdfklj lkja sd sfjklasdf lkasjkdl fa lkjsdf lkjasdl kjfas lkjdf lkjasdlk fal kd  asdlkjf alksj dfjkl asd kljfjkl asdf jklasjkl df jlaksdfkl jasdf kajkls df',
                 failState: false,
                 user: 'Dave',
                 age: '12 minutes ago',
@@ -367,13 +367,19 @@
 
         // methods
         ctrl.toggleCommitDetails = toggleCommitDetails;
-
+        ctrl.viewCommitInRepo = viewCommitInRepo;
 
 
 
 
         function toggleCommitDetails(index) {
             ctrl.commits[index].expanded = !ctrl.commits[index].expanded;
+        }
+
+        function viewCommitInRepo(commit, $event) {
+            alert(commit);
+            $event.stopPropagation();
+            //window.open(url);
         }
     }
 })();
