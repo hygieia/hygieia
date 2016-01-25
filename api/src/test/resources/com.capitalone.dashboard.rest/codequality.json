@@ -1,0 +1,46 @@
+{
+  "hygieiaId": "56a57fde3b9b28e1ec3946e9",
+  "timestamp": 1453686764000,
+  "projectName": "DevOps Dashboard Core Library",
+  "projectUrl": "http://localhost:9000/dashboard/index/1",
+  "type": "StaticAnalysis",
+  "projectVersion": "0.3.1-SNAPSHOT",
+  "metrics": [
+    {
+      "name": "ncloc",
+      "value": 1974.0,
+      "formattedValue": "1,974",
+      "status": "Ok"
+    },
+    {
+      "name": "violations",
+      "value": 56.0,
+      "formattedValue": "56",
+      "status": "Ok"
+    },
+    {
+      "name": "blocker_violations",
+      "value": 0.0,
+      "formattedValue": "0",
+      "status": "Ok"
+    },
+    {
+      "name": "critical_violations",
+      "value": 3.0,
+      "formattedValue": "3",
+      "status": "Ok"
+    },
+    {
+      "name": "major_violations",
+      "value": 5.0,
+      "formattedValue": "5",
+      "status": "Ok"
+    },
+    {
+      "name": "sqale_index",
+      "value": 432.0,
+      "formattedValue": "7h 12min",
+      "status": "Ok"
+    }
+  ]
+}

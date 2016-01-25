@@ -1,19 +1,31 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.QTestResult;
+import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
+import com.capitalone.dashboard.request.CollectorRequest;
+import com.capitalone.dashboard.request.TestDataCreateRequest;
 import com.capitalone.dashboard.request.TestResultRequest;
+import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import com.google.common.collect.Lists;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class TestResultServiceImpl implements TestResultService {
@@ -21,14 +33,17 @@ public class TestResultServiceImpl implements TestResultService {
     private final TestResultRepository testResultRepository;
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
+    private final CollectorService collectorService;
 
     @Autowired
     public TestResultServiceImpl(TestResultRepository testResultRepository,
                                  ComponentRepository componentRepository,
-                                 CollectorRepository collectorRepository) {
+                                 CollectorRepository collectorRepository,
+                                 CollectorService collectorService) {
         this.testResultRepository = testResultRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
+        this.collectorService = collectorService;
     }
 
     @Override
@@ -79,5 +94,89 @@ public class TestResultServiceImpl implements TestResultService {
         }
 
         return new DataResponse<>(null, 0L);
+    }
+
+    @Override
+    public String create(TestDataCreateRequest request) throws HygieiaException {
+        /**
+         * Step 1: create Collector if not there
+         * Step 2: create Collector item if not there
+         * Step 3: Insert test data if new. If existing, update it
+         */
+        Collector collector = createCollector();
+
+        if (collector == null) {
+            throw new HygieiaException("Failed creating Test collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
+        }
+
+        CollectorItem collectorItem = createCollectorItem(collector, request);
+
+        if (collectorItem == null) {
+            throw new HygieiaException("Failed creating Test collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
+        }
+
+
+        TestResult testResult = createTest(collectorItem, request);
+
+
+        if (testResult == null) {
+            throw new HygieiaException("Failed inserting/updating Test information.", HygieiaException.ERROR_INSERTING_DATA);
+        }
+
+        return testResult.getId().toString();
+
+    }
+
+    private Collector createCollector() {
+        CollectorRequest collectorReq = new CollectorRequest();
+        collectorReq.setName("JenkinsCucumberTest");
+        collectorReq.setCollectorType(CollectorType.Test);
+        Collector col = collectorReq.toCollector();
+        col.setEnabled(true);
+        col.setOnline(true);
+        col.setLastExecuted(System.currentTimeMillis());
+        return collectorService.createCollector(col);
+    }
+
+    private CollectorItem createCollectorItem(Collector collector, TestDataCreateRequest request) {
+        CollectorItem tempCi = new CollectorItem();
+        tempCi.setCollectorId(collector.getId());
+        tempCi.setDescription(request.getDescription());
+        tempCi.setPushed(true);
+        tempCi.setLastUpdated(System.currentTimeMillis());
+        Map<String, Object> option = new HashMap<>();
+        option.put("jobName", request.getTestJobName());
+        option.put("jobUrl", request.getTestJobUrl());
+        option.put("instanceUrl", request.getServerUrl());
+        tempCi.getOptions().putAll(option);
+        CollectorItem collectorItem = collectorService.createCollectorItem(tempCi);
+        return collectorItem;
+    }
+
+    private TestResult createTest(CollectorItem collectorItem, TestDataCreateRequest request) {
+        TestResult testResult = testResultRepository.findByCollectorItemIdAndExecutionId(collectorItem.getId(),
+                request.getExecutionId());
+        if (testResult == null) {
+            testResult = new TestResult();
+        }
+
+        testResult.setCollectorItemId(collectorItem.getId());
+        testResult.setType(request.getType());
+        testResult.setDescription(request.getDescription());
+        testResult.setDuration(request.getDuration());
+        testResult.setEndTime(request.getEndTime());
+        testResult.setExecutionId(request.getExecutionId());
+        testResult.setFailureCount(request.getFailureCount());
+        testResult.setSkippedCount(request.getSkippedCount());
+        testResult.setStartTime(request.getStartTime());
+        testResult.setSuccessCount(request.getSuccessCount());
+        testResult.setTimestamp(request.getTimestamp());
+        testResult.setTotalCount(request.getTotalCount());
+        testResult.setUnknownStatusCount(request.getUnknownStatusCount());
+        testResult.setUrl(request.getTestJobUrl());
+        testResult.getTestCapabilities().addAll(request.getTestCapabilities());
+        testResult.setBuildId(new ObjectId(request.getTestJobId()));
+
+        return testResultRepository.save(testResult);
     }
 }

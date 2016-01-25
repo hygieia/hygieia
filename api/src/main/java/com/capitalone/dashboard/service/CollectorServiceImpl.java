@@ -58,7 +58,19 @@ public class CollectorServiceImpl implements CollectorService {
     public CollectorItem createCollectorItem(CollectorItem item) {
         CollectorItem existing = collectorItemRepository.findByCollectorAndOptions(
                 item.getCollectorId(), item.getOptions());
-        return existing == null ? collectorItemRepository.save(item) : existing;
+        if (existing != null) {
+            item.setId(existing.getId());
+        }
+        return collectorItemRepository.save(item);
+    }
+
+    @Override
+    public Collector createCollector(Collector collector) {
+        Collector existing = collectorRepository.findByName(collector.getName());
+        if (existing != null) {
+            collector.setId(existing.getId());
+        }
+        return collectorRepository.save(collector);
     }
 
     private Collector collectorById(ObjectId collectorId, List<Collector> collectors) {

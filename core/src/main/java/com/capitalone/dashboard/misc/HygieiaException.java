@@ -1,0 +1,33 @@
+package com.capitalone.dashboard.misc;
+
+public class HygieiaException extends Exception {
+    public static final int NOTHING_TO_UPDATE = 0;
+    public static final int JSON_FORMAT_ERROR = -1;
+    public static final int COLLECTOR_CREATE_ERROR = -10;
+    public static final int COLLECTOR_ITEM_CREATE_ERROR = -11;
+    public static final int ERROR_INSERTING_DATA = -12;
+    public static final int DUPLICATE_DATA = -13;
+    private int errorCode = 0;
+
+    public HygieiaException(String message, int errorCode) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
+    public HygieiaException(String message, Throwable cause, int errorCode) {
+        super(message, cause);
+        this.errorCode = errorCode;
+    }
+
+    public HygieiaException(Throwable cause) {
+        super(cause);
+    }
+
+    public HygieiaException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+}

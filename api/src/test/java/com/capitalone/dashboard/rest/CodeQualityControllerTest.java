@@ -2,17 +2,23 @@ package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
 import com.capitalone.dashboard.model.CodeQualityMetricStatus;
 import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityRequest;
 import com.capitalone.dashboard.service.CodeQualityService;
+import com.capitalone.dashboard.util.TestUtil;
 import org.bson.types.ObjectId;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,12 +34,14 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class, WebMVCConfig.class })
 @WebAppConfiguration
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class CodeQualityControllerTest {
 
 	private MockMvc mockMvc;
@@ -42,6 +50,7 @@ public class CodeQualityControllerTest {
 	private WebApplicationContext wac;
 	@Autowired
 	private CodeQualityService codeQualityService;
+
 
 	@Before
 	public void before() {
@@ -129,6 +138,57 @@ public class CodeQualityControllerTest {
 	public void builds_noComponentId_badRequest() throws Exception {
 		mockMvc.perform(get("/quality")).andExpect(status().isBadRequest());
 	}
+
+
+    @Test
+    public void insertStaticAnalysisTest1() throws Exception {
+        CodeQualityCreateRequest request = makeCodeQualityRequest();
+        byte[] content = TestUtil.convertObjectToJsonBytes(request);
+        when(codeQualityService.create(Matchers.any(CodeQualityCreateRequest.class))).thenReturn("123456");
+        mockMvc.perform(post("/quality/static-analysis")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isCreated());
+
+    }
+
+    @Test
+    public void insertStaticAnalysisTest2() throws Exception {
+        CodeQualityCreateRequest request = makeCodeQualityRequest();
+        request.setProjectName(null);
+        byte[] content = TestUtil.convertObjectToJsonBytes(request);
+        when(codeQualityService.create(Matchers.any(CodeQualityCreateRequest.class))).thenReturn("1234");
+        mockMvc.perform(post("/quality/static-analysis")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    public void insertStaticAnalysisTest3() throws Exception {
+        CodeQualityCreateRequest request = makeCodeQualityRequest();
+        byte[] content = TestUtil.convertObjectToJsonBytes(request);
+        when(codeQualityService.create(Matchers.any(CodeQualityCreateRequest.class))).thenThrow(new HygieiaException("This is bad", HygieiaException.COLLECTOR_CREATE_ERROR));
+        mockMvc.perform(post("/quality/static-analysis")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isInternalServerError());
+    }
+
+    private CodeQualityCreateRequest makeCodeQualityRequest() {
+        CodeQualityCreateRequest quality = new CodeQualityCreateRequest();
+        quality.setHygieiaId("2345");
+        quality.setProjectId("1234");
+        quality.setTimestamp(1);
+        quality.setProjectName("MyTest");
+        quality.setType(CodeQualityType.StaticAnalysis);
+        quality.setProjectUrl("http://mycompany.sonar.com/MyTest");
+        quality.setServerUrl("http://mycompany.sonar.com");
+        quality.setProjectVersion("1.0.0.1");
+        quality.getMetrics().add(makeMetric());
+        return quality;
+    }
 
 	private CodeQuality makeCodeQualityStatic() {
 		CodeQuality quality = new CodeQuality();

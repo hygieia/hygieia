@@ -25,7 +25,7 @@ public interface AuthenticationService {
     /**
      * Creates a new Users and saves it to the store.
      *
-     * @param authentication new Authentication to createCollectorItem
+     * @param username new Authentication to createCollectorItem
      * @return newly created Authentication object
      */
     String create(String username, String password);
@@ -33,7 +33,7 @@ public interface AuthenticationService {
     /**
      * Updates an existing quthentication instance.
      *
-     * @param dashboard Authentication to update
+     * @param username Authentication to update
      * @return updated Authentication instance
      */
     String update(String username, String password);
@@ -52,7 +52,8 @@ public interface AuthenticationService {
 	
 	/**
 	 * 
-	 * @param authentication
+	 * @param username
+     * @param password
 	 * @return
 	 */
 	boolean authenticate(String username, String password);
