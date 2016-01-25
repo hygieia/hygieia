@@ -106,7 +106,7 @@ public class DashboardController {
         return dashboardOwner;
     }
 
-    @RequestMapping(value = "/dashboard/{id}/pipeline", method = GET, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/pipeline", method = GET, produces = APPLICATION_JSON_VALUE)
     public Iterable<Pipeline> pipelinesForProductDashboard(@RequestParam(value="collectorItemId") ObjectId[] collectorItemIds) {
         return dashboardService.getPipelinesForTeamDashboardCollectorItemIds(Arrays.asList(collectorItemIds));
     }
