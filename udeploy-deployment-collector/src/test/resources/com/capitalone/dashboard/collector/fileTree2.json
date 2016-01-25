@@ -1,0 +1,13 @@
+[
+  {
+    "name": "jpetstore.ear",
+    "path": "jpetstore.ear",
+    "version": 1,
+    "$ref": "jpetstore.ear\/",
+    "type": "file",
+    "children": false,
+    "lastModified": 1427199388000,
+    "length": 7995150,
+    "metaOnly": false
+  }
+]

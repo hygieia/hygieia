@@ -8,8 +8,8 @@
         .controller('LoginController', LoginController);
 
 
-    LoginController.$inject = ['$scope', 'loginData', '$location', '$cookies'];
-    function LoginController($scope, loginData, $location, $cookies) {
+    LoginController.$inject = ['$scope', 'loginData', '$location', '$cookies', '$http'];
+    function LoginController($scope, loginData, $location, $cookies, $http) {
         var login = this;
 
         // public variables
@@ -18,13 +18,15 @@
         login.passwd= '';
         login.submitted= false;
         $scope.alerts = [];
+        login.apiup=false;
 
 
       //public methods
-      login.doLogin=doLogin;
-      login.doSignup=doSignup;
+        login.doLogin=doLogin;
+        login.doSignup=doSignup;
         login.templateUrl = "app/dashboard/views/navheader.html";
         login.doCheckState = doCheckState;
+        login.checkApi=checkApi;
 
 
         //function for closing alerts
@@ -34,13 +36,13 @@
 
 
         function doCheckState() {
+            //Call the method to make sure api layer is up
+            checkApi();
             if ($cookies.authenticated) {
-                console.log("I am authenticated");
                 $location.path('/site');
 
             }
             else {
-                console.log("Not authenticated redirecting");
                 $location.path('/');
             }
         }
@@ -86,6 +88,34 @@
         {
             console.log("In signup");
             $location.path('/signup');
+        }
+
+        function checkApi()
+        {
+            var url = '/api/dashboard';
+
+            $http.get(url)
+                .success(function(data, status, headers, config) {
+
+                    if(status == 200)
+                    {
+                        console.log("API Connectivity");
+                        login.apiup=true;
+
+                    }
+                    //we will add explicit code to check if we we secure the api layer.
+                    else
+                    {
+                        console.log("API layer down");
+
+                    }
+
+                })
+                .error(function(data, status, headers, config) {
+
+                   login.apiup=false;
+
+                });
         }
 
     }
