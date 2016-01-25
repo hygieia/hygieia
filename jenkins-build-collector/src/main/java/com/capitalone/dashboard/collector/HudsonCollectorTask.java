@@ -11,10 +11,12 @@ import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.HudsonCollectorRepository;
 import com.capitalone.dashboard.repository.HudsonJobRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -56,7 +58,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
     @Override
     public HudsonCollector getCollector() {
-        return HudsonCollector.prototype(hudsonSettings.getServers());
+        return HudsonCollector.prototype(hudsonSettings.getServers(), hudsonSettings.getNiceNames());
     }
 
     @Override
@@ -189,18 +191,36 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         int count = 0;
 
         for (HudsonJob job : jobs) {
-
-            if (isNewJob(collector, job)) {
+            HudsonJob existing = getExistingJob(collector, job);
+            String niceName = getNiceName(job, collector);
+            if (existing == null) {
                 job.setCollectorId(collector.getId());
                 job.setEnabled(false); // Do not enable for collection. Will be
                 // enabled when added to dashboard
                 job.setDescription(job.getJobName());
+                if (!StringUtils.isEmpty(niceName)) {
+                    job.setNiceName(niceName);
+                }
                 hudsonJobRepository.save(job);
                 count++;
+            } else if (!StringUtils.isEmpty(niceName)) {
+                existing.setNiceName(niceName);
+                hudsonJobRepository.save(existing);
             }
-
         }
         log("New jobs", start, count);
+    }
+
+    private String getNiceName(HudsonJob job, HudsonCollector collector) {
+        if (CollectionUtils.isEmpty(collector.getBuildServers())) return "";
+        List<String> servers = collector.getBuildServers();
+        List<String> niceNames = collector.getNiceNames();
+        for (int i = 0; i < servers.size(); i++) {
+            if (servers.get(i).equalsIgnoreCase(job.getInstanceUrl())) {
+                return niceNames.get(i);
+            }
+        }
+        return "";
     }
 
     private List<HudsonJob> enabledJobs(HudsonCollector collector,
@@ -209,9 +229,9 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
                 instanceUrl);
     }
 
-    private boolean isNewJob(HudsonCollector collector, HudsonJob job) {
+    private HudsonJob getExistingJob(HudsonCollector collector, HudsonJob job) {
         return hudsonJobRepository.findHudsonJob(collector.getId(),
-                job.getInstanceUrl(), job.getJobName()) == null;
+                job.getInstanceUrl(), job.getJobName());
     }
 
     private boolean isNewBuild(HudsonJob job, Build build) {

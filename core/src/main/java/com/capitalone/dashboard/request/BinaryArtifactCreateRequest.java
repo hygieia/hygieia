@@ -19,6 +19,7 @@ public class BinaryArtifactCreateRequest {
     @NotNull
     private String buildId;
 
+
     private long timestamp;
 
     private List<SCM> sourceChangeSet = new ArrayList<>();

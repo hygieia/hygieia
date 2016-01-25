@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -11,6 +12,7 @@ import com.google.common.collect.Lists;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -60,6 +62,18 @@ public class CollectorServiceImpl implements CollectorService {
                 item.getCollectorId(), item.getOptions());
         if (existing != null) {
             item.setId(existing.getId());
+        }
+        return collectorItemRepository.save(item);
+    }
+
+    @Override
+    public CollectorItem createCollectorItemByNiceName(CollectorItem item) throws HygieiaException {
+        List<CollectorItem> existing = collectorItemRepository.findByCollectorIdAndNiceName(item.getCollectorId(), item.getNiceName());
+        if (!CollectionUtils.isEmpty(existing)) {
+            if (existing.size() > 1) throw new HygieiaException("Multiple collector items found with the same name: " + item.getNiceName(), HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
+            item.setId(existing.get(0).getId());
+        } else {
+            createCollectorItem(item);
         }
         return collectorItemRepository.save(item);
     }
