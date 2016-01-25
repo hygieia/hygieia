@@ -10,6 +10,7 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
 public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 
+	private final CoreFeatureSettings coreFeatureSettings;
 	private final FeatureRepository featureRepository;
 	private final ScopeOwnerRepository teamRepository;
 	private final ScopeRepository projectRepository;
@@ -46,7 +48,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 *            system
 	 */
 	@Autowired
-	public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureRepository featureRepository,
+	public FeatureCollectorTask(CoreFeatureSettings coreFeatureSettings,
+			TaskScheduler taskScheduler, FeatureRepository featureRepository,
 			ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
 			FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings) {
 		super(taskScheduler, Constants.JIRA);
@@ -54,6 +57,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 		this.teamRepository = teamRepository;
 		this.projectRepository = projectRepository;
 		this.featureRepository = featureRepository;
+		this.coreFeatureSettings = coreFeatureSettings;
 		this.featureSettings = featureSettings;
 	}
 
@@ -98,8 +102,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 				this.projectRepository, this.featureCollectorRepository);
 		projectData.updateProjectInformation();
 
-		StoryDataClientImpl storyData = new StoryDataClientImpl(this.featureSettings,
-				this.featureRepository, this.featureCollectorRepository);
+		StoryDataClientImpl storyData = new StoryDataClientImpl(this.coreFeatureSettings,
+				this.featureSettings, this.featureRepository, this.featureCollectorRepository);
 		storyData.updateStoryInformation();
 
 		LOGGER.info("Feature Data Collection Finished");

@@ -23,10 +23,12 @@ import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.FeatureStatus;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
 
@@ -52,6 +54,8 @@ import java.util.Map;
 public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements StoryDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StoryDataClientImpl.class);
 
+	@SuppressWarnings("unused")
+	private final CoreFeatureSettings coreFeatureSettings;
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
 	private final FeatureRepository featureRepo;
@@ -62,12 +66,13 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	 * 
 	 * @param teamRepository
 	 */
-	public StoryDataClientImpl(FeatureSettings featureSettings,
-			FeatureRepository featureRepository,
+	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings,
+			FeatureSettings featureSettings, FeatureRepository featureRepository,
 			FeatureCollectorRepository featureCollectorRepository) {
 		super(featureSettings, featureRepository, featureCollectorRepository);
 		LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
+		this.coreFeatureSettings = coreFeatureSettings;
 		this.featureSettings = featureSettings;
 		this.featureRepo = featureRepository;
 		this.featureWidgetQueries = new FeatureWidgetQueries(this.featureSettings);
@@ -106,7 +111,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 					IssueType issueType = issue.getIssueType();
 					BasicProject project = issue.getProject();
 					User assignee = issue.getAssignee();
-					String status = issue.getStatus().getName();
+					String status = this.toCanonicalFeatureStatus(issue.getStatus().getName());
 					String estimate = String.valueOf(issue.getTimeTracking()
 							.getRemainingEstimateMinutes());
 					IssueField epic = fields.get(super.featureSettings.getJiraEpicIdFieldName());
@@ -395,6 +400,43 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 				}
 			}
 		}
+	}
+
+	/**
+	 * ETL for converting any number of custom Jira statuses to a reduced list
+	 * of generally logical statuses used by Hygieia
+	 * 
+	 * @param nativeStatus
+	 *            The status label as native to Jira
+	 * @return A Hygieia-canonical status, as defined by a Core enum
+	 */
+	private String toCanonicalFeatureStatus(String nativeStatus) {
+		List<String> todo = coreFeatureSettings.getTodoStatuses();
+		List<String> doing = coreFeatureSettings.getDoingStatuses();
+		List<String> done = coreFeatureSettings.getDoneStatuses();
+		String canonicalStatus = null;
+
+		if (!nativeStatus.isEmpty()) {
+			for (String status : todo) {
+				if (status.equalsIgnoreCase(nativeStatus)) {
+					canonicalStatus = FeatureStatus.BACKLOG.getStatus();
+				}
+			}
+			for (String status : doing) {
+				if (status.equalsIgnoreCase(nativeStatus)) {
+					canonicalStatus = FeatureStatus.IN_PROGRESS.getStatus();
+				}
+			}
+			for (String status : done) {
+				if (status.equalsIgnoreCase(nativeStatus)) {
+					canonicalStatus = FeatureStatus.DONE.getStatus();
+				}
+			}
+		} else {
+			canonicalStatus = FeatureStatus.BACKLOG.getStatus();
+		}
+
+		return canonicalStatus;
 	}
 
 	/**
