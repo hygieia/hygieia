@@ -407,6 +407,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	 */
 	protected List<Issue> getEpicData(String epicKey) {
 		List<Issue> epicRs = new ArrayList<Issue>();
+		JiraDataFactoryImpl jiraConnect = null;
 		String jiraCredentials = this.featureSettings.getJiraCredentials();
 		String jiraBaseUrl = this.featureSettings.getJiraBaseUrl();
 		String query = this.featureWidgetQueries.getEpicQuery(epicKey, "epic");
@@ -418,8 +419,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 				proxyUri = this.featureSettings.getJiraProxyUrl();
 				proxyPort = this.featureSettings.getJiraProxyPort();
 			}
-			JiraDataFactoryImpl jiraConnect = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUrl,
-					proxyUri, proxyPort);
+			jiraConnect = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUrl, proxyUri, proxyPort);
 			jiraConnect.setQuery(query);
 			epicRs = jiraConnect.getJiraIssues();
 		} catch (Exception e) {
@@ -427,6 +427,8 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 					"There was a problem connecting to Jira while getting sub-relationships to epics:"
 							+ e.getMessage() + " : " + e.getCause(), e);
 			epicRs = new ArrayList<Issue>();
+		} finally {
+			jiraConnect.destroy();
 		}
 
 		return epicRs;
