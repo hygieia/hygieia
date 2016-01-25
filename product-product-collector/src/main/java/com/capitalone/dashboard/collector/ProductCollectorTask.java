@@ -158,13 +158,19 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
         Map<Commit, List<Build>> commitBuildMap = new HashMap<>();
 
         //Get the build collector items for this particular dashboard
-        List<CollectorItem> collectorItems = dashboard.getApplication().getComponents().get(0).getCollectorItems(CollectorType.Build);
+        List<CollectorItem> buildCollectorItems = dashboard.getApplication().getComponents().get(0).getCollectorItems(CollectorType.Build);
         List<ObjectId> collectorItemIds = new ArrayList<>();
-        for(CollectorItem collectorItem : collectorItems){
-            collectorItemIds.add(collectorItem.getId());
+        List<Build> buildsForCommits = new ArrayList<>();
+        if(buildCollectorItems != null && !buildCollectorItems.isEmpty())
+        {
+            for(CollectorItem collectorItem : buildCollectorItems){
+                collectorItemIds.add(collectorItem.getId());
+            }
+            //get all the builds for the revision numbers of the commits above and the
+            buildsForCommits = buildRepository.findBuildsForRevisionNumbersAndBuildCollectorItemIds(revisionNumbers, collectorItemIds);
+
         }
-        //get all the builds for the revision numbers of the commits above and the
-        List<Build> buildsForCommits = buildRepository.findBuildsForRevisionNumbersAndBuildCollectorItemIds(revisionNumbers, collectorItemIds);
+
         List<Build> successfulBuildsForCommits;
 
         /**
