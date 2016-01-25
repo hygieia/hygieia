@@ -43,7 +43,6 @@ public interface UDeployClient {
      *
      * @param application a {@link UDeployApplication}
      * @param environment an {@link Environment}
-     * @param environmentComponentRepository
      * @return list of {@link EnvironmentStatus}es
      */
     List<UDeployEnvResCompData> getEnvironmentResourceStatusData(UDeployApplication application, Environment environment);
