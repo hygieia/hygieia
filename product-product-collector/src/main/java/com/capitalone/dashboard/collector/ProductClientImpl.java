@@ -21,6 +21,6 @@ public class ProductClientImpl implements ProductClient {
     }
 
     public List<Dashboard> getAllTeamDashboards(){
-        return (List) dashboardRepository.findAll();
+        return (List) dashboardRepository.findTeamDashboards();
     }
 }
