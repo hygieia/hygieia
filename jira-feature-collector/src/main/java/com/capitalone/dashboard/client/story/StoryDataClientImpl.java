@@ -446,9 +446,10 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	 * @return Hour representation of minutes, rounded down
 	 */
 	protected String toHours(String estimate) {
+		String nullLiteral = "null";
 		String hours = "";
 		long minutes = 0;
-		if ((estimate != null) && !(estimate.isEmpty()) || estimate.equalsIgnoreCase("null")) {
+		if ((estimate != null) && !(estimate.isEmpty()) || nullLiteral.equalsIgnoreCase(estimate)) {
 			minutes = Long.valueOf(estimate);
 			hours = TOOLS.sanitizeResponse(Integer.toString((int) (minutes / 60)));
 		} else {
