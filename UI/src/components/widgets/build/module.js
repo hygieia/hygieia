@@ -21,18 +21,18 @@
         };
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .config(register);
 
-    register.$inject = ['widgetManagerProvider', 'WIDGET_STATE'];
-    function register(widgetManagerProvider, WIDGET_STATE) {
-        widget_state = WIDGET_STATE;
+    register.$inject = ['widgetManagerProvider', 'WidgetState'];
+    function register(widgetManagerProvider, WidgetState) {
+        widget_state = WidgetState;
         widgetManagerProvider.register('build', config);
     }
 
     function getState(config) {
         // make sure config values are set
-        return localTesting || (config.id && config.options.buildDurationThreshold && config.options.consecutiveFailureThreshold) ?
+        return HygieiaConfig.local || (config.id && config.options.buildDurationThreshold && config.options.consecutiveFailureThreshold) ?
             widget_state.READY :
             widget_state.CONFIGURE;
     }

@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard.core')
+        .module(HygieiaConfig.module + '.core')
         .factory('codeAnalysisData', codeAnalysisData);
 
     function codeAnalysisData($http) {
@@ -21,12 +21,12 @@
 
         // get the latest code quality data for the component
         function staticDetails(params) {
-            return $http.get(localTesting ? testStaticDetailRoute : caStaticDetailsRoute, { params: params })
+            return $http.get(HygieiaConfig.local ? testStaticDetailRoute : caStaticDetailsRoute, { params: params })
                 .then(function (response) { return response.data; });
         }
 
         function securityDetails(params) {
-            return $http.get(localTesting ? testSecDetailRoute : caSecDetailsRoute, { params: params })
+            return $http.get(HygieiaConfig.local ? testSecDetailRoute : caSecDetailsRoute, { params: params })
                 .then(function (response) { return response.data; });
         }
     }

@@ -4,7 +4,7 @@
 (function() {
 	'use strict';
 
-	angular.module('devops-dashboard.core').factory('featureData', featureData);
+	angular.module(HygieiaConfig.module + '.core').factory('featureData', featureData);
 
 	function featureData($http) {
 		var param = '?component=';
@@ -47,7 +47,7 @@
 		 * @param filterTeamId
 		 */
 		function total(componentId,filterTeamId) {
-			return $http.get(localTesting ? testTotal : buildTotal + filterTeamId + param + componentId)
+			return $http.get(HygieiaConfig.local ? testTotal : buildTotal + filterTeamId + param + componentId)
 					.then(function(response) {
 						return response.data;
 					});
@@ -60,7 +60,7 @@
 		 * @param filterTeamId
 		 */
 		function wip(componentId,filterTeamId) {
-			return $http.get(localTesting ? testWip : buildWip + filterTeamId + param + componentId)
+			return $http.get(HygieiaConfig.local ? testWip : buildWip + filterTeamId + param + componentId)
 					.then(function(response) {
 						return response.data;
 					});
@@ -73,7 +73,7 @@
 		 * @param filterTeamId
 		 */
 		function done(componentId,filterTeamId) {
-			return $http.get(localTesting ? testDone : buildDone + filterTeamId + param + componentId)
+			return $http.get(HygieiaConfig.local ? testDone : buildDone + filterTeamId + param + componentId)
 					.then(function(response) {
 						return response.data;
 					});
@@ -87,7 +87,7 @@
 		 * @param filterTeamId
 		 */
 		function featureWip(componentId,filterTeamId) {
-			return $http.get(localTesting ? testFeatureWip : buildFeatureWip + filterTeamId + param + componentId)
+			return $http.get(HygieiaConfig.local ? testFeatureWip : buildFeatureWip + filterTeamId + param + componentId)
 					.then(function(response) {
 						return response.data;
 					});
@@ -100,7 +100,7 @@
 		 * @param filterTeamId
 		 */
 		function sprint(componentId,filterTeamId) {
-			return $http.get(localTesting ? testSprint : buildSprint + filterTeamId + param + componentId)
+			return $http.get(HygieiaConfig.local ? testSprint : buildSprint + filterTeamId + param + componentId)
 					.then(function(response) {
 						return response.data;
 					});
@@ -110,7 +110,7 @@
 		 * Retrieves all team names and team IDs
 		 */
 		function teams() {
-			return $http.get(localTesting ? testTeams : buildTeams)
+			return $http.get(HygieiaConfig.local ? testTeams : buildTeams)
 					.then(function(response) {
 						return response.data;
 					});
@@ -122,7 +122,7 @@
 		 * @param collectorItemId
 		 */
 		function teamByCollectorItemId(collectorItemId) {
-			return $http.get(localTesting ? testTeamByCollectorItemId : buildTeamByCollectorItemId + collectorItemId)
+			return $http.get(HygieiaConfig.local ? testTeamByCollectorItemId : buildTeamByCollectorItemId + collectorItemId)
 					.then(function(response) {
 						return response.data;
 					});

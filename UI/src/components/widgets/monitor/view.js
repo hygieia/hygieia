@@ -2,17 +2,17 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('monitorViewController', monitorViewController)
         .controller('monitorStatusController', monitorStatusController);
 
-    monitorViewController.$inject = ['$scope', 'monitorData', 'DASH_STATUS', '$modal', '$q'];
-    function monitorViewController($scope, monitorData, DASH_STATUS, $modal, $q) {
+    monitorViewController.$inject = ['$scope', 'monitorData', 'DashStatus', '$modal', '$q'];
+    function monitorViewController($scope, monitorData, DashStatus, $modal, $q) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // public variables
-        ctrl.statuses = DASH_STATUS;
+        ctrl.statuses = DashStatus;
         ctrl.services = [];
         ctrl.dependencies = [];
 
@@ -47,7 +47,7 @@
                 resolve: {
                     // make sure modal has access to the status and selected
                     statuses: function () {
-                        return DASH_STATUS;
+                        return DashStatus;
                     },
                     service: function () {
                         return {
@@ -81,7 +81,7 @@
                     doWork: workerDoWork
                 };
 
-            worker.doWork(response, DASH_STATUS, workerCallback);
+            worker.doWork(response, DashStatus, workerCallback);
         }
 
         function workerDoWork(data, statuses, cb) {

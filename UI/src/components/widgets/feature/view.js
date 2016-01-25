@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	angular.module('devops-dashboard').controller('featureViewController',
+	angular.module(HygieiaConfig.module).controller('featureViewController',
 			featureViewController);
 
 	featureViewController.$inject = [ '$scope', 'featureData' ];

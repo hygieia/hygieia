@@ -102,7 +102,6 @@ public interface DashboardService {
      */
     
     String getDashboardOwner(String dashboardName);
-
 }
 
 

@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .directive('guageContainer', guageContainer);
 
     function guageContainer() {

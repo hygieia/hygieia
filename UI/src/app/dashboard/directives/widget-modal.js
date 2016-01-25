@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard.core')
+        .module(HygieiaConfig.module + '.core')
         .directive('widgetModal', widgetModal);
 
     function widgetModal() {

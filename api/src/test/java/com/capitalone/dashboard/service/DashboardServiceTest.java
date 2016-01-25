@@ -1,13 +1,6 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Service;
-import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -23,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -66,7 +60,7 @@ public class DashboardServiceTest {
     @Test
     public void get() {
         ObjectId id = ObjectId.get();
-        Dashboard expected = makeDashboard("template", "title", "AppName", "comp1");
+        Dashboard expected = makeTeamDashboard("template", "title", "AppName", "comp1");
         when(dashboardRepository.findOne(id)).thenReturn(expected);
 
         assertThat(dashboardService.get(id), is(expected));
@@ -74,7 +68,7 @@ public class DashboardServiceTest {
 
     @Test
     public void create() {
-        Dashboard expected = makeDashboard("template", "title", "appName", "comp1", "comp2");
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
 
         when(dashboardRepository.save(expected)).thenReturn(expected);
 
@@ -84,7 +78,7 @@ public class DashboardServiceTest {
 
     @Test
     public void update() {
-        Dashboard expected = makeDashboard("template", "title", "appName", "comp1", "comp2");
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
 
         when(dashboardRepository.save(expected)).thenReturn(expected);
 
@@ -301,7 +295,7 @@ public class DashboardServiceTest {
     @Test
     public void delete() {
         ObjectId id = ObjectId.get();
-        Dashboard expected = makeDashboard("template", "title", "appName", "comp1", "comp2");
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
         when(dashboardRepository.findOne(id)).thenReturn(expected);
 
         List<Service> services = Arrays.asList(new Service());
@@ -309,6 +303,7 @@ public class DashboardServiceTest {
         depService.getDependedBy().add(id);
         when(serviceRepository.findByDashboardId(id)).thenReturn(services);
         when(serviceRepository.findByDependedBy(id)).thenReturn(Arrays.asList(depService));
+        when(collectorRepository.findByCollectorType(CollectorType.Product)).thenReturn(new ArrayList<Collector>());
 
         dashboardService.delete(id);
 
@@ -322,7 +317,7 @@ public class DashboardServiceTest {
 
     @Test
     public void addWidget() {
-        Dashboard d = makeDashboard("template", "title", "appName", "amit");
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit");
         Widget expected = new Widget();
 
         Widget actual = dashboardService.addWidget(d, expected);
@@ -337,7 +332,7 @@ public class DashboardServiceTest {
     @Test
     public void getWidget() {
         ObjectId widgetId = ObjectId.get();
-        Dashboard d = makeDashboard("template", "title", "appName", "amit");
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit");
         Widget expected = new Widget();
         expected.setId(widgetId);
         d.getWidgets().add(expected);
@@ -348,7 +343,7 @@ public class DashboardServiceTest {
     @Test
     public void updateWidget() {
         ObjectId widgetId = ObjectId.get();
-        Dashboard d = makeDashboard("template", "title", "appName", "amit");
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit");
         d.getWidgets().add(makeWidget(widgetId, "existing"));
         Widget expected = makeWidget(widgetId, "updated");
 
@@ -359,12 +354,12 @@ public class DashboardServiceTest {
         verify(dashboardRepository).save(d);
     }
 
-    private Dashboard makeDashboard(String template, String title, String appName, String owner, String... compNames) {
+    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, String... compNames) {
         Application app = new Application(appName);
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-        return new Dashboard(template, title, app, owner);
+        return new Dashboard(template, title, app, owner, DashboardType.Team);
     }
 
     private Widget makeWidget(ObjectId id, String name) {

@@ -2,7 +2,7 @@
     'use strict';
 
     var app = angular
-        .module('devops-dashboard');
+        .module(HygieiaConfig.module);
 
     var directives = [
         'buildsPerDay',

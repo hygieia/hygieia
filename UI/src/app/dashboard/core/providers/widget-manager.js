@@ -7,7 +7,7 @@
     var widgets = {};
 
     angular
-        .module('devops-dashboard.core')
+        .module(HygieiaConfig.module + '.core')
         .provider('widgetManager', widgetManagerProvider);
 
 

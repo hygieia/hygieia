@@ -2,6 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import org.bson.types.ObjectId;
@@ -73,6 +74,11 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public void delete(ObjectId id) {
         Dashboard dashboard = dashboardRepository.findOne(id);
+
+        if(!isSafeDelete(dashboard)){
+            throw new UnsafeDeleteException("Cannot delete team dashboard "+dashboard.getTitle()+" as it is referenced by program dashboards.");
+        }
+
         componentRepository.delete(dashboard.getApplication().getComponents());
 
         // Remove this Dashboard's services and service dependencies
@@ -83,6 +89,39 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         dashboardRepository.delete(dashboard);
+    }
+
+    private boolean isSafeDelete(Dashboard dashboard){
+        boolean isSafe = false;
+
+        if(dashboard.getType() == null || dashboard.getType().equals(DashboardType.Team)){
+            isSafe = isSafeTeamDashboardDelete(dashboard);
+        }else {
+            isSafe = true;
+        }
+        return isSafe;
+    }
+
+    private boolean isSafeTeamDashboardDelete(Dashboard dashboard){
+        boolean isSafe = false;
+        List<Collector> productCollectors = collectorRepository.findByCollectorType(CollectorType.Product);
+        if(productCollectors.isEmpty()){
+            return true;
+        }
+
+        Collector productCollector = productCollectors.get(0);
+
+        CollectorItem teamDashboardCollectorItem = collectorItemRepository.findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(productCollector.getId(), dashboard.getId().toString());
+
+        //// TODO: 1/21/16 Is this safe? What if we add a new team dashbaord and quickly add it to a product and then delete it?
+        if(teamDashboardCollectorItem == null){
+            return true;
+        }
+        
+        if(dashboardRepository.findProductDashboardsByTeamDashboardCollectorItemId(teamDashboardCollectorItem.getId().toString()).isEmpty()) {
+            isSafe = true;
+        }
+        return isSafe;
     }
 
     @Override
@@ -200,10 +239,16 @@ public class DashboardServiceImpl implements DashboardService {
 
 	@Override
 	public String getDashboardOwner(String dashboardName) {
-		
-		
+
 		String dashboardOwner=dashboardRepository.findByTitle(dashboardName).get(0).getOwner();
 		
 		return dashboardOwner;
 	}
+
+    private DashboardType getDashboardType(Dashboard dashboard){
+        if(dashboard.getType() != null){
+            return dashboard.getType();
+        }
+        return DashboardType.Team;
+    }
 }

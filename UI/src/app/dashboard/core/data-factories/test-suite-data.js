@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard.core')
+        .module(HygieiaConfig.module + '.core')
         .factory('testSuiteData', testSuiteData);
 
     function testSuiteData($http) {
@@ -18,7 +18,7 @@
 
         // search for test suite data
         function details(params) {
-            return $http.get(localTesting ? testDetailRoute : caDetailRoute, { params: params })
+            return $http.get(HygieiaConfig.local ? testDetailRoute : caDetailRoute, { params: params })
                 .then(function (response) {
                     return response.data;
                 });
