@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -90,7 +89,6 @@ public class BuildControllerTest {
     public void insertBuildGoodRequest() throws Exception {
         BuildDataCreateRequest request = makeBuildRequest();
         byte[] content = TestUtil.convertObjectToJsonBytes(request);
-        System.out.println(new String(content, StandardCharsets.UTF_8));
         when(buildService.create(Matchers.any(BuildDataCreateRequest.class))).thenReturn("123456");
         mockMvc.perform(post("/build")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -104,8 +102,7 @@ public class BuildControllerTest {
         BuildDataCreateRequest request = makeBuildRequest();
         request.setJobName(null);
         byte[] content = TestUtil.convertObjectToJsonBytes(request);
-        System.out.println(new String(content, StandardCharsets.UTF_8));
-        when(buildService.create(Matchers.any(BuildDataCreateRequest.class))).thenReturn("");
+        when(buildService.create(Matchers.any(BuildDataCreateRequest.class))).thenReturn("123456");
         mockMvc.perform(post("/build")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))

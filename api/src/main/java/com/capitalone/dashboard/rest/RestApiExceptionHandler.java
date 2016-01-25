@@ -69,7 +69,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(HygieiaException.class)
-    public ResponseEntity<Object> handleConflict(HygieiaException e) {
+    public ResponseEntity<Object> handleHygieiaException(HygieiaException e) {
         LOGGER.error(e.getMessage(), e);
         switch (e.getErrorCode()) {
             case HygieiaException.ERROR_INSERTING_DATA:
