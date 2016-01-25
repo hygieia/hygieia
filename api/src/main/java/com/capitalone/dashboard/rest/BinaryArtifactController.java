@@ -37,10 +37,6 @@ public class BinaryArtifactController {
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> create(@Valid @RequestBody BinaryArtifactCreateRequest request) {
         String response = artifactService.create(request);
-        if ("".equals(response)) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST).body("");
-        }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);

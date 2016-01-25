@@ -86,13 +86,13 @@ public class BuildServiceImpl implements BuildService {
         Collector collector = createCollector();
 
         if (collector == null) {
-            throw new HygieiaException("Failed creating collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
+            throw new HygieiaException("Failed creating Build collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
         }
 
         CollectorItem collectorItem = createCollectorItem(collector, request);
 
         if (collectorItem == null) {
-            throw new HygieiaException("Failed creating collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
+            throw new HygieiaException("Failed creating Build collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
         }
 
         Build build = createBuild(collectorItem, request);
@@ -107,10 +107,13 @@ public class BuildServiceImpl implements BuildService {
 
     private Collector createCollector() {
         CollectorRequest collectorReq = new CollectorRequest();
-        collectorReq.setName("Hudson");
+        collectorReq.setName("Hudson");  //for now hardcode it.
         collectorReq.setCollectorType(CollectorType.Build);
-        Collector collector = collectorService.createCollector(collectorReq.toCollector());
-        return collector;
+        Collector col = collectorReq.toCollector();
+        col.setEnabled(true);
+        col.setOnline(true);
+        col.setLastExecuted(System.currentTimeMillis());
+        return collectorService.createCollector(col);
     }
 
     private CollectorItem createCollectorItem(Collector collector, BuildDataCreateRequest request) {
@@ -118,6 +121,7 @@ public class BuildServiceImpl implements BuildService {
         tempCi.setCollectorId(collector.getId());
         tempCi.setDescription(request.getJobName());
         tempCi.setPushed(true);
+        tempCi.setLastUpdated(System.currentTimeMillis());
         Map<String, Object> option = new HashMap<>();
         option.put("jobName", request.getJobName());
         option.put("jobUrl", request.getJobUrl());
