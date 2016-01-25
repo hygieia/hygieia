@@ -244,4 +244,11 @@ public class ClientUtilTest {
 						+ classUnderTest.toNativeDate(testCanonicalDate), "1900-01-01 00:00",
 				classUnderTest.toNativeDate(testCanonicalDate));
 	}
+
+	@Test
+	public void testToHours_NullStringLiteral_ZeroStringOutput() {
+		assertEquals("The response was unexpectedly not zero", "0", classUnderTest.toHours("0"));
+		assertEquals("The response was unexpectedly not zero", "0", classUnderTest.toHours(null));
+		assertEquals("The response was unexpectedly not zero", "0", classUnderTest.toHours("null"));
+	}
 }

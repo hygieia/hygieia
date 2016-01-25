@@ -84,11 +84,11 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	@SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.NcssMethodCount", "PMD.NPathComplexity",
 			"PMD.AvoidDeeplyNestedIfStmts" })
 	protected void updateMongoInfo(List<Issue> currentPagedJiraRs) {
-		try {
-			LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
-			if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
-				Iterator<Issue> globalResponseItr = currentPagedJiraRs.iterator();
-				while (globalResponseItr.hasNext()) {
+		LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
+		if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
+			Iterator<Issue> globalResponseItr = currentPagedJiraRs.iterator();
+			while (globalResponseItr.hasNext()) {
+				try {
 					/*
 					 * Initialize DOMs
 					 */
@@ -142,7 +142,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 						feature.setsState(TOOLS.sanitizeResponse(status));
 
 						// sEstimate,
-						feature.setsEstimate(this.toHours(estimate));
+						feature.setsEstimate(TOOLS.toHours(estimate));
 
 						// sChangeDate
 						feature.setChangeDate(TOOLS.toCanonicalDate(TOOLS
@@ -180,55 +180,69 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 						 * Epic Data - Note: Will only grab first epic
 						 * associated
 						 */
-						if ((epic.getName() != null) && !(epic.getName().isEmpty())) {
+						String blankLiteral = "";
+						if ((epic.getValue() != null)
+								&& !(epic.getValue().toString().isEmpty() && !blankLiteral
+										.equalsIgnoreCase(TOOLS.sanitizeResponse(epic.getValue())))) {
 							List<Issue> epicData = this.getEpicData(TOOLS.sanitizeResponse(epic
 									.getValue()));
-							Iterable<IssueField> rawEpicFields = epicData.get(0).getFields();
-							HashMap<String, IssueField> epicFields = new LinkedHashMap<String, IssueField>();
-							if (rawEpicFields != null) {
-								Iterator<IssueField> itr = rawFields.iterator();
-								while (itr.hasNext()) {
-									IssueField epicField = itr.next();
-									epicFields.put(epicField.getId(), epicField);
+							if (!epicData.isEmpty()) {
+								Iterable<IssueField> rawEpicFields = epicData.get(0).getFields();
+								HashMap<String, IssueField> epicFields = new LinkedHashMap<String, IssueField>();
+								if (rawEpicFields != null) {
+									Iterator<IssueField> itr = rawFields.iterator();
+									while (itr.hasNext()) {
+										IssueField epicField = itr.next();
+										epicFields.put(epicField.getId(), epicField);
+									}
 								}
-							}
-							String epicId = epicData.get(0).getId().toString();
-							String epicNumber = epicData.get(0).getKey().toString();
-							String epicName = epicData.get(0).getSummary().toString();
-							String epicBeginDate = epicData.get(0).getCreationDate().toString();
-							IssueField epicEndDate = epicFields.get("duedate");
-							String epicStatus = epicData.get(0).getStatus().getName();
+								String epicId = epicData.get(0).getId().toString();
+								String epicNumber = epicData.get(0).getKey().toString();
+								String epicName = epicData.get(0).getSummary().toString();
+								String epicBeginDate = epicData.get(0).getCreationDate().toString();
+								IssueField epicEndDate = epicFields.get("duedate");
+								String epicStatus = epicData.get(0).getStatus().getName();
 
-							// sEpicID
-							feature.setsEpicID(TOOLS.sanitizeResponse(epicId));
+								// sEpicID
+								feature.setsEpicID(TOOLS.sanitizeResponse(epicId));
 
-							// sEpicNumber
-							feature.setsEpicNumber(TOOLS.sanitizeResponse(epicNumber));
+								// sEpicNumber
+								feature.setsEpicNumber(TOOLS.sanitizeResponse(epicNumber));
 
-							// sEpicName
-							feature.setsEpicName(TOOLS.sanitizeResponse(epicName));
+								// sEpicName
+								feature.setsEpicName(TOOLS.sanitizeResponse(epicName));
 
-							// sEpicBeginDate - mapped to create date
-							if ((epicBeginDate != null) && !(epicBeginDate.isEmpty())) {
-								feature.setsEpicBeginDate(TOOLS.toCanonicalDate(TOOLS
-										.sanitizeResponse(epicBeginDate)));
+								// sEpicBeginDate - mapped to create date
+								if ((epicBeginDate != null) && !(epicBeginDate.isEmpty())) {
+									feature.setsEpicBeginDate(TOOLS.toCanonicalDate(TOOLS
+											.sanitizeResponse(epicBeginDate)));
+								} else {
+									feature.setsEpicBeginDate("");
+								}
+
+								// sEpicEndDate
+								if (epicEndDate != null) {
+									feature.setsEpicEndDate(TOOLS.toCanonicalDate(TOOLS
+											.sanitizeResponse(epicEndDate.getValue())));
+								} else {
+									feature.setsEpicEndDate("");
+								}
+
+								// sEpicAssetState
+								if (epicStatus != null) {
+									feature.setsEpicAssetState(TOOLS.sanitizeResponse(epicStatus));
+								} else {
+									feature.setsEpicAssetState("");
+								}
 							} else {
+								feature.setsEpicID("");
+								feature.setsEpicNumber("");
+								feature.setsEpicName("");
 								feature.setsEpicBeginDate("");
-							}
-
-							// sEpicEndDate
-							if (epicEndDate != null) {
-								feature.setsEpicEndDate(TOOLS.toCanonicalDate(TOOLS
-										.sanitizeResponse(epicEndDate.getValue())));
-							} else {
 								feature.setsEpicEndDate("");
-							}
-
-							// sEpicAssetState
-							if (epicStatus != null) {
-								feature.setsEpicAssetState(TOOLS.sanitizeResponse(epicStatus));
-							} else {
+								feature.setsEpicType("");
 								feature.setsEpicAssetState("");
+								feature.setsEpicChangeDate("");
 							}
 						} else {
 							feature.setsEpicID("");
@@ -253,9 +267,9 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 						/*
 						 * Sprint Data
 						 */
-						Map<String, Object> canonicalSprint = TOOLS.toCanonicalSprintPOJO(sprint
-								.getValue().toString());
-						if (canonicalSprint != null && !(canonicalSprint.isEmpty())) {
+						if (sprint.getValue() != null) {
+							Map<String, Object> canonicalSprint = TOOLS
+									.toCanonicalSprintPOJO(sprint.getValue().toString());
 							// sSprintID
 							if (canonicalSprint.get("id") != null) {
 								feature.setsSprintID(canonicalSprint.get("id").toString());
@@ -373,12 +387,13 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 
 					// Saving back to MongoDB
 					featureRepo.save(feature);
+
+				} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
+					LOGGER.error(
+							"Unexpected error caused while mapping data from source system to local data store:\n"
+									+ e.getMessage() + " : " + e.getCause(), e);
 				}
 			}
-		} catch (Exception e) {
-			LOGGER.error(
-					"Unexpected error caused while mapping data from source system to local data store:\n"
-							+ e.getMessage() + " : " + e.getCause(), e);
 		}
 	}
 
@@ -435,28 +450,6 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 		LOGGER.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
 		updateObjectInformation();
 
-	}
-
-	/**
-	 * Jira story estimate in minutes, converted to hours, rounded down: For
-	 * Jira, 8 hours = 1 day; 5 days = 1 week
-	 * 
-	 * @param estimate
-	 *            Minute representation of estimate content
-	 * @return Hour representation of minutes, rounded down
-	 */
-	protected String toHours(String estimate) {
-		String nullLiteral = "null";
-		String hours = "";
-		long minutes = 0;
-		if ((estimate != null) && !(estimate.isEmpty()) || nullLiteral.equalsIgnoreCase(estimate)) {
-			minutes = Long.valueOf(estimate);
-			hours = TOOLS.sanitizeResponse(Integer.toString((int) (minutes / 60)));
-		} else {
-			hours = "0";
-		}
-
-		return hours;
 	}
 
 	/**

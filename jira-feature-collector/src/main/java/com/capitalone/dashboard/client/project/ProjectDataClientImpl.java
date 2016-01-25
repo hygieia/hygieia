@@ -53,11 +53,11 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	 */
 	@Override
 	protected void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
-		try {
-			LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
-			if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
-				Iterator<BasicProject> globalResponseItr = currentPagedJiraRs.iterator();
-				while (globalResponseItr.hasNext()) {
+		LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
+		if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
+			Iterator<BasicProject> globalResponseItr = currentPagedJiraRs.iterator();
+			while (globalResponseItr.hasNext()) {
+				try {
 					/*
 					 * Initialize DOMs
 					 */
@@ -105,12 +105,13 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 
 					// Saving back to MongoDB
 					projectRepo.save(scope);
+
+				} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
+					LOGGER.error(
+							"Unexpected error caused while mapping data from source system to local data store:\n"
+									+ e.getMessage() + " : " + e.getCause(), e);
 				}
 			}
-		} catch (Exception e) {
-			LOGGER.error(
-					"Unexpected error caused while mapping data from source system to local data store:\n"
-							+ e.getMessage() + " : " + e.getCause(), e);
 		}
 	}
 

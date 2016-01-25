@@ -265,4 +265,26 @@ public class ClientUtil {
 		}
 		return list;
 	}
+	
+	/**
+	 * Jira story estimate in minutes, converted to hours, rounded down: For
+	 * Jira, 8 hours = 1 day; 5 days = 1 week
+	 * 
+	 * @param estimate
+	 *            Minute representation of estimate content
+	 * @return Hour representation of minutes, rounded down
+	 */
+	public String toHours(String estimate) {
+		String nullLiteral = "null";
+		String hours = "";
+		long minutes = 0;
+		if ((estimate != null) && !estimate.isEmpty() && !nullLiteral.equalsIgnoreCase(estimate)) {
+			minutes = Long.valueOf(estimate);
+			hours = this.sanitizeResponse(Integer.toString((int) (minutes / 60)));
+		} else {
+			hours = "0";
+		}
+
+		return hours;
+	}
 }

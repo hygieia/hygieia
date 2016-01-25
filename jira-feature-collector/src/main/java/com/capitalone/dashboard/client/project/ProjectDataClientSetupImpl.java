@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -75,6 +76,7 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 	 * @see Story
 	 */
 	public void updateObjectInformation() {
+		LOGGER.info("Beginning collection of project data at " + Calendar.getInstance().getTime());
 		long start = System.nanoTime();
 		String jiraCredentials = this.featureSettings.getJiraCredentials();
 		String jiraBaseUrl = this.featureSettings.getJiraBaseUrl();

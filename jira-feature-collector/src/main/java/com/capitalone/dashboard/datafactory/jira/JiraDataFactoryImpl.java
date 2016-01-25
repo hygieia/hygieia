@@ -40,7 +40,6 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	protected int pageSize;
 	protected int pageIndex;
 	protected String basicQuery;
-	protected String pagingQuery;
 
 	/**
 	 * Default constructor required for Spring (not used)
