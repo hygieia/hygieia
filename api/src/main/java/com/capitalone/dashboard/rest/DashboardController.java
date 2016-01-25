@@ -107,7 +107,7 @@ public class DashboardController {
     }
 
     @RequestMapping(value = "/pipeline", method = GET, produces = APPLICATION_JSON_VALUE)
-    public Iterable<Pipeline> pipelinesForProductDashboard(@RequestParam(value="collectorItemId") ObjectId[] collectorItemIds) {
+    public Iterable<Pipeline> pipelinesForProductDashboard(@RequestParam(value="collectorItemId") ObjectId[] collectorItemIds, @RequestParam Long beginDate, @RequestParam Long endDate) {
         return dashboardService.getPipelinesForTeamDashboardCollectorItemIds(Arrays.asList(collectorItemIds));
     }
 }
