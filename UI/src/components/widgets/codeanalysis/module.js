@@ -21,17 +21,17 @@
         };
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .config(register);
 
-    register.$inject = ['widgetManagerProvider', 'WIDGET_STATE'];
-    function register(widgetManagerProvider, WIDGET_STATE) {
-        widget_state = WIDGET_STATE;
+    register.$inject = ['widgetManagerProvider', 'WidgetState'];
+    function register(widgetManagerProvider, WidgetState) {
+        widget_state = WidgetState;
         widgetManagerProvider.register('codeanalysis', config);
     }
 
     function getState(widgetConfig) {
         // make sure config values are set
-        return localTesting || (widgetConfig.id) ? widget_state.READY : widget_state.CONFIGURE;
+        return HygieiaConfig.local || (widgetConfig.id) ? widget_state.READY : widget_state.CONFIGURE;
     }
 })();

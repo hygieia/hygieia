@@ -28,7 +28,7 @@
                             x: data.x + options.labelOffset.x,
                             y: data.y + options.labelOffset.y,
                             style: 'text-anchor: ' + options.textAnchor
-                        }, options.labelClass).text(data.value);
+                        }, options.labelClass).text(data.value.y);
                     }
                 });
             }

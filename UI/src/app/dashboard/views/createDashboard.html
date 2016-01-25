@@ -4,19 +4,32 @@
     </div>
     <div class="widget-modal-body">
         <form name="cdf" class="form" ng-submit="ctrl.submit(cdf.$valid)" novalidate>
-            <div class="form-group" ng-class="{'has-error': cdf.templateName.$invalid && ctrl.submitted}">
-                <select name="templateName"
+            <div class="form-group" ng-class="{'has-error': cdf.dashboardType.$invalid && cdf.$submitted}">
+                <select name="dashboardType"
                         class="form-control"
-                        ng-model="ctrl.templateName"
-                        ng-options="item.name for item in ctrl.templates track by item.value"
+                        ng-model="ctrl.dashboardType"
+                        ng-options="item.text for item in ctrl.dashboardTypes track by item.id"
+                        ng-change="ctrl.setAvailableTemplates()"
                         required>
-                    <option value="">Select a template</option>
+                    <option value="" disabled>Select a type</option>
+                </select>
+
+                <p class="help-block" ng-if="cdf.dashboardType.$error.required">Please select a dashboard type</p>
+            </div>
+
+            <div class="form-group" ng-class="{'has-error': cdf.templateName.$invalid && cdf.$submitted}">
+                <select name="selectedTemplate"
+                        class="form-control"
+                        ng-model="ctrl.selectedTemplate"
+                        ng-options="item.name for item in ctrl.availableTemplates track by item.value"
+                        required>
+                    <option value="" disabled>Select a template</option>
                 </select>
 
                 <p class="help-block" ng-if="cdf.dashboardName.$error.required">Please select a template</p>
             </div>
 
-            <div class="form-group" ng-class="{'has-error': cdf.dashboardName.$invalid && ctrl.submitted}">
+            <div class="form-group" ng-class="{'has-error': cdf.dashboardName.$invalid && cdf.$submitted}">
                 <input
                         type="text"
                         name="dashboardName"
@@ -25,6 +38,7 @@
                         ng-model="ctrl.dashboardName"
                         required
                         maxlength="50"
+                        autocomplete="off"
                         minlength="6"/>
 
                 <p class="help-block" ng-if="cdf.dashboardName.$error.required">Template name is required</p>
@@ -34,7 +48,7 @@
                 <p class="help-block" ng-if="cdf.dashboardName.$error.maxlength">Max length of 50 characters</p>
             </div>
 
-            <div class="form-group" ng-class="{'has-error': cdf.applicationName.$invalid && ctrl.submitted}">
+            <div class="form-group" ng-class="{'has-error': cdf.applicationName.$invalid && cdf.$submitted}" ng-if="ctrl.isTeamDashboardSelected()">
                 <input
                         type="text"
                         name="applicationName"
@@ -42,7 +56,8 @@
                         placeholder="Application name"
                         ng-model="ctrl.applicationName"
                         maxlength="50"
-                        required/>
+                        autocomplete="off"
+                        required />
 
                 <p class="help-block" ng-if="cdf.applicationName.$error.required">Application name is required</p>
 

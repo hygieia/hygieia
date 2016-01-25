@@ -5,7 +5,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard.core')
+        .module(HygieiaConfig.module + '.core')
         .factory('buildData', buildData);
 
     function buildData($http) {
@@ -18,7 +18,7 @@
 
         // search for current builds
         function details(params) {
-            return $http.get(localTesting ? testDetailRoute : buildDetailRoute, { params: params })
+            return $http.get(HygieiaConfig.local ? testDetailRoute : buildDetailRoute, { params: params })
                 .then(function (response) {
                     return response.data;
                 });

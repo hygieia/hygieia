@@ -11,19 +11,13 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 public class DashboardController {
@@ -70,10 +64,13 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard/{id}/widget", method = POST,
             consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<WidgetResponse> addWidget(@PathVariable ObjectId id, @RequestBody WidgetRequest request) {
+
+        Dashboard dashboard = dashboardService.get(id);
+
         Component component = dashboardService.associateCollectorToComponent(
                 request.getComponentId(), request.getCollectorItemIds());
 
-        Widget widget = dashboardService.addWidget(dashboardService.get(id), request.widget());
+        Widget widget = dashboardService.addWidget(dashboard, request.widget());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new WidgetResponse(component, widget));
     }
@@ -93,9 +90,9 @@ public class DashboardController {
         return ResponseEntity.ok().body(new WidgetResponse(component, widget));
     }
 
-    @RequestMapping(value = "/dashboard/mydashboard/{username}", method = GET,
+    @RequestMapping(value = "/dashboard/mydashboard", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public List<Dashboard> getOwnedDashboards(@PathVariable String username) {
+    public List<Dashboard> getOwnedDashboards(@RequestParam String username) {
         List<Dashboard> myDashboard = dashboardService.getOwnedDashboards(username);
         return myDashboard;
 

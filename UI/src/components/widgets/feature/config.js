@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	angular.module('devops-dashboard').controller('featureConfigController',
+	angular.module(HygieiaConfig.module).controller('featureConfigController',
 			featureConfigController);
 
 	featureConfigController.$inject = [ 'modalData', '$modalInstance',

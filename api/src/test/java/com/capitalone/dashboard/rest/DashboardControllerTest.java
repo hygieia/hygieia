@@ -26,9 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
@@ -47,7 +48,7 @@ public class DashboardControllerTest {
 
     @Test
     public void dashboards() throws Exception {
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit");
+        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
         when(dashboardService.all()).thenReturn(Arrays.asList(d1));
 
         mockMvc.perform(get("/dashboard"))
@@ -60,8 +61,17 @@ public class DashboardControllerTest {
     }
 
     @Test
-    public void createDashboard() throws Exception {
-        DashboardRequest request = makeDashboardRequest("template", "title", "app", "comp","amit");
+    public void createProductDashboard() throws Exception {
+        DashboardRequest request = makeDashboardRequest("template", "title", null, null,"amit", null, "product");
+        mockMvc.perform(post("/dashboard")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void createTeamDashboard() throws Exception {
+        DashboardRequest request = makeDashboardRequest("template", "title", "app", "comp","amit", null, "team");
         mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
@@ -76,14 +86,17 @@ public class DashboardControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.fieldErrors.template", hasItems("may not be null")))
             .andExpect(jsonPath("$.fieldErrors.title", hasItems("may not be null")))
-            .andExpect(jsonPath("$.fieldErrors.componentName", hasItems("may not be null")))
-            .andExpect(jsonPath("$.fieldErrors.applicationName", hasItems("may not be null")));
+
+//            TODO:  These are no longer necessary in all cases.  Potentially add new class-level validator.
+//            .andExpect(jsonPath("$.fieldErrors.componentName", hasItems("may not be null")))
+//            .andExpect(jsonPath("$.fieldErrors.applicationName", hasItems("may not be null")))
+            ;
     }
 
     @Test
     public void getDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit");
+        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
         d1.setId(objectId);
 
         when(dashboardService.get(objectId)).thenReturn(d1);
@@ -94,10 +107,10 @@ public class DashboardControllerTest {
     }
 
     @Test
-    public void updateDashboard() throws Exception {
+    public void updateTeamDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "title", "app", "comp","amit");
-        DashboardRequest request = makeDashboardRequest("template", "title", "app", "comp","amit");
+        Dashboard orig = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
+        DashboardRequest request = makeDashboardRequest("template", "title", "app", "comp","amit", null, "team");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
         when(dashboardService.update(Matchers.any(Dashboard.class))).thenReturn(orig);
@@ -123,7 +136,7 @@ public class DashboardControllerTest {
         List<ObjectId> collIds = Arrays.asList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 1).put("option2", "2").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit");
+        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
         Widget widgetWithId = request.widget();
         widgetWithId.setId(ObjectId.get());
         Component component = makeComponent(compId, "Component", CollectorType.Build, collId);
@@ -156,7 +169,7 @@ public class DashboardControllerTest {
         List<ObjectId> collIds = Arrays.asList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 2).put("option2", "3").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit");
+        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
         Widget widget = makeWidget(widgetId, "build", compId, options);
 
         when(dashboardService.get(dashId)).thenReturn(d1);
@@ -169,21 +182,27 @@ public class DashboardControllerTest {
                 .andExpect(status().isOk());
     }
 
-    private DashboardRequest makeDashboardRequest(String template, String title, String appName, String compName,String owner) {
+    private DashboardRequest makeDashboardRequest(String template, String title, String appName, String compName, String owner, List<String> teamDashboardIds, String type) {
         DashboardRequest request = new DashboardRequest();
         request.setTemplate(template);
         request.setTitle(title);
         request.setApplicationName(appName);
         request.setComponentName(compName);
         request.setOwner(owner);
+        request.setType(type);
+
         return request;
     }
 
-    private Dashboard makeDashboard(String template, String title, String appName, String compName,String owner) {
-        Component component = new Component();
-        component.setName(compName);
-        Application app = new Application(appName, component);
-        return new Dashboard(template, title, app,owner);
+    private Dashboard makeDashboard(String template, String title, String appName, String compName, String owner, DashboardType type) {
+        Application application = null;
+        if(type.equals(DashboardType.Team)){
+            Component component = new Component();
+            component.setName(compName);
+            application = new Application(appName, component);
+        }
+
+        return new Dashboard(template, title, application,owner, type);
     }
 
     private Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {

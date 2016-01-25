@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('RepoViewController', RepoViewController);
 
     RepoViewController.$inject = ['$q', '$scope','codeRepoData', '$modal'];
@@ -14,7 +14,18 @@
                 Chartist.plugins.gridBoundaries(),
                 Chartist.plugins.lineAboveArea(),
                 Chartist.plugins.pointHalo(),
-                //Chartist.plugins.tooltip()
+                //Chartist.plugins.ctPointClick({
+                //    onClick: showDetail
+                //}),
+                Chartist.plugins.axisLabels({
+                    axisX: {
+                        labels: [
+                            moment().subtract(14, 'days').format('MMM DD'),
+                            moment().subtract(7, 'days').format('MMM DD'),
+                            moment().format('MMM DD')
+                        ]
+                    }
+                }),
                 Chartist.plugins.ctPointLabels({
                     textAnchor: 'middle'
                 })
@@ -22,18 +33,12 @@
             showArea: true,
             lineSmooth: false,
             fullWidth: true,
-            chartPadding: 7,
             axisY: {
                 offset: 30,
                 showGrid: true,
                 showLabel: true,
                 labelInterpolationFnc: function(value) { return Math.round(value * 100) / 100; }
             }
-        };
-
-        ctrl.commitChartData = {
-            labels: [],
-            series: []
         };
 
         ctrl.commits = [];
@@ -77,12 +82,14 @@
                 });
 
             //update charts
-            ctrl.commitChartData.labels = [
-                moment().subtract(14, 'days').format('MMM DD'),
-                moment().subtract(7, 'days').format('MMM DD'),
-                moment().format('MMM DD')
-            ];
-            ctrl.commitChartData.series = [commits];
+            var labels = []
+            _(commits).forEach(function(c) {
+                labels.push('');
+            });
+            ctrl.commitChartData = {
+                series: [commits],
+                labels: labels
+            };
 
 
             // group get total counts and contributors
