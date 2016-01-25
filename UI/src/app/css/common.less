@@ -399,6 +399,27 @@ body {
 .widget-modal {
     padding: 1rem 5rem 3rem;
 
+    .widget-modal-close {
+        cursor: pointer;
+        color: @text-color;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 3rem;
+        height: 3rem;
+        border: 1px solid @text-color;
+        border-radius: 1.5rem;
+        background-clip: padding-box;
+        text-align: center;
+        line-height: 3rem;
+        opacity: .7;
+        .transition(opacity .2s linear);
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
     .widget-modal-heading {
         border-bottom: 1px solid @dash-modal-heading-border;
         color: @dash-modal-heading-text;
@@ -406,6 +427,11 @@ body {
         margin-bottom: 3rem;
         padding: 1rem;
         text-align: center;
+    }
+
+    .widget-modal-heading-markup {
+        border-bottom: 1px solid @dash-modal-heading-border;
+        padding-bottom: 8px;
     }
 
     .text-danger {
@@ -439,7 +465,7 @@ body {
 // styles for detail/expanded view modals
 .widget-detail {
     padding: 1rem 5rem 3rem;
-    .text-standard-lg;
+    .text-lg;
     color: @dash-detail-heading-text;
 
     .widget-detail-heading {

@@ -183,13 +183,14 @@ gulp.task('themes', function() {
     });
 
     return gulp.src(themeFiles)
-        .on('error', function() {})
+
         .pipe(replace('/** insert:widgets **/', widgetLessFiles.join('')))
         .pipe(less({
             paths: [
                 hygieia.src + 'components'
             ]
         }))
+        .on('error', console.error.bind(console))
         .pipe(gulp.dest(hygieia.dist + 'styles'));
 });
 

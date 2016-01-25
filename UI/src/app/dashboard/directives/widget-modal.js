@@ -16,9 +16,8 @@
             scope: {
                 title: '@widgetModalTitle'
             },
-            // TODO: use the modal classes instead of panels
             template: '<div class="widget-modal">' +
-            '<div class="widget-modal-heading">{{::title}}</div>' +
+            '<div class="widget-modal-heading" ng-if="title">{{::title}}</div>' +
             '<div class="widget-modal-body" ng-transclude></div>' +
             '</div>'
         };

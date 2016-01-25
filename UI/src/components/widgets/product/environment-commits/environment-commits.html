@@ -1,0 +1,50 @@
+<widget-modal class="team-environment-commit-detail">
+    <div class="widget-modal-heading-markup clearfix">
+        <chartist class="ct-chart ct-square pull-left heading-pie-chart"
+                  chartist-chart-type="Pie"
+                  chartist-data="ctrl.headingPieData"
+                  chartist-chart-options="ctrl.headingPieOptions"
+        ></chartist>
+
+        <span class="heading-num">
+            17
+        </span>
+        <div class="heading-num-details">
+            <div class="from-team">commits from Tetris</div>
+            <div class="in-environment">in INT</div>
+        </div>
+    </div>
+
+    <div class="team-environment-detail-rows">
+        <div class="team-environment-detail-row"
+             ng-class="{'detail-row-expanded': commit.expanded}"
+             ng-repeat="commit in ctrl.commits"
+             ng-click="ctrl.toggleCommitDetails($index)">
+            <div class="team-environment-detail-header clearfix">
+                <div class="status-icon-container">
+                    <span class="dash-status-lg" dash-status="false" ng-if="commit.failState"></span>
+                </div>
+                <div class="team-environment-detail-text">
+                    <div class="team-environment-detail-text-name">{{commit.message}}</div>
+                    <div class="team-environment-detail-text-from">From {{commit.user}} {{commit.age}} <span>#{{commit.commitNumber}}</span></div>
+                </div>
+                <div class="team-environment-detail-toggle">
+                    <span class="fa fa-2x fa-plus" ng-class="{'team-environment-detail-open': commit.expanded}"></span>
+                </div>
+            </div>
+            <table class="team-environment-detail-stages clearfix">
+                <thead>
+                    <tr>
+                        <th ng-repeat="env in commit.environments">{{env.name}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td ng-repeat="env in commit.environments">{{env.value}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</widget-modal>
