@@ -77,8 +77,10 @@ for information about sourcing this properties file.
 	# queries rely on that change between different instantiations of Jira.
 	# Please provide the name value reference to your instance's IssueType for
 	# the lowest level of Issues (e.g., "user story") specific to your Jira
-	# instance.  Note:  You can retrieve your instance's IssueType ID
-	# listings via the following URI:  https://[your-jira-domain-name]/rest/api/2/issuetype/
+	# instance.  Note:  You can retrieve your instance's IssueType Name
+	# listings via the following URI:
+	# https://[your-jira-domain-name]/rest/api/2/issuetype/.  It is listed as
+	# attribute "name" in the JSON response.
     feature.jiraIssueTypeId=Story
     # In Jira, your instance will have its own custom field created for "sprint" or "timebox" details,
 	# which includes a list of information.  This field allows you to specify that data field for your
@@ -98,3 +100,12 @@ for information about sourcing this properties file.
     #Start dates from which to begin collector data, if no other data is present - usually, a month back is appropriate (required)
     feature.deltaStartDate=2015-03-01T00:00:00.000000
     feature.masterStartDate=2008-01-01T00:00:00.000000
+    
+    #Core Artifacts
+	# These arrays of status mappings must be completed in order for custom source system statuses to be providable by
+	# Hygieia.  Currently, Hygieia only maps to the following 3 status mappings:  to do, doing, and done.  You can find
+	# all available issue status mappings by going to your instance's version of the following API call:
+	# http://fake.jira.com/rest/api/2/status/.  Your statuses are listed in the JSON response as "name."
+	feature.todoStatuses[0]=
+	feature.doingStatuses[0]=
+	feature.doneStatuses[0]=

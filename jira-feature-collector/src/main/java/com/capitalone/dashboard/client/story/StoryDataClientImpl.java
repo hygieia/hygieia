@@ -414,23 +414,41 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 		List<String> todo = coreFeatureSettings.getTodoStatuses();
 		List<String> doing = coreFeatureSettings.getDoingStatuses();
 		List<String> done = coreFeatureSettings.getDoneStatuses();
+		boolean alreadySet = false;
 		String canonicalStatus = null;
 
 		if (!nativeStatus.isEmpty()) {
+			// Map todo
 			for (String status : todo) {
 				if (status.equalsIgnoreCase(nativeStatus)) {
 					canonicalStatus = FeatureStatus.BACKLOG.getStatus();
+					alreadySet = true;
+					break;
 				}
 			}
-			for (String status : doing) {
-				if (status.equalsIgnoreCase(nativeStatus)) {
-					canonicalStatus = FeatureStatus.IN_PROGRESS.getStatus();
+			// Map doing
+			if (!alreadySet) {
+				for (String status : doing) {
+					if (status.equalsIgnoreCase(nativeStatus)) {
+						canonicalStatus = FeatureStatus.IN_PROGRESS.getStatus();
+						alreadySet = true;
+						break;
+					}
 				}
 			}
-			for (String status : done) {
-				if (status.equalsIgnoreCase(nativeStatus)) {
-					canonicalStatus = FeatureStatus.DONE.getStatus();
+			// Map done
+			if (!alreadySet) {
+				for (String status : done) {
+					if (status.equalsIgnoreCase(nativeStatus)) {
+						canonicalStatus = FeatureStatus.DONE.getStatus();
+						alreadySet = true;
+						break;
+					}
 				}
+			}
+
+			if (!alreadySet) {
+				canonicalStatus = FeatureStatus.BACKLOG.getStatus();
 			}
 		} else {
 			canonicalStatus = FeatureStatus.BACKLOG.getStatus();
