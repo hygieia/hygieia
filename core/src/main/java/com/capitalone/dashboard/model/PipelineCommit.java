@@ -8,7 +8,8 @@ public class PipelineCommit {
     private PipelineStageType currentStage;
     private Map<PipelineStageType, Long> processedTimestamps = new HashMap<>();
 
-    public PipelineCommit() {
+    public PipelineCommit(Commit commit) {
+        this.commit = commit;
     }
 
     public PipelineCommit(Commit commit, Map<PipelineStageType, Long> processedTimestamps) {
@@ -42,5 +43,25 @@ public class PipelineCommit {
 
     public void addNewPipelineProcessedTimestamp(PipelineStageType pipelineStageType, Long timestamp){
         getProcessedTimestamps().put(pipelineStageType, timestamp);
+    }
+
+    public void updateCurrentStage(PipelineStageType currentStage, Long timestamp) {
+        this.currentStage = currentStage;
+        this.addNewPipelineProcessedTimestamp(currentStage, timestamp);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PipelineCommit that = (PipelineCommit) o;
+
+        return commit.scmRevisionNumber.equals(that.commit.scmRevisionNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return commit.hashCode();
     }
 }

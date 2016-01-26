@@ -2,10 +2,16 @@ package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.Component;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+
+import java.util.List;
 
 /**
  * {@link Component} repository.
  */
 public interface ComponentRepository extends CrudRepository<Component, ObjectId> {
+
+    @Query(value = "'collectorItems.SCM.id': ?0")
+    List<Component> findBySCMCollectorItemId(ObjectId scmCollectorItemId);
 }
