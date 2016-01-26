@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PipelineCommit {
-    Commit commit;
-    Map<PipelineStageType, Long> processedTimestamps = new HashMap<>();
+    private Commit commit;
+    private PipelineStageType currentStage;
+    private Map<PipelineStageType, Long> processedTimestamps = new HashMap<>();
 
     public PipelineCommit() {
     }
@@ -29,6 +30,14 @@ public class PipelineCommit {
 
     public void setProcessedTimestamps(Map<PipelineStageType, Long> processedTimestamps) {
         this.processedTimestamps = processedTimestamps;
+    }
+
+    public PipelineStageType getCurrentStage() {
+        return currentStage;
+    }
+
+    public void setCurrentStage(PipelineStageType currentStage) {
+        this.currentStage = currentStage;
     }
 
     public void addNewPipelineProcessedTimestamp(PipelineStageType pipelineStageType, Long timestamp){

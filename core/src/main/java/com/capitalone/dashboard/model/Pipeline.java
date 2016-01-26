@@ -4,7 +4,9 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Document containing the details of a Pipeline for a TeamDashboardCollectorItem
@@ -13,7 +15,9 @@ import java.util.Map;
 public class Pipeline extends BaseModel{
     private String name;
     private ObjectId collectorItemId;
+    // TODO - Remove this property after refactor
     private Map<PipelineStageType, PipelineStage> stages = new HashMap<>();
+    private Set<PipelineCommit> commits = new HashSet<>();
 
     public String getName() {
         return name;
@@ -37,5 +41,13 @@ public class Pipeline extends BaseModel{
 
     public void setStages(Map<PipelineStageType, PipelineStage> stages) {
         this.stages = stages;
+    }
+
+    public Set<PipelineCommit> getCommits() {
+        return commits;
+    }
+
+    public void setCommits(Set<PipelineCommit> commits) {
+        this.commits = commits;
     }
 }
