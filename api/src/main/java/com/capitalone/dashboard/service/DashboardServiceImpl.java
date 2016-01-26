@@ -254,9 +254,4 @@ public class DashboardServiceImpl implements DashboardService {
         }
         return DashboardType.Team;
     }
-
-    @Override
-    public Iterable<Pipeline> getPipelinesForTeamDashboardCollectorItemIds(List<ObjectId> collectorItemIds) {
-        return pipelineRepository.findByCollectorItemIdIn(collectorItemIds);
-    }
 }

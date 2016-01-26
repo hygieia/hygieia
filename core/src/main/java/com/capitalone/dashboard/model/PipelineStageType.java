@@ -4,7 +4,7 @@ package com.capitalone.dashboard.model;
  * Defines the type of {@link PipelineStage}
  */
 public enum PipelineStageType {
-    Commit, Build;
+    Commit, Build, Dev, QA, Int, Perf, Prod;
 
     public static PipelineStageType fromString(String value) {
         for (PipelineStageType type : values()) {

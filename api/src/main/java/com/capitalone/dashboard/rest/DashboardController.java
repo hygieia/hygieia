@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -104,10 +103,5 @@ public class DashboardController {
             dashboardOwner = dashboardService.getDashboardOwner(dashboardtitle);
         }
         return dashboardOwner;
-    }
-
-    @RequestMapping(value = "/pipeline", method = GET, produces = APPLICATION_JSON_VALUE)
-    public Iterable<Pipeline> pipelinesForProductDashboard(@RequestParam(value="collectorItemId") ObjectId[] collectorItemIds, @RequestParam Long beginDate, @RequestParam Long endDate) {
-        return dashboardService.getPipelinesForTeamDashboardCollectorItemIds(Arrays.asList(collectorItemIds));
     }
 }

@@ -2,7 +2,6 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Pipeline;
 import com.capitalone.dashboard.model.Widget;
 import org.bson.types.ObjectId;
 
@@ -17,13 +16,6 @@ public interface DashboardService {
      * @return all dashboards
      */
     Iterable<Dashboard> all();
-
-    /**
-     * Retrieves all pipeline objects for the provided list of team dashboard collector item ids
-     * @param teamDashboardCollectorItemIds List of team dashboard collectoritemids
-     * @return all pipelines for team dashboards
-     */
-    Iterable<Pipeline> getPipelinesForTeamDashboardCollectorItemIds(List<ObjectId> teamDashboardCollectorItemIds);
 
 
     /**

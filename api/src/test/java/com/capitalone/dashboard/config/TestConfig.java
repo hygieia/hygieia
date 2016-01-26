@@ -75,4 +75,9 @@ public class TestConfig {
     public BinaryArtifactService artifactService() {
         return Mockito.mock(BinaryArtifactService.class);
     }
+
+	@Bean
+	public PipelineService pipelineService() {
+		return Mockito.mock(PipelineService.class);
+	}
 }
