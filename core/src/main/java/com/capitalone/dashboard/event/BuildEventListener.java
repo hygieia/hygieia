@@ -6,13 +6,12 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
 import java.util.*;
 
 @org.springframework.stereotype.Component
-public class BuildEventListener extends AbstractMongoEventListener<Build> {
+public class BuildEventListener extends HygieiaMongoEventListener<Build> {
     private static final Logger LOG = LoggerFactory.getLogger(BuildEventListener.class);
 
     private DashboardRepository dashboardRepository;
@@ -48,13 +47,6 @@ public class BuildEventListener extends AbstractMongoEventListener<Build> {
         processBuild(event.getSource());
     }
 
-    private Collector getProductCollector(){
-        List<Collector> productCollectors = collectorRepository.findByCollectorType(CollectorType.Product);
-        if(productCollectors.isEmpty()){
-            return null;
-        }
-        return productCollectors.get(0);
-    }
 
     private void processBuild(Build build){
         List<Dashboard> teamDashboardsReferencingBuild = findAllDashboardsForBuild(build);
@@ -64,17 +56,13 @@ public class BuildEventListener extends AbstractMongoEventListener<Build> {
 
             boolean deployed = isBuildDeployed(build, teamDashboardCollectorItem);
             if(!deployed){
-                AbstractMap.SimpleEntry dashboardPair = new AbstractMap.SimpleEntry(teamDashboard, teamDashboardCollectorItem);
+                AbstractMap.SimpleEntry<Dashboard, CollectorItem> dashboardPair = new AbstractMap.SimpleEntry(teamDashboard, teamDashboardCollectorItem);
                 updatePipelinesForBuild(dashboardPair, build);
             }
         }
     }
 
-    private CollectorItem getTeamDashboardCollectorItem(Dashboard teamDashboard) {
-        ObjectId productCollectorId = getProductCollector().getId();
-        ObjectId dashboardId = teamDashboard.getId();
-        return collectorItemRepository.findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(productCollectorId, dashboardId.toString());
-    }
+
 
     /**
      *
@@ -114,47 +102,6 @@ public class BuildEventListener extends AbstractMongoEventListener<Build> {
         pipelineRepository.save(pipeline);
     }
 
-    /**
-     * Finds a SCM in a pipeline by way of the pipelineCommitMap
-     *
-     * @param pipeline
-     * @param pipelineCommitMap
-     * @param scm
-     * @return
-     */
-    private PipelineCommit findOrCreatePipelineCommit(Pipeline pipeline, Map<PipelineCommit, PipelineCommit> pipelineCommitMap, SCM scm) {
-        PipelineCommit pipelineCommit = pipelineCommitMap.get(new PipelineCommit(scm));
-        if(pipelineCommit == null){
-            pipelineCommit = new PipelineCommit(scm);
-            pipeline.getCommits().add(pipelineCommit);
-        }
-        return pipelineCommit;
-    }
-
-    private Pipeline getOrCreatePipeline(AbstractMap.SimpleEntry<Dashboard, CollectorItem> dashboard) {
-        Pipeline pipeline = pipelineRepository.findByCollectorItemId(dashboard.getValue().getId());
-        if(pipeline == null){
-            pipeline = new Pipeline();
-            pipeline.setName(dashboard.getKey().getTitle());
-            pipeline.setCollectorItemId(dashboard.getValue().getId());
-        }
-        return pipeline;
-    }
-
-    /**
-     * Builds a map of commits for a given pipeline.  Allows for quickly finding/updating commits
-     * @param pipeline
-     * @return
-     */
-    private Map<PipelineCommit, PipelineCommit> buildPipelineCommitPipelineCommitMap(Pipeline pipeline) {
-        Map<PipelineCommit, PipelineCommit> pipelineCommitMap= new HashMap<>();
-        for (PipelineCommit pc : pipeline.getCommits()) {
-            pipelineCommitMap.put(pc, pc);
-        }
-        return pipelineCommitMap;
-    }
-
-
     private List<BinaryArtifact> findAllBinaryArtifactsForBuild(Build build){
         return (List)binaryArtifactRepository.findByCollectorItemId(build.getCollectorItemId());
     }
@@ -176,5 +123,20 @@ public class BuildEventListener extends AbstractMongoEventListener<Build> {
             buildComponentObjectIds.add(c.getId());
         }
         return dashboardRepository.findDashboardsByApplicationComponentIds(buildComponentObjectIds);
+    }
+
+    @Override
+    protected CollectorItemRepository getCollectorItemRepository() {
+        return this.collectorItemRepository;
+    }
+
+    @Override
+    protected CollectorRepository getCollectorRepository() {
+        return this.collectorRepository;
+    }
+
+    @Override
+    protected PipelineRepository getPipelineRepository() {
+        return this.pipelineRepository;
     }
 }
