@@ -4,24 +4,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PipelineCommit {
-    private Commit commit;
+    private SCM commit;
     private PipelineStageType currentStage;
     private Map<PipelineStageType, Long> processedTimestamps = new HashMap<>();
 
-    public PipelineCommit(Commit commit) {
+    public PipelineCommit(SCM commit) {
         this.commit = commit;
     }
 
-    public PipelineCommit(Commit commit, Map<PipelineStageType, Long> processedTimestamps) {
+    public PipelineCommit(SCM commit, Map<PipelineStageType, Long> processedTimestamps) {
         this.commit = commit;
         this.processedTimestamps = processedTimestamps;
     }
 
-    public Commit getCommit() {
+    public SCM getCommit() {
         return commit;
     }
 
-    public void setCommit(Commit commit) {
+    public void setCommit(SCM commit) {
         this.commit = commit;
     }
 

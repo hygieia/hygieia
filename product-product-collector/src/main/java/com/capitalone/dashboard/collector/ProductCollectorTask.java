@@ -13,19 +13,19 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
 
     private final ProductDashboardRepository productDashboardRepository;
     private final TeamDashboardRepository teamDashboardRepository;
-    private final ProductClient productClient;
+//    private final ProductClient productClient;
     private final ProductSettings productSettings;
 
     @Autowired
     public ProductCollectorTask(TaskScheduler taskScheduler,
                                 ProductDashboardRepository productDashboardRepository,
                                 TeamDashboardRepository teamDashboardRepository,
-                                ProductClient productClient,
+//                                ProductClient productClient,
                                 ProductSettings productSettings) {
         super(taskScheduler, "Product");
         this.productDashboardRepository = productDashboardRepository;
         this.teamDashboardRepository = teamDashboardRepository;
-        this.productClient = productClient;
+//        this.productClient = productClient;
         this.productSettings = productSettings;
     }
 

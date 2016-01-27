@@ -30,4 +30,10 @@ public interface EnvironmentComponentRepository extends CrudRepository<Environme
      * @return list of {@link EnvironmentComponent}
      */
     List<EnvironmentComponent> findByCollectorItemId(ObjectId collectorItemId);
+
+    @Query(value="{ 'collectorItemId': {$in: ?0 }, 'deployed': true}")
+    List<EnvironmentComponent> findDeployedByCollectorItemIds(List<ObjectId> collectorItemIds);
+
+    @Query(value="{ 'collectorItemId': ?0, 'componentName': ?1, 'componentVersion': ?2, 'deployed':true}")
+    List<EnvironmentComponent> findDeployedByCollectorItemIdAndComponentNameAndComponentVersion(ObjectId dashboardCollectorItemId, String componentName, String componentVersion);
 }

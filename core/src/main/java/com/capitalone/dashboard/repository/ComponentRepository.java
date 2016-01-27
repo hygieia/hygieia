@@ -12,6 +12,10 @@ import java.util.List;
  */
 public interface ComponentRepository extends CrudRepository<Component, ObjectId> {
 
+
     @Query(value = "'collectorItems.SCM.id': ?0")
     List<Component> findBySCMCollectorItemId(ObjectId scmCollectorItemId);
+
+    @Query(value="{'collectorItems.Build._id': ?0}")
+    List<Component> findByBuildCollectorItemId(ObjectId buildCollectorItemId);
 }

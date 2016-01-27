@@ -19,6 +19,10 @@ import java.util.List;
  */
 @Document(collection = "artifacts")
 public class BinaryArtifact extends BaseModel {
+
+    /**
+     * CollectorItemId for the {@link Build} that produced the artifact
+     */
     private ObjectId collectorItemId;
     private long timestamp;
 

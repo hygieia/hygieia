@@ -25,4 +25,7 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 	@Query(value="{'widgets.options.teams.collectorItemId': ?0 }")
 	List<Dashboard> findProductDashboardsByTeamDashboardCollectorItemId(String teamDashboardCollectorItemId);
 
+	@Query(value="{ 'application.components.$id': { $in: ?0 }}")
+	List<Dashboard> findDashboardsByApplicationComponentIds(List<ObjectId> componentIds);
+
 }
