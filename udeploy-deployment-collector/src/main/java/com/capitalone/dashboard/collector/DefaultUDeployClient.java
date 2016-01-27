@@ -19,13 +19,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 public class DefaultUDeployClient implements UDeployClient {
@@ -113,7 +117,7 @@ public class DefaultUDeployClient implements UDeployClient {
     }
 
     // Called by DefaultEnvironmentStatusUpdater
-    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, this method needs refactoring.
+//    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, this method needs refactoring.
     @Override
     public List<UDeployEnvResCompData> getEnvironmentResourceStatusData(
             UDeployApplication application, Environment environment) {
@@ -144,23 +148,8 @@ public class DefaultUDeployClient implements UDeployClient {
  */
 
         // Failed to deploy list:
-        HashSet<String> failedComponents = new HashSet<>();
-        for (Object nonCompItem : nonCompliantResourceJSON) {
-            JSONArray nonCompChildrenArray = (JSONArray) ((JSONObject) nonCompItem)
-                    .get("children");
-            for (Object nonCompChildItem : nonCompChildrenArray) {
-                JSONObject nonCompChildObject = (JSONObject) nonCompChildItem;
-                JSONObject nonCompVersonObject = (JSONObject) nonCompChildObject
-                        .get("version");
-                if (nonCompVersonObject == null) continue;
-                JSONObject nonCompComponentObject =
-                        (JSONObject) nonCompVersonObject.get("component");
-                if (nonCompComponentObject != null) {
-                    failedComponents.add(str(nonCompComponentObject, "name"));
-                }
-            }
-        }
-
+        Set<String> failedComponents = getFailedComponents(nonCompliantResourceJSON);
+        Map<String, List<String>> versionFileMap = new HashMap<>();
         for (Object item : allResourceJSON) {
             JSONObject jsonObject = (JSONObject) item;
             if (jsonObject == null) continue;
@@ -170,28 +159,79 @@ public class DefaultUDeployClient implements UDeployClient {
                 JSONObject childObject = (JSONObject) child;
                 JSONArray jsonVersions = (JSONArray) childObject.get("versions");
                 if (jsonVersions == null || jsonVersions.size() == 0) continue;
-
-                UDeployEnvResCompData data = new UDeployEnvResCompData();
-                data.setEnvironmentName(environment.getName());
-                data.setCollectorItemId(application.getId());
                 JSONObject versionObject = (JSONObject) jsonVersions.get(0);
-                data.setComponentVersion(str(versionObject, "name"));
-                data.setAsOfDate(date(versionObject, "created"));
-                String componentName = str(childObject, "name");
-                data.setDeployed(!failedComponents.contains(componentName));
-                data.setComponentName(componentName);
-                data.setOnline("ONLINE".equalsIgnoreCase(str(
-                        childObject, "status")));
-                JSONObject resource = (JSONObject) childObject.get("parent");
-                if (resource != null) {
-                    data.setResourceName(str(resource, "name"));
+                // get version fileTree and build data.
+                List<String> physicalFileNames = versionFileMap.get(str(versionObject, "id"));
+                if (CollectionUtils.isEmpty(physicalFileNames)) {
+                    physicalFileNames = getPhysicalFileList(application, versionObject);
+                    versionFileMap.put(str(versionObject, "id"), physicalFileNames);
                 }
-                environmentStatuses.add(data);
+                for (String fileName : physicalFileNames) {
+                    environmentStatuses.add(buildUdeployEnvResCompData(environment, application, versionObject, fileName, childObject, failedComponents));
+                }
             }
         }
-
         return environmentStatuses;
     }
+
+    private List<String> getPhysicalFileList(UDeployApplication application, JSONObject versionObject) {
+        List<String> list = new ArrayList<>();
+        String fileTreeUrl = "deploy/version/" + str(versionObject, "id") + "/fileTree";
+        ResponseEntity<String> fileTreeResponse = makeRestCall(
+                application.getInstanceUrl(), fileTreeUrl);
+        JSONArray fileTreeJson = paresAsArray(fileTreeResponse);
+        for (Object f : fileTreeJson) {
+            JSONObject fileJson = (JSONObject) f;
+            list.add(cleanFileName(str(fileJson, "name"), str(versionObject, "name")));
+        }
+        return list;
+    }
+
+    private Set<String> getFailedComponents(JSONArray nonCompliantResourceJSON) {
+        HashSet<String> failedComponents = new HashSet<>();
+        for (Object nonCompItem : nonCompliantResourceJSON) {
+            JSONArray nonCompChildrenArray = (JSONArray) ((JSONObject) nonCompItem)
+                    .get("children");
+            for (Object nonCompChildItem : nonCompChildrenArray) {
+                JSONObject nonCompChildObject = (JSONObject) nonCompChildItem;
+                JSONObject nonCompVersionObject = (JSONObject) nonCompChildObject
+                        .get("version");
+                if (nonCompVersionObject == null) continue;
+                JSONObject nonCompComponentObject =
+                        (JSONObject) nonCompVersionObject.get("component");
+                if (nonCompComponentObject != null) {
+                    failedComponents.add(str(nonCompComponentObject, "name"));
+                }
+            }
+        }
+        return failedComponents;
+    }
+
+    private String cleanFileName(String fileName, String version) {
+        if (fileName.contains("-" + version))
+            return fileName.replace("-" + version, "");
+        if (fileName.contains(version))
+            return fileName.replace(version, "");
+        return fileName;
+    }
+
+    private UDeployEnvResCompData buildUdeployEnvResCompData(Environment environment, UDeployApplication application, JSONObject versionObject, String fileName, JSONObject childObject, Set<String> failedComponents) {
+        UDeployEnvResCompData data = new UDeployEnvResCompData();
+        data.setEnvironmentName(environment.getName());
+        data.setCollectorItemId(application.getId());
+        data.setComponentVersion(str(versionObject, "name"));
+        data.setAsOfDate(date(versionObject, "created"));
+        data.setDeployed(!failedComponents.contains(str(childObject, "name")));
+        data.setComponentName(fileName);
+        data.setOnline("ONLINE".equalsIgnoreCase(str(
+                childObject, "status")));
+        JSONObject resource = (JSONObject) childObject.get("parent");
+        if (resource != null) {
+            data.setResourceName(str(resource, "name"));
+        }
+        return data;
+    }
+
 
     private JSONArray getLowestLevelChildren(JSONObject topParent, JSONArray returnArray) {
         JSONArray jsonChildren = (JSONArray) topParent.get("children");

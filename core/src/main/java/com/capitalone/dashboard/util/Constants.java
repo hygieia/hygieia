@@ -10,11 +10,10 @@ package com.capitalone.dashboard.util;
  * 
  */
 public final class Constants {
+	public static final String JIRA = "Jira";
+	public static final String VERSIONONE = "VersionOne";
 
 	private Constants() {
 		// This class should not be instantiable
 	}
-
-	public static final String JIRA = "Jira";
-	public static final String VERSIONONE = "VersionOne";
 }

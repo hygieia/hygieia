@@ -5,14 +5,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * Application configuration and bootstrap
- *
+ * 
  * @author KFK884
  */
 @SpringBootApplication
 public class Application {
 	/**
 	 * Main thread of operation that runs the Spring Boot collector application.
-	 *
+	 * 
 	 * @param args
 	 *            Any command line arguments that need to be captured at runtime
 	 *            (currently, none are used)

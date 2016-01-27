@@ -10,6 +10,7 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +20,14 @@ import org.springframework.stereotype.Component;
 
 /**
  * Collects {@link FeatureCollector} data from feature content source system.
- *
+ * 
  * @author KFK884
  */
 @Component
 public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 
+	private final CoreFeatureSettings coreFeatureSettings;
 	private final FeatureRepository featureRepository;
 	private final ScopeOwnerRepository teamRepository;
 	private final ScopeRepository projectRepository;
@@ -36,7 +38,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 * Default constructor for the collector task. This will construct this
 	 * collector task with all repository, scheduling, and settings
 	 * configurations custom to this collector.
-	 *
+	 * 
 	 * @param taskScheduler
 	 *            A task scheduler artifact
 	 * @param teamRepository
@@ -46,16 +48,16 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 *            system
 	 */
 	@Autowired
-	public FeatureCollectorTask(TaskScheduler taskScheduler,
-			FeatureRepository featureRepository, ScopeOwnerRepository teamRepository,
-			ScopeRepository projectRepository,
-			FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings) {
+	public FeatureCollectorTask(CoreFeatureSettings coreFeatureSettings,
+			TaskScheduler taskScheduler, FeatureRepository featureRepository,
+			ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
+			FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings) {
 		super(taskScheduler, Constants.JIRA);
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepository = teamRepository;
 		this.projectRepository = projectRepository;
 		this.featureRepository = featureRepository;
+		this.coreFeatureSettings = coreFeatureSettings;
 		this.featureSettings = featureSettings;
 	}
 
@@ -92,19 +94,16 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	public void collect(FeatureCollector collector) {
 		LOGGER.info("Starting Feature collection...");
 
-		TeamDataClientImpl teamData = new TeamDataClientImpl(
-				this.featureCollectorRepository, this.featureSettings,
-				this.teamRepository);
+		TeamDataClientImpl teamData = new TeamDataClientImpl(this.featureCollectorRepository,
+				this.featureSettings, this.teamRepository);
 		teamData.updateTeamInformation();
 
-		ProjectDataClientImpl projectData = new ProjectDataClientImpl(
-				this.featureSettings, this.projectRepository,
-				this.featureCollectorRepository);
+		ProjectDataClientImpl projectData = new ProjectDataClientImpl(this.featureSettings,
+				this.projectRepository, this.featureCollectorRepository);
 		projectData.updateProjectInformation();
 
-		StoryDataClientImpl storyData = new StoryDataClientImpl(
-				this.featureSettings, this.featureRepository,
-				this.featureCollectorRepository);
+		StoryDataClientImpl storyData = new StoryDataClientImpl(this.coreFeatureSettings,
+				this.featureSettings, this.featureRepository, this.featureCollectorRepository);
 		storyData.updateStoryInformation();
 
 		LOGGER.info("Feature Data Collection Finished");
