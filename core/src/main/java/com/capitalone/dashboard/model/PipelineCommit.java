@@ -8,6 +8,9 @@ public class PipelineCommit {
     private PipelineStageType currentStage;
     private Map<PipelineStageType, Long> processedTimestamps = new HashMap<>();
 
+    public PipelineCommit(){
+    }
+
     public PipelineCommit(SCM commit) {
         this.commit = commit;
     }
