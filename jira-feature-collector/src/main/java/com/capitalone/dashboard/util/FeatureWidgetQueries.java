@@ -11,10 +11,7 @@ import org.stringtemplate.v4.STGroupDir;
  * @author kfk884
  * 
  */
-@SuppressWarnings("PMD.SingularField")
 public class FeatureWidgetQueries {
-	private final FeatureSettings featureSettings;
-	private final String queryFolder;
 	private final STGroup folder;
 
 	/**
@@ -25,9 +22,7 @@ public class FeatureWidgetQueries {
 	 *            Feature collector system settings
 	 */
 	public FeatureWidgetQueries(FeatureSettings featureSettings) {
-		this.featureSettings = featureSettings;
-		this.queryFolder = this.featureSettings.getQueryFolder();
-		this.folder = new STGroupDir(queryFolder, '$', '$');
+		this.folder = new STGroupDir(featureSettings.getQueryFolder(), '$', '$');
 	}
 
 	/**
