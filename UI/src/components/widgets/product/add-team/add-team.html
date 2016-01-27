@@ -17,7 +17,6 @@
                    ng-model="ctrl.collectorItemId"
                    select-on-click
                    typeahead="item.id as item.title for item in items = (ctrl.dashboards | filter:ctrl.filterDashboards($viewValue)) | orderBy: 'title'"
-                   typeahead-focus
                    typeahead-input-formatter="ctrl.formatLabel($model)"
                    typeahead-editable="false"
                    ng-blur="ctrl.onBlur(addTeamForm)"

@@ -1,6 +1,6 @@
 {
     "id": "54b819e203643678fd9343f8",
-    "template": "capone",
+    "template": "product-dashboard",
     "title": "Topo's Dashboard",
     "componentName": "API",
     "type": 2,
@@ -39,16 +39,9 @@
                 "id": "product0",
                 "teams": [
                     {
-                        "dashboardId": "98239852jlkasdjfa78",
-                        "alternateName": "Some alternate name"
-                    },
-                    {
-                        "dashboardId": "ASKDFIASDGJLKWEJKLG",
-                        "alternateName": "Another board"
-                    },
-                    {
-                        "dashboardId": "a987sio298dljk2d8",
-                        "alternateName": ""
+                        "collectorItemId": "56a67a88689a6c2d50757022",
+                        "name": "Tetris",
+                        "customName": "Some alternate name"
                     }
                 ]
             }

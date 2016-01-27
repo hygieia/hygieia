@@ -31,3 +31,4 @@ UI/src/app/local-testing.js
 # Eclipse specific ignore settings
 .settings/
 .project
+application.properties

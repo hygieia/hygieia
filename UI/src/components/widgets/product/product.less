@@ -111,14 +111,12 @@
             .team-name {
                 color: @dash-dashboard-text-hover;
                 font-weight: bold;
-                line-height: @team-line-height;
-                .text(3, 3);
+                .text(3, 3.6);
 
                 overflow: hidden;
                 display: -webkit-box;
                 -webkit-box-orient: vertical;
                 -webkit-line-clamp: 3;  /* number of lines to show */
-                line-height: 1em;       /* fallback */
                 max-height: 3em;        /* fallback */
             }
 
@@ -168,23 +166,27 @@
             }
         }
 
+        .team-data-cell-content {
+            cursor: pointer;
+        }
+
         .team-data-cell {
             position: relative;
-            cursor: pointer;
 
             .team-data-cell-header {
                 padding: @team-cell-padding/2;
                 border-bottom: 1px solid @dash-dashboard-text;
                 .text(1.5, 1.5);
 
-                .team-time-colon {
-                    margin: 0 -.25em;
+
+                .team-time-average-desc {
+                    margin-left: -.2em;
+                    color: @dash-dashboard-text-hover;
                 }
 
-                .team-time-lg {
+                .team-time-average-lg {
                     .text(2.5, 2.5);
                     color: @dash-dashboard-text-hover;
-                    font-weight: bold;
                 }
 
                 .team-time-average {
@@ -192,10 +194,14 @@
                     margin-top: 3px;
                 }
 
-                .team-time-average-num {
+                .team-time-stddev-num {
                     .text(1.4, 1.4);
                     color: @dash-dashboard-text-hover;
                     font-weight: bold;
+                }
+
+                .team-time-stddev-desc {
+                    text-transform: uppercase;
                 }
             }
 
