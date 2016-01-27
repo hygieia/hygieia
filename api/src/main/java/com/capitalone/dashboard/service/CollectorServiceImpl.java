@@ -3,8 +3,10 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.DashboardRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -12,6 +14,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
@@ -19,12 +22,15 @@ public class CollectorServiceImpl implements CollectorService {
 
     private final CollectorRepository collectorRepository;
     private final CollectorItemRepository collectorItemRepository;
+    private final DashboardRepository dashboardRepository;
 
     @Autowired
     public CollectorServiceImpl(CollectorRepository collectorRepository,
-                                CollectorItemRepository collectorItemRepository) {
+                                CollectorItemRepository collectorItemRepository,
+                                DashboardRepository dashboardRepository) {
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
+        this.dashboardRepository = dashboardRepository;
     }
 
     @Override
@@ -45,6 +51,34 @@ public class CollectorServiceImpl implements CollectorService {
         }
 
         return collectorItems;
+    }
+
+    /**
+     * We want to initialize the Quasi-product collector when the API starts up
+     * so that any existing Team dashboards will be added as CollectorItems.
+     *
+     * TODO - Is this the best home for this method??
+     */
+    @PostConstruct
+    public void initProductCollectorOnStartup() {
+        Collector productCollector = collectorRepository.findByName("Product");
+        if (productCollector == null) {
+            productCollector = new Collector();
+            productCollector.setName("Product");
+            productCollector.setCollectorType(CollectorType.Product);
+            productCollector.setEnabled(true);
+            productCollector.setOnline(true);
+            collectorRepository.save(productCollector);
+
+            // Create collector items for existing team dashboards
+            for (Dashboard dashboard : dashboardRepository.findTeamDashboards()) {
+                CollectorItem item = new CollectorItem();
+                item.setCollectorId(productCollector.getId());
+                item.getOptions().put("dashboardId", dashboard.getId().toString());
+                item.setDescription(dashboard.getTitle());
+                collectorItemRepository.save(item);
+            }
+        }
     }
 
     @Override

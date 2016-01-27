@@ -65,11 +65,11 @@ public class ProductCollectorTask extends CollectorTask<ProductDashboardCollecto
 
     @Override
     public void collect(ProductDashboardCollector collector) {
-        List<TeamDashboardCollectorItem> existingTeamDashboardCollectorItems = teamDashboardRepository.findTeamDashboards(collector.getId());
-        List<Dashboard> allTeamDashboards = productClient.getAllTeamDashboards();
-
-        doCleanUp(existingTeamDashboardCollectorItems, allTeamDashboards);
-        addNewCollectorItemsForNewDashboards(existingTeamDashboardCollectorItems, allTeamDashboards, collector);
+//        List<TeamDashboardCollectorItem> existingTeamDashboardCollectorItems = teamDashboardRepository.findTeamDashboards(collector.getId());
+//        List<Dashboard> allTeamDashboards = productClient.getAllTeamDashboards();
+//
+//        doCleanUp(existingTeamDashboardCollectorItems, allTeamDashboards);
+//        addNewCollectorItemsForNewDashboards(existingTeamDashboardCollectorItems, allTeamDashboards, collector);
     }
 
     private void addNewCollectorItemsForNewDashboards(List<TeamDashboardCollectorItem> existingTeamDashboardCollectorItems,
