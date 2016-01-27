@@ -68,25 +68,32 @@
 
                 <td class="team-data-cell"
                     ng-repeat="stage in ctrl.stages | filter: '!PROD'">
-                    {{teamData = ctrl.getTeamStageData(team, stage);""}}
-                    <div class="team-data-cell-content" ng-if="teamData != false" ng-click="ctrl.viewTeamEnvDetails(team)">
+                    {{teamData = team.stages[stage].summary;""}}
+                    <div class="team-data-cell-content" ng-if="teamData" ng-click="ctrl.viewTeamStageDetails(team, stage)">
                         <div class="team-data-cell-header">
-                            <div class="clearfix">
+                            <div class="clearfix" ng-if-start="teamData.average != false">
                                 <!-- only leading zeros get small size -->
                                 <span class="team-time-average-lg" ng-if="teamData.average.days">{{teamData.average.days}}</span>
-                                <span class="team-time-average-desc" ng-if="teamData.average.days > 0">d</span>
+                                <span class="team-time-average-desc" ng-if="teamData.average.days > 0">D</span>
                                 <span class="team-time-average-lg" ng-if="teamData.average.hours > 0 || teamData.average.days > 0">{{teamData.average.hours}}</span>
-                                <span class="team-time-average-desc" ng-if="teamData.average.hours > 0 || teamData.average.days > 0">h</span>
+                                <span class="team-time-average-desc" ng-if="teamData.average.hours > 0 || teamData.average.days > 0">H</span>
                                 <span class="team-time-average-lg" ng-if="teamData.average.hours > 0">{{teamData.average.minutes}}</span>
-                                <span class="team-time-average-desc">m</span>
+                                <span class="team-time-average-desc">M</span>
                             </div>
-                            <div class="clearfix team-time-average" ng-if="teamDeviation != false">
+                            <div class="clearfix team-time-average" ng-if-end>
                                 <span class="pull-left">Average</span>
-                                    <span class="pull-right">
-                                        <span>+/-</span>
-                                        <span class="team-time-stddev-num">{{teamData.deviation.number}}</span>
-                                        <span class="team-time-stddev-desc">{{teamData.deviation.descriptor}}</span>
-                                    </span>
+                                <span class="pull-right">
+                                    <span>+/-</span>
+                                    <span class="team-time-stddev-num">{{teamData.deviation.number}}</span>
+                                    <span class="team-time-stddev-desc">{{teamData.deviation.descriptor}}</span>
+                                </span>
+                            </div>
+
+                            <div class="clearfix" ng-if-start="teamData.average == false">
+                                <span class="team-time-average-lg">--</span>
+                            </div>
+                            <div class="clearfix team-time-average" ng-if-end>
+                                <span class="pull-left">Calculating</span>
                             </div>
                         </div>
 

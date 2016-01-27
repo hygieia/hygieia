@@ -18,51 +18,7 @@
         ctrl.editTeam = editTeam;
         ctrl.addTeam = addTeam;
         ctrl.openDashboard = openDashboard;
-        ctrl.viewTeamEnvDetails = viewTeamEnvDetails;
-
-        ctrl.getTeamStageData = function(team, stage) {
-            if (!hasStageData(team, stage)) {
-                return false;
-            }
-
-            var stageData = team.stages[stage],
-                lastUpdated = moment(_(stageData.commits).max('timestamp').value().timestamp),
-                deviationNum = moment(stageData.stageStdDeviation).minutes(),
-                deviationDesc = 'min';
-
-            if(deviationNum > 60*24) {
-                deviationDesc = 'day';
-                deviationNum = Math.round(deviationNum / 24 / 60);
-            }
-            else if (deviationNum > 60) {
-                deviationDesc = 'hour';
-                deviationNum = Math.round(deviationNum / 60);
-            }
-
-            var average = moment(stageData.stageAverageTime);
-
-            return {
-                commitsInsideTimeframe: stageData.commitsInsideTimeframe,
-                commitsOutsideTimeframe: stageData.commitsOutsideTimeframe,
-                lastUpdated: {
-                    longDisplay: lastUpdated.format('MMMM Do YYYY, h:mm:ss a'),
-                    shortDisplay: lastUpdated.dash('ago')
-                },
-                deviation: {
-                    number: deviationNum,
-                    descriptor: deviationDesc
-                },
-                average: {
-                    days: average.days(),
-                    hours: average.hours(),
-                    minutes: average.minutes()
-                }
-            }
-        };
-
-        function hasStageData(team, stage) {
-            return team.stages && team.stages[stage];
-        }
+        ctrl.viewTeamStageDetails = viewTeamStageDetails;
 
         function openDashboard(item) {
             collectorData.itemsByType('product').then(function(response) {
@@ -175,12 +131,21 @@
             $scope.upsertWidget(data);
         }
 
-        function viewTeamEnvDetails() {
+        function viewTeamStageDetails(team, stage) {
             $modal.open({
                 templateUrl: 'components/widgets/product/environment-commits/environment-commits.html',
                 controller: 'productEnvironmentCommitController',
                 controllerAs: 'ctrl',
-                size: 'lg'
+                size: 'lg',
+                resolve: {
+                    modalData: function () {
+                        return {
+                            team: team,
+                            stage: stage,
+                            stages: ctrl.stages
+                        };
+                    }
+                }
             });
         }
 
@@ -191,8 +156,57 @@
             return r.deviation = Math.sqrt(r.variance = s / t), r;
         }
 
-        function teamHasStageCommits(team, stage) {
-            return team.stages[stage] && team.stages[stage].commits && team.stages[stage].commits.length;
+        function getTeamStageSummary(stageData) {
+
+            return {
+                commitsInsideTimeframe: _(stageData.commits).filter({errorState:false}).value().length,
+                commitsOutsideTimeframe: _(stageData.commits).filter({errorState:true}).value().length,
+                lastUpdated: (function(stageData) {
+                    if(!stageData.commits) {
+                        return false;
+                    }
+
+                    var lastUpdated = moment(_(stageData.commits).max('timestamp').value().timestamp);
+                    return {
+                        longDisplay: lastUpdated.format('MMMM Do YYYY, h:mm:ss a'),
+                        shortDisplay: lastUpdated.dash('ago')
+                    }
+                })(stageData),
+
+                deviation: (function(stageData) {
+                    if(!stageData.stageStdDeviation) {
+                        return false;
+                    }
+
+                    var number = moment(stageData.stageStdDeviation).minutes(),
+                        desc = 'min';
+                    if(number > 60*24) {
+                        desc = 'day';
+                        number = Math.round(number / 24 / 60);
+                    }
+                    else if (number > 60) {
+                        desc = 'hour';
+                        number = Math.round(number / 60);
+                    }
+
+                    return {
+                        number: number,
+                        descriptor: desc
+                    }
+                })(stageData),
+
+                average: (function(stageData) {
+                    if(!stageData.stageAverageTime) {
+                        return false;
+                    }
+                    var average = moment(stageData.stageAverageTime);
+                    return {
+                        days: average.days(),
+                        hours: average.hours(),
+                        minutes: average.minutes()
+                    }
+                })(stageData)
+            }
         }
 
         function getCommitData(teams) {
@@ -233,10 +247,7 @@
                 console.log(JSON.stringify(teams));
                 */
 
-                // process response
-                var result = {};
-
-                // loop through each team
+                // start processing response by looping through each team
                 _(teams).each(function(team) {
                     var teamStageData = {},
                         stageDurations = {},
@@ -247,7 +258,7 @@
                     _(stages).reverse().forEach(function(currentStageName) {
 
                         // make sure there are commits in that stage, otherwise skip it
-                        if (!teamHasStageCommits(team, currentStageName)) {
+                        if (!team.stages[currentStageName] || !team.stages[currentStageName].commits || !team.stages[currentStageName].commits.length) {
                             return;
                         }
 
@@ -261,6 +272,7 @@
                             var commit = {
                                 author: commitObj.commit.scmAuthor || 'NA',
                                 message: commitObj.commit.scmCommitLog || 'No message',
+                                id: commitObj.commit.scmRevisionNumber,
                                 timestamp: commitObj.commit.scmCommitTimestamp
                             };
 
@@ -275,7 +287,11 @@
                                 var previousStageTimestamp = commitObj.processedTimestamps[previousStage],
                                     timeInPreviousStage = currentStageTimestamp - previousStageTimestamp;
 
-                                commit['in' + previousStage] = timeInPreviousStage;
+                                if(!commit['in']) {
+                                    commit['in'] = {};
+                                }
+
+                                commit.in[previousStage] = timeInPreviousStage;
                                 currentStageTimestamp = previousStageTimestamp;
 
                                 // add this number to the stage duration array so it can be used
@@ -301,7 +317,6 @@
                     // we can calculate the averages and std deviation
                     _(stageDurations).forEach(function(durationArray, currentStageName) {
                         var stats = getStageDurationStats(durationArray)
-                        console.log(currentStageName, stats);
                         angular.extend(teamStageData[currentStageName], {
                             stageAverageTime: stats.mean,
                             stageStdDeviation: stats.deviation
@@ -317,24 +332,16 @@
                             return;
                         }
 
-                        var insideTimeframe = 0,
-                            outsideTimeframe = 0;
-
                         _(data.commits).forEach(function(commit) {
                             var now = moment().format('x'),
                                 timeInStage = now - commit.timestamp;
 
-                            commit.showRed = timeInStage > 2 * commit.stageStdDeviation;
-
-                            if(commit.showRed) {
-                                outsideTimeframe++;
-                            } else {
-                                insideTimeframe++;
-                            }
+                            commit.errorState = timeInStage > 2 * data.stageStdDeviation;
                         });
+                    });
 
-                        data.commitsInsideTimeframe = insideTimeframe;
-                        data.commitsOutsideTimeframe = outsideTimeframe;
+                    _(teamStageData).forEach(function(data, stage) {
+                        data.summary = getTeamStageSummary(teamStageData[stage]);
                     });
 
                     // set all the team data in a key that w/*e can
@@ -345,7 +352,6 @@
                             stages : teamStageData
                         });
                     });
-                    angular.extend(team)
                 });
 
 
