@@ -173,6 +173,13 @@
 			<artifactId>findbugs</artifactId>
 			<version>3.0.1</version>
 		</dependency>
+		
+		<!-- apache commons -->
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.9</version>
+		</dependency>
 
 		<!-- Logging Dependencies -->
 		<dependency>

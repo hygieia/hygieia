@@ -3,7 +3,6 @@ package com.capitalone.dashboard.datafactory.jira;
 import java.io.IOException;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.URI;
@@ -28,6 +27,7 @@ import com.atlassian.util.concurrent.Promise;
 import com.google.common.collect.Lists;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -89,9 +89,8 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public JiraDataFactoryImpl(String jiraCredentials, String jiraBaseUrl, String jiraProxyUrl,
 			String jiraProxyPort) {
 		URI jiraUri;
-		if ((jiraBaseUrl != null) && (!jiraBaseUrl.isEmpty())) {
-			if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (!jiraProxyUrl.isEmpty())
-					&& (!jiraProxyPort.isEmpty())) {
+		if (!StringUtils.isEmpty(jiraBaseUrl)) {
+			if (!StringUtils.isEmpty(jiraProxyUrl) && !StringUtils.isEmpty(jiraProxyPort)) {
 				jiraUri = this.createJiraConnection(jiraBaseUrl,
 						jiraProxyUrl + ":" + jiraProxyPort, this.decodeCredentials(jiraCredentials)
 								.get("username"),
@@ -163,9 +162,8 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public JiraDataFactoryImpl(int inPageSize, String jiraCredentials, String jiraBaseUrl,
 			String jiraProxyUrl, String jiraProxyPort) {
 		URI jiraUri;
-		if ((jiraBaseUrl != null) && (!jiraBaseUrl.isEmpty())) {
-			if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (!jiraProxyUrl.isEmpty())
-					&& (!jiraProxyPort.isEmpty())) {
+		if (!StringUtils.isEmpty(jiraBaseUrl)) {
+			if (!StringUtils.isEmpty(jiraProxyUrl) && !StringUtils.isEmpty(jiraProxyPort)) {
 				jiraUri = this.createJiraConnection(jiraBaseUrl,
 						jiraProxyUrl + ":" + jiraProxyPort, this.decodeCredentials(jiraCredentials)
 								.get("username"),
@@ -246,8 +244,8 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public List<BasicProject> getJiraTeams() {
 		Iterable<BasicProject> jiraRawRs = null;
 		List<BasicProject> issues = new ArrayList<BasicProject>();
-		Promise<Iterable<BasicProject>> promisedRs = client.getProjectClient().getAllProjects();
 		if (client != null) {
+			Promise<Iterable<BasicProject>> promisedRs = client.getProjectClient().getAllProjects();
 			try {
 				jiraRawRs = promisedRs.claim();
 				if (jiraRawRs != null) {
@@ -361,44 +359,43 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 */
 	protected URI createJiraConnection(String jiraBaseUri, String fullProxyUrl, String username,
 			String password) {
+		final String uname = username;
+		final String pword = password;
+		Proxy proxy = null;
+		URLConnection connection = null;
 		try {
-			URL url = new URL(jiraBaseUri);
-			URI uri = new URI(fullProxyUrl);
-			final String uname = username;
-			final String pword = password;
-			Proxy authProxy = null;
+			if (!StringUtils.isEmpty(jiraBaseUri)) {
+				URL baseUrl = new URL(jiraBaseUri);
+				if (!StringUtils.isEmpty(fullProxyUrl)) {
+					URL proxyUrl = new URL(fullProxyUrl);
+					URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(),
+							proxyUrl.getHost(), proxyUrl.getPort(), proxyUrl.getPath(),
+							proxyUrl.getQuery(), null);
+					proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUri.getHost(),
+							proxyUri.getPort()));
+					connection = baseUrl.openConnection(proxy);
 
-			if ((!uri.getHost().isEmpty()) || (uri.getPort() > 0)) {
-				authProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(uri.getHost(),
-						uri.getPort()));
-				if ((username != null) && (password != null)) {
-					Authenticator.setDefault(new Authenticator() {
-						protected PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication(uname, pword.toCharArray());
-						}
-					});
+					if (!StringUtils.isEmpty(username) && (!StringUtils.isEmpty(password))) {
+						String creds = uname + ":" + pword;
+						Authenticator.setDefault(new Authenticator() {
+							protected PasswordAuthentication getPasswordAuthentication() {
+								return new PasswordAuthentication(uname, pword.toCharArray());
+							}
+						});
+						connection.setRequestProperty("Proxy-Authorization",
+								"Basic " + Base64.encodeBase64String((creds).getBytes()));
+					}
+				} else {
+					connection = baseUrl.openConnection();
 				}
-			}
-
-			URLConnection connection = null;
-
-			if (authProxy != null) {
-				try {
-					connection = url.openConnection(authProxy);
-				} catch (IOException e) {
-					LOGGER.error("There was a problem reading and openning the proxy connection");
-				}
-				if (((!uri.getHost().isEmpty()) || (uri.getPort() > 0))
-						&& ((username != null) && (password != null))) {
-					String proxyAuth = username + ":" + password;
-					connection.setRequestProperty("Proxy-Authorization",
-							"Basic " + Base64.encodeBase64String((proxyAuth).getBytes()));
-				}
+			} else {
+				LOGGER.error("The response from Jira was blank or non existant - please check your property configurations");
+				return null;
 			}
 
 			return connection.getURL().toURI();
 
-		} catch (URISyntaxException | MalformedURLException e) {
+		} catch (URISyntaxException | IOException e) {
 			try {
 				LOGGER.error("There was a problem parsing or reading the proxy configuration settings during openning a Jira connection. Defaulting to a non-proxy URI.");
 				return new URI(jiraBaseUri);

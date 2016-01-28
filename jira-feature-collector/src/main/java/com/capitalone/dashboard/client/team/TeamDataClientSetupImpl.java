@@ -91,6 +91,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 				proxyUri, proxyPort);
 		try {
 			List<BasicProject> rs = jiraDataFactory.getJiraTeams();
+
 			if ((rs != null) && (!rs.isEmpty())) {
 				updateMongoInfo(rs);
 			} else {
