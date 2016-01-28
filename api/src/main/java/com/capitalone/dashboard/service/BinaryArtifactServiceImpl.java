@@ -46,7 +46,7 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
         }
 
         if (request.getBuildId() != null) {
-            return new DataResponse<>(artifactRepository.findByArtifactBuildId(
+            return new DataResponse<>(artifactRepository.findByBuildInfoId(
                     request.getBuildId()), 0);
         }
         return new DataResponse<>(null, 0);

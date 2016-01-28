@@ -16,6 +16,6 @@ public interface BinaryArtifactRepository extends CrudRepository<BinaryArtifact,
 
     Iterable<BinaryArtifact> findByArtifactGroupId(String artifactGroupId);
 
-    Iterable<BinaryArtifact> findByArtifactBuildId (ObjectId artifactBuildId);
+    Iterable<BinaryArtifact> findByBuildInfoId (ObjectId artifactBuildId);
 
 }
