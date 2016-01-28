@@ -8,7 +8,7 @@ import java.util.Map;
 public class PipelineResponse {
     private String name;
     private ObjectId collectorItemId;
-    private Map<PipelineStageType, PipelineStage> stages = new HashMap<>();
+    private Map<PipelineStageType, EnvironmentStage> stages = new HashMap<>();
 
     public String getName() {
         return name;
@@ -26,18 +26,18 @@ public class PipelineResponse {
         this.collectorItemId = collectorItemId;
     }
 
-    public Map<PipelineStageType, PipelineStage> getStages() {
+    public Map<PipelineStageType, EnvironmentStage> getStages() {
         return stages;
     }
 
-    public void setStages(Map<PipelineStageType, PipelineStage> stages) {
+    public void setStages(Map<PipelineStageType, EnvironmentStage> stages) {
         this.stages = stages;
     }
 
     public void addToStage(PipelineStageType stage, PipelineCommit pipelineCommit) {
-        PipelineStage pipelineStage = stages.get(stage);
+        EnvironmentStage pipelineStage = stages.get(stage);
         if (pipelineStage == null) {
-            pipelineStage = new PipelineStage();
+            pipelineStage = new EnvironmentStage();
             stages.put(stage, pipelineStage);
         }
         pipelineStage.getCommits().add(pipelineCommit);

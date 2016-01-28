@@ -1,11 +1,13 @@
 package com.capitalone.dashboard.request;
 
+import com.capitalone.dashboard.model.CollectorItem;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
 
 public class PipelineSearchRequest {
+    /** {@link CollectorItem} teamdashboard collector item id */
     @NotEmpty
     private List<ObjectId> collectorItemId;
     private Long beginDate;

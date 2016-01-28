@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.model;
 
 /**
- * Defines the type of {@link PipelineStage}
+ * Defines the type of {@link EnvironmentStage}
  */
 public enum PipelineStageType {
     Commit, Build, Dev, QA, Int, Perf, Prod;
