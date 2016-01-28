@@ -17,24 +17,21 @@
                     User created successfully
                 </div>
 
-                <div class="form-group" ng-class="{'has-error': suf.email.$invalid && suf.$submitted}">
+                <div class="form-group" ng-class="{'has-error': suf.username.$invalid && suf.$submitted}">
 
-                    <input type="email"
+                    <input type="text"
                            class="form-control text-center"
                            ng-model="signup.id"
-                           name="email"
-                           placeholder="Enter your email"
+                           name="username"
+                           placeholder="Enter your username"
                            autocomplete="off"
                            required />
 
-                    <p class="help-block" ng-if="suf.email.$error.exists">
+                    <p class="help-block" ng-if="suf.username.$error.exists">
                         User already exists
                     </p>
-                    <p class="help-block" ng-if="suf.email.$error.required">
-                        Email address is required
-                    </p>
-                    <p class="help-block" ng-if="suf.email.$error.email">
-                        Please enter a valid email address
+                    <p class="help-block" ng-if="suf.username.$error.required">
+                        Username is required
                     </p>
                 </div>
 
