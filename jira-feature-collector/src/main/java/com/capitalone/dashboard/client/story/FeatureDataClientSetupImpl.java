@@ -98,7 +98,10 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 			for (int i = 0; hasMore; i += pageSize) {
 				jiraDataFactory.setPageIndex(i);
 				List<Issue> rs = jiraDataFactory.getJiraIssues();
-				if (rs.isEmpty()) {
+				if (rs == null) {
+					hasMore = false;
+					LOGGER.error("The response from Jira was blank or non existant - please check your property configurations");
+				} else if (rs.isEmpty()) {
 					hasMore = false;
 				}
 

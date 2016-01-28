@@ -89,23 +89,28 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public JiraDataFactoryImpl(String jiraCredentials, String jiraBaseUrl, String jiraProxyUrl,
 			String jiraProxyPort) {
 		URI jiraUri;
-		if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (jiraProxyUrl.isEmpty())
-				&& (jiraProxyPort.isEmpty())) {
-			jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
+		if ((jiraBaseUrl != null) && (!jiraBaseUrl.isEmpty())) {
+			if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (!jiraProxyUrl.isEmpty())
+					&& (!jiraProxyPort.isEmpty())) {
+				jiraUri = this.createJiraConnection(jiraBaseUrl,
+						jiraProxyUrl + ":" + jiraProxyPort, this.decodeCredentials(jiraCredentials)
+								.get("username"),
+						this.decodeCredentials(jiraCredentials).get("password"));
+			} else {
+				try {
+					LOGGER.debug("Handling without authenticated proxy (fields were available in properties settings but were blank)");
+					jiraUri = new URI(jiraBaseUrl);
+				} catch (URISyntaxException e) {
+					LOGGER.error("There was a problem reading the provide Jira base URI syntax");
+					jiraUri = null;
+				}
+			}
+			client = factory.createWithBasicHttpAuthentication(jiraUri,
 					this.decodeCredentials(jiraCredentials).get("username"), this
 							.decodeCredentials(jiraCredentials).get("password"));
 		} else {
-			try {
-				LOGGER.debug("Handling without authenticated proxy (fields were available in properties settings but were blank)");
-				jiraUri = new URI(jiraBaseUrl);
-			} catch (URISyntaxException e) {
-				LOGGER.error("There was a problem reading the provide Jira base URI syntax");
-				jiraUri = null;
-			}
+			LOGGER.error("At runtime in a property setting at minimum, a valid Jira URI and basic authentication credentials must be provided");
 		}
-		client = factory.createWithBasicHttpAuthentication(jiraUri,
-				this.decodeCredentials(jiraCredentials).get("username"),
-				this.decodeCredentials(jiraCredentials).get("password"));
 
 		this.pageSize = 1000;
 		this.pageIndex = 0;
@@ -158,23 +163,28 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public JiraDataFactoryImpl(int inPageSize, String jiraCredentials, String jiraBaseUrl,
 			String jiraProxyUrl, String jiraProxyPort) {
 		URI jiraUri;
-		if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (jiraProxyUrl.isEmpty())
-				&& (jiraProxyPort.isEmpty())) {
-			jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
-					this.decodeCredentials(jiraCredentials).get("username"), this
-							.decodeCredentials(jiraCredentials).get("password"));
-		} else {
-			try {
-				LOGGER.debug("Handling without authenticated proxy (fields were available in properties settings but were blank)");
-				jiraUri = new URI(jiraBaseUrl);
-			} catch (URISyntaxException e) {
-				LOGGER.error("There was a problem reading the provide Jira base URI syntax");
-				jiraUri = null;
+		if ((jiraBaseUrl != null) && (!jiraBaseUrl.isEmpty())) {
+			if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (!jiraProxyUrl.isEmpty())
+					&& (!jiraProxyPort.isEmpty())) {
+				jiraUri = this.createJiraConnection(jiraBaseUrl,
+						jiraProxyUrl + ":" + jiraProxyPort, this.decodeCredentials(jiraCredentials)
+								.get("username"),
+						this.decodeCredentials(jiraCredentials).get("password"));
+			} else {
+				try {
+					LOGGER.debug("Handling without authenticated proxy (fields were available in properties settings but were blank)");
+					jiraUri = new URI(jiraBaseUrl);
+				} catch (URISyntaxException e) {
+					LOGGER.error("There was a problem reading the provide Jira base URI syntax");
+					jiraUri = null;
+				}
 			}
+			this.client = factory.createWithBasicHttpAuthentication(jiraUri, this
+					.decodeCredentials(jiraCredentials).get("username"),
+					this.decodeCredentials(jiraCredentials).get("password"));
+		} else {
+			LOGGER.error("At runtime in a property setting at minimum, a valid Jira URI and basic authentication credentials must be provided");
 		}
-		this.client = factory.createWithBasicHttpAuthentication(jiraUri,
-				this.decodeCredentials(jiraCredentials).get("username"),
-				this.decodeCredentials(jiraCredentials).get("password"));
 
 		this.pageSize = inPageSize;
 		pageIndex = 0;
@@ -204,19 +214,24 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 		List<Issue> issues = new ArrayList<Issue>();
 		Set<String> fields = new LinkedHashSet<String>();
 		fields.add("*all");
-		Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(this.getBasicQuery(),
-				this.getPageSize(), this.getPageIndex(), fields);
-		try {
-			jiraRawRs = promisedRs.claim().getIssues();
-			if (jiraRawRs != null) {
-				issues = Lists.newArrayList(jiraRawRs);
-			} else {
+		if (client != null) {
+			Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(
+					this.getBasicQuery(), this.getPageSize(), this.getPageIndex(), fields);
+			try {
+				jiraRawRs = promisedRs.claim().getIssues();
+				if (jiraRawRs != null) {
+					issues = Lists.newArrayList(jiraRawRs);
+				} else {
+					issues = new ArrayList<Issue>();
+				}
+			} catch (Exception e) {
 				issues = new ArrayList<Issue>();
+				LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
+						+ e.getCause());
 			}
-		} catch (Exception e) {
-			issues = new ArrayList<Issue>();
-			LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
-					+ e.getCause());
+		} else {
+			issues = null;
+			LOGGER.error("The response from Jira was blank or non existant - please check your property configurations");
 		}
 
 		return issues;
@@ -232,17 +247,22 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 		Iterable<BasicProject> jiraRawRs = null;
 		List<BasicProject> issues = new ArrayList<BasicProject>();
 		Promise<Iterable<BasicProject>> promisedRs = client.getProjectClient().getAllProjects();
-		try {
-			jiraRawRs = promisedRs.claim();
-			if (jiraRawRs != null) {
-				issues = Lists.newArrayList(jiraRawRs);
-			} else {
+		if (client != null) {
+			try {
+				jiraRawRs = promisedRs.claim();
+				if (jiraRawRs != null) {
+					issues = Lists.newArrayList(jiraRawRs);
+				} else {
+					issues = new ArrayList<BasicProject>();
+				}
+			} catch (Exception e) {
 				issues = new ArrayList<BasicProject>();
+				LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
+						+ e.getCause());
 			}
-		} catch (Exception e) {
-			issues = new ArrayList<BasicProject>();
-			LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
-					+ e.getCause());
+		} else {
+			issues = null;
+			LOGGER.error("The response from Jira was blank or non existant - please check your property configurations");
 		}
 
 		return issues;
@@ -393,10 +413,14 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 * Destroys current Jira Client connection during asynchronous connection
 	 */
 	public void destroy() {
-		try {
-			this.client.close();
-		} catch (IOException e) {
-			LOGGER.error("There was a problem closing your Jira connection during query collection");
+		if (client != null) {
+			try {
+				this.client.close();
+			} catch (IOException e) {
+				LOGGER.error("There was a problem closing your Jira connection during query collection");
+			}
+		} else {
+			LOGGER.warn("No valid client was established to be destroyed");
 		}
 	}
 }
