@@ -34,6 +34,9 @@ public class Pipeline extends BaseModel{
     }
 
     public void addCommit(String stage, PipelineCommit commit){
+        if(!this.getStages().containsKey(stage)){
+            this.getStages().put(stage, new EnvironmentStage());
+        }
         this.getStages().get(stage).getCommits().add(commit);
     }
 
