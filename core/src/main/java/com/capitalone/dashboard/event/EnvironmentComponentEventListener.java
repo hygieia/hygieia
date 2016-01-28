@@ -11,6 +11,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("PMD")
 @org.springframework.stereotype.Component
 public class EnvironmentComponentEventListener extends HygieiaMongoEventListener<EnvironmentComponent> {
 

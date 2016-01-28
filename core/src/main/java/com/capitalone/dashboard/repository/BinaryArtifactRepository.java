@@ -2,6 +2,7 @@ package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.BinaryArtifact;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface BinaryArtifactRepository extends CrudRepository<BinaryArtifact, ObjectId> {
@@ -16,6 +17,7 @@ public interface BinaryArtifactRepository extends CrudRepository<BinaryArtifact,
 
     Iterable<BinaryArtifact> findByArtifactGroupId(String artifactGroupId);
 
+    @Query(value="{'buildInfo.id' : ?0}")
     Iterable<BinaryArtifact> findByArtifactBuildId (ObjectId artifactBuildId);
 
 }
