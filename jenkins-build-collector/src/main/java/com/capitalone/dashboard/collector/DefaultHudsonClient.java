@@ -24,6 +24,8 @@ import org.springframework.web.client.RestOperations;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -126,17 +128,16 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     @Override
-    public Build getBuildDetails(String buildUrl) {
+    public Build getBuildDetails(String buildUrl, String instanceUrl) {
         try {
-            String url = joinURL(buildUrl, BUILD_DETAILS_URL_SUFFIX);
+            String newUrl = rebuildJobUrl(buildUrl, instanceUrl);
+            String url = joinURL(newUrl, BUILD_DETAILS_URL_SUFFIX);
             ResponseEntity<String> result = makeRestCall(url);
             String returnJSON = result.getBody();
             JSONParser parser = new JSONParser();
-
             try {
                 JSONObject buildJson = (JSONObject) parser.parse(returnJSON);
                 Boolean building = (Boolean) buildJson.get("building");
-
                 // Ignore jobs that are building
                 if (!building) {
                     Build build = new Build();
@@ -151,7 +152,6 @@ public class DefaultHudsonClient implements HudsonClient {
                     if (settings.isSaveLog()) {
                         build.setLog(getLog(buildUrl));
                     }
-
                     addChangeSets(build, buildJson);
                     return build;
                 }
@@ -163,10 +163,30 @@ public class DefaultHudsonClient implements HudsonClient {
             LOG.error("client exception loading build details", rce);
         } catch (MalformedURLException mfe) {
             LOG.error("malformed url for loading build details", mfe);
+        } catch (URISyntaxException use) {
+            LOG.error("uri syntax exception for loading build details", use);
+        } catch (RuntimeException rte) { //yes, catching RTE.. dont want to impact the whole collection process
+            LOG.error("uri syntax exception for loading build details:" + buildUrl, rte);
         }
-
         return null;
     }
+
+
+    //This method will rebuild the API endpoint because the buildUrl obtained via Jenkins API
+    //does not save the auth user info and we need to add it back.
+    public static String rebuildJobUrl (String build, String server) throws URISyntaxException, MalformedURLException {
+        URL instanceUrl = new URL(server);
+        String userInfo = instanceUrl.getUserInfo();
+        String instanceProtocol = instanceUrl.getProtocol();
+
+        URL buildUrl = new URL(build);
+        String buildPath = buildUrl.getPath();
+        String host = buildUrl.getHost();
+        int port = buildUrl.getPort();
+        URI newUri = new URI(instanceProtocol,userInfo,host,port,buildPath, null, null);
+        return newUri.toString();
+    }
+
 
     /**
      * Grabs changeset information for the given build.

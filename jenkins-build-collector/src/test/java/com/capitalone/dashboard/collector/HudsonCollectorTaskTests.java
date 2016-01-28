@@ -120,7 +120,7 @@ public class HudsonCollectorTaskTests {
         when(hudsonJobRepository.findEnabledHudsonJobs(collector.getId(), SERVER1))
                 .thenReturn(Arrays.asList(job));
         when(buildRepository.findByCollectorItemIdAndNumber(job.getId(), build.getNumber())).thenReturn(null);
-        when(hudsonClient.getBuildDetails(build.getBuildUrl())).thenReturn(build);
+        when(hudsonClient.getBuildDetails(build.getBuildUrl(), job.getInstanceUrl())).thenReturn(build);
         when(dbComponentRepository.findAll()).thenReturn(components());
         task.collect(collector);
 
