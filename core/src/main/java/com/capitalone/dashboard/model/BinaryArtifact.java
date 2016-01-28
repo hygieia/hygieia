@@ -27,14 +27,14 @@ public class BinaryArtifact extends BaseModel {
     private String canonicalName;
     private String artifactGroupId;
     private String artifactVersion;
-    private Build build;
+    private Build buildInfo;
 
-    public Build getBuild() {
-        return build;
+    public Build getBuildInfo() {
+        return buildInfo;
     }
 
-    public void setBuild(Build build) {
-        this.build = build;
+    public void setBuildInfo(Build buildInfo) {
+        this.buildInfo = buildInfo;
     }
 
     public ObjectId getCollectorItemId() {

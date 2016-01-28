@@ -1,8 +1,10 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.BinaryArtifact;
+import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.repository.BinaryArtifactRepository;
+import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.BinaryArtifactSearchRequest;
 import org.bson.types.ObjectId;
@@ -13,10 +15,12 @@ import org.springframework.stereotype.Service;
 public class BinaryArtifactServiceImpl implements BinaryArtifactService {
 
     private final BinaryArtifactRepository artifactRepository;
+    private final BuildRepository buildRepository;
 
     @Autowired
-    public BinaryArtifactServiceImpl(BinaryArtifactRepository artifactRepository) {
+    public BinaryArtifactServiceImpl(BinaryArtifactRepository artifactRepository, BuildRepository buildRepository) {
         this.artifactRepository = artifactRepository;
+        this.buildRepository = buildRepository;
     }
 
     @Override
@@ -49,6 +53,10 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
 
     }
 
+    private Build getBuildById(ObjectId buildId){
+        return buildRepository.findOne(buildId);
+    }
+
 
     @Override
     public String create(BinaryArtifactCreateRequest request) {
@@ -57,10 +65,10 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
         ba.setCanonicalName(request.getCanonicalName());
         ba.setArtifactGroupId(request.getArtifactGroup());
         ObjectId objId = new ObjectId(request.getBuildId());
-        ba.setArtifactBuildId(objId);
+        Build build = getBuildById(objId);
+        ba.setBuildInfo(build);
         ba.setArtifactVersion(request.getArtifactVersion());
         ba.setTimestamp(request.getTimestamp());
-        ba.getSourceChangeSet().addAll(request.getSourceChangeSet());
         BinaryArtifact existing = existing(ba, objId);
         if (existing == null) {
             BinaryArtifact savedArt = artifactRepository.save(ba);
@@ -76,7 +84,7 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
                 (artifact.getArtifactGroupId(), artifact.getArtifactName(),
                         artifact.getArtifactVersion());
         for (BinaryArtifact ba : bas) {
-            if ((ba.getArtifactBuildId() != null) && ba.getArtifactBuildId().equals(buildId)) {
+            if ((ba.getBuildInfo() != null) && ba.getBuildInfo().getId().equals(buildId)) {
                 return ba;
             }
         }
