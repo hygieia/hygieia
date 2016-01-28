@@ -8,7 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Document(collection = "environment_components")
 public class EnvironmentComponent extends BaseModel {
-    //
+    /**
+     * Deploy collectorItemId
+     */
     private ObjectId collectorItemId;
     private String environmentName;
     private String environmentUrl;

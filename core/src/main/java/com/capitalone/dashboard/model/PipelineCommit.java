@@ -1,12 +1,8 @@
 package com.capitalone.dashboard.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class PipelineCommit {
     private SCM commit;
-    private PipelineStageType currentStage;
-    private Map<PipelineStageType, Long> processedTimestamps = new HashMap<>();
+    private long processedTimestamp;
 
     public PipelineCommit(){
     }
@@ -15,9 +11,9 @@ public class PipelineCommit {
         this.commit = commit;
     }
 
-    public PipelineCommit(SCM commit, Map<PipelineStageType, Long> processedTimestamps) {
+    public PipelineCommit(SCM commit, long processedTimestamp) {
         this.commit = commit;
-        this.processedTimestamps = processedTimestamps;
+        this.processedTimestamp = processedTimestamp;
     }
 
     public SCM getCommit() {
@@ -28,29 +24,12 @@ public class PipelineCommit {
         this.commit = commit;
     }
 
-    public Map<PipelineStageType, Long> getProcessedTimestamps() {
-        return processedTimestamps;
+    public long getProcessedTimestamp() {
+        return processedTimestamp;
     }
 
-    public void setProcessedTimestamps(Map<PipelineStageType, Long> processedTimestamps) {
-        this.processedTimestamps = processedTimestamps;
-    }
-
-    public PipelineStageType getCurrentStage() {
-        return currentStage;
-    }
-
-    public void setCurrentStage(PipelineStageType currentStage) {
-        this.currentStage = currentStage;
-    }
-
-    public void addNewPipelineProcessedTimestamp(PipelineStageType pipelineStageType, Long timestamp){
-        getProcessedTimestamps().put(pipelineStageType, timestamp);
-    }
-
-    public void updateCurrentStage(PipelineStageType currentStage, Long timestamp) {
-        this.currentStage = currentStage;
-        this.addNewPipelineProcessedTimestamp(currentStage, timestamp);
+    public void setProcessedTimestamp(long processedTimestamp) {
+        this.processedTimestamp = processedTimestamp;
     }
 
     @Override
