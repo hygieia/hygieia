@@ -5,6 +5,30 @@
     margin: 5px 0;
     min-width: 120px;
 
+    &.commit-blocks-legend {
+
+
+        .village,
+        .town,
+        .city,
+        .state {
+            background-color: @dash-widget-section-highlight;
+        }
+
+        .commit-blocks-legend-block {
+            display: inline-block;
+            line-height: 46px;
+            height: 46px;
+            margin-right: 2rem;
+
+            .village, .town, .city {
+                position: relative;
+                top: 50%;
+                .transform(translateY(-50%));
+            }
+        }
+    }
+
     .village,
     .town,
     .city,

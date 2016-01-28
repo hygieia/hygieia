@@ -39,7 +39,7 @@
                 ctrl.configuredTeams = options.teams;
             }
 
-            getCommitData(options.teams);
+            getTeamStageData(options.teams, [].concat(ctrl.stages));
         }
 
         function editTeam(team) {
@@ -159,7 +159,7 @@
         function getTeamStageSummary(stageData) {
 
             return {
-                commitsInsideTimeframe: _(stageData.commits).filter({errorState:false}).value().length,
+                commitsInsideTimeframe: _(stageData.commits).filter(function(c) { return !c.errorState; }).value().length,
                 commitsOutsideTimeframe: _(stageData.commits).filter({errorState:true}).value().length,
                 lastUpdated: (function(stageData) {
                     if(!stageData.commits) {
@@ -209,49 +209,19 @@
             }
         }
 
-        function getCommitData(teams) {
+        function getTeamStageData(teams, ctrlStages) {
             var now = moment(),
                 end = now.format('x'),
                 start = now.subtract(90, 'days').format('x');
 
             pipelineData.commits(start, end, _(teams).pluck('collectorItemId').value()).then(function(teams) {
-                // prep some test data
-                /*
-                var buildCommits = [];
-                var QACommits = [];
-                function getRandomInt(min, max) {
-                    return Math.floor(Math.random() * (max - min + 1)) + min;
-                }
-
-                for(var x=0;x<teams[0].stages.Commit.commits.length;x++) {
-                    if (x % 2 == 0) {
-                        var el = teams[0].stages.Commit.commits.splice(x, 1)[0];
-                        el.processedTimestamps.Build = el.processedTimestamps.Commit + (1000*60*getRandomInt(15, 2500));
-                        buildCommits.push(el);
-                    }
-
-                    if(x % 4 == 0) {
-                        var el = buildCommits.splice(buildCommits.length - 1, 1)[0];
-                        el.processedTimestamps.QA = el.processedTimestamps.Build + (1000*60*getRandomInt(15, 2500));
-                        QACommits.push(el);
-                    }
-                }
-
-                 teams[0].stages.Build = {
-                    commits: buildCommits
-                };
-                 teams[0].stages.QA = {
-                    commits: QACommits
-                };
-
-                console.log(JSON.stringify(teams));
-                */
+                var response = {};
 
                 // start processing response by looping through each team
                 _(teams).each(function(team) {
                     var teamStageData = {},
                         stageDurations = {},
-                        stages = [].concat(ctrl.stages); // create a local copy so lodash doesn't overwrite it
+                        stages = [].concat(ctrlStages); // create a local copy so lodash doesn't overwrite it
 
                     // go backward through the stages and define commit data.
                     // reverse should make it easier to calculate time in the previous stage
@@ -264,7 +234,7 @@
 
                         var stage = team.stages[currentStageName],
                             commits = [],
-                            localStages = [].concat(ctrl.stages),
+                            localStages = [].concat(ctrlStages),
                             previousStages = _(localStages.splice(0, localStages.indexOf(currentStageName))).reverse().value();
 
                         // loop through each commit and create our own custom commit object
@@ -344,18 +314,21 @@
                         data.summary = getTeamStageSummary(teamStageData[stage]);
                     });
 
-                    // set all the team data in a key that w/*e can
+
+                    // set all the team data in a key that we can
                     // easily get to with collector item id
-                    //result[team.collectorItemId] = teamStageData;
-                    _(ctrl.configuredTeams).filter({'collectorItemId': team.collectorItemId}).forEach(function(configuredTeam) {
-                        angular.extend(configuredTeam, {
-                            stages : teamStageData
-                        });
-                    });
+                    response[team.collectorItemId] = teamStageData;
                 });
 
-
-                console.log(ctrl.configuredTeams);
+                // set our data back on the controller
+                for (var collectorItemId in response) {
+                    // set the da
+                    _(ctrl.configuredTeams).filter({'collectorItemId': collectorItemId}).forEach(function (configuredTeam) {
+                        angular.extend(configuredTeam, {
+                            stages: response[collectorItemId]
+                        });
+                    });
+                }
             });
         }
     }

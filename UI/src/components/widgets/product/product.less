@@ -4,7 +4,20 @@
 @import 'environment-commits/environment-commits';
 
 #product-dashboard {
-    margin-top: -2.5em;
+    margin-top: -2rem;
+
+    .product-dash-header {
+        .product-dash-header-text {
+            text-align: center;
+            line-height: 46px;
+        }
+
+        .product-dash-header-legend {
+            text-align: center;
+        }
+    }
+
+
 
     @team-cell-padding: 10px;
     .product-table {
@@ -305,6 +318,18 @@
 
         .fa {
             color: @state-danger-text;
+        }
+    }
+}
+
+@media(min-width: @screen-sm-min) {
+    #product-dashboard .product-dash-header {
+        .product-dash-header-text {
+            float: left;
+        }
+
+        .product-dash-header-legend {
+            float: right;
         }
     }
 }
