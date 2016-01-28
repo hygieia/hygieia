@@ -162,7 +162,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
                 if (isNewBuild(job, buildSummary)) {
                     Build build = hudsonClient.getBuildDetails(buildSummary
-                            .getBuildUrl());
+                            .getBuildUrl(), job.getInstanceUrl());
                     if (build != null) {
                         build.setCollectorItemId(job.getId());
                         buildRepository.save(build);
