@@ -4,8 +4,6 @@ package com.capitalone.dashboard.event;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
@@ -15,7 +13,6 @@ import java.util.List;
 
 @org.springframework.stereotype.Component
 public class EnvironmentComponentEventListener extends HygieiaMongoEventListener<EnvironmentComponent> {
-    private static final Logger LOG = LoggerFactory.getLogger(BuildEventListener.class);
 
     private DashboardRepository dashboardRepository;
     private CollectorItemRepository collectorItemRepository;

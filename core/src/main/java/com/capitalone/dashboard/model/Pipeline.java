@@ -15,7 +15,7 @@ public class Pipeline extends BaseModel{
     private ObjectId collectorItemId;
 
     /** Map of environment name and stage object*/
-    Map<String, EnvironmentStage> stages = new HashMap<>();
+    private Map<String, EnvironmentStage> stages = new HashMap<>();
 
     public ObjectId getCollectorItemId() {
         return collectorItemId;
