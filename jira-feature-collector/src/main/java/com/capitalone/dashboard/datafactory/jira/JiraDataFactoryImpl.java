@@ -40,7 +40,6 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	protected int pageSize;
 	protected int pageIndex;
 	protected String basicQuery;
-	private static final String BLANK_LITERAL = "";
 
 	/**
 	 * Default constructor required for Spring (not used)
@@ -90,8 +89,8 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public JiraDataFactoryImpl(String jiraCredentials, String jiraBaseUrl, String jiraProxyUrl,
 			String jiraProxyPort) {
 		URI jiraUri;
-		if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (jiraProxyUrl != BLANK_LITERAL)
-				&& (jiraProxyPort != BLANK_LITERAL)) {
+		if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (jiraProxyUrl.isEmpty())
+				&& (jiraProxyPort.isEmpty())) {
 			jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
 					this.decodeCredentials(jiraCredentials).get("username"), this
 							.decodeCredentials(jiraCredentials).get("password"));
@@ -159,8 +158,8 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public JiraDataFactoryImpl(int inPageSize, String jiraCredentials, String jiraBaseUrl,
 			String jiraProxyUrl, String jiraProxyPort) {
 		URI jiraUri;
-		if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (jiraProxyUrl != BLANK_LITERAL)
-				&& (jiraProxyPort != BLANK_LITERAL)) {
+		if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (jiraProxyUrl.isEmpty())
+				&& (jiraProxyPort.isEmpty())) {
 			jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
 					this.decodeCredentials(jiraCredentials).get("username"), this
 							.decodeCredentials(jiraCredentials).get("password"));
