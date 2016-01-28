@@ -40,6 +40,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	protected int pageSize;
 	protected int pageIndex;
 	protected String basicQuery;
+	private static final String BLANK_LITERAL = "";
 
 	/**
 	 * Default constructor required for Spring (not used)
@@ -88,9 +89,21 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 */
 	public JiraDataFactoryImpl(String jiraCredentials, String jiraBaseUrl, String jiraProxyUrl,
 			String jiraProxyPort) {
-		URI jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
-				this.decodeCredentials(jiraCredentials).get("username"),
-				this.decodeCredentials(jiraCredentials).get("password"));
+		URI jiraUri;
+		if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (jiraProxyUrl != BLANK_LITERAL)
+				&& (jiraProxyPort != BLANK_LITERAL)) {
+			jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
+					this.decodeCredentials(jiraCredentials).get("username"), this
+							.decodeCredentials(jiraCredentials).get("password"));
+		} else {
+			try {
+				LOGGER.debug("Handling without authenticated proxy (fields were available in properties settings but were blank)");
+				jiraUri = new URI(jiraBaseUrl);
+			} catch (URISyntaxException e) {
+				LOGGER.error("There was a problem reading the provide Jira base URI syntax");
+				jiraUri = null;
+			}
+		}
 		client = factory.createWithBasicHttpAuthentication(jiraUri,
 				this.decodeCredentials(jiraCredentials).get("username"),
 				this.decodeCredentials(jiraCredentials).get("password"));
@@ -145,9 +158,21 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	 */
 	public JiraDataFactoryImpl(int inPageSize, String jiraCredentials, String jiraBaseUrl,
 			String jiraProxyUrl, String jiraProxyPort) {
-		URI jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
-				this.decodeCredentials(jiraCredentials).get("username"),
-				this.decodeCredentials(jiraCredentials).get("password"));
+		URI jiraUri;
+		if ((jiraProxyUrl != null) && (jiraProxyPort != null) && (jiraProxyUrl != BLANK_LITERAL)
+				&& (jiraProxyPort != BLANK_LITERAL)) {
+			jiraUri = this.createJiraConnection(jiraBaseUrl, jiraProxyUrl + ":" + jiraProxyPort,
+					this.decodeCredentials(jiraCredentials).get("username"), this
+							.decodeCredentials(jiraCredentials).get("password"));
+		} else {
+			try {
+				LOGGER.debug("Handling without authenticated proxy (fields were available in properties settings but were blank)");
+				jiraUri = new URI(jiraBaseUrl);
+			} catch (URISyntaxException e) {
+				LOGGER.error("There was a problem reading the provide Jira base URI syntax");
+				jiraUri = null;
+			}
+		}
 		this.client = factory.createWithBasicHttpAuthentication(jiraUri,
 				this.decodeCredentials(jiraCredentials).get("username"),
 				this.decodeCredentials(jiraCredentials).get("password"));
