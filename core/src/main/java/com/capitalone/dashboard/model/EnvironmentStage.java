@@ -1,8 +1,5 @@
 package com.capitalone.dashboard.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Class representing any stage of a {@link Pipeline}
  */
