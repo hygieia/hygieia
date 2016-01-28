@@ -51,13 +51,13 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
     private void processBuild(Build build){
         List<Dashboard> teamDashboardsReferencingBuild = findAllDashboardsForBuild(build);
 
+        //for every team dashboard referencing the build, find the pipeline, put this commit in the build stage
         for(Dashboard teamDashboard : teamDashboardsReferencingBuild){
             CollectorItem teamDashboardCollectorItem = getTeamDashboardCollectorItem(teamDashboard);
-
-            boolean deployed = isBuildDeployed(build, teamDashboardCollectorItem);
-            if(!deployed){
-                AbstractMap.SimpleEntry<Dashboard, CollectorItem> dashboardPair = new AbstractMap.SimpleEntry(teamDashboard, teamDashboardCollectorItem);
-                updatePipelinesForBuild(dashboardPair, build);
+            Pipeline pipeline = getOrCreatePipeline(new AbstractMap.SimpleEntry<Dashboard, CollectorItem>(teamDashboard, teamDashboardCollectorItem));
+            for(SCM scm : build.getSourceChangeSet()){
+                //// TODO: 1/28/16 should this timestamp potentially be the begin or end timestamp?
+                pipeline.addCommit(PipelineStageType.Build.name(), new PipelineCommit(scm, build.getTimestamp()));
             }
         }
     }
@@ -83,23 +83,6 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
             }
         }
         return deployed;
-    }
-
-    /**
-     * Updates the dashboard's pipeline in respect to the build
-     *
-     * @param dashboard
-     * @param build
-     */
-    private void updatePipelinesForBuild(AbstractMap.SimpleEntry<Dashboard, CollectorItem> dashboard, Build build){
-        Pipeline pipeline = getOrCreatePipeline(dashboard);
-        Map<PipelineCommit, PipelineCommit> pipelineCommitMap = buildPipelineCommitPipelineCommitMap(pipeline);
-
-        for(SCM scm : build.getSourceChangeSet()){
-            PipelineCommit pipelineCommit = findOrCreatePipelineCommit(pipeline, pipelineCommitMap, scm);
-            pipelineCommit.updateCurrentStage(PipelineStageType.Build, build.getTimestamp());
-        }
-        pipelineRepository.save(pipeline);
     }
 
     private List<BinaryArtifact> findAllBinaryArtifactsForBuild(Build build){

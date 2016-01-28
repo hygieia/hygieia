@@ -3,25 +3,19 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Document containing the details of a Pipeline for a TeamDashboardCollectorItem
  */
 @Document(collection="pipelines")
 public class Pipeline extends BaseModel{
-    private String name;
+    /** {@link CollectorItem} teamdashboard collector item id */
     private ObjectId collectorItemId;
-    private Set<PipelineCommit> commits = new HashSet<>();
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    /** Map of environment name and stage object*/
+    Map<String, EnvironmentStage> stages = new HashMap<>();
 
     public ObjectId getCollectorItemId() {
         return collectorItemId;
@@ -31,11 +25,16 @@ public class Pipeline extends BaseModel{
         this.collectorItemId = collectorItemId;
     }
 
-    public Set<PipelineCommit> getCommits() {
-        return commits;
+    public Map<String, EnvironmentStage> getStages() {
+        return stages;
     }
 
-    public void setCommits(Set<PipelineCommit> commits) {
-        this.commits = commits;
+    public void setStages(Map<String, EnvironmentStage> stages) {
+        this.stages = stages;
     }
+
+    public void addCommit(String stage, PipelineCommit commit){
+        this.getStages().get(stage).getCommits().add(commit);
+    }
+
 }

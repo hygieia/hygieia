@@ -7,10 +7,11 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 
 @org.springframework.stereotype.Component
 public class EnvironmentComponentEventListener extends HygieiaMongoEventListener<EnvironmentComponent> {
@@ -19,7 +20,6 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
     private DashboardRepository dashboardRepository;
     private CollectorItemRepository collectorItemRepository;
     private ComponentRepository componentRepository;
-    private EnvironmentComponentRepository environmentComponentRepository;
     private BinaryArtifactRepository binaryArtifactRepository;
     private PipelineRepository pipelineRepository;
     private CollectorRepository collectorRepository;
@@ -36,7 +36,6 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         this.dashboardRepository = dashboardRepository;
         this.collectorItemRepository = collectorItemRepository;
         this.componentRepository = componentRepository;
-        this.environmentComponentRepository = environmentComponentRepository;
         this.binaryArtifactRepository = binaryArtifactRepository;
         this.pipelineRepository = pipelineRepository;
         this.collectorRepository = collectorRepository;
@@ -61,47 +60,22 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         for (Dashboard dashboard : dashboards) {
             CollectorItem teamDashboardCollectorItem = getTeamDashboardCollectorItem(dashboard);
             AbstractMap.SimpleEntry<Dashboard, CollectorItem> dashboardPair = new AbstractMap.SimpleEntry(dashboard, teamDashboardCollectorItem);
-            PipelineStageType pipelineStageType = getPipelineStage(dashboard, environmentComponent);
             Pipeline pipeline = getOrCreatePipeline(dashboardPair);
-            Map<PipelineCommit, PipelineCommit> pipelineCommitMap = buildPipelineCommitPipelineCommitMap(pipeline);
 
             for (SCM scm : changeSet) {
-                PipelineCommit pipelineCommit = findOrCreatePipelineCommit(pipeline, pipelineCommitMap, scm);
-                //// TODO: 1/27/16 verify: is this the right date?
-                pipelineCommit.updateCurrentStage(pipelineStageType, environmentComponent.getAsOfDate());
+                pipeline.addCommit(environmentComponent.getEnvironmentName(), new PipelineCommit(scm, environmentComponent.getAsOfDate()));
             }
             pipelineRepository.save(pipeline);
         }
 
     }
 
-    private PipelineStageType getPipelineStage(Dashboard dashboard, EnvironmentComponent environmentComponent){
-        PipelineStageType pipelineStageType = null;
-        for(Widget widget : dashboard.getWidgets()) {
-            if(widget.getName().equalsIgnoreCase("pipeline")){
-                Map<String, String> mappings = (Map)widget.getOptions().get("mappings");
-                if(mappings == null ||mappings.size() < 1)
-                {
-                    return null;
-                }
-
-                for(Map.Entry entry : mappings.entrySet()){
-                    if(entry.getValue().equals(environmentComponent.getEnvironmentName()))
-                    {
-                        pipelineStageType = PipelineStageType.fromString((String)entry.getKey());
-                    }
-                }
-            }
-        }
-        return pipelineStageType;
-    }
 
     //// TODO: 1/27/16 Verify: is the logic here correct?
     private List<SCM> getScmChangeSetForEnvironmentComponent(EnvironmentComponent environmentComponent){
         List<SCM> changeSet = new ArrayList<>();
         List<BinaryArtifact> artifacts = (List)binaryArtifactRepository.findByArtifactNameAndArtifactVersion(environmentComponent.getComponentName(), environmentComponent.getComponentVersion());
         for(BinaryArtifact artifact : artifacts){
-            changeSet.addAll(artifact.getSourceChangeSet());
         }
         return changeSet;
     }
@@ -118,6 +92,7 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         dashboards = dashboardRepository.findDashboardsByApplicationComponentIds(componentObjectIds);
         return dashboards;
     }
+
 
     @Override
     protected CollectorItemRepository getCollectorItemRepository() {
