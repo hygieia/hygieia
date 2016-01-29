@@ -44,38 +44,39 @@
                         </div>
 
                         <div class="row">
+                            {{teamSummaryMetrics = ctrl.getTeamSummaryMetrics(team.collectorItemId);""}}
                             <div class="col-xs-4">
-                                        <span class="quality-cell-wrapper">
-                                            <div class="quality-num">
-                                                <span class="fa fa-long-arrow-up text-success"></span>
-                                                80<sup>%</sup>
-                                            </div>
-                                            <div class="quality-text">
-                                                Code coverage
-                                            </div>
-                                        </span>
+                                <span class="quality-cell-wrapper">
+                                    <div class="quality-num">
+                                        <span class="fa fa-long-arrow-up text-success"></span>
+                                        {{teamSummaryMetrics.codeCoverage.number}}<sup>%</sup>
+                                    </div>
+                                    <div class="quality-text">
+                                        Code coverage
+                                    </div>
+                                </span>
                             </div>
                             <div class="col-xs-4 text-center">
-                                        <span class="quality-cell-wrapper">
-                                            <div class="quality-num">
-                                                <span class="fa fa-long-arrow-down text-danger"></span>
-                                                92<sup>%</sup>
-                                            </div>
-                                            <div class="quality-text">
-                                                Func tests passed
-                                            </div>
-                                        </span>
+                                <span class="quality-cell-wrapper">
+                                    <div class="quality-num">
+                                        <span class="fa fa-long-arrow-down text-danger"></span>
+                                        {{teamSummaryMetrics.funcTestsPassed.number}}<sup>%</sup>
+                                    </div>
+                                    <div class="quality-text">
+                                        Func tests passed
+                                    </div>
+                                </span>
                             </div>
                             <div class="col-xs-4 text-right">
-                                        <span class="quality-cell-wrapper">
-                                            <div class="quality-num">
-                                                <span class="fa fa-long-arrow-up text-danger"></span>
-                                                43
-                                            </div>
-                                            <div class="quality-text">
-                                                # of code issues
-                                            </div>
-                                        </span>
+                                <span class="quality-cell-wrapper">
+                                    <div class="quality-num">
+                                        <span class="fa fa-long-arrow-up text-danger"></span>
+                                        {{teamSummaryMetrics.numberCodeIssues.number}}
+                                    </div>
+                                    <div class="quality-text">
+                                        # of code issues
+                                    </div>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -92,7 +93,7 @@
                                 <span class="team-time-average-desc" ng-if="teamData.average.days > 0">D</span>
                                 <span class="team-time-average-lg" ng-if="teamData.average.hours > 0 || teamData.average.days > 0">{{teamData.average.hours}}</span>
                                 <span class="team-time-average-desc" ng-if="teamData.average.hours > 0 || teamData.average.days > 0">H</span>
-                                <span class="team-time-average-lg" ng-if="teamData.average.hours > 0">{{teamData.average.minutes}}</span>
+                                <span class="team-time-average-lg" ng-if="teamData.average.minutes > 0">{{teamData.average.minutes}}</span>
                                 <span class="team-time-average-desc">M</span>
                             </div>
                             <div class="clearfix team-time-average" ng-if-end>

@@ -12,11 +12,11 @@
 
         // private properties
         var teamDashboardDetails = {},
-            teamInfo = {};
+            teamSummaryMetrics = {};
 
 
         // public properties
-        ctrl.stages = ['Commit', 'Build', 'DEV', 'QA', 'INT', 'PERF', 'PROD'];
+        ctrl.stages = ['Commit', 'Build', 'Dev', 'QA', 'Int', 'Perf', 'Prod'];
 
         // public methods
         ctrl.load = load;
@@ -26,12 +26,12 @@
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
 
-        function setTeamInfo(collectorItemId, field, data) {
-            if(!teamInfo[collectorItemId]) {
-                teamInfo[collectorItemId] = {};
+        function setTeamSummaryMetrics(collectorItemId, field, data) {
+            if(!teamSummaryMetrics[collectorItemId]) {
+                teamSummaryMetrics[collectorItemId] = {};
             }
 
-            teamInfo[collectorItemId][field] = data;
+            teamSummaryMetrics[collectorItemId][field] = data;
         }
 
         function openDashboard(item) {
@@ -98,7 +98,7 @@
             buildData
                 .details({componentId: componentId, max: 1})
                 .then(function(response) {
-                    setTeamInfo(collectorItemId, 'latestBuild', response.result[0]);
+                    setTeamSummaryMetrics(collectorItemId, 'latestBuild', response.result[0]);
                 });
 
             codeAnalysisData
@@ -109,12 +109,26 @@
         }
 
         function getTeamSummaryMetrics(collectorItemId) {
-            if(!teamInfo[collectorItemId] || !teamInfo[collectorItemId].latestBuild) {
+            if(!teamSummaryMetrics[collectorItemId]) {
                 return false;
             }
 
-            var info = teamInfo[collectorItemId],
-                metrics = {};
+            var info = teamSummaryMetrics[collectorItemId],
+                metrics = {
+                    latestBuild: {
+                        success: true,
+                        number: 0
+                    },
+                    codeCoverage: {
+                        number: 80
+                    },
+                    funcTestsPassed: {
+                        number: 92
+                    },
+                    numberCodeIssues: {
+                        number: 47
+                    }
+                };
 
             if(info.latestBuild) {
                 metrics.latestBuild = {
@@ -257,12 +271,9 @@
                 })(stageData),
 
                 deviation: (function(stageData) {
-                    if(!stageData.stageStdDeviation) {
-                        return false;
-                    }
-
-                    var number = moment(stageData.stageStdDeviation).minutes(),
+                    var number = moment.duration(stageData.stageStdDeviation).minutes(),
                         desc = 'min';
+
                     if(number > 60*24) {
                         desc = 'day';
                         number = Math.round(number / 24 / 60);
@@ -282,7 +293,8 @@
                     if(!stageData.stageAverageTime) {
                         return false;
                     }
-                    var average = moment(stageData.stageAverageTime);
+                    var average = moment.duration(stageData.stageAverageTime);
+
                     return {
                         days: average.days(),
                         hours: average.hours(),
@@ -311,7 +323,7 @@
                     _(stages).reverse().forEach(function(currentStageName) {
 
                         // make sure there are commits in that stage, otherwise skip it
-                        if (!team.stages[currentStageName] || !team.stages[currentStageName].commits) {
+                        if (!team.stages[currentStageName] || !team.stages[currentStageName].commits || !team.stages[currentStageName].commits.length) {
                             return;
                         }
 
