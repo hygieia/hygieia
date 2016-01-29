@@ -25,7 +25,7 @@
         ctrl.getTeamSummaryMetrics = getTeamSummaryMetrics;
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
-
+        ctrl.teamStageHasCommits = teamStageHasCommits;
         ctrl.getLatestBuildInfo = function(collectorItemId) {
             var metrics = teamSummaryMetrics;
             if (!metrics || !metrics[collectorItemId] || !metrics[collectorItemId].latestBuild) {
@@ -241,7 +241,16 @@
             $scope.upsertWidget(data);
         }
 
+        function teamStageHasCommits(team, stage) {
+            return team.stages[stage] && team.stages[stage].commits && team.stages[stage].commits.length;
+        }
+
         function viewTeamStageDetails(team, stage) {
+            // only show details if we have commits
+            if(!teamStageHasCommits(team, stage)) {
+                return false;
+            }
+
             $modal.open({
                 templateUrl: 'components/widgets/product/environment-commits/environment-commits.html',
                 controller: 'productEnvironmentCommitController',
