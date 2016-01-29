@@ -124,7 +124,7 @@
             .team-name {
                 color: @dash-dashboard-text-hover;
                 font-weight: bold;
-                .text(3, 3.6);
+                .text(3, 3.2);
 
                 overflow: hidden;
                 display: -webkit-box;
@@ -159,6 +159,7 @@
 
                 .team-quality-desc {
                     color: @dash-dashboard-text-light;
+                    margin-bottom: .3em;
                 }
 
                 .quality-cell-wrapper {
@@ -167,13 +168,21 @@
                 }
 
                 .quality-num {
-                    .text-2x;
+                    .text(2.5);
                     color: @dash-dashboard-text-hover;
+
+                    sup {
+                        font-size: .6em;
+                        top: -.5em;
+                        margin-left: .1em;
+                        color: @dash-dashboard-text-light;
+                    }
                 }
 
                 .quality-text {
-                    .text(1, 1);
+                    .text(1);
                     color: @dash-dashboard-text-hover;
+                    margin-top: .4em;
                     white-space: nowrap;
                 }
             }
@@ -189,7 +198,7 @@
             .team-data-cell-header {
                 padding: @team-cell-padding/2;
                 border-bottom: 1px solid @dash-dashboard-text;
-                .text(1.5, 1.5);
+                .text(1.5);
 
 
                 .team-time-average-desc {
@@ -198,7 +207,7 @@
                 }
 
                 .team-time-average-lg {
-                    .text(2.5, 2.5);
+                    .text(2.5);
                     color: @dash-dashboard-text-hover;
                 }
 
@@ -208,7 +217,7 @@
                 }
 
                 .team-time-stddev-num {
-                    .text(1.4, 1.4);
+                    .text(1.4);
                     color: @dash-dashboard-text-hover;
                     font-weight: bold;
                 }
@@ -223,10 +232,10 @@
 
                 .team-data-cell-last-updated {
                     text-align: center;
-                    .text(1.1, 1.1);
+                    .text(1.1);
 
                     .team-data-cell-last-updated-num {
-                        .text(1.4, 1.4);
+                        .text(1.4);
                         color: @dash-dashboard-text-hover;
                     }
                 }
@@ -240,6 +249,10 @@
                 text-align: center;
 
                 .text(1.2, 2);
+
+                .fa {
+                    font-size: 1.7em;
+                }
                 
                 .team-data-cell-last-build-num {
                     .text(1.5, 2);
@@ -307,7 +320,7 @@
 
 #edit-team {
     .team-delete {
-        .text(1, 1);
+        .text(1);
         color: @state-danger-text;
         position: relative;
         top: -25px;

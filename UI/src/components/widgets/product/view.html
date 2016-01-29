@@ -51,10 +51,10 @@
                                     <span class="quality-cell-wrapper">
                                         <div class="quality-num">
                                             <span class="fa fa-long-arrow-up text-success"></span>
-                                            80%
+                                            80<sup>%</sup>
                                         </div>
                                         <div class="quality-text">
-                                            Func tests passed
+                                            Code coverage
                                         </div>
                                     </span>
                             </div>
@@ -62,21 +62,21 @@
                                     <span class="quality-cell-wrapper">
                                         <div class="quality-num">
                                             <span class="fa fa-long-arrow-down text-danger"></span>
-                                            92%
+                                            92<sup>%</sup>
                                         </div>
                                         <div class="quality-text">
-                                            Build success rate
+                                            Func tests passed
                                         </div>
                                     </span>
                             </div>
                             <div class="col-xs-4 text-right">
                                     <span class="quality-cell-wrapper">
                                         <div class="quality-num">
-                                            <span class="fa fa-long-arrow-up text-success"></span>
-                                            0:43
+                                            <span class="fa fa-long-arrow-up text-danger"></span>
+                                            43
                                         </div>
                                         <div class="quality-text">
-                                            Avg time to fix
+                                            # of code issues
                                         </div>
                                     </span>
                             </div>
@@ -123,9 +123,10 @@
                             <commit-blocks commit-fail="teamData.commitsOutsideTimeframe" commit-pass="teamData.commitsInsideTimeframe"></commit-blocks>
                         </div>
 
-                        <!--<div class="team-data-cell-last-build">-->
-                        <!--Latest build #: <span class="team-data-cell-last-build-num">73</span>-->
-                        <!--</div>-->
+                        <div class="team-data-cell-last-build" ng-if="stage === 'Build'">
+                            {{build = ctrl.getLatestBuildInfo(team.collectorItemId);""}}
+                            Latest build #: <span class="fa" ng-class="{'text-success fa-thumbs-up': build.success, 'text-danger fa-thumbs-down': !build.success}"></span> <span class="team-data-cell-last-build-num">{{build.number}}</span>
+                        </div>
                     </div>
 
                 </td>
