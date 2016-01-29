@@ -128,7 +128,7 @@ public class DefaultHudsonClient implements HudsonClient {
     @Override
     public Build getBuildDetails(String buildUrl) {
         try {
-            String url = joinURL(buildUrl, BUILD_DETAILS_URL_SUFFIX);
+            String url = joinURL(buildUrl, BUILD_DETAILS_URL_SUFFIX).replace("http://", "https://");
             ResponseEntity<String> result = makeRestCall(url);
             String returnJSON = result.getBody();
             JSONParser parser = new JSONParser();

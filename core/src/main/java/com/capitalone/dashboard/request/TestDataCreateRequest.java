@@ -34,6 +34,8 @@ public class TestDataCreateRequest {
     @NotNull
     private String executionId;
 
+    private String niceName;
+
     /**
      * Creation timestamp
      */
@@ -221,5 +223,13 @@ public class TestDataCreateRequest {
 
     public void setType(TestSuiteType type) {
         this.type = type;
+    }
+
+    public String getNiceName() {
+        return niceName;
+    }
+
+    public void setNiceName(String niceName) {
+        this.niceName = niceName;
     }
 }

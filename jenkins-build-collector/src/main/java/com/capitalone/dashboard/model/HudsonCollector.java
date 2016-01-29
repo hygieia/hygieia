@@ -8,22 +8,32 @@ import java.util.List;
  */
 public class HudsonCollector extends Collector {
     private List<String> buildServers = new ArrayList<>();
+    private List<String> niceNames = new ArrayList<>();
 
     public List<String> getBuildServers() {
         return buildServers;
+    }
+
+    public List<String> getNiceNames() {
+        return niceNames;
+    }
+
+    public void setNiceNames(List<String> niceNames) {
+        this.niceNames = niceNames;
     }
 
     public void setBuildServers(List<String> buildServers) {
         this.buildServers = buildServers;
     }
 
-    public static HudsonCollector prototype(List<String> buildServers) {
+    public static HudsonCollector prototype(List<String> buildServers, List<String> niceNames) {
         HudsonCollector protoType = new HudsonCollector();
         protoType.setName("Hudson");
         protoType.setCollectorType(CollectorType.Build);
         protoType.setOnline(true);
         protoType.setEnabled(true);
         protoType.getBuildServers().addAll(buildServers);
+        protoType.getNiceNames().addAll(niceNames);
         return protoType;
     }
 }

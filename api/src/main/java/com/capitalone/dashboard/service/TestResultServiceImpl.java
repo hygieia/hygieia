@@ -16,6 +16,7 @@ import com.capitalone.dashboard.request.TestDataCreateRequest;
 import com.capitalone.dashboard.request.TestResultRequest;
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -138,7 +139,7 @@ public class TestResultServiceImpl implements TestResultService {
         return collectorService.createCollector(col);
     }
 
-    private CollectorItem createCollectorItem(Collector collector, TestDataCreateRequest request) {
+    private CollectorItem createCollectorItem(Collector collector, TestDataCreateRequest request) throws HygieiaException {
         CollectorItem tempCi = new CollectorItem();
         tempCi.setCollectorId(collector.getId());
         tempCi.setDescription(request.getDescription());
@@ -149,8 +150,11 @@ public class TestResultServiceImpl implements TestResultService {
         option.put("jobUrl", request.getTestJobUrl());
         option.put("instanceUrl", request.getServerUrl());
         tempCi.getOptions().putAll(option);
-        CollectorItem collectorItem = collectorService.createCollectorItem(tempCi);
-        return collectorItem;
+        tempCi.setNiceName(request.getNiceName());
+        if (StringUtils.isEmpty(tempCi.getNiceName())) {
+            return collectorService.createCollectorItem(tempCi);
+        }
+        return collectorService.createCollectorItemByNiceName(tempCi);
     }
 
     private TestResult createTest(CollectorItem collectorItem, TestDataCreateRequest request) {
