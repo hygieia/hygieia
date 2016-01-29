@@ -7,10 +7,10 @@
         ></chartist>
 
         <span class="heading-num">
-            17
+            {{ctrl.totalCommits}}
         </span>
         <div class="heading-num-details">
-            <div class="from-team">commits</div>
+            <div class="from-team"><ng-pluralize count="ctrl.totalCommits" when="{1:'commit',other:'commits'}"></ng-pluralize></div>
             <div class="in-environment">from <span class="in-environment-team-name">{{ctrl.displayTeamName}}</span> in {{ctrl.currentStageName}}</div>
         </div>
     </div>
@@ -25,7 +25,7 @@
                     <span class="dash-status-lg" dash-status="false" ng-if="commit.errorState"></span>
                 </div>
                 <div class="team-environment-detail-text">
-                    <span class="team-environment-detail-text-name-link" ng-click="ctrl.viewCommitInRepo(commit, $event)">View in repo</span>
+                    <!--<span class="team-environment-detail-text-name-link" ng-click="ctrl.viewCommitInRepo(commit, $event)">View in repo</span>-->
                     <div class="team-environment-detail-text-name" ng-class="{'text-danger' : commit.errorState}">
                         {{commit.message}}
                     </div>

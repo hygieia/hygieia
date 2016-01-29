@@ -53,10 +53,11 @@
         };
         ctrl.getCommitStageTimeDisplay = function(commit, stage) {
             if(!commit.in || !commit.in[stage]) {
+                // it hasn't moved on to the next stage, so show how long it's been in this stage
                 return '';
             }
 
-            var time = moment(commit.in[stage]),
+            var time = moment.duration(commit.in[stage]),
                 days = time.days(),
                 hours = time.hours(),
                 minutes = time.minutes();

@@ -93,7 +93,7 @@
                                 <span class="team-time-average-desc" ng-if="teamData.average.days > 0">D</span>
                                 <span class="team-time-average-lg" ng-if="teamData.average.hours > 0 || teamData.average.days > 0">{{teamData.average.hours}}</span>
                                 <span class="team-time-average-desc" ng-if="teamData.average.hours > 0 || teamData.average.days > 0">H</span>
-                                <span class="team-time-average-lg" ng-if="teamData.average.minutes > 0">{{teamData.average.minutes}}</span>
+                                <span class="team-time-average-lg">{{teamData.average.minutes}}</span>
                                 <span class="team-time-average-desc">M</span>
                             </div>
                             <div class="clearfix team-time-average" ng-if-end>
@@ -114,17 +114,17 @@
                         </div>
 
                         <div class="team-data-cell-body">
-                            <div class="team-data-cell-last-updated" title="{{teamData.lastUpdated.longDisplay}}">
+                            <div class="team-data-cell-last-updated" title="{{teamData.lastUpdated.longDisplay}}" ng-if="teamData.lastUpdated">
                                 Updated: <span class="team-last-updated-num">{{teamData.lastUpdated.shortDisplay}}</span>
                             </div>
 
                             <commit-blocks commit-fail="teamData.commitsOutsideTimeframe" commit-pass="teamData.commitsInsideTimeframe"></commit-blocks>
                         </div>
 
-                        <!--<div class="team-data-cell-last-build" ng-if="stage === 'Build'">-->
-                            <!--{{build = ctrl.getLatestBuildInfo(team.collectorItemId);""}}-->
-                            <!--Latest build #: <span class="fa" ng-class="{'text-success fa-thumbs-up': build.success, 'text-danger fa-thumbs-down': !build.success}"></span> <span class="team-data-cell-last-build-num">{{build.number}}</span>-->
-                        <!--</div>-->
+                        <div class="team-data-cell-last-build" ng-if="stage === 'Build'">
+                            {{build = ctrl.getLatestBuildInfo(team.collectorItemId);""}}
+                            Latest build #: <span class="fa" ng-class="{'text-success fa-thumbs-up': build.success, 'text-danger fa-thumbs-down': !build.success}"></span> <span class="team-data-cell-last-build-num">{{build.number}}</span>
+                        </div>
                     </div>
 
                 </div>
