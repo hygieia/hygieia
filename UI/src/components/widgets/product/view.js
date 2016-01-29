@@ -12,7 +12,7 @@
 
         // private properties
         var teamDashboardDetails = {},
-            latestBuilds = {};
+            teamInfo = {};
 
 
         // public properties
@@ -22,9 +22,17 @@
         ctrl.load = load;
         ctrl.editTeam = editTeam;
         ctrl.addTeam = addTeam;
-        ctrl.getLatestBuildInfo = getLatestBuildInfo;
+        ctrl.getTeamSummaryMetrics = getTeamSummaryMetrics;
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
+
+        function setTeamInfo(collectorItemId, field, data) {
+            if(!teamInfo[collectorItemId]) {
+                teamInfo[collectorItemId] = {};
+            }
+
+            teamInfo[collectorItemId][field] = data;
+        }
 
         function openDashboard(item) {
             var dashboardDetails = teamDashboardDetails[item.collectorItemId];
@@ -90,26 +98,32 @@
             buildData
                 .details({componentId: componentId, max: 1})
                 .then(function(response) {
-                    latestBuilds[collectorItemId] = response.result[0];
+                    setTeamInfo(collectorItemId, 'latestBuild', response.result[0]);
                 });
 
-            //codeAnalysisData
-            //    .staticDetails({componentId: componentId, max:1})
-            //    .then(function(result) {
-            //        console.log('ca', result);
-            //    });
+            codeAnalysisData
+                .staticDetails({componentId: componentId, max:1})
+                .then(function(result) {
+                    console.log('ca', result);
+                });
         }
 
-        function getLatestBuildInfo(collectorItemId) {
-            var build = latestBuilds[collectorItemId]
-            if(build) {
-                return {
-                    success: build.buildStatus === 'Success',
-                    number: build.number
-                }
+        function getTeamSummaryMetrics(collectorItemId) {
+            if(!teamInfo[collectorItemId] || !teamInfo[collectorItemId].latestBuild) {
+                return false;
             }
 
-            return false;
+            var info = teamInfo[collectorItemId],
+                metrics = {};
+
+            if(info.latestBuild) {
+                metrics.latestBuild = {
+                    success: info.latestBuild.buildStatus === 'Success',
+                    number: info.latestBuild.number
+                };
+            }
+
+            return metrics;
         }
 
         function editTeam(team) {

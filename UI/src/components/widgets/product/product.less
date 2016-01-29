@@ -17,37 +17,20 @@
         }
     }
 
-
-
     @team-cell-padding: 10px;
     .product-table {
         width: 100%;
+        display: table;
         margin-top: 30px;
 
-        .product-text-active {
-            color: @dash-dashboard-text-hover;
+        .product-table-tr {
+            display: table-row;
         }
 
-        thead th {
-            .text(1.4, 2.4);
-        }
 
-        tbody {
-            tr {
-                &:nth-child(odd) {
-                    background-color: @dash-widget-section-highlight;
-                }
-            }
 
-            td {
-                color: @dash-dashboard-text-light;
-                height: 180px;
-                text-align: left;
-                vertical-align: top;
-            }
-        }
-
-        td, th {
+        .product-table-th, .product-table-td {
+            display: table-cell;
             border-left: 1px solid @dash-divider;
             text-align: center;
             font-weight: normal;
@@ -57,6 +40,31 @@
 
             &:first-of-type {
                 border-left: 0;
+            }
+        }
+
+        .product-text-active {
+            color: @dash-dashboard-text-hover;
+        }
+
+        .product-table-th {
+            .text(1.4, 2.4);
+        }
+
+        .product-table-tbody {
+            display: table-row-group;
+
+            .product-table-tr {
+                &:nth-child(odd) {
+                    background-color: @dash-widget-section-highlight;
+                }
+            }
+
+            .product-table-td {
+                color: @dash-dashboard-text-light;
+                height: 180px;
+                text-align: left;
+                vertical-align: top;
             }
         }
 
@@ -79,12 +87,12 @@
             }
 
             &.no-teams {
-                td {
+                .product-table-td {
                     font-size: 1.5em;
                 }
             }
 
-            td {
+            .product-table-td {
                 padding-top: 30px;
                 padding-bottom: 30px;
                 text-align: center;
@@ -116,7 +124,7 @@
 
         .team-name-cell {
             position: relative;
-            width: 16%;
+            width: 25%;
             min-width: 260px;
             padding: 10px;
 
