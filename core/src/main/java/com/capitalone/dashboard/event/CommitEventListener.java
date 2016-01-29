@@ -74,7 +74,7 @@ public class CommitEventListener extends HygieiaMongoEventListener<Commit> {
         // Find the Product collector items associated with these team dashboards
         for (Dashboard teamDashboard : teamDashboards) {
             CollectorItem item = getTeamDashboardCollectorItem(teamDashboard);
-            if (item != null && item.isEnabled()) {
+            if (item != null) {
                 teamDashboardCollectorItemMap.put(item, teamDashboard);
             }
         }
