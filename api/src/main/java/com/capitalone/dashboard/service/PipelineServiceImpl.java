@@ -125,14 +125,15 @@ public class PipelineServiceImpl implements PipelineService {
                 environmentMappings =  (Map) widget.getOptions().get("mappings");
             }
         }
-        if(environmentMappings == null){
-            throw new RuntimeException("No pipeline widget configured for dashboard: "+dashboard.getTitle());
-        }
         Map<PipelineStageType, String> stageTypeToEnvironmentNameMap = new HashMap<>();
-        for(Map.Entry mapping : environmentMappings.entrySet()){
-            stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String)mapping.getKey()), (String)mapping.getValue());
+        if(environmentMappings == null){
+            //throw new RuntimeException("No pipeline widget configured for dashboard: "+dashboard.getTitle());
+        }
+        else {
+            for (Map.Entry mapping : environmentMappings.entrySet()) {
+                stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
+            }
         }
         return stageTypeToEnvironmentNameMap;
-
     }
 }
