@@ -137,14 +137,14 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     }
 
 
-    private void deleteUnwantedJobs(List<SonarProject> projects, List<SonarProject> existingProjects, SonarCollector collector) {
+    private void deleteUnwantedJobs(List<SonarProject> latestProjects, List<SonarProject> existingProjects, SonarCollector collector) {
         List<SonarProject> deleteJobList = new ArrayList<>();
 
         // First delete collector items that are not supposed to be collected anymore because the servers have moved(?)
         for (SonarProject job : existingProjects) {
             if (!collector.getSonarServers().contains(job.getInstanceUrl()) ||
                     (!job.getCollectorId().equals(collector.getId())) ||
-                    (!projects.contains(job))) {
+                    (!latestProjects.contains(job))) {
                 deleteJobList.add(job);
             }
         }
