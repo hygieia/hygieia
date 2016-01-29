@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 
 @org.springframework.stereotype.Component
 public class BuildEventListener extends HygieiaMongoEventListener<Build> {
@@ -44,7 +46,11 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
     public void onAfterSave(AfterSaveEvent<Build> event) {
         super.onAfterSave(event);
         LOG.debug("Build saved: " + event.getSource().getNumber());
-        processBuild(event.getSource());
+        Build build = event.getSource();
+        if(build.getBuildStatus().equals(BuildStatus.Success)){
+            processBuild(event.getSource());
+        }
+
     }
 
 
