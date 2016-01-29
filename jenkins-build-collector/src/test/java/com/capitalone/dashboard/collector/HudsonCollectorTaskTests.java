@@ -128,7 +128,8 @@ public class HudsonCollectorTaskTests {
     }
 
     private HudsonCollector collectorWithOneServer() {
-        return HudsonCollector.prototype(Arrays.asList(SERVER1));
+//        return HudsonCollector.prototype(SERVER1);
+        return null;
     }
 
     private Map<HudsonJob, Set<Build>> oneJobWithBuilds(HudsonJob job, Build... builds) {

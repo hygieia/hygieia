@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.rest;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
@@ -35,7 +36,7 @@ public class BinaryArtifactController {
 
     @RequestMapping(value = "/artifact", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> create(@Valid @RequestBody BinaryArtifactCreateRequest request) {
+    public ResponseEntity<String> create(@Valid @RequestBody BinaryArtifactCreateRequest request) throws HygieiaException {
         String response = artifactService.create(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
