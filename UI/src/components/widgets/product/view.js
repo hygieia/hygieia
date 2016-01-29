@@ -5,10 +5,15 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
-    productViewController.$inject = ['$scope', '$modal', 'pipelineData', '$location', 'collectorData'];
-    function productViewController($scope, $modal, pipelineData, $location, collectorData) {
+    productViewController.$inject = ['$scope', '$modal', 'pipelineData', '$location', 'collectorData', 'dashboardData', '$q', 'codeAnalysisData', 'buildData'];
+    function productViewController($scope, $modal, pipelineData, $location, collectorData, dashboardData, $q, codeAnalysisData, buildData) {
         /*jshint validthis:true */
         var ctrl = this;
+
+        // private properties
+        var teamDashboardDetails = {},
+            latestBuilds = {};
+
 
         // public properties
         ctrl.stages = ['Commit', 'Build', 'DEV', 'QA', 'INT', 'PERF', 'PROD'];
@@ -17,29 +22,94 @@
         ctrl.load = load;
         ctrl.editTeam = editTeam;
         ctrl.addTeam = addTeam;
+        ctrl.getLatestBuildInfo = getLatestBuildInfo;
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
 
         function openDashboard(item) {
-            collectorData.itemsByType('product').then(function(response) {
-                _(response).forEach(function(board) {
-                    if (item.collectorItemId == board.id) {
-                        $location.path('/dashboard/' + board.options.dashboardId);
-                    }
-                });
-            });
+            var dashboardDetails = teamDashboardDetails[item.collectorItemId];
+            if(dashboardDetails) {
+                $location.path('/dashboard/' + dashboardDetails.id);
+            }
         }
 
         function load() {
             var options = $scope.widgetConfig.options;
-            console.log($scope.dashboard);
-            console.log(options);
 
             if (options && options.teams) {
                 ctrl.configuredTeams = options.teams;
             }
 
             getTeamStageData(options.teams, [].concat(ctrl.stages));
+
+            var requestedData = getTeamDashboardDetails(options.teams);
+            if(!requestedData) {
+                for(var collectorItemId in teamDashboardDetails) {
+                    getTeamComponentData(collectorItemId);
+                }
+            }
+        }
+
+        function getTeamDashboardDetails(teams) {
+            var update = false;
+            _(teams).forEach(function(team) {
+                if(!teamDashboardDetails[team.collectorItemId]) {
+                    update = true;
+                }
+            });
+
+            // if we already have all the teams, don't make the call
+            if (!update) {
+                return false;
+            }
+
+            // let's grab our products and update all the board info
+            collectorData.itemsByType('product').then(function(response) {
+                _(teams).forEach(function(team) {
+                    _(response).forEach(function(board) {
+                        if (team.collectorItemId == board.id) {
+                            dashboardData.detail(board.options.dashboardId).then(function(result) {
+                                teamDashboardDetails[team.collectorItemId] = result;
+
+                                getTeamComponentData(team.collectorItemId);
+                            });
+                        }
+                    });
+                });
+            });
+
+            return true;
+        }
+
+        function getTeamComponentData(collectorItemId) {
+            var team = teamDashboardDetails[collectorItemId],
+                componentId = team.application.components[0].id,
+                start = moment().subtract(90, 'days').format('x');
+
+
+            buildData
+                .details({componentId: componentId, max: 1})
+                .then(function(response) {
+                    latestBuilds[collectorItemId] = response.result[0];
+                });
+
+            //codeAnalysisData
+            //    .staticDetails({componentId: componentId, max:1})
+            //    .then(function(result) {
+            //        console.log('ca', result);
+            //    });
+        }
+
+        function getLatestBuildInfo(collectorItemId) {
+            var build = latestBuilds[collectorItemId]
+            if(build) {
+                return {
+                    success: build.buildStatus === 'Success',
+                    number: build.number
+                }
+            }
+
+            return false;
         }
 
         function editTeam(team) {
@@ -127,7 +197,6 @@
                 options: options
             };
 
-            console.log('Upsert widget', data);
             $scope.upsertWidget(data);
         }
 
@@ -211,10 +280,10 @@
 
         function getTeamStageData(teams, ctrlStages) {
             var now = moment(),
-                end = now.format('x'),
+                nowTimestamp = now.format('x'),
                 start = now.subtract(90, 'days').format('x');
 
-            pipelineData.commits(start, end, _(teams).pluck('collectorItemId').value()).then(function(teams) {
+            pipelineData.commits(start, nowTimestamp, _(teams).pluck('collectorItemId').value()).then(function(teams) {
                 var response = {};
 
                 // start processing response by looping through each team
@@ -228,14 +297,14 @@
                     _(stages).reverse().forEach(function(currentStageName) {
 
                         // make sure there are commits in that stage, otherwise skip it
-                        if (!team.stages[currentStageName] || !team.stages[currentStageName].commits || !team.stages[currentStageName].commits.length) {
+                        if (!team.stages[currentStageName] || !team.stages[currentStageName].commits) {
                             return;
                         }
 
-                        var stage = team.stages[currentStageName],
-                            commits = [],
-                            localStages = [].concat(ctrlStages),
-                            previousStages = _(localStages.splice(0, localStages.indexOf(currentStageName))).reverse().value();
+                        var stage = team.stages[currentStageName], // team data for current stage
+                            commits = [], // store our new commit object
+                            localStages = [].concat(ctrlStages), // create a copy of the stages
+                            previousStages = _(localStages.splice(0, localStages.indexOf(currentStageName))).reverse().value(); // only look for stages before this one
 
                         // loop through each commit and create our own custom commit object
                         _(stage.commits).forEach(function(commitObj) {
@@ -245,6 +314,12 @@
                                 id: commitObj.commit.scmRevisionNumber,
                                 timestamp: commitObj.commit.scmCommitTimestamp
                             };
+
+                            // use this commit to calculate time in the current stage
+                            if(!stageDurations[currentStageName]) {
+                                stageDurations[currentStageName] = [];
+                            }
+                            stageDurations[currentStageName].push(nowTimestamp - commit.timestamp);
 
                             // on each commit, set data for how long it was in each stage by looping
                             // through any previous stage and subtracting its timestamp from the next stage
@@ -303,8 +378,7 @@
                         }
 
                         _(data.commits).forEach(function(commit) {
-                            var now = moment().format('x'),
-                                timeInStage = now - commit.timestamp;
+                            var timeInStage = nowTimestamp - commit.timestamp;
 
                             commit.errorState = timeInStage > 2 * data.stageStdDeviation;
                         });

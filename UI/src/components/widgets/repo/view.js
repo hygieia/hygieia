@@ -86,14 +86,18 @@
                 });
 
             //update charts
-            var labels = []
-            _(commits).forEach(function(c) {
-                labels.push('');
-            });
-            ctrl.commitChartData = {
-                series: [commits],
-                labels: labels
-            };
+            if(commits.length)
+            {
+                var labels = [];
+                _(commits).forEach(function(c) {
+                    labels.push('');
+                });
+
+                ctrl.commitChartData = {
+                    series: [commits],
+                    labels: labels
+                };
+            }
 
 
             // group get total counts and contributors

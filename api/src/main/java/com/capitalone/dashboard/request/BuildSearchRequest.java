@@ -17,6 +17,7 @@ public class BuildSearchRequest {
     private Long endDateEnds;
     private Long durationGreaterThan;
     private Long durationLessThan;
+    private Integer max;
     private List<BuildStatus> buildStatuses = new ArrayList<>();
 
     public ObjectId getComponentId() {
@@ -102,4 +103,8 @@ public class BuildSearchRequest {
     public boolean validDurationRange() {
         return durationGreaterThan != null || durationLessThan != null;
     }
+
+    public Integer getMax() { return max; }
+
+    public void setMax(Integer max) { this.max = max; }
 }
