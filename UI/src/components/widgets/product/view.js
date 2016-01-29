@@ -26,6 +26,19 @@
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
 
+        ctrl.getLatestBuildInfo = function(collectorItemId) {
+            var metrics = teamSummaryMetrics;
+            if (!metrics || !metrics[collectorItemId] || !metrics[collectorItemId].latestBuild) {
+                return false;
+            }
+
+            var build = metrics[collectorItemId].latestBuild;
+            return {
+                success: build.buildStatus === 'Success',
+                number: build.number
+            }
+        };
+
         function setTeamSummaryMetrics(collectorItemId, field, data) {
             if(!teamSummaryMetrics[collectorItemId]) {
                 teamSummaryMetrics[collectorItemId] = {};
@@ -381,12 +394,15 @@
                         teamStageData[currentStageName] = {
                             commits: commits
                         }
-
                     });
 
                     // now that we've added all the duration data for all commits in each stage
                     // we can calculate the averages and std deviation
                     _(stageDurations).forEach(function(durationArray, currentStageName) {
+                        if(!teamStageData[currentStageName]) {
+                            teamStageData[currentStageName] = {};
+                        }
+
                         var stats = getStageDurationStats(durationArray)
                         angular.extend(teamStageData[currentStageName], {
                             stageAverageTime: stats.mean,
