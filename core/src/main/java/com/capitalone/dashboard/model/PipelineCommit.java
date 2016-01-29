@@ -1,19 +1,17 @@
 package com.capitalone.dashboard.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PipelineCommit {
     private SCM commit;
-    private long processedTimestamp;
+    Map<PipelineStageType, Long> processedTimestamps = new HashMap<>();
 
     public PipelineCommit(){
     }
 
     public PipelineCommit(SCM commit) {
         this.commit = commit;
-    }
-
-    public PipelineCommit(SCM commit, long processedTimestamp) {
-        this.commit = commit;
-        this.processedTimestamp = processedTimestamp;
     }
 
     public SCM getCommit() {
@@ -24,22 +22,25 @@ public class PipelineCommit {
         this.commit = commit;
     }
 
-    public long getProcessedTimestamp() {
-        return processedTimestamp;
+    public Map<PipelineStageType, Long> getProcessedTimestamps() {
+        return processedTimestamps;
     }
 
-    public void setProcessedTimestamp(long processedTimestamp) {
-        this.processedTimestamp = processedTimestamp;
+    public void setProcessedTimestamps(Map<PipelineStageType, Long> processedTimestamps) {
+        this.processedTimestamps = processedTimestamps;
+    }
+
+    public void addNewPipelineProcessedTimestamp(PipelineStageType pipelineStageType, Long timestamp){
+        getProcessedTimestamps().put(pipelineStageType, timestamp);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PipelineCommit that = (PipelineCommit) o;
-
-        return commit.scmRevisionNumber.equals(that.commit.scmRevisionNumber);
+        if(o instanceof PipelineCommit){
+            PipelineCommit toCompareTo = (PipelineCommit) o;
+            return this.commit.scmRevisionNumber.equals(toCompareTo.commit.scmRevisionNumber);
+        }
+        return false;
     }
 
     @Override

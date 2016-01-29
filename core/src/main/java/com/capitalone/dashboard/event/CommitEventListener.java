@@ -51,7 +51,9 @@ public class CommitEventListener extends HygieiaMongoEventListener<Commit> {
         }
 
         ///// TODO: 1/28/16 For all commits that come through, just add it to commit bucket
-        PipelineCommit pipelineCommit = new PipelineCommit(commit, commit.getScmCommitTimestamp());
+        PipelineCommit pipelineCommit = new PipelineCommit(commit);
+        pipelineCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Commit, commit.getScmCommitTimestamp());
+
         pipeline.addCommit(PipelineStageType.Commit.name(), pipelineCommit);
 
         pipelineRepository.save(pipeline);

@@ -61,7 +61,9 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
             Pipeline pipeline = getOrCreatePipeline(dashboardPair);
 
             for (SCM scm : changeSet) {
-                pipeline.addCommit(environmentComponent.getEnvironmentName(), new PipelineCommit(scm, environmentComponent.getAsOfDate()));
+                //todo: this needs to be fixed...
+                PipelineCommit commit = new PipelineCommit(scm);
+                pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
             }
             pipelineRepository.save(pipeline);
         }

@@ -54,11 +54,13 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
         //for every team dashboard referencing the build, find the pipeline, put this commit in the build stage
         for(Dashboard teamDashboard : teamDashboardsReferencingBuild){
             CollectorItem teamDashboardCollectorItem = getTeamDashboardCollectorItem(teamDashboard);
-            Pipeline pipeline = getOrCreatePipeline(new AbstractMap.SimpleEntry<Dashboard, CollectorItem>(teamDashboard, teamDashboardCollectorItem));
+            Pipeline pipeline = getOrCreatePipeline(new AbstractMap.SimpleEntry<>(teamDashboard, teamDashboardCollectorItem));
             for(SCM scm : build.getSourceChangeSet()){
-                //// TODO: 1/28/16 should this timestamp potentially be the begin or end timestamp?
-                pipeline.addCommit(PipelineStageType.Build.name(), new PipelineCommit(scm, build.getTimestamp()));
+                PipelineCommit commit = new PipelineCommit(scm);
+                commit.addNewPipelineProcessedTimestamp(PipelineStageType.Build, build.getTimestamp());
+                pipeline.addCommit(PipelineStageType.Build.name(), commit);
             }
+            pipelineRepository.save(pipeline);
         }
     }
 
