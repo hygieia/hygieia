@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestClientException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -77,23 +78,30 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         udId.add(collector.getId());
         List<HudsonJob> existingJobs = hudsonJobRepository.findByCollectorIdIn(udId);
         List<HudsonJob> latestJobs = new ArrayList<>();
+        List<String> cleanUpServers = new ArrayList<>();
+        cleanUpServers.addAll(collector.getBuildServers());
 
         clean(collector, existingJobs);
         for (String instanceUrl : collector.getBuildServers()) {
             logBanner(instanceUrl);
 
-            Map<HudsonJob, Set<Build>> buildsByJob = hudsonClient
-                    .getInstanceJobs(instanceUrl);
-            log("Fetched jobs", start);
-            latestJobs.addAll(buildsByJob.keySet());
-            addNewJobs(buildsByJob.keySet(), existingJobs, collector);
+            try {
+                Map<HudsonJob, Set<Build>> buildsByJob = hudsonClient
+                        .getInstanceJobs(instanceUrl);
+                log("Fetched jobs", start);
+                latestJobs.addAll(buildsByJob.keySet());
+                addNewJobs(buildsByJob.keySet(), existingJobs, collector);
 
-            addNewBuilds(enabledJobs(collector, instanceUrl), buildsByJob);
+                addNewBuilds(enabledJobs(collector, instanceUrl), buildsByJob);
 
-            log("Finished", start);
+                log("Finished", start);
+            } catch (RestClientException rce) {
+                cleanUpServers.remove(instanceUrl);
+                log("Error getting jobs for: " + instanceUrl, start);
+            }
         }
         // First delete jobs that will be no longer collected because servers have moved etc.
-        deleteUnwantedJobs(latestJobs, existingJobs, collector);
+        deleteUnwantedJobs(latestJobs, existingJobs, cleanUpServers, collector);
 
     }
 
@@ -139,15 +147,15 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         }
     }
 
-    private void deleteUnwantedJobs(List<HudsonJob> latestJobs, List<HudsonJob> existingJobs, HudsonCollector collector) {
+    private void deleteUnwantedJobs(List<HudsonJob> latestJobs, List<HudsonJob> existingJobs, List<String> cleanUpServers, HudsonCollector collector) {
 
         List<HudsonJob> deleteJobList = new ArrayList<>();
         Set<ObjectId> udId = new HashSet<>();
         udId.add(collector.getId());
         for (HudsonJob job : existingJobs) {
-            if (!collector.getBuildServers().contains(job.getInstanceUrl()) ||
+            if((!collector.getBuildServers().contains(job.getInstanceUrl()) ||
                     (!job.getCollectorId().equals(collector.getId())) ||
-                    (!latestJobs.contains(job))) {
+                    (!latestJobs.contains(job))) && cleanUpServers.contains(job.getInstanceUrl())) {
                 deleteJobList.add(job);
             }
         }

@@ -120,6 +120,7 @@ public class DefaultHudsonClient implements HudsonClient {
             }
         } catch (RestClientException rce) {
             LOG.error("client exception loading jobs", rce);
+            throw rce;
         } catch (MalformedURLException mfe) {
             LOG.error("malformed url for loading jobs", mfe);
         }
