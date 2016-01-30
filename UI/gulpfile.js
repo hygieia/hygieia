@@ -59,7 +59,8 @@ var browserSync = require('browser-sync'),
     config = {
         module: 'hygieia-dashboard',
         local: null,
-        api: null
+        api: null,
+        refresh: 60
     };
 
 // override config values

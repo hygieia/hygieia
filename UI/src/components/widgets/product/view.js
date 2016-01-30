@@ -360,14 +360,28 @@
                                 author: commitObj.commit.scmAuthor || 'NA',
                                 message: commitObj.commit.scmCommitLog || 'No message',
                                 id: commitObj.commit.scmRevisionNumber,
-                                timestamp: commitObj.commit.scmCommitTimestamp
+                                timestamp: commitObj.commit.scmCommitTimestamp,
+                                in: {} //placeholder for stage duration data per commit
                             };
 
-                            // use this commit to calculate time in the current stage
+                            // make sure this stage exists to track durations
                             if(!stageDurations[currentStageName]) {
                                 stageDurations[currentStageName] = [];
                             }
-                            stageDurations[currentStageName].push(nowTimestamp - commit.timestamp);
+
+                            // use this commit to calculate time in the current stage
+                            var currentStageTimestampCompare = commit.timestamp;
+                            if(commitObj.processedTimestamps[currentStageName])
+                            {
+                                currentStageTimestampCompare = commitObj.processedTimestamps[currentStageName];
+                            }
+
+                            // use this time in our metric calculations
+                            var timeInCurrentStage = nowTimestamp - currentStageTimestampCompare;
+                            stageDurations[currentStageName].push(timeInCurrentStage);
+
+                            // make sure current stage is set
+                            commit.in[currentStageName] = timeInCurrentStage;
 
                             // on each commit, set data for how long it was in each stage by looping
                             // through any previous stage and subtracting its timestamp from the next stage
@@ -379,10 +393,6 @@
 
                                 var previousStageTimestamp = commitObj.processedTimestamps[previousStage],
                                     timeInPreviousStage = currentStageTimestamp - previousStageTimestamp;
-
-                                if(!commit['in']) {
-                                    commit['in'] = {};
-                                }
 
                                 commit.in[previousStage] = timeInPreviousStage;
                                 currentStageTimestamp = previousStageTimestamp;
