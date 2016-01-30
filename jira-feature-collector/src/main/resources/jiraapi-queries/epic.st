@@ -1,1 +1,1 @@
-epic(epicKey) ::= "issue/$epicKey$"
+epic(epicKey) ::= "key=$epicKey$"

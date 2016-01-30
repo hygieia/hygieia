@@ -79,6 +79,7 @@ public class DefaultHudsonClient implements HudsonClient {
         this.settings = settings;
     }
 
+    @SuppressWarnings("PMD.D")
     @Override
     public Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl) {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
@@ -94,21 +95,39 @@ public class DefaultHudsonClient implements HudsonClient {
                 for (Object job : getJsonArray(object, "jobs")) {
                     JSONObject jsonJob = (JSONObject) job;
 
+                    final String jobName = getString(jsonJob, "name");
+                    final String jobURL = getString(jsonJob, "url");
+                    LOG.debug("Job:" + jobName);
+                    LOG.debug("jobURL: " + jobURL);
                     HudsonJob hudsonJob = new HudsonJob();
                     hudsonJob.setInstanceUrl(instanceUrl);
-                    hudsonJob.setJobName(getString(jsonJob, "name"));
-                    hudsonJob.setJobUrl(getString(jsonJob, "url"));
+                    hudsonJob.setJobName(jobName);
+                    hudsonJob.setJobUrl(jobURL);
 
                     Set<Build> builds = new LinkedHashSet<>();
                     for (Object build : getJsonArray(jsonJob, "builds")) {
                         JSONObject jsonBuild = (JSONObject) build;
 
                         // A basic Build object. This will be fleshed out later if this is a new Build.
-                        String buildNumber = jsonBuild.get("number").toString();
+                        String dockerLocalHostIP = settings.getDockerLocalHostIP();
+                        String buildNumber = jsonBuild.get("number").toString();                        
                         if (!buildNumber.equals("0")) {
                             Build hudsonBuild = new Build();
                             hudsonBuild.setNumber(buildNumber);
-                            hudsonBuild.setBuildUrl(getString(jsonBuild, "url"));
+                            String buildURL = getString(jsonBuild, "url");
+                            
+                            	//Modify localhost if Docker Natting is being done
+		                    if ( ! dockerLocalHostIP.isEmpty() )
+		                    {
+		                    	buildURL = buildURL.replace("localhost", dockerLocalHostIP);
+		                        LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
+		                    }
+		                    else
+		                    {
+		                    	LOG.debug(" Adding Build: " + buildURL);
+		                    }
+		                    
+                            hudsonBuild.setBuildUrl(buildURL);
                             builds.add(hudsonBuild);
                         }
                     }

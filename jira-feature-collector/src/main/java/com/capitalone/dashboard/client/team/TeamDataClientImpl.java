@@ -1,15 +1,16 @@
 package com.capitalone.dashboard.client.team;
 
+import java.util.Iterator;
+import java.util.List;
+
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.FeatureSettings;
-import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import org.bson.types.ObjectId;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,6 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 	private static final ClientUtil TOOLS = new ClientUtil();
 
 	private final FeatureSettings featureSettings;
-	private final FeatureWidgetQueries featureWidgetQueries;
 	private final ScopeOwnerRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
 
@@ -47,63 +47,72 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 		this.featureSettings = featureSettings;
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepo = teamRepository;
-		this.featureWidgetQueries = new FeatureWidgetQueries(this.featureSettings);
 	}
 
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
 	 * 
-	 * @param tmpMongoDetailArray
-	 *            A JSON response in JSONArray format from the source system
-	 * @param featureCollector
+	 * @param currentPagedJiraRs
+	 *            A list response of Jira issues from the source system
 	 */
-	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
-		try {
-			for (int i = 0; i < tmpMongoDetailArray.size(); i++) {
-				JSONObject dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
-				ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
-				
-				// ?
-				boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(dataMainObj
-						.get("id")));
-
-				// Id
-				if (deleted) {
-					team.setId(this.getOldTeamId());
-					team.setEnabled(this.isOldTeamEnabledState());
-				}
-
-				// collectorId
-				team.setCollectorId(featureCollectorRepository.findByName(Constants.JIRA).getId());
-
-				// teamId
-				team.setTeamId(TOOLS.sanitizeResponse(dataMainObj.get("id")));
-
-				// name
-				team.setName(TOOLS.sanitizeResponse(dataMainObj.get("name")));
-
-				// changeDate - does not exist for jira
-				team.setChangeDate("");
-
-				// assetState - does not exist for jira
-				team.setAssetState("Active");
-
-				// isDeleted - does not exist for jira
-				team.setIsDeleted("False");
-
+	@Override
+	protected void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
+		LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
+		if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
+			Iterator<BasicProject> globalResponseItr = currentPagedJiraRs.iterator();
+			while (globalResponseItr.hasNext()) {
 				try {
+					/*
+					 * Initialize DOMs
+					 */
+					ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
+					BasicProject jiraTeam = globalResponseItr.next();
+
+					/*
+					 * Removing any existing entities where they exist in the
+					 * local DB store...
+					 */
+					boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(jiraTeam
+							.getId()));
+
+					/*
+					 * Team Data
+					 */
+					// Id
+					if (deleted) {
+						team.setId(this.getOldTeamId());
+						team.setEnabled(this.isOldTeamEnabledState());
+					}
+
+					// collectorId
+					team.setCollectorId(featureCollectorRepository.findByName(Constants.JIRA)
+							.getId());
+
+					// teamId
+					team.setTeamId(TOOLS.sanitizeResponse(jiraTeam.getId()));
+
+					// name
+					team.setName(TOOLS.sanitizeResponse(jiraTeam.getName()));
+
+					// changeDate - does not exist for jira
+					team.setChangeDate("");
+
+					// assetState - does not exist for jira
+					team.setAssetState("Active");
+
+					// isDeleted - does not exist for jira
+					team.setIsDeleted("False");
+
+					// Saving back to MongoDB
 					teamRepo.save(team);
-				} catch (Exception e) {
+
+				} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
 					LOGGER.error(
-							"Unexpected error caused when attempting to save data\nCaused by: "
+							"Unexpected error caused while mapping data from source system to local data store:\n"
 									+ e.getMessage() + " : " + e.getCause(), e);
 				}
 			}
-		} catch (Exception e) {
-			LOGGER.error(
-					"Unexpected error caused while mapping data from source system to local data store:\n"
-							+ e.getMessage() + " : " + e.getCause(), e);
 		}
 	}
 
@@ -118,9 +127,6 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 			super.returnDate = super.getMaxChangeDate();
 		}
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
-		String queryName = this.featureSettings.getTeamQuery();
-		super.query = this.featureWidgetQueries.getQuery(queryName);
-		LOGGER.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
 		updateObjectInformation();
 	}
 

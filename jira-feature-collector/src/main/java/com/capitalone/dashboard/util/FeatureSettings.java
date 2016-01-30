@@ -45,7 +45,6 @@ public class FeatureSettings {
 	private int scheduledPriorMin;
 	// Jira-connection details
 	private String jiraBaseUrl;
-	private String jiraQueryEndpoint;
 	private String jiraCredentials;
 	private String jiraOauthAuthtoken;
 	private String jiraOauthRefreshtoken;
@@ -220,14 +219,6 @@ public class FeatureSettings {
 
 	public void setJiraBaseUrl(String jiraBaseUrl) {
 		this.jiraBaseUrl = jiraBaseUrl;
-	}
-
-	public String getJiraQueryEndpoint() {
-		return this.jiraQueryEndpoint;
-	}
-
-	public void setJiraQueryEndpoint(String jiraQueryEndpoint) {
-		this.jiraQueryEndpoint = jiraQueryEndpoint;
 	}
 
 	public String getJiraCredentials() {
