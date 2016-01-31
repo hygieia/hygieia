@@ -134,8 +134,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
 	 * 
-	 * @param A
-	 *            local repository item ID (not the precise mongoID)
+	 * @param localId repository item ID (not the precise mongoID)
 	 */
 	protected Boolean removeExistingEntity(String localId) {
 		boolean deleted = false;

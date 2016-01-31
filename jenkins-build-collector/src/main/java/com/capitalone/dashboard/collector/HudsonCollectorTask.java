@@ -96,7 +96,8 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
                 log("Finished", start);
             } catch (RestClientException rce) {
-                cleanUpServers.remove(instanceUrl);
+                cleanUpServers.remove(instanceUrl); // since it was a rest exception, we will not delete this job  and wait for
+                // rest exceptions to clear up at a later run.
                 log("Error getting jobs for: " + instanceUrl, start);
             }
         }
@@ -108,33 +109,29 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     /**
      * Clean up unused hudson/jenkins collector items
      *
-     * @param collector the {@link HudsonCollector}
+     * @param collector    the {@link HudsonCollector}
      * @param existingJobs
      */
 
     @SuppressWarnings("PMD.UnnecessaryFullyQualifiedName")
     private void clean(HudsonCollector collector, List<HudsonJob> existingJobs) {
-
-
         Set<ObjectId> uniqueIDs = new HashSet<>();
         for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
                 .findAll()) {
-            if (comp.getCollectorItems() == null
-                    || comp.getCollectorItems().isEmpty()) continue;
-            List<CollectorItem> itemList = comp.getCollectorItems().get(
-                    CollectorType.Build);
-            if (itemList == null) continue;
+
+            if (CollectionUtils.isEmpty(comp.getCollectorItems())) continue;
+
+            List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.Build);
+
+            if (CollectionUtils.isEmpty(itemList)) continue;
+
             for (CollectorItem ci : itemList) {
-                if (ci != null
-                        && ci.getCollectorId().equals(collector.getId())) {
+                if (collector.getId().equals(ci.getCollectorId())) {
                     uniqueIDs.add(ci.getId());
                 }
-
             }
         }
         List<HudsonJob> stateChangeJobList = new ArrayList<>();
-        Set<ObjectId> udId = new HashSet<>();
-        udId.add(collector.getId());
         for (HudsonJob job : existingJobs) {
             if ((job.isEnabled() && !uniqueIDs.contains(job.getId())) ||  // if it was enabled but not on a dashboard
                     (!job.isEnabled() && uniqueIDs.contains(job.getId()))) { // OR it was disabled and now on a dashboard
@@ -153,13 +150,13 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         Set<ObjectId> udId = new HashSet<>();
         udId.add(collector.getId());
         for (HudsonJob job : existingJobs) {
-            if((!collector.getBuildServers().contains(job.getInstanceUrl()) ||
+            if ((!collector.getBuildServers().contains(job.getInstanceUrl()) ||
                     (!job.getCollectorId().equals(collector.getId())) ||
                     (!latestJobs.contains(job))) && cleanUpServers.contains(job.getInstanceUrl())) {
                 deleteJobList.add(job);
             }
         }
-        if (!CollectionUtils.isEmpty(deleteJobList )) {
+        if (!CollectionUtils.isEmpty(deleteJobList)) {
             hudsonJobRepository.delete(deleteJobList);
         }
     }
@@ -176,7 +173,6 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         int count = 0;
 
         for (HudsonJob job : enabledJobs) {
-
             for (Build buildSummary : nullSafe(buildsByJob.get(job))) {
 
                 if (isNewBuild(job, buildSummary)) {
@@ -200,9 +196,10 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
     /**
      * Adds new {@link HudsonJob}s to the database as disabled jobs.
-     *  @param jobs      list of {@link HudsonJob}s
+     *
+     * @param jobs         list of {@link HudsonJob}s
      * @param existingJobs
-     * @param collector the {@link HudsonCollector}
+     * @param collector    the {@link HudsonCollector}
      */
     private void addNewJobs(Set<HudsonJob> jobs, List<HudsonJob> existingJobs, HudsonCollector collector) {
         long start = System.currentTimeMillis();

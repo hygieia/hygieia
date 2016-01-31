@@ -282,7 +282,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
     /**
      * @param cucumberJsonPattern
      * @param fileName
-     * @return
+     * @return String
      */
     private String getCapabilityDescription(String cucumberJsonPattern, String fileName) {
         return StringUtils.removeEnd(fileName, cucumberJsonPattern);
