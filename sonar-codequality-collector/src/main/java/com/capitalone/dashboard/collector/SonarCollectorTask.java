@@ -34,7 +34,6 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     private final SonarClient sonarClient;
     private final SonarSettings sonarSettings;
     private final ComponentRepository dbComponentRepository;
-    private final static int CLEANUP_INTERVAL = 3600000;
 
     @Autowired
     public SonarCollectorTask(TaskScheduler taskScheduler,
