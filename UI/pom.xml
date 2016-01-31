@@ -36,7 +36,7 @@
               <nodeVersion>v5.4.1</nodeVersion>
               <npmVersion>2.14.15</npmVersion>
                 <nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
-                <npmDownloadRoot>https://registry.npmjs.org/npm/-/</npmDownloadRoot>
+                <npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>
             </configuration>
           </execution>
 
