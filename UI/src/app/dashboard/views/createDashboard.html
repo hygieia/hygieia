@@ -13,7 +13,7 @@
             <p class="help-block" ng-if="cdf.dashboardType.$error.required">Please select a dashboard type</p>
         </div>
 
-        <div class="form-group" ng-class="{'has-error': cdf.templateName.$invalid && cdf.$submitted}">
+        <div class="form-group" ng-class="{'has-error': cdf.selectedTemplate.$invalid && cdf.$submitted}">
             <select name="selectedTemplate"
                     class="form-control"
                     ng-model="ctrl.selectedTemplate"
@@ -22,7 +22,7 @@
                 <option value="" disabled>Select a template</option>
             </select>
 
-            <p class="help-block" ng-if="cdf.dashboardName.$error.required">Please select a template</p>
+            <p class="help-block" ng-if="cdf.selectedTemplate.$error.required">Please select a template</p>
         </div>
 
         <div class="form-group" ng-class="{'has-error': cdf.dashboardName.$invalid && cdf.$submitted}">

@@ -1,0 +1,9 @@
+<span class="quality-cell-wrapper">
+    <div class="quality-num">
+        <span class="fa" ng-class="{'text-success': successState, 'text-danger': !successState, 'fa-long-arrow-up': trendUp, 'fa-long-arrow-down': !trendUp}"></span>
+        {{number}}<sup ng-if="percent == 'true'">%</sup>
+    </div>
+    <div class="quality-text">
+        {{caption}}
+    </div>
+</span>

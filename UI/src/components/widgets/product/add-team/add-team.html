@@ -1,14 +1,7 @@
 <widget-modal widget-modal-title="Add team" class="add-team-modal" id="add-team">
     <form name="addTeamForm" ng-submit="ctrl.submit(addTeamForm.$valid)" novalidate="novalidate">
-        <!--<div class="form-group">-->
-            <!--{{ctrl.collectorItem}}-->
-            <!--<typeahead-dropdown-->
-                <!--ng-model="ctrl.collectorItem"-->
-                <!--config="ctrl.dropdownConfig"-->
-                <!--options="ctrl.dropdownOptions"></typeahead-dropdown>-->
-        <!--</div>-->
 
-        <div class="form-group has-feedback typeahead-dropdown">
+        <div class="form-group has-feedback typeahead-dropdown" ng-class="{'has-error': addTeamForm.collectorItemId.$invalid && addTeamForm.$submitted}">
             <input placeholder="Select a team dashboard"
                    type="text"
                    name="collectorItemId"
@@ -23,6 +16,8 @@
                    required />
 
             <span class="fa fa-sort-down form-control-feedback" aria-hidden="true"></span>
+
+            <p class="help-block" ng-if="addTeamForm.collectorItemId.$error.required">Please select a team</p>
         </div>
         <div class="form-group">
             <input class="form-control"

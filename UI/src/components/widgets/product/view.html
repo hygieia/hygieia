@@ -44,39 +44,33 @@
                         </div>
 
                         <div class="row">
-                            {{teamSummaryMetrics = ctrl.getTeamSummaryMetrics(team.collectorItemId);""}}
+
                             <div class="col-xs-4">
-                                <span class="quality-cell-wrapper">
-                                    <div class="quality-num">
-                                        <span class="fa fa-long-arrow-up text-success"></span>
-                                        {{teamSummaryMetrics.codeCoverage.number}}<sup>%</sup>
-                                    </div>
-                                    <div class="quality-text">
-                                        Code coverage
-                                    </div>
-                                </span>
+                                {{codeCoverage = ctrl.getSummaryMetric(team.collectorItemId, 'codeCoverage');""}}
+                                <product-team-summary-field
+                                    number="{{codeCoverage.number}}"
+                                    percent="true"
+                                    trend-up="{{codeNumber.trendUp}}"
+                                    success-state="{{codeNumber.successState}}"
+                                    caption="Code coverage"></product-team-summary-field>
                             </div>
                             <div class="col-xs-4 text-center">
-                                <span class="quality-cell-wrapper">
-                                    <div class="quality-num">
-                                        <span class="fa fa-long-arrow-down text-danger"></span>
-                                        {{teamSummaryMetrics.funcTestsPassed.number}}<sup>%</sup>
-                                    </div>
-                                    <div class="quality-text">
-                                        Func tests passed
-                                    </div>
-                                </span>
+                                {{funcTests = ctrl.getSummaryMetric(team.collectorItemId, 'functionalTestsPassed');""}}
+                                <product-team-summary-field
+                                    number="{{funcTests.number}}"
+                                    percent="true"
+                                    trend-up="{{funcTests.trendUp}}"
+                                    success-state="{{funcTests.successState}}"
+                                    caption="Func tests passed"></product-team-summary-field>
                             </div>
                             <div class="col-xs-4 text-right">
-                                <span class="quality-cell-wrapper">
-                                    <div class="quality-num">
-                                        <span class="fa fa-long-arrow-up text-danger"></span>
-                                        {{teamSummaryMetrics.numberCodeIssues.number}}
-                                    </div>
-                                    <div class="quality-text">
-                                        # of code issues
-                                    </div>
-                                </span>
+                                {{codeIssues = ctrl.getSummaryMetric(team.collectorItemId, 'codeIssues');""}}
+                                <product-team-summary-field
+                                    number="{{codeIssues.number}}"
+                                    percent="false"
+                                    trend-up="{{codeIssues.trendUp}}"
+                                    success-state="{{codeIssues.successState}}"
+                                    caption="# of code issues"></product-team-summary-field>
                             </div>
                         </div>
                     </div>
@@ -84,28 +78,28 @@
 
                 <div class="product-table-td team-data-cell"
                     ng-repeat="stage in ctrl.stages | filter: '!PROD'">
-                    {{teamData = team.stages[stage].summary;""}}
-                    <div ng-class="{'clickable':ctrl.teamStageHasCommits(team, stage)}" ng-if="teamData" ng-click="ctrl.viewTeamStageDetails(team, stage)">
+                    {{teamStageData = team.stages[stage].summary;""}}
+                    <div ng-class="{'clickable':ctrl.teamStageHasCommits(team, stage)}" ng-if="teamStageData" ng-click="ctrl.viewTeamStageDetails(team, stage)">
                         <div class="team-data-cell-header">
-                            <div class="clearfix" ng-if-start="teamData.average != false">
+                            <div class="clearfix" ng-if-start="teamStageData.average != false">
                                 <!-- only leading zeros get small size -->
-                                <span class="team-time-average-lg" ng-if="teamData.average.days">{{teamData.average.days}}</span>
-                                <span class="team-time-average-desc" ng-if="teamData.average.days > 0">D</span>
-                                <span class="team-time-average-lg" ng-if="teamData.average.hours > 0 || teamData.average.days > 0">{{teamData.average.hours}}</span>
-                                <span class="team-time-average-desc" ng-if="teamData.average.hours > 0 || teamData.average.days > 0">H</span>
-                                <span class="team-time-average-lg">{{teamData.average.minutes}}</span>
+                                <span class="team-time-average-lg" ng-if="teamStageData.average.days">{{teamStageData.average.days}}</span>
+                                <span class="team-time-average-desc" ng-if="teamStageData.average.days > 0">D</span>
+                                <span class="team-time-average-lg" ng-if="teamStageData.average.hours > 0 || teamStageData.average.days > 0">{{teamStageData.average.hours}}</span>
+                                <span class="team-time-average-desc" ng-if="teamStageData.average.hours > 0 || teamStageData.average.days > 0">H</span>
+                                <span class="team-time-average-lg">{{teamStageData.average.minutes}}</span>
                                 <span class="team-time-average-desc">M</span>
                             </div>
                             <div class="clearfix team-time-average" ng-if-end>
                                 <span class="pull-left">Average</span>
                                     <span class="pull-right">
                                         <span>+/-</span>
-                                        <span class="team-time-stddev-num">{{teamData.deviation.number}}</span>
-                                        <span class="team-time-stddev-desc">{{teamData.deviation.descriptor}}</span>
+                                        <span class="team-time-stddev-num">{{teamStageData.deviation.number}}</span>
+                                        <span class="team-time-stddev-desc">{{teamStageData.deviation.descriptor}}</span>
                                     </span>
                             </div>
 
-                            <div class="clearfix" ng-if-start="teamData.average == false">
+                            <div class="clearfix" ng-if-start="teamStageData.average == false">
                                 <span class="team-time-average-lg">--</span>
                             </div>
                             <div class="clearfix team-time-average" ng-if-end>
@@ -114,11 +108,13 @@
                         </div>
 
                         <div class="team-data-cell-body">
-                            <div class="team-data-cell-last-updated" title="{{teamData.lastUpdated.longDisplay}}" ng-if="teamData.lastUpdated">
-                                Updated: <span class="team-last-updated-num">{{teamData.lastUpdated.shortDisplay}}</span>
+                            <div class="team-data-cell-last-updated" title="{{teamStageData.lastUpdated.longDisplay}}" ng-if="teamStageData.lastUpdated">
+                                Updated: <span class="team-last-updated-num">{{teamStageData.lastUpdated.shortDisplay}}</span>
                             </div>
 
-                            <commit-blocks commit-fail="teamData.commitsOutsideTimeframe" commit-pass="teamData.commitsInsideTimeframe"></commit-blocks>
+                            <commit-blocks commit-fail="teamStageData.commitsOutsideTimeframe" commit-pass="teamStageData.commitsInsideTimeframe"></commit-blocks>
+
+                            <div class="clearfix"></div>
                         </div>
 
                         <div class="team-data-cell-last-build" ng-if="stage === 'Build'">
@@ -132,7 +128,7 @@
                 <div class="product-table-td team-prod-cell">
                     <div class="clearfix team-prod-average-header">
                         <span class="pull-left team-prod-arrow fa fa-long-arrow-down text-danger"></span>
-                        <span class="pull-left product-text-active">10</span>
+                        <span class="pull-left product-text-active">{{team.prod.averageDays}}</span>
                         <span class="pull-left team-prod-average-days">DAY</span>
                     </div>
 
@@ -141,8 +137,8 @@
                     </div>
 
                     <div class="team-prod-last-90">
-                        <span class="team-prod-last-90-num">90</span>
-                        commits in the last <span class="widget-font-bold">3 days</span>
+                        <span class="team-prod-last-90-num">{{team.prod.totalCommits}}</span>
+                        <ng-pluralize count="team.prod.totalCommits" when="{1:' commit ',other:' commits '}"></ng-pluralize> in the last <span class="widget-font-bold">90 days</span>
                     </div>
                 </div>
             </div>
