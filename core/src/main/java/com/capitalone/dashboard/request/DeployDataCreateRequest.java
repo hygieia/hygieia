@@ -29,6 +29,7 @@ public class DeployDataCreateRequest {
     private long endTime;
     private long duration;
     private String startedBy;
+    private String niceName;
 
 
     public String getExecutionId() {
@@ -149,5 +150,13 @@ public class DeployDataCreateRequest {
 
     public void setHygieiaId(String hygieiaId) {
         this.hygieiaId = hygieiaId;
+    }
+
+    public String getNiceName() {
+        return niceName;
+    }
+
+    public void setNiceName(String niceName) {
+        this.niceName = niceName;
     }
 }

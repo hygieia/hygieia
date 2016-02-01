@@ -171,7 +171,7 @@ public class DeployServiceImpl implements DeployService {
             throw new HygieiaException("Failed creating Deploy collector item.", HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
         }
 
-        EnvironmentComponent deploy = createBuild(collectorItem, request);
+        EnvironmentComponent deploy = createEnvComponent(collectorItem, request);
 
         if (deploy == null) {
             throw new HygieiaException("Failed inserting/updating Deployment information.", HygieiaException.ERROR_INSERTING_DATA);
@@ -198,6 +198,7 @@ public class DeployServiceImpl implements DeployService {
         tempCi.setDescription(request.getJobName());
         tempCi.setPushed(true);
         tempCi.setLastUpdated(System.currentTimeMillis());
+        tempCi.setNiceName(request.getNiceName());
         Map<String, Object> option = new HashMap<>();
         option.put("applicationName", request.getAppName());
         option.put("environmentName", request.getEnvName());
@@ -210,7 +211,7 @@ public class DeployServiceImpl implements DeployService {
         return collectorItem;
     }
 
-    private EnvironmentComponent createBuild(CollectorItem collectorItem, DeployDataCreateRequest request) {
+    private EnvironmentComponent createEnvComponent(CollectorItem collectorItem, DeployDataCreateRequest request) {
         EnvironmentComponent deploy = environmentComponentRepository.
                 findByUniqueKey(collectorItem.getId(), request.getArtifactName(), request.getArtifactName(), request.getEndTime());
         if ( deploy == null) {
@@ -223,6 +224,7 @@ public class DeployServiceImpl implements DeployService {
         deploy.setComponentName(request.getArtifactName());
         deploy.setComponentVersion(request.getArtifactVersion());
         deploy.setEnvironmentName(request.getEnvName());
+        deploy.setDeployTime(request.getEndTime());
 
         return environmentComponentRepository.save(deploy); // Save = Update (if ID present) or Insert (if ID not there)
     }
