@@ -4,7 +4,9 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Document containing the details of a Pipeline for a TeamDashboardCollectorItem
@@ -16,6 +18,10 @@ public class Pipeline extends BaseModel{
 
     /** Map of environment name and stage object*/
     private Map<String, EnvironmentStage> stages = new HashMap<>();
+
+    /**not including this in the map above because the enum allows us to
+     * use ordinals to iterate through pipeline progression*/
+    private Set<Build> failedBuilds = new HashSet<>();
 
     public ObjectId getCollectorItemId() {
         return collectorItemId;
@@ -40,4 +46,15 @@ public class Pipeline extends BaseModel{
         this.getStages().get(stage).getCommits().add(commit);
     }
 
+    public Set<Build> getFailedBuilds() {
+        return failedBuilds;
+    }
+
+    public void setFailedBuilds(Set<Build> failedBuilds) {
+        this.failedBuilds = failedBuilds;
+    }
+
+    public void addFailedBuild(Build failedBuild){
+        this.getFailedBuilds().add(failedBuild);
+    }
 }

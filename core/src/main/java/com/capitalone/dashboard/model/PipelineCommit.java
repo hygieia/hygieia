@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class PipelineCommit {
     private SCM commit;
-    Map<PipelineStageType, Long> processedTimestamps = new HashMap<>();
+    Map<String, Long> processedTimestamps = new HashMap<>();
 
     public PipelineCommit(){
     }
@@ -22,15 +22,15 @@ public class PipelineCommit {
         this.commit = commit;
     }
 
-    public Map<PipelineStageType, Long> getProcessedTimestamps() {
+    public Map<String, Long> getProcessedTimestamps() {
         return processedTimestamps;
     }
 
-    public void setProcessedTimestamps(Map<PipelineStageType, Long> processedTimestamps) {
+    public void setProcessedTimestamps(Map<String, Long> processedTimestamps) {
         this.processedTimestamps = processedTimestamps;
     }
 
-    public void addNewPipelineProcessedTimestamp(PipelineStageType pipelineStageType, Long timestamp){
+    public void addNewPipelineProcessedTimestamp(String pipelineStageType, Long timestamp){
         getProcessedTimestamps().put(pipelineStageType, timestamp);
     }
 

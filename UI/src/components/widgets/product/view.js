@@ -5,14 +5,15 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
-    productViewController.$inject = ['$scope', '$modal', 'pipelineData', '$location', 'collectorData', 'dashboardData', '$q', 'codeAnalysisData', 'buildData'];
-    function productViewController($scope, $modal, pipelineData, $location, collectorData, dashboardData, $q, codeAnalysisData, buildData) {
+    productViewController.$inject = ['$scope', '$modal', 'pipelineData', '$location', 'collectorData', 'dashboardData', '$q', 'codeAnalysisData', 'buildData', 'testSuiteData'];
+    function productViewController($scope, $modal, pipelineData, $location, collectorData, dashboardData, $q, codeAnalysisData, buildData, testSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // private properties
         var teamDashboardDetails = {},
-            teamSummaryMetrics = {};
+            teamSummaryMetrics = {},
+            latestBuilds = {};
 
 
         // public properties
@@ -22,29 +23,42 @@
         ctrl.load = load;
         ctrl.editTeam = editTeam;
         ctrl.addTeam = addTeam;
-        ctrl.getTeamSummaryMetrics = getTeamSummaryMetrics;
+        ctrl.getSummaryMetric = getSummaryMetric;
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
         ctrl.teamStageHasCommits = teamStageHasCommits;
-        ctrl.getLatestBuildInfo = function(collectorItemId) {
-            var metrics = teamSummaryMetrics;
-            if (!metrics || !metrics[collectorItemId] || !metrics[collectorItemId].latestBuild) {
-                return false;
-            }
-
-            var build = metrics[collectorItemId].latestBuild;
-            return {
-                success: build.buildStatus === 'Success',
-                number: build.number
-            }
-        };
+        ctrl.getLatestBuildInfo = getLatestBuildInfo;
 
         function setTeamSummaryMetrics(collectorItemId, field, data) {
             if(!teamSummaryMetrics[collectorItemId]) {
-                teamSummaryMetrics[collectorItemId] = {};
+                teamSummaryMetrics[collectorItemId] = {
+                    codeCoverage: {
+                        number: 0,
+                        trendUp: false,
+                        successState: false
+                    },
+                    functionalTestsPassed: {
+                        number: 0,
+                        trendUp: true,
+                        successState: false
+                    },
+                    codeIssues: {
+                        number: 0,
+                        trendUp: true,
+                        successState: true
+                    }
+                };
             }
 
-            teamSummaryMetrics[collectorItemId][field] = data;
+            var obj = teamSummaryMetrics[collectorItemId],
+                subFields = field.split('.');
+
+            if(subFields.length == 1) {
+                obj[field] = data;
+            }
+            else if (subFields.length == 2) {
+                obj[subFields[0]][subFields[1]] = data;
+            }
         }
 
         function openDashboard(item) {
@@ -111,46 +125,41 @@
             buildData
                 .details({componentId: componentId, max: 1})
                 .then(function(response) {
-                    setTeamSummaryMetrics(collectorItemId, 'latestBuild', response.result[0]);
+                    latestBuilds[collectorItemId] = response.result[0];
                 });
 
             codeAnalysisData
                 .staticDetails({componentId: componentId, max:1})
-                .then(function(result) {
-                    console.log('ca', result);
+                .then(function(response) {
+                    if(response.result[0] && response.result[0].metrics) {
+                        _(response.result[0].metrics).filter({name: 'line_coverage'}).forEach(function(item) {
+                            setTeamSummaryMetrics(collectorItemId, 'codeCoverage.number', Math.round(item.value));
+                        });
+
+                        _(response.result[0].metrics).filter({name: 'violations'}).forEach(function(item) {
+                            setTeamSummaryMetrics(collectorItemId, 'codeIssues.number', item.value);
+                        })
+                    }
+                });
+
+            testSuiteData.details({componentId: componentId, max:1})
+                .then(function(response) {
+                    var totalPassed = 0,
+                        totalTests = 0;
+
+                    _(response.result).forEach(function(result) {
+                        totalPassed += result.successCount || 0;
+                        totalTests += result.totalCount || 0;
+                    });
+
+                    var testPassedPercent = totalTests ? totalPassed/totalTests : 0;
+                    setTeamSummaryMetrics(collectorItemId, 'functionalTestsPassed.number', Math.round(testPassedPercent));
                 });
         }
 
-        function getTeamSummaryMetrics(collectorItemId) {
-            if(!teamSummaryMetrics[collectorItemId]) {
-                return false;
-            }
-
-            var info = teamSummaryMetrics[collectorItemId],
-                metrics = {
-                    latestBuild: {
-                        success: true,
-                        number: 0
-                    },
-                    codeCoverage: {
-                        number: 80
-                    },
-                    funcTestsPassed: {
-                        number: 92
-                    },
-                    numberCodeIssues: {
-                        number: 47
-                    }
-                };
-
-            if(info.latestBuild) {
-                metrics.latestBuild = {
-                    success: info.latestBuild.buildStatus === 'Success',
-                    number: info.latestBuild.number
-                };
-            }
-
-            return metrics;
+        function getSummaryMetric(collectorItemId, type) {
+            var metrics = teamSummaryMetrics[collectorItemId];
+            return metrics ? metrics[type] : {};
         }
 
         function editTeam(team) {
@@ -243,6 +252,18 @@
 
         function teamStageHasCommits(team, stage) {
             return team.stages[stage] && team.stages[stage].commits && team.stages[stage].commits.length;
+        }
+
+        function getLatestBuildInfo(collectorItemId) {
+            if (!latestBuilds[collectorItemId]) {
+                return false;
+            }
+
+            var build = latestBuilds[collectorItemId];
+            return {
+                success: build.buildStatus === 'Success',
+                number: build.number
+            }
         }
 
         function viewTeamStageDetails(team, stage) {
@@ -449,19 +470,53 @@
                         data.summary = getTeamStageSummary(teamStageData[stage]);
                     });
 
+                    // calculate info used in production
+                    var teamProdData = {
+                        averageDays: '--',
+                        totalCommits: 0
+                    },
+                        commitTimeToProd = _(team.stages)
+                        // limit to prod
+                        .filter(function(val, key) {
+                            return key == 'Prod'
+                        })
+                        // get commits
+                        .pluck('commits')
+                        // make all commits a single array
+                        .reduce(function(num, commits){ return num + commits; })
+                        // they should, but make sure the commits have a prod timestamp
+                        .filter(function(commit) {
+                            return commit.processedTimestamps && commit.processedTimestamps['Prod'];
+                        })
+                        // calculate their time to prod
+                        .map(function(commit) {
+                            return commit.processedTimestamps['Prod'] - commit.commit.scmCommitTimestamp;
+                        });
+
+
+                    teamProdData.totalCommits = commitTimeToProd.length;
+
+                    if (commitTimeToProd.length > 1) {
+                        var averageDuration = _(commitTimeToProd).reduce(function(a,b) {
+                            return a + b;
+                        }) / commitTimeToProd.length;
+
+                        teamProdData.averageDays = moment.duration(averageDuration).days();
+                    }
 
                     // set all the team data in a key that we can
                     // easily get to with collector item id
-                    response[team.collectorItemId] = teamStageData;
+                    response[team.collectorItemId] = {
+                        stages: teamStageData,
+                        prod: teamProdData
+                    };
                 });
 
                 // set our data back on the controller
                 for (var collectorItemId in response) {
-                    // set the da
+                    // set the data for a given collectorItemId
                     _(ctrl.configuredTeams).filter({'collectorItemId': collectorItemId}).forEach(function (configuredTeam) {
-                        angular.extend(configuredTeam, {
-                            stages: response[collectorItemId]
-                        });
+                        angular.extend(configuredTeam, response[collectorItemId]);
                     });
                 }
             });

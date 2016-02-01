@@ -30,8 +30,19 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
         if(build.getBuildStatus().equals(BuildStatus.Success)){
             processBuild(event.getSource());
         }
+        else if(build.getBuildStatus().equals(BuildStatus.Failure)){
+            processFailedBuild(event.getSource());
+        }
     }
 
+    private void processFailedBuild(Build failedBuild){
+        List<Dashboard> teamDashboardsReferencingBuild = findAllDashboardsForBuild(failedBuild);
+        for(Dashboard teamDashboard : teamDashboardsReferencingBuild){
+            Pipeline pipeline = getOrCreatePipeline(teamDashboard);
+            pipeline.addFailedBuild(failedBuild);
+            pipelineRepository.save(pipeline);
+        }
+    }
 
     private void processBuild(Build build){
         List<Dashboard> teamDashboardsReferencingBuild = findAllDashboardsForBuild(build);
@@ -41,13 +52,25 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
             Pipeline pipeline = getOrCreatePipeline(teamDashboard);
             for(SCM scm : build.getSourceChangeSet()){
                 PipelineCommit commit = new PipelineCommit(scm);
-                commit.addNewPipelineProcessedTimestamp(PipelineStageType.Build, build.getTimestamp());
+                commit.addNewPipelineProcessedTimestamp(PipelineStageType.Build.name(), build.getTimestamp());
                 pipeline.addCommit(PipelineStageType.Build.name(), commit);
             }
+            processPreviousFailedBuilds(build, pipeline);
             pipelineRepository.save(pipeline);
         }
     }
 
+    private void processPreviousFailedBuilds(Build successfulBuild, Pipeline pipeline){
+        for(Build b : pipeline.getFailedBuilds()){
+            if(b.getBuildUrl().equals(successfulBuild.getBuildUrl()) && b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())){
+                for(SCM scm : b.getSourceChangeSet()){
+                    PipelineCommit failedBuildCommit = new PipelineCommit(scm);
+                    failedBuildCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Build.name(), successfulBuild.getTimestamp());
+                    pipeline.addCommit(PipelineStageType.Build.name(), failedBuildCommit);
+                }
+            }
+        }
+    }
     /**
      * Finds all of the dashboards for a given build way of the build by:
      * 1. Get collector item id for the build
