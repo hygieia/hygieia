@@ -164,7 +164,7 @@
                     var data = _(response.result)
                         .sortBy('timestamp')
                         .map(function(result) {
-                            var daysAgo = -1 * moment().diff(result.timestamp, 'days'),
+                            var daysAgo = -1 * moment.duration(moment().diff(result.timestamp)).asDays(),
                                 codeIssues = getCaMetric(result.metrics, 'violations'),
                                 codeCoverage = getCaMetric(result.metrics, 'line_coverage');
 
@@ -193,6 +193,7 @@
                     setTeamSummaryMetric(collectorItemId, 'codeCoverage.successState', codeCoverageTrendUp);
                 });
 
+            // calculate the current state for percent tests passed
             testSuiteData.details({componentId: componentId, max:1})
                 .then(function(response) {
                     var totalPassed = 0,
@@ -207,27 +208,19 @@
                     setTeamSummaryMetric(collectorItemId, 'functionalTestsPassed.number', Math.round(testPassedPercent));
                 });
 
+            // calculate trend for percent of tests passed
             testSuiteData.details({componentId: componentId, endDateBegins: start, endDateEnds:moment().format('x')})
                 .then(function(response) {
                     var data = _(response.result)
                         .sortBy('timestamp')
                         .map(function(result) {
-                            var daysAgo = -1 * moment().diff(result.timestamp, 'days'),
+                            var daysAgo = -1 * moment.duration(moment().diff(result.timestamp)).asDays(),
                                 totalPassed = result.successCount || 0,
                                 totalTests = result.totalCount,
                                 percentPassed = totalTests ? totalPassed/totalTests : 0;
 
                             return [daysAgo, percentPassed];
                         }).value();
-
-                    var xs = [];
-                    var ys = [];
-                    _(data).forEach(function(d) {
-                        xs.push(d[0]);
-                        ys.push(d[1]);
-                    });
-                    console.log(xs.join(','));
-                    console.log(ys.join(','));
 
                     var passedPercentResult = regression('linear', data),
                         passedPercentTrendUp = passedPercentResult.equation[0] > 0;
@@ -556,32 +549,43 @@
                         totalCommits: 0
                     },
                         commitTimeToProd = _(team.stages)
-                        // limit to prod
-                        .filter(function(val, key) {
-                            return key == 'Prod'
-                        })
-                        // get commits
-                        .pluck('commits')
-                        // make all commits a single array
-                        .reduce(function(num, commits){ return num + commits; })
-                        // they should, but make sure the commits have a prod timestamp
-                        .filter(function(commit) {
-                            return commit.processedTimestamps && commit.processedTimestamps['Prod'];
-                        })
-                        // calculate their time to prod
-                        .map(function(commit) {
-                            return commit.processedTimestamps['Prod'] - commit.commit.scmCommitTimestamp;
-                        });
+                            // limit to prod
+                            .filter(function(val, key) {
+                                return key == 'Prod'
+                            })
+                            // get commits
+                            .pluck('commits')
+                            // make all commits a single array
+                            .reduce(function(num, commits){ return num + commits; })
+                            // they should, but make sure the commits have a prod timestamp
+                            .filter(function(commit) {
+                                return commit.processedTimestamps && commit.processedTimestamps['Prod'];
+                            })
+                            // calculate their time to prod
+                            .map(function(commit) {
+                                return {
+                                    duration: commit.processedTimestamps['Prod'] - commit.commit.scmCommitTimestamp,
+                                    commitTimestamp: commit.commit.scmCommitTimestamp
+                                };
+                            });
 
 
                     teamProdData.totalCommits = commitTimeToProd.length;
 
                     if (commitTimeToProd.length > 1) {
-                        var averageDuration = _(commitTimeToProd).reduce(function(a,b) {
+                        var averageDuration = _(commitTimeToProd).pluck('duration').reduce(function(a,b) {
                             return a + b;
                         }) / commitTimeToProd.length;
 
-                        teamProdData.averageDays = Math.floor(moment.duration(averageDuration)).asDays();
+                        teamProdData.averageDays = Math.floor(moment.duration(averageDuration).asDays());
+
+                        var plotData = _(commitTimeToProd).map(function(ttp) {
+                            var daysAgo = -1*moment.duration(moment().diff(ttp.commitTimestamp)).asDays();
+                            return [daysAgo, ttp.duration];
+                        }).value();
+
+                        var averageToProdResult = regression('linear', plotData);
+                        teamProdData.trendUp = averageToProdResult.equation[0] > 0;
                     }
 
                     // set all the team data in a key that we can

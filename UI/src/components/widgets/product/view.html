@@ -127,7 +127,7 @@
 
                 <div class="product-table-td team-prod-cell">
                     <div class="clearfix team-prod-average-header">
-                        <span class="pull-left team-prod-arrow fa fa-long-arrow-down text-danger"></span>
+                        <span class="pull-left team-prod-arrow fa" ng-class="{'fa-long-arrow-up text-danger':team.prod.trendUp, 'fa-long-arrow-down text-success': !team.prod.trendUp}"></span>
                         <span class="pull-left product-text-active">{{team.prod.averageDays}}</span>
                         <span class="pull-left team-prod-average-days">DAY</span>
                     </div>
