@@ -3,7 +3,7 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.deploy.Environment;
-import com.capitalone.dashboard.request.BuildDataCreateRequest;
+import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.service.DeployService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class DeployController {
 
     @RequestMapping(value = "/deploy", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createBuild(@Valid @RequestBody BuildDataCreateRequest request) throws HygieiaException {
+    public ResponseEntity<String> createBuild(@Valid @RequestBody DeployDataCreateRequest request) throws HygieiaException {
         String response = deployService.create(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
