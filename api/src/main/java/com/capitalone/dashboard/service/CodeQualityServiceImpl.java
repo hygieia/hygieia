@@ -19,6 +19,7 @@ import com.capitalone.dashboard.request.CollectorRequest;
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.mysema.query.BooleanBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,7 +159,7 @@ public class CodeQualityServiceImpl implements CodeQualityService {
         return collectorService.createCollector(col);
     }
 
-    private CollectorItem createCollectorItem(Collector collector, CodeQualityCreateRequest request) {
+    private CollectorItem createCollectorItem(Collector collector, CodeQualityCreateRequest request) throws HygieiaException {
         CollectorItem tempCi = new CollectorItem();
         tempCi.setCollectorId(collector.getId());
         tempCi.setDescription(request.getProjectName());
@@ -169,7 +170,11 @@ public class CodeQualityServiceImpl implements CodeQualityService {
         option.put("projectId", request.getProjectId());
         option.put("instanceUrl", request.getServerUrl());
         tempCi.getOptions().putAll(option);
-        return collectorService.createCollectorItem(tempCi);
+        tempCi.setNiceName(request.getNiceName());
+        if (StringUtils.isEmpty(tempCi.getNiceName())) {
+            return collectorService.createCollectorItem(tempCi);
+        }
+        return collectorService.createCollectorItemByNiceName(tempCi);
     }
 
     private CodeQuality createCodeQuality(CollectorItem collectorItem, CodeQualityCreateRequest request) {

@@ -42,4 +42,6 @@ public interface BaseCollectorItemRepository<T extends CollectorItem> extends Cr
      */
     @Query(value="{ 'collectorId' : ?0, options : ?1}")
     T findByCollectorAndOptions(ObjectId collectorId, Map<String, Object> options);
+
+    List<T> findByCollectorIdAndNiceName (ObjectId collectorId, String niceName);
 }

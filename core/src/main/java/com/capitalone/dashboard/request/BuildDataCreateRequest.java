@@ -24,6 +24,8 @@ public class BuildDataCreateRequest {
     @NotNull
     private String instanceUrl;
 
+    private String niceName;
+
     private long endTime;
     private long duration;
     private String startedBy;
@@ -125,5 +127,13 @@ public class BuildDataCreateRequest {
 
     public void setInstanceUrl(String instanceUrl) {
         this.instanceUrl = instanceUrl;
+    }
+
+    public String getNiceName() {
+        return niceName;
+    }
+
+    public void setNiceName(String niceName) {
+        this.niceName = niceName;
     }
 }
