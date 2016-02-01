@@ -205,6 +205,11 @@
                 border-bottom: 1px solid @dash-dashboard-text;
                 .text(1.5);
 
+                .team-data-cell-average-days {
+                    white-space:nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
 
                 .team-time-average-desc {
                     margin-left: -.2em;
@@ -285,8 +290,10 @@
             }
 
             .team-prod-average-days {
+                display: inline-block;
                 font-size: .5em;
                 bottom: -.4em;
+                margin-left: .2em;
                 position: relative;
             }
 

@@ -48,28 +48,28 @@
                             <div class="col-xs-4">
                                 {{codeCoverage = ctrl.getSummaryMetric(team.collectorItemId, 'codeCoverage');""}}
                                 <product-team-summary-field
-                                    number="{{codeCoverage.number}}"
+                                    number="codeCoverage.number"
                                     percent="true"
-                                    trend-up="{{codeNumber.trendUp}}"
-                                    success-state="{{codeNumber.successState}}"
+                                    trend-up="codeCoverage.trendUp"
+                                    success-state="codeCoverage.successState"
                                     caption="Code coverage"></product-team-summary-field>
                             </div>
                             <div class="col-xs-4 text-center">
                                 {{funcTests = ctrl.getSummaryMetric(team.collectorItemId, 'functionalTestsPassed');""}}
                                 <product-team-summary-field
-                                    number="{{funcTests.number}}"
+                                    number="funcTests.number"
                                     percent="true"
-                                    trend-up="{{funcTests.trendUp}}"
-                                    success-state="{{funcTests.successState}}"
+                                    trend-up="funcTests.trendUp"
+                                    success-state="funcTests.successState"
                                     caption="Func tests passed"></product-team-summary-field>
                             </div>
                             <div class="col-xs-4 text-right">
                                 {{codeIssues = ctrl.getSummaryMetric(team.collectorItemId, 'codeIssues');""}}
                                 <product-team-summary-field
-                                    number="{{codeIssues.number}}"
+                                    number="codeIssues.number"
                                     percent="false"
-                                    trend-up="{{codeIssues.trendUp}}"
-                                    success-state="{{codeIssues.successState}}"
+                                    trend-up="codeIssues.trendUp"
+                                    success-state="codeIssues.successState"
                                     caption="# of code issues"></product-team-summary-field>
                             </div>
                         </div>
@@ -81,7 +81,7 @@
                     {{teamStageData = team.stages[stage].summary;""}}
                     <div ng-class="{'clickable':ctrl.teamStageHasCommits(team, stage)}" ng-if="teamStageData" ng-click="ctrl.viewTeamStageDetails(team, stage)">
                         <div class="team-data-cell-header">
-                            <div class="clearfix" ng-if-start="teamStageData.average != false">
+                            <div class="clearfix team-data-cell-average-days" ng-if-start="teamStageData.average != false">
                                 <!-- only leading zeros get small size -->
                                 <span class="team-time-average-lg" ng-if="teamStageData.average.days">{{teamStageData.average.days}}</span>
                                 <span class="team-time-average-desc" ng-if="teamStageData.average.days > 0">D</span>
@@ -138,7 +138,7 @@
 
                     <div class="team-prod-last-90">
                         <span class="team-prod-last-90-num">{{team.prod.totalCommits}}</span>
-                        <ng-pluralize count="team.prod.totalCommits" when="{1:' commit ',other:' commits '}"></ng-pluralize> in the last <span class="widget-font-bold">90 days</span>
+                        <ng-pluralize count="team.prod.totalCommits" when="{1:' commit ',other:'commits '}"></ng-pluralize> in the last <span class="widget-font-bold">90 days</span>
                     </div>
                 </div>
             </div>

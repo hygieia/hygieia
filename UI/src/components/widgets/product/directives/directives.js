@@ -10,10 +10,10 @@
         productTeamSummaryField : {
             scope: {
                 caption: '@caption',
-                number: '@number',
+                number: '=number',
                 percent: '@percent',
-                trendUp: '@trendUp',
-                successState: '@successState'
+                trendUp: '=trendUp',
+                successState: '=successState'
             }
         }
     };
