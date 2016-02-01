@@ -41,7 +41,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
             Pipeline pipeline = getOrCreatePipeline(teamDashboard);
             for(SCM scm : build.getSourceChangeSet()){
                 PipelineCommit commit = new PipelineCommit(scm);
-                commit.addNewPipelineProcessedTimestamp(PipelineStageType.Build, build.getTimestamp());
+                commit.addNewPipelineProcessedTimestamp(PipelineStageType.Build.name(), build.getTimestamp());
                 pipeline.addCommit(PipelineStageType.Build.name(), commit);
             }
             pipelineRepository.save(pipeline);

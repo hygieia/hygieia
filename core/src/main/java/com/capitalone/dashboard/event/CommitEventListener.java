@@ -30,7 +30,7 @@ public class CommitEventListener extends HygieiaMongoEventListener<Commit> {
 
         for (Dashboard teamDashboard : findAllDashboardsForCommit(commit)) {
             PipelineCommit pipelineCommit = new PipelineCommit(commit);
-            pipelineCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Commit, commit.getScmCommitTimestamp());
+            pipelineCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Commit.name(), commit.getScmCommitTimestamp());
 
             Pipeline pipeline = getOrCreatePipeline(teamDashboard);
             pipeline.addCommit(PipelineStageType.Commit.name(), pipelineCommit);

@@ -63,6 +63,7 @@ public class PipelineServiceImpl implements PipelineService {
         return notPropagatedCommits;
     }
 
+    //todo: rethink this approach.  breaking for deployment environments
     private void applyStageTimestamps(PipelineCommit commit, Dashboard dashboard, Pipeline pipeline){
         Map<PipelineStageType, Map<String, PipelineCommit>> commitsMapByStage = getCommitsByStage(dashboard, pipeline);
         for(PipelineStageType stageType : PipelineStageType.values()){
@@ -71,7 +72,7 @@ public class PipelineServiceImpl implements PipelineService {
             PipelineCommit pipelineCommit = commitMap.get(commit.getCommit().getScmRevisionNumber());
             if(pipelineCommit != null && !commit.getProcessedTimestamps().containsKey(stageType)){
                 Long timestamp = pipelineCommit.getProcessedTimestamps().get(stageType);
-                commit.addNewPipelineProcessedTimestamp(stageType, timestamp);
+                commit.addNewPipelineProcessedTimestamp(stageType.name(), timestamp);
             }
         }
     }
@@ -127,7 +128,7 @@ public class PipelineServiceImpl implements PipelineService {
         }
         Map<PipelineStageType, String> stageTypeToEnvironmentNameMap = new HashMap<>();
         if(environmentMappings == null){
-            //throw new RuntimeException("No pipeline widget configured for dashboard: "+dashboard.getTitle());
+            throw new RuntimeException("No pipeline widget configured for dashboard: "+dashboard.getTitle());
         }
         else {
             for (Map.Entry mapping : environmentMappings.entrySet()) {
