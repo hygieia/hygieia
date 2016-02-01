@@ -90,7 +90,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 			proxyUri = this.featureSettings.getJiraProxyUrl();
 			proxyPort = this.featureSettings.getJiraProxyPort();
 		}
-		JiraDataFactoryImpl jiraDataFactory = new JiraDataFactoryImpl(1000, jiraCredentials,
+		JiraDataFactoryImpl jiraDataFactory = new JiraDataFactoryImpl(pageSize, jiraCredentials,
 				jiraBaseUrl, proxyUri, proxyPort);
 		jiraDataFactory.setQuery(query);
 		boolean hasMore = true;
