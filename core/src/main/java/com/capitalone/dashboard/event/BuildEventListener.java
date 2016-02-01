@@ -68,6 +68,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
                     failedBuildCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Build.name(), successfulBuild.getTimestamp());
                     pipeline.addCommit(PipelineStageType.Build.name(), failedBuildCommit);
                 }
+                pipeline.getFailedBuilds().remove(b);
             }
         }
     }
