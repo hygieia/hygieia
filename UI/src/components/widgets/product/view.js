@@ -29,7 +29,7 @@
         ctrl.teamStageHasCommits = teamStageHasCommits;
         ctrl.getLatestBuildInfo = getLatestBuildInfo;
 
-        function setTeamSummaryMetrics(collectorItemId, field, data) {
+        function setTeamSummaryMetric(collectorItemId, field, data) {
             if(!teamSummaryMetrics[collectorItemId]) {
                 teamSummaryMetrics[collectorItemId] = {
                     codeCoverage: {
@@ -45,7 +45,7 @@
                     codeIssues: {
                         number: 0,
                         trendUp: true,
-                        successState: true
+                        successState: false
                     }
                 };
             }
@@ -121,25 +121,76 @@
                 componentId = team.application.components[0].id,
                 start = moment().subtract(90, 'days').format('x');
 
+            function getCaMetric(metrics, name, fallback) {
+                var val = fallback === undefined ? false : fallback;
+                _(metrics).filter({name:name}).forEach(function(item) {
+                    val = item.value;
+                });
+                return val;
+            }
 
+            // get latest build
             buildData
                 .details({componentId: componentId, max: 1})
                 .then(function(response) {
                     latestBuilds[collectorItemId] = response.result[0];
                 });
 
+            // get latest code coverage and issues metrics
             codeAnalysisData
                 .staticDetails({componentId: componentId, max:1})
                 .then(function(response) {
                     if(response.result[0] && response.result[0].metrics) {
-                        _(response.result[0].metrics).filter({name: 'line_coverage'}).forEach(function(item) {
-                            setTeamSummaryMetrics(collectorItemId, 'codeCoverage.number', Math.round(item.value));
+                        var metrics = response.result[0].metrics,
+                            lineCoverage = getCaMetric(metrics, 'line_coverage'),
+                            violations = getCaMetric(metrics, 'violations');
+
+                        if(lineCoverage !== false) {
+                            setTeamSummaryMetric(collectorItemId, 'codeCoverage.number', Math.round(lineCoverage));
+                        }
+
+                        if(violations !== false) {
+                            setTeamSummaryMetric(collectorItemId, 'codeIssues.number', violations);
+                        }
+                    }
+                });
+
+            // get trends for code coverage and issues
+            codeAnalysisData
+                .staticDetails({componentId: componentId, dateBegins: start})
+                .then(function(response) {
+
+                    // just need the issue and coverage metric values
+                    var data = _(response.result)
+                        .sortBy('timestamp')
+                        .map(function(result) {
+                            var daysAgo = -1 * moment().diff(result.timestamp, 'days'),
+                                codeIssues = getCaMetric(result.metrics, 'violations'),
+                                codeCoverage = getCaMetric(result.metrics, 'line_coverage');
+
+                            return {
+                                codeIssues: [daysAgo, codeIssues],
+                                codeCoverage: [daysAgo, codeCoverage]
+                            }
                         });
 
-                        _(response.result[0].metrics).filter({name: 'violations'}).forEach(function(item) {
-                            setTeamSummaryMetrics(collectorItemId, 'codeIssues.number', item.value);
-                        })
-                    }
+                    // get issues and coverage as their own array
+                    var codeIssues = data.pluck('codeIssues').value(),
+                        codeCoverage = data.pluck('codeCoverage').value();
+
+                    // get our regression data to determine the trend
+                    var codeIssuesResult = regression('linear', codeIssues),
+                        codeIssuesTrendUp = codeIssuesResult.equation[0] > 0;
+
+                    var codeCoverageResult = regression('linear', codeCoverage),
+                        codeCoverageTrendUp = codeCoverageResult.equation[0] > 0;
+
+                    // set the data
+                    setTeamSummaryMetric(collectorItemId, 'codeIssues.trendUp', codeIssuesTrendUp);
+                    setTeamSummaryMetric(collectorItemId, 'codeIssues.successState', !codeIssuesTrendUp);
+
+                    setTeamSummaryMetric(collectorItemId, 'codeCoverage.trendUp', codeCoverageTrendUp);
+                    setTeamSummaryMetric(collectorItemId, 'codeCoverage.successState', codeCoverageTrendUp);
                 });
 
             testSuiteData.details({componentId: componentId, max:1})
@@ -153,7 +204,36 @@
                     });
 
                     var testPassedPercent = totalTests ? totalPassed/totalTests : 0;
-                    setTeamSummaryMetrics(collectorItemId, 'functionalTestsPassed.number', Math.round(testPassedPercent));
+                    setTeamSummaryMetric(collectorItemId, 'functionalTestsPassed.number', Math.round(testPassedPercent));
+                });
+
+            testSuiteData.details({componentId: componentId, endDateBegins: start, endDateEnds:moment().format('x')})
+                .then(function(response) {
+                    var data = _(response.result)
+                        .sortBy('timestamp')
+                        .map(function(result) {
+                            var daysAgo = -1 * moment().diff(result.timestamp, 'days'),
+                                totalPassed = result.successCount || 0,
+                                totalTests = result.totalCount,
+                                percentPassed = totalTests ? totalPassed/totalTests : 0;
+
+                            return [daysAgo, percentPassed];
+                        }).value();
+
+                    var xs = [];
+                    var ys = [];
+                    _(data).forEach(function(d) {
+                        xs.push(d[0]);
+                        ys.push(d[1]);
+                    });
+                    console.log(xs.join(','));
+                    console.log(ys.join(','));
+
+                    var passedPercentResult = regression('linear', data),
+                        passedPercentTrendUp = passedPercentResult.equation[0] > 0;
+
+                    setTeamSummaryMetric(collectorItemId, 'functionalTestsPassed.trendUp', passedPercentTrendUp);
+                    setTeamSummaryMetric(collectorItemId, 'functionalTestsPassed.successState', passedPercentTrendUp);
                 });
         }
 
@@ -339,7 +419,7 @@
                     var average = moment.duration(stageData.stageAverageTime);
 
                     return {
-                        days: average.days(),
+                        days: Math.floor(average.asDays()),
                         hours: average.hours(),
                         minutes: average.minutes()
                     }
@@ -501,7 +581,7 @@
                             return a + b;
                         }) / commitTimeToProd.length;
 
-                        teamProdData.averageDays = moment.duration(averageDuration).days();
+                        teamProdData.averageDays = Math.floor(moment.duration(averageDuration)).asDays();
                     }
 
                     // set all the team data in a key that we can
