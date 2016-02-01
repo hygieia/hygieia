@@ -40,6 +40,7 @@ public class HudsonCollectorTaskTests {
     @InjectMocks private HudsonCollectorTask task;
 
     private static final String SERVER1 = "server1";
+    private static final String NICENAME1 = "niceName1";
 
     @Test
     public void collect_noBuildServers_nothingAdded() {
@@ -60,7 +61,7 @@ public class HudsonCollectorTaskTests {
 
     @Test
     public void collect_twoJobs_jobsAdded() {
-        when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(twoJobsWithTwoBuilds(SERVER1));
+        when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(twoJobsWithTwoBuilds(SERVER1, NICENAME1));
         when(dbComponentRepository.findAll()).thenReturn(components());
         task.collect(collectorWithOneServer());
 
@@ -70,7 +71,7 @@ public class HudsonCollectorTaskTests {
     @Test
     public void collect_oneJob_exists_notAdded() {
         HudsonCollector collector = collectorWithOneServer();
-        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL");
+        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job));
         when(hudsonJobRepository.findHudsonJob(collector.getId(), SERVER1, job.getJobName()))
                 .thenReturn(job);
@@ -84,7 +85,7 @@ public class HudsonCollectorTaskTests {
     @Test
     public void collect_jobNotEnabled_buildNotAdded() {
         HudsonCollector collector = collectorWithOneServer();
-        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL");
+        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
         Build build = build("JOB1_1", "JOB1_1_URL");
 
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
@@ -97,7 +98,7 @@ public class HudsonCollectorTaskTests {
     @Test
     public void collect_jobEnabled_buildExists_buildNotAdded() {
         HudsonCollector collector = collectorWithOneServer();
-        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL");
+        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
         Build build = build("JOB1_1", "JOB1_1_URL");
 
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
@@ -113,7 +114,7 @@ public class HudsonCollectorTaskTests {
     @Test
     public void collect_jobEnabled_newBuild_buildAdded() {
         HudsonCollector collector = collectorWithOneServer();
-        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL");
+        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
         Build build = build("JOB1_1", "JOB1_1_URL");
 
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
@@ -128,8 +129,7 @@ public class HudsonCollectorTaskTests {
     }
 
     private HudsonCollector collectorWithOneServer() {
-//        return HudsonCollector.prototype(SERVER1);
-        return null;
+        return HudsonCollector.prototype(Arrays.asList(SERVER1), Arrays.asList(NICENAME1));
     }
 
     private Map<HudsonJob, Set<Build>> oneJobWithBuilds(HudsonJob job, Build... builds) {
@@ -138,18 +138,19 @@ public class HudsonCollectorTaskTests {
         return jobs;
     }
 
-    private Map<HudsonJob, Set<Build>> twoJobsWithTwoBuilds(String server) {
+    private Map<HudsonJob, Set<Build>> twoJobsWithTwoBuilds(String server, String niceName) {
         Map<HudsonJob, Set<Build>> jobs = new HashMap<>();
-        jobs.put(hudsonJob("JOB1", server, "JOB1_URL"), Sets.newHashSet(build("JOB1_1", "JOB1_1_URL"), build("JOB1_2", "JOB1_2_URL")));
-        jobs.put(hudsonJob("JOB2", server, "JOB2_URL"), Sets.newHashSet(build("JOB2_1", "JOB2_1_URL"), build("JOB2_2", "JOB2_2_URL")));
+        jobs.put(hudsonJob("JOB1", server, "JOB1_URL", niceName), Sets.newHashSet(build("JOB1_1", "JOB1_1_URL"), build("JOB1_2", "JOB1_2_URL")));
+        jobs.put(hudsonJob("JOB2", server, "JOB2_URL", niceName), Sets.newHashSet(build("JOB2_1", "JOB2_1_URL"), build("JOB2_2", "JOB2_2_URL")));
         return jobs;
     }
 
-    private HudsonJob hudsonJob(String jobName, String instanceUrl, String jobUrl) {
+    private HudsonJob hudsonJob(String jobName, String instanceUrl, String jobUrl, String niceName) {
         HudsonJob job = new HudsonJob();
         job.setJobName(jobName);
         job.setInstanceUrl(instanceUrl);
         job.setJobUrl(jobUrl);
+        job.setNiceName(niceName);
         return job;
     }
 
