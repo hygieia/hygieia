@@ -30,7 +30,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
         if(build.getBuildStatus().equals(BuildStatus.Success)){
             processBuild(event.getSource());
         }
-        else{
+        else if(build.getBuildStatus().equals(BuildStatus.Failure)){
             processFailedBuild(event.getSource());
         }
     }
