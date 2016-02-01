@@ -70,7 +70,7 @@ public class PipelineServiceImpl implements PipelineService {
             Map<String, PipelineCommit> commitMap = commitsMapByStage.get(stageType);
             //if this commit doesnt have a processed timestamp for this stage, add one
             PipelineCommit pipelineCommit = commitMap.get(commit.getCommit().getScmRevisionNumber());
-            if(pipelineCommit != null && !commit.getProcessedTimestamps().containsKey(stageType)){
+            if(pipelineCommit != null && !commit.getProcessedTimestamps().containsKey(stageType.name())){
                 Long timestamp = pipelineCommit.getProcessedTimestamps().get(stageType);
                 commit.addNewPipelineProcessedTimestamp(stageType.name(), timestamp);
             }
