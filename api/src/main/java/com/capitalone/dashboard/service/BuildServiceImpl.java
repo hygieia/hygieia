@@ -9,6 +9,7 @@ import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.capitalone.dashboard.request.CollectorRequest;
 import com.mysema.query.BooleanBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -121,7 +122,7 @@ public class BuildServiceImpl implements BuildService {
         return collectorService.createCollector(col);
     }
 
-    private CollectorItem createCollectorItem(Collector collector, BuildDataCreateRequest request) {
+    private CollectorItem createCollectorItem(Collector collector, BuildDataCreateRequest request) throws HygieiaException {
         CollectorItem tempCi = new CollectorItem();
         tempCi.setCollectorId(collector.getId());
         tempCi.setDescription(request.getJobName());
@@ -131,10 +132,12 @@ public class BuildServiceImpl implements BuildService {
         option.put("jobName", request.getJobName());
         option.put("jobUrl", request.getJobUrl());
         option.put("instanceUrl", request.getInstanceUrl());
+        tempCi.setNiceName(request.getNiceName());
         tempCi.getOptions().putAll(option);
-
-        CollectorItem collectorItem = collectorService.createCollectorItem(tempCi);
-        return collectorItem;
+        if (StringUtils.isEmpty(tempCi.getNiceName())) {
+            return collectorService.createCollectorItem(tempCi);
+        }
+        return collectorService.createCollectorItemByNiceName(tempCi);
     }
 
     private Build createBuild(CollectorItem collectorItem, BuildDataCreateRequest request) {

@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -13,6 +14,7 @@ import com.google.common.collect.Lists;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -95,6 +97,26 @@ public class CollectorServiceImpl implements CollectorService {
         if (existing != null) {
             item.setId(existing.getId());
         }
+        return collectorItemRepository.save(item);
+    }
+
+    @Override
+    public CollectorItem createCollectorItemByNiceName(CollectorItem item) throws HygieiaException {
+        //Try to find a matching by collector ID and niceName.
+        List<CollectorItem> existing = collectorItemRepository.findByCollectorIdAndNiceName(item.getCollectorId(), item.getNiceName());
+
+        //if not found, call the method to look up by collector ID and options. NiceName would be saved too
+        if (CollectionUtils.isEmpty(existing)) return createCollectorItem(item);
+
+        //if there are more than one found matching nice name, throw. This should be done by declaring niceName as unique, but
+        // have to do this for backward compatibility.
+        if (existing.size() > 1)
+            throw new HygieiaException("Multiple collector items found with the same name: " + item.getNiceName(), HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
+
+        //Flow is here because there is only one collector item with the same collector id and niceName. So, update with
+        // the new info - keep the same collector item id. Save here = Update or Insert.
+        item.setId(existing.get(0).getId());
+
         return collectorItemRepository.save(item);
     }
 

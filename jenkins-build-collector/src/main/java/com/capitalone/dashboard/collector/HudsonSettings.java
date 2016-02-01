@@ -16,6 +16,7 @@ public class HudsonSettings {
     private String cron;
     private boolean saveLog = false;
     private List<String> servers;
+    private List<String> niceNames;
     private String username;
     private String apiKey;
 
@@ -59,4 +60,11 @@ public class HudsonSettings {
         this.apiKey = apiKey;
     }
 
+    public List<String> getNiceNames() {
+        return niceNames;
+    }
+
+    public void setNiceNames(List<String> niceNames) {
+        this.niceNames = niceNames;
+    }
 }

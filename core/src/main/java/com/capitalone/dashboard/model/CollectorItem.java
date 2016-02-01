@@ -24,6 +24,7 @@ import java.util.Map;
 public class CollectorItem extends BaseModel {
 
     private String description;
+    private String niceName;
     private boolean enabled;
     private boolean pushed;
     private ObjectId collectorId;
@@ -83,5 +84,13 @@ public class CollectorItem extends BaseModel {
 
     public void setLastUpdated(long lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getNiceName() {
+        return niceName;
+    }
+
+    public void setNiceName(String niceName) {
+        this.niceName = niceName;
     }
 }

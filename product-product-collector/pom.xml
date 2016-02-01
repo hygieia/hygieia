@@ -1,12 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.capitalone.dashboard</groupId>
-	<artifactId>stash-scm-collector</artifactId>
+	<artifactId>product-product-collector</artifactId>
 	<packaging>jar</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>Stash Collector Microservice collecting stats from Stash</description>
+	<description>ProductCollector Microservice</description>
 	<url>https://github.com/capitalone/Hygieia</url>
-
 
 	<parent>
 		<groupId>com.capitalone.dashboard</groupId>
@@ -14,16 +13,17 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
+
 	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
 	<!-- Package as an executable jar -->
 	<build>
@@ -44,7 +44,6 @@
 	<properties>
 		<java.version>1.7</java.version>
 	</properties>
-
 
 	<dependencies>
 		<!-- Project Deps -->
@@ -88,19 +87,7 @@
 			<version>2.4</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-		</dependency>
+
 	</dependencies>
 
 </project>
