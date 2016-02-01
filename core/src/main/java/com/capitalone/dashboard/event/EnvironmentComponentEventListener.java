@@ -45,30 +45,25 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
     }
 
     private void processEnvironmentComponent(EnvironmentComponent environmentComponent) {
-        List<SCM> changeSet = getScmChangeSetForEnvironmentComponent(environmentComponent);
         List<Dashboard> dashboards = findTeamDashboardsForEnvironmentComponent(environmentComponent);
 
         for (Dashboard dashboard : dashboards) {
             Pipeline pipeline = getOrCreatePipeline(dashboard);
-
-            for (SCM scm : changeSet) {
-                //todo: this needs to be fixed...
-                PipelineCommit commit = new PipelineCommit(scm);
-                pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
-            }
+            addCommitsToEnvironmentStage(environmentComponent, pipeline);
             pipelineRepository.save(pipeline);
         }
 
     }
 
-
-    //// TODO: 1/27/16 Verify: is the logic here correct?
-    private List<SCM> getScmChangeSetForEnvironmentComponent(EnvironmentComponent environmentComponent){
-        List<SCM> changeSet = new ArrayList<>();
+    private void addCommitsToEnvironmentStage(EnvironmentComponent environmentComponent, Pipeline pipeline){
         Iterable<BinaryArtifact> artifacts = binaryArtifactRepository.findByArtifactNameAndArtifactVersion(environmentComponent.getComponentName(), environmentComponent.getComponentVersion());
         for(BinaryArtifact artifact : artifacts){
+            for(SCM scm : artifact.getBuildInfo().getSourceChangeSet()){
+                PipelineCommit commit = new PipelineCommit(scm);
+                commit.addNewPipelineProcessedTimestamp(environmentComponent.getEnvironmentName(), environmentComponent.getAsOfDate());
+                pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
+            }
         }
-        return changeSet;
     }
 
     private List<Dashboard> findTeamDashboardsForEnvironmentComponent(EnvironmentComponent environmentComponent){
