@@ -7,7 +7,6 @@ import com.capitalone.dashboard.repository.PipelineRepository;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 
-import java.util.AbstractMap;
 import java.util.List;
 
 public abstract class HygieiaMongoEventListener<T> extends AbstractMongoEventListener<T> {

@@ -36,4 +36,8 @@ public interface EnvironmentComponentRepository extends CrudRepository<Environme
 
     @Query(value="{ 'collectorItemId': ?0, 'componentName': ?1, 'componentVersion': ?2, 'deployed':true}")
     List<EnvironmentComponent> findDeployedByCollectorItemIdAndComponentNameAndComponentVersion(ObjectId dashboardCollectorItemId, String componentName, String componentVersion);
+
+    @Query(value="{ 'collectorItemId': ?0, 'componentName': ?1, 'componentVersion': ?2, 'deployTime':?3}")
+    EnvironmentComponent findByUniqueKey(ObjectId collectorItemId, String componentName, String componentVersion, long deployTime);
+
 }

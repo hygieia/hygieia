@@ -18,6 +18,7 @@ public class EnvironmentComponent extends BaseModel {
 	private String componentName;
     private String componentVersion;
     private boolean deployed;
+    private long deployTime;
     private long asOfDate;
 
 
@@ -85,5 +86,13 @@ public class EnvironmentComponent extends BaseModel {
 
     public void setAsOfDate(long asOfDate) {
         this.asOfDate = asOfDate;
+    }
+
+    public long getDeployTime() {
+        return deployTime;
+    }
+
+    public void setDeployTime(long deployTime) {
+        this.deployTime = deployTime;
     }
 }
