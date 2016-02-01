@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +14,9 @@ import java.util.List;
 @org.springframework.stereotype.Component
 public class EnvironmentComponentEventListener extends HygieiaMongoEventListener<EnvironmentComponent> {
 
-    private DashboardRepository dashboardRepository;
-    private CollectorItemRepository collectorItemRepository;
-    private ComponentRepository componentRepository;
-    private BinaryArtifactRepository binaryArtifactRepository;
-    private PipelineRepository pipelineRepository;
-    private CollectorRepository collectorRepository;
+    private final DashboardRepository dashboardRepository;
+    private final ComponentRepository componentRepository;
+    private final BinaryArtifactRepository binaryArtifactRepository;
 
     @Autowired
     public EnvironmentComponentEventListener(DashboardRepository dashboardRepository,
@@ -30,13 +26,10 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
                               BinaryArtifactRepository binaryArtifactRepository,
                               PipelineRepository pipelineRepository,
                               CollectorRepository collectorRepository) {
-
+        super(collectorItemRepository, pipelineRepository, collectorRepository);
         this.dashboardRepository = dashboardRepository;
-        this.collectorItemRepository = collectorItemRepository;
         this.componentRepository = componentRepository;
         this.binaryArtifactRepository = binaryArtifactRepository;
-        this.pipelineRepository = pipelineRepository;
-        this.collectorRepository = collectorRepository;
     }
 
     @Override
@@ -56,9 +49,7 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         List<Dashboard> dashboards = findTeamDashboardsForEnvironmentComponent(environmentComponent);
 
         for (Dashboard dashboard : dashboards) {
-            CollectorItem teamDashboardCollectorItem = getTeamDashboardCollectorItem(dashboard);
-            AbstractMap.SimpleEntry<Dashboard, CollectorItem> dashboardPair = new AbstractMap.SimpleEntry(dashboard, teamDashboardCollectorItem);
-            Pipeline pipeline = getOrCreatePipeline(dashboardPair);
+            Pipeline pipeline = getOrCreatePipeline(dashboard);
 
             for (SCM scm : changeSet) {
                 //todo: this needs to be fixed...
@@ -74,7 +65,7 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
     //// TODO: 1/27/16 Verify: is the logic here correct?
     private List<SCM> getScmChangeSetForEnvironmentComponent(EnvironmentComponent environmentComponent){
         List<SCM> changeSet = new ArrayList<>();
-        List<BinaryArtifact> artifacts = (List)binaryArtifactRepository.findByArtifactNameAndArtifactVersion(environmentComponent.getComponentName(), environmentComponent.getComponentVersion());
+        Iterable<BinaryArtifact> artifacts = binaryArtifactRepository.findByArtifactNameAndArtifactVersion(environmentComponent.getComponentName(), environmentComponent.getComponentVersion());
         for(BinaryArtifact artifact : artifacts){
         }
         return changeSet;
@@ -91,21 +82,5 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         }
         dashboards = dashboardRepository.findDashboardsByApplicationComponentIds(componentObjectIds);
         return dashboards;
-    }
-
-
-    @Override
-    protected CollectorItemRepository getCollectorItemRepository() {
-        return this.collectorItemRepository;
-    }
-
-    @Override
-    protected CollectorRepository getCollectorRepository() {
-        return this.collectorRepository;
-    }
-
-    @Override
-    protected PipelineRepository getPipelineRepository() {
-        return this.pipelineRepository;
     }
 }

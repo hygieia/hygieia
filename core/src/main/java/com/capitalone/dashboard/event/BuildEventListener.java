@@ -2,55 +2,34 @@ package com.capitalone.dashboard.event;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Component
 public class BuildEventListener extends HygieiaMongoEventListener<Build> {
-    private static final Logger LOG = LoggerFactory.getLogger(BuildEventListener.class);
 
-    private DashboardRepository dashboardRepository;
-    private CollectorItemRepository collectorItemRepository;
-    private ComponentRepository componentRepository;
-    private EnvironmentComponentRepository environmentComponentRepository;
-    private BinaryArtifactRepository binaryArtifactRepository;
-    private PipelineRepository pipelineRepository;
-    private CollectorRepository collectorRepository;
+    private final DashboardRepository dashboardRepository;
+    private final ComponentRepository componentRepository;
 
     @Autowired
     public BuildEventListener(DashboardRepository dashboardRepository,
                               CollectorItemRepository collectorItemRepository,
                               ComponentRepository componentRepository,
-                              EnvironmentComponentRepository environmentComponentRepository,
-                              BinaryArtifactRepository binaryArtifactRepository,
                               PipelineRepository pipelineRepository,
                               CollectorRepository collectorRepository) {
-
+        super(collectorItemRepository, pipelineRepository, collectorRepository);
         this.dashboardRepository = dashboardRepository;
-        this.collectorItemRepository = collectorItemRepository;
         this.componentRepository = componentRepository;
-        this.environmentComponentRepository = environmentComponentRepository;
-        this.binaryArtifactRepository = binaryArtifactRepository;
-        this.pipelineRepository = pipelineRepository;
-        this.collectorRepository = collectorRepository;
     }
 
     @Override
     public void onAfterSave(AfterSaveEvent<Build> event) {
-        super.onAfterSave(event);
-        LOG.debug("Build saved: " + event.getSource().getNumber());
         Build build = event.getSource();
         if(build.getBuildStatus().equals(BuildStatus.Success)){
             processBuild(event.getSource());
         }
-
     }
 
 
@@ -59,8 +38,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
 
         //for every team dashboard referencing the build, find the pipeline, put this commit in the build stage
         for(Dashboard teamDashboard : teamDashboardsReferencingBuild){
-            CollectorItem teamDashboardCollectorItem = getTeamDashboardCollectorItem(teamDashboard);
-            Pipeline pipeline = getOrCreatePipeline(new AbstractMap.SimpleEntry<>(teamDashboard, teamDashboardCollectorItem));
+            Pipeline pipeline = getOrCreatePipeline(teamDashboard);
             for(SCM scm : build.getSourceChangeSet()){
                 PipelineCommit commit = new PipelineCommit(scm);
                 commit.addNewPipelineProcessedTimestamp(PipelineStageType.Build, build.getTimestamp());
@@ -68,33 +46,6 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
             }
             pipelineRepository.save(pipeline);
         }
-    }
-
-
-
-    /**
-     *
-     * @param build
-     * @param teamDashboardCollectorItem
-     * @return
-     */
-    private boolean isBuildDeployed(Build build, CollectorItem teamDashboardCollectorItem) {
-        boolean deployed = false;
-        for(BinaryArtifact artifact : findAllBinaryArtifactsForBuild(build))
-        {
-            List<EnvironmentComponent> environmentComponentsForArtifact = environmentComponentRepository
-                    .findDeployedByCollectorItemIdAndComponentNameAndComponentVersion(teamDashboardCollectorItem.getId(),
-                            artifact.getArtifactName(), artifact.getArtifactVersion());
-            if(environmentComponentsForArtifact != null && !environmentComponentsForArtifact.isEmpty()){
-                deployed = true;
-                break;
-            }
-        }
-        return deployed;
-    }
-
-    private List<BinaryArtifact> findAllBinaryArtifactsForBuild(Build build){
-        return (List)binaryArtifactRepository.findByCollectorItemId(build.getCollectorItemId());
     }
 
     /**
@@ -109,25 +60,6 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
     private List<Dashboard> findAllDashboardsForBuild(Build build){
         CollectorItem buildCollectorItem = collectorItemRepository.findOne(build.getCollectorItemId());
         List<Component> components = componentRepository.findByBuildCollectorItemId(buildCollectorItem.getId());
-        List<ObjectId> buildComponentObjectIds = new ArrayList<>();
-        for(Component c : components){
-            buildComponentObjectIds.add(c.getId());
-        }
-        return dashboardRepository.findDashboardsByApplicationComponentIds(buildComponentObjectIds);
-    }
-
-    @Override
-    protected CollectorItemRepository getCollectorItemRepository() {
-        return this.collectorItemRepository;
-    }
-
-    @Override
-    protected CollectorRepository getCollectorRepository() {
-        return this.collectorRepository;
-    }
-
-    @Override
-    protected PipelineRepository getPipelineRepository() {
-        return this.pipelineRepository;
+        return dashboardRepository.findByApplicationComponents(components);
     }
 }

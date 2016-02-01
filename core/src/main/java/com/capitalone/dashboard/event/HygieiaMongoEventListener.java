@@ -12,8 +12,20 @@ import java.util.List;
 
 public abstract class HygieiaMongoEventListener<T> extends AbstractMongoEventListener<T> {
 
+    protected final CollectorItemRepository collectorItemRepository;
+    protected final PipelineRepository pipelineRepository;
+    protected final CollectorRepository collectorRepository;
+
+    public HygieiaMongoEventListener(CollectorItemRepository collectorItemRepository,
+                                     PipelineRepository pipelineRepository,
+                                     CollectorRepository collectorRepository) {
+        this.collectorItemRepository = collectorItemRepository;
+        this.pipelineRepository = pipelineRepository;
+        this.collectorRepository = collectorRepository;
+    }
+
     private Collector getProductCollector(){
-        List<Collector> productCollectors = getCollectorRepository().findByCollectorType(CollectorType.Product);
+        List<Collector> productCollectors = collectorRepository.findByCollectorType(CollectorType.Product);
         if(productCollectors.isEmpty()){
             return null;
         }
@@ -23,21 +35,20 @@ public abstract class HygieiaMongoEventListener<T> extends AbstractMongoEventLis
     protected CollectorItem getTeamDashboardCollectorItem(Dashboard teamDashboard) {
         ObjectId productCollectorId = getProductCollector().getId();
         ObjectId dashboardId = teamDashboard.getId();
-        return getCollectorItemRepository().findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(productCollectorId, dashboardId.toString());
+        return collectorItemRepository.findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(productCollectorId, dashboardId.toString());
     }
 
-    protected Pipeline getOrCreatePipeline(AbstractMap.SimpleEntry<Dashboard, CollectorItem> dashboard) {
-        Pipeline pipeline = getPipelineRepository().findByCollectorItemId(dashboard.getValue().getId());
+    protected Pipeline getOrCreatePipeline(Dashboard teamDashboard) {
+        CollectorItem teamDashboardCollectorItem = getTeamDashboardCollectorItem(teamDashboard);
+        return getOrCreatePipeline(teamDashboardCollectorItem);
+    }
+
+    protected Pipeline getOrCreatePipeline(CollectorItem collectorItem) {
+        Pipeline pipeline = pipelineRepository.findByCollectorItemId(collectorItem.getId());
         if(pipeline == null){
             pipeline = new Pipeline();
-            pipeline.setCollectorItemId(dashboard.getValue().getId());
+            pipeline.setCollectorItemId(collectorItem.getId());
         }
         return pipeline;
     }
-
-    protected abstract CollectorItemRepository getCollectorItemRepository();
-    protected abstract CollectorRepository getCollectorRepository();
-    protected abstract PipelineRepository getPipelineRepository();
-
-
 }
