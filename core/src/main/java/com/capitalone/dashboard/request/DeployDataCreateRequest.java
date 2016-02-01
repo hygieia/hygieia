@@ -25,7 +25,7 @@ public class DeployDataCreateRequest {
     private long startTime;
 
     private String artifactGroup;
-
+    private String hygieiaId;
     private long endTime;
     private long duration;
     private String startedBy;
@@ -141,5 +141,13 @@ public class DeployDataCreateRequest {
 
     public void setStartedBy(String startedBy) {
         this.startedBy = startedBy;
+    }
+
+    public String getHygieiaId() {
+        return hygieiaId;
+    }
+
+    public void setHygieiaId(String hygieiaId) {
+        this.hygieiaId = hygieiaId;
     }
 }
