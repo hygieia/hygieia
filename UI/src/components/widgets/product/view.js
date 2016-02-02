@@ -165,31 +165,19 @@
         //endregion
 
         //region public data method implementations
-        function setTeamData(collectorItemId, field, data) {
-            var teamIndex = false,
-                team = false;
+        function setTeamData(collectorItemId, data) {
+            var team = false,
+                idx = false;
 
             _(ctrl.configuredTeams).filter({'collectorItemId': collectorItemId}).forEach(function (configuredTeam, i) {
-                teamIndex = i;
+                idx = i;
                 team = configuredTeam;
             });
 
-            if(!team) {
-                return;
-            }
+            if(!team) { return; }
 
-            var fields = field.split('.');
-            if(fields.length == 1) {
-                team[field] = data;
-            }
-            else if (fields.length == 2) {
-                team[fields[0]][fields[1]] = data;
-            }
-            else if (fields.length == 3) {
-                team[fields[0]][fields[1]][fields[2]] = data;
-            }
-
-            //ctrl.configuredTeams[teamIndex] = team;
+            team = deepmerge(team, data);
+            ctrl.configuredTeams[idx] = team;
         }
 
         function getTeamDashboardDetails(teams) {
@@ -240,7 +228,7 @@
             buildData
                 .details({componentId: componentId, max: 1})
                 .then(function(response) {
-                    setTeamData(collectorItemId, 'latestBuild', response.result[0]);
+                    setTeamData(collectorItemId, {latestBuild: response.result[0]})
                 });
 
             // get latest code coverage and issues metrics
@@ -252,13 +240,16 @@
                             lineCoverage = getCaMetric(metrics, 'line_coverage'),
                             violations = getCaMetric(metrics, 'violations');
 
-                        if(lineCoverage !== false) {
-                            setTeamData(collectorItemId, 'summary.codeCoverage.number', Math.round(lineCoverage));
-                        }
-
-                        if(violations !== false) {
-                            setTeamData(collectorItemId, 'summary.codeIssues.number', violations);
-                        }
+                        setTeamData(collectorItemId, {
+                            summary: {
+                                codeIssues: {
+                                    number: violations
+                                },
+                                codeCoverage: {
+                                    number: Math.round(lineCoverage)
+                                }
+                            }
+                        });
                     }
                 });
 
@@ -293,11 +284,19 @@
                         codeCoverageTrendUp = codeCoverageResult.equation[0] > 0;
 
                     // set the data
-                    setTeamData(collectorItemId, 'summary.codeIssues.trendUp', codeIssuesTrendUp);
-                    setTeamData(collectorItemId, 'summary.codeIssues.successState', !codeIssuesTrendUp);
 
-                    setTeamData(collectorItemId, 'summary.codeCoverage.trendUp', codeCoverageTrendUp);
-                    setTeamData(collectorItemId, 'summary.codeCoverage.successState', codeCoverageTrendUp);
+                    setTeamData(collectorItemId, {
+                        summary: {
+                            codeIssues: {
+                                trendUp: codeIssuesTrendUp,
+                                successState: !codeIssuesTrendUp
+                            },
+                            codeCoverage: {
+                                trendUp: codeCoverageTrendUp,
+                                successState: codeCoverageTrendUp
+                            }
+                        }
+                    });
                 });
 
             // calculate the current state for percent tests passed
@@ -312,7 +311,7 @@
                     });
 
                     var testPassedPercent = totalTests ? totalPassed/totalTests : 0;
-                    setTeamData(collectorItemId, 'summary.functionalTestsPassed.number', Math.round(testPassedPercent));
+                    setTeamData(collectorItemId, {summary:{functionalTestsPassed:{number: Math.round(testPassedPercent)}}});
                 });
 
             // calculate trend for percent of tests passed
@@ -332,8 +331,14 @@
                     var passedPercentResult = regression('linear', data),
                         passedPercentTrendUp = passedPercentResult.equation[0] > 0;
 
-                    setTeamData(collectorItemId, 'summary.functionalTestsPassed.trendUp', passedPercentTrendUp);
-                    setTeamData(collectorItemId, 'summary.functionalTestsPassed.successState', passedPercentTrendUp);
+                    setTeamData(collectorItemId, {
+                        summary: {
+                            functionalTestsPassed: {
+                                trendUp: passedPercentTrendUp,
+                                successState: passedPercentTrendUp
+                            }
+                        }
+                    });
                 });
         }
 
@@ -596,8 +601,10 @@
                         teamProdData.trendUp = averageToProdResult.equation[0] > 0;
                     }
 
-                    setTeamData(team.collectorItemId, 'stages', teamStageData);
-                    setTeamData(team.collectorItemId, 'prod', teamProdData);
+                    setTeamData(team.collectorItemId, {
+                        stages: teamStageData,
+                        prod: teamProdData
+                    });
                 });
             });
         }
