@@ -28,18 +28,18 @@ The following components are required to run Hygieia:
          switched to db dashboardb
          > db.createUser(
                   {
-                    user: "dashboarduser",
-                    pwd: "1qazxSw2",
+                    user: "db",
+                    pwd: "dbpass",
                     roles: [
-                       {role: "readWrite", db: "dashboarddb"}
+                       {role: "readWrite", db: "dashboard"}
                             ]
                     })
                 Successfully added user: {
-                  "user" : "dashboarduser",
+                  "user" : "db",
                   "roles" : [
                   {
                     "role" : "readWrite",
-                    "db" : "dashboarddb"
+                    "db" : "dashboard"
                   }
                   ]
                 }  
