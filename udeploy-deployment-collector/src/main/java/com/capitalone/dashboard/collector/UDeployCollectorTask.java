@@ -120,7 +120,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
             }
         }
         List<UDeployApplication> appList = new ArrayList<>();
-        Set<ObjectId> udId = new HashSet< >();
+        Set<ObjectId> udId = new HashSet<>();
         udId.add(collector.getId());
         for (UDeployApplication app : uDeployApplicationRepository.findByCollectorIdIn(udId)) {
             if (app != null) {

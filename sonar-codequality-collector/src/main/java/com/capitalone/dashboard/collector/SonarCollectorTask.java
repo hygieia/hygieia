@@ -16,7 +16,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,6 +33,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     private final SonarClient sonarClient;
     private final SonarSettings sonarSettings;
     private final ComponentRepository dbComponentRepository;
+    private final static int CLEANUP_INTERVAL = 3600000;
 
     @Autowired
     public SonarCollectorTask(TaskScheduler taskScheduler,
@@ -71,86 +71,62 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     public void collect(SonarCollector collector) {
         long start = System.currentTimeMillis();
 
-        Set<ObjectId> udId = new HashSet<>();
-        udId.add(collector.getId());
-        List<SonarProject> existingProjects = sonarProjectRepository.findByCollectorIdIn(udId);
-        List<SonarProject> latestProjects = new ArrayList<>();
-        clean(collector, existingProjects);
-
+		// Clean up every hour
+		if ((start - collector.getLastExecuted()) > CLEANUP_INTERVAL) {
+			clean(collector);
+		}
         for (String instanceUrl : collector.getSonarServers()) {
             logBanner(instanceUrl);
 
+
             List<SonarProject> projects = sonarClient.getProjects(instanceUrl);
-            latestProjects.addAll(projects);
-
             int projSize = ((projects != null) ? projects.size() : 0);
-            log("Fetched projects   " + projSize, start);
+            log("Fetched projects   " + projSize , start);
 
-            addNewProjects(projects, existingProjects, collector);
+            addNewProjects(projects, collector);
 
             refreshData(enabledProjects(collector, instanceUrl));
 
             log("Finished", start);
         }
-        deleteUnwantedJobs(latestProjects, existingProjects, collector);
     }
 
 
-    /**
-     * Clean up unused sonar collector items
-     *
-     * @param collector the {@link SonarCollector}
-     */
+	/**
+	 * Clean up unused sonar collector items
+	 *
+	 * @param collector
+	 *            the {@link HudsonCollector}
+	 */
 
     @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed PMD, fixme
-    private void clean(SonarCollector collector, List<SonarProject> existingProjects) {
-        Set<ObjectId> uniqueIDs = new HashSet<>();
-        for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
-                .findAll()) {
-            if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
-                List<CollectorItem> itemList = comp.getCollectorItems().get(
-                        CollectorType.CodeQuality);
-                if (itemList != null) {
-                    for (CollectorItem ci : itemList) {
-                        if (ci != null && ci.getCollectorId().equals(collector.getId())) {
-                            uniqueIDs.add(ci.getId());
-                        }
-                    }
-                }
-            }
-        }
-        List<SonarProject> stateChangeJobList = new ArrayList<>();
-        Set<ObjectId> udId = new HashSet<>();
-        udId.add(collector.getId());
-        for (SonarProject job : existingProjects) {
-            // collect the jobs that need to change state : enabled vs disabled.
-            if ((job.isEnabled() && !uniqueIDs.contains(job.getId())) ||  // if it was enabled but not on a dashboard
-                    (!job.isEnabled() && uniqueIDs.contains(job.getId()))) { // OR it was disabled and now on a dashboard
-                job.setEnabled(uniqueIDs.contains(job.getId()));
-                stateChangeJobList.add(job);
-            }
-        }
-        if (!CollectionUtils.isEmpty(stateChangeJobList)) {
-            sonarProjectRepository.save(stateChangeJobList);
-        }
-    }
-
-
-    private void deleteUnwantedJobs(List<SonarProject> latestProjects, List<SonarProject> existingProjects, SonarCollector collector) {
-        List<SonarProject> deleteJobList = new ArrayList<>();
-
-        // First delete collector items that are not supposed to be collected anymore because the servers have moved(?)
-        for (SonarProject job : existingProjects) {
-            if (!collector.getSonarServers().contains(job.getInstanceUrl()) ||
-                    (!job.getCollectorId().equals(collector.getId())) ||
-                    (!latestProjects.contains(job))) {
-                deleteJobList.add(job);
-            }
-        }
-        if (!CollectionUtils.isEmpty(deleteJobList)) {
-            sonarProjectRepository.delete(deleteJobList);
-        }
-    }
+	private void clean(SonarCollector collector) {
+		Set<ObjectId> uniqueIDs = new HashSet<>();
+		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
+				.findAll()) {
+			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
+				List<CollectorItem> itemList = comp.getCollectorItems().get(
+						CollectorType.CodeQuality);
+				if (itemList != null) {
+					for (CollectorItem ci : itemList) {
+						if (ci != null && ci.getCollectorId().equals(collector.getId())){
+							uniqueIDs.add(ci.getId());
+						}
+					}
+				}
+			}
+		}
+		List<SonarProject> jobList = new ArrayList<>();
+		Set<ObjectId> udId = new HashSet<>();
+		udId.add(collector.getId());
+		for (SonarProject job : sonarProjectRepository.findByCollectorIdIn(udId)) {
+			if (job != null) {
+				job.setEnabled(uniqueIDs.contains(job.getId()));
+				jobList.add(job);
+			}
+		}
+		sonarProjectRepository.save(jobList);
+	}
 
     private void refreshData(List<SonarProject> sonarProjects) {
         long start = System.currentTimeMillis();
@@ -164,6 +140,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
                 count++;
             }
         }
+
         log("Updated", start, count);
     }
 
@@ -171,22 +148,19 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         return sonarProjectRepository.findEnabledProjects(collector.getId(), instanceUrl);
     }
 
-    private void addNewProjects(List<SonarProject> projects, List<SonarProject> existingProjects, SonarCollector collector) {
+    private void addNewProjects(List<SonarProject> projects, SonarCollector collector) {
         long start = System.currentTimeMillis();
         int count = 0;
-        List<SonarProject> newProjects = new ArrayList<>();
+
         for (SonarProject project : projects) {
-            if (!existingProjects.contains(project)) {
+
+            if (isNewProject(collector, project)) {
                 project.setCollectorId(collector.getId());
                 project.setEnabled(false);
                 project.setDescription(project.getProjectName());
-                newProjects.add(project);
+                sonarProjectRepository.save(project);
                 count++;
             }
-        }
-        //save all in one shot
-        if (!CollectionUtils.isEmpty(newProjects)) {
-            sonarProjectRepository.save(newProjects);
         }
         log("New projects", start, count);
     }

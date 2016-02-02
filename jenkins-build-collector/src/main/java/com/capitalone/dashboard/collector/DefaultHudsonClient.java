@@ -24,8 +24,6 @@ import org.springframework.web.client.RestOperations;
 
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -79,7 +77,6 @@ public class DefaultHudsonClient implements HudsonClient {
         this.settings = settings;
     }
 
-    @SuppressWarnings("PMD.D")
     @Override
     public Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl) {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
@@ -95,39 +92,21 @@ public class DefaultHudsonClient implements HudsonClient {
                 for (Object job : getJsonArray(object, "jobs")) {
                     JSONObject jsonJob = (JSONObject) job;
 
-                    final String jobName = getString(jsonJob, "name");
-                    final String jobURL = getString(jsonJob, "url");
-                    LOG.debug("Job:" + jobName);
-                    LOG.debug("jobURL: " + jobURL);
                     HudsonJob hudsonJob = new HudsonJob();
                     hudsonJob.setInstanceUrl(instanceUrl);
-                    hudsonJob.setJobName(jobName);
-                    hudsonJob.setJobUrl(jobURL);
+                    hudsonJob.setJobName(getString(jsonJob, "name"));
+                    hudsonJob.setJobUrl(getString(jsonJob, "url"));
 
                     Set<Build> builds = new LinkedHashSet<>();
                     for (Object build : getJsonArray(jsonJob, "builds")) {
                         JSONObject jsonBuild = (JSONObject) build;
 
                         // A basic Build object. This will be fleshed out later if this is a new Build.
-                        String dockerLocalHostIP = settings.getDockerLocalHostIP();
-                        String buildNumber = jsonBuild.get("number").toString();                        
+                        String buildNumber = jsonBuild.get("number").toString();
                         if (!buildNumber.equals("0")) {
                             Build hudsonBuild = new Build();
                             hudsonBuild.setNumber(buildNumber);
-                            String buildURL = getString(jsonBuild, "url");
-                            
-                            	//Modify localhost if Docker Natting is being done
-		                    if ( ! dockerLocalHostIP.isEmpty() )
-		                    {
-		                    	buildURL = buildURL.replace("localhost", dockerLocalHostIP);
-		                        LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
-		                    }
-		                    else
-		                    {
-		                    	LOG.debug(" Adding Build: " + buildURL);
-		                    }
-		                    
-                            hudsonBuild.setBuildUrl(buildURL);
+                            hudsonBuild.setBuildUrl(getString(jsonBuild, "url"));
                             builds.add(hudsonBuild);
                         }
                     }
@@ -139,7 +118,6 @@ public class DefaultHudsonClient implements HudsonClient {
             }
         } catch (RestClientException rce) {
             LOG.error("client exception loading jobs", rce);
-            throw rce;
         } catch (MalformedURLException mfe) {
             LOG.error("malformed url for loading jobs", mfe);
         }
@@ -148,16 +126,17 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     @Override
-    public Build getBuildDetails(String buildUrl, String instanceUrl) {
+    public Build getBuildDetails(String buildUrl) {
         try {
-            String newUrl = rebuildJobUrl(buildUrl, instanceUrl);
-            String url = joinURL(newUrl, BUILD_DETAILS_URL_SUFFIX);
+            String url = joinURL(buildUrl, BUILD_DETAILS_URL_SUFFIX);
             ResponseEntity<String> result = makeRestCall(url);
             String returnJSON = result.getBody();
             JSONParser parser = new JSONParser();
+
             try {
                 JSONObject buildJson = (JSONObject) parser.parse(returnJSON);
                 Boolean building = (Boolean) buildJson.get("building");
+
                 // Ignore jobs that are building
                 if (!building) {
                     Build build = new Build();
@@ -172,6 +151,7 @@ public class DefaultHudsonClient implements HudsonClient {
                     if (settings.isSaveLog()) {
                         build.setLog(getLog(buildUrl));
                     }
+
                     addChangeSets(build, buildJson);
                     return build;
                 }
@@ -183,30 +163,10 @@ public class DefaultHudsonClient implements HudsonClient {
             LOG.error("client exception loading build details", rce);
         } catch (MalformedURLException mfe) {
             LOG.error("malformed url for loading build details", mfe);
-        } catch (URISyntaxException use) {
-            LOG.error("uri syntax exception for loading build details", use);
-        } catch (RuntimeException rte) { //yes, catching RTE.. dont want to impact the whole collection process
-            LOG.error("uri syntax exception for loading build details:" + buildUrl, rte);
         }
+
         return null;
     }
-
-
-    //This method will rebuild the API endpoint because the buildUrl obtained via Jenkins API
-    //does not save the auth user info and we need to add it back.
-    public static String rebuildJobUrl (String build, String server) throws URISyntaxException, MalformedURLException {
-        URL instanceUrl = new URL(server);
-        String userInfo = instanceUrl.getUserInfo();
-        String instanceProtocol = instanceUrl.getProtocol();
-
-        URL buildUrl = new URL(build);
-        String buildPath = buildUrl.getPath();
-        String host = buildUrl.getHost();
-        int port = buildUrl.getPort();
-        URI newUri = new URI(instanceProtocol,userInfo,host,port,buildPath, null, null);
-        return newUri.toString();
-    }
-
 
     /**
      * Grabs changeset information for the given build.

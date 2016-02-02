@@ -45,7 +45,7 @@ public class DefaultHudsonClientTests {
     private HudsonClient hudsonClient;
     private DefaultHudsonClient defaultHudsonClient;
 
-    private static final String URL_TEST = "http://server/job/job2/2/";
+    private static final String URL_TEST = "URL";
 
     @Before
     public void init() {
@@ -72,22 +72,6 @@ public class DefaultHudsonClientTests {
         String u3 = DefaultHudsonClient.joinURL("http://jenkins.com", "///test",
                 "/api/json?tree=jobs[name,url,builds[number,url]]");
         assertEquals("http://jenkins.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u3);
-    }
-
-    @Test
-    public void rebuildURLTest() throws Exception {
-
-        String u1 = DefaultHudsonClient.rebuildJobUrl("http://jenkins.com/job/job1", "https://123456:234567@jenkins.com");
-        assertEquals("https://123456:234567@jenkins.com/job/job1", u1);
-
-        String u2 = DefaultHudsonClient.rebuildJobUrl("https://jenkins.com/job/job1", "https://123456:234567@jenkins.com");
-        assertEquals("https://123456:234567@jenkins.com/job/job1", u2);
-
-        String u3 = DefaultHudsonClient.rebuildJobUrl("http://jenkins.com/job/job1", "http://123456:234567@jenkins.com");
-        assertEquals("http://123456:234567@jenkins.com/job/job1", u3);
-
-        String u4 = DefaultHudsonClient.rebuildJobUrl("http://jenkins.com/job/job1", "http://123456:234567@jenkins.com");
-        assertEquals("http://123456:234567@jenkins.com/job/job1", u4);
     }
 
     @Test
@@ -188,7 +172,7 @@ public class DefaultHudsonClientTests {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(getJson("buildDetails_full.json"), HttpStatus.OK));
 
-        Build build = hudsonClient.getBuildDetails("http://server/job/job2/2/", "http://server");
+        Build build = hudsonClient.getBuildDetails(URL_TEST);
 
         assertThat(build.getTimestamp(), notNullValue());
         assertThat(build.getNumber(), is("2483"));

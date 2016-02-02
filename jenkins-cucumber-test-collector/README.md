@@ -14,7 +14,15 @@ for information about sourcing this properties file.
 
 ##Sample application.properties file
 ```
-    ```
+        dbname=dashboarddb 
+        dbhost=localhost
+        dbusername=user
+        dbpassword=password
+        dbport=27017
+        logging.file=./logs/jenkins-cucumber-collector.log
+        jenkins-cucumber.cron=1 * * * * *
+        jenkins-cucumber.servers[0]=http://username:password@mycompany.jenkins.com/
+```
 
 #Jenkins Job with Cucumber
 

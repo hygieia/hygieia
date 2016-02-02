@@ -27,13 +27,6 @@ target
 UI/node
 UI/src/app/local-testing.js
 *.releaseBackup
-docker-compose.override.yml
-logs
-.project
-.settings
-.pmd
-.pmdruleset.xml
-.classpath
 
 # Eclipse specific ignore settings
 .settings/

@@ -9,10 +9,10 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.HudsonCollectorRepository;
 import com.capitalone.dashboard.repository.HudsonJobRepository;
 import com.google.common.collect.Sets;
+
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -21,18 +21,10 @@ import org.springframework.scheduling.TaskScheduler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HudsonCollectorTaskTests {
@@ -71,8 +63,8 @@ public class HudsonCollectorTaskTests {
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(twoJobsWithTwoBuilds(SERVER1));
         when(dbComponentRepository.findAll()).thenReturn(components());
         task.collect(collectorWithOneServer());
-        ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-        verify(hudsonJobRepository, times(1)).save(anyListOf(HudsonJob.class));
+
+        verify(hudsonJobRepository, times(2)).save(any(HudsonJob.class));
     }
 
     @Test
@@ -87,46 +79,6 @@ public class HudsonCollectorTaskTests {
         task.collect(collector);
 
         verify(hudsonJobRepository, never()).save(job);
-    }
-
-
-    @Test
-    public void delete_job() {
-        HudsonCollector collector = collectorWithOneServer();
-        collector.setId(new ObjectId().get());
-        HudsonJob job1 = hudsonJob("JOB1", SERVER1, "JOB1_URL");
-        job1.setCollectorId(collector.getId());
-        HudsonJob job2 = hudsonJob("JOB2", SERVER1, "JOB2_URL");
-        job2.setCollectorId(collector.getId());
-        List<HudsonJob> jobs = new ArrayList<>();
-        jobs.add(job1);
-        jobs.add(job2);
-        Set<ObjectId> udId = new HashSet<>();
-        udId.add(collector.getId());
-        when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job1));
-        when(hudsonJobRepository.findByCollectorIdIn(udId)).thenReturn(jobs);
-        when(dbComponentRepository.findAll()).thenReturn(components());
-        task.collect(collector);
-        List<HudsonJob> delete = new ArrayList<>();
-        delete.add(job2);
-        verify(hudsonJobRepository, times(1)).delete(delete);
-    }
-
-    @Test
-    public void delete_never_job() {
-        HudsonCollector collector = collectorWithOneServer();
-        collector.setId(new ObjectId().get());
-        HudsonJob job1 = hudsonJob("JOB1", SERVER1, "JOB1_URL");
-        job1.setCollectorId(collector.getId());
-        List<HudsonJob> jobs = new ArrayList<>();
-        jobs.add(job1);
-        Set<ObjectId> udId = new HashSet<>();
-        udId.add(collector.getId());
-        when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job1));
-        when(hudsonJobRepository.findByCollectorIdIn(udId)).thenReturn(jobs);
-        when(dbComponentRepository.findAll()).thenReturn(components());
-        task.collect(collector);
-        verify(hudsonJobRepository, never()).delete(anyListOf(HudsonJob.class));
     }
 
     @Test
@@ -168,7 +120,7 @@ public class HudsonCollectorTaskTests {
         when(hudsonJobRepository.findEnabledHudsonJobs(collector.getId(), SERVER1))
                 .thenReturn(Arrays.asList(job));
         when(buildRepository.findByCollectorItemIdAndNumber(job.getId(), build.getNumber())).thenReturn(null);
-        when(hudsonClient.getBuildDetails(build.getBuildUrl(), job.getInstanceUrl())).thenReturn(build);
+        when(hudsonClient.getBuildDetails(build.getBuildUrl())).thenReturn(build);
         when(dbComponentRepository.findAll()).thenReturn(components());
         task.collect(collector);
 
