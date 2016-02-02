@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('productEnvironmentCommitController', productEnvironmentCommitController);
 
-    productEnvironmentCommitController.$inject = ['modalData', '$modalInstance'];
-    function productEnvironmentCommitController(modalData, $modalInstance) {
+    productEnvironmentCommitController.$inject = ['modalData', '$modalInstance', '$timeout'];
+    function productEnvironmentCommitController(modalData, $modalInstance, $timeout) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -75,14 +75,12 @@
             return '< 0m';
         };
 
-        function toggleCommitDetails(index) {
-            ctrl.commits[index].expanded = !ctrl.commits[index].expanded;
+        function toggleCommitDetails(commit) {
+            commit.expanded = !commit.expanded;
         }
 
         function viewCommitInRepo(commit, $event) {
-            alert(commit);
             $event.stopPropagation();
-            //window.open(url);
         }
     }
 })();
