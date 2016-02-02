@@ -5,6 +5,7 @@ import com.capitalone.dashboard.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
+import java.util.Iterator;
 import java.util.List;
 
 @org.springframework.stereotype.Component
@@ -61,14 +62,16 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
     }
 
     private void processPreviousFailedBuilds(Build successfulBuild, Pipeline pipeline){
-        for(Build b : pipeline.getFailedBuilds()){
+        Iterator<Build> failedBuilds = pipeline.getFailedBuilds().iterator();
+        while(failedBuilds.hasNext()){
+            Build b = failedBuilds.next();
             if(b.getBuildUrl().equals(successfulBuild.getBuildUrl()) && b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())){
                 for(SCM scm : b.getSourceChangeSet()){
                     PipelineCommit failedBuildCommit = new PipelineCommit(scm);
                     failedBuildCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Build.name(), successfulBuild.getTimestamp());
                     pipeline.addCommit(PipelineStageType.Build.name(), failedBuildCommit);
                 }
-                pipeline.getFailedBuilds().remove(b);
+                failedBuilds.remove();
             }
         }
     }
