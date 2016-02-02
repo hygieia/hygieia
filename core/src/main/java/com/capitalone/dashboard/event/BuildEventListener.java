@@ -13,16 +13,19 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
 
     private final DashboardRepository dashboardRepository;
     private final ComponentRepository componentRepository;
+    private final BuildRepository buildRepository;
 
     @Autowired
     public BuildEventListener(DashboardRepository dashboardRepository,
                               CollectorItemRepository collectorItemRepository,
                               ComponentRepository componentRepository,
                               PipelineRepository pipelineRepository,
-                              CollectorRepository collectorRepository) {
+                              CollectorRepository collectorRepository,
+                              BuildRepository buildRepository) {
         super(collectorItemRepository, pipelineRepository, collectorRepository);
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
+        this.buildRepository = buildRepository;
     }
 
     @Override
@@ -62,17 +65,24 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
     }
 
     private void processPreviousFailedBuilds(Build successfulBuild, Pipeline pipeline){
-        Iterator<Build> failedBuilds = pipeline.getFailedBuilds().iterator();
-        while(failedBuilds.hasNext()){
-            Build b = failedBuilds.next();
-            if(b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())){
-                for(SCM scm : b.getSourceChangeSet()){
-                    PipelineCommit failedBuildCommit = new PipelineCommit(scm);
-                    failedBuildCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Build.name(), successfulBuild.getTimestamp());
-                    pipeline.addCommit(PipelineStageType.Build.name(), failedBuildCommit);
+
+        if(!pipeline.getFailedBuilds().isEmpty()) {
+            Iterator<Build> failedBuilds = pipeline.getFailedBuilds().iterator();
+
+            while (failedBuilds.hasNext()) {
+                Build b = failedBuilds.next();
+                if (b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())) {
+                    for (SCM scm : b.getSourceChangeSet()) {
+                        PipelineCommit failedBuildCommit = new PipelineCommit(scm);
+                        failedBuildCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Build.name(), successfulBuild.getTimestamp());
+                        pipeline.addCommit(PipelineStageType.Build.name(), failedBuildCommit);
+                        successfulBuild.getSourceChangeSet().add(scm);
+                    }
+                    failedBuilds.remove();
+
                 }
-                failedBuilds.remove();
             }
+            buildRepository.save(successfulBuild);
         }
     }
     /**
