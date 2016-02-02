@@ -32,7 +32,7 @@
                 ng-repeat="team in ctrl.configuredTeams">
 
                 <div class="product-table-td team-name-cell">
-                    <span class="fa fa-cog" ng-click="ctrl.editTeam(team)"></span>
+                    <span class="fa fa-cog" ng-click="ctrl.editTeam(team.collectorItemId)"></span>
 
                     <a title="{{item.customName || item.name}}" class="team-name" ng-click="ctrl.openDashboard(team)">
                         {{team.customName || team.name}}
@@ -78,7 +78,7 @@
                     {{teamStageData = team.stages[stage].summary;""}}
                     <div ng-class="{'clickable':ctrl.teamStageHasCommits(team, stage)}" ng-if="teamStageData" ng-click="ctrl.viewTeamStageDetails(team, stage)">
                         <div class="team-data-cell-header">
-                            <div class="clearfix team-data-cell-average-days" ng-if-start="teamStageData.average != false">
+                            <div class="clearfix team-data-cell-average-days" ng-if-start="teamStageData.average">
                                 <!-- only leading zeros get small size -->
                                 <span class="team-time-average-lg" ng-if="teamStageData.average.days">{{teamStageData.average.days}}</span>
                                 <span class="team-time-average-desc" ng-if="teamStageData.average.days > 0">D</span>

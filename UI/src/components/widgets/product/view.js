@@ -29,32 +29,33 @@
         ctrl.teamStageHasCommits = teamStageHasCommits;
         ctrl.getLatestBuildInfo = getLatestBuildInfo;
 
+        // set our data before we get things started
+        var widgetOptions = angular.copy($scope.widgetConfig.options);
+
+        if (widgetOptions && widgetOptions.teams) {
+            ctrl.configuredTeams = widgetOptions.teams;
+        }
+
+        // set team default values
+        _(ctrl.configuredTeams).forEach(function(team) {
+            team.summary = {
+                codeCoverage: {
+                    number: '--'
+                },
+                functionalTestsPassed: {
+                    number: '--'
+                },
+                codeIssues: {
+                    number: '--'
+                }
+            }
+        });
+
         //region public method implementations
         function load() {
-            var options = $scope.widgetConfig.options;
+            getTeamStageData(widgetOptions.teams, [].concat(ctrl.stages));
 
-            if (options && options.teams) {
-                ctrl.configuredTeams = options.teams;
-            }
-
-            // set team default values
-            _(ctrl.configuredTeams).forEach(function(team) {
-                team.summary = {
-                    codeCoverage: {
-                        number: '--'
-                    },
-                    functionalTestsPassed: {
-                        number: '--'
-                    },
-                    codeIssues: {
-                        number: '--'
-                    }
-                }
-            });
-
-            getTeamStageData(options.teams, [].concat(ctrl.stages));
-
-            var requestedData = getTeamDashboardDetails(options.teams);
+            var requestedData = getTeamDashboardDetails(widgetOptions.teams);
             if(!requestedData) {
                 for(var collectorItemId in teamDashboardDetails) {
                     getTeamComponentData(collectorItemId);
@@ -88,7 +89,15 @@
             });
         }
 
-        function editTeam(team) {
+        function editTeam(collectorItemId) {
+            var team = false;
+            _($scope.widgetConfig.options.teams)
+                .filter({collectorItemId: collectorItemId})
+                .forEach(function(t) {
+                    team = t;
+                });
+
+            if(!team) { return; }
 
             $modal.open({
                 templateUrl: 'components/widgets/product/edit-team/edit-team.html',
@@ -106,30 +115,30 @@
                     return;
                 }
 
-                var options = $scope.widgetConfig.options;
+                var newOptions = $scope.widgetConfig.options;
 
                 // take the collector item out of the team array
                 if(config.remove) {
                     // do remove
                     var keepTeams = [];
 
-                    _(options.teams).forEach(function(team) {
+                    _(newOptions.teams).forEach(function(team) {
                         if(team.collectorItemId != config.collectorItemId) {
                             keepTeams.push(team);
                         }
                     });
 
-                    options.teams = keepTeams;
+                    newOptions.teams = keepTeams;
                 }
                 else {
-                    for(var x=0;x<options.teams.length;x++) {
-                        if(options.teams[x].collectorItemId == config.collectorItemId) {
-                            options.teams[x] = config;
+                    for(var x=0;x<newOptions.teams.length;x++) {
+                        if(newOptions.teams[x].collectorItemId == config.collectorItemId) {
+                            newOptions.teams[x] = config;
                         }
                     }
                 }
-
-                updateWidgetOptions(options);
+                console.log('new config', newOptions);
+                updateWidgetOptions(newOptions);
             });
         }
 
@@ -176,8 +185,34 @@
 
             if(!team) { return; }
 
-            team = deepmerge(team, data);
-            ctrl.configuredTeams[idx] = team;
+            ctrl.configuredTeams[idx] = deepmerge(team, data);
+
+            //var obj = ctrl.configuredTeams[idx];
+            //
+            //// hackish way to update the configured teams object in place so their entire
+            //// object does not need to be replaced which would cause a full refresh of the
+            //// row instead of just the numbers
+            //for(var x in data) {
+            //    var xData = data[x];
+            //    if(typeof xData == 'object' && obj[x] != undefined) {
+            //        for(var y in xData) {
+            //            var yData = xData[y];
+            //
+            //            if(typeof yData == 'object' && obj[x][y] != undefined) {
+            //                for (var z in yData) {
+            //                    var zData = yData[z];
+            //                    obj[x][y][z] = zData;
+            //                }
+            //            }
+            //            else {
+            //                obj[x][y] = yData;
+            //            }
+            //        }
+            //    }
+            //    else {
+            //        obj[x] = xData;
+            //    }
+            //}
         }
 
         function getTeamDashboardDetails(teams) {
@@ -311,7 +346,13 @@
                     });
 
                     var testPassedPercent = totalTests ? totalPassed/totalTests : 0;
-                    setTeamData(collectorItemId, {summary:{functionalTestsPassed:{number: Math.round(testPassedPercent)}}});
+                    setTeamData(collectorItemId, {
+                        summary:{
+                            functionalTestsPassed:{
+                                number: Math.round(testPassedPercent)
+                            }
+                        }
+                    });
                 });
 
             // calculate trend for percent of tests passed
@@ -385,7 +426,6 @@
         }
 
         function getTeamStageSummary(stageData) {
-
             return {
                 commitsInsideTimeframe: _(stageData.commits).filter(function(c) { return !c.errorState; }).value().length,
                 commitsOutsideTimeframe: _(stageData.commits).filter({errorState:true}).value().length,

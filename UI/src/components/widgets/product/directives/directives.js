@@ -4,9 +4,9 @@
     var app = angular
         .module(HygieiaConfig.module);
 
+    // simple way to add multiple directives with basic templates so we
+    // can break apart the widget
     var directives = {
-        //productBuildStageCell : {},
-        //productTeamNameCell : {},
         productTeamSummaryField : {
             scope: {
                 caption: '@caption',
@@ -22,7 +22,7 @@
         app.directive(name, function () {
             name = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
             obj = angular.extend({
-                restrict: 'E',
+                restrict: 'EA',
                 templateUrl: 'components/widgets/product/directives/' + name + '.html'
             }, obj);
             console.log(obj);

@@ -15,11 +15,12 @@
         </div>
     </div>
 
-    <div class="team-environment-detail-rows">
+    <div class="team-environment-detail-rows" vs-repeat>
         <div class="team-environment-detail-row"
              ng-class="{'detail-row-expanded': commit.expanded}"
              ng-repeat="commit in ctrl.commits"
-             ng-click="ctrl.toggleCommitDetails($index)">
+             ng-click="ctrl.toggleCommitDetails(commit)"
+            >
             <div class="team-environment-detail-header clearfix">
                 <div class="status-icon-container">
                     <span class="dash-status-lg" dash-status="false" ng-if="commit.errorState"></span>
@@ -37,14 +38,14 @@
             </div>
             <table class="team-environment-detail-stages clearfix">
                 <thead>
-                    <tr>
-                        <th ng-repeat="stage in ctrl.stages">{{stage}}</th>
-                    </tr>
+                <tr>
+                    <th ng-repeat="stage in ctrl.stages">{{stage}}</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td ng-repeat="stage in ctrl.stages">{{ctrl.getCommitStageTimeDisplay(commit, stage)}}</td>
-                    </tr>
+                <tr>
+                    <td ng-repeat="stage in ctrl.stages">{{ctrl.getCommitStageTimeDisplay(commit, stage)}}</td>
+                </tr>
                 </tbody>
             </table>
         </div>
