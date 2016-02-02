@@ -33,19 +33,13 @@
             if(!teamSummaryMetrics[collectorItemId]) {
                 teamSummaryMetrics[collectorItemId] = {
                     codeCoverage: {
-                        number: 0,
-                        trendUp: false,
-                        successState: false
+                        number: '--'
                     },
                     functionalTestsPassed: {
-                        number: 0,
-                        trendUp: true,
-                        successState: false
+                        number: '--'
                     },
                     codeIssues: {
-                        number: 0,
-                        trendUp: true,
-                        successState: false
+                        number: '--'
                     }
                 };
             }
