@@ -195,15 +195,12 @@ public class DeployServiceImpl implements DeployService {
     private CollectorItem createCollectorItem(Collector collector, DeployDataCreateRequest request) {
         CollectorItem tempCi = new CollectorItem();
         tempCi.setCollectorId(collector.getId());
-        tempCi.setDescription(request.getJobName());
+        tempCi.setDescription(request.getAppName());
         tempCi.setPushed(true);
         tempCi.setLastUpdated(System.currentTimeMillis());
         tempCi.setNiceName(request.getNiceName());
         Map<String, Object> option = new HashMap<>();
         option.put("applicationName", request.getAppName());
-        option.put("environmentName", request.getEnvName());
-        option.put("jobName", request.getJobName());
-        option.put("jobUrl", request.getJobUrl());
         option.put("instanceUrl", request.getInstanceUrl());
         tempCi.getOptions().putAll(option);
 
