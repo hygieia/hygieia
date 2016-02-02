@@ -36,7 +36,7 @@
 			<artifactId>docker-maven-plugin</artifactId>
 			<version>0.3.3</version>
 			<configuration>
-				<imageName>sonar-codequality-collector</imageName>
+				<imageName>hygieia-sonar-codequality-collector</imageName>
 				<dockerDirectory>${project.basedir}/docker</dockerDirectory>
 				<resources>
 					<resource>
