@@ -24,6 +24,19 @@ fi
 echo "MONGODB_HOST: $MONGODB_HOST"
 echo "MONGODB_PORT: $MONGODB_PORT"
 
+#update local host to bridge ip if used for a URL
+SONAR_LOCALHOST=
+echo $SONAR_URL|egrep localhost >>/dev/null
+if [ $? -ne 1 ]
+then
+        #this seems to give a access to the VM of the docker-machine
+        #LOCALHOST=`ip route|egrep '^default via'|cut -f3 -d' '`
+        #see http://superuser.com/questions/144453/virtualbox-guest-os-accessing-local-server-on-host-os
+        SONAR_LOCALHOST=10.0.2.2
+        MAPPED_URL=`echo "$SONAR_URL"|sed "s|localhost|$SONAR_LOCALHOST|"`
+        echo "Mapping localhost -> $MAPPED_URL"
+        SONAR_URL=$MAPPED_URL
+fi
 
 cat > $PROP_FILE <<EOF
 #Database Name
@@ -44,7 +57,7 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 #Collector schedule (required)
 sonar.cron=${SONAR_CRON:-0 0/5 * * * *}
 
-sonar.servers[0]=${SONAR_URL:-http://sonar.company.com}
+sonar.servers[0]=${SONAR_URL:-http://localhost:9000}
 
 #Sonar Metrics
 sonar.metrics=${SONAR_METRICS:-ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,sqale_index,test_success_density,test_failures,test_errors,tests}
