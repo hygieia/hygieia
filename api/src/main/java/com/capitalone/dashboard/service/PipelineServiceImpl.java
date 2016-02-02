@@ -1,11 +1,13 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.deploy.Environment;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.request.PipelineSearchRequest;
 import com.google.common.collect.Sets;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.CaseInsensitiveMap;
 import org.apache.commons.lang.NotImplementedException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +103,7 @@ public class PipelineServiceImpl implements PipelineService {
         Map<PipelineStageType, Map<String, PipelineCommit>> commitsByStage = new HashMap<>();
 
         for(PipelineStageType pipelineStage : PipelineStageType.values()){
-            EnvironmentStage stage;
+            EnvironmentStage stage = null;
             String environmentName;
             if(!pipelineStage.equals(PipelineStageType.Build) && !pipelineStage.equals(PipelineStageType.Commit)){
                 Map<PipelineStageType, String> environmentMappings =getEnvironmentMappings(dashboard);
@@ -110,7 +112,12 @@ public class PipelineServiceImpl implements PipelineService {
             else{
                 environmentName = pipelineStage.name();
             }
-            stage = pipeline.getStages().get(environmentName);
+
+            Map<String, EnvironmentStage> stages = new TreeMap<String, EnvironmentStage>(String.CASE_INSENSITIVE_ORDER);
+            stages.putAll(pipeline.getStages());
+            if(environmentName != null) {
+                stage = stages.get(environmentName);
+            }
             if(!commitsByStage.containsKey(pipelineStage)){
                 commitsByStage.put(pipelineStage, new HashMap<String, PipelineCommit>());
             }
@@ -118,6 +125,8 @@ public class PipelineServiceImpl implements PipelineService {
         }
         return commitsByStage;
     }
+
+
 
     private Map<PipelineStageType, String> getEnvironmentMappings(Dashboard dashboard){
         Map<String, String> environmentMappings = null;

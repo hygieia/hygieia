@@ -65,7 +65,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
         Iterator<Build> failedBuilds = pipeline.getFailedBuilds().iterator();
         while(failedBuilds.hasNext()){
             Build b = failedBuilds.next();
-            if(b.getBuildUrl().equals(successfulBuild.getBuildUrl()) && b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())){
+            if(b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())){
                 for(SCM scm : b.getSourceChangeSet()){
                     PipelineCommit failedBuildCommit = new PipelineCommit(scm);
                     failedBuildCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Build.name(), successfulBuild.getTimestamp());

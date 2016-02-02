@@ -3,6 +3,8 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Comparator;
+
 /**
  * Binary artifacts produced by build jobs and stored in an artifact repository.
  *
@@ -85,5 +87,10 @@ public class BinaryArtifact extends BaseModel {
         this.canonicalName = canonicalName;
     }
 
-
+    public static Comparator<BinaryArtifact> TIMESTAMP_COMPATOR = new Comparator<BinaryArtifact>() {
+        @Override
+        public int compare(BinaryArtifact o1, BinaryArtifact o2) {
+            return Long.compare(o1.getTimestamp(), o2.getTimestamp());
+        }
+    };
 }

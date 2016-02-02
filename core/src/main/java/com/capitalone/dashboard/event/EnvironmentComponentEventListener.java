@@ -3,11 +3,14 @@ package com.capitalone.dashboard.event;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
+import com.google.common.collect.Lists;
+import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("PMD")
@@ -56,14 +59,32 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
     }
 
     private void addCommitsToEnvironmentStage(EnvironmentComponent environmentComponent, Pipeline pipeline){
-        Iterable<BinaryArtifact> artifacts = binaryArtifactRepository.findByArtifactNameAndArtifactVersion(environmentComponent.getComponentName(), environmentComponent.getComponentVersion());
-        for(BinaryArtifact artifact : artifacts){
+        //find all artifacts by name, only ones that matter are between last artifact and this
+        EnvironmentStage currentStage = getOrCreateEnvironmentStage(pipeline, environmentComponent.getEnvironmentName());
+
+        Iterable<BinaryArtifact> artifacts;
+        BinaryArtifact oldLastArtifact = currentStage.getLastArtifact();
+        if(oldLastArtifact != null){
+            Long lastArtifactTimestamp = oldLastArtifact != null ? oldLastArtifact.getTimestamp() : null;
+            artifacts = binaryArtifactRepository.findByArtifactNameAndTimestampGreaterThan(environmentComponent.getComponentName(), lastArtifactTimestamp);
+        }
+        else{
+            artifacts = binaryArtifactRepository.findByArtifactName(environmentComponent.getComponentName());
+        }
+
+        List<BinaryArtifact> sortedArtifacts = Lists.newArrayList(artifacts);
+        Collections.sort(sortedArtifacts, BinaryArtifact.TIMESTAMP_COMPATOR);
+
+        for(BinaryArtifact artifact : sortedArtifacts){
             for(SCM scm : artifact.getBuildInfo().getSourceChangeSet()){
                 PipelineCommit commit = new PipelineCommit(scm);
                 commit.addNewPipelineProcessedTimestamp(environmentComponent.getEnvironmentName(), environmentComponent.getAsOfDate());
                 pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
             }
         }
+        BinaryArtifact lastArtifact = sortedArtifacts.get(sortedArtifacts.size()-1);
+        currentStage.setLastArtifact(lastArtifact);
+
     }
 
     private List<Dashboard> findTeamDashboardsForEnvironmentComponent(EnvironmentComponent environmentComponent){
