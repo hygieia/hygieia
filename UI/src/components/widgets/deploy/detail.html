@@ -50,6 +50,13 @@
                         <td ng-show="server.online" class="servers-up"><span class="fa fa-arrow-up"></span></td>
                         <td ng-hide="server.online" class="servers-down"><span class="fa fa-arrow-down"></span></td>
                     </tr>
+                    <tr ng-if="!unit.servers || unit.servers.length === 0">
+                        <td dash-status="{{unit.deployed}}"></td>
+                        <td>{{::unit.name}}</td>
+                        <td>{{::unit.lastUpdated | date:'MMM d, HH:mm:ss'}}</td>
+                        <td>{{::unit.version}}</td>
+                        <td colspan="2">N/A</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
