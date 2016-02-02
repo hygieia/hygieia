@@ -42,7 +42,7 @@ public class CommitEventListener extends HygieiaMongoEventListener<Commit> {
     private List<Dashboard> findAllDashboardsForCommit(Commit commit){
         CollectorItem commitCollectorItem = collectorItemRepository.findOne(commit.getCollectorItemId());
         List<Component> components = componentRepository.findBySCMCollectorItemId(commitCollectorItem.getId());
-        return dashboardRepository.findByApplicationComponents(components);
+        return dashboardRepository.findByApplicationComponentsIn(components);
     }
 
 }

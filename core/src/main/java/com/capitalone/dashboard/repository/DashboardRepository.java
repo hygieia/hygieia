@@ -17,15 +17,12 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 	List<Dashboard> findByOwner(String owner);
 	List<Dashboard> findByTitle(String title);
 
-	List<Dashboard> findByApplicationComponents(Collection<Component> components);
+    List<Dashboard> findByApplicationComponentsIn(Collection<Component> components);
 
 	@Query(value="{'type': {$in : [null, 'Team']}}")
 	List<Dashboard> findTeamDashboards();
 
 	@Query(value="{'widgets.options.teams.collectorItemId': ?0 }")
 	List<Dashboard> findProductDashboardsByTeamDashboardCollectorItemId(String teamDashboardCollectorItemId);
-
-	@Query(value="{ 'application.components.$id': { $in: ?0 }}")
-	List<Dashboard> findDashboardsByApplicationComponentIds(List<ObjectId> componentIds);
 
 }

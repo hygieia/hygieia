@@ -82,7 +82,7 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
                 pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
             }
         }
-        BinaryArtifact lastArtifact = sortedArtifacts.get(sortedArtifacts.size()-1);
+        BinaryArtifact lastArtifact = sortedArtifacts.get(sortedArtifacts.size() - 1);
         currentStage.setLastArtifact(lastArtifact);
 
     }
@@ -91,12 +91,7 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         List<Dashboard> dashboards;
         CollectorItem deploymentCollectorItem = collectorItemRepository.findOne(environmentComponent.getCollectorItemId());
         List<Component> components = componentRepository.findByDeployCollectorItemId(deploymentCollectorItem.getId());
-        List<ObjectId> componentObjectIds = new ArrayList<>();
-
-        for(Component c : components){
-            componentObjectIds.add(c.getId());
-        }
-        dashboards = dashboardRepository.findDashboardsByApplicationComponentIds(componentObjectIds);
+        dashboards = dashboardRepository.findByApplicationComponentsIn(components);
         return dashboards;
     }
 }

@@ -87,6 +87,6 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
     private List<Dashboard> findAllDashboardsForBuild(Build build){
         CollectorItem buildCollectorItem = collectorItemRepository.findOne(build.getCollectorItemId());
         List<Component> components = componentRepository.findByBuildCollectorItemId(buildCollectorItem.getId());
-        return dashboardRepository.findByApplicationComponents(components);
+        return dashboardRepository.findByApplicationComponentsIn(components);
     }
 }
