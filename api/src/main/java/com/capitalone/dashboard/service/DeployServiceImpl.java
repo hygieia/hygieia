@@ -225,6 +225,7 @@ public class DeployServiceImpl implements DeployService {
         deploy.setComponentVersion(request.getArtifactVersion());
         deploy.setEnvironmentName(request.getEnvName());
         deploy.setDeployTime(request.getEndTime());
+        deploy.setDeployed("SUCCESS".equalsIgnoreCase(request.getDeployStatus()));
 
         return environmentComponentRepository.save(deploy); // Save = Update (if ID present) or Insert (if ID not there)
     }
