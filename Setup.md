@@ -1,4 +1,4 @@
-<img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/images/Hygieia_b.png)
+:<img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/images/Hygieia_b.png)
 --
 
 ### Build Hygieia
@@ -124,22 +124,12 @@ Tests should now run/pass when built from behind a corporate proxy, even if it i
 
 Only the above proxy settings (non authentication) may required to be set on your deployment instance.  Additionally, please updated all property files for each collector/API configuration with their specific proxy setting property.
 
-### Build Docker images
+### Build Docker images and setup id for mongodb
 
-* Build the API Image
-
-```bash
-mvn clean package
-```
+* Build the containers
 
 ```bash
-mvn -pl api docker:build
-```
-
-* Build the UI Image
-
-```bash
-mvn -pl UI docker:build
+mvn -pl  api,UI,jenkins-build-collector,github-scm-collector,jenkins-cucumber-test-collector,jira-feature-collector  docker:build
 ```
 
 * Bring up the container images
@@ -148,10 +138,47 @@ mvn -pl UI docker:build
 docker-compose up -d
 ```
 
-* Create user in mongo
+* Create user in mongo (if you log into the container then you dont have to install mongo locally)
 
 ```bash
+docker exec -t -i mongodb2 bash
+```
+```bash
 mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
+```
+
+### create a docker-compose.override.yml to configure your environment
+#### These are the most common entries, the uncommented ones are mandatory if you want the collector to work
+##### For dev/testing you will find it useful to change the CRON entries to "0 * * * * *"
+```
+hygieia-github-scm-collector:
+  environment:
+#  - GITHUB_HOST=github.com
+#  - GITHUB_CRON=0 0/5 * * * *
+#  - GITHUB_COMMIT_THRESHOLD_DAYS=15
+hygieia-jira-feature-collector:
+ environment:
+# - DEBUG=1
+ - JIRA_BASE_URL=https://company.atlassian.net/
+ - JIRA_CREDENTIALS=amltQHN0cmF0ZW5nbGxjLmNvbTp0M0NkZUpaNk00UkZ5SFdSbXMK
+ - JIRA_ISSUE_TYPE_ID=10200
+ - JIRA_SPRINT_DATA_FIELD_NAME=customfield_10007
+ - JIRA_EPIC_FIELD_NAME=customfield_10008
+hygieia-jenkins-build-collector:
+ environment:
+# - DEBUG=1
+# - JENKINS_CRON=0 0/5 * * * *
+ - JENKINS_MASTER=http://localhost:8080/jenkins
+ - JENKINS_USERNAME=username
+ - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXX
+hygieia-jenkins-cucumber-test-collector:
+ environment:
+# - DEBUG=1
+# - JENKINS_CRON=0 0/5 * * * *
+ - JENKINS_MASTER=http://localhost:8080/jenkins
+ - JENKINS_USERNAME=username
+ - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ - JENKINS_CUCUMBER_JSON_FILENAME=cucumber-report.json
 ```
 
 * Make sure everything is restarted _it may fail if the user doesn't exist at start up time_
@@ -166,7 +193,7 @@ docker-compose restart
 docker port hygieia-ui
 ```
 
-### Start Collectors
+### Start Collectors in the background (optional as they are all running in containers by default)
 * To start individual collector as a background process please run the command in below format
   * On linux platform
 ```bash
