@@ -12,7 +12,6 @@
 
         // private properties
         var teamDashboardDetails = {},
-            teamSummaryMetrics = {},
             latestBuilds = {};
 
 
@@ -21,17 +20,26 @@
 
         // public methods
         ctrl.load = load;
-        ctrl.editTeam = editTeam;
         ctrl.addTeam = addTeam;
-        ctrl.getSummaryMetric = getSummaryMetric;
+        ctrl.editTeam = editTeam;
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
+
+        // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
         ctrl.getLatestBuildInfo = getLatestBuildInfo;
 
-        function setTeamSummaryMetric(collectorItemId, field, data) {
-            if(!teamSummaryMetrics[collectorItemId]) {
-                teamSummaryMetrics[collectorItemId] = {
+        //region public method implementations
+        function load() {
+            var options = $scope.widgetConfig.options;
+
+            if (options && options.teams) {
+                ctrl.configuredTeams = options.teams;
+            }
+
+            // set team default values
+            _(ctrl.configuredTeams).forEach(function(team) {
+                team.summary = {
                     codeCoverage: {
                         number: '--'
                     },
@@ -41,33 +49,8 @@
                     codeIssues: {
                         number: '--'
                     }
-                };
-            }
-
-            var obj = teamSummaryMetrics[collectorItemId],
-                subFields = field.split('.');
-
-            if(subFields.length == 1) {
-                obj[field] = data;
-            }
-            else if (subFields.length == 2) {
-                obj[subFields[0]][subFields[1]] = data;
-            }
-        }
-
-        function openDashboard(item) {
-            var dashboardDetails = teamDashboardDetails[item.collectorItemId];
-            if(dashboardDetails) {
-                $location.path('/dashboard/' + dashboardDetails.id);
-            }
-        }
-
-        function load() {
-            var options = $scope.widgetConfig.options;
-
-            if (options && options.teams) {
-                ctrl.configuredTeams = options.teams;
-            }
+                }
+            });
 
             getTeamStageData(options.teams, [].concat(ctrl.stages));
 
@@ -77,6 +60,136 @@
                     getTeamComponentData(collectorItemId);
                 }
             }
+        }
+
+        function addTeam() {
+
+            $modal.open({
+                templateUrl: 'components/widgets/product/add-team/add-team.html',
+                controller: 'addTeamController',
+                controllerAs: 'ctrl'
+            }).result.then(function(config) {
+                if(!config) {
+                    return;
+                }
+
+                // prepare our response for the widget upsert
+                var options = $scope.widgetConfig.options;
+
+                // make sure it's an array
+                if(!options.teams || !options.teams.length) {
+                    options.teams = [];
+                }
+
+                // add our new config to the array
+                options.teams.push(config);
+
+                updateWidgetOptions(options);
+            });
+        }
+
+        function editTeam(team) {
+
+            $modal.open({
+                templateUrl: 'components/widgets/product/edit-team/edit-team.html',
+                controller: 'editTeamController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    editTeamConfig: function() {
+                        return {
+                            team: team
+                        }
+                    }
+                }
+            }).result.then(function(config) {
+                if(!config) {
+                    return;
+                }
+
+                var options = $scope.widgetConfig.options;
+
+                // take the collector item out of the team array
+                if(config.remove) {
+                    // do remove
+                    var keepTeams = [];
+
+                    _(options.teams).forEach(function(team) {
+                        if(team.collectorItemId != config.collectorItemId) {
+                            keepTeams.push(team);
+                        }
+                    });
+
+                    options.teams = keepTeams;
+                }
+                else {
+                    for(var x=0;x<options.teams.length;x++) {
+                        if(options.teams[x].collectorItemId == config.collectorItemId) {
+                            options.teams[x] = config;
+                        }
+                    }
+                }
+
+                updateWidgetOptions(options);
+            });
+        }
+
+        function openDashboard(item) {
+            var dashboardDetails = teamDashboardDetails[item.collectorItemId];
+            if(dashboardDetails) {
+                $location.path('/dashboard/' + dashboardDetails.id);
+            }
+        }
+
+        function viewTeamStageDetails(team, stage) {
+            // only show details if we have commits
+            if(!teamStageHasCommits(team, stage)) {
+                return false;
+            }
+
+            $modal.open({
+                templateUrl: 'components/widgets/product/environment-commits/environment-commits.html',
+                controller: 'productEnvironmentCommitController',
+                controllerAs: 'ctrl',
+                size: 'lg',
+                resolve: {
+                    modalData: function () {
+                        return {
+                            team: team,
+                            stage: stage,
+                            stages: ctrl.stages
+                        };
+                    }
+                }
+            });
+        }
+        //endregion
+
+        //region public data method implementations
+        function setTeamData(collectorItemId, field, data) {
+            var teamIndex = false,
+                team = false;
+
+            _(ctrl.configuredTeams).filter({'collectorItemId': collectorItemId}).forEach(function (configuredTeam, i) {
+                teamIndex = i;
+                team = configuredTeam;
+            });
+
+            if(!team) {
+                return;
+            }
+
+            var fields = field.split('.');
+            if(fields.length == 1) {
+                team[field] = data;
+            }
+            else if (fields.length == 2) {
+                team[fields[0]][fields[1]] = data;
+            }
+            else if (fields.length == 3) {
+                team[fields[0]][fields[1]][fields[2]] = data;
+            }
+
+            //ctrl.configuredTeams[teamIndex] = team;
         }
 
         function getTeamDashboardDetails(teams) {
@@ -127,7 +240,7 @@
             buildData
                 .details({componentId: componentId, max: 1})
                 .then(function(response) {
-                    latestBuilds[collectorItemId] = response.result[0];
+                    setTeamData(collectorItemId, 'latestBuild', response.result[0]);
                 });
 
             // get latest code coverage and issues metrics
@@ -140,11 +253,11 @@
                             violations = getCaMetric(metrics, 'violations');
 
                         if(lineCoverage !== false) {
-                            setTeamSummaryMetric(collectorItemId, 'codeCoverage.number', Math.round(lineCoverage));
+                            setTeamData(collectorItemId, 'summary.codeCoverage.number', Math.round(lineCoverage));
                         }
 
                         if(violations !== false) {
-                            setTeamSummaryMetric(collectorItemId, 'codeIssues.number', violations);
+                            setTeamData(collectorItemId, 'summary.codeIssues.number', violations);
                         }
                     }
                 });
@@ -180,11 +293,11 @@
                         codeCoverageTrendUp = codeCoverageResult.equation[0] > 0;
 
                     // set the data
-                    setTeamSummaryMetric(collectorItemId, 'codeIssues.trendUp', codeIssuesTrendUp);
-                    setTeamSummaryMetric(collectorItemId, 'codeIssues.successState', !codeIssuesTrendUp);
+                    setTeamData(collectorItemId, 'summary.codeIssues.trendUp', codeIssuesTrendUp);
+                    setTeamData(collectorItemId, 'summary.codeIssues.successState', !codeIssuesTrendUp);
 
-                    setTeamSummaryMetric(collectorItemId, 'codeCoverage.trendUp', codeCoverageTrendUp);
-                    setTeamSummaryMetric(collectorItemId, 'codeCoverage.successState', codeCoverageTrendUp);
+                    setTeamData(collectorItemId, 'summary.codeCoverage.trendUp', codeCoverageTrendUp);
+                    setTeamData(collectorItemId, 'summary.codeCoverage.successState', codeCoverageTrendUp);
                 });
 
             // calculate the current state for percent tests passed
@@ -199,7 +312,7 @@
                     });
 
                     var testPassedPercent = totalTests ? totalPassed/totalTests : 0;
-                    setTeamSummaryMetric(collectorItemId, 'functionalTestsPassed.number', Math.round(testPassedPercent));
+                    setTeamData(collectorItemId, 'summary.functionalTestsPassed.number', Math.round(testPassedPercent));
                 });
 
             // calculate trend for percent of tests passed
@@ -219,85 +332,9 @@
                     var passedPercentResult = regression('linear', data),
                         passedPercentTrendUp = passedPercentResult.equation[0] > 0;
 
-                    setTeamSummaryMetric(collectorItemId, 'functionalTestsPassed.trendUp', passedPercentTrendUp);
-                    setTeamSummaryMetric(collectorItemId, 'functionalTestsPassed.successState', passedPercentTrendUp);
+                    setTeamData(collectorItemId, 'summary.functionalTestsPassed.trendUp', passedPercentTrendUp);
+                    setTeamData(collectorItemId, 'summary.functionalTestsPassed.successState', passedPercentTrendUp);
                 });
-        }
-
-        function getSummaryMetric(collectorItemId, type) {
-            var metrics = teamSummaryMetrics[collectorItemId];
-            return metrics ? metrics[type] : {};
-        }
-
-        function editTeam(team) {
-
-            $modal.open({
-                templateUrl: 'components/widgets/product/edit-team/edit-team.html',
-                controller: 'editTeamController',
-                controllerAs: 'ctrl',
-                resolve: {
-                    editTeamConfig: function() {
-                        return {
-                            team: team
-                        }
-                    }
-                }
-            }).result.then(function(config) {
-                if(!config) {
-                    return;
-                }
-
-                var options = $scope.widgetConfig.options;
-
-                // take the collector item out of the team array
-                if(config.remove) {
-                    // do remove
-                    var keepTeams = [];
-
-                    _(options.teams).forEach(function(team) {
-                        if(team.collectorItemId != config.collectorItemId) {
-                            keepTeams.push(team);
-                        }
-                    });
-
-                    options.teams = keepTeams;
-                }
-                else {
-                    for(var x=0;x<options.teams.length;x++) {
-                        if(options.teams[x].collectorItemId == config.collectorItemId) {
-                            options.teams[x] = config;
-                        }
-                    }
-                }
-
-                updateWidgetOptions(options);
-            });
-        }
-
-        function addTeam() {
-
-            $modal.open({
-                templateUrl: 'components/widgets/product/add-team/add-team.html',
-                controller: 'addTeamController',
-                controllerAs: 'ctrl'
-            }).result.then(function(config) {
-                if(!config) {
-                    return;
-                }
-
-                // prepare our response for the widget upsert
-                var options = $scope.widgetConfig.options;
-
-                // make sure it's an array
-                if(!options.teams || !options.teams.length) {
-                    options.teams = [];
-                }
-
-                // add our new config to the array
-                options.teams.push(config);
-
-                updateWidgetOptions(options);
-            });
         }
 
         function updateWidgetOptions(options) {
@@ -333,28 +370,7 @@
             }
         }
 
-        function viewTeamStageDetails(team, stage) {
-            // only show details if we have commits
-            if(!teamStageHasCommits(team, stage)) {
-                return false;
-            }
 
-            $modal.open({
-                templateUrl: 'components/widgets/product/environment-commits/environment-commits.html',
-                controller: 'productEnvironmentCommitController',
-                controllerAs: 'ctrl',
-                size: 'lg',
-                resolve: {
-                    modalData: function () {
-                        return {
-                            team: team,
-                            stage: stage,
-                            stages: ctrl.stages
-                        };
-                    }
-                }
-            });
-        }
 
         function getStageDurationStats(a) {
             var r = {mean: 0, variance: 0, deviation: 0}, t = a.length;
@@ -420,8 +436,6 @@
                 start = now.subtract(90, 'days').format('x');
 
             pipelineData.commits(start, nowTimestamp, _(teams).pluck('collectorItemId').value()).then(function(teams) {
-                var response = {};
-
                 // start processing response by looping through each team
                 _(teams).each(function(team) {
                     var teamStageData = {},
@@ -582,22 +596,11 @@
                         teamProdData.trendUp = averageToProdResult.equation[0] > 0;
                     }
 
-                    // set all the team data in a key that we can
-                    // easily get to with collector item id
-                    response[team.collectorItemId] = {
-                        stages: teamStageData,
-                        prod: teamProdData
-                    };
+                    setTeamData(team.collectorItemId, 'stages', teamStageData);
+                    setTeamData(team.collectorItemId, 'prod', teamProdData);
                 });
-
-                // set our data back on the controller
-                for (var collectorItemId in response) {
-                    // set the data for a given collectorItemId
-                    _(ctrl.configuredTeams).filter({'collectorItemId': collectorItemId}).forEach(function (configuredTeam) {
-                        angular.extend(configuredTeam, response[collectorItemId]);
-                    });
-                }
             });
         }
+        //endregion
     }
 })();

@@ -46,30 +46,27 @@
                         <div class="row">
 
                             <div class="col-xs-4">
-                                {{codeCoverage = ctrl.getSummaryMetric(team.collectorItemId, 'codeCoverage');""}}
                                 <product-team-summary-field
-                                    number="codeCoverage.number"
+                                    number="team.summary.codeCoverage.number"
                                     percent="true"
-                                    trend-up="codeCoverage.trendUp"
-                                    success-state="codeCoverage.successState"
+                                    trend-up="team.summary.codeCoverage.trendUp"
+                                    success-state="team.summary.codeCoverage.successState"
                                     caption="Code coverage"></product-team-summary-field>
                             </div>
                             <div class="col-xs-4 text-center">
-                                {{funcTests = ctrl.getSummaryMetric(team.collectorItemId, 'functionalTestsPassed');""}}
                                 <product-team-summary-field
-                                    number="funcTests.number"
+                                    number="team.summary.functionalTestsPassed.number"
                                     percent="true"
-                                    trend-up="funcTests.trendUp"
-                                    success-state="funcTests.successState"
+                                    trend-up="team.summary.functionalTestsPassed.trendUp"
+                                    success-state="team.summary.functionalTestsPassed.successState"
                                     caption="Func tests passed"></product-team-summary-field>
                             </div>
                             <div class="col-xs-4 text-right">
-                                {{codeIssues = ctrl.getSummaryMetric(team.collectorItemId, 'codeIssues');""}}
                                 <product-team-summary-field
-                                    number="codeIssues.number"
+                                    number="team.summary.codeIssues.number"
                                     percent="false"
-                                    trend-up="codeIssues.trendUp"
-                                    success-state="codeIssues.successState"
+                                    trend-up="team.summary.codeIssues.trendUp"
+                                    success-state="team.summary.codeIssues.successState"
                                     caption="# of code issues"></product-team-summary-field>
                             </div>
                         </div>
@@ -118,7 +115,7 @@
                         </div>
 
                         <div class="team-data-cell-last-build" ng-if="stage === 'Build'">
-                            {{build = ctrl.getLatestBuildInfo(team.collectorItemId);""}}
+                            {{build = team.latestBuild;""}}
                             Latest build #: <span class="fa" ng-class="{'text-success fa-thumbs-up': build.success, 'text-danger fa-thumbs-down': !build.success}"></span> <span class="team-data-cell-last-build-num">{{build.number}}</span>
                         </div>
                     </div>
