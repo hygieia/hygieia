@@ -5,6 +5,16 @@
     margin: 5px 0;
     min-width: 120px;
 
+    .ng-enter,
+    .ng-leave.ng-leave-active {
+        transition-delay: 0s !important;
+    }
+
+    .ng-leave,
+    .ng-enter.ng-enter-active {
+        transition-delay: .6s !important;
+    }
+
     &.commit-blocks-legend {
         .village,
         .town,
