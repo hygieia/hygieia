@@ -1,50 +1,44 @@
 package com.capitalone.dashboard.model;
 
-import java.util.HashMap;
-import java.util.Map;
+public class PipelineCommit extends SCM{
 
-public class PipelineCommit {
-    private SCM commit;
-    Map<String, Long> processedTimestamps = new HashMap<>();
-
-    public PipelineCommit(){
+    public PipelineCommit() {
     }
 
-    public PipelineCommit(SCM commit) {
-        this.commit = commit;
+    public PipelineCommit(long timestamp) {
+        this.timestamp = timestamp;
     }
 
-    public SCM getCommit() {
-        return commit;
+    public PipelineCommit(String scmUrl, String scmBranch, String scmRevisionNumber, String scmCommitLog, String scmAuthor, long scmCommitTimestamp, long numberOfChanges, long timestamp) {
+        super(scmUrl, scmBranch, scmRevisionNumber, scmCommitLog, scmAuthor, scmCommitTimestamp, numberOfChanges);
+        this.timestamp = timestamp;
     }
 
-    public void setCommit(SCM commit) {
-        this.commit = commit;
+    public PipelineCommit(SCM scm, long timestamp){
+        super(scm.scmUrl, scm.scmBranch, scm.scmRevisionNumber, scm.scmCommitLog, scm.scmAuthor, scm.scmCommitTimestamp, scm.numberOfChanges);
+        this.timestamp = timestamp;
+    }
+    private long timestamp;
+
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    public Map<String, Long> getProcessedTimestamps() {
-        return processedTimestamps;
-    }
-
-    public void setProcessedTimestamps(Map<String, Long> processedTimestamps) {
-        this.processedTimestamps = processedTimestamps;
-    }
-
-    public void addNewPipelineProcessedTimestamp(String pipelineStageType, Long timestamp){
-        getProcessedTimestamps().put(pipelineStageType, timestamp);
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     @Override
     public boolean equals(Object o) {
         if(o instanceof PipelineCommit){
             PipelineCommit toCompareTo = (PipelineCommit) o;
-            return this.commit.scmRevisionNumber.equals(toCompareTo.commit.scmRevisionNumber);
+            return this.scmRevisionNumber.equals(toCompareTo.scmRevisionNumber);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return commit.hashCode();
+        return (int) (timestamp ^ (timestamp >>> 32));
     }
 }

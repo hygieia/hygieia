@@ -2,13 +2,15 @@ package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PipelineResponse {
     private String name;
     private ObjectId collectorItemId;
-    private Map<PipelineStageType, Stage> stages = new HashMap<>();
+    private Map<PipelineStageType, List<PipelineResponseCommit>> stages = new HashMap<>();
 
     public String getName() {
         return name;
@@ -26,20 +28,20 @@ public class PipelineResponse {
         this.collectorItemId = collectorItemId;
     }
 
-    public Map<PipelineStageType, Stage> getStages() {
+    public Map<PipelineStageType, List<PipelineResponseCommit>> getStages() {
         return stages;
     }
 
-    public void setStages(Map<PipelineStageType, Stage> stages) {
+    public void setStages(Map<PipelineStageType, List<PipelineResponseCommit>> stages) {
         this.stages = stages;
     }
 
-    public void addToStage(PipelineStageType stage, PipelineCommit pipelineCommit) {
-        Stage pipelineStage = stages.get(stage);
+    public void addToStage(PipelineStageType stage, PipelineResponseCommit pipelineCommit) {
+        List<PipelineResponseCommit> pipelineStage = stages.get(stage);
         if (pipelineStage == null) {
-            pipelineStage = new Stage();
+            pipelineStage = new ArrayList<>();
             stages.put(stage, pipelineStage);
         }
-        pipelineStage.getCommits().add(pipelineCommit);
+        pipelineStage.add(pipelineCommit);
     }
 }

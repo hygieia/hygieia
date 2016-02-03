@@ -74,8 +74,7 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
 
         for(BinaryArtifact artifact : sortedArtifacts){
             for(SCM scm : artifact.getBuildInfo().getSourceChangeSet()){
-                PipelineCommit commit = new PipelineCommit(scm);
-                commit.addNewPipelineProcessedTimestamp(environmentComponent.getEnvironmentName(), environmentComponent.getAsOfDate());
+                PipelineCommit commit = new PipelineCommit(scm, environmentComponent.getAsOfDate());
                 pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
             }
         }

@@ -55,8 +55,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
         for(Dashboard teamDashboard : teamDashboardsReferencingBuild){
             Pipeline pipeline = getOrCreatePipeline(teamDashboard);
             for(SCM scm : build.getSourceChangeSet()){
-                PipelineCommit commit = new PipelineCommit(scm);
-                commit.addNewPipelineProcessedTimestamp(PipelineStageType.Build.name(), build.getTimestamp());
+                PipelineCommit commit = new PipelineCommit(scm, build.getTimestamp());
                 pipeline.addCommit(PipelineStageType.Build.name(), commit);
             }
             processPreviousFailedBuilds(build, pipeline);
@@ -73,8 +72,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
                 Build b = failedBuilds.next();
                 if (b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())) {
                     for (SCM scm : b.getSourceChangeSet()) {
-                        PipelineCommit failedBuildCommit = new PipelineCommit(scm);
-                        failedBuildCommit.addNewPipelineProcessedTimestamp(PipelineStageType.Build.name(), successfulBuild.getTimestamp());
+                        PipelineCommit failedBuildCommit = new PipelineCommit(scm, successfulBuild.getTimestamp());
                         pipeline.addCommit(PipelineStageType.Build.name(), failedBuildCommit);
                         successfulBuild.getSourceChangeSet().add(scm);
                     }

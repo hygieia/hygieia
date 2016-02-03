@@ -46,19 +46,20 @@ public class PipelineServiceImpl implements PipelineService {
         Map<PipelineStageType, Map<String, PipelineCommit>> commitsByStage = getCommitsByStage(dashboard, pipeline);
 
         for(PipelineStageType stage : PipelineStageType.values()){
-            Set<PipelineCommit> commits = findNotPropagatedCommits(commitsByStage.get(stage), getCommitsAfterStage(stage, commitsByStage), dashboard, pipeline);
-            pipelineResponse.getStages().put(stage, new Stage(commits));
+            List<PipelineResponseCommit> commits = findNotPropagatedCommits(commitsByStage.get(stage), getCommitsAfterStage(stage, commitsByStage), dashboard, pipeline);
+            pipelineResponse.getStages().put(stage, commits);
         }
         return pipelineResponse;
     }
 
+
+
     //todo: make this not so ugly
-    private Set<PipelineCommit> findNotPropagatedCommits(Map<String, PipelineCommit> startingStage, Map<String, PipelineCommit> commitsInLaterStages, Dashboard dashboard, Pipeline pipeline){
-        Set<PipelineCommit> notPropagatedCommits = new HashSet<>();
+    private List<PipelineResponseCommit> findNotPropagatedCommits(Map<String, PipelineCommit> startingStage, Map<String, PipelineCommit> commitsInLaterStages, Dashboard dashboard, Pipeline pipeline){
+        List<PipelineResponseCommit> notPropagatedCommits = new ArrayList<>();
         for(Map.Entry entry : startingStage.entrySet()){
             if(!commitsInLaterStages.containsKey(entry.getKey())){
-                PipelineCommit commit = (PipelineCommit)entry.getValue();
-                applyStageTimestamps(commit, dashboard, pipeline);
+                PipelineResponseCommit commit = applyStageTimestamps((PipelineCommit)entry.getValue(), dashboard, pipeline);
                 notPropagatedCommits.add(commit);
             }
         }
@@ -66,23 +67,25 @@ public class PipelineServiceImpl implements PipelineService {
     }
 
     //todo: rethink this approach.  breaking for deployment environments
-    private void applyStageTimestamps(PipelineCommit commit, Dashboard dashboard, Pipeline pipeline){
+    private PipelineResponseCommit applyStageTimestamps(PipelineCommit commit, Dashboard dashboard, Pipeline pipeline){
         Map<PipelineStageType, Map<String, PipelineCommit>> commitsMapByStage = getCommitsByStage(dashboard, pipeline);
+        PipelineResponseCommit returnCommit = new PipelineResponseCommit(commit);
         for(PipelineStageType stageType : PipelineStageType.values()){
             Map<String, PipelineCommit> commitMap = commitsMapByStage.get(stageType);
             //if this commit doesnt have a processed timestamp for this stage, add one
-            PipelineCommit pipelineCommit = commitMap.get(commit.getCommit().getScmRevisionNumber());
-            if(pipelineCommit != null && !commit.getProcessedTimestamps().containsKey(stageType.name())){
-                Long timestamp = pipelineCommit.getProcessedTimestamps().get(stageType);
-                commit.addNewPipelineProcessedTimestamp(stageType.name(), timestamp);
+            PipelineCommit pipelineCommit = commitMap.get(commit.getScmRevisionNumber());
+            if(pipelineCommit != null && !returnCommit.getProcessedTimestamps().containsKey(stageType.name())){
+                Long timestamp = pipelineCommit.getTimestamp();
+                returnCommit.addNewPipelineProcessedTimestamp(stageType.name(), timestamp);
             }
         }
+        return returnCommit;
     }
 
     private Map<String, PipelineCommit> commitSetToMap(Set<PipelineCommit> set){
         Map<String, PipelineCommit> returnMap = new HashMap<>();
         for(PipelineCommit commit : set){
-            returnMap.put(commit.getCommit().getScmRevisionNumber(), commit);
+            returnMap.put(commit.getScmRevisionNumber(), commit);
         }
         return returnMap;
     }

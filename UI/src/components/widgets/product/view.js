@@ -422,7 +422,6 @@
                 start = now.subtract(90, 'days').format('x');
 
             pipelineData.commits(start, nowTimestamp, _(teams).pluck('collectorItemId').value()).then(function(teams) {
-
                 // start processing response by looping through each team
                 _(teams).each(function(team) {
                     var teamStageData = {},
@@ -434,7 +433,7 @@
                     _(stages).reverse().forEach(function(currentStageName) {
 
                         // make sure there are commits in that stage, otherwise skip it
-                        if (!team.stages[currentStageName] || !team.stages[currentStageName].commits || !team.stages[currentStageName].commits.length) {
+                        if (!team.stages[currentStageName] || !team.stages[currentStageName].length) {
                             return;
                         }
 
@@ -444,12 +443,12 @@
                             previousStages = _(localStages.splice(0, localStages.indexOf(currentStageName))).reverse().value(); // only look for stages before this one
 
                         // loop through each commit and create our own custom commit object
-                        _(stage.commits).forEach(function(commitObj) {
+                        _(stage).forEach(function(commitObj) {
                             var commit = {
-                                author: commitObj.commit.scmAuthor || 'NA',
-                                message: commitObj.commit.scmCommitLog || 'No message',
-                                id: commitObj.commit.scmRevisionNumber,
-                                timestamp: commitObj.commit.scmCommitTimestamp,
+                                author: commitObj.scmAuthor || 'NA',
+                                message: commitObj.scmCommitLog || 'No message',
+                                id: commitObj.scmRevisionNumber,
+                                timestamp: commitObj.scmCommitTimestamp,
                                 in: {} //placeholder for stage duration data per commit
                             };
 
@@ -617,8 +616,6 @@
                             .filter(function(val, key) {
                                 return key == 'Prod'
                             })
-                            // get commits
-                            .pluck('commits')
                             // make all commits a single array
                             .reduce(function(num, commits){ return num + commits; })
                             // they should, but make sure the commits have a prod timestamp
@@ -628,8 +625,8 @@
                             // calculate their time to prod
                             .map(function(commit) {
                                 return {
-                                    duration: commit.processedTimestamps['Prod'] - commit.commit.scmCommitTimestamp,
-                                    commitTimestamp: commit.commit.scmCommitTimestamp
+                                    duration: commit.processedTimestamps['Prod'] - commit.scmCommitTimestamp,
+                                    commitTimestamp: commit.scmCommitTimestamp
                                 };
                             });
 
