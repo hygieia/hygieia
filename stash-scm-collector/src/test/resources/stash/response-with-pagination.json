@@ -1,0 +1,26 @@
+{
+  "size": 1,
+  "limit": 25,
+  "isLastPage": false,
+  "values": [
+    {
+      "id": "def0123abcdef4567abcdef8987abcdef6543abc",
+      "displayId": "def0123abcd",
+      "author": {
+        "name": "charlie",
+        "emailAddress": "charlie@example.com"
+      },
+      "authorTimestamp": 1442553509156,
+      "message": "More work on feature 1",
+      "parents": [
+        {
+          "id": "abcdef0123abcdef4567abcdef8987abcdef6543",
+          "displayId": "abcdef0"
+        }
+      ]
+    }
+  ],
+  "start": 0,
+  "authorCount": 1,
+  "totalCount": 1
+}
