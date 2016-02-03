@@ -32,7 +32,7 @@
                 ng-repeat="team in ctrl.configuredTeams">
 
                 <div class="product-table-td team-name-cell">
-                    <span class="fa fa-cog" ng-click="ctrl.editTeam(team.collectorItemId)"></span>
+                    <span class="fa fa-cog" ng-click="ctrl.editTeam(team)"></span>
 
                     <a title="{{item.customName || item.name}}" class="team-name" ng-click="ctrl.openDashboard(team)">
                         {{team.customName || team.name}}
@@ -44,8 +44,8 @@
                         </div>
 
                         <div class="team-quality-trends">
-                            <div class="trend-wrap-6">
-		                            <div class="trend text-center">
+                            <div class="trend-wrap-3">
+		                            <div class="trend">
 		                                <product-team-summary-field
 		                                    number="team.summary.codeCoverage.number"
 		                                    percent="true"
@@ -53,7 +53,7 @@
 		                                    success-state="team.summary.codeCoverage.successState"
 		                                    caption="Code coverage"></product-team-summary-field>
 		                            </div>
-		                            <div class="trend text-center">
+		                            <div class="trend">
 		                                <product-team-summary-field
 		                                    number="team.summary.functionalTestsPassed.number"
 		                                    percent="true"
@@ -61,31 +61,7 @@
 		                                    success-state="team.summary.functionalTestsPassed.successState"
 		                                    caption="Func tests passed"></product-team-summary-field>
 		                            </div>
-		                            <div class="trend text-center">
-		                                <product-team-summary-field
-		                                    number="team.summary.codeIssues.number"
-		                                    percent="false"
-		                                    trend-up="team.summary.codeIssues.trendUp"
-		                                    success-state="team.summary.codeIssues.successState"
-		                                    caption="# of code issues"></product-team-summary-field>
-		                            </div>
-		                            <div class="trend text-center">
-		                                <product-team-summary-field
-		                                    number="team.summary.codeCoverage.number"
-		                                    percent="true"
-		                                    trend-up="team.summary.codeCoverage.trendUp"
-		                                    success-state="team.summary.codeCoverage.successState"
-		                                    caption="Code coverage"></product-team-summary-field>
-		                            </div>
-		                            <div class="trend text-center">
-		                                <product-team-summary-field
-		                                    number="team.summary.functionalTestsPassed.number"
-		                                    percent="true"
-		                                    trend-up="team.summary.functionalTestsPassed.trendUp"
-		                                    success-state="team.summary.functionalTestsPassed.successState"
-		                                    caption="Func tests passed"></product-team-summary-field>
-		                            </div>
-		                            <div class="trend text-center">
+		                            <div class="trend">
 		                                <product-team-summary-field
 		                                    number="team.summary.codeIssues.number"
 		                                    percent="false"
@@ -140,8 +116,7 @@
                         </div>
 
                         <div class="team-data-cell-last-build" ng-if="stage === 'Build'">
-                            {{build = team.latestBuild;""}}
-                            Latest build #: <span class="fa" ng-class="{'text-success fa-thumbs-up': build.success, 'text-danger fa-thumbs-down': !build.success}"></span> <span class="team-data-cell-last-build-num">{{build.number}}</span>
+                            Latest build #: <span class="fa" ng-class="{'text-success fa-thumbs-up': team.latestBuild.success, 'text-danger fa-thumbs-down': team.latestBuild.success == false}"></span> <span class="team-data-cell-last-build-num">{{team.latestBuild.number}}</span>
                         </div>
                     </div>
 

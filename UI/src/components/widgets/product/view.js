@@ -11,8 +11,7 @@
         var ctrl = this;
 
         // private properties
-        var teamDashboardDetails = {},
-            latestBuilds = {};
+        var teamDashboardDetails = {};
 
 
         // public properties
@@ -27,7 +26,6 @@
 
         // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
-        ctrl.getLatestBuildInfo = getLatestBuildInfo;
 
         // set our data before we get things started
         var widgetOptions = angular.copy($scope.widgetConfig.options);
@@ -53,7 +51,7 @@
 
         //region public method implementations
         function load() {
-            getTeamStageData(widgetOptions.teams, [].concat(ctrl.stages));
+            collectTeamStageData(widgetOptions.teams, [].concat(ctrl.stages));
 
             var requestedData = getTeamDashboardDetails(widgetOptions.teams);
             if(!requestedData) {
@@ -263,7 +261,14 @@
             buildData
                 .details({componentId: componentId, max: 1})
                 .then(function(response) {
-                    setTeamData(collectorItemId, {latestBuild: response.result[0]})
+                    var build = response.result[0];
+
+                    setTeamData(collectorItemId, {
+                        latestBuild: {
+                            success: build.buildStatus.toLowerCase() == 'success',
+                            number: build.number
+                        }
+                    });
                 });
 
             // get latest code coverage and issues metrics
@@ -401,22 +406,8 @@
         }
 
         function teamStageHasCommits(team, stage) {
-            return team.stages[stage] && team.stages[stage].commits && team.stages[stage].commits.length;
+            return team.stages && team.stages[stage] && team.stages[stage].commits && team.stages[stage].commits.length;
         }
-
-        function getLatestBuildInfo(collectorItemId) {
-            if (!latestBuilds[collectorItemId]) {
-                return false;
-            }
-
-            var build = latestBuilds[collectorItemId];
-            return {
-                success: build.buildStatus === 'Success',
-                number: build.number
-            }
-        }
-
-
 
         function getStageDurationStats(a) {
             var r = {mean: 0, variance: 0, deviation: 0}, t = a.length;
@@ -426,6 +417,7 @@
         }
 
         function getTeamStageSummary(stageData) {
+
             return {
                 commitsInsideTimeframe: _(stageData.commits).filter(function(c) { return !c.errorState; }).value().length,
                 commitsOutsideTimeframe: _(stageData.commits).filter({errorState:true}).value().length,
@@ -475,12 +467,13 @@
             }
         }
 
-        function getTeamStageData(teams, ctrlStages) {
+        function collectTeamStageData(teams, ctrlStages) {
             var now = moment(),
                 nowTimestamp = now.format('x'),
                 start = now.subtract(90, 'days').format('x');
 
             pipelineData.commits(start, nowTimestamp, _(teams).pluck('collectorItemId').value()).then(function(teams) {
+
                 // start processing response by looping through each team
                 _(teams).each(function(team) {
                     var teamStageData = {},
@@ -534,7 +527,7 @@
                             // through any previous stage and subtracting its timestamp from the next stage
                             var currentStageTimestamp = commitObj.processedTimestamps[currentStageName];
                             _(previousStages).forEach(function(previousStage) {
-                                if(!commitObj.processedTimestamps[previousStage]) {
+                                if(!commitObj.processedTimestamps[previousStage] || isNaN(currentStageTimestamp)) {
                                     return;
                                 }
 
@@ -557,6 +550,7 @@
                             commits.push(commit);
                         });
 
+                        // make sure commits are always set
                         teamStageData[currentStageName] = {
                             commits: commits
                         }
@@ -595,6 +589,8 @@
                     _(teamStageData).forEach(function(data, stage) {
                         data.summary = getTeamStageSummary(teamStageData[stage]);
                     });
+
+                    console.log(teamStageData);
 
                     // calculate info used in production
                     var teamProdData = {

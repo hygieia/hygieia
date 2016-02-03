@@ -146,7 +146,7 @@ gulp.task('serve', ['build'], function() {
     });
 
     gulp.watch(testDataFiles).on('change', function() {
-        runSequence('test-data', browserSync.reload);
+        runSequence('test-data');
     });
 });
 
