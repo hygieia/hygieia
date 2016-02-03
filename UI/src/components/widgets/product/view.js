@@ -416,57 +416,6 @@
             return r.deviation = Math.sqrt(r.variance = s / t), r;
         }
 
-        function getTeamStageSummary(stageData) {
-
-            return {
-                commitsInsideTimeframe: _(stageData.commits).filter(function(c) { return !c.errorState; }).value().length,
-                commitsOutsideTimeframe: _(stageData.commits).filter({errorState:true}).value().length,
-                lastUpdated: (function(stageData) {
-                    if(!stageData.commits) {
-                        return false;
-                    }
-
-                    var lastUpdated = moment(_(stageData.commits).max('timestamp').value().timestamp);
-                    return {
-                        longDisplay: lastUpdated.format('MMMM Do YYYY, h:mm:ss a'),
-                        shortDisplay: lastUpdated.dash('ago')
-                    }
-                })(stageData),
-
-                deviation: (function(stageData) {
-                    var number = moment.duration(stageData.stageStdDeviation).minutes(),
-                        desc = 'min';
-
-                    if(number > 60*24) {
-                        desc = 'day';
-                        number = Math.round(number / 24 / 60);
-                    }
-                    else if (number > 60) {
-                        desc = 'hour';
-                        number = Math.round(number / 60);
-                    }
-
-                    return {
-                        number: number,
-                        descriptor: desc
-                    }
-                })(stageData),
-
-                average: (function(stageData) {
-                    if(!stageData.stageAverageTime) {
-                        return false;
-                    }
-                    var average = moment.duration(stageData.stageAverageTime);
-
-                    return {
-                        days: Math.floor(average.asDays()),
-                        hours: average.hours(),
-                        minutes: average.minutes()
-                    }
-                })(stageData)
-            }
-        }
-
         function collectTeamStageData(teams, ctrlStages) {
             var now = moment(),
                 nowTimestamp = now.format('x'),
@@ -534,8 +483,8 @@
                                 var previousStageTimestamp = commitObj.processedTimestamps[previousStage],
                                     timeInPreviousStage = currentStageTimestamp - previousStageTimestamp;
 
+                                // add how long it was in the previous stage
                                 commit.in[previousStage] = timeInPreviousStage;
-                                currentStageTimestamp = previousStageTimestamp;
 
                                 // add this number to the stage duration array so it can be used
                                 // to calculate each stages average duration individually
@@ -543,7 +492,11 @@
                                     stageDurations[previousStage] = [];
                                 }
 
+                                // add this time to our duration list
                                 stageDurations[previousStage].push(timeInPreviousStage);
+
+                                // now use this as our new current timestamp
+                                currentStageTimestamp = previousStageTimestamp;
                             });
 
                             // add our commit object back
@@ -557,7 +510,7 @@
                     });
 
                     // now that we've added all the duration data for all commits in each stage
-                    // we can calculate the averages and std deviation
+                    // we can calculate the averages and std deviation and put the data on the stage
                     _(stageDurations).forEach(function(durationArray, currentStageName) {
                         if(!teamStageData[currentStageName]) {
                             teamStageData[currentStageName] = {};
@@ -580,19 +533,81 @@
                         }
 
                         _(data.commits).forEach(function(commit) {
-                            var timeInStage = nowTimestamp - commit.timestamp;
+                            // use the time it's been in the existing environment to compare
+                            var timeInStage = commit.in[stage];
 
                             commit.errorState = timeInStage > 2 * data.stageStdDeviation;
                         });
                     });
 
-                    _(teamStageData).forEach(function(data, stage) {
-                        data.summary = getTeamStageSummary(teamStageData[stage]);
+                    // create some summary data used in each stage's cell
+                    _(teamStageData).forEach(function(stageData, stageName) {
+                        stageData.summary = {
+                            // green block count
+                            commitsInsideTimeframe: _(stageData.commits).filter(function(c) { return !c.errorState; }).value().length,
+
+                            // red block count
+                            commitsOutsideTimeframe: _(stageData.commits).filter({errorState:true}).value().length,
+
+                            // stage last updated text
+                            lastUpdated: (function(stageData) {
+                                if(!stageData.commits) {
+                                    return false;
+                                }
+
+                                // try to get the last commit to enter this stage by evaluating the duration
+                                // for this current stage, otherwise use the commit timestamp
+                                var lastUpdatedDuration = _(stageData.commits).map(function(commit) {
+                                        return commit.in[stageName] || moment().format('x') - commit.timestamp;
+                                    }).min().value(),
+                                    lastUpdated = moment().add(-1*lastUpdatedDuration, 'milliseconds');
+
+                                return {
+                                    longDisplay: lastUpdated.format('MMMM Do YYYY, h:mm:ss a'),
+                                    shortDisplay: lastUpdated.dash('ago')
+                                }
+                            })(stageData),
+
+                            // stage deviation
+                            deviation: (function(stageData) {
+                                // determine how to display the standard deviation
+                                var number = moment.duration(stageData.stageStdDeviation).minutes(),
+                                    desc = 'min';
+
+                                if(number > 60*24) {
+                                    desc = 'day';
+                                    number = Math.round(number / 24 / 60);
+                                }
+                                else if (number > 60) {
+                                    desc = 'hour';
+                                    number = Math.round(number / 60);
+                                }
+
+                                return {
+                                    number: number,
+                                    descriptor: desc
+                                }
+                            })(stageData),
+
+                            average: (function(stageData) {
+                                // determine how to display the average time
+
+                                if(!stageData.stageAverageTime) {
+                                    return false;
+                                }
+
+                                var average = moment.duration(stageData.stageAverageTime);
+
+                                return {
+                                    days: Math.floor(average.asDays()),
+                                    hours: average.hours(),
+                                    minutes: average.minutes()
+                                }
+                            })(stageData)
+                        };
                     });
 
-                    console.log(teamStageData);
-
-                    // calculate info used in production
+                    // calculate info used in prod cell
                     var teamProdData = {
                         averageDays: '--',
                         totalCommits: 0

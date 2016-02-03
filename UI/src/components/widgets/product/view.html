@@ -77,8 +77,8 @@
                 <div class="product-table-td team-data-cell"
                     ng-repeat="stage in ctrl.stages | filter: '!PROD'">
                     {{teamStageData = team.stages[stage].summary;""}}
-                    <div ng-class="{'clickable':ctrl.teamStageHasCommits(team, stage)}" ng-if="teamStageData" ng-click="ctrl.viewTeamStageDetails(team, stage)">
-                        <div class="team-data-cell-header">
+                    <div ng-class="{'clickable':ctrl.teamStageHasCommits(team, stage)}" ng-click="ctrl.viewTeamStageDetails(team, stage)">
+                        <div class="team-data-cell-header" ng-if="teamStageData">
                             <div class="clearfix team-data-cell-average-days" ng-if-start="teamStageData.average">
                                 <!-- only leading zeros get small size -->
                                 <span class="team-time-average-lg" ng-if="teamStageData.average.days">{{teamStageData.average.days}}</span>
@@ -105,7 +105,7 @@
                             </div>
                         </div>
 
-                        <div class="team-data-cell-body">
+                        <div class="team-data-cell-body" ng-if="teamStageData">
                             <div class="team-data-cell-last-updated" title="{{teamStageData.lastUpdated.longDisplay}}" ng-if="teamStageData.lastUpdated">
                                 Updated: <span class="team-last-updated-num">{{teamStageData.lastUpdated.shortDisplay}}</span>
                             </div>
