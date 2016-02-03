@@ -102,6 +102,9 @@ public class CollectorServiceImpl implements CollectorService {
 
     @Override
     public CollectorItem createCollectorItemByNiceName(CollectorItem item) throws HygieiaException {
+        /*
+         * FIXME - This logic is currently broken!!
+         */
         //Try to find a matching by collector ID and niceName.
         List<CollectorItem> existing = collectorItemRepository.findByCollectorIdAndNiceName(item.getCollectorId(), item.getNiceName());
 

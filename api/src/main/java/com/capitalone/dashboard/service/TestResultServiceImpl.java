@@ -151,10 +151,12 @@ public class TestResultServiceImpl implements TestResultService {
         option.put("instanceUrl", request.getServerUrl());
         tempCi.getOptions().putAll(option);
         tempCi.setNiceName(request.getNiceName());
-        if (StringUtils.isEmpty(tempCi.getNiceName())) {
-            return collectorService.createCollectorItem(tempCi);
-        }
-        return collectorService.createCollectorItemByNiceName(tempCi);
+        // FIXME: CollectorItem creation via nice name is broken!
+//        if (StringUtils.isEmpty(tempCi.getNiceName())) {
+//            return collectorService.createCollectorItem(tempCi);
+//        }
+//        return collectorService.createCollectorItemByNiceName(tempCi);
+        return collectorService.createCollectorItem(tempCi);
     }
 
     private TestResult createTest(CollectorItem collectorItem, TestDataCreateRequest request) {

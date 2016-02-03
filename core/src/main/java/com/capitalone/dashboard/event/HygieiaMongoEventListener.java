@@ -55,6 +55,7 @@ public abstract class HygieiaMongoEventListener<T> extends AbstractMongoEventLis
         EnvironmentStage stage = pipeline.getStages().get(stageName);
         if(stage == null){
             stage = new EnvironmentStage();
+            pipeline.getStages().put(stageName, stage);
         }
         return stage;
     }
