@@ -4,12 +4,9 @@ package com.capitalone.dashboard.event;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.*;
 import com.google.common.collect.Lists;
-import org.bson.types.Binary;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,7 +70,7 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         }
 
         List<BinaryArtifact> sortedArtifacts = Lists.newArrayList(artifacts);
-        Collections.sort(sortedArtifacts, BinaryArtifact.TIMESTAMP_COMPATOR);
+        Collections.sort(sortedArtifacts, BinaryArtifact.TIMESTAMP_COMPARATOR);
 
         for(BinaryArtifact artifact : sortedArtifacts){
             for(SCM scm : artifact.getBuildInfo().getSourceChangeSet()){

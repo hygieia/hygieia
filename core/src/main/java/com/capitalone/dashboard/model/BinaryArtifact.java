@@ -87,7 +87,7 @@ public class BinaryArtifact extends BaseModel {
         this.canonicalName = canonicalName;
     }
 
-    public static Comparator<BinaryArtifact> TIMESTAMP_COMPATOR = new Comparator<BinaryArtifact>() {
+    public static final Comparator<BinaryArtifact> TIMESTAMP_COMPARATOR = new Comparator<BinaryArtifact>() {
         @Override
         public int compare(BinaryArtifact o1, BinaryArtifact o2) {
             return Long.compare(o1.getTimestamp(), o2.getTimestamp());
