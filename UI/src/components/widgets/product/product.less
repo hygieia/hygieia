@@ -27,8 +27,6 @@
             display: table-row;
         }
 
-
-
         .product-table-th, .product-table-td {
             display: table-cell;
             border-left: 1px solid @dash-divider;
@@ -138,8 +136,8 @@
                 overflow: hidden;
                 display: -webkit-box;
                 -webkit-box-orient: vertical;
-                -webkit-line-clamp: 3;  /* number of lines to show */
-                max-height: 3em;        /* fallback */
+                -webkit-line-clamp: 3; /* number of lines to show */
+                max-height: 3em; /* fallback */
             }
 
             .fa-cog {
@@ -171,52 +169,52 @@
                     margin-bottom: .3em;
                 }
 
-								.team-quality-trends {
-	                  width: 100%;
-	                  overflow: hidden;
+                .team-quality-trends {
+                    width: 100%;
+                    overflow: hidden;
 
-	                  .trend {
-		                    float: left;
-	                  }
+                    .trend {
+                        float: left;
+                    }
                 }
-								
+
                 .generate-trends(15);
 
-                .generate-trends(@n, @i: 3) when (@i =< @n) {
-	                  .trend-wrap-@{i} {
-		                    width: (100% / 3 * @i);
-		                    animation-name: ~'trendticker-@{i}';
-	                      animation-duration: (@i - 2)*2s; 
-	                      animation-timing-function: cubic-bezier(0.750, -0.250, 0.250, 1.250); 
-	                      animation-delay: 5s;
-	                      animation-iteration-count: infinite;
+                .generate-trends(@n; @i: 3) when (@i =< @n) {
+                    .trend-wrap-@{i} {
+                        width: (100% / 3 * @i);
+                        animation-name: ~'trendticker-@{i}';
+                        animation-duration: (@i - 2)*2s;
+                        animation-timing-function: cubic-bezier(0.750, -0.250, 0.250, 1.250);
+                        animation-delay: 5s;
+                        animation-iteration-count: infinite;
                     }
 
-										
-                    @keyframes ~'trendticker-@{i}' {
-	                      .keyframe-ticker(@i);
+                    @tickerKeyframeName: ~'trendticker-@{i}';
+                    @keyframes @tickerKeyframeName {
+                        .keyframe-ticker(@i);
                     }
-                    
-	                  .trend:first-child:nth-last-child(@{i}),
+
+                    .trend:first-child:nth-last-child(@{i}),
                     .trend:first-child:nth-last-child(@{i}) ~ .trend {
                         width: 100% / @i;
                     }
-                    
+
                     .generate-trends(@n, (@i + 1));
                 }
 
-								.keyframe-ticker(@limit, @frame: 0) when (@frame =< @limit - 3) {
-	                  @lowerlimit: @frame * 100 / (@limit - 2) * 1%;
-	                  @upperlimit: (@frame * (100 / (@limit - 2))) + ((100 / (@limit - 2)) * 0.8) * 1%;
-	                  @transform: @frame * (100 / @limit) * -1%;
-	                  @{lowerlimit} {
-		                    transform: translateX(@transform);
-	                  }
-	                  @{upperlimit} {
-		                    transform: translateX(@transform);
-	                  }
-		                .keyframe-ticker(@limit, (@frame + 1));
-		            }
+                .keyframe-ticker(@limit; @frame: 0) when (@frame =< (@limit - 3)) {
+                    @lowerlimit: @frame * 100 / (@limit - 2) * 1%;
+                    @upperlimit: (@frame * (100 / (@limit - 2))) + ((100 / (@limit - 2)) * 0.8) * 1%;
+                    @transform: @frame * (100 / @limit) * -1%;
+                    @{lowerlimit} {
+                        transform: translateX(@transform);
+                    }
+                    @{upperlimit} {
+                        transform: translateX(@transform);
+                    }
+                    .keyframe-ticker(@limit, (@frame + 1));
+                }
 
                 .quality-cell-wrapper {
                     display: inline-block;
@@ -255,7 +253,7 @@
                 .text(1.5);
 
                 .team-data-cell-average-days {
-                    white-space:nowrap;
+                    white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
                 }
@@ -312,7 +310,7 @@
                 .fa {
                     font-size: 1.7em;
                 }
-                
+
                 .team-data-cell-last-build-num {
                     .text(1.5, 2);
                     color: @dash-dashboard-text-hover;
@@ -396,7 +394,7 @@
     }
 }
 
-@media(min-width: @screen-sm-min) {
+@media (min-width: @screen-sm-min) {
     #product-dashboard .product-dash-header {
         .product-dash-header-text {
             float: left;
