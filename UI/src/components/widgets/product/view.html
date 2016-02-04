@@ -44,7 +44,15 @@
                         </div>
 
                         <div class="team-quality-trends">
-                            <div class="trend-wrap-5">
+                            <div class="trend-wrap-7">
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        number="team.summary.unitTests.number"
+                                        percent="true"
+                                        trend-up="team.summary.unitTests.trendUp"
+                                        success-state="team.summary.unitTests.successState"
+                                        caption="Unit tests passed"></product-team-summary-field>
+                                </div>
                                 <div class="trend">
                                     <product-team-summary-field
                                         number="team.summary.codeCoverage.number"
@@ -55,27 +63,11 @@
                                 </div>
                                 <div class="trend">
                                     <product-team-summary-field
-                                        number="team.summary.functionalTestsPassed.number"
-                                        percent="true"
-                                        trend-up="team.summary.functionalTestsPassed.trendUp"
-                                        success-state="team.summary.functionalTestsPassed.successState"
-                                        caption="Func tests passed"></product-team-summary-field>
-                                </div>
-                                <div class="trend">
-                                    <product-team-summary-field
                                         number="team.summary.codeIssues.number"
                                         percent="false"
                                         trend-up="team.summary.codeIssues.trendUp"
                                         success-state="team.summary.codeIssues.successState"
-                                        caption="# of code issues"></product-team-summary-field>
-                                </div>
-                                <div class="trend">
-                                    <product-team-summary-field
-                                        number="team.summary.unitTests.number"
-                                        percent="false"
-                                        trend-up="team.summary.unitTests.trendUp"
-                                        success-state="team.summary.unitTests.successState"
-                                        caption="% unit passed"></product-team-summary-field>
+                                        caption="Code issues"></product-team-summary-field>
                                 </div>
                                 <div class="trend">
                                     <product-team-summary-field
@@ -83,7 +75,31 @@
                                         percent="false"
                                         trend-up="team.summary.securityIssues.trendUp"
                                         success-state="team.summary.securityIssues.successState"
-                                        caption="# of sec. issues"></product-team-summary-field>
+                                        caption="Security issues"></product-team-summary-field>
+                                </div>
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        number="team.summary.buildSuccess.number"
+                                        percent="true"
+                                        trend-up="team.summary.buildSuccess.trendUp"
+                                        success-state="team.summary.buildSuccess.successState"
+                                        caption="Build success"></product-team-summary-field>
+                                </div>
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        number="43"
+                                        percent="false"
+                                        trend-up="true"
+                                        success-state="false"
+                                        caption="Build fix rate"></product-team-summary-field>
+                                </div>
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        number="team.summary.functionalTestsPassed.number"
+                                        percent="true"
+                                        trend-up="team.summary.functionalTestsPassed.trendUp"
+                                        success-state="team.summary.functionalTestsPassed.successState"
+                                        caption="Func tests passed"></product-team-summary-field>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +147,7 @@
                             <div class="clearfix"></div>
                         </div>
 
-                        <div class="team-data-cell-last-build" ng-if="stage === 'Build'">
+                        <div class="team-data-cell-last-build" ng-if="stage === 'Build' && team.latestBuild">
                             Latest build #: <span class="fa" ng-class="{'text-success fa-thumbs-up': team.latestBuild.success, 'text-danger fa-thumbs-down': team.latestBuild.success == false}"></span> <span class="team-data-cell-last-build-num">{{team.latestBuild.number}}</span>
                         </div>
                     </div>
@@ -142,7 +158,7 @@
                     <div class="clearfix team-prod-average-header">
                         <span class="pull-left team-prod-arrow fa" ng-class="{'fa-long-arrow-up text-danger':team.prod.trendUp == true, 'fa-long-arrow-down text-success': team.prod.trendUp == false}" ng-if="team.prod.trendUp != undefined"></span>
                         <span class="pull-left product-text-active">{{team.prod.averageDays}}</span>
-                        <span class="pull-left team-prod-average-days">DAY</span>
+                        <span class="pull-left team-prod-average-days"><ng-pluralize count="team.prod.averageDays" when="{1:' DAY',other:' DAYS'}"></ng-pluralize></span>
                     </div>
 
                     <div class="team-prod-average-desc">

@@ -26,7 +26,8 @@
             lastRequest: '++id,[type+componentId]',
             testSuite: '++id,[componentId+timestamp]',
             codeAnalysis: '++id,[componentId+timestamp]',
-            securityAnalysis: '++id,[componentId+timestamp]'
+            securityAnalysis: '++id,[componentId+timestamp]',
+            buildData: '++id,[componentId+timestamp]'
         });
 
         // create classes
@@ -36,6 +37,7 @@
             timestamp: Number
         });
 
+        // ad a convenience method to save back the request
         LastRequest.prototype.save = function() {
             db.lastRequest.put(this);
         };
@@ -71,6 +73,13 @@
             totalCount: Number
         });
 
+        var BuildData = db.buildData.defineClass({
+            componentId: String,
+            timestamp: Number,
+            number: String,
+            success: Number // booleans are not in idb spec so use 1 or 0
+        });
+
         db.open();
 
         // clear out any collection data if there is a reset parameter
@@ -79,6 +88,7 @@
             db.lastRequest.clear();
             db.codeAnalysis.clear();
             db.testSuite.clear();
+            db.buildData.clear();
         }
 
         // public properties
@@ -318,19 +328,104 @@
                 return val;
             }
 
-            // get latest build
-            buildData
-                .details({componentId: componentId, max: 1})
-                .then(function(response) {
-                    var build = response.result[0];
+            // region Build Data
+            db.lastRequest.where('[type+componentId]').equals(['build-data', componentId]).first()
+                .then(function(lastRequest) {
+                    var now = moment(),
+                        dateEnds = now.valueOf(),
+                        ninetyDaysAgo = now.add(-90, 'days').valueOf(),
+                        dateBegins = ninetyDaysAgo;
 
-                    setTeamData(collectorItemId, {
-                        latestBuild: {
-                            success: build.buildStatus.toLowerCase() == 'success',
-                            number: build.number
-                        }
-                    });
+                    // if we already have made a request, just get the delta
+                    if(lastRequest) {
+                        dateBegins = lastRequest.timestamp;
+                    }
+
+                    buildData
+                        .details({componentId: componentId, endDateBegins: dateBegins, endDateEnds: dateEnds})
+                        .then(function(response) {
+                            // since we're only requesting a minute we'll probably have nothing
+                            if(!response || !response.result || !response.result.length) {
+                                return isReload ? $q.reject('No new data') : false;
+                            }
+
+                            // save the request object so we can get the delta next time as well
+                            if(lastRequest) {
+                                lastRequest.timestamp = dateEnds;
+                                lastRequest.save();
+                            }
+                            // need to add a new item
+                            else {
+                                db.lastRequest.add({
+                                    type: 'build-data',
+                                    componentId: componentId,
+                                    timestamp: dateEnds
+                                });
+                            }
+
+                            // put all results in the database
+                            _(response.result).forEach(function(result) {
+                                var build = {
+                                        componentId: componentId,
+                                        timestamp: result.timestamp,
+                                        number: result.number,
+                                        success: result.buildStatus.toLowerCase() == 'success'
+                                    };
+
+                                db.buildData.add(build);
+                            });
+                        })
+                        .then(function() {
+                            db.buildData.where('[componentId+timestamp]').between([componentId, ninetyDaysAgo], [componentId, dateEnds]).toArray(function(rows) {
+                                if(!rows.length) {
+                                    return;
+                                }
+
+                                // make sure it's sorted with the most recent first (largest timestamp)
+                                rows = _(rows).sortBy('timestamp').reverse().value();
+
+                                var now = moment(),
+                                successRateData = _(rows).groupBy(function(build) {
+                                        return moment(moment(build.timestamp).format('L')).valueOf();
+                                    }).map(function(builds, key) {
+                                        key = parseFloat(key); // make sure it's a number
+
+                                        var daysAgo = -1 * moment.duration(now.diff(key)).asDays(),
+                                            successfulBuilds = _(builds).filter({success:true}).value().length,
+                                            totalBuilds = builds.length;
+
+                                        return [daysAgo, totalBuilds > 0 ? successfulBuilds / totalBuilds : 0];
+                                    }).value();
+
+                                var successRateResponse = regression('linear', successRateData),
+                                    successRateTrendUp = successRateResponse.equation[0] > 0,
+                                    totalSuccessfulBuilds = _(rows).filter({success:true}).value().length,
+                                    totalBuilds = rows.length,
+                                    successRateAverage = totalBuilds ? totalSuccessfulBuilds / totalBuilds : 0;
+
+                                var latestBuild = rows[0];
+
+                                // use $timeout so that it will apply on the next digest
+                                $timeout(function() {
+                                    // update data for the UI
+                                    setTeamData(collectorItemId, {
+                                        summary: {
+                                            buildSuccess: {
+                                                number: Math.round(successRateAverage * 100),
+                                                trendUp: successRateTrendUp,
+                                                successState: successRateTrendUp
+                                            }
+                                        },
+                                        latestBuild: {
+                                            number: latestBuild.number,
+                                            success: latestBuild.success
+                                        }
+                                    });
+                                });
+                            });
+                        });
                 });
+            // endregion
 
             // region Security Analysis
             // get our security analysis data. start by seeing if we've already run this request
@@ -651,132 +746,6 @@
                     });
             });
             // endregion
-
-            // region Old way processing 90 days at a time
-            // get latest code coverage and issues metrics
-//            codeAnalysisData
-//                .staticDetails({componentId: componentId, max:1})
-//                .then(function(response) {
-//                    if(!response || !response.result || !response.result.length || !response.result[0].metrics) {
-//                        return;
-//                    }
-//
-//                    var metrics = response.result[0].metrics,
-//                        lineCoverage = getCaMetric(metrics, 'line_coverage'),
-//                        violations = getCaMetric(metrics, 'violations');
-//
-//                    setTeamData(collectorItemId, {
-//                        summary: {
-//                            codeIssues: {
-//                                number: violations
-//                            },
-//                            codeCoverage: {
-//                                number: Math.round(lineCoverage)
-//                            }
-//                        }
-//                    });
-//                });
-//
-//            // get trends for code coverage and issues
-//            codeAnalysisData
-//                .staticDetails({componentId: componentId, dateBegins: start})
-//                .then(function(response) {
-//
-//                    // just need the issue and coverage metric values
-//                    var data = _(response.result)
-//                        .sortBy('timestamp')
-//                        .map(function(result) {
-//                            var daysAgo = -1 * moment.duration(moment().diff(result.timestamp)).asDays(),
-//                                codeIssues = getCaMetric(result.metrics, 'violations'),
-//                                codeCoverage = getCaMetric(result.metrics, 'line_coverage');
-//
-//                            return {
-//                                codeIssues: [daysAgo, codeIssues],
-//                                codeCoverage: [daysAgo, codeCoverage]
-//                            }
-//                        });
-//
-//                    // get issues and coverage as their own array
-//                    var codeIssues = data.pluck('codeIssues').value(),
-//                        codeCoverage = data.pluck('codeCoverage').value();
-//
-//                    // get our regression data to determine the trend
-//                    var codeIssuesResult = regression('linear', codeIssues),
-//                        codeIssuesTrendUp = codeIssuesResult.equation[0] > 0;
-//
-//                    console.log('code issues original', JSON.stringify(codeIssuesResult.equation));
-//
-//                    var codeCoverageResult = regression('linear', codeCoverage),
-//                        codeCoverageTrendUp = codeCoverageResult.equation[0] > 0;
-//
-//                    console.log('code coverage original', JSON.stringify(codeCoverageResult.equation));
-//
-//                    // set the data
-//                    setTeamData(collectorItemId, {
-//                        summary: {
-//                            codeIssues: {
-//                                trendUp: codeIssuesTrendUp,
-//                                successState: !codeIssuesTrendUp
-//                            },
-//                            codeCoverage: {
-//                                trendUp: codeCoverageTrendUp,
-//                                successState: codeCoverageTrendUp
-//                            }
-//                        }
-//                    });
-//                });
-
-            // calculate the current state for percent tests passed
-            //testSuiteData.details({componentId: componentId, max:1})
-            //    .then(function(response) {
-            //        var totalPassed = 0,
-            //            totalTests = 0;
-            //
-            //        _(response.result).forEach(function(result) {
-            //            totalPassed += result.successCount || 0;
-            //            totalTests += result.totalCount || 0;
-            //        });
-            //
-            //        var testPassedPercent = totalTests ? totalPassed/totalTests : 0;
-            //        console.log('test passed original', testPassedPercent, totalPassed, totalTests);
-            //        setTeamData(collectorItemId, {
-            //            summary:{
-            //                functionalTestsPassed:{
-            //                    number: Math.round(testPassedPercent)
-            //                }
-            //            }
-            //        });
-            //    });
-//
-//            // calculate trend for percent of tests passed
-//            testSuiteData.details({componentId: componentId, endDateBegins: start, endDateEnds:moment().valueOf()})
-//                .then(function(response) {
-//                    var data = _(response.result)
-//                        .sortBy('timestamp')
-//                        .map(function(result) {
-//                            var daysAgo = -1 * moment.duration(moment().diff(result.timestamp)).asDays(),
-//                                totalPassed = result.successCount || 0,
-//                                totalTests = result.totalCount,
-//                                percentPassed = totalTests ? totalPassed/totalTests : 0;
-//
-//                            return [daysAgo, percentPassed];
-//                        }).value();
-//
-//                    var passedPercentResult = regression('linear', data),
-//                        passedPercentTrendUp = passedPercentResult.equation[0] > 0;
-//
-//                    console.log('passed percent original', JSON.stringify(passedPercentResult.equation));
-//
-//                    setTeamData(collectorItemId, {
-//                        summary: {
-//                            functionalTestsPassed: {
-//                                trendUp: passedPercentTrendUp,
-//                                successState: passedPercentTrendUp
-//                            }
-//                        }
-//                    });
-//                });
-            // endregion
         }
 
         function updateWidgetOptions(options) {
@@ -875,6 +844,12 @@
 
                                 var previousStageTimestamp = commitObj.processedTimestamps[previousStage],
                                     timeInPreviousStage = currentStageTimestamp - previousStageTimestamp;
+
+                                // it is possible that a hot-fix or some other change was made which caused
+                                // the commit to skip an earlier environment. In this case just set that
+                                // time to 0 so it's considered in the calculation, but does not negatively
+                                // take away from the average
+                                timeInPreviousStage = Math.max(timeInPreviousStage, 0);
 
                                 // add how long it was in the previous stage
                                 commit.in[previousStage] = timeInPreviousStage;
