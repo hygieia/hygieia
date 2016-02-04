@@ -5,13 +5,14 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
-    productViewController.$inject = ['$scope', '$modal', '$location', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData'];
-    function productViewController($scope, $modal, $location, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData) {
+    productViewController.$inject = ['$scope', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData'];
+    function productViewController($scope, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // private properties
-        var teamDashboardDetails = {};
+        var teamDashboardDetails = {},
+            isReload = null;
 
         // setup our local db
         var db = new Dexie('ProductPipelineDb');
@@ -24,7 +25,8 @@
         db.version(1).stores({
             lastRequest: '++id,[type+componentId]',
             testSuite: '++id,[componentId+timestamp]',
-            codeAnalysis: '++id,[componentId+timestamp]'
+            codeAnalysis: '++id,[componentId+timestamp]',
+            securityAnalysis: '++id,[componentId+timestamp]'
         });
 
         // create classes
@@ -51,6 +53,14 @@
             testErrors: Number,
             testFailures: Number,
             tests: Number
+        });
+
+        var SecurityAnalysis = db.securityAnalysis.defineClass({
+            componentId: String,
+            timestamp: Number,
+            blocker: Number,
+            major: Number,
+            critical: Number
         });
 
         var TestSuite = db.testSuite.defineClass({
@@ -91,23 +101,16 @@
             ctrl.configuredTeams = widgetOptions.teams;
         }
 
-        // set team default values
-        _(ctrl.configuredTeams).forEach(function(team) {
-            team.summary = {
-                codeCoverage: {
-                    number: '--'
-                },
-                functionalTestsPassed: {
-                    number: '--'
-                },
-                codeIssues: {
-                    number: '--'
-                }
-            }
-        });
-
         //region public method implementations
         function load() {
+            // determine our current state
+            if (isReload === null) {
+                isReload = false;
+            }
+            else if(isReload === false) {
+                isReload = true;
+            }
+
             collectTeamStageData(widgetOptions.teams, [].concat(ctrl.stages));
 
             var requestedData = getTeamDashboardDetails(widgetOptions.teams);
@@ -310,7 +313,7 @@
             function getCaMetric(metrics, name, fallback) {
                 var val = fallback === undefined ? false : fallback;
                 _(metrics).filter({name:name}).forEach(function(item) {
-                    val = item.value;
+                    val = item.value || parseFloat(item.formattedValue);
                 });
                 return val;
             }
@@ -329,13 +332,105 @@
                     });
                 });
 
+            // region Security Analysis
+            // get our security analysis data. start by seeing if we've already run this request
+            db.lastRequest.where('[type+componentId]').equals(['security-analysis', componentId]).first()
+                .then(function(lastRequest) {
+                    var now = moment(),
+                        dateEnds = now.valueOf(),
+                        ninetyDaysAgo = now.add(-90, 'days').valueOf(),
+                        dateBegins = ninetyDaysAgo;
+
+                    // if we already have made a request, just get the delta
+                    if(lastRequest) {
+                        dateBegins = lastRequest.timestamp;
+                    }
+
+                    codeAnalysisData
+                        .securityDetails({componentId: componentId, dateBegins: dateBegins, dateEnds: dateEnds})
+                        .then(function(response) {
+                            // since we're only requesting a minute we'll probably have nothing
+                            if(!response || !response.result || !response.result.length) {
+                                return isReload ? $q.reject('No new data') : false;
+                            }
+
+                            // save the request object so we can get the delta next time as well
+                            if(lastRequest) {
+                                lastRequest.timestamp = dateEnds;
+                                lastRequest.save();
+                            }
+                            // need to add a new item
+                            else {
+                                db.lastRequest.add({
+                                    type: 'security-analysis',
+                                    componentId: componentId,
+                                    timestamp: dateEnds
+                                });
+                            }
+
+                            // put all results in the database
+                            _(response.result).forEach(function(result) {
+                                var metrics = result.metrics,
+                                    analysis = {
+                                        componentId: componentId,
+                                        timestamp: result.timestamp,
+                                        blocker: parseInt(getCaMetric(metrics, 'blocker')),
+                                        critical: parseInt(getCaMetric(metrics, 'critical')),
+                                        major: parseInt(getCaMetric(metrics, 'major'))
+                                    };
+
+                                db.securityAnalysis.add(analysis);
+                            });
+                        })
+                        .then(function() {
+                            db.securityAnalysis.where('[componentId+timestamp]').between([componentId, ninetyDaysAgo], [componentId, dateEnds]).toArray(function(rows) {
+                                if(!rows.length) {
+                                    return;
+                                }
+
+                                // make sure it's sorted with the most recent first (largest timestamp)
+                                rows = _(rows).sortBy('timestamp').reverse().value();
+
+                                // prepare the data for the regression test mapping days ago on the x axis
+                                var now = moment(),
+                                    securityIssues = _(rows).map(function(row) {
+                                        var daysAgo = -1 * moment.duration(now.diff(row.timestamp)).asDays();
+                                        return [daysAgo, row.major + row.critical + row.blocker];
+                                    }).value();
+
+                                var securityIssuesResult = regression('linear', securityIssues),
+                                    securityIssuesTrendUp = securityIssuesResult.equation[0] > 0;
+
+
+                                // get the most recent record for current metric
+                                var latestResult = rows[0];
+
+                                // use $timeout so that it will apply on the next digest
+                                $timeout(function() {
+                                    // update data for the UI
+                                    setTeamData(collectorItemId, {
+                                        summary: {
+                                            securityIssues: {
+                                                number: latestResult.major + latestResult.critical + latestResult.blocker,
+                                                trendUp: securityIssuesTrendUp,
+                                                successState: !securityIssuesTrendUp
+                                            }
+                                        }
+                                    });
+                                });
+                            });
+                        });
+                });
+
+            // endregion
+
             // region Code Analysis
             // get our code analysis data. start by seeing if we've already run this request
             db.lastRequest.where('[type+componentId]').equals(['code-analysis', componentId]).first().then(function(lastRequest) {
                 var now = moment(),
                     dateEnds = now.valueOf(),
-                    nintyDaysAgo = now.add(-90, 'days').valueOf(),
-                    dateBegins = nintyDaysAgo;
+                    ninetyDaysAgo = now.add(-90, 'days').valueOf(),
+                    dateBegins = ninetyDaysAgo;
 
                 // if we already have made a request, just get the delta
                 if(lastRequest) {
@@ -344,11 +439,11 @@
 
                 // request our data
                 codeAnalysisData
-                    .staticDetails({componentId:componentId, dateBegins: dateBegins, dateEnds: dateEnds})
+                    .staticDetails({componentId: componentId, dateBegins: dateBegins, dateEnds: dateEnds})
                     .then(function(response) {
                         // since we're only requesting a minute we'll probably have nothing
                         if(!response || !response.result || !response.result.length) {
-                            return;
+                            return isReload ? $q.reject('No new data') : false;
                         }
 
                         // save the request object so we can get the delta next time as well
@@ -389,7 +484,7 @@
                     .then(function() {
                         // now that all the delta data has been saved, request
                         // and process 90 days worth of it
-                        db.codeAnalysis.where('[componentId+timestamp]').between([componentId, nintyDaysAgo], [componentId, dateEnds]).toArray(function(rows) {
+                        db.codeAnalysis.where('[componentId+timestamp]').between([componentId, ninetyDaysAgo], [componentId, dateEnds]).toArray(function(rows) {
                             if(!rows.length) {
                                 return;
                             }
@@ -457,19 +552,19 @@
             db.lastRequest.where('[type+componentId]').equals(['test-suite', componentId]).first().then(function(lastRequest) {
                 var now = moment(),
                     dateEnds = now.valueOf(),
-                    nintyDaysAgo = now.add(-90, 'days').valueOf(),
-                    dateBegins = nintyDaysAgo;
+                    ninetyDaysAgo = now.add(-90, 'days').valueOf(),
+                    dateBegins = ninetyDaysAgo;
 
                 // if we already have made a request, just get the delta
                 if(lastRequest) {
                     dateBegins = lastRequest.timestamp;
                 }
 
-                testSuiteData.details({componentId: componentId, endDateBegins:dateBegins, endDateEnds:dateEnds})
+                testSuiteData.details({componentId: componentId, endDateBegins:dateBegins, endDateEnds:dateEnds, depth: 0})
                     .then(function(response) {
                         // since we're only requesting a minute we'll probably have nothing
                         if(!response || !response.result || !response.result.length) {
-                            return;
+                            return isReload ? $q.reject('No new data') : false;
                         }
 
                         // save the request object so we can get the delta next time as well
@@ -504,7 +599,7 @@
                     .then(function() {
                         // now that all the delta data has been saved, request
                         // and process 90 days worth of it
-                        db.testSuite.where('[componentId+timestamp]').between([componentId, nintyDaysAgo], [componentId, dateEnds]).toArray(function(rows) {
+                        db.testSuite.where('[componentId+timestamp]').between([componentId, ninetyDaysAgo], [componentId, dateEnds]).toArray(function(rows) {
                             if (!rows.length) {
                                 return;
                             }
@@ -525,8 +620,6 @@
 
                             var passedPercentResult = regression('linear', data),
                                 passedPercentTrendUp = passedPercentResult.equation[0] > 0;
-
-                            console.log('percent passed new', JSON.stringify(passedPercentResult.equation));
 
                             // get the most recent record for current metric for each collectorItem id
                             var lastRunResults = _(rows).groupBy('collectorItemId').map(function(items, collectorItemId) {

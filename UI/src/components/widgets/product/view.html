@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="team-quality-trends">
-                            <div class="trend-wrap-4">
+                            <div class="trend-wrap-5">
                                 <div class="trend">
                                     <product-team-summary-field
                                         number="team.summary.codeCoverage.number"
@@ -75,7 +75,15 @@
                                         percent="false"
                                         trend-up="team.summary.unitTests.trendUp"
                                         success-state="team.summary.unitTests.successState"
-                                        caption="# of code issues"></product-team-summary-field>
+                                        caption="% unit passed"></product-team-summary-field>
+                                </div>
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        number="team.summary.securityIssues.number"
+                                        percent="false"
+                                        trend-up="team.summary.securityIssues.trendUp"
+                                        success-state="team.summary.securityIssues.successState"
+                                        caption="# of sec. issues"></product-team-summary-field>
                                 </div>
                             </div>
                         </div>
