@@ -20,4 +20,6 @@ public interface DeployService {
     DataResponse<List<Environment>> getDeployStatus(ObjectId componentId);
 
     String create(DeployDataCreateRequest request) throws HygieiaException;
+
+    DataResponse<List<Environment>> getDeployStatus(String applicationName);
 }

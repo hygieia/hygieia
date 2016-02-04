@@ -12,4 +12,6 @@ public interface CollectorItemRepository extends BaseCollectorItemRepository<Col
     //// FIXME: 1/20/16 I really hate this dashboard specific method in the collectoritem repository, should we move the dashboardcollectoritem repository into core?
     @Query(value="{'options.dashboardId': ?1, 'collectorId': ?0 }")
     CollectorItem findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(ObjectId collectorId, String dashboardId);
+    @Query(value="{'options.applicationName' : ?1, 'collectorId' : ?0}")
+    CollectorItem findByOptionsAndDeployedApplicationName(ObjectId collectorId, String applicationName);
 }
