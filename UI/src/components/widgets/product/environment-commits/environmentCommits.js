@@ -28,7 +28,9 @@
         ctrl.stages = _(modalData.stages).filter(function(stage) { return stage != 'PROD'}).value();
         ctrl.displayTeamName = modalData.team.customName || modalData.team.name;
         ctrl.currentStageName = modalData.stage;
-        ctrl.totalCommits = stageData.summary.commitsInsideTimeframe + stageData.summary.commitsOutsideTimeframe;
+
+        ctrl.commits = _(stageData.commits).sortBy('timestamp').value();
+        ctrl.totalCommits = stageData.commits.length;
 
         ctrl.headingPieData = {
             labels: ['',''],
@@ -42,8 +44,6 @@
             donut: true,
             donutWidth: 6
         };
-
-        ctrl.commits = _(stageData.commits).sortBy('timestamp').value();
 
         // methods
         ctrl.toggleCommitDetails = toggleCommitDetails;

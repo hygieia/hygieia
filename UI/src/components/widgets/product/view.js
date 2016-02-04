@@ -5,14 +5,71 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
-    productViewController.$inject = ['$scope', '$modal', 'pipelineData', '$location', 'collectorData', 'dashboardData', '$q', 'codeAnalysisData', 'buildData', 'testSuiteData'];
-    function productViewController($scope, $modal, pipelineData, $location, collectorData, dashboardData, $q, codeAnalysisData, buildData, testSuiteData) {
+    productViewController.$inject = ['$scope', '$modal', '$location', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData'];
+    function productViewController($scope, $modal, $location, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // private properties
         var teamDashboardDetails = {};
 
+        // setup our local db
+        var db = new Dexie('ProductPipelineDb');
+        Dexie.Promise.on('error', function(err) {
+            // Log to console or show en error indicator somewhere in your GUI...
+            console.log('Uncaught Dexie error: ' + err);
+        });
+
+        // define our schemas
+        db.version(1).stores({
+            lastRequest: '++id,[type+componentId]',
+            testSuite: '++id,[componentId+timestamp]',
+            codeAnalysis: '++id,[componentId+timestamp]'
+        });
+
+        // create classes
+        var LastRequest = db.lastRequest.defineClass({
+            type: String,
+            componentId: String,
+            timestamp: Number
+        });
+
+        LastRequest.prototype.save = function() {
+            db.lastRequest.put(this);
+        };
+
+        var CodeAnalysis = db.codeAnalysis.defineClass({
+            componentId: String,
+            timestamp: Number,
+            coverage: Number,
+            lineCoverage: Number,
+            violations: Number,
+            criticalViolations: Number,
+            majorViolations: Number,
+            blockerViolations: Number,
+            testSuccessDensity: Number,
+            testErrors: Number,
+            testFailures: Number,
+            tests: Number
+        });
+
+        var TestSuite = db.testSuite.defineClass({
+            componentId: String,
+            collectorItemId: String,
+            timestamp: Number,
+            successCount: Number,
+            totalCount: Number
+        });
+
+        db.open();
+
+        // clear out any collection data if there is a reset parameter
+        if($routeParams.reset) {
+            // db.delete();
+            db.lastRequest.clear();
+            db.codeAnalysis.clear();
+            db.testSuite.clear();
+        }
 
         // public properties
         ctrl.stages = ['Commit', 'Build', 'Dev', 'QA', 'Int', 'Perf', 'Prod'];
@@ -185,6 +242,7 @@
 
             ctrl.configuredTeams[idx] = deepmerge(team, data);
 
+
             //var obj = ctrl.configuredTeams[idx];
             //
             //// hackish way to update the configured teams object in place so their entire
@@ -247,7 +305,7 @@
         function getTeamComponentData(collectorItemId) {
             var team = teamDashboardDetails[collectorItemId],
                 componentId = team.application.components[0].id,
-                start = moment().subtract(90, 'days').format('x');
+                start = moment().subtract(90, 'days').valueOf();
 
             function getCaMetric(metrics, name, fallback) {
                 var val = fallback === undefined ? false : fallback;
@@ -271,121 +329,361 @@
                     });
                 });
 
-            // get latest code coverage and issues metrics
-            codeAnalysisData
-                .staticDetails({componentId: componentId, max:1})
-                .then(function(response) {
-                    if(response.result[0] && response.result[0].metrics) {
-                        var metrics = response.result[0].metrics,
-                            lineCoverage = getCaMetric(metrics, 'line_coverage'),
-                            violations = getCaMetric(metrics, 'violations');
+            // region Code Analysis
+            // get our code analysis data. start by seeing if we've already run this request
+            db.lastRequest.where('[type+componentId]').equals(['code-analysis', componentId]).first().then(function(lastRequest) {
+                var now = moment(),
+                    dateEnds = now.valueOf(),
+                    nintyDaysAgo = now.add(-90, 'days').valueOf(),
+                    dateBegins = nintyDaysAgo;
 
-                        setTeamData(collectorItemId, {
-                            summary: {
-                                codeIssues: {
-                                    number: violations
-                                },
-                                codeCoverage: {
-                                    number: Math.round(lineCoverage)
-                                }
-                            }
-                        });
-                    }
-                });
+                // if we already have made a request, just get the delta
+                if(lastRequest) {
+                    dateBegins = lastRequest.timestamp;
+                }
 
-            // get trends for code coverage and issues
-            codeAnalysisData
-                .staticDetails({componentId: componentId, dateBegins: start})
-                .then(function(response) {
-
-                    // just need the issue and coverage metric values
-                    var data = _(response.result)
-                        .sortBy('timestamp')
-                        .map(function(result) {
-                            var daysAgo = -1 * moment.duration(moment().diff(result.timestamp)).asDays(),
-                                codeIssues = getCaMetric(result.metrics, 'violations'),
-                                codeCoverage = getCaMetric(result.metrics, 'line_coverage');
-
-                            return {
-                                codeIssues: [daysAgo, codeIssues],
-                                codeCoverage: [daysAgo, codeCoverage]
-                            }
-                        });
-
-                    // get issues and coverage as their own array
-                    var codeIssues = data.pluck('codeIssues').value(),
-                        codeCoverage = data.pluck('codeCoverage').value();
-
-                    // get our regression data to determine the trend
-                    var codeIssuesResult = regression('linear', codeIssues),
-                        codeIssuesTrendUp = codeIssuesResult.equation[0] > 0;
-
-                    var codeCoverageResult = regression('linear', codeCoverage),
-                        codeCoverageTrendUp = codeCoverageResult.equation[0] > 0;
-
-                    // set the data
-
-                    setTeamData(collectorItemId, {
-                        summary: {
-                            codeIssues: {
-                                trendUp: codeIssuesTrendUp,
-                                successState: !codeIssuesTrendUp
-                            },
-                            codeCoverage: {
-                                trendUp: codeCoverageTrendUp,
-                                successState: codeCoverageTrendUp
-                            }
+                // request our data
+                codeAnalysisData
+                    .staticDetails({componentId:componentId, dateBegins: dateBegins, dateEnds: dateEnds})
+                    .then(function(response) {
+                        // since we're only requesting a minute we'll probably have nothing
+                        if(!response || !response.result || !response.result.length) {
+                            return;
                         }
+
+                        // save the request object so we can get the delta next time as well
+                        if(lastRequest) {
+                            lastRequest.timestamp = dateEnds;
+                            lastRequest.save();
+                        }
+                        // need to add a new item
+                        else {
+                            db.lastRequest.add({
+                                type: 'code-analysis',
+                                componentId: componentId,
+                                timestamp: dateEnds
+                            });
+                        }
+
+                        // put all results in the database
+                        _(response.result).forEach(function(result) {
+                            var metrics = result.metrics,
+                                analysis = {
+                                    componentId: componentId,
+                                    timestamp: result.timestamp,
+                                    coverage: getCaMetric(metrics, 'coverage'),
+                                    lineCoverage: getCaMetric(metrics, 'line_coverage'),
+                                    violations: getCaMetric(metrics, 'violations'),
+                                    criticalViolations: getCaMetric(metrics, 'critical_violations'),
+                                    majorViolations: getCaMetric(metrics, 'major_violations'),
+                                    blockerViolations: getCaMetric(metrics, 'blocker_violations'),
+                                    testSuccessDensity: getCaMetric(metrics, 'test_success_density'),
+                                    testErrors: getCaMetric(metrics, 'test_errors'),
+                                    testFailures: getCaMetric(metrics, 'test_failures'),
+                                    tests: getCaMetric(metrics, 'tests')
+                                };
+
+                            db.codeAnalysis.add(analysis);
+                        });
+                    })
+                    .then(function() {
+                        // now that all the delta data has been saved, request
+                        // and process 90 days worth of it
+                        db.codeAnalysis.where('[componentId+timestamp]').between([componentId, nintyDaysAgo], [componentId, dateEnds]).toArray(function(rows) {
+                            if(!rows.length) {
+                                return;
+                            }
+
+                            // make sure it's sorted with the most recent first (largest timestamp)
+                            rows = _(rows).sortBy('timestamp').reverse().value();
+
+                            // prepare the data for the regression test mapping days ago on the x axis
+                            var now = moment(),
+                                codeIssues = _(rows).map(function(row) {
+                                    var daysAgo = -1 * moment.duration(now.diff(row.timestamp)).asDays();
+                                    return [daysAgo, row.violations];
+                                }).value(),
+                                codeCoverage = _(rows).map(function(row) {
+                                    var daysAgo = -1 * moment.duration(now.diff(row.timestamp)).asDays();
+                                    return [daysAgo, row.lineCoverage]
+                                }).value(),
+                                unitTestSuccess = _(rows).map(function(row) {
+                                    var daysAgo = -1 * moment.duration(now.diff(row.timestamp)).asDays();
+                                    return [daysAgo, row.testSuccessDensity]
+                                }).value();
+
+                            var codeIssuesResult = regression('linear', codeIssues),
+                                codeIssuesTrendUp = codeIssuesResult.equation[0] > 0;
+
+                            var codeCoverageResult = regression('linear', codeCoverage),
+                                codeCoverageTrendUp = codeCoverageResult.equation[0] > 0;
+
+                            var unitTestSuccessResult = regression('linear', unitTestSuccess),
+                                unitTestSuccessTrendUp = unitTestSuccessResult.equation[0] > 0;
+
+
+                            // get the most recent record for current metric
+                            var latestResult = rows[0];
+
+                            // use $timeout so that it will apply on the next digest
+                            $timeout(function() {
+                                // update data for the UI
+                                setTeamData(collectorItemId, {
+                                    summary: {
+                                        codeIssues: {
+                                            number: latestResult.violations,
+                                            trendUp: codeIssuesTrendUp,
+                                            successState: !codeIssuesTrendUp
+                                        },
+                                        codeCoverage: {
+                                            number: Math.round(latestResult.lineCoverage),
+                                            trendUp: codeCoverageTrendUp,
+                                            successState: codeCoverageTrendUp
+                                        },
+                                        unitTests: {
+                                            number: Math.round(latestResult.testSuccessDensity),
+                                            trendUp: unitTestSuccessTrendUp,
+                                            successState: unitTestSuccessTrendUp
+                                        }
+                                    }
+                                });
+                            });
+                        });
                     });
-                });
+            });
+            // endregion
+
+            // region Test Suite
+            db.lastRequest.where('[type+componentId]').equals(['test-suite', componentId]).first().then(function(lastRequest) {
+                var now = moment(),
+                    dateEnds = now.valueOf(),
+                    nintyDaysAgo = now.add(-90, 'days').valueOf(),
+                    dateBegins = nintyDaysAgo;
+
+                // if we already have made a request, just get the delta
+                if(lastRequest) {
+                    dateBegins = lastRequest.timestamp;
+                }
+
+                testSuiteData.details({componentId: componentId, endDateBegins:dateBegins, endDateEnds:dateEnds})
+                    .then(function(response) {
+                        // since we're only requesting a minute we'll probably have nothing
+                        if(!response || !response.result || !response.result.length) {
+                            return;
+                        }
+
+                        // save the request object so we can get the delta next time as well
+                        if(lastRequest) {
+                            lastRequest.timestamp = dateEnds;
+                            lastRequest.save();
+                        }
+                        // need to add a new item
+                        else {
+                            db.lastRequest.add({
+                                type: 'test-suite',
+                                componentId: componentId,
+                                timestamp: dateEnds
+                            });
+                        }
+
+                        // put all results in the database
+                        _(response.result).forEach(function(result) {
+                            var test = {
+                                componentId: componentId,
+                                collectorItemId: result.collectorItemId,
+                                timestamp: result.timestamp,
+                                successCount: result.successCount,
+                                totalCount: result.totalCount
+                            };
+
+                            db.testSuite.add(test).catch(function() {
+                                alert('issue with test suite not registering');
+                            });
+                        });
+                    })
+                    .then(function() {
+                        // now that all the delta data has been saved, request
+                        // and process 90 days worth of it
+                        db.testSuite.where('[componentId+timestamp]').between([componentId, nintyDaysAgo], [componentId, dateEnds]).toArray(function(rows) {
+                            if (!rows.length) {
+                                return;
+                            }
+
+                            // make sure it's sorted with the most recent first (largest timestamp)
+                            rows = _(rows).sortBy('timestamp').reverse().value();
+
+                            // prepare the data for the regression test mapping days ago on the x axis
+                            var now = moment(),
+                                data = _(rows).map(function(result) {
+                                    var daysAgo = -1 * moment.duration(now.diff(result.timestamp)).asDays(),
+                                        totalPassed = result.successCount || 0,
+                                        totalTests = result.totalCount,
+                                        percentPassed = totalTests ? totalPassed/totalTests : 0;
+
+                                    return [daysAgo, percentPassed];
+                                }).value();
+
+                            var passedPercentResult = regression('linear', data),
+                                passedPercentTrendUp = passedPercentResult.equation[0] > 0;
+
+                            console.log('percent passed new', JSON.stringify(passedPercentResult.equation));
+
+                            // get the most recent record for current metric for each collectorItem id
+                            var lastRunResults = _(rows).groupBy('collectorItemId').map(function(items, collectorItemId) {
+                                var lastRun = _(items).sortBy('timestamp').reverse().first();
+
+                                return {
+                                    success: lastRun.successCount || 0,
+                                    total: lastRun.totalCount || 0
+                                }
+                            });
+
+                            var totalSuccess = lastRunResults.pluck('success').reduce(function(a,b) { return a + b }),
+                                totalResults = lastRunResults.pluck('total').reduce(function(a,b) { return a + b });
+
+                            // use $timeout so that it will apply on the next digest
+                            $timeout(function() {
+                                // update data for the UI
+                                setTeamData(collectorItemId, {
+                                    summary: {
+                                        functionalTestsPassed: {
+                                            number: totalResults ? Math.round(totalSuccess / totalSuccess) : 0,
+                                            trendUp: passedPercentTrendUp,
+                                            successState: passedPercentTrendUp
+                                        }
+                                    }
+                                });
+                            });
+                        });
+                    });
+            });
+            // endregion
+
+            // region Old way processing 90 days at a time
+            // get latest code coverage and issues metrics
+//            codeAnalysisData
+//                .staticDetails({componentId: componentId, max:1})
+//                .then(function(response) {
+//                    if(!response || !response.result || !response.result.length || !response.result[0].metrics) {
+//                        return;
+//                    }
+//
+//                    var metrics = response.result[0].metrics,
+//                        lineCoverage = getCaMetric(metrics, 'line_coverage'),
+//                        violations = getCaMetric(metrics, 'violations');
+//
+//                    setTeamData(collectorItemId, {
+//                        summary: {
+//                            codeIssues: {
+//                                number: violations
+//                            },
+//                            codeCoverage: {
+//                                number: Math.round(lineCoverage)
+//                            }
+//                        }
+//                    });
+//                });
+//
+//            // get trends for code coverage and issues
+//            codeAnalysisData
+//                .staticDetails({componentId: componentId, dateBegins: start})
+//                .then(function(response) {
+//
+//                    // just need the issue and coverage metric values
+//                    var data = _(response.result)
+//                        .sortBy('timestamp')
+//                        .map(function(result) {
+//                            var daysAgo = -1 * moment.duration(moment().diff(result.timestamp)).asDays(),
+//                                codeIssues = getCaMetric(result.metrics, 'violations'),
+//                                codeCoverage = getCaMetric(result.metrics, 'line_coverage');
+//
+//                            return {
+//                                codeIssues: [daysAgo, codeIssues],
+//                                codeCoverage: [daysAgo, codeCoverage]
+//                            }
+//                        });
+//
+//                    // get issues and coverage as their own array
+//                    var codeIssues = data.pluck('codeIssues').value(),
+//                        codeCoverage = data.pluck('codeCoverage').value();
+//
+//                    // get our regression data to determine the trend
+//                    var codeIssuesResult = regression('linear', codeIssues),
+//                        codeIssuesTrendUp = codeIssuesResult.equation[0] > 0;
+//
+//                    console.log('code issues original', JSON.stringify(codeIssuesResult.equation));
+//
+//                    var codeCoverageResult = regression('linear', codeCoverage),
+//                        codeCoverageTrendUp = codeCoverageResult.equation[0] > 0;
+//
+//                    console.log('code coverage original', JSON.stringify(codeCoverageResult.equation));
+//
+//                    // set the data
+//                    setTeamData(collectorItemId, {
+//                        summary: {
+//                            codeIssues: {
+//                                trendUp: codeIssuesTrendUp,
+//                                successState: !codeIssuesTrendUp
+//                            },
+//                            codeCoverage: {
+//                                trendUp: codeCoverageTrendUp,
+//                                successState: codeCoverageTrendUp
+//                            }
+//                        }
+//                    });
+//                });
 
             // calculate the current state for percent tests passed
-            testSuiteData.details({componentId: componentId, max:1})
-                .then(function(response) {
-                    var totalPassed = 0,
-                        totalTests = 0;
-
-                    _(response.result).forEach(function(result) {
-                        totalPassed += result.successCount || 0;
-                        totalTests += result.totalCount || 0;
-                    });
-
-                    var testPassedPercent = totalTests ? totalPassed/totalTests : 0;
-                    setTeamData(collectorItemId, {
-                        summary:{
-                            functionalTestsPassed:{
-                                number: Math.round(testPassedPercent)
-                            }
-                        }
-                    });
-                });
-
-            // calculate trend for percent of tests passed
-            testSuiteData.details({componentId: componentId, endDateBegins: start, endDateEnds:moment().format('x')})
-                .then(function(response) {
-                    var data = _(response.result)
-                        .sortBy('timestamp')
-                        .map(function(result) {
-                            var daysAgo = -1 * moment.duration(moment().diff(result.timestamp)).asDays(),
-                                totalPassed = result.successCount || 0,
-                                totalTests = result.totalCount,
-                                percentPassed = totalTests ? totalPassed/totalTests : 0;
-
-                            return [daysAgo, percentPassed];
-                        }).value();
-
-                    var passedPercentResult = regression('linear', data),
-                        passedPercentTrendUp = passedPercentResult.equation[0] > 0;
-
-                    setTeamData(collectorItemId, {
-                        summary: {
-                            functionalTestsPassed: {
-                                trendUp: passedPercentTrendUp,
-                                successState: passedPercentTrendUp
-                            }
-                        }
-                    });
-                });
+            //testSuiteData.details({componentId: componentId, max:1})
+            //    .then(function(response) {
+            //        var totalPassed = 0,
+            //            totalTests = 0;
+            //
+            //        _(response.result).forEach(function(result) {
+            //            totalPassed += result.successCount || 0;
+            //            totalTests += result.totalCount || 0;
+            //        });
+            //
+            //        var testPassedPercent = totalTests ? totalPassed/totalTests : 0;
+            //        console.log('test passed original', testPassedPercent, totalPassed, totalTests);
+            //        setTeamData(collectorItemId, {
+            //            summary:{
+            //                functionalTestsPassed:{
+            //                    number: Math.round(testPassedPercent)
+            //                }
+            //            }
+            //        });
+            //    });
+//
+//            // calculate trend for percent of tests passed
+//            testSuiteData.details({componentId: componentId, endDateBegins: start, endDateEnds:moment().valueOf()})
+//                .then(function(response) {
+//                    var data = _(response.result)
+//                        .sortBy('timestamp')
+//                        .map(function(result) {
+//                            var daysAgo = -1 * moment.duration(moment().diff(result.timestamp)).asDays(),
+//                                totalPassed = result.successCount || 0,
+//                                totalTests = result.totalCount,
+//                                percentPassed = totalTests ? totalPassed/totalTests : 0;
+//
+//                            return [daysAgo, percentPassed];
+//                        }).value();
+//
+//                    var passedPercentResult = regression('linear', data),
+//                        passedPercentTrendUp = passedPercentResult.equation[0] > 0;
+//
+//                    console.log('passed percent original', JSON.stringify(passedPercentResult.equation));
+//
+//                    setTeamData(collectorItemId, {
+//                        summary: {
+//                            functionalTestsPassed: {
+//                                trendUp: passedPercentTrendUp,
+//                                successState: passedPercentTrendUp
+//                            }
+//                        }
+//                    });
+//                });
+            // endregion
         }
 
         function updateWidgetOptions(options) {
@@ -405,6 +703,8 @@
             $scope.upsertWidget(data);
         }
 
+        // return whether this stage has commits. used to determine whether details
+        // will be shown for this team in the specific stage
         function teamStageHasCommits(team, stage) {
             return team.stages && team.stages[stage] && team.stages[stage].commits && team.stages[stage].commits.length;
         }
@@ -418,15 +718,17 @@
 
         function collectTeamStageData(teams, ctrlStages) {
             var now = moment(),
-                nowTimestamp = now.format('x'),
-                start = now.subtract(90, 'days').format('x');
+                nowTimestamp = now.valueOf(),
+                start = now.subtract(90, 'days').valueOf();
+
 
             pipelineData.commits(start, nowTimestamp, _(teams).pluck('collectorItemId').value()).then(function(teams) {
+
                 // start processing response by looping through each team
                 _(teams).each(function(team) {
                     var teamStageData = {},
                         stageDurations = {},
-                        stages = [].concat(ctrlStages); // create a local copy so lodash doesn't overwrite it
+                        stages = [].concat(ctrlStages); // create a local copy so it doesn't get overwritten
 
                     // go backward through the stages and define commit data.
                     // reverse should make it easier to calculate time in the previous stage
@@ -437,13 +739,12 @@
                             return;
                         }
 
-                        var stage = team.stages[currentStageName], // team data for current stage
-                            commits = [], // store our new commit object
+                        var commits = [], // store our new commit object
                             localStages = [].concat(ctrlStages), // create a copy of the stages
                             previousStages = _(localStages.splice(0, localStages.indexOf(currentStageName))).reverse().value(); // only look for stages before this one
 
                         // loop through each commit and create our own custom commit object
-                        _(stage).forEach(function(commitObj) {
+                        _(team.stages[currentStageName]).forEach(function(commitObj) {
                             var commit = {
                                 author: commitObj.scmAuthor || 'NA',
                                 message: commitObj.scmCommitLog || 'No message',
@@ -557,7 +858,7 @@
                                 // try to get the last commit to enter this stage by evaluating the duration
                                 // for this current stage, otherwise use the commit timestamp
                                 var lastUpdatedDuration = _(stageData.commits).map(function(commit) {
-                                        return commit.in[stageName] || moment().format('x') - commit.timestamp;
+                                        return commit.in[stageName] || moment().valueOf() - commit.timestamp;
                                     }).min().value(),
                                     lastUpdated = moment().add(-1*lastUpdatedDuration, 'milliseconds');
 
@@ -625,8 +926,8 @@
                             // calculate their time to prod
                             .map(function(commit) {
                                 return {
-                                    duration: commit.processedTimestamps['Prod'] - commit.scmCommitTimestamp,
-                                    commitTimestamp: commit.scmCommitTimestamp
+                                    duration: commit.processedTimestamps['Prod'] - commit.commit.scmCommitTimestamp,
+                                    commitTimestamp: commit.commit.scmCommitTimestamp
                                 };
                             });
 
@@ -657,5 +958,7 @@
             });
         }
         //endregion
+
+
     }
 })();

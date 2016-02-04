@@ -16,24 +16,20 @@
             commits: commits
         };
 
-        // get commit data for the given team collector item ids
+        // get commit data for the given team collector item ids.
+        // can pass a single collector item id or an array
         function commits(beginDate, endDate, collectorItemIds) {
             // make sure it's an array
             collectorItemIds = [].concat(collectorItemIds);
 
             // add our begin and end date
-            var params = [
-                'beginDate=' + beginDate,
-                'endDate=' + endDate
-            ];
+            var params = {
+                beginDate: beginDate,
+                endDate: endDate,
+                collectorItemId: collectorItemIds
+            };
 
-            // add our collector items
-            _(collectorItemIds).forEach(function(id) {
-                params.push('collectorItemId=' + id);
-            });
-
-            var query = params.join('&');
-            return $http.get(HygieiaConfig.local ? localRoute : pipelineRoute + '?' + query)
+            return $http.get(HygieiaConfig.local ? localRoute : pipelineRoute, { params: params })
                 .then(function (response) {
                     return response.data;
                 });

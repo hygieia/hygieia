@@ -7,20 +7,12 @@
                 <div class="dash-modal-row clearfix" ng-repeat="service in ctrl.dashboardServices">
                     <label>{{service.name}}</label>
 
-                    <span class="trash-icon clickable pull-right fa fa-stack fa-lg"
-                          ng-click="ctrl.deleteDashboardService($index)">
-                        <span class="fa-circle-thin fa-stack-2x"></span>
-                        <span class="fa-trash fa-stack-1x"></span>
-                    </span>
+                    <dash-trash class="pull-right" ng-click="ctrl.deleteDashboardService($index)"></dash-trash>
                 </div>
 
                 <!--new services-->
                 <div class="dash-modal-row clearfix form-horizontal" ng-repeat="service in ctrl.newDashboardServices">
-                    <span class="trash-icon clickable pull-right fa fa-stack fa-lg"
-                          ng-click="ctrl.deleteNewDashboardService($index)">
-                        <span class="fa-circle-thin fa-stack-2x"></span>
-                        <span class="fa-trash fa-stack-1x"></span>
-                    </span>
+                    <dash-trash class="pull-right" ng-click="ctrl.deleteNewDashboardService($index)"></dash-trash>
                     <label class="control-label pull-left">
                         {{::ctrl.appName}}&nbsp;:&nbsp;
                     </label>
