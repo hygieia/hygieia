@@ -20,7 +20,7 @@ import java.util.*;
 @Service
 public class PipelineServiceImpl implements PipelineService {
 
-    private static final int PROD_COMMIT_DATE_RANGE_DEFAULT = 90;
+    private static final int PROD_COMMIT_DATE_RANGE_DEFAULT = -90;
     private final PipelineRepository pipelineRepository;
     private final DashboardRepository dashboardRepository;
     private final CollectorItemRepository collectorItemRepository;
