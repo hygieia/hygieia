@@ -1,6 +1,6 @@
 [
     {
-        "collectorItemId": "56b0dc2850ece67bbb1e98ce",
+        "collectorItemId": "56a67a88689a6c2d50757022",
         "stages": {
             "Commit": [
                 {
@@ -12,7 +12,8 @@
                     "scmCommitTimestamp": 1454527627000,
                     "numberOfChanges": 1,
                     "processedTimestamps": {
-                        "Commit": 1454527627000
+                        "Commit": 1454527627000,
+                        "Build": 1454527568774
                     }
                 }
             ],

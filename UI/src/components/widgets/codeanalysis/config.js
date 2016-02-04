@@ -109,6 +109,7 @@
         }
 
         function deleteTestConfig(item) {
+            debugger;
             ctrl.testConfigs.pop(item);
         }
     }
