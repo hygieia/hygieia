@@ -6,6 +6,7 @@ import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.request.PipelineSearchRequest;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.CaseInsensitiveMap;
 import org.apache.commons.lang.NotImplementedException;
@@ -18,6 +19,8 @@ import java.util.*;
 
 @Service
 public class PipelineServiceImpl implements PipelineService {
+
+    private static final int PROD_COMMIT_DATE_RANGE_DEFAULT = 90;
     private final PipelineRepository pipelineRepository;
     private final DashboardRepository dashboardRepository;
     private final CollectorItemRepository collectorItemRepository;
@@ -35,12 +38,12 @@ public class PipelineServiceImpl implements PipelineService {
         for (Pipeline pipeline : pipelineRepository.findByCollectorItemIdIn(searchRequest.getCollectorItemId())){
             CollectorItem dashboardCollectorItem = collectorItemRepository.findOne(pipeline.getCollectorItemId());
             Dashboard dashboard = dashboardRepository.findOne(new ObjectId((String)dashboardCollectorItem.getOptions().get("dashboardId")));
-            pipelineResponses.add(buildPipelineResponse(dashboard, dashboardCollectorItem, pipeline));
+            pipelineResponses.add(buildPipelineResponse(dashboard, dashboardCollectorItem, pipeline, searchRequest.getBeginDate(), searchRequest.getEndDate()));
         }
         return pipelineResponses;
     }
 
-    private PipelineResponse buildPipelineResponse(Dashboard dashboard, CollectorItem dashboardCollectorItem, Pipeline pipeline){
+    private PipelineResponse buildPipelineResponse(Dashboard dashboard, CollectorItem dashboardCollectorItem, Pipeline pipeline, Long beginDate, Long endDate){
         PipelineResponse pipelineResponse = new PipelineResponse();
         pipelineResponse.setCollectorItemId(dashboardCollectorItem.getId());
         Map<PipelineStageType, Map<String, PipelineCommit>> commitsByStage = getCommitsByStage(dashboard, pipeline);
@@ -48,8 +51,34 @@ public class PipelineServiceImpl implements PipelineService {
         for(PipelineStageType stage : PipelineStageType.values()){
             List<PipelineResponseCommit> commits = findNotPropagatedCommits(commitsByStage.get(stage), getCommitsAfterStage(stage, commitsByStage), dashboard, pipeline);
             pipelineResponse.getStages().put(stage, commits);
+            Iterator<PipelineResponseCommit> commitIterator = commits.iterator();
+            if(stage.equals(PipelineStageType.Prod)){
+                while(commitIterator.hasNext()){
+                    PipelineResponseCommit commit = commitIterator.next();
+                    if(!isBetween(commit.getScmCommitTimestamp(), beginDate, endDate)){
+                        commitIterator.remove();
+                    }
+                }
+            }
         }
         return pipelineResponse;
+    }
+
+    private boolean isBetween(Long commitTimestamp, Long lowerBound, Long upperBound){
+        Long beginDate = lowerBound;
+        if(beginDate == null){
+            Calendar cal = new GregorianCalendar();
+            cal.setTime(new Date());
+            cal.add(Calendar.DAY_OF_MONTH, PROD_COMMIT_DATE_RANGE_DEFAULT);
+            beginDate = cal.getTime().getTime();
+        }
+        Long endDate = upperBound != null ? upperBound : new Date().getTime();
+
+        if(beginDate <= commitTimestamp && commitTimestamp <= endDate)
+        {
+            return true;
+        }
+        return false;
     }
 
 
