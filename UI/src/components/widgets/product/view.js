@@ -1019,8 +1019,8 @@
                             // calculate their time to prod
                             .map(function(commit) {
                                 return {
-                                    duration: commit.processedTimestamps['Prod'] - commit.commit.scmCommitTimestamp,
-                                    commitTimestamp: commit.commit.scmCommitTimestamp
+                                    duration: commit.processedTimestamps['Prod'] - commit.scmCommitTimestamp,
+                                    commitTimestamp: commit.scmCommitTimestamp
                                 };
                             });
 
