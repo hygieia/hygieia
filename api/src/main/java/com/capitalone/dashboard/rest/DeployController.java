@@ -37,6 +37,11 @@ public class DeployController {
         return deployService.getDeployStatus(componentId);
     }
 
+    @RequestMapping(value = "/deploy/status/application/{applicationName}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public DataResponse<List<Environment>> deployStatus(@PathVariable String applicationName) {
+        return deployService.getDeployStatus(applicationName);
+    }
+
     @RequestMapping(value = "/deploy", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createBuild(@Valid @RequestBody DeployDataCreateRequest request) throws HygieiaException {

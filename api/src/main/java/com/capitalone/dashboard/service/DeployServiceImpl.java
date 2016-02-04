@@ -11,6 +11,7 @@ import com.capitalone.dashboard.model.EnvironmentStatus;
 import com.capitalone.dashboard.model.deploy.DeployableUnit;
 import com.capitalone.dashboard.model.deploy.Environment;
 import com.capitalone.dashboard.model.deploy.Server;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
@@ -23,6 +24,7 @@ import com.google.common.collect.Iterables;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,17 +40,19 @@ public class DeployServiceImpl implements DeployService {
     private final EnvironmentComponentRepository environmentComponentRepository;
     private final EnvironmentStatusRepository environmentStatusRepository;
     private final CollectorRepository collectorRepository;
+    private final CollectorItemRepository collectorItemRepository;
     private final CollectorService collectorService;
 
     @Autowired
     public DeployServiceImpl(ComponentRepository componentRepository,
                              EnvironmentComponentRepository environmentComponentRepository,
                              EnvironmentStatusRepository environmentStatusRepository,
-                             CollectorRepository collectorRepository, CollectorService collectorService) {
+                             CollectorRepository collectorRepository, CollectorItemRepository collectorItemRepository, CollectorService collectorService) {
         this.componentRepository = componentRepository;
         this.environmentComponentRepository = environmentComponentRepository;
         this.environmentStatusRepository = environmentStatusRepository;
         this.collectorRepository = collectorRepository;
+        this.collectorItemRepository = collectorItemRepository;
         this.collectorService = collectorService;
     }
 
@@ -179,6 +183,38 @@ public class DeployServiceImpl implements DeployService {
 
         return deploy.getId().toString();
 
+    }
+
+    @Override
+    public DataResponse<List<Environment>> getDeployStatus(String applicationName) {
+        //FIXME: Remove hardcoding of Jenkins.
+        List<Collector> collectorList = collectorRepository.findByCollectorTypeAndName(CollectorType.Deployment, "Jenkins");
+        if (CollectionUtils.isEmpty(collectorList)) return new DataResponse<>(null, 0);
+
+        Collector collector = collectorList.get(0);
+        CollectorItem item = collectorItemRepository.findByOptionsAndDeployedApplicationName(collector.getId(), applicationName);
+
+        if (item == null) return new DataResponse<>(null, 0);
+
+        ObjectId collectorItemId = item.getId();
+
+        List<EnvironmentComponent> components = environmentComponentRepository
+                .findByCollectorItemId(collectorItemId);
+        List<EnvironmentStatus> statuses = environmentStatusRepository
+                .findByCollectorItemId(collectorItemId);
+
+        List<Environment> environments = new ArrayList<>();
+        for (Map.Entry<Environment, List<EnvironmentComponent>> entry : groupByEnvironment(
+                components).entrySet()) {
+            Environment env = entry.getKey();
+            environments.add(env);
+            for (EnvironmentComponent envComponent : entry.getValue()) {
+                env.getUnits().add(
+                        new DeployableUnit(envComponent, servers(envComponent,
+                                statuses)));
+            }
+        }
+        return new DataResponse<>(environments, collector.getLastExecuted());
     }
 
     private Collector createCollector() {

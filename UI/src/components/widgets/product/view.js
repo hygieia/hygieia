@@ -47,6 +47,7 @@
             criticalViolations: Number,
             majorViolations: Number,
             blockerViolations: Number,
+            testSuccessDensity: Number,
             testErrors: Number,
             testFailures: Number,
             tests: Number
@@ -376,6 +377,7 @@
                                     criticalViolations: getCaMetric(metrics, 'critical_violations'),
                                     majorViolations: getCaMetric(metrics, 'major_violations'),
                                     blockerViolations: getCaMetric(metrics, 'blocker_violations'),
+                                    testSuccessDensity: getCaMetric(metrics, 'test_success_density'),
                                     testErrors: getCaMetric(metrics, 'test_errors'),
                                     testFailures: getCaMetric(metrics, 'test_failures'),
                                     tests: getCaMetric(metrics, 'tests')
@@ -404,17 +406,21 @@
                                 codeCoverage = _(rows).map(function(row) {
                                     var daysAgo = -1 * moment.duration(now.diff(row.timestamp)).asDays();
                                     return [daysAgo, row.lineCoverage]
+                                }).value(),
+                                unitTestSuccess = _(rows).map(function(row) {
+                                    var daysAgo = -1 * moment.duration(now.diff(row.timestamp)).asDays();
+                                    return [daysAgo, row.testSuccessDensity]
                                 }).value();
 
                             var codeIssuesResult = regression('linear', codeIssues),
                                 codeIssuesTrendUp = codeIssuesResult.equation[0] > 0;
 
-                            //console.log('code issues new', JSON.stringify(codeIssuesResult.equation));
-
                             var codeCoverageResult = regression('linear', codeCoverage),
                                 codeCoverageTrendUp = codeCoverageResult.equation[0] > 0;
 
-                            //console.log('code coverage new', JSON.stringify(codeCoverageResult.equation));
+                            var unitTestSuccessResult = regression('linear', unitTestSuccess),
+                                unitTestSuccessTrendUp = unitTestSuccessResult.equation[0] > 0;
+
 
                             // get the most recent record for current metric
                             var latestResult = rows[0];
@@ -433,6 +439,11 @@
                                             number: Math.round(latestResult.lineCoverage),
                                             trendUp: codeCoverageTrendUp,
                                             successState: codeCoverageTrendUp
+                                        },
+                                        unitTests: {
+                                            number: Math.round(latestResult.testSuccessDensity),
+                                            trendUp: unitTestSuccessTrendUp,
+                                            successState: unitTestSuccessTrendUp
                                         }
                                     }
                                 });
@@ -504,13 +515,13 @@
                             // prepare the data for the regression test mapping days ago on the x axis
                             var now = moment(),
                                 data = _(rows).map(function(result) {
-                                        var daysAgo = -1 * moment.duration(now.diff(result.timestamp)).asDays(),
-                                            totalPassed = result.successCount || 0,
-                                            totalTests = result.totalCount,
-                                            percentPassed = totalTests ? totalPassed/totalTests : 0;
+                                    var daysAgo = -1 * moment.duration(now.diff(result.timestamp)).asDays(),
+                                        totalPassed = result.successCount || 0,
+                                        totalTests = result.totalCount,
+                                        percentPassed = totalTests ? totalPassed/totalTests : 0;
 
-                                        return [daysAgo, percentPassed];
-                                    }).value();
+                                    return [daysAgo, percentPassed];
+                                }).value();
 
                             var passedPercentResult = regression('linear', data),
                                 passedPercentTrendUp = passedPercentResult.equation[0] > 0;
@@ -947,5 +958,7 @@
             });
         }
         //endregion
+
+
     }
 })();
