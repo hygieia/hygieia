@@ -23,17 +23,18 @@
 
         // define our schemas
         db.version(1).stores({
-            lastRequest: '++id,[type+componentId]',
+            lastRequest: '[type+id]',
             testSuite: '++id,[componentId+timestamp]',
             codeAnalysis: '++id,[componentId+timestamp]',
             securityAnalysis: '++id,[componentId+timestamp]',
-            buildData: '++id,[componentId+timestamp]'
+            buildData: '++id,[componentId+timestamp]',
+            prodCommit: '[componentId+timestamp]'
         });
 
         // create classes
         var LastRequest = db.lastRequest.defineClass({
+            id: String,
             type: String,
-            componentId: String,
             timestamp: Number
         });
 
@@ -42,49 +43,14 @@
             db.lastRequest.put(this);
         };
 
-        var CodeAnalysis = db.codeAnalysis.defineClass({
-            componentId: String,
-            timestamp: Number,
-            coverage: Number,
-            lineCoverage: Number,
-            violations: Number,
-            criticalViolations: Number,
-            majorViolations: Number,
-            blockerViolations: Number,
-            testSuccessDensity: Number,
-            testErrors: Number,
-            testFailures: Number,
-            tests: Number
-        });
-
-        var SecurityAnalysis = db.securityAnalysis.defineClass({
-            componentId: String,
-            timestamp: Number,
-            blocker: Number,
-            major: Number,
-            critical: Number
-        });
-
-        var TestSuite = db.testSuite.defineClass({
-            componentId: String,
-            collectorItemId: String,
-            timestamp: Number,
-            successCount: Number,
-            totalCount: Number
-        });
-
-        var BuildData = db.buildData.defineClass({
-            componentId: String,
-            timestamp: Number,
-            number: String,
-            success: Number // booleans are not in idb spec so use 1 or 0
-        });
-
         db.open();
 
         // clear out any collection data if there is a reset parameter
+        if($routeParams.delete) {
+            db.delete();
+        }
+
         if($routeParams.reset) {
-            // db.delete();
             db.lastRequest.clear();
             db.codeAnalysis.clear();
             db.testSuite.clear();
@@ -205,7 +171,7 @@
                         }
                     }
                 }
-                console.log('new config', newOptions);
+
                 updateWidgetOptions(newOptions);
             });
         }
@@ -315,8 +281,7 @@
 
         function getTeamComponentData(collectorItemId) {
             var team = teamDashboardDetails[collectorItemId],
-                componentId = team.application.components[0].id,
-                start = moment().subtract(90, 'days').valueOf();
+                componentId = team.application.components[0].id;
 
             function getCaMetric(metrics, name, fallback) {
                 var val = fallback === undefined ? false : fallback;
@@ -327,7 +292,7 @@
             }
 
             // region Build Data
-            db.lastRequest.where('[type+componentId]').equals(['build-data', componentId]).first()
+            db.lastRequest.where('[type+id]').equals(['build-data', componentId]).first()
                 .then(function(lastRequest) {
                     var now = moment(),
                         dateEnds = now.valueOf(),
@@ -355,8 +320,8 @@
                             // need to add a new item
                             else {
                                 db.lastRequest.add({
+                                    id: componentId,
                                     type: 'build-data',
-                                    componentId: componentId,
                                     timestamp: dateEnds
                                 });
                             }
@@ -385,7 +350,7 @@
                                 var now = moment(),
                                     latestBuild = rows[0],
                                     successRateData = _(rows).groupBy(function(build) {
-                                            return moment(moment(build.timestamp).format('L')).valueOf();
+                                            return moment(build.timestamp).startOf('day').valueOf();
                                         }).map(function(builds, key) {
                                             key = parseFloat(key); // make sure it's a number
 
@@ -398,9 +363,7 @@
                                     fixedBuildData = [];
 
                                 var lastFailedBuild = false;
-                                _(rows).reverse().forEach(function(build, idx) {
-                                    //console.log(moment(build.timestamp).format('L hh:mm'));
-
+                                _(rows).reverse().forEach(function(build) {
                                     // we have a failed build. need a
                                     // successful one to compare it to
                                     if(lastFailedBuild) {
@@ -430,43 +393,49 @@
                                     totalBuilds = rows.length,
                                     successRateAverage = totalBuilds ? totalSuccessfulBuilds / totalBuilds : 0;
 
-                                var buildFixRateResponse = regression('linear', fixedBuildData),
-                                    buildFixRateTrendUp = buildFixRateResponse.equation[0] > 0,
-                                    buildFixRateAverage = fixedBuildData.length ? Math.round(_(fixedBuildData).map(function(i) { return i[1]; }).reduce(function(a,b){ return a+b; }) / fixedBuildData.length) : false,
-                                    buildFixRateMetric = 'M',
-                                    minPerDay = 24*60;
+                                var buildData = {
+                                    summary: {
+                                        buildSuccess: {
+                                            number: Math.round(successRateAverage * 100),
+                                            trendUp: successRateTrendUp,
+                                            successState: successRateTrendUp
+                                        }
+                                    },
+                                    latestBuild: {
+                                        number: latestBuild.number,
+                                        success: latestBuild.success
+                                    }
+                                };
 
-                                if (buildFixRateAverage > minPerDay) {
-                                    buildFixRateAverage = Math.round(buildFixRateAverage / minPerDay);
-                                    buildFixRateMetric = 'D';
-                                }
-                                else if(buildFixRateAverage > 60) {
-                                    buildFixRateAverage = Math.round(buildFixRateAverage / 60);
-                                    buildFixRateMetric = 'H'
+                                // only calculate fixed build data if it exists
+                                if(fixedBuildData.length) {
+                                    var buildFixRateResponse = regression('linear', fixedBuildData),
+                                        buildFixRateTrendUp = buildFixRateResponse.equation[0] > 0,
+                                        buildFixRateAverage = fixedBuildData.length ? Math.round(_(fixedBuildData).map(function(i) { return i[1]; }).reduce(function(a,b){ return a+b; }) / fixedBuildData.length) : false,
+                                        buildFixRateMetric = 'm',
+                                        minPerDay = 24*60;
+
+                                    if (buildFixRateAverage > minPerDay) {
+                                        buildFixRateAverage = Math.round(buildFixRateAverage / minPerDay);
+                                        buildFixRateMetric = 'd';
+                                    }
+                                    else if(buildFixRateAverage > 60) {
+                                        buildFixRateAverage = Math.round(buildFixRateAverage / 60);
+                                        buildFixRateMetric = 'h'
+                                    }
+
+                                    buildData.summary['buildFix'] = {
+                                        number: buildFixRateAverage,
+                                        trendUp: buildFixRateTrendUp,
+                                        successState: !buildFixRateTrendUp,
+                                        metric: buildFixRateMetric
+                                    };
                                 }
 
                                 // use $timeout so that it will apply on the next digest
                                 $timeout(function() {
                                     // update data for the UI
-                                    setTeamData(collectorItemId, {
-                                        summary: {
-                                            buildSuccess: {
-                                                number: Math.round(successRateAverage * 100),
-                                                trendUp: successRateTrendUp,
-                                                successState: successRateTrendUp
-                                            },
-                                            buildFix: {
-                                                number: buildFixRateAverage,
-                                                trendUp: buildFixRateTrendUp,
-                                                successState: !buildFixRateTrendUp,
-                                                metric: buildFixRateMetric
-                                            }
-                                        },
-                                        latestBuild: {
-                                            number: latestBuild.number,
-                                            success: latestBuild.success
-                                        }
-                                    });
+                                    setTeamData(collectorItemId, buildData);
                                 });
                             });
                         });
@@ -475,7 +444,7 @@
 
             // region Security Analysis
             // get our security analysis data. start by seeing if we've already run this request
-            db.lastRequest.where('[type+componentId]').equals(['security-analysis', componentId]).first()
+            db.lastRequest.where('[type+id]').equals(['security-analysis', componentId]).first()
                 .then(function(lastRequest) {
                     var now = moment(),
                         dateEnds = now.valueOf(),
@@ -503,8 +472,8 @@
                             // need to add a new item
                             else {
                                 db.lastRequest.add({
+                                    id: componentId,
                                     type: 'security-analysis',
-                                    componentId: componentId,
                                     timestamp: dateEnds
                                 });
                             }
@@ -567,7 +536,7 @@
 
             // region Code Analysis
             // get our code analysis data. start by seeing if we've already run this request
-            db.lastRequest.where('[type+componentId]').equals(['code-analysis', componentId]).first().then(function(lastRequest) {
+            db.lastRequest.where('[type+id]').equals(['code-analysis', componentId]).first().then(function(lastRequest) {
                 var now = moment(),
                     dateEnds = now.valueOf(),
                     ninetyDaysAgo = now.add(-90, 'days').valueOf(),
@@ -595,8 +564,8 @@
                         // need to add a new item
                         else {
                             db.lastRequest.add({
+                                id: componentId,
                                 type: 'code-analysis',
-                                componentId: componentId,
                                 timestamp: dateEnds
                             });
                         }
@@ -690,7 +659,7 @@
             // endregion
 
             // region Test Suite
-            db.lastRequest.where('[type+componentId]').equals(['test-suite', componentId]).first().then(function(lastRequest) {
+            db.lastRequest.where('[type+id]').equals(['test-suite', componentId]).first().then(function(lastRequest) {
                 var now = moment(),
                     dateEnds = now.valueOf(),
                     ninetyDaysAgo = now.add(-90, 'days').valueOf(),
@@ -716,8 +685,8 @@
                         // need to add a new item
                         else {
                             db.lastRequest.add({
+                                id: componentId,
                                 type: 'test-suite',
-                                componentId: componentId,
                                 timestamp: dateEnds
                             });
                         }
@@ -837,6 +806,14 @@
                 nowTimestamp = now.valueOf(),
                 start = now.subtract(90, 'days').valueOf();
 
+            // no need to go further if teams aren't configured
+            if(!teams.length) {
+                return;
+            }
+
+            _(teams).forEach(function(team) {
+
+            });
 
             pipelineData.commits(start, nowTimestamp, _(teams).pluck('collectorItemId').value()).then(function(teams) {
 
