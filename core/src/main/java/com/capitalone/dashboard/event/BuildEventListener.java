@@ -58,8 +58,13 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
                 PipelineCommit commit = new PipelineCommit(scm, build.getTimestamp());
                 pipeline.addCommit(PipelineStageType.Build.name(), commit);
             }
+
+            boolean hasFailedBuilds = !pipeline.getFailedBuilds().isEmpty();
             processPreviousFailedBuilds(build, pipeline);
             pipelineRepository.save(pipeline);
+            if(hasFailedBuilds){
+                buildRepository.save(build);
+            }
         }
     }
 
@@ -80,7 +85,6 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
 
                 }
             }
-            buildRepository.save(successfulBuild);
         }
     }
     /**
