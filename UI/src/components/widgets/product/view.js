@@ -383,17 +383,46 @@
                                 rows = _(rows).sortBy('timestamp').reverse().value();
 
                                 var now = moment(),
-                                successRateData = _(rows).groupBy(function(build) {
-                                        return moment(moment(build.timestamp).format('L')).valueOf();
-                                    }).map(function(builds, key) {
-                                        key = parseFloat(key); // make sure it's a number
+                                    latestBuild = rows[0],
+                                    successRateData = _(rows).groupBy(function(build) {
+                                            return moment(moment(build.timestamp).format('L')).valueOf();
+                                        }).map(function(builds, key) {
+                                            key = parseFloat(key); // make sure it's a number
 
-                                        var daysAgo = -1 * moment.duration(now.diff(key)).asDays(),
-                                            successfulBuilds = _(builds).filter({success:true}).value().length,
-                                            totalBuilds = builds.length;
+                                            var daysAgo = -1 * moment.duration(now.diff(key)).asDays(),
+                                                successfulBuilds = _(builds).filter({success:true}).value().length,
+                                                totalBuilds = builds.length;
 
-                                        return [daysAgo, totalBuilds > 0 ? successfulBuilds / totalBuilds : 0];
-                                    }).value();
+                                            return [daysAgo, totalBuilds > 0 ? successfulBuilds / totalBuilds : 0];
+                                        }).value(),
+                                    fixedBuildData = [];
+
+                                var lastFailedBuild = false;
+                                _(rows).reverse().forEach(function(build, idx) {
+                                    //console.log(moment(build.timestamp).format('L hh:mm'));
+
+                                    // we have a failed build. need a
+                                    // successful one to compare it to
+                                    if(lastFailedBuild) {
+                                        if(build.success) {
+                                            var daysAgo = -1 * moment.duration(now.diff(lastFailedBuild.timestamp)).asDays(),
+                                                timeToFixInMinutes = moment.duration(moment(build.timestamp).diff(lastFailedBuild.timestamp)).asMinutes()
+
+                                            // add this to our regression data
+                                            fixedBuildData.push([daysAgo, timeToFixInMinutes]);
+
+                                            // reset the failed build so we can find the next one
+                                            lastFailedBuild = false;
+                                        }
+
+                                        return;
+                                    }
+
+                                    // we need a failed build
+                                    if(!build.success) {
+                                        lastFailedBuild = build;
+                                    }
+                                });
 
                                 var successRateResponse = regression('linear', successRateData),
                                     successRateTrendUp = successRateResponse.equation[0] > 0,
@@ -401,7 +430,20 @@
                                     totalBuilds = rows.length,
                                     successRateAverage = totalBuilds ? totalSuccessfulBuilds / totalBuilds : 0;
 
-                                var latestBuild = rows[0];
+                                var buildFixRateResponse = regression('linear', fixedBuildData),
+                                    buildFixRateTrendUp = buildFixRateResponse.equation[0] > 0,
+                                    buildFixRateAverage = fixedBuildData.length ? Math.round(_(fixedBuildData).map(function(i) { return i[1]; }).reduce(function(a,b){ return a+b; }) / fixedBuildData.length) : false,
+                                    buildFixRateMetric = 'M',
+                                    minPerDay = 24*60;
+
+                                if (buildFixRateAverage > minPerDay) {
+                                    buildFixRateAverage = Math.round(buildFixRateAverage / minPerDay);
+                                    buildFixRateMetric = 'D';
+                                }
+                                else if(buildFixRateAverage > 60) {
+                                    buildFixRateAverage = Math.round(buildFixRateAverage / 60);
+                                    buildFixRateMetric = 'H'
+                                }
 
                                 // use $timeout so that it will apply on the next digest
                                 $timeout(function() {
@@ -412,6 +454,12 @@
                                                 number: Math.round(successRateAverage * 100),
                                                 trendUp: successRateTrendUp,
                                                 successState: successRateTrendUp
+                                            },
+                                            buildFix: {
+                                                number: buildFixRateAverage,
+                                                trendUp: buildFixRateTrendUp,
+                                                successState: !buildFixRateTrendUp,
+                                                metric: buildFixRateMetric
                                             }
                                         },
                                         latestBuild: {
@@ -1024,7 +1072,6 @@
                         teamProdData.trendUp = averageToProdResult.equation[0] > 0;
                     }
 
-                    console.log(teamStageData);
                     setTeamData(team.collectorItemId, {
                         stages: teamStageData,
                         prod: teamProdData
