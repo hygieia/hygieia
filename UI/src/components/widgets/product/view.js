@@ -653,7 +653,7 @@
                     dateBegins = lastRequest.timestamp;
                 }
 
-                testSuiteData.details({componentId: componentId, endDateBegins:dateBegins, endDateEnds:dateEnds, depth: 0})
+                testSuiteData.details({componentId: componentId, endDateBegins:dateBegins, endDateEnds:dateEnds, depth: 1})
                     .then(function(response) {
                         // since we're only requesting a minute we'll probably have nothing
                         if(!response || !response.result || !response.result.length) {
@@ -676,12 +676,20 @@
 
                         // put all results in the database
                         _(response.result).forEach(function(result) {
+                            var totalPassed = 0,
+                                totalTests = 0;
+
+                            _(result.testCapabilities).forEach(function(capabilityResult) {
+                                totalPassed += capabilityResult.successTestSuiteCount;
+                                totalTests += capabilityResult.totalTestSuiteCount;
+                            });
+
                             var test = {
                                 componentId: componentId,
                                 collectorItemId: result.collectorItemId,
                                 timestamp: result.timestamp,
-                                successCount: result.successCount,
-                                totalCount: result.totalCount
+                                successCount: totalPassed,//result.successCount,
+                                totalCount: totalTests//result.totalCount
                             };
 
                             db.testSuite.add(test).catch(function() {
@@ -733,7 +741,7 @@
                                 setTeamData(collectorItemId, {
                                     summary: {
                                         functionalTestsPassed: {
-                                            number: totalResults ? Math.round(totalSuccess / totalSuccess) : 0,
+                                            number: totalResults ? Math.round(totalSuccess / totalResults * 100) : 0,
                                             trendUp: passedPercentTrendUp,
                                             successState: passedPercentTrendUp
                                         }
