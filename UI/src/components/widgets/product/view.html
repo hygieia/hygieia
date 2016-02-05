@@ -32,7 +32,7 @@
                 ng-repeat="team in ctrl.configuredTeams">
 
                 <div class="product-table-td team-name-cell">
-                    <span class="fa fa-cog" ng-click="ctrl.editTeam(team)"></span>
+                    <span class="fa fa-cog" ng-click="ctrl.editTeam(team.collectorItemId)"></span>
 
                     <a title="{{item.customName || item.name}}" class="team-name" ng-click="ctrl.openDashboard(team)">
                         {{team.customName || team.name}}
@@ -40,7 +40,7 @@
 
                     <div class="team-quality">
                         <div class="team-quality-desc">
-                            90-day Quality Metrics
+                            90-day Pipeline Health
                         </div>
 
                         <div class="team-quality-trends">
@@ -109,9 +109,9 @@
                 <div class="product-table-td team-data-cell"
                     ng-repeat="stage in ctrl.stages | filter: '!PROD'">
                     {{teamStageData = team.stages[stage].summary;""}}
-                    <div ng-class="{'clickable':ctrl.teamStageHasCommits(team, stage)}" ng-click="ctrl.viewTeamStageDetails(team, stage)">
-                        <div class="team-data-cell-header" ng-if="teamStageData">
-                            <div class="clearfix team-data-cell-average-days" ng-if-start="teamStageData.average">
+                    <div ng-class="{'clickable':teamStageData.hasCommits}" ng-click="ctrl.viewTeamStageDetails(team, stage)">
+                        <div class="team-data-cell-header" ng-if="teamStageData.average">
+                            <div class="clearfix team-data-cell-average-days">
                                 <!-- only leading zeros get small size -->
                                 <span class="team-time-average-lg" ng-if="teamStageData.average.days">{{teamStageData.average.days}}</span>
                                 <span class="team-time-average-desc" ng-if="teamStageData.average.days > 0">D</span>
@@ -120,24 +120,17 @@
                                 <span class="team-time-average-lg">{{teamStageData.average.minutes}}</span>
                                 <span class="team-time-average-desc">M</span>
                             </div>
-                            <div class="clearfix team-time-average" ng-if-end>
+                            <div class="clearfix team-time-average">
                                 <span class="pull-left">Average</span>
-                                    <span class="pull-right">
-                                        <span>+/-</span>
-                                        <span class="team-time-stddev-num">{{teamStageData.deviation.number}}</span>
-                                        <span class="team-time-stddev-desc">{{teamStageData.deviation.descriptor}}</span>
-                                    </span>
-                            </div>
-
-                            <div class="clearfix" ng-if-start="teamStageData.average == false">
-                                <span class="team-time-average-lg">--</span>
-                            </div>
-                            <div class="clearfix team-time-average" ng-if-end>
-                                <span class="pull-left">Calculating</span>
+                                <span class="pull-right">
+                                    <span>+/-</span>
+                                    <span class="team-time-stddev-num">{{teamStageData.deviation.number}}</span>
+                                    <span class="team-time-stddev-desc">{{teamStageData.deviation.descriptor}}</span>
+                                </span>
                             </div>
                         </div>
 
-                        <div class="team-data-cell-body" ng-if="teamStageData">
+                        <div class="team-data-cell-body">
                             <div class="team-data-cell-last-updated" title="{{teamStageData.lastUpdated.longDisplay}}" ng-if="teamStageData.lastUpdated">
                                 Updated: <span class="team-last-updated-num">{{teamStageData.lastUpdated.shortDisplay}}</span>
                             </div>

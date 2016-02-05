@@ -20,7 +20,6 @@
     "components-font-awesome": "~4.2.0",
     "bootstrap": "~3.3.2",
     "hygieia-jstz-detect": "~1.0.5",
-    "deepmerge": "*",
     "dexie": "*",
     "regression-js": "*",
     "typeahead-focus": "*",
