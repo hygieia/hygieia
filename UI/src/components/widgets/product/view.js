@@ -253,35 +253,33 @@
 
             if(!team) { return; }
 
-            ctrl.configuredTeams[idx] = deepmerge(team, data);
+            var obj = ctrl.configuredTeams[idx];
 
+            // hackish way to update the configured teams object in place so their entire
+            // object does not need to be replaced which would cause a full refresh of the
+            // row instead of just the numbers. some deep merge tools did not replace everything
+            // correctly so this way we can be explicit in the behavior
+            for(var x in data) {
+                var xData = data[x];
+                if(typeof xData == 'object' && obj[x] != undefined) {
+                    for(var y in xData) {
+                        var yData = xData[y];
 
-            //var obj = ctrl.configuredTeams[idx];
-            //
-            //// hackish way to update the configured teams object in place so their entire
-            //// object does not need to be replaced which would cause a full refresh of the
-            //// row instead of just the numbers
-            //for(var x in data) {
-            //    var xData = data[x];
-            //    if(typeof xData == 'object' && obj[x] != undefined) {
-            //        for(var y in xData) {
-            //            var yData = xData[y];
-            //
-            //            if(typeof yData == 'object' && obj[x][y] != undefined) {
-            //                for (var z in yData) {
-            //                    var zData = yData[z];
-            //                    obj[x][y][z] = zData;
-            //                }
-            //            }
-            //            else {
-            //                obj[x][y] = yData;
-            //            }
-            //        }
-            //    }
-            //    else {
-            //        obj[x] = xData;
-            //    }
-            //}
+                        if(typeof yData == 'object' && obj[x][y] != undefined) {
+                            for (var z in yData) {
+                                var zData = yData[z];
+                                obj[x][y][z] = zData;
+                            }
+                        }
+                        else {
+                            obj[x][y] = yData;
+                        }
+                    }
+                }
+                else {
+                    obj[x] = xData;
+                }
+            }
         }
 
         function getTeamDashboardDetails(teams) {
@@ -385,17 +383,46 @@
                                 rows = _(rows).sortBy('timestamp').reverse().value();
 
                                 var now = moment(),
-                                successRateData = _(rows).groupBy(function(build) {
-                                        return moment(moment(build.timestamp).format('L')).valueOf();
-                                    }).map(function(builds, key) {
-                                        key = parseFloat(key); // make sure it's a number
+                                    latestBuild = rows[0],
+                                    successRateData = _(rows).groupBy(function(build) {
+                                            return moment(moment(build.timestamp).format('L')).valueOf();
+                                        }).map(function(builds, key) {
+                                            key = parseFloat(key); // make sure it's a number
 
-                                        var daysAgo = -1 * moment.duration(now.diff(key)).asDays(),
-                                            successfulBuilds = _(builds).filter({success:true}).value().length,
-                                            totalBuilds = builds.length;
+                                            var daysAgo = -1 * moment.duration(now.diff(key)).asDays(),
+                                                successfulBuilds = _(builds).filter({success:true}).value().length,
+                                                totalBuilds = builds.length;
 
-                                        return [daysAgo, totalBuilds > 0 ? successfulBuilds / totalBuilds : 0];
-                                    }).value();
+                                            return [daysAgo, totalBuilds > 0 ? successfulBuilds / totalBuilds : 0];
+                                        }).value(),
+                                    fixedBuildData = [];
+
+                                var lastFailedBuild = false;
+                                _(rows).reverse().forEach(function(build, idx) {
+                                    //console.log(moment(build.timestamp).format('L hh:mm'));
+
+                                    // we have a failed build. need a
+                                    // successful one to compare it to
+                                    if(lastFailedBuild) {
+                                        if(build.success) {
+                                            var daysAgo = -1 * moment.duration(now.diff(lastFailedBuild.timestamp)).asDays(),
+                                                timeToFixInMinutes = moment.duration(moment(build.timestamp).diff(lastFailedBuild.timestamp)).asMinutes()
+
+                                            // add this to our regression data
+                                            fixedBuildData.push([daysAgo, timeToFixInMinutes]);
+
+                                            // reset the failed build so we can find the next one
+                                            lastFailedBuild = false;
+                                        }
+
+                                        return;
+                                    }
+
+                                    // we need a failed build
+                                    if(!build.success) {
+                                        lastFailedBuild = build;
+                                    }
+                                });
 
                                 var successRateResponse = regression('linear', successRateData),
                                     successRateTrendUp = successRateResponse.equation[0] > 0,
@@ -403,7 +430,20 @@
                                     totalBuilds = rows.length,
                                     successRateAverage = totalBuilds ? totalSuccessfulBuilds / totalBuilds : 0;
 
-                                var latestBuild = rows[0];
+                                var buildFixRateResponse = regression('linear', fixedBuildData),
+                                    buildFixRateTrendUp = buildFixRateResponse.equation[0] > 0,
+                                    buildFixRateAverage = fixedBuildData.length ? Math.round(_(fixedBuildData).map(function(i) { return i[1]; }).reduce(function(a,b){ return a+b; }) / fixedBuildData.length) : false,
+                                    buildFixRateMetric = 'M',
+                                    minPerDay = 24*60;
+
+                                if (buildFixRateAverage > minPerDay) {
+                                    buildFixRateAverage = Math.round(buildFixRateAverage / minPerDay);
+                                    buildFixRateMetric = 'D';
+                                }
+                                else if(buildFixRateAverage > 60) {
+                                    buildFixRateAverage = Math.round(buildFixRateAverage / 60);
+                                    buildFixRateMetric = 'H'
+                                }
 
                                 // use $timeout so that it will apply on the next digest
                                 $timeout(function() {
@@ -414,6 +454,12 @@
                                                 number: Math.round(successRateAverage * 100),
                                                 trendUp: successRateTrendUp,
                                                 successState: successRateTrendUp
+                                            },
+                                            buildFix: {
+                                                number: buildFixRateAverage,
+                                                trendUp: buildFixRateTrendUp,
+                                                successState: !buildFixRateTrendUp,
+                                                metric: buildFixRateMetric
                                             }
                                         },
                                         latestBuild: {
@@ -655,7 +701,7 @@
                     dateBegins = lastRequest.timestamp;
                 }
 
-                testSuiteData.details({componentId: componentId, endDateBegins:dateBegins, endDateEnds:dateEnds, depth: 0})
+                testSuiteData.details({componentId: componentId, endDateBegins:dateBegins, endDateEnds:dateEnds, depth: 1})
                     .then(function(response) {
                         // since we're only requesting a minute we'll probably have nothing
                         if(!response || !response.result || !response.result.length) {
@@ -678,12 +724,20 @@
 
                         // put all results in the database
                         _(response.result).forEach(function(result) {
+                            var totalPassed = 0,
+                                totalTests = 0;
+
+                            _(result.testCapabilities).forEach(function(capabilityResult) {
+                                totalPassed += capabilityResult.successTestSuiteCount;
+                                totalTests += capabilityResult.totalTestSuiteCount;
+                            });
+
                             var test = {
                                 componentId: componentId,
                                 collectorItemId: result.collectorItemId,
                                 timestamp: result.timestamp,
-                                successCount: result.successCount,
-                                totalCount: result.totalCount
+                                successCount: totalPassed,//result.successCount,
+                                totalCount: totalTests//result.totalCount
                             };
 
                             db.testSuite.add(test).catch(function() {
@@ -735,7 +789,7 @@
                                 setTeamData(collectorItemId, {
                                     summary: {
                                         functionalTestsPassed: {
-                                            number: totalResults ? Math.round(totalSuccess / totalSuccess) : 0,
+                                            number: totalResults ? Math.round(totalSuccess / totalResults * 100) : 0,
                                             trendUp: passedPercentTrendUp,
                                             successState: passedPercentTrendUp
                                         }
@@ -795,12 +849,6 @@
                     // go backward through the stages and define commit data.
                     // reverse should make it easier to calculate time in the previous stage
                     _(stages).reverse().forEach(function(currentStageName) {
-
-                        // make sure there are commits in that stage, otherwise skip it
-                        if (!team.stages[currentStageName] || !team.stages[currentStageName].length) {
-                            return;
-                        }
-
                         var commits = [], // store our new commit object
                             localStages = [].concat(ctrlStages), // create a copy of the stages
                             previousStages = _(localStages.splice(0, localStages.indexOf(currentStageName))).reverse().value(); // only look for stages before this one
@@ -911,6 +959,9 @@
                     // create some summary data used in each stage's cell
                     _(teamStageData).forEach(function(stageData, stageName) {
                         stageData.summary = {
+                            // helper for determining whether this stage has current commits
+                            hasCommits: stageData.commits && stageData.commits.length ? true : false,
+
                             // green block count
                             commitsInsideTimeframe: _(stageData.commits).filter(function(c) { return !c.errorState; }).value().length,
 
@@ -919,7 +970,7 @@
 
                             // stage last updated text
                             lastUpdated: (function(stageData) {
-                                if(!stageData.commits) {
+                                if(!stageData.commits || !stageData.commits.length) {
                                     return false;
                                 }
 
@@ -938,6 +989,10 @@
 
                             // stage deviation
                             deviation: (function(stageData) {
+                                if(!stageData.stageStdDeviation) {
+                                    return false;
+                                }
+
                                 // determine how to display the standard deviation
                                 var number = moment.duration(stageData.stageStdDeviation).minutes(),
                                     desc = 'min';
@@ -959,7 +1014,6 @@
 
                             average: (function(stageData) {
                                 // determine how to display the average time
-
                                 if(!stageData.stageAverageTime) {
                                     return false;
                                 }
