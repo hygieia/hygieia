@@ -1,13 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.model.QTestResult;
-import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
@@ -25,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -52,7 +47,7 @@ public class TestResultServiceImpl implements TestResultService {
         if (!component.getCollectorItems().containsKey(CollectorType.Test)) {
             return new DataResponse<>(null, 0L);
         }
-        ArrayList<TestResult> result = new ArrayList<>();
+        List<TestResult> result = new ArrayList<>();
 
 
         for (CollectorItem item : component.getCollectorItems().get(CollectorType.Test)) {
@@ -89,11 +84,47 @@ public class TestResultServiceImpl implements TestResultService {
         if (!CollectionUtils.isEmpty(component.getCollectorItems().get(CollectorType.Test)) && (component.getCollectorItems().get(CollectorType.Test).get(0) != null)) {
             Collector collector = collectorRepository.findOne(component.getCollectorItems().get(CollectorType.Test).get(0).getCollectorId());
             if (collector != null) {
-                return new DataResponse<>((Iterable<TestResult>) result, collector.getLastExecuted());
+                return new DataResponse<>(pruneToDepth(result, request.getDepth()), collector.getLastExecuted());
             }
         }
 
         return new DataResponse<>(null, 0L);
+    }
+
+    private Iterable<TestResult> pruneToDepth(List<TestResult> results, Integer depth) {
+        // Prune the response to the requested depth
+        // 0 - TestResult
+        // 1 - TestCapability
+        // 2 - TestSuite
+        // 3 - TestCase
+        // 4 - Entire response
+        // null - Entire response
+        if (depth == null || depth > 3) {
+            return results;
+        }
+        for (TestResult result : results) {
+            if (depth == 0) {
+                result.getTestCapabilities().clear();
+            } else {
+                for (TestCapability testCapability : result.getTestCapabilities()) {
+                    if (depth == 1) {
+                        testCapability.getTestSuites().clear();
+                    } else {
+                        for (TestSuite testSuite : testCapability.getTestSuites()) {
+                            if (depth == 2) {
+                                testSuite.getTestCases().clear();
+                            } else { // depth == 3
+                                for (TestCase testCase : testSuite.getTestCases()) {
+                                    testCase.getTestSteps().clear();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return results;
     }
 
     @Override

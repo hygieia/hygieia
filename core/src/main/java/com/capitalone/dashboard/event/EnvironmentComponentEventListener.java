@@ -78,8 +78,11 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
                 pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
             }
         }
-        BinaryArtifact lastArtifact = sortedArtifacts.get(sortedArtifacts.size() - 1);
-        currentStage.setLastArtifact(lastArtifact);
+        if(sortedArtifacts != null && !sortedArtifacts.isEmpty()){
+            BinaryArtifact lastArtifact = sortedArtifacts.get(sortedArtifacts.size() - 1);
+            currentStage.setLastArtifact(lastArtifact);
+        }
+
 
     }
 

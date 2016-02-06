@@ -2,6 +2,7 @@ package com.capitalone.dashboard.request;
 
 import com.capitalone.dashboard.model.TestSuiteType;
 import org.bson.types.ObjectId;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ public class TestResultRequest {
     private Long endDateEnds;
     private Long durationGreaterThan;
     private Long durationLessThan;
+    @Range(min = 0, max = 4)
+    private Integer depth;
     private List<TestSuiteType> types = new ArrayList<>();
 
     public ObjectId getComponentId() {
@@ -81,6 +84,14 @@ public class TestResultRequest {
 
     public void setDurationLessThan(Long durationLessThan) {
         this.durationLessThan = durationLessThan;
+    }
+
+    public Integer getDepth() {
+        return depth;
+    }
+
+    public void setDepth(Integer depth) {
+        this.depth = depth;
     }
 
     public List<TestSuiteType> getTypes() {

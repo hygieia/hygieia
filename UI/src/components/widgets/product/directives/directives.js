@@ -13,6 +13,7 @@
                 number: '=number',
                 percent: '@percent',
                 trendUp: '=trendUp',
+                measurement: '@measurement',
                 successState: '=successState'
             }
         }
