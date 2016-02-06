@@ -52,7 +52,7 @@ public interface CollectorService {
      * @param item CollectorItem to create
      * @return created CollectorItem
      */
-    CollectorItem createCollectorItemByNiceName(CollectorItem item) throws HygieiaException;
+    CollectorItem createCollectorItemByNiceNameAndJobName(CollectorItem item, String jobName) throws HygieiaException;
 
     /**
      * Creates a new Collector.

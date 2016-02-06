@@ -135,11 +135,11 @@ public class BuildServiceImpl implements BuildService {
         tempCi.setNiceName(request.getNiceName());
         tempCi.getOptions().putAll(option);
         // FIXME: CollectorItem creation via nice name is broken!
-//        if (StringUtils.isEmpty(tempCi.getNiceName())) {
-//            return collectorService.createCollectorItem(tempCi);
-//        }
-//        return collectorService.createCollectorItemByNiceName(tempCi);
-        return collectorService.createCollectorItem(tempCi);
+        if (StringUtils.isEmpty(tempCi.getNiceName())) {
+            return collectorService.createCollectorItem(tempCi);
+        }
+        return collectorService.createCollectorItemByNiceNameAndJobName(tempCi, request.getJobName());
+//        return collectorService.createCollectorItem(tempCi);
     }
 
     private Build createBuild(CollectorItem collectorItem, BuildDataCreateRequest request) {

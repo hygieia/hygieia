@@ -14,4 +14,6 @@ public interface CollectorItemRepository extends BaseCollectorItemRepository<Col
     CollectorItem findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(ObjectId collectorId, String dashboardId);
     @Query(value="{'options.applicationName' : ?1, 'collectorId' : ?0}")
     CollectorItem findByOptionsAndDeployedApplicationName(ObjectId collectorId, String applicationName);
+    @Query(value="{'options.jobName' : ?2, 'niceName' : ?1, 'collectorId' : ?0}")
+    CollectorItem findByCollectorIdNiceNameAndJobName(ObjectId collectorId, String niceName, String jobName);
 }

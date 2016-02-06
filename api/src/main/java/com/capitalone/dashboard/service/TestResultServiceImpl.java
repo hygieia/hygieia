@@ -16,7 +16,6 @@ import com.capitalone.dashboard.request.TestDataCreateRequest;
 import com.capitalone.dashboard.request.TestResultRequest;
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
-import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -166,6 +165,8 @@ public class TestResultServiceImpl implements TestResultService {
             testResult = new TestResult();
         }
 
+        testResult.setTargetAppName(request.getTargetAppName());
+        testResult.setTargetEnvName(request.getTargetEnvName());
         testResult.setCollectorItemId(collectorItem.getId());
         testResult.setType(request.getType());
         testResult.setDescription(request.getDescription());
