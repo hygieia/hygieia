@@ -55,7 +55,7 @@ public class PipelineServiceImpl implements PipelineService {
             if(stage.equals(PipelineStageType.Prod)){
                 while(commitIterator.hasNext()){
                     PipelineResponseCommit commit = commitIterator.next();
-                    if(!isBetween(commit.getScmCommitTimestamp(), beginDate, endDate)){
+                    if(!isBetween(commit.getProcessedTimestamps().get(stage.name()), beginDate, endDate)){
                         commitIterator.remove();
                     }
                 }
@@ -145,7 +145,7 @@ public class PipelineServiceImpl implements PipelineService {
                 environmentName = pipelineStage.name();
             }
 
-            Map<String, EnvironmentStage> stages = new TreeMap<String, EnvironmentStage>(String.CASE_INSENSITIVE_ORDER);
+            Map<String, EnvironmentStage> stages = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
             stages.putAll(pipeline.getStages());
             if(environmentName != null) {
                 stage = stages.get(environmentName);
