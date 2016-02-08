@@ -1,0 +1,5 @@
+cucumber-testresult-plugin 0.8.2
+scm-api:1.0
+git-client:1.19.0
+git:2.4.0
+maven-plugin:2.7.1
