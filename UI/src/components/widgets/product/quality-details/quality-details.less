@@ -1,0 +1,117 @@
+@import (reference) '../../../../../bower_components/bootstrap/less/variables';
+@import (reference) '../../../../../bower_components/bootstrap/less/mixins/gradients';
+@import (reference) '../../../../app/css/variables';
+@import (reference) '../../../../app/css/mixins';
+@import (reference) '../product-mixins';
+
+#quality-details {
+    .quality-cell-style(@dash-text, @dash-text);
+
+    .tab-content {
+        min-height: 350px;
+    }
+
+    .nav-tabs > li {
+        a, a:hover, a:focus {
+            border-radius: 0;
+        }
+
+        &.active a {
+            border-top-color: @modal-content-bg;
+
+            #gradient > .vertical(@start-color: @modal-content-bg; @end-color: @nav-tabs-active-link-hover-bg; @start-percent: 0; @end-percent: 50%);
+        }
+    }
+
+    @critical-color: @btn-primary-bg;
+    @blocker-color: lighten(@btn-primary-bg, 15%);
+    @major-color: lighten(@btn-primary-bg, 50%);
+    @issues-color: lighten(@btn-primary-bg, 70%);
+
+    .quality-details-series-chart {
+        .ct-bar {
+            stroke-width: 7px;
+        }
+
+        .ct-series.ct-series-a {
+            .ct-bar, .ct-area, line, .ct-point {
+                stroke: @issues-color;
+            }
+            path {
+                fill: @issues-color;
+                stroke: @issues-color;
+            }
+        }
+
+        .ct-series.ct-series-b {
+            .ct-bar, .ct-area, line, .ct-point {
+                stroke: @major-color;
+            }
+            path {
+                fill: @major-color;
+                stroke: @major-color;
+            }
+        }
+
+        .ct-series.ct-series-c {
+            .ct-bar, .ct-area, line, .ct-point {
+                stroke: @critical-color;
+            }
+            path {
+                fill: @critical-color;
+                stroke: @critical-color;
+            }
+        }
+
+        .ct-series.ct-series-d {
+            .ct-bar, .ct-area, line, .ct-point {
+                stroke: @blocker-color;
+            }
+            path {
+                fill: @blocker-color;
+                stroke: @blocker-color;
+            }
+        }
+    }
+
+    .code-quality-series-legend {
+        background-color: @modal-content-bg;
+
+        border-top: 1px solid @modal-content-border-color;
+        //.text(1.5, 3);
+        padding: 1rem;
+
+        .legend-block {
+            display: inline-block;
+            margin-right: 2rem;
+
+            .legend-square {
+                display: inline-block;
+                width: 2rem;
+                height: 2rem;
+                margin-right: 1rem;
+                border: 1px solid @dash-dashboard-text-hover;
+            }
+
+            .legend-text {
+                .text(1.5, 3);
+            }
+
+            &.legend-block-d .legend-square {
+                background: @blocker-color;
+            }
+
+            &.legend-block-c .legend-square {
+                background: @critical-color;
+            }
+
+            &.legend-block-b .legend-square {
+                background: @major-color;
+            }
+
+            &.legend-block-a .legend-square {
+                background: @issues-color;
+            }
+        }
+    }
+}
