@@ -110,7 +110,7 @@ public class PipelineServiceImpl implements PipelineService {
     }
 
     private Map<String, PipelineCommit> findCommitsForPipelineStageType(Dashboard dashboard, Pipeline pipeline, PipelineStageType stageType) {
-        String mappedName = (stageType.equals(PipelineStageType.Build) || stageType.equals(PipelineStageType.Commit)) ? stageType.name() : dashboard.getEnvironmentMappings().get(stageType);
+        String mappedName = (stageType.equals(PipelineStageType.Build) || stageType.equals(PipelineStageType.Commit)) ? stageType.name() : dashboard.findEnvironmentMappings().get(stageType);
         return pipeline.getCommitsByStage(mappedName);
     }
 
