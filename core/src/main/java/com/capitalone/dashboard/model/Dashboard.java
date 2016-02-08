@@ -73,7 +73,7 @@ public class Dashboard extends BaseModel {
 
     public void setType(DashboardType type) { this.type = type; }
 
-    public Map<PipelineStageType, String> getEnvironmentMappings(){
+    public Map<PipelineStageType, String> findEnvironmentMappings(){
         Map<String, String> environmentMappings = null;
         for(Widget widget : this.getWidgets()) {
             if (widget.getName().equalsIgnoreCase("pipeline")) {
