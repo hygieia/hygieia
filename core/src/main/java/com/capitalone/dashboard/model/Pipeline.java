@@ -1,12 +1,10 @@
 package com.capitalone.dashboard.model;
 
+import com.capitalone.dashboard.util.PipelineUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Document containing the details of a Pipeline for a TeamDashboardCollectorItem
@@ -56,5 +54,15 @@ public class Pipeline extends BaseModel{
 
     public void addFailedBuild(Build failedBuild){
         this.getFailedBuilds().add(failedBuild);
+    }
+
+    public Map<String, PipelineCommit> getCommitsByStage(String stage){//, Map<PipelineStageType, String> environmentMappings){
+        EnvironmentStage pipelineStage = this.getStages().get(stage);
+        if(pipelineStage == null) {
+            return new HashMap<>();
+        }
+
+        Map<String, PipelineCommit> commitsByStage = PipelineUtils.commitSetToMap(pipelineStage.getCommits());
+        return commitsByStage;
     }
 }
