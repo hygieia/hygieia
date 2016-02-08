@@ -13,7 +13,7 @@
 
 // FONT AWESOME
 // ========================================
-@fa-font-path: '/fonts';
+@fa-font-path: '../fonts';
 
 // BOOTSTRAP VARIABLES
 // ========================================
@@ -33,6 +33,12 @@
     width: 960px;
 }
 
+.tab-content {
+    background: @nav-tabs-active-link-hover-bg;
+    border: 1px solid @nav-tabs-border-color;
+    border-top: 0;
+}
+
 // CHARTIST VARIABLES
 // ========================================
 @ct-series-colors: @dash-status-pass, @dash-status-fail, @dash-status-warn, @dash-text;
@@ -47,7 +53,7 @@
 
 // CHARTIST OVERRIDES
 // ========================================
-#dashboard {
+#dashboard, .modal-content {
     // defining alternative chart colors
     .ct-chart.dash-chart-alt .ct-series {
         .ct-line, .ct-point, .ct-bar, .ct-donut {
@@ -76,6 +82,20 @@
     .ct-grid.ct-grid-threshold {
         stroke: @dash-status-fail;
         stroke-dasharray: none;
+    }
+}
+
+.modal-content {
+    .ct-label {
+        color: @dash-text;
+    }
+
+    text.ct-label {
+        fill: @dash-text;
+    }
+
+    .ct-grid {
+        stroke: @modal-content-bg;
     }
 }
 
@@ -438,6 +458,10 @@ body {
 
     .text-danger {
         color: @state-danger-text !important;
+    }
+
+    .text-success {
+        color: @state-success-text !important;
     }
 
     .fa, .glyphicon {
