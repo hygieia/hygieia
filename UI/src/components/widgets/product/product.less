@@ -1,10 +1,14 @@
 @import (reference) '../../../app/css/variables.less';
 @import (reference) '../../../app/css/mixins.less';
 @import (reference) '../../../../bower_components/bootstrap/less/mixins/buttons';
+@import (reference) 'product-mixins';
 @import 'environment-commits/environment-commits';
+@import 'quality-details/quality-details.less';
 
 #product-dashboard {
     margin-top: -2rem;
+
+    .quality-cell-style(@dash-dashboard-text-hover, @dash-dashboard-text-light);
 
     .product-dash-header {
         .product-dash-header-text {
@@ -216,41 +220,7 @@
                     .keyframe-ticker(@limit, (@frame + 1));
                 }
 
-                .quality-cell-wrapper {
-                    display: inline-block;
-                    text-align: left;
-                }
 
-                .quality-num {
-                    .text(2.5);
-                    color: @dash-dashboard-text-hover;
-
-                    .fa {
-                        margin-right: -.15em;
-                    }
-
-                    sup, sub {
-                        font-size: .6em;
-                        margin-left: -.3em;
-                        color: @dash-dashboard-text-light;
-                    }
-
-                    sup {
-                        top: -.5em;
-                    }
-
-                    sub {
-                        bottom: -0.05em;
-                        text-transform: uppercase;
-                    }
-                }
-
-                .quality-text {
-                    .text(1);
-                    color: @dash-dashboard-text-hover;
-                    margin-top: .4em;
-                    white-space: nowrap;
-                }
             }
         }
 

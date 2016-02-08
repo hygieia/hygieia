@@ -47,7 +47,7 @@
                             <div class="trend-wrap-7">
                                 <div class="trend">
                                     <product-team-summary-field
-                                        ng-click="ctrl.open"
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 0)"
                                         number="team.summary.unitTests.number"
                                         percent="true"
                                         trend-up="team.summary.unitTests.trendUp"
@@ -56,6 +56,7 @@
                                 </div>
                                 <div class="trend">
                                     <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 1)"
                                         number="team.summary.codeCoverage.number"
                                         percent="true"
                                         trend-up="team.summary.codeCoverage.trendUp"
@@ -64,6 +65,7 @@
                                 </div>
                                 <div class="trend">
                                     <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 2)"
                                         number="team.summary.codeIssues.number"
                                         percent="false"
                                         trend-up="team.summary.codeIssues.trendUp"
@@ -72,6 +74,7 @@
                                 </div>
                                 <div class="trend">
                                     <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 3)"
                                         number="team.summary.securityIssues.number"
                                         percent="false"
                                         trend-up="team.summary.securityIssues.trendUp"
@@ -80,6 +83,7 @@
                                 </div>
                                 <div class="trend">
                                     <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 4)"
                                         number="team.summary.buildSuccess.number"
                                         percent="true"
                                         trend-up="team.summary.buildSuccess.trendUp"
@@ -88,6 +92,7 @@
                                 </div>
                                 <div class="trend">
                                     <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 5)"
                                         number="team.summary.buildFix.number"
                                         measurement="{{team.summary.buildFix.metric}}"
                                         trend-up="team.summary.buildFix.trendUp"
@@ -96,6 +101,7 @@
                                 </div>
                                 <div class="trend">
                                     <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 6)"
                                         number="team.summary.functionalTestsPassed.number"
                                         percent="true"
                                         trend-up="team.summary.functionalTestsPassed.trendUp"
@@ -142,7 +148,7 @@
                         </div>
 
                         <div class="team-data-cell-last-build" ng-if="stage === 'Build' && team.latestBuild">
-                            Latest build #: <span class="fa" ng-class="{'text-success fa-thumbs-up': team.latestBuild.success, 'text-danger fa-thumbs-down': team.latestBuild.success == false}"></span> <span class="team-data-cell-last-build-num">{{team.latestBuild.number}}</span>
+                            Latest build #: <span class="fa" ng-class="{'fa-refresh fa-spin product-text-active':team.latestBuild.inProgress, 'text-success fa-thumbs-up': !team.latestBuild.inProgress && team.latestBuild.success, 'text-danger fa-thumbs-down': !team.latestBuild.inProgress && !team.latestBuild.success}"></span> <span class="team-data-cell-last-build-num">{{team.latestBuild.number}}</span>
                         </div>
                     </div>
 

@@ -45,6 +45,11 @@
     },
     "bootstrap": {
       "dependencies": {}
+    },
+    "chartist": {
+      "main": [
+        "./dist/chartist.js"
+      ]
     }
   }
 }

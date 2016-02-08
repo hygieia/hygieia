@@ -67,6 +67,7 @@
         ctrl.editTeam = editTeam;
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
+        ctrl.viewQualityDetails = viewQualityDetails;
 
         // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
@@ -196,7 +197,7 @@
                 controllerAs: 'ctrl',
                 size: 'lg',
                 resolve: {
-                    modalData: function () {
+                    modalData: function() {
                         return {
                             team: team,
                             stage: stage,
@@ -205,6 +206,24 @@
                     }
                 }
             });
+        }
+
+        function viewQualityDetails(team, stage, metricIndex) {
+            $modal.open({
+                templateUrl: 'components/widgets/product/quality-details/quality-details.html',
+                controller: 'productQualityDetailsController',
+                controllerAs: 'ctrl',
+                size: 'lg',
+                resolve: {
+                    modalData: function() {
+                        return {
+                            team: team,
+                            stage: stage,
+                            metricIndex: metricIndex
+                        }
+                    }
+                }
+            })
         }
         //endregion
 
@@ -333,7 +352,8 @@
                                         componentId: componentId,
                                         timestamp: result.timestamp,
                                         number: result.number,
-                                        success: result.buildStatus.toLowerCase() == 'success'
+                                        success: result.buildStatus.toLowerCase() == 'success',
+                                        inProgress: result.buildStatus.toLowerCase() == 'inprogress'
                                     };
 
                                 db.buildData.add(build);
@@ -348,18 +368,20 @@
                                 // make sure it's sorted with the most recent first (largest timestamp)
                                 rows = _(rows).sortBy('timestamp').reverse().value();
 
+                                var latestBuild = rows[0];
+
+                                rows = _(rows).filter({inProgress:false}).value();
+
                                 var now = moment(),
-                                    latestBuild = rows[0],
                                     successRateData = _(rows).groupBy(function(build) {
-                                            return moment(build.timestamp).startOf('day').valueOf();
+                                            return -1 * Math.floor(moment.duration(now.diff(moment(build.timestamp).startOf('day').valueOf())).asDays());
                                         }).map(function(builds, key) {
                                             key = parseFloat(key); // make sure it's a number
 
-                                            var daysAgo = -1 * moment.duration(now.diff(key)).asDays(),
-                                                successfulBuilds = _(builds).filter({success:true}).value().length,
+                                            var successfulBuilds = _(builds).filter({success:true}).value().length,
                                                 totalBuilds = builds.length;
 
-                                            return [daysAgo, totalBuilds > 0 ? successfulBuilds / totalBuilds : 0];
+                                            return [key, totalBuilds > 0 ? successfulBuilds / totalBuilds : 0];
                                         }).value(),
                                     fixedBuildData = [];
 
@@ -395,6 +417,10 @@
                                     successRateAverage = totalBuilds ? totalSuccessfulBuilds / totalBuilds : 0;
 
                                 var buildData = {
+                                    data: {
+                                        buildSuccess: successRateData,
+                                        fixedBuild: fixedBuildData
+                                    },
                                     summary: {
                                         buildSuccess: {
                                             number: Math.round(successRateAverage * 100),
@@ -404,7 +430,8 @@
                                     },
                                     latestBuild: {
                                         number: latestBuild.number,
-                                        success: latestBuild.success
+                                        success: latestBuild.success,
+                                        inProgress: latestBuild.inProgress
                                     }
                                 };
 
@@ -520,6 +547,9 @@
                                 $timeout(function() {
                                     // update data for the UI
                                     setTeamData(collectorItemId, {
+                                        data: {
+                                            securityAnalysis: rows
+                                        },
                                         summary: {
                                             securityIssues: {
                                                 number: latestResult.major + latestResult.critical + latestResult.blocker,
@@ -606,8 +636,9 @@
                             // prepare the data for the regression test mapping days ago on the x axis
                             var now = moment(),
                                 codeIssues = _(rows).map(function(row) {
-                                    var daysAgo = -1 * moment.duration(now.diff(row.timestamp)).asDays();
-                                    return [daysAgo, row.violations];
+                                    var daysAgo = -1 * moment.duration(now.diff(row.timestamp)).asDays(),
+                                        totalViolations = row.violations + row.criticalViolations + row.majorViolations + row.blockerViolations;
+                                    return [daysAgo, totalViolations];
                                 }).value(),
                                 codeCoverage = _(rows).map(function(row) {
                                     var daysAgo = -1 * moment.duration(now.diff(row.timestamp)).asDays();
@@ -635,6 +666,9 @@
                             $timeout(function() {
                                 // update data for the UI
                                 setTeamData(collectorItemId, {
+                                    data: {
+                                        codeAnalysis: rows
+                                    },
                                     summary: {
                                         codeIssues: {
                                             number: latestResult.violations,
@@ -705,6 +739,7 @@
                             var test = {
                                 componentId: componentId,
                                 collectorItemId: result.collectorItemId,
+                                name: result.description,
                                 timestamp: result.timestamp,
                                 successCount: totalPassed,//result.successCount,
                                 totalCount: totalTests//result.totalCount
@@ -755,6 +790,9 @@
                             $timeout(function() {
                                 // update data for the UI
                                 setTeamData(collectorItemId, {
+                                    data: {
+                                        testSuite: rows
+                                    },
                                     summary: {
                                         functionalTestsPassed: {
                                             number: totalResults ? Math.round(totalSuccess / totalResults * 100) : 0,
@@ -836,6 +874,10 @@
                         pipelineData
                             .commits(dateBegins, nowTimestamp, collectorItemId)
                             .then(function(response) {
+                                if(!response.length) {
+                                    return $q.reject('No response found');
+                                }
+
                                 // we only requested one team so it's safe to assume
                                 // that it's in the first position
                                 response = response[0];
