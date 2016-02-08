@@ -50,7 +50,7 @@
                 numberOfDays: 14
             };
             codeRepoData.details(params).then(function(data) {
-                processResponse(data.result);
+                processResponse(data.result, params.numberOfDays);
                 deferred.resolve(data.lastUpdated);
             });
             return deferred.promise;
@@ -74,16 +74,24 @@
         }
 
         var groupedCommitData = [];
-        function processResponse(data) {
+        function processResponse(data, numberOfDays) {
             // get total commits by day
             var commits = [];
-            _(data).sortBy('timestamp')
+            var groups = _(data).sortBy('timestamp')
                 .groupBy(function(item) {
-                    return moment(item.scmCommitTimestamp).format('L');
-                }).forEach(function(group) {
-                    commits.push(group.length);
-                    groupedCommitData.push(group);
-                });
+                    return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
+                }).value();
+
+            for(var x=-1*numberOfDays+1; x <= 0; x++) {
+                if(groups[x]) {
+                    commits.push(groups[x].length);
+                    groupedCommitData.push(groups[x]);
+                }
+                else {
+                    commits.push(0);
+                    groupedCommitData.push([]);
+                }
+            }
 
             //update charts
             if(commits.length)

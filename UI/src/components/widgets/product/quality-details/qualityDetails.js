@@ -9,7 +9,6 @@
     function productQualityDetailsController(modalData, $modalInstance, $timeout) {
         /*jshint validthis:true */
         var ctrl = this;
-modalData.metricIndex = 6;
         ctrl.tabSettings = {
             unitTests: { active: modalData.metricIndex == 0},
             codeCoverage: { active: modalData.metricIndex == 1},
@@ -29,28 +28,88 @@ modalData.metricIndex = 6;
         ctrl.buildFix = modalData.team.summary.buildFix;
         ctrl.functionalTestsPassed = modalData.team.summary.functionalTestsPassed;
 
-        prepareUnitTestChartData();
-        prepareCodeCoverageChartData();
-        prepareCodeIssuesChartData();
-        prepareSecurityAnalysisChartData();
-        prepareBuildSuccessChartData();
-        prepareFixedBuildChartData();
-        prepareFuncTestsPassedData();
+        ctrl.selectTab = function(idx) {
+            var fn = false;
+            switch(idx) {
+                case 0:
+                    if(!ctrl.unitTestChartData)
+                    {
+                        fn = prepareUnitTestChartData;
+                    }
+                    break;
+                case 1:
+                    if(!ctrl.codeCoverageChartData) {
+                        fn = prepareCodeCoverageChartData;
+                    }
+                    break;
+                case 2:
+                    if(!ctrl.codeIssuesChartData) {
+                        fn = prepareCodeIssuesChartData;
+                    }
+                    break;
+                case 3:
+                    if(!ctrl.securityAnalysisChartData) {
+                        fn = prepareSecurityAnalysisChartData;
+                    }
+                    break;
+                case 4:
+                    if(!ctrl.buildSuccessChartData) {
+                        fn = prepareBuildSuccessChartData;
+                    }
+                    break;
+                case 5:
+                    if(!ctrl.fixedBuildChartData) {
+                        fn = prepareFixedBuildChartData;
+                    }
+                    break;
+                case 6:
+                    if(!ctrl.funcTestsPassedChartData) {
+                        fn = prepareFuncTestsPassedData;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            if(fn) {
+                $timeout(fn, 50);
+            }
+        };
+
+        function getDateLabels(count) {
+            var labels = [];
+            for(var x = count; x > 0; x--) {
+                var text = '';
+                if(x % 7 == 0) {
+                    labels.push(moment().add(-1 * x, 'days').format('MMM DD'));
+                }
+
+                labels.push(text);
+            }
+
+            return labels;
+        }
 
         // set some basic options so we're not stuck copying them everywhere
-        function getLineGraphOptions() {
+        function getDefaultChartOptions() {
             return {
                 plugins: [
                     Chartist.plugins.gridBoundaries()
                 ],
-                showArea: true,
-                lineSmooth: false,
+                showArea: false,
+                lineSmooth: Chartist.Interpolation.none({
+                    fillHoles: true
+                }),
                 fullWidth: true,
                 chartPadding: 7,
                 axisX: {
-                    showLabel: false
+                    //showLabel: false
                 },
                 axisY: {
+                    labelOffset: {
+                        x: 0,
+                        y: 5
+                    },
                     labelInterpolationFnc: function(value) {
                         return value === 0 ? 0 : ((Math.round(value * 100) / 100) + '');
                     }
@@ -72,7 +131,6 @@ modalData.metricIndex = 6;
 
         function getAnalysisData(origData, metric, defaultValue) {
             var data = [],
-                labels = [],
                 rawData = {};
 
             _(origData)
@@ -91,14 +149,13 @@ modalData.metricIndex = 6;
             });
 
             for(var x = -90; x < 0; x++) {
-                labels.push('');
                 var existingValue = rawData[x];
 
                 data.push(existingValue == undefined && defaultValue != undefined ? defaultValue : rawData[x]);
             }
 
             return {
-                labels: labels,
+                labels: getDateLabels(data.length),
                 data: data
             }
         }
@@ -115,7 +172,10 @@ modalData.metricIndex = 6;
                 }]
             };
 
-            ctrl.unitTestChartOptions = getLineGraphOptions();
+            var options = getDefaultChartOptions();
+            //options.low = 0;
+            //options.high = 100;
+            ctrl.unitTestChartOptions = options;
         }
 
         function prepareCodeCoverageChartData()
@@ -130,7 +190,7 @@ modalData.metricIndex = 6;
                 }]
             };
 
-            ctrl.codeCoverageChartOptions = getLineGraphOptions();
+            ctrl.codeCoverageChartOptions = getDefaultChartOptions();
         }
 
         function prepareCodeIssuesChartData()
@@ -194,7 +254,7 @@ modalData.metricIndex = 6;
                 .forEach(function(item) {
                     // populate an object instead of dealing with arrays so
                     // we can get to it by property names
-                    rawData[item[0]] = item[1];
+                    rawData[item[0]] = parseFloat((item[1] * 100).toFixed(1));
                 });
 
             for(var x = -90; x < 0; x++) {
@@ -210,13 +270,13 @@ modalData.metricIndex = 6;
                 }]
             };
 
-            ctrl.buildSuccessChartOptions = getLineGraphOptions();
+            ctrl.buildSuccessChartOptions = getDefaultChartOptions();
         }
 
         function prepareFixedBuildChartData()
         {
             var data = _(modalData.team.data.fixedBuild).map(function(record) {
-                return { x: record[0], y: record[1] };
+                return { x: record[0], y: parseFloat(record[1].toFixed(1)) };
             }).value();
 
             ctrl.fixedBuildChartData = {
@@ -225,13 +285,15 @@ modalData.metricIndex = 6;
                 ]
             };
 
-            var options = angular.extend(getLineGraphOptions(), {
+            var options = angular.extend(getDefaultChartOptions(), {
+                plugins: [
+                    Chartist.plugins.gridBoundaries()
+                ],
                 axisX: {
                     type: Chartist.AutoScaleAxis,
                     onlyInteger: true,
                     showLabel: false
                 },
-                showArea: false,
                 showLine: false
             });
 
@@ -271,21 +333,14 @@ modalData.metricIndex = 6;
 
             _(series[0].data).forEach(function() {
                 labels.push('');
-            })
+            });
 
             ctrl.funcTestsPassedChartData = {
                 labels: labels,
                 series: series//[series[0].data]
             };
 
-            var options = getLineGraphOptions();
-            //var options = angular.extend(getLineGraphOptions(), {
-            //    axisX: {
-            //        type: Chartist.AutoScaleAxis,
-            //        onlyInteger: true,
-            //        showLabel: false
-            //    }
-            //});
+            var options = getDefaultChartOptions();
             ctrl.funcTestsPassedChartOptions = options;
 
             var seriesChartNames = ['a','b','c','d'];
