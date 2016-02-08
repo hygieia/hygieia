@@ -151,7 +151,7 @@ hygieia-jenkins-cucumber-test-collector:
 #Determines if build console log is collected - defaults to false
 #  - JENKINS_SAVE_LOG=true
 
-sonar-codequality-collector:
+hygieia-sonar-codequality-collector:
   image: hygieia-sonar-codequality-collector:latest
   container_name: hygieia-sonar-codequality
   volumes:
@@ -162,4 +162,15 @@ sonar-codequality-collector:
 #  environment:
 #  - SONAR_CRON=0 0/5 * * * *
 #  - SONAR_URL=http://localhost:9000
+
+hygieia-chat-ops-collector:
+  image: hygieia-chat-ops-collector:latest
+  container_name: hygieia-chat-ops
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+#  environment:
+#  - CHATOPS_CRON=0 0/5 * * * *
 
