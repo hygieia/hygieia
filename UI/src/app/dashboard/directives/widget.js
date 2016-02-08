@@ -244,7 +244,7 @@
 
                 // TODO: make timeout a setting in the widget configuration
                 if($scope.widgetViewController && $scope.widgetViewController.load) {
-                    refreshInterval = $interval(refresh, 60000);
+                    refreshInterval = $interval(refresh, HygieiaConfig.refresh * 1000);
                 }
             }
 

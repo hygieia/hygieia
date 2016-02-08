@@ -14,9 +14,9 @@
                 Chartist.plugins.gridBoundaries(),
                 Chartist.plugins.lineAboveArea(),
                 Chartist.plugins.pointHalo(),
-                //Chartist.plugins.ctPointClick({
-                //    onClick: showDetail
-                //}),
+                Chartist.plugins.ctPointClick({
+                    onClick: showDetail
+                }),
                 Chartist.plugins.axisLabels({
                     axisX: {
                         labels: [
@@ -56,7 +56,10 @@
             return deferred.promise;
         };
 
-        function showDetail() {
+        function showDetail(evt) {
+            var target = evt.target,
+                pointIndex = target.getAttribute('ct:point-index');
+
             $modal.open({
                 controller: 'RepoDetailController',
                 controllerAs: 'detail',
@@ -64,12 +67,13 @@
                 size: 'lg',
                 resolve: {
                     commits: function() {
-                        return ctrl.commits;
+                        return groupedCommitData[pointIndex];
                     }
                 }
             });
         }
 
+        var groupedCommitData = [];
         function processResponse(data) {
             // get total commits by day
             var commits = [];
@@ -78,18 +82,22 @@
                     return moment(item.scmCommitTimestamp).format('L');
                 }).forEach(function(group) {
                     commits.push(group.length);
-
+                    groupedCommitData.push(group);
                 });
 
             //update charts
-            var labels = []
-            _(commits).forEach(function(c) {
-                labels.push('');
-            });
-            ctrl.commitChartData = {
-                series: [commits],
-                labels: labels
-            };
+            if(commits.length)
+            {
+                var labels = [];
+                _(commits).forEach(function(c) {
+                    labels.push('');
+                });
+
+                ctrl.commitChartData = {
+                    series: [commits],
+                    labels: labels
+                };
+            }
 
 
             // group get total counts and contributors

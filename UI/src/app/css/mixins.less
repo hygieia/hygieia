@@ -87,6 +87,20 @@
     }
 }
 
+.animate-fade (@speed: .3s) {
+    .ng-enter,
+    .ng-leave.ng-leave-active {
+        opacity:0;
+        transition:opacity @speed linear;
+    }
+
+    .ng-leave,
+    .ng-enter.ng-enter-active {
+        opacity:1;
+        transition:opacity @speed linear;
+    }
+}
+
 .transform(@transform) {
     -ms-transform: @transform;
     -webkit-transform: @transform;
@@ -106,7 +120,7 @@
     .transform(translateX(-50%));
 }
 
-.text(@font-size; @line-height:1.5) {
+.text(@font-size; @line-height:@font-size) {
     font-size: @font-size * 1rem;
     line-height: @line-height * 1rem
 }

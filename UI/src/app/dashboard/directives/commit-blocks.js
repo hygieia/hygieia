@@ -27,29 +27,42 @@ angular
                     return input;
                 };
 
-                var pass = $scope.passes || 0,
-                    fail = $scope.fails || 0;
+                function updateScopeValues() {
+                    var pass = $scope.passes || 0,
+                        fail = $scope.fails || 0;
 
-                $scope.stateFail = Math.floor(fail / 1000);
-                $scope.statePass = Math.floor(pass / 1000);
+                    $scope.stateFail = Math.floor(fail / 1000);
+                    $scope.statePass = Math.floor(pass / 1000);
 
-                fail %= 1000;
-                pass %= 1000;
+                    fail %= 1000;
+                    pass %= 1000;
 
-                $scope.cityFail = Math.floor(fail / 100);
-                $scope.cityPass = Math.floor(pass / 100);
+                    $scope.cityFail = Math.floor(fail / 100);
+                    $scope.cityPass = Math.floor(pass / 100);
 
-                fail %= 100;
-                pass %= 100;
+                    fail %= 100;
+                    pass %= 100;
 
-                $scope.townFail = Math.floor(fail / 10);
-                $scope.townPass = Math.floor(pass / 10);
+                    $scope.townFail = Math.floor(fail / 10);
+                    $scope.townPass = Math.floor(pass / 10);
 
-                fail %= 10;
-                pass %= 10;
+                    fail %= 10;
+                    pass %= 10;
 
-                $scope.villageFail = fail;
-                $scope.villagePass = pass;
+                    $scope.villageFail = fail;
+                    $scope.villagePass = pass;
+                }
+
+                $scope.$watch("passes",function(newValue,oldValue) {
+                    //This gets called when data changes.
+                    updateScopeValues();
+                });
+                $scope.$watch("fails",function(newValue,oldValue) {
+                    //This gets called when data changes.
+                    updateScopeValues();
+                });
+
+                updateScopeValues();
 
             }
         };

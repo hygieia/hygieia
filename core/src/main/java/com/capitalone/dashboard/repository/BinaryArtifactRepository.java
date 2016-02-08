@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.BinaryArtifact;
-import com.capitalone.dashboard.model.Build;
 import org.bson.types.ObjectId;
 import org.springframework.data.repository.CrudRepository;
 
@@ -17,8 +16,8 @@ public interface BinaryArtifactRepository extends CrudRepository<BinaryArtifact,
 
     Iterable<BinaryArtifact> findByArtifactGroupId(String artifactGroupId);
 
-    Iterable<BinaryArtifact> findByBuildInfo (Build buildInfo);
+    Iterable<BinaryArtifact> findByBuildInfoId (ObjectId artifactBuildId);
 
-    BinaryArtifact findByArtifactGroupIdAndArtifactNameAndArtifactVersionAndBuildInfo (String artifactGroupId, String artifactName, String artifactVersion, Build buildInfo);
+    Iterable<BinaryArtifact> findByArtifactNameAndTimestampGreaterThan(String artifactName, Long timestamp);
 
 }

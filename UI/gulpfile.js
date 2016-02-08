@@ -59,7 +59,8 @@ var browserSync = require('browser-sync'),
     config = {
         module: 'hygieia-dashboard',
         local: null,
-        api: null
+        api: null,
+        refresh: 60
     };
 
 // override config values
@@ -145,7 +146,7 @@ gulp.task('serve', ['build'], function() {
     });
 
     gulp.watch(testDataFiles).on('change', function() {
-        runSequence('test-data', browserSync.reload);
+        runSequence('test-data');
     });
 });
 
@@ -183,13 +184,14 @@ gulp.task('themes', function() {
     });
 
     return gulp.src(themeFiles)
-        .on('error', function() {})
+
         .pipe(replace('/** insert:widgets **/', widgetLessFiles.join('')))
         .pipe(less({
             paths: [
                 hygieia.src + 'components'
             ]
         }))
+        .on('error', console.error.bind(console))
         .pipe(gulp.dest(hygieia.dist + 'styles'));
 });
 

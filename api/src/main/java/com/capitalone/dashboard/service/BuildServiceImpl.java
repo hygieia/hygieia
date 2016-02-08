@@ -1,14 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.model.QBuild;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -19,6 +12,8 @@ import com.mysema.query.BooleanBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -74,7 +69,17 @@ public class BuildServiceImpl implements BuildService {
         }
 
         Collector collector = collectorRepository.findOne(item.getCollectorId());
-        return new DataResponse<>(buildRepository.findAll(builder.getValue()), collector.getLastExecuted());
+
+        Iterable<Build> result;
+        if(request.getMax() == null) {
+            result = buildRepository.findAll(builder.getValue());
+        }
+        else {
+            PageRequest pageRequest = new PageRequest(0, request.getMax(), Sort.Direction.DESC, "timestamp");
+            result = buildRepository.findAll(builder.getValue(), pageRequest).getContent();
+        }
+
+        return new DataResponse<>(result, collector.getLastExecuted());
     }
 
     @Override
@@ -129,10 +134,12 @@ public class BuildServiceImpl implements BuildService {
         option.put("instanceUrl", request.getInstanceUrl());
         tempCi.setNiceName(request.getNiceName());
         tempCi.getOptions().putAll(option);
+        // FIXME: CollectorItem creation via nice name is broken!
         if (StringUtils.isEmpty(tempCi.getNiceName())) {
             return collectorService.createCollectorItem(tempCi);
         }
-        return collectorService.createCollectorItemByNiceName(tempCi);
+        return collectorService.createCollectorItemByNiceNameAndJobName(tempCi, request.getJobName());
+//        return collectorService.createCollectorItem(tempCi);
     }
 
     private Build createBuild(CollectorItem collectorItem, BuildDataCreateRequest request) {

@@ -21,9 +21,10 @@
                     if (data.type === 'point' && options.onClick) {
                         var node = data.element._node;
                         node.style.cursor = 'pointer';
-                        node.addEventListener('click', function(evt) {
 
-                        });
+                        node.setAttribute('ct:series-index', data.seriesIndex);
+                        node.setAttribute('ct:point-index', data.index);
+                        node.addEventListener('click', options.onClick);
                     }
                 });
             }

@@ -1,39 +1,34 @@
 @import (reference) '../../../app/css/variables.less';
 @import (reference) '../../../app/css/mixins.less';
 @import (reference) '../../../../bower_components/bootstrap/less/mixins/buttons';
+@import 'environment-commits/environment-commits';
 
 #product-dashboard {
-    margin-top: -2.5em;
+    margin-top: -2rem;
+
+    .product-dash-header {
+        .product-dash-header-text {
+            text-align: center;
+            line-height: 46px;
+        }
+
+        .product-dash-header-legend {
+            text-align: center;
+        }
+    }
 
     @team-cell-padding: 10px;
     .product-table {
         width: 100%;
+        display: table;
         margin-top: 30px;
 
-        .product-text-active {
-            color: @dash-dashboard-text-hover;
+        .product-table-tr {
+            display: table-row;
         }
 
-        thead th {
-            .text(1.4, 2.4);
-        }
-
-        tbody {
-            tr {
-                &:nth-child(odd) {
-                    background-color: @dash-widget-section-highlight;
-                }
-            }
-
-            td {
-                color: @dash-dashboard-text-light;
-                height: 180px;
-                text-align: left;
-                vertical-align: top;
-            }
-        }
-
-        td, th {
+        .product-table-th, .product-table-td {
+            display: table-cell;
             border-left: 1px solid @dash-divider;
             text-align: center;
             font-weight: normal;
@@ -43,6 +38,31 @@
 
             &:first-of-type {
                 border-left: 0;
+            }
+        }
+
+        .product-text-active {
+            color: @dash-dashboard-text-hover;
+        }
+
+        .product-table-th {
+            .text(1.4, 2.4);
+        }
+
+        .product-table-tbody {
+            display: table-row-group;
+
+            .product-table-tr {
+                &:nth-child(odd) {
+                    background-color: @dash-widget-section-highlight;
+                }
+            }
+
+            .product-table-td {
+                color: @dash-dashboard-text-light;
+                height: 180px;
+                text-align: left;
+                vertical-align: top;
             }
         }
 
@@ -65,12 +85,12 @@
             }
 
             &.no-teams {
-                td {
+                .product-table-td {
                     font-size: 1.5em;
                 }
             }
 
-            td {
+            .product-table-td {
                 padding-top: 30px;
                 padding-bottom: 30px;
                 text-align: center;
@@ -102,23 +122,22 @@
 
         .team-name-cell {
             position: relative;
-            width: 16%;
+            width: 25%;
             min-width: 260px;
             padding: 10px;
 
             @team-line-height: 1.5em;
             .team-name {
                 color: @dash-dashboard-text-hover;
+                cursor: pointer;
                 font-weight: bold;
-                line-height: @team-line-height;
-                .text(3, 3);
+                .text(3, 3.2);
 
                 overflow: hidden;
                 display: -webkit-box;
                 -webkit-box-orient: vertical;
-                -webkit-line-clamp: 3;  /* number of lines to show */
-                line-height: 1em;       /* fallback */
-                max-height: 3em;        /* fallback */
+                -webkit-line-clamp: 3; /* number of lines to show */
+                max-height: 3em; /* fallback */
             }
 
             .fa-cog {
@@ -147,6 +166,54 @@
 
                 .team-quality-desc {
                     color: @dash-dashboard-text-light;
+                    margin-bottom: .3em;
+                }
+
+                .team-quality-trends {
+                    width: 100%;
+                    overflow: hidden;
+
+                    .trend {
+                        float: left;
+                    }
+                }
+
+                .generate-trends(15);
+
+                .generate-trends(@n; @i: 3) when (@i =< @n) {
+                    .trend-wrap-@{i} {
+                        width: (100% / 3 * @i);
+                        animation-name: ~'trendticker-@{i}';
+                        animation-duration: (@i - 2)*10s;
+                        animation-timing-function: cubic-bezier(0.750, -0, 0.250, 1.250);
+                        animation-delay: 5s;
+                        animation-iteration-count: infinite;
+                    }
+
+                    @tickerKeyframeName: ~'trendticker-@{i}';
+                    @keyframes @tickerKeyframeName {
+                        .keyframe-ticker(@i);
+                    }
+
+                    .trend:first-child:nth-last-child(@{i}),
+                    .trend:first-child:nth-last-child(@{i}) ~ .trend {
+                        width: 100% / @i;
+                    }
+
+                    .generate-trends(@n, (@i + 1));
+                }
+
+                .keyframe-ticker(@limit; @frame: 0) when (@frame =< (@limit - 3)) {
+                    @lowerlimit: @frame * 100 / (@limit - 2) * 1%;
+                    @upperlimit: (@frame * (100 / (@limit - 2))) + ((100 / (@limit - 2)) * 0.8) * 1%;
+                    @transform: @frame * (100 / @limit) * -1%;
+                    @{lowerlimit} {
+                        transform: translateX(@transform);
+                    }
+                    @{upperlimit} {
+                        transform: translateX(@transform);
+                    }
+                    .keyframe-ticker(@limit, (@frame + 1));
                 }
 
                 .quality-cell-wrapper {
@@ -155,13 +222,33 @@
                 }
 
                 .quality-num {
-                    .text-2x;
+                    .text(2.5);
                     color: @dash-dashboard-text-hover;
+
+                    .fa {
+                        margin-right: -.15em;
+                    }
+
+                    sup, sub {
+                        font-size: .6em;
+                        margin-left: -.3em;
+                        color: @dash-dashboard-text-light;
+                    }
+
+                    sup {
+                        top: -.5em;
+                    }
+
+                    sub {
+                        bottom: -0.05em;
+                        text-transform: uppercase;
+                    }
                 }
 
                 .quality-text {
-                    .text(1, 1);
+                    .text(1);
                     color: @dash-dashboard-text-hover;
+                    margin-top: .4em;
                     white-space: nowrap;
                 }
             }
@@ -170,19 +257,27 @@
         .team-data-cell {
             position: relative;
 
+            .animate-fade();
+
             .team-data-cell-header {
                 padding: @team-cell-padding/2;
                 border-bottom: 1px solid @dash-dashboard-text;
-                .text(1.5, 1.5);
+                .text(1.5);
 
-                .team-time-colon {
-                    margin: 0 -.25em;
+                .team-data-cell-average-days {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
 
-                .team-time-lg {
-                    .text(2.5, 2.5);
+                .team-time-average-desc {
+                    margin-left: -.2em;
                     color: @dash-dashboard-text-hover;
-                    font-weight: bold;
+                }
+
+                .team-time-average-lg {
+                    .text(2.5);
+                    color: @dash-dashboard-text-hover;
                 }
 
                 .team-time-average {
@@ -190,10 +285,14 @@
                     margin-top: 3px;
                 }
 
-                .team-time-average-num {
-                    .text(1.4, 1.4);
+                .team-time-stddev-num {
+                    .text(1.4);
                     color: @dash-dashboard-text-hover;
                     font-weight: bold;
+                }
+
+                .team-time-stddev-desc {
+                    text-transform: uppercase;
                 }
             }
 
@@ -202,10 +301,10 @@
 
                 .team-data-cell-last-updated {
                     text-align: center;
-                    .text(1.1, 1.1);
+                    .text(1.1);
 
                     .team-data-cell-last-updated-num {
-                        .text(1.4, 1.4);
+                        .text(1.4);
                         color: @dash-dashboard-text-hover;
                     }
                 }
@@ -214,12 +313,16 @@
             .team-data-cell-last-build {
                 position: absolute;
                 bottom: @team-cell-padding;
-                left: @team-cell-padding;
-                right: @team-cell-padding;
+                left: 0;
+                right: 0;
                 text-align: center;
 
                 .text(1.2, 2);
-                
+
+                .fa {
+                    font-size: 1.7em;
+                }
+
                 .team-data-cell-last-build-num {
                     .text(1.5, 2);
                     color: @dash-dashboard-text-hover;
@@ -246,8 +349,10 @@
             }
 
             .team-prod-average-days {
+                display: inline-block;
                 font-size: .5em;
                 bottom: -.4em;
+                margin-left: .2em;
                 position: relative;
             }
 
@@ -286,7 +391,7 @@
 
 #edit-team {
     .team-delete {
-        .text(1, 1);
+        .text(1);
         color: @state-danger-text;
         position: relative;
         top: -25px;
@@ -297,6 +402,18 @@
 
         .fa {
             color: @state-danger-text;
+        }
+    }
+}
+
+@media (min-width: @screen-sm-min) {
+    #product-dashboard .product-dash-header {
+        .product-dash-header-text {
+            float: left;
+        }
+
+        .product-dash-header-legend {
+            float: right;
         }
     }
 }

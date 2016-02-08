@@ -46,7 +46,8 @@ var localStorageSupported = (function () {
         'ngCookies',
         'validation.match',
         'apg.typeaheadDropdown',
-        'typeahead-focus'
+        'typeahead-focus',
+        'vs-repeat'
     ])
     .config(['$httpProvider',
         // intercepting the http provider allows us to use relative routes

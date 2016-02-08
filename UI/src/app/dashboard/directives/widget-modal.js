@@ -13,12 +13,15 @@
             restrict: 'E',
             replace: true,
             transclude: true,
-            scope: {
-                title: '@widgetModalTitle'
+            scope: true,
+            link: function ($scope, $element, $attributes) {
+
+                $scope.title = $attributes.widgetModalTitle;
+                $scope.close = $attributes.widgetModalClose;
             },
-            // TODO: use the modal classes instead of panels
             template: '<div class="widget-modal">' +
-            '<div class="widget-modal-heading">{{::title}}</div>' +
+            '<button type="button" class="widget-modal-close" ng-click="$close()" ng-if="close" aria-hidden="true">&times;</button>' +
+            '<div class="widget-modal-heading" ng-if="title">{{title}}</div>' +
             '<div class="widget-modal-body" ng-transclude></div>' +
             '</div>'
         };

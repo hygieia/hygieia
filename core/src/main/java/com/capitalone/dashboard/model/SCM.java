@@ -13,6 +13,20 @@ public class SCM {
     protected long scmCommitTimestamp;
     protected long numberOfChanges;
 
+    public SCM(){
+
+    }
+
+    public SCM(String scmUrl, String scmBranch, String scmRevisionNumber, String scmCommitLog, String scmAuthor, long scmCommitTimestamp, long numberOfChanges) {
+        this.scmUrl = scmUrl;
+        this.scmBranch = scmBranch;
+        this.scmRevisionNumber = scmRevisionNumber;
+        this.scmCommitLog = scmCommitLog;
+        this.scmAuthor = scmAuthor;
+        this.scmCommitTimestamp = scmCommitTimestamp;
+        this.numberOfChanges = numberOfChanges;
+    }
+
     public String getScmUrl() {
         return scmUrl;
     }

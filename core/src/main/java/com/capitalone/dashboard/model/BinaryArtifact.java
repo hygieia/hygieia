@@ -3,6 +3,8 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Comparator;
+
 /**
  * Binary artifacts produced by build jobs and stored in an artifact repository.
  *
@@ -16,6 +18,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Document(collection = "artifacts")
 public class BinaryArtifact extends BaseModel {
+
+    /**
+     * CollectorItemId for the {@link Build} that produced the artifact
+     */
     private ObjectId collectorItemId;
     private long timestamp;
 
@@ -24,6 +30,14 @@ public class BinaryArtifact extends BaseModel {
     private String artifactGroupId;
     private String artifactVersion;
     private Build buildInfo;
+
+    public Build getBuildInfo() {
+        return buildInfo;
+    }
+
+    public void setBuildInfo(Build buildInfo) {
+        this.buildInfo = buildInfo;
+    }
 
     public ObjectId getCollectorItemId() {
         return collectorItemId;
@@ -65,7 +79,6 @@ public class BinaryArtifact extends BaseModel {
         this.artifactVersion = artifactVersion;
     }
 
-
     public String getCanonicalName() {
         return canonicalName;
     }
@@ -74,11 +87,10 @@ public class BinaryArtifact extends BaseModel {
         this.canonicalName = canonicalName;
     }
 
-    public Build getBuildInfo() {
-        return buildInfo;
-    }
-
-    public void setBuildInfo(Build buildInfo) {
-        this.buildInfo = buildInfo;
-    }
+    public static final Comparator<BinaryArtifact> TIMESTAMP_COMPARATOR = new Comparator<BinaryArtifact>() {
+        @Override
+        public int compare(BinaryArtifact o1, BinaryArtifact o2) {
+            return Long.compare(o1.getTimestamp(), o2.getTimestamp());
+        }
+    };
 }

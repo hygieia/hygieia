@@ -1,9 +1,6 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Widget;
-import com.capitalone.dashboard.model.WidgetResponse;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;

@@ -1,0 +1,171 @@
+@import (reference) '../../../../app/css/variables';
+@import (reference) '../../../../app/css/mixins';
+
+.team-environment-commit-detail {
+    @heading-size: 60px;
+
+    .heading-pie-chart {
+        width: @heading-size;
+    }
+
+    @heading-num-size: @heading-size * .9;
+    .heading-num {
+        font-size: @heading-num-size;
+        line-height: @heading-size;
+        float: left;
+        margin-right: 10px;
+    }
+
+    .heading-num-details {
+        float: left;
+
+        .from-team {
+            display: block;
+            margin-top: .25em;
+
+            @heading-num-details-size: @heading-num-size * .5;
+            font-size: @heading-num-details-size;
+            line-height: @heading-num-details-size * 1.1;
+        }
+
+        .in-environment {
+            display: block;
+            color: @dash-dashboard-text-light;
+
+            .in-environment-team-name {
+                display: inline-block;
+                max-width: 350px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                vertical-align: top;
+            }
+        }
+    }
+
+    .team-environment-detail-rows {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .team-environment-detail-row {
+        @details-outline: @dash-dashboard-text-light;
+        margin: 15px 1px;
+        .transition(background .2s linear);
+
+        &.detail-row-expanded {
+            background-color: white;
+            outline: 1px solid @details-outline;
+
+            .team-environment-detail-stages {
+                display: table;
+                table-layout: fixed;
+            }
+
+            .team-environment-detail-header {
+                .team-environment-detail-text-name-link {
+                    display: inline-block;
+                }
+            }
+        }
+
+        .team-environment-detail-header {
+            @row-padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: @row-padding;
+
+            .status-icon-container {
+                width: 35px;
+                padding-left: @row-padding;
+                margin-right: 10px;
+                text-align: center;
+            }
+
+            .team-environment-detail-text {
+                width: 100%;
+            }
+
+            .team-environment-detail-text-name-link {
+                margin-right: 2rem;
+                padding: 0 20px;
+                float: right;
+                font-weight: normal;
+                color: @details-outline;
+                border: 1px solid @details-outline;
+                border-radius: 3px;
+                display: none;
+
+                .transition(color .2s linear);
+
+                &:hover {
+                    color: @dash-text;
+                }
+            }
+
+            .team-environment-detail-text-name {
+                .text-lg;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-weight: bold;
+                margin-right: 2rem;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+            }
+
+            .team-environment-detail-text-from {
+                color: darken(@dash-dashboard-text-light, 25%);
+                font-weight: bold;
+                line-height: 1em;
+
+                span {
+                    color: @dash-dashboard-text-light;
+                    font-weight: normal;
+                }
+            }
+
+            .team-environment-detail-toggle {
+                color: @dash-dashboard-text-light;
+                padding-right: @row-padding;
+
+                .fa {
+                    .transition(transform .2s linear);
+                }
+
+                .team-environment-detail-open {
+                    .fa-icon-rotate(45deg, .5);
+                }
+            }
+        }
+
+        .team-environment-detail-stages {
+            display: none;
+            margin-top: 10px;
+            width: 100%;
+
+            th {
+                border-bottom: 1px solid @details-outline;
+                color: @dash-dashboard-text-light;
+                font-weight: normal;
+                padding: 3px;
+            }
+
+            td, th {
+                border-right: 1px solid @details-outline;
+                text-align: center;
+
+                &:last-of-type {
+                    border-right: none;
+                }
+            }
+
+            td {
+                .text(2.5);
+                padding: 15px 5px 10px;
+            }
+        }
+    }
+}

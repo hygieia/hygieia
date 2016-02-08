@@ -1,0 +1,105 @@
+{
+  "BuildDataCreateRequest": {
+    "number": "1",
+    "buildUrl": "http://jenkins.com/blah",
+    "buildStatus": "Success",
+    "startTime": 1453819102000,
+    "jobUrl": "http://joburl",
+    "jobName": "hygieia job",
+    "instanceUrl": "http://instanceUrl",
+    "endTime": 1453819222000,
+    "duration": 2,
+    "startedBy": "Bob the Builder",
+    "log": "blah blah log message",
+    "sourceChangeSet": [{
+      "scmUrl": "http://scmUrl",
+      "scmBranch": "master",
+      "scmRevisionNumber": "5a2cc1eef167b1546f6652376e56acbbf70e774d",
+      "scmCommitLog": "rock out",
+      "scmAuthor": "crazy coder",
+      "scmCommitTimestamp": 1453905502000,
+      "numberOfChanges": 4
+    }, {
+      "scmUrl": "http://scmUrl",
+      "scmBranch": "master",
+      "scmRevisionNumber": "e7bef76ff01953a8d3f3a032040fccaf65b6c56f",
+      "scmCommitLog": "rock out",
+      "scmAuthor": "crazy coder",
+      "scmCommitTimestamp": 1453905502000,
+      "numberOfChanges": 4
+    }, {
+      "scmUrl": "http://scmUrl",
+      "scmBranch": "master",
+      "scmRevisionNumber": "fecea6588c75d2358c2ee99c575a0089eb177457",
+      "scmCommitLog": "rock out",
+      "scmAuthor": "crazy coder",
+      "scmCommitTimestamp": 1453905502000,
+      "numberOfChanges": 4
+    }, {
+      "scmUrl": "http://scmUrl",
+      "scmBranch": "master",
+      "scmRevisionNumber": "6ec8a553ffe8814a6e21c0b12c0124ab1fdfd76d",
+      "scmCommitLog": "rock out",
+      "scmAuthor": "crazy coder",
+      "scmCommitTimestamp": 1453905502000,
+      "numberOfChanges": 4
+    }, {
+      "scmUrl": "http://scmUrl",
+      "scmBranch": "master",
+      "scmRevisionNumber": "3ca655a27a1f3b74120979d7ae5598a7f57fb084",
+      "scmCommitLog": "rock out",
+      "scmAuthor": "crazy coder",
+      "scmCommitTimestamp": 1453905502000,
+      "numberOfChanges": 4
+    }]
+  },
+  "BinaryArtifactCreateRequest":{
+    "atifactName":"hygeia.jar",
+    "canonicalName": "hygeia",
+    "artifactGroup": "com.capitalone",
+    "artifactVersion": "9.0.1",
+    "buildId": "1",
+    "timestamp": 1453819222000,
+    "sourceChangeSet":[{
+      "scmUrl": "http://scmUrl",
+      "scmBranch": "master",
+      "scmRevisionNumber": "5a2cc1eef167b1546f6652376e56acbbf70e774d",
+      "scmCommitLog": "rock out",
+      "scmAuthor": "crazy coder",
+      "scmCommitTimestamp": 1453905502000,
+      "numberOfChanges": 4
+    }, {
+      "scmUrl": "http://scmUrl",
+      "scmBranch": "master",
+      "scmRevisionNumber": "e7bef76ff01953a8d3f3a032040fccaf65b6c56f",
+      "scmCommitLog": "rock out",
+      "scmAuthor": "crazy coder",
+      "scmCommitTimestamp": 1453905502000,
+      "numberOfChanges": 4
+    }, {
+      "scmUrl": "http://scmUrl",
+      "scmBranch": "master",
+      "scmRevisionNumber": "fecea6588c75d2358c2ee99c575a0089eb177457",
+      "scmCommitLog": "rock out",
+      "scmAuthor": "crazy coder",
+      "scmCommitTimestamp": 1453905502000,
+      "numberOfChanges": 4
+    }, {
+      "scmUrl": "http://scmUrl",
+      "scmBranch": "master",
+      "scmRevisionNumber": "6ec8a553ffe8814a6e21c0b12c0124ab1fdfd76d",
+      "scmCommitLog": "rock out",
+      "scmAuthor": "crazy coder",
+      "scmCommitTimestamp": 1453905502000,
+      "numberOfChanges": 4
+    }, {
+      "scmUrl": "http://scmUrl",
+      "scmBranch": "master",
+      "scmRevisionNumber": "3ca655a27a1f3b74120979d7ae5598a7f57fb084",
+      "scmCommitLog": "rock out",
+      "scmAuthor": "crazy coder",
+      "scmCommitTimestamp": 1453905502000,
+      "numberOfChanges": 4
+    }]
+  }
+}

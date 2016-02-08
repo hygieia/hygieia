@@ -13,10 +13,5 @@
         ctrl.statuses = DashStatus;
         ctrl.commits = commits;
 
-        ctrl.close = close;
-
-        function close() {
-            $modalInstance.dismiss('close');
-        }
     }
 })();

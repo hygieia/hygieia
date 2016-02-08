@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Document(collection = "environment_components")
 public class EnvironmentComponent extends BaseModel {
+    /**
+     * Deploy collectorItemId
+     */
     private ObjectId collectorItemId;
     private String environmentName;
     private String environmentUrl;
@@ -15,6 +18,7 @@ public class EnvironmentComponent extends BaseModel {
 	private String componentName;
     private String componentVersion;
     private boolean deployed;
+    private long deployTime;
     private long asOfDate;
 
 
@@ -82,5 +86,13 @@ public class EnvironmentComponent extends BaseModel {
 
     public void setAsOfDate(long asOfDate) {
         this.asOfDate = asOfDate;
+    }
+
+    public long getDeployTime() {
+        return deployTime;
+    }
+
+    public void setDeployTime(long deployTime) {
+        this.deployTime = deployTime;
     }
 }

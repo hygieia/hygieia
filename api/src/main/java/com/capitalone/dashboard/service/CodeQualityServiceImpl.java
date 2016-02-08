@@ -171,10 +171,12 @@ public class CodeQualityServiceImpl implements CodeQualityService {
         option.put("instanceUrl", request.getServerUrl());
         tempCi.getOptions().putAll(option);
         tempCi.setNiceName(request.getNiceName());
-        if (StringUtils.isEmpty(tempCi.getNiceName())) {
-            return collectorService.createCollectorItem(tempCi);
-        }
-        return collectorService.createCollectorItemByNiceName(tempCi);
+        // FIXME: CollectorItem creation via nice name is broken!
+//        if (StringUtils.isEmpty(tempCi.getNiceName())) {
+//            return collectorService.createCollectorItem(tempCi);
+//        }
+//        return collectorService.createCollectorItemByNiceName(tempCi);
+        return collectorService.createCollectorItem(tempCi);
     }
 
     private CodeQuality createCodeQuality(CollectorItem collectorItem, CodeQualityCreateRequest request) {

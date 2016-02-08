@@ -203,7 +203,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
                 }
                 hudsonJobRepository.save(job);
                 count++;
-            } else if (!StringUtils.isEmpty(niceName)) {
+            } else if (StringUtils.isEmpty(existing.getNiceName()) && !StringUtils.isEmpty(niceName)) {
                 existing.setNiceName(niceName);
                 hudsonJobRepository.save(existing);
             }

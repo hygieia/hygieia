@@ -124,7 +124,6 @@
         <module>udeploy-deployment-collector</module>
         <module>jira-feature-collector</module>
         <module>jenkins-cucumber-test-collector</module>
-        <module>product-product-collector</module>
         <module>chat-ops-collector</module>
         <module>UI</module>
       </modules>
@@ -157,7 +156,6 @@
         <module>udeploy-deployment-collector</module>
         <module>jira-feature-collector</module>
         <module>jenkins-cucumber-test-collector</module>
-        <module>product-product-collector</module>
         <module>chat-ops-collector</module>
       </modules>
       <build>

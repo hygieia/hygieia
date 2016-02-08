@@ -23,10 +23,9 @@
                         required
                         minlength="4"
                         autocomplete="off"
-                        placeholder="Enter your email"/>
+                        placeholder="Enter your username"/>
 
-                    <p class="help-block" ng-if="lg.login.$error.required">Email is required</p>
-                    <p class="help-block" ng-if="lg.login.$error.email">Invalid email address</p>
+                    <p class="help-block" ng-if="lg.login.$error.required">Username is required</p>
                     <p class="help-block" ng-if="lg.login.$error.invalidUsernamePassword">Incorrect username and password</p>
 
                 </div>
