@@ -147,8 +147,8 @@ docker exec -t -i mongodb2 bash
 mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
 ```
 
-# create a docker-compose.override.yml to configure your environment
-## These are the most common entries, the uncommented ones are mandatory if you want the collector to work
+## Create a docker-compose.override.yml to configure your environment
+### These are the most common entries, the uncommented ones are mandatory if you want the collector to work
 ### For dev/testing you will find it useful to change the CRON entries to "0 * * * * *"
 ```
 hygieia-github-scm-collector:
@@ -180,7 +180,7 @@ hygieia-sonar-codequality-collector:
   environment:
   - SONAR_URL=http://192.168.99.100:9000
   - SONAR_CRON=0 * * * * *
-  ```
+```
 
 * Make sure everything is restarted _it may fail if the user doesn't exist at start up time_
 

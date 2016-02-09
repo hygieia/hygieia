@@ -1,100 +1,101 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>UI</artifactId>
-  <packaging>pom</packaging>
-  <name>${project.groupId}:${project.artifactId}</name>
-  <description>Hygieia UI module</description>
-  <url>https://github.com/capitalone/Hygieia</url>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>UI</artifactId>
+	<packaging>pom</packaging>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Hygieia UI module</description>
+	<url>https://github.com/capitalone/Hygieia</url>
 
-  <parent>
-    <groupId>com.capitalone.dashboard</groupId>
-    <artifactId>Hygieia</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<groupId>com.capitalone.dashboard</groupId>
+		<artifactId>Hygieia</artifactId>
+		<version>1.5.0-SNAPSHOT</version>
+	</parent>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <!-- if you have issues with your proxy, be careful https://github.com/eirslett/frontend-maven-plugin/commit/bcd8a7883703e28e3c5346e1f34c64332994e442 -->
-        <version>0.0.25</version>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<!-- if you have issues with your proxy, be careful https://github.com/eirslett/frontend-maven-plugin/commit/bcd8a7883703e28e3c5346e1f34c64332994e442 -->
+				<version>0.0.25</version>
 
-        <configuration>
-          <workingDirectory>./</workingDirectory>
-        </configuration>
+				<configuration>
+					<workingDirectory>./</workingDirectory>
+				</configuration>
 
-        <executions>
+				<executions>
 
-          <execution>
-            <id>install node and npm</id>
-            <goals>
-              <goal>install-node-and-npm</goal>
-            </goals>
-            <configuration>
-              <nodeVersion>v0.12.0</nodeVersion>
-              <npmVersion>2.7.1</npmVersion>
-            </configuration>
-          </execution>
+					<execution>
+						<id>install node and npm</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>v0.12.0</nodeVersion>
+							<npmVersion>2.7.1</npmVersion>
+						</configuration>
+					</execution>
 
-          <execution>
-            <id>npm install</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-<!-- Optional configuration which provides for running any npm command -->
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
+					<execution>
+						<id>npm install</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<!-- Optional configuration which provides for running any npm command -->
+						<configuration>
+							<arguments>install</arguments>
+						</configuration>
+					</execution>
 
-          <execution>
-            <id>bower install</id>
-            <goals>
-              <goal>bower</goal>
-            </goals>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
+					<execution>
+						<id>bower install</id>
+						<goals>
+							<goal>bower</goal>
+						</goals>
+						<configuration>
+							<arguments>install</arguments>
+						</configuration>
+					</execution>
 
-          <execution>
-            <id>gulp build</id>
-            <goals>
-              <goal>gulp</goal>
-            </goals>
+					<execution>
+						<id>gulp build</id>
+						<goals>
+							<goal>gulp</goal>
+						</goals>
 
-<!-- optional: the default phase is "generate-resources" -->
-            <phase>generate-resources</phase>
+						<!-- optional: the default phase is "generate-resources" -->
+						<phase>generate-resources</phase>
 
-            <configuration>
-<!-- optional: if not specified, it will run gulp's default
-        task (and you can remove this whole <configuration> section.) -->
-              <arguments>build</arguments>
-            </configuration>
-          </execution>
+						<configuration>
+							<!-- optional: if not specified, it will run gulp's default task (and 
+								you can remove this whole <configuration> section.) -->
+							<arguments>build</arguments>
+						</configuration>
+					</execution>
 
-        </executions>
+				</executions>
 
-      </plugin>
-      <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <configuration>
-	  <skipDockerBuild>false</skipDockerBuild>
-          <imageName>hygieia-ui</imageName>
-          <dockerDirectory>${project.basedir}/docker</dockerDirectory>
-          <resources>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<configuration>
+					<skipDockerBuild>false</skipDockerBuild>
+					<imageName>hygieia-ui</imageName>
+					<dockerDirectory>${project.basedir}/docker</dockerDirectory>
+					<resources>
 
-             <resource>
-               <targetPath>html</targetPath>
-               <directory>${project.basedir}/dist</directory>
-               <include>*/**</include>
-             </resource>
+						<resource>
+							<targetPath>html</targetPath>
+							<directory>${project.basedir}/dist</directory>
+							<include>*/**</include>
+						</resource>
 
-           </resources>
-         </configuration>
-      </plugin>
-    </plugins>
-  </build>
+					</resources>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
