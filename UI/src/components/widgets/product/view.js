@@ -362,7 +362,7 @@
                             _(response.result).forEach(function(result) {
                                 var build = {
                                         componentId: componentId,
-                                        timestamp: result.timestamp,
+                                        timestamp: result.endTime,
                                         number: result.number,
                                         success: result.buildStatus.toLowerCase() == 'success',
                                         inProgress: result.buildStatus.toLowerCase() == 'inprogress'
@@ -406,6 +406,8 @@
                                         if(build.success) {
                                             var daysAgo = -1 * moment.duration(now.diff(lastFailedBuild.timestamp)).asDays(),
                                                 timeToFixInMinutes = moment.duration(moment(build.timestamp).diff(lastFailedBuild.timestamp)).asMinutes()
+
+                                            console.log('fix', lastFailedBuild, build, build.timestamp - lastFailedBuild.timestamp);
 
                                             // add this to our regression data
                                             fixedBuildData.push([daysAgo, timeToFixInMinutes]);
@@ -769,7 +771,7 @@
                                 componentId: componentId,
                                 collectorItemId: result.collectorItemId,
                                 name: result.description,
-                                timestamp: result.timestamp,
+                                timestamp: result.endTime,
                                 successCount: totalPassed,//result.successCount,
                                 totalCount: totalTests//result.totalCount
                             };
