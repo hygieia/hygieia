@@ -1,4 +1,4 @@
-<img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/images/Hygieia_b.png)
+:<img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/images/Hygieia_b.png)
 --
 
 ### Build Hygieia
@@ -28,18 +28,18 @@ The following components are required to run Hygieia:
          switched to db dashboardb
          > db.createUser(
                   {
-                    user: "dashboarduser",
-                    pwd: "1qazxSw2",
+                    user: "db",
+                    pwd: "dbpass",
                     roles: [
-                       {role: "readWrite", db: "dashboarddb"}
+                       {role: "readWrite", db: "dashboard"}
                             ]
                     })
                 Successfully added user: {
-                  "user" : "dashboarduser",
+                  "user" : "db",
                   "roles" : [
                   {
                     "role" : "readWrite",
-                    "db" : "dashboarddb"
+                    "db" : "dashboard"
                   }
                   ]
                 }  
@@ -124,22 +124,12 @@ Tests should now run/pass when built from behind a corporate proxy, even if it i
 
 Only the above proxy settings (non authentication) may required to be set on your deployment instance.  Additionally, please updated all property files for each collector/API configuration with their specific proxy setting property.
 
-### Build Docker images
+### Build Docker images and setup id for mongodb
 
-* Build the API Image
-
-```bash
-mvn clean package
-```
+* Build the containers
 
 ```bash
-mvn -pl api docker:build
-```
-
-* Build the UI Image
-
-```bash
-mvn -pl UI docker:build
+mvn docker:build
 ```
 
 * Bring up the container images
@@ -148,10 +138,48 @@ mvn -pl UI docker:build
 docker-compose up -d
 ```
 
-* Create user in mongo
+* Create user in mongo (if you log into the container then you dont have to install mongo locally)
 
 ```bash
+docker exec -t -i mongodb2 bash
+```
+```bash
 mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
+```
+
+## Create a docker-compose.override.yml to configure your environment
+### These are the most common entries, the uncommented ones are mandatory if you want the collector to work
+### For dev/testing you will find it useful to change the CRON entries to "0 * * * * *"
+```
+hygieia-github-scm-collector:
+  environment:
+  - GITHUB_HOST=github.com
+  - GITHUB_CRON=0 * * * * *
+  - GITHUB_COMMIT_THRESHOLD_DAYS=300
+hygieia-jira-feature-collector:
+  environment:
+  - JIRA_BASE_URL=https://mycompany.atlassian.net/
+  - JIRA_CREDENTIALS=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  - JIRA_ISSUE_TYPE_ID=10200
+  - JIRA_SPRINT_DATA_FIELD_NAME=customfield_10007
+  - JIRA_EPIC_FIELD_NAME=customfield_10008
+hygieia-jenkins-build-collector:
+  environment:
+  - JENKINS_CRON=0 * * * * *
+  - JENKINS_MASTER=http://192.168.99.100:9100
+  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
+  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXX
+hygieia-jenkins-cucumber-test-collector:
+  environment:
+  - JENKINS_CRON=0 * * * * *
+  - JENKINS_MASTER=http://192.168.99.100:9100
+  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
+  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXX
+  - JENKINS_CUCUMBER_JSON_FILENAME=cucumber-report.json
+hygieia-sonar-codequality-collector:
+  environment:
+  - SONAR_URL=http://192.168.99.100:9000
+  - SONAR_CRON=0 * * * * *
 ```
 
 * Make sure everything is restarted _it may fail if the user doesn't exist at start up time_
@@ -166,7 +194,26 @@ docker-compose restart
 docker port hygieia-ui
 ```
 
-### Start Collectors
+## How to setup test data
+###1. Setup GIT -  by configuring it to point to the github master branch for Hygieia
+	a. In the SCM panel, select 'git'
+	b. Enter the URL: 'https://github.com/capitalone/Hygieia.git' (without the quotes)
+	c. Set the branch to 'master' (without the quotes)
+	ote: For this to work you will need to have set your credentials on the ID that the collectors is running under, the best way to do this is first clone the repo to set your credentials.
+
+###2. Setup Sonar -  by running a test instance of sonar
+	a. docker-compose -f test-servers/sonar/sonar.yml up -d	
+	b. Fill it with data from the Hygieia project
+mvn sonar:sonar -Dsonar.host.url=http://$(docker-machine ip default):9000 -Dsonar.jdbc.url="jdbc:h2:tcp://$(docker-machine ip default)/sonar"
+	c. You can now go in and configure the quality panel in the UI.
+
+###3. Setup Jenkins w/cucumber output - by starting a test jenkins master
+	a. docker-compose -f test-servers/jenkins/jenkins.yml up -d
+	b. Run the job: http://192.168.99.100:9100/job/Hygieia_Example_Job/build
+	c. Configure the Jenkins Build and Jenkins Cucumber panels using this jobs output.
+
+
+## Start Collectors in the background (optional as they are all running in containers by default)
 * To start individual collector as a background process please run the command in below format
   * On linux platform
 ```bash
