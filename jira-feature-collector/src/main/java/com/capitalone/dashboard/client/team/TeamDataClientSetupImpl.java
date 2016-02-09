@@ -91,12 +91,7 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 				proxyUri, proxyPort);
 		try {
 			List<BasicProject> rs = jiraDataFactory.getJiraTeams();
-
-			if ((rs != null) && (!rs.isEmpty())) {
-				updateMongoInfo(rs);
-			} else {
-				LOGGER.error("The response from Jira was blank or non existant - please check your property configurations");
-			}
+			updateMongoInfo(rs);
 		} catch (Exception e) {
 			LOGGER.error("Unexpected error in Jira paging request of " + e.getClass().getName()
 					+ "\n[" + e.getMessage() + "]");
