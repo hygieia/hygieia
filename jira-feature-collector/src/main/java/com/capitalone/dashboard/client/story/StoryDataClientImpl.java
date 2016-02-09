@@ -64,10 +64,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	/**
 	 * Extends the constructor from the super class.
 	 * 
-	 * @param coreFeatureSettings
-     * @param featureSettings
-     * @param featureRepository
-     * @param featureCollectorRepository
+	 * @param teamRepository
 	 */
 	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings,
 			FeatureSettings featureSettings, FeatureRepository featureRepository,
@@ -521,7 +518,8 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
 	 * 
-	 * @param localId repository item ID (not the precise mongoID)
+	 * @param A
+	 *            local repository item ID (not the precise mongoID)
 	 */
 	protected Boolean removeExistingEntity(String localId) {
 		boolean deleted = false;
