@@ -16,8 +16,9 @@
 
 package com.capitalone.dashboard.datafactory.jira;
 
-import org.json.simple.JSONArray;
+import java.util.List;
 
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.capitalone.dashboard.datafactory.DataFactory;
 
 /**
@@ -28,18 +29,13 @@ import com.capitalone.dashboard.datafactory.DataFactory;
  *
  */
 public interface JiraDataFactory extends DataFactory{
-	String buildBasicQuery(String query);
+	String setQuery(String query);
 
-	String buildPagingQuery(int inPageIndex);
-
-	JSONArray getPagingQueryResponse();
-
-	JSONArray getQueryResponse();
+	List<Issue> getJiraIssues();
 
 	String getBasicQuery();
 
-	String getPagingQuery();
-
 	int getPageIndex();
 
+	void destroy();
 }

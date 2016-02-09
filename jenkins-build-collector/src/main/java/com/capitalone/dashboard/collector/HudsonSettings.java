@@ -19,6 +19,7 @@ public class HudsonSettings {
     private List<String> niceNames;
     private String username;
     private String apiKey;
+    private String dockerLocalHostIP; //null if not running in docker on http://localhost
 
     public String getCron() {
         return cron;
@@ -59,6 +60,10 @@ public class HudsonSettings {
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
+    
+    public void setDockerLocalHostIP(String dockerLocalHostIP) {
+        this.dockerLocalHostIP = dockerLocalHostIP;
+    }
 
     public List<String> getNiceNames() {
         return niceNames;
@@ -66,5 +71,18 @@ public class HudsonSettings {
 
     public void setNiceNames(List<String> niceNames) {
         this.niceNames = niceNames;
+    }
+
+	//Docker NATs the real host localhost to 10.0.2.2 when running in docker
+	//as localhost is stored in the JSON payload from jenkins we need
+	//this hack to fix the addresses
+    public String getDockerLocalHostIP() {
+    	
+    		//we have to do this as spring will return NULL if the value is not set vs and empty string
+    	String localHostOverride = "";
+    	if (dockerLocalHostIP != null) {
+    		localHostOverride = dockerLocalHostIP;
+    	}
+        return localHostOverride;
     }
 }

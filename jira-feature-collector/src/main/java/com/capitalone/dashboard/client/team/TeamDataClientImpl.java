@@ -1,14 +1,16 @@
 package com.capitalone.dashboard.client.team;
 
-import com.capitalone.dashboard.model.TeamCollectorItem;
+import java.util.Iterator;
+import java.util.List;
+
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.TeamRepository;
+import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
+import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.FeatureSettings;
-import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import org.bson.types.ObjectId;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,84 +19,100 @@ import org.slf4j.LoggerFactory;
  * collector. This will get data from the source system, but will grab the
  * majority of needed data and aggregate it in a single, flat MongoDB collection
  * for consumption.
- *
+ * 
  * @author kfk884
- *
+ * 
  */
-public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
-		TeamDataClient {
+public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientImpl.class);
 	private static final ClientUtil TOOLS = new ClientUtil();
 
 	private final FeatureSettings featureSettings;
-	private final FeatureWidgetQueries featureWidgetQueries;
-	private final TeamRepository teamRepo;
+	private final ScopeOwnerRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
+
+	private ObjectId oldTeamId;
+	private boolean oldTeamEnabledState;
 
 	/**
 	 * Extends the constructor from the super class.
-	 *
+	 * 
 	 * @param teamRepository
 	 */
-	public TeamDataClientImpl(
-			FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings, TeamRepository teamRepository) {
+	public TeamDataClientImpl(FeatureCollectorRepository featureCollectorRepository,
+			FeatureSettings featureSettings, ScopeOwnerRepository teamRepository) {
 		super(featureSettings, teamRepository, featureCollectorRepository);
 		LOGGER.debug("Constructing data collection for the feature widget, team-level data...");
 
 		this.featureSettings = featureSettings;
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepo = teamRepository;
-		this.featureWidgetQueries = new FeatureWidgetQueries(this.featureSettings);
 	}
 
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
-	 *
-	 * @param tmpMongoDetailArray
-	 *            A JSON response in JSONArray format from the source system
-	 * @param featureCollector
+	 * 
+	 * @param currentPagedJiraRs
+	 *            A list response of Jira issues from the source system
 	 */
-	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
-		try {
-			for (int i = 0; i < tmpMongoDetailArray.size(); i++) {
-				JSONObject dataMainObj = (JSONObject) tmpMongoDetailArray.get(i);
-				TeamCollectorItem team = new TeamCollectorItem();
-
-				@SuppressWarnings("unused") //?
-				boolean deleted = this.removeExistingEntity(TOOLS
-						.sanitizeResponse(dataMainObj.get("id")));
-
-				// collectorId
-				team.setCollectorId(featureCollectorRepository.findByName(
-						"Jira").getId());
-
-				// teamId
-				team.setTeamId(TOOLS.sanitizeResponse(dataMainObj.get("id")));
-
-				// name
-				team.setName(TOOLS.sanitizeResponse(dataMainObj.get("name")));
-
-				// changeDate - does not exist for jira
-				team.setChangeDate("");
-
-				// assetState - does not exist for jira
-				team.setAssetState("Active");
-
-				// isDeleted - does not exist for jira
-				team.setIsDeleted("False");
-
+	@Override
+	protected void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
+		LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
+		if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
+			Iterator<BasicProject> globalResponseItr = currentPagedJiraRs.iterator();
+			while (globalResponseItr.hasNext()) {
 				try {
+					/*
+					 * Initialize DOMs
+					 */
+					ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
+					BasicProject jiraTeam = globalResponseItr.next();
+
+					/*
+					 * Removing any existing entities where they exist in the
+					 * local DB store...
+					 */
+					boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(jiraTeam
+							.getId()));
+
+					/*
+					 * Team Data
+					 */
+					// Id
+					if (deleted) {
+						team.setId(this.getOldTeamId());
+						team.setEnabled(this.isOldTeamEnabledState());
+					}
+
+					// collectorId
+					team.setCollectorId(featureCollectorRepository.findByName(Constants.JIRA)
+							.getId());
+
+					// teamId
+					team.setTeamId(TOOLS.sanitizeResponse(jiraTeam.getId()));
+
+					// name
+					team.setName(TOOLS.sanitizeResponse(jiraTeam.getName()));
+
+					// changeDate - does not exist for jira
+					team.setChangeDate("");
+
+					// assetState - does not exist for jira
+					team.setAssetState("Active");
+
+					// isDeleted - does not exist for jira
+					team.setIsDeleted("False");
+
+					// Saving back to MongoDB
 					teamRepo.save(team);
-				} catch (Exception e) {
-					LOGGER.error("Unexpected error caused when attempting to save data\nCaused by: "
-							+ e.getMessage() + " : " + e.getCause(), e);
+
+				} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
+					LOGGER.error(
+							"Unexpected error caused while mapping data from source system to local data store:\n"
+									+ e.getMessage() + " : " + e.getCause(), e);
 				}
 			}
-		} catch (Exception e) {
-			LOGGER.error("Unexpected error caused while mapping data from source system to local data store:\n"
-					+ e.getMessage() + " : " + e.getCause(), e);
 		}
 	}
 
@@ -103,33 +121,30 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 	 * update to MongoDB from those calls.
 	 */
 	public void updateTeamInformation() {
-		super.objClass = TeamCollectorItem.class;
-		super.returnDate = this.featureSettings
-				.getDeltaCollectorItemStartDate();
+		super.objClass = ScopeOwnerCollectorItem.class;
+		super.returnDate = this.featureSettings.getDeltaCollectorItemStartDate();
 		if (super.getMaxChangeDate() != null) {
 			super.returnDate = super.getMaxChangeDate();
 		}
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
-		String queryName = this.featureSettings.getTeamQuery();
-		super.query = this.featureWidgetQueries.getQuery(queryName);
-		LOGGER.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
 		updateObjectInformation();
 	}
 
 	/**
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
-	 *
-	 * @param A
-	 *            local repository item ID (not the precise mongoID)
+	 * 
+	 * @param localId repository item ID (not the precise mongoID)
 	 */
 	protected Boolean removeExistingEntity(String localId) {
 		boolean deleted = false;
 
 		try {
 			ObjectId tempEntId = teamRepo.getTeamIdById(localId).get(0).getId();
-			if (localId.equalsIgnoreCase(teamRepo.getTeamIdById(localId).get(0)
-					.getTeamId())) {
+			if (localId.equalsIgnoreCase(teamRepo.getTeamIdById(localId).get(0).getTeamId())) {
+				this.setOldTeamId(tempEntId);
+				this.setOldTeamEnabledState(teamRepo.getTeamIdById(localId).get(0).isEnabled());
+
 				teamRepo.delete(tempEntId);
 				deleted = true;
 			}
@@ -140,5 +155,21 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements
 		}
 
 		return deleted;
+	}
+
+	private ObjectId getOldTeamId() {
+		return oldTeamId;
+	}
+
+	private void setOldTeamId(ObjectId oldTeamId) {
+		this.oldTeamId = oldTeamId;
+	}
+
+	private boolean isOldTeamEnabledState() {
+		return oldTeamEnabledState;
+	}
+
+	private void setOldTeamEnabledState(boolean oldTeamEnabledState) {
+		this.oldTeamEnabledState = oldTeamEnabledState;
 	}
 }

@@ -30,32 +30,38 @@ import com.capitalone.dashboard.model.Feature;
  */
 public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 		QueryDslPredicateExecutor<Feature> {
-	@Query(value = "{ $query: { 'collectorId' : ?0, 'changeDate' : {$gt: ?1}}, $orderby: { 'changeDate' :-1 }}", fields = "{'changeDate' : 1, '_id' : 0}")
-	List<Feature> getFeatureMaxChangeDate(ObjectId collectorId,
-			String lastChangeDate);
+	/**
+	 * This essentially returns the max change date from the collection, based
+	 * on the last change date (or default delta change date property) available
+	 * 
+	 * @param collectorId
+	 *            Collector ID of source system collector
+	 * @param changeDate
+	 *            Last available change date or delta begin date property
+	 * @return A single Change Date value that is the maximum value of the
+	 *         existing collection
+	 */
+	@Query
+	List<Feature> findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+			ObjectId collectorId, String changeDate);
 
-	@Query(value = "{ $query: {'sId' : ?0},{'sId' : 1}}")
+	@Query(value = "{'sId' : ?0}", fields = "{'sId' : 1}")
 	List<Feature> getFeatureIdById(String sId);
 
-	@Query(value = "{ $query: {'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }}")
-	List<Feature> getSprintStoriesByTeamId(String sTeamID,
-			String currentISODateTime);
+	@Query(value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}")
+	List<Feature> queryByOrderBySStatusDesc(String sTeamID, String currentISODateTime);
 
 	@Query(value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }", fields = "{'sSprintID' : 1, 'sSprintName' : 1,'sSprintBeginDate' : 1, 'sSprintEndDate' : 1}")
-	List<Feature> getCurrentSprintDetail(String sTeamID,
-			String currentISODateTime);
+	List<Feature> getCurrentSprintDetail(String sTeamID, String currentISODateTime);
 
 	@Query(value = " {'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sEpicID' :-1 }", fields = "{'sEpicID' : 1,'sEpicNumber' : 1,'sEpicName' : 1,'sEstimate' : 1}")
-	List<Feature> getInProgressFeaturesEstimatesByTeamId(String sTeamID,
-			String currentISODateTime);
+	List<Feature> getInProgressFeaturesEstimatesByTeamId(String sTeamID, String currentISODateTime);
 
 	@Query(value = " {'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }", fields = "{'sStatus': 1,'sEstimate' : 1}")
-	List<Feature> getSprintBacklogTotal(String sTeamID,
-			String currentISODateTime);
+	List<Feature> getSprintBacklogTotal(String sTeamID, String currentISODateTime);
 
 	@Query(value = " {'sTeamID' : ?0 , $and : [{'isDeleted' : 'False'} , {'sState' : 'Active'}] , $or : [{'sStatus' : 'In Progress'} , {'sStatus' : 'Waiting'} , {'sStatus' : 'Impeded'}] , $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }", fields = "{'sStatus': 1,'sEstimate' : 1}")
-	List<Feature> getSprintBacklogInProgress(String sTeamID,
-			String currentISODateTime);
+	List<Feature> getSprintBacklogInProgress(String sTeamID, String currentISODateTime);
 
 	@Query(value = " {'sTeamID' : ?0 , 'isDeleted' : 'False' , $or : [{'sStatus' : 'Done'} , {'sStatus' : 'Accepted'}] , $and : [{'sSprintID' : {$ne : null}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}}]}, $orderby: { 'sStatus' :-1 }", fields = "{'sStatus': 1,'sEstimate' : 1}")
 	List<Feature> getSprintBacklogDone(String sTeamID, String currentISODateTime);

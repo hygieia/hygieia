@@ -140,9 +140,9 @@ public class DefaultJenkinsClient implements JenkinsClient {
                     // return true if we find an archived file that matches the naming of the regex config
                     if (cucumberJsonFilePattern.matcher(getString(artifact, "fileName")).matches()) {
                         return true;
-                        // TODO: maybe we want to validate that we can parse the json
-                        //String cucumberJson = getCucumberJson(buildUrl, getString(artifact, "relativePath"));
-                        //suites.addAll(cucumberTransformer.transformer(cucumberJson));
+	                        // TODO: maybe we want to validate that we can parse the json
+	                        //String cucumberJson = getCucumberJson(buildUrl, getString(artifact, "relativePath"));
+	                        //suites.addAll(cucumberTransformer.transformer(cucumberJson));
                     }
                 }
             }
@@ -282,7 +282,7 @@ public class DefaultJenkinsClient implements JenkinsClient {
     /**
      * @param cucumberJsonPattern
      * @param fileName
-     * @return
+     * @return String
      */
     private String getCapabilityDescription(String cucumberJsonPattern, String fileName) {
         return StringUtils.removeEnd(fileName, cucumberJsonPattern);
@@ -317,7 +317,19 @@ public class DefaultJenkinsClient implements JenkinsClient {
     }
 
     protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
-        URI thisuri = URI.create(sUrl);
+    	String url = sUrl;
+    	String dockerLocalHostOverride = settings.getDockerLocalHostIP();
+		LOG.debug("dockerLocalHostOverride =  " + dockerLocalHostOverride);
+
+    	if( !dockerLocalHostOverride.isEmpty() ){
+    		url = sUrl.replace("localhost", dockerLocalHostOverride);
+    		LOG.debug("WARNING: mapping localhost to: " + dockerLocalHostOverride);
+    		LOG.debug("URL: " + url );
+        } else {
+    		LOG.debug("URL: " + url );
+        }
+
+    	URI thisuri = URI.create(url);
         String userInfo = thisuri.getUserInfo();
 
         //get userinfo from URI or settings (in spring properties)

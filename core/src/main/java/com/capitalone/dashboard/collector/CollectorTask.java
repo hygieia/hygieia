@@ -113,6 +113,9 @@ public abstract class CollectorTask<T extends Collector> implements Runnable {
         }
         LOGGER.info(text + token2 + token3);
     }
+    protected void log(String message) {
+        LOGGER.info(message);
+    }
 
     protected void logBanner(String instanceUrl) {
         LOGGER.info("------------------------------");

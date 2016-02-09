@@ -107,7 +107,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
     @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
     private void clean(UDeployCollector collector) {
         deleteUnwantedJobs(collector);
-        Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+        Set<ObjectId> uniqueIDs = new HashSet<>();
         for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
                 .findAll()) {
             if (comp.getCollectorItems() == null || comp.getCollectorItems().isEmpty()) continue;
@@ -119,8 +119,8 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
                 uniqueIDs.add(ci.getId());
             }
         }
-        List<UDeployApplication> appList = new ArrayList<UDeployApplication>();
-        Set<ObjectId> udId = new HashSet<ObjectId>();
+        List<UDeployApplication> appList = new ArrayList<>();
+        Set<ObjectId> udId = new HashSet< >();
         udId.add(collector.getId());
         for (UDeployApplication app : uDeployApplicationRepository.findByCollectorIdIn(udId)) {
             if (app != null) {
@@ -200,6 +200,7 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
             List<EnvironmentComponent> compList = new ArrayList<>();
             List<EnvironmentStatus> statusList = new ArrayList<>();
             long startApp = System.currentTimeMillis();
+
             for (Environment environment : uDeployClient
                     .getEnvironments(application)) {
 
