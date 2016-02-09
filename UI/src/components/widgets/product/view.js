@@ -407,8 +407,6 @@
                                             var daysAgo = -1 * moment.duration(now.diff(lastFailedBuild.timestamp)).asDays(),
                                                 timeToFixInMinutes = moment.duration(moment(build.timestamp).diff(lastFailedBuild.timestamp)).asMinutes()
 
-                                            console.log('fix', lastFailedBuild, build, build.timestamp - lastFailedBuild.timestamp);
-
                                             // add this to our regression data
                                             fixedBuildData.push([daysAgo, timeToFixInMinutes]);
 
