@@ -25,7 +25,8 @@ public interface HudsonClient {
      * Fetch full populated build information for a build.
      *
      * @param buildUrl the url of the build
+     * @param instanceUrl
      * @return a Build instance or null
      */
-    Build getBuildDetails(String buildUrl);
+    Build getBuildDetails(String buildUrl, String instanceUrl);
 }
