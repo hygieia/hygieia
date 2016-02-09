@@ -244,9 +244,11 @@
             var team = false,
                 idx = false;
 
-            _(ctrl.configuredTeams).filter({'collectorItemId': collectorItemId}).forEach(function (configuredTeam, i) {
-                idx = i;
-                team = configuredTeam;
+            _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
+                if(configuredTeam.collectorItemId == collectorItemId) {
+                    idx = i;
+                    team = configuredTeam;
+                }
             });
 
             if(!team) { return; }
