@@ -74,7 +74,7 @@ public class PipelineServiceImpl implements PipelineService {
         Map<String, PipelineCommit> unionOfAllSets = new HashMap<>();
         for(PipelineStageType stageType : PipelineStageType.values()){
             if(stageType.ordinal() > stage.ordinal()){
-                Map<String, PipelineCommit> commits = findCommitsForPipelineStageType(dashboard, pipeline, stage);
+                Map<String, PipelineCommit> commits = findCommitsForPipelineStageType(dashboard, pipeline, stageType);
                 unionOfAllSets.putAll(commits);
             }
         }
