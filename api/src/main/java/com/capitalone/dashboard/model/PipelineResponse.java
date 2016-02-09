@@ -44,4 +44,25 @@ public class PipelineResponse {
         }
         pipelineStage.add(pipelineCommit);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PipelineResponse that = (PipelineResponse) o;
+
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (!collectorItemId.equals(that.collectorItemId)) return false;
+        return stages.equals(that.stages);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + collectorItemId.hashCode();
+        result = 31 * result + stages.hashCode();
+        return result;
+    }
 }

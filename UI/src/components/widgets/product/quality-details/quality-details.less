@@ -23,10 +23,10 @@
         }
     }
 
-    @critical-color: @btn-primary-bg;
-    @blocker-color: lighten(@btn-primary-bg, 15%);
-    @major-color: lighten(@btn-primary-bg, 50%);
-    @issues-color: lighten(@btn-primary-bg, 70%);
+    @quality-series-a: lighten(@btn-primary-bg, 75%);
+    @quality-series-b: lighten(@btn-primary-bg, 50%);
+    @quality-series-c: lighten(@btn-primary-bg, 25%);
+    @quality-series-d: @btn-primary-bg;
 
     .quality-details-series-chart {
         .ct-bar {
@@ -34,42 +34,41 @@
         }
 
         .ct-series.ct-series-a {
-            .ct-bar, .ct-area, line, .ct-point {
-                stroke: @issues-color;
+            .ct-bar, .ct-line, .ct-point {
+                stroke: @quality-series-a;
             }
-            path {
-                fill: @issues-color;
-                stroke: @issues-color;
+            .ct-area {
+                fill: @quality-series-a;
             }
         }
 
         .ct-series.ct-series-b {
-            .ct-bar, .ct-area, line, .ct-point {
-                stroke: @major-color;
+            .ct-bar, .ct-line, .ct-point {
+                stroke: @quality-series-b;
             }
-            path {
-                fill: @major-color;
-                stroke: @major-color;
+
+            .ct-area {
+                fill: @quality-series-b;
             }
         }
 
         .ct-series.ct-series-c {
-            .ct-bar, .ct-area, line, .ct-point {
-                stroke: @critical-color;
+            .ct-bar, .ct-line, .ct-point {
+                stroke: @quality-series-d;
             }
-            path {
-                fill: @critical-color;
-                stroke: @critical-color;
+
+            .ct-area {
+                fill: @quality-series-d;
             }
         }
 
         .ct-series.ct-series-d {
-            .ct-bar, .ct-area, line, .ct-point {
-                stroke: @blocker-color;
+            .ct-bar, .ct-line, .ct-point {
+                stroke: @quality-series-c;
             }
-            path {
-                fill: @blocker-color;
-                stroke: @blocker-color;
+
+            .ct-area {
+                fill: @quality-series-c;
             }
         }
     }
@@ -78,8 +77,7 @@
         background-color: @modal-content-bg;
 
         border-top: 1px solid @modal-content-border-color;
-        //.text(1.5, 3);
-        padding: 1rem;
+        padding: .5rem 1rem;
 
         .legend-block {
             display: inline-block;
@@ -90,28 +88,36 @@
                 width: 2rem;
                 height: 2rem;
                 margin-right: 1rem;
-                border: 1px solid @dash-dashboard-text-hover;
+                border: 2px solid @dash-dashboard-text-hover;
+                top: .5rem;
+                position: relative;
             }
 
             .legend-text {
                 .text(1.5, 3);
             }
 
-            &.legend-block-d .legend-square {
-                background: @blocker-color;
-            }
-
-            &.legend-block-c .legend-square {
-                background: @critical-color;
+            &.legend-block-a .legend-square {
+                background: @quality-series-a;
             }
 
             &.legend-block-b .legend-square {
-                background: @major-color;
+                background: @quality-series-b;
             }
 
-            &.legend-block-a .legend-square {
-                background: @issues-color;
+            &.legend-block-c .legend-square {
+                background: @quality-series-c;
             }
+
+            &.legend-block-d .legend-square {
+                background: @quality-series-d;
+            }
+        }
+    }
+
+    .fixed-build-chart {
+        .ct-point {
+            stroke-width: 10px;
         }
     }
 }

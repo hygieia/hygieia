@@ -3,7 +3,9 @@ package com.capitalone.dashboard.model;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A collection of widgets, collectors and application components that represent a software
@@ -70,5 +72,24 @@ public class Dashboard extends BaseModel {
     public DashboardType getType(){ return this.type; }
 
     public void setType(DashboardType type) { this.type = type; }
+
+    public Map<PipelineStageType, String> findEnvironmentMappings(){
+        Map<String, String> environmentMappings = null;
+        for(Widget widget : this.getWidgets()) {
+            if (widget.getName().equalsIgnoreCase("pipeline")) {
+                environmentMappings =  (Map) widget.getOptions().get("mappings");
+            }
+        }
+        Map<PipelineStageType, String> stageTypeToEnvironmentNameMap = new HashMap<>();
+        if(environmentMappings == null){
+            throw new RuntimeException("No pipeline widget configured for dashboard: "+this.getTitle());
+        }
+        else {
+            for (Map.Entry mapping : environmentMappings.entrySet()) {
+                stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
+            }
+        }
+        return stageTypeToEnvironmentNameMap;
+    }
 
 }

@@ -3,7 +3,7 @@
               widget-modal-title="90-day Quality Trends"
               widget-modal-close="true">
     <tabset justified="true">
-        <tab active="ctrl.tabSettings.unitTests.active">
+        <tab active="ctrl.tabSettings.unitTests.active" select="ctrl.selectTab(0)">
             <tab-heading>
                 <product-team-summary-field
                     number="ctrl.unitTests.number"
@@ -19,7 +19,7 @@
                       chartist-chart-options="ctrl.unitTestChartOptions"
             ></chartist>
         </tab>
-        <tab active="ctrl.tabSettings.codeCoverage.active">
+        <tab active="ctrl.tabSettings.codeCoverage.active" select="ctrl.selectTab(1)">
             <tab-heading>
                 <product-team-summary-field
                     number="ctrl.codeCoverage.number"
@@ -35,7 +35,7 @@
                       chartist-chart-options="ctrl.codeCoverageChartOptions"
                       ></chartist>
         </tab>
-        <tab active="ctrl.tabSettings.codeIssues.active">
+        <tab active="ctrl.tabSettings.codeIssues.active" select="ctrl.selectTab(2)">
             <tab-heading>
                 <product-team-summary-field
                     number="ctrl.codeIssues.number"
@@ -70,7 +70,7 @@
                 </span>
             </div>
         </tab>
-        <tab active="ctrl.tabSettings.securityIssues.active">
+        <tab active="ctrl.tabSettings.securityIssues.active" select="ctrl.selectTab(3)">
             <tab-heading>
                 <product-team-summary-field
                     number="ctrl.securityIssues.number"
@@ -87,21 +87,21 @@
             ></chartist>
 
             <div class="code-quality-series-legend">
-                <span class="legend-block legend-block-critical">
+                <span class="legend-block legend-block-d">
                     <span class="legend-square"></span>
                     <span class="legend-text">Critical</span>
                 </span>
-                <span class="legend-block legend-block-blocker">
+                <span class="legend-block legend-block-c">
                     <span class="legend-square"></span>
                     <span class="legend-text">Blocker</span>
                 </span>
-                <span class="legend-block legend-block-major">
+                <span class="legend-block legend-block-b">
                     <span class="legend-square"></span>
                     <span class="legend-text">Major</span>
                 </span>
             </div>
         </tab>
-        <tab active="ctrl.tabSettings.buildSuccess.active">
+        <tab active="ctrl.tabSettings.buildSuccess.active" select="ctrl.selectTab(4)">
             <tab-heading>
                 <product-team-summary-field
                     number="ctrl.buildSuccess.number"
@@ -117,7 +117,7 @@
                       chartist-chart-options="ctrl.buildSuccessChartOptions"
             ></chartist>
         </tab>
-        <tab active="ctrl.tabSettings.buildFix.active">
+        <tab active="ctrl.tabSettings.buildFix.active" select="ctrl.selectTab(5)">
             <tab-heading>
                 <product-team-summary-field
                     number="ctrl.buildFix.number"
@@ -127,13 +127,13 @@
                     caption="Build fix rate"></product-team-summary-field>
             </tab-heading>
 
-            <chartist class="ct-chart ct-octave"
+            <chartist class="ct-chart ct-octave fixed-build-chart"
                       chartist-chart-type="Line"
                       chartist-data="ctrl.fixedBuildChartData"
                       chartist-chart-options="ctrl.fixedBuildChartOptions"
             ></chartist>
         </tab>
-        <tab active="ctrl.tabSettings.functionalTestsPassed.active">
+        <tab active="ctrl.tabSettings.functionalTestsPassed.active" select="ctrl.selectTab(6)">
             <tab-heading>
                 <product-team-summary-field
                     number="ctrl.functionalTestsPassed.number"
