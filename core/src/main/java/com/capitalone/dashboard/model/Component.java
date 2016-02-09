@@ -69,4 +69,14 @@ public class Component extends BaseModel {
         }
         return true;
     }
+
+    public CollectorItem getFirstCollectorItemForType(CollectorType type){
+
+        if(getCollectorItems().get(type) == null) {
+            return null;
+        }
+        List<CollectorItem> collectorItems = new ArrayList<>();
+        collectorItems.addAll(getCollectorItems().get(type));
+        return collectorItems.get(0);
+    }
 }
