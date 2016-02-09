@@ -81,13 +81,8 @@ public class Dashboard extends BaseModel {
             }
         }
         Map<PipelineStageType, String> stageTypeToEnvironmentNameMap = new HashMap<>();
-        if(environmentMappings == null){
-            throw new RuntimeException("No pipeline widget configured for dashboard: "+this.getTitle());
-        }
-        else {
-            for (Map.Entry mapping : environmentMappings.entrySet()) {
-                stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
-            }
+        for (Map.Entry mapping : environmentMappings.entrySet()) {
+            stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
         }
         return stageTypeToEnvironmentNameMap;
     }
