@@ -33,9 +33,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	/**
 	 * Extends the constructor from the super class.
 	 * 
-	 * @param featureSettings
-     * @param projectRepository
-     * @param featureCollectorRepository
+	 * @param teamRepository
 	 */
 	public ProjectDataClientImpl(FeatureSettings featureSettings,
 			ScopeRepository projectRepository, FeatureCollectorRepository featureCollectorRepository) {
@@ -135,7 +133,8 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
 	 * 
-	 * @param localId repository item ID (not the precise mongoID)
+	 * @param A
+	 *            local repository item ID (not the precise mongoID)
 	 */
 	protected Boolean removeExistingEntity(String localId) {
 		boolean deleted = false;
