@@ -67,6 +67,21 @@
 
   <build>
       <plugins>
+<plugin>
+  <groupId>com.spotify</groupId>
+  <artifactId>docker-maven-plugin</artifactId>
+  <configuration>
+	  <skipDockerBuild>true</skipDockerBuild>
+  </configuration>
+  <executions>
+    <execution>
+      <phase>package</phase>
+      <goals>
+        <goal>build</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
@@ -92,6 +107,11 @@
       </plugins>
     <pluginManagement>
       <plugins>
+	<plugin>
+	  <groupId>com.spotify</groupId>
+	  <artifactId>docker-maven-plugin</artifactId>
+	  <version>0.4.0</version>
+	</plugin>
 	<plugin>
 		<groupId>org.codehaus.sonar</groupId>
 		<artifactId>sonar-maven-plugin</artifactId>

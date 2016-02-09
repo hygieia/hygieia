@@ -34,8 +34,8 @@
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.3.3</version>
 				<configuration>
+					<skipDockerBuild>false</skipDockerBuild>
 					<imageName>hygieia-jenkins-build-collector</imageName>
 					<dockerDirectory>${project.basedir}/docker</dockerDirectory>
 					<resources>

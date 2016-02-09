@@ -129,7 +129,7 @@ Only the above proxy settings (non authentication) may required to be set on you
 * Build the containers
 
 ```bash
-mvn -pl  api,UI,jenkins-build-collector,github-scm-collector,jenkins-cucumber-test-collector,jira-feature-collector  docker:build
+mvn docker:build
 ```
 
 * Bring up the container images
@@ -147,39 +147,40 @@ docker exec -t -i mongodb2 bash
 mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
 ```
 
-### create a docker-compose.override.yml to configure your environment
-#### These are the most common entries, the uncommented ones are mandatory if you want the collector to work
-##### For dev/testing you will find it useful to change the CRON entries to "0 * * * * *"
+# create a docker-compose.override.yml to configure your environment
+## These are the most common entries, the uncommented ones are mandatory if you want the collector to work
+### For dev/testing you will find it useful to change the CRON entries to "0 * * * * *"
 ```
 hygieia-github-scm-collector:
   environment:
-#  - GITHUB_HOST=github.com
-#  - GITHUB_CRON=0 0/5 * * * *
-#  - GITHUB_COMMIT_THRESHOLD_DAYS=15
+  - GITHUB_HOST=github.com
+  - GITHUB_CRON=0 * * * * *
+  - GITHUB_COMMIT_THRESHOLD_DAYS=300
 hygieia-jira-feature-collector:
- environment:
-# - DEBUG=1
- - JIRA_BASE_URL=https://company.atlassian.net/
- - JIRA_CREDENTIALS=amltQHN0cmF0ZW5nbGxjLmNvbTp0M0NkZUpaNk00UkZ5SFdSbXMK
- - JIRA_ISSUE_TYPE_ID=10200
- - JIRA_SPRINT_DATA_FIELD_NAME=customfield_10007
- - JIRA_EPIC_FIELD_NAME=customfield_10008
+  environment:
+  - JIRA_BASE_URL=https://mycompany.atlassian.net/
+  - JIRA_CREDENTIALS=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  - JIRA_ISSUE_TYPE_ID=10200
+  - JIRA_SPRINT_DATA_FIELD_NAME=customfield_10007
+  - JIRA_EPIC_FIELD_NAME=customfield_10008
 hygieia-jenkins-build-collector:
- environment:
-# - DEBUG=1
-# - JENKINS_CRON=0 0/5 * * * *
- - JENKINS_MASTER=http://localhost:8080/jenkins
- - JENKINS_USERNAME=username
- - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXX
+  environment:
+  - JENKINS_CRON=0 * * * * *
+  - JENKINS_MASTER=http://192.168.99.100:9100
+  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
+  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXX
 hygieia-jenkins-cucumber-test-collector:
- environment:
-# - DEBUG=1
-# - JENKINS_CRON=0 0/5 * * * *
- - JENKINS_MASTER=http://localhost:8080/jenkins
- - JENKINS_USERNAME=username
- - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- - JENKINS_CUCUMBER_JSON_FILENAME=cucumber-report.json
-```
+  environment:
+  - JENKINS_CRON=0 * * * * *
+  - JENKINS_MASTER=http://192.168.99.100:9100
+  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
+  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXX
+  - JENKINS_CUCUMBER_JSON_FILENAME=cucumber-report.json
+hygieia-sonar-codequality-collector:
+  environment:
+  - SONAR_URL=http://192.168.99.100:9000
+  - SONAR_CRON=0 * * * * *
+  ```
 
 * Make sure everything is restarted _it may fail if the user doesn't exist at start up time_
 
@@ -193,7 +194,26 @@ docker-compose restart
 docker port hygieia-ui
 ```
 
-### Start Collectors in the background (optional as they are all running in containers by default)
+## How to setup test data
+###1. Setup GIT -  by configuring it to point to the github master branch for Hygieia
+	a. In the SCM panel, select 'git'
+	b. Enter the URL: 'https://github.com/capitalone/Hygieia.git' (without the quotes)
+	c. Set the branch to 'master' (without the quotes)
+	ote: For this to work you will need to have set your credentials on the ID that the collectors is running under, the best way to do this is first clone the repo to set your credentials.
+
+###2. Setup Sonar -  by running a test instance of sonar
+	a. docker-compose -f test-servers/sonar/sonar.yml up -d	
+	b. Fill it with data from the Hygieia project
+mvn sonar:sonar -Dsonar.host.url=http://$(docker-machine ip default):9000 -Dsonar.jdbc.url="jdbc:h2:tcp://$(docker-machine ip default)/sonar"
+	c. You can now go in and configure the quality panel in the UI.
+
+###3. Setup Jenkins w/cucumber output - by starting a test jenkins master
+	a. docker-compose -f test-servers/jenkins/jenkins.yml up -d
+	b. Run the job: http://192.168.99.100:9100/job/Hygieia_Example_Job/build
+	c. Configure the Jenkins Build and Jenkins Cucumber panels using this jobs output.
+
+
+## Start Collectors in the background (optional as they are all running in containers by default)
 * To start individual collector as a background process please run the command in below format
   * On linux platform
 ```bash
