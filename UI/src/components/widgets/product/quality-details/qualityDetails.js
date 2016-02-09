@@ -76,15 +76,15 @@
             }
         };
 
-        function getDateLabels(count) {
+        function getDateLabels(count, noGaps) {
             var labels = [];
             for(var x = count; x > 0; x--) {
-                var text = '';
                 if(x % 7 == 0) {
                     labels.push(moment().add(-1 * x, 'days').format('MMM DD'));
                 }
-
-                labels.push(text);
+                else if (!noGaps) {
+                    labels.push('');
+                }
             }
 
             return labels;
@@ -93,18 +93,15 @@
         // set some basic options so we're not stuck copying them everywhere
         function getDefaultChartOptions() {
             return {
-                plugins: [
-                    Chartist.plugins.gridBoundaries()
-                ],
                 showArea: false,
                 lineSmooth: Chartist.Interpolation.none({
                     fillHoles: true
                 }),
                 fullWidth: true,
-                chartPadding: 7,
                 axisX: {
                     //showLabel: false
                 },
+
                 axisY: {
                     labelOffset: {
                         x: 0,
@@ -151,7 +148,7 @@
             for(var x = -90; x < 0; x++) {
                 var existingValue = rawData[x];
 
-                data.push(existingValue == undefined && defaultValue != undefined ? defaultValue : rawData[x]);
+                data.push({value: existingValue == undefined && defaultValue != undefined ? defaultValue : rawData[x]});
             }
 
             return {
@@ -200,6 +197,33 @@
                 major = getCodeAnalysisData('majorViolations', 0),
                 blocker = getCodeAnalysisData('blockerViolations', 0);
 
+            _(blocker.data).forEach(function(record, idx) {
+                // set a custom tooltip
+                var tip = '';
+                if(violations.data[idx].value > 0) {
+                    tip += '<div class="tooltip-row">' + Math.ceil(violations.data[idx].value) + ' issues</div>';
+                }
+
+                if(major.data[idx].value > 0) {
+                    tip += '<div class="tooltip-row">' + Math.ceil(major.data[idx].value) + ' major issues</div>';
+                }
+
+                if(blocker.data[idx].value > 0) {
+                    tip += '<div class="tooltip-row">' + Math.ceil(blocker.data[idx].value) + ' blocking issues</div>';
+                }
+
+                if(critical.data[idx].value > 0) {
+                    tip += '<div class="tooltip-row">' + Math.ceil(critical.data[idx].value) + ' critical issues</div>';
+                }
+
+                if(tip.length) {
+                    violations.data[idx].meta = tip;
+                    major.data[idx].meta = tip;
+                    blocker.data[idx].meta = tip;
+                    critical.data[idx].meta = tip;
+                }
+            });
+
             ctrl.codeIssuesChartData = {
                 labels: violations.labels,
                 series: [
@@ -210,10 +234,25 @@
                 ]
             };
 
-            ctrl.codeIssuesChartOptions = {
-                stackBars: true,
-                fullWidth: true
-            }
+            var options = getDefaultChartOptions();
+            options.stackBars = true;
+            options.plugins = [
+                Chartist.plugins.tooltip(),
+                Chartist.plugins.ctAxisTitle({
+                    axisY: {
+                        axisTitle: 'Avg. code issues per day',
+                        axisClass: 'ct-axis-title',
+                        offset: {
+                            x: 0,
+                            y: 20
+                        },
+                        textAnchor: 'middle',
+                        flipTitle: true
+                    }
+                })
+            ];
+
+            ctrl.codeIssuesChartOptions = options;
         }
 
         function prepareSecurityAnalysisChartData()
@@ -224,8 +263,28 @@
                 major = getSecurityAnalysisData('major', 0);
 
             // create an empty issues data to preserve series colors across charts
-            _(blocker.data).forEach(function() {
-                issuesData.push(0);
+            _(blocker.data).forEach(function(record, idx) {
+                issuesData.push({value: 0});
+
+                // set a custom tooltip
+                var tip = '';
+                if(major.data[idx].value > 0) {
+                    tip += '<div class="tooltip-row">' + Math.ceil(major.data[idx].value) + ' major issues</div>';
+                }
+
+                if(blocker.data[idx].value > 0) {
+                    tip += '<div class="tooltip-row">' + Math.ceil(blocker.data[idx].value) + ' blocking issues</div>';
+                }
+
+                if(critical.data[idx].value > 0) {
+                    tip += '<div class="tooltip-row">' + Math.ceil(critical.data[idx].value) + ' critical issues</div>';
+                }
+
+                if(tip.length) {
+                    major.data[idx].meta = tip;
+                    blocker.data[idx].meta = tip;
+                    critical.data[idx].meta = tip;
+                }
             });
 
             ctrl.securityAnalysisChartData = {
@@ -239,6 +298,9 @@
             };
 
             ctrl.securityAnalysisChartOptions = {
+                plugins: [
+                    Chartist.plugins.tooltip()
+                ],
                 stackBars: true,
                 fullWidth: true
             }
@@ -246,7 +308,6 @@
 
         function prepareBuildSuccessChartData() {
             var rawData = {},
-                labels = [],
                 data = [];
 
             // build success is being passed as an already grouped value
@@ -258,25 +319,38 @@
                 });
 
             for(var x = -90; x < 0; x++) {
-                labels.push('');
                 data.push(rawData[x]);
             }
 
             ctrl.buildSuccessChartData = {
-                labels: labels,
+                labels: getDateLabels(data.length),
                 series: [{
                     name: 'Build Success',
                     data: data
                 }]
             };
 
-            ctrl.buildSuccessChartOptions = getDefaultChartOptions();
+            var options = getDefaultChartOptions();
+            ctrl.buildSuccessChartOptions = options;
         }
 
         function prepareFixedBuildChartData()
         {
             var data = _(modalData.team.data.fixedBuild).map(function(record) {
-                return { x: record[0], y: parseFloat(record[1].toFixed(1)) };
+                var timeToFixInMinutes = moment.duration(moment(record.fixedBuild.timestamp).diff(record.brokenBuild.timestamp)).asMinutes()
+
+                return {
+                    meta: (function(r) {
+                        return '<div class="tooltip-row tooltip-left">#' + r.brokenBuild.number + ' broke on '
+                            + moment(r.brokenBuild.timestamp).format('MM/DD/YY [at] hh:mm A')
+                            + '</div><div class="tooltip-row tooltip-left">#' + r.fixedBuild.number + ' fixed on '
+                            + moment(r.fixedBuild.timestamp).format('MM/DD/YY [at] hh:mm A') + '</div>';
+                    })(record),
+                    value: {
+                        x: daysAgo(record.fixedBuild.timestamp),
+                        y: timeToFixInMinutes
+                    }
+                };
             }).value();
 
             ctrl.fixedBuildChartData = {
@@ -287,23 +361,31 @@
 
             var options = angular.extend(getDefaultChartOptions(), {
                 plugins: [
-                    Chartist.plugins.gridBoundaries()
+                    Chartist.plugins.gridBoundaries(),
+                    Chartist.plugins.tooltip({
+                        className: 'fixed-build-tooltip'
+                    }),
+                    Chartist.plugins.axisLabels({
+                        axisX: {
+                            labels: getDateLabels(90, true)
+                        }
+                    })
                 ],
                 axisX: {
                     type: Chartist.AutoScaleAxis,
                     onlyInteger: true,
-                    showLabel: false
+                    showLabel: false,
+                    low: -90,
+                    high: 0
                 },
                 showLine: false
             });
-
             ctrl.fixedBuildChartOptions = options;
         }
 
         function prepareFuncTestsPassedData()
         {
-            var labels = [],
-                series = [];
+            var series = [];
             _(modalData.team.data.testSuite)
                 .groupBy('collectorItemId')
                 .forEach(function(tests, key) {
@@ -314,15 +396,31 @@
                         return daysAgo(test.timestamp);
                     }).forEach(function(tests, key) {
                         var passed = _(tests).pluck('successCount').reduce(function(a, b) { return a + b; }),
-                            total = _(tests).pluck('totalCount').reduce(function(a, b) { return a + b; });
+                            total = _(tests).pluck('totalCount').reduce(function(a, b) { return a + b; }),
+                            tip = '';
+
+                        _(tests).forEach(function(run) {
+                            tip += '<div class="tooltip-row">' + run.successCount + ' of ' + run.totalCount + ' tests passed on ' + moment(run.timestamp).format('MM/DD/YY [at] hh:mm A') + '</div>';
+                        });
 
 
-                        rawData[parseInt(key)] = total ? parseFloat((passed / total * 100).toFixed(1)) : 0;
+                        rawData[parseInt(key)] = {tip: tip, percentPassed: total ? parseFloat((passed / total * 100).toFixed(1)) : 0};
                     });
 
                     var data = [];
                     for(var x = -90; x<0; x++) {
-                        data.push(rawData[x]);
+                        if(rawData[x] != undefined) {
+                            var obj = rawData[x];
+                            var tip = '<div class="modal-label">' + name + '</div>' + obj.tip;
+
+                            data.push({
+                                meta: tip,
+                                value: obj.percentPassed
+                            });
+                        }
+                        else {
+                            data.push({value:null});
+                        }
                     }
 
                     series.push({
@@ -331,16 +429,27 @@
                     });
                 });
 
-            _(series[0].data).forEach(function() {
-                labels.push('');
-            });
-
             ctrl.funcTestsPassedChartData = {
-                labels: labels,
-                series: series//[series[0].data]
+                labels: getDateLabels(series[0].data.length),
+                series: series
             };
 
             var options = getDefaultChartOptions();
+            options.plugins = [
+                Chartist.plugins.tooltip(),
+                Chartist.plugins.ctAxisTitle({
+                    axisY: {
+                        axisTitle: '% of tests passed by suite',
+                        axisClass: 'ct-axis-title',
+                        offset: {
+                            x: 0,
+                            y: 20
+                        },
+                        textAnchor: 'middle',
+                        flipTitle: true
+                    }
+                })
+            ];
             ctrl.funcTestsPassedChartOptions = options;
 
             var seriesChartNames = ['a','b','c','d'];

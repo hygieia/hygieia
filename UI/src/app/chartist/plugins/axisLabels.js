@@ -19,7 +19,8 @@
                 y: 20
             },
             textAnchor: 'middle'
-        }
+        },
+        stretchFactor: 1 // multiplies by the width of the chart to further space out our labels
     };
 
     Chartist.plugins = Chartist.plugins || {};
@@ -31,14 +32,14 @@
 
             chart.on('created', function (data) {
 
-                var labelCount = options.axisX.labels.length;
+                var labelCount = options.axisX.labels.length,
+                    padding = data.options.chartPadding;
 
                 for(var x=0; x<labelCount;x++) {
-                    var factor = 1.4;
 
                     var text = options.axisX.labels[x],
-                        xPos = (data.axisX.axisLength * factor / (labelCount + 1)) * (x+1) + (1-factor)/2*data.axisX.axisLength+ data.options.axisY.offset + data.options.chartPadding.left,
-                        yPos = data.options.chartPadding.top + data.axisY.axisLength;
+                        xPos = (data.axisX.axisLength * options.stretchFactor / (labelCount + 1)) * (x+1) + (1-options.stretchFactor)/2*data.axisX.axisLength+ data.options.axisY.offset + padding.left,
+                        yPos = padding.top + data.axisY.axisLength;
 
                     var label = new Chartist.Svg('text');
                     label.addClass(options.axisX.labelClass);

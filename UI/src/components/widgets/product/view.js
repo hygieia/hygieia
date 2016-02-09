@@ -24,11 +24,11 @@
         // define our schemas
         db.version(1).stores({
             lastRequest: '[type+id]',
-            testSuite: '++id,[componentId+timestamp]',
-            codeAnalysis: '++id,[componentId+timestamp]',
-            securityAnalysis: '++id,[componentId+timestamp]',
-            buildData: '++id,[componentId+timestamp]',
-            prodCommit: '++id,[collectorItemId+timestamp]'
+            testSuite: '++id,timestamp,[componentId+timestamp]',
+            codeAnalysis: '++id,timestamp,[componentId+timestamp]',
+            securityAnalysis: '++id,timestamp,[componentId+timestamp]',
+            buildData: '++id,timestamp,[componentId+timestamp]',
+            prodCommit: '++id,timestamp,[collectorItemId+timestamp]'
         });
 
         // create classes
@@ -47,9 +47,13 @@
 
         // clear out any collection data if there is a reset parameter
         if($routeParams.delete) {
-            db.delete();
+            db.delete().then(function() {
+                // redirect to this page without the parameter
+                window.location.href = '/#/dashboard/' + $routeParams.id;
+            });
         }
 
+        // remove any data from the existing tables
         if($routeParams.reset || HygieiaConfig.local) {
             db.lastRequest.clear();
             db.codeAnalysis.clear();
@@ -99,8 +103,16 @@
             }
         }
 
-        function addTeam() {
+        // remove data from the db where data is older than the provided timestamp
+        function cleanseData(table, beforeTimestamp) {
+            table.where('timestamp').below(beforeTimestamp).toArray(function(rows) {
+                _(rows).forEach(function(row) {
+                    table.delete(row.id);
+                })
+            });
+        }
 
+        function addTeam() {
             $modal.open({
                 templateUrl: 'components/widgets/product/add-team/add-team.html',
                 controller: 'addTeamController',
@@ -383,7 +395,8 @@
 
                                             return [key, totalBuilds > 0 ? successfulBuilds / totalBuilds : 0];
                                         }).value(),
-                                    fixedBuildData = [];
+                                    fixedBuildData = [],
+                                    fixedBuildDetails = [];
 
                                 var lastFailedBuild = false;
                                 _(rows).reverse().forEach(function(build) {
@@ -396,6 +409,12 @@
 
                                             // add this to our regression data
                                             fixedBuildData.push([daysAgo, timeToFixInMinutes]);
+
+                                            // create a custom object to pass to quality details
+                                            fixedBuildDetails.push({
+                                                brokenBuild: lastFailedBuild,
+                                                fixedBuild: build
+                                            });
 
                                             // reset the failed build so we can find the next one
                                             lastFailedBuild = false;
@@ -419,7 +438,7 @@
                                 var buildData = {
                                     data: {
                                         buildSuccess: successRateData,
-                                        fixedBuild: fixedBuildData
+                                        fixedBuild: fixedBuildDetails
                                     },
                                     summary: {
                                         buildSuccess: {
@@ -466,6 +485,9 @@
                                     setTeamData(collectorItemId, buildData);
                                 });
                             });
+                        })
+                        .finally(function() {
+                            cleanseData(db.buildData, ninetyDaysAgo);
                         });
                 });
             // endregion
@@ -560,6 +582,9 @@
                                     });
                                 });
                             });
+                        })
+                        .finally(function() {
+                            cleanseData(db.securityAnalysis, ninetyDaysAgo);
                         });
                 });
 
@@ -689,6 +714,9 @@
                                 });
                             });
                         });
+                    })
+                    .finally(function() {
+                        cleanseData(db.codeAnalysis, ninetyDaysAgo);
                     });
             });
             // endregion
@@ -705,7 +733,8 @@
                     dateBegins = lastRequest.timestamp;
                 }
 
-                testSuiteData.details({componentId: componentId, endDateBegins:dateBegins, endDateEnds:dateEnds, depth: 1})
+                testSuiteData
+                    .details({componentId: componentId, endDateBegins:dateBegins, endDateEnds:dateEnds, depth: 1})
                     .then(function(response) {
                         // since we're only requesting a minute we'll probably have nothing
                         if(!response || !response.result || !response.result.length) {
@@ -803,6 +832,9 @@
                                 });
                             });
                         });
+                    })
+                    .finally(function() {
+                        cleanseData(db.testSuite, ninetyDaysAgo);
                     });
             });
             // endregion
@@ -1150,6 +1182,9 @@
                                         prod: teamProdData
                                     });
                                 });
+                            })
+                            .finally(function() {
+                                cleanseData(db.prodCommit, ninetyDaysAgo);
                             });
                     });
             });

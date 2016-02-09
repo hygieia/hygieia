@@ -97,6 +97,38 @@
     .ct-grid {
         stroke: @modal-content-bg;
     }
+
+    .tooltip {
+        @modal-tooltip-bg: darken(@modal-content-bg, 10%);
+        .tooltip-inner {
+            background-color: @modal-tooltip-bg;
+            max-width: none;
+            .tooltip-row {
+                white-space: nowrap;
+                display: block;
+            }
+
+            .tooltip-left {
+                text-align: left;
+            }
+        }
+
+        &.top .tooltip-arrow {
+            border-top-color: @modal-tooltip-bg;
+        }
+
+        &.bottom .tooltip-arrow {
+            border-bottom-color: @modal-tooltip-bg;
+        }
+
+        &.left .tooltip-arrow {
+            border-left-color: @modal-tooltip-bg;
+        }
+
+        &.right .tooltip-arrow {
+            border-right-color: @modal-tooltip-bg;
+        }
+    }
 }
 
 // OTHER
