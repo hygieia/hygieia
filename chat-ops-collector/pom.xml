@@ -37,7 +37,7 @@
 			<artifactId>docker-maven-plugin</artifactId>
 			<version>0.3.3</version>
 			<configuration>
-				<imageName>hygieia-sonar-chat-ops-collector</imageName>
+				<imageName>hygieia-chat-ops-collector</imageName>
 				<dockerDirectory>${project.basedir}/docker</dockerDirectory>
 				<resources>
 					<resource>
