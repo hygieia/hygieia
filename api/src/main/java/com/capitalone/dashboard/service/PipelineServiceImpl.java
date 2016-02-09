@@ -1,10 +1,12 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.Pipeline;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.request.PipelineSearchRequest;
+import org.apache.catalina.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,7 +68,31 @@ public class PipelineServiceImpl implements PipelineService {
                 }
             }
         }
+
+        pipelineResponse.setUnmappedStages(findUnmappedEnvironments(dashboard));
         return pipelineResponse;
+    }
+
+    private List<PipelineStageType> findUnmappedEnvironments(Dashboard dashboard){
+        Map<String, String> environmentMappings= new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for(Widget widget : dashboard.getWidgets()) {
+            if (widget.getName().equalsIgnoreCase("pipeline")) {
+                environmentMappings.putAll((Map)widget.getOptions().get("mappings"));
+            }
+        }
+
+        List<PipelineStageType> unmappedNames = new ArrayList<>();
+        for(PipelineStageType stage : PipelineStageType.values()){
+            if(!stage.equals(PipelineStageType.Build) && !stage.equals(PipelineStageType.Commit)){
+                String mappedName = environmentMappings.get(stage.name());
+                if(mappedName == null || mappedName.isEmpty()){
+                    unmappedNames.add(stage);
+                }
+            }
+
+        }
+
+        return unmappedNames;
     }
 
     //this needs to take into account mapping

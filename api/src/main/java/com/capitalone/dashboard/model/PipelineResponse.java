@@ -10,6 +10,7 @@ import java.util.Map;
 public class PipelineResponse {
     private String name;
     private ObjectId collectorItemId;
+    private List<PipelineStageType> unmappedStages;
     private Map<PipelineStageType, List<PipelineResponseCommit>> stages = new HashMap<>();
 
     public String getName() {
@@ -34,6 +35,14 @@ public class PipelineResponse {
 
     public void setStages(Map<PipelineStageType, List<PipelineResponseCommit>> stages) {
         this.stages = stages;
+    }
+
+    public List<PipelineStageType> getUnmappedStages() {
+        return unmappedStages;
+    }
+
+    public void setUnmappedStages(List<PipelineStageType> unmappedStages) {
+        this.unmappedStages = unmappedStages;
     }
 
     public void addToStage(PipelineStageType stage, PipelineResponseCommit pipelineCommit) {
