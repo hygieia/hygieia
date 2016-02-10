@@ -13,6 +13,8 @@
     .quality-cell-style(@dash-dashboard-text-hover, @dash-dashboard-text-light);
 
     .product-dash-header {
+        color: @dash-dashboard-text-light;
+
         .product-dash-header-text {
             text-align: center;
             line-height: 46px;
@@ -41,6 +43,11 @@
 
         .as-sortable-placeholder {
             background-color: fade(@dash-status-pass, 20%) !important;
+
+            .product-table-td {
+                cursor: -webkit-grabbing !important;
+                cursor: -moz-grabbing !important;
+            }
         }
 
         .product-table-th, .product-table-td {
@@ -76,6 +83,9 @@
 
             .product-table-td {
                 cursor: move;
+                cursor: -webkit-grab;
+                cursor: -moz-grab;
+
                 color: @dash-dashboard-text-light;
                 height: 180px;
                 text-align: left;
@@ -96,7 +106,6 @@
 
         .new-team-row {
             opacity: .3;
-            cursor: pointer;
             background: transparent;
             outline: 3px dashed;
 
@@ -119,6 +128,7 @@
             }
 
             .product-table-td {
+                cursor: pointer;
                 padding-top: 30px;
                 padding-bottom: 30px;
                 text-align: center;

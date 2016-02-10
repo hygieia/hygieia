@@ -10,10 +10,7 @@
         /*jshint validthis:true */
         var ctrl = this;
 
-        // private properties
-        var teamDashboardDetails = {},
-            isReload = null;
-
+        //region Dexie configuration
         // setup our local db
         var db = new Dexie('ProductPipelineDb');
         Dexie.Promise.on('error', function(err) {
@@ -61,6 +58,11 @@
             db.buildData.clear();
             db.prodCommit.clear();
         }
+        // endregion
+
+        // private properties
+        var teamDashboardDetails = {},
+            isReload = null;
 
         // public properties
         ctrl.stages = ['Commit', 'Build', 'Dev', 'QA', 'Int', 'Perf', 'Prod'];
@@ -349,6 +351,36 @@
             });
 
             return true;
+        }
+
+        function updateWidgetOptions(options) {
+            // get a list of collector ids
+            var collectorItemIds = [];
+            _(options.teams).forEach(function(team) {
+                collectorItemIds.push(team.collectorItemId);
+            });
+
+            var data = {
+                name: 'product',
+                componentId: $scope.dashboard.application.components[0].id,
+                collectorItemIds: collectorItemIds,
+                options: options
+            };
+
+            $scope.upsertWidget(data);
+        }
+
+        // return whether this stage has commits. used to determine whether details
+        // will be shown for this team in the specific stage
+        function teamStageHasCommits(team, stage) {
+            return team.stages && team.stages[stage] && team.stages[stage].commits && team.stages[stage].commits.length;
+        }
+
+        function getStageDurationStats(a) {
+            var r = {mean: 0, variance: 0, deviation: 0}, t = a.length;
+            for(var m, s = 0, l = t; l--; s += a[l]);
+            for(m = r.mean = s / t, l = t, s = 0; l--; s += Math.pow(a[l] - m, 2));
+            return r.deviation = Math.sqrt(r.variance = s / t), r;
         }
 
         function getTeamComponentData(collectorItemId) {
@@ -878,36 +910,6 @@
                     });
             });
             // endregion
-        }
-
-        function updateWidgetOptions(options) {
-            // get a list of collector ids
-            var collectorItemIds = [];
-            _(options.teams).forEach(function(team) {
-                collectorItemIds.push(team.collectorItemId);
-            });
-
-            var data = {
-                name: 'product',
-                componentId: $scope.dashboard.application.components[0].id,
-                collectorItemIds: collectorItemIds,
-                options: options
-            };
-
-            $scope.upsertWidget(data);
-        }
-
-        // return whether this stage has commits. used to determine whether details
-        // will be shown for this team in the specific stage
-        function teamStageHasCommits(team, stage) {
-            return team.stages && team.stages[stage] && team.stages[stage].commits && team.stages[stage].commits.length;
-        }
-
-        function getStageDurationStats(a) {
-            var r = {mean: 0, variance: 0, deviation: 0}, t = a.length;
-            for(var m, s = 0, l = t; l--; s += a[l]);
-            for(m = r.mean = s / t, l = t, s = 0; l--; s += Math.pow(a[l] - m, 2));
-            return r.deviation = Math.sqrt(r.variance = s / t), r;
         }
 
         function collectTeamStageData(teams, ctrlStages) {
