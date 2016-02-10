@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
-    productViewController.$inject = ['$scope', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData'];
-    function productViewController($scope, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData) {
+    productViewController.$inject = ['$scope', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData'];
+    function productViewController($scope, $document, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -64,6 +64,44 @@
 
         // public properties
         ctrl.stages = ['Commit', 'Build', 'Dev', 'QA', 'Int', 'Perf', 'Prod'];
+        ctrl.sortableOptions = {
+            additionalPlaceholderClass: 'product-table-tr',
+            placeholder: function(el) {
+                // create a placeholder row
+                var tr = $document[0].createElement('div');
+                for(var x=0;x<=ctrl.stages.length;x++) {
+                    var td = $document[0].createElement('div');
+                    td.setAttribute('class', 'product-table-td');
+
+                    if(x == 0) {
+                        var name = $document[0].createElement('div');
+                        name.setAttribute('class', 'team-name');
+                        name.innerText = el.element[0].querySelector('.team-name').innerText;
+                        td.setAttribute('class', 'product-table-td team-name-cell');
+                        td.appendChild(name);
+                    }
+                    tr.appendChild(td);
+                }
+
+                return tr;
+            },
+            orderChanged: function() {
+                var teams = ctrl.configuredTeams,
+                    existingConfigTeams = $scope.widgetConfig.options.teams,
+                    newConfigTeams = [];
+
+                _(teams).forEach(function(team) {
+                    _(existingConfigTeams).forEach(function(configTeam) {
+                        if(team.collectorItemId == configTeam.collectorItemId) {
+                            newConfigTeams.push(configTeam);
+                        }
+                    });
+                });
+
+                $scope.widgetConfig.options.teams = newConfigTeams;
+                updateWidgetOptions($scope.widgetConfig.options);
+            }
+        };
 
         // public methods
         ctrl.load = load;
