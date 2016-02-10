@@ -114,7 +114,9 @@
                 </div>
 
                 <div class="product-table-td team-data-cell"
-                    ng-repeat="stage in ctrl.stages | filter: '!PROD'">
+                     ng-class="{'team-stage-needs-configured': team.stages[stage].needsConfiguration}"
+                     ng-repeat="stage in ctrl.stages | filter: '!PROD'"
+                     >
                     {{teamStageData = team.stages[stage].summary;""}}
                     <div ng-class="{'clickable':teamStageData.hasCommits}" ng-click="ctrl.viewTeamStageDetails(team, stage)">
                         <div class="team-data-cell-header" ng-if="teamStageData.average">
@@ -154,7 +156,7 @@
 
                 </div>
 
-                <div class="product-table-td team-prod-cell">
+                <div class="product-table-td team-prod-cell" ng-class="{'team-stage-needs-configured': team.stages['Prod'].needsConfiguration}">
                     <div ng-if="team.prod">
                         <div class="clearfix team-prod-average-header">
                             <span class="pull-left team-prod-arrow fa" ng-class="{'fa-long-arrow-up text-danger':team.prod.trendUp == true, 'fa-long-arrow-down text-success': team.prod.trendUp == false}" ng-if="team.prod.trendUp != undefined"></span>

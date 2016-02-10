@@ -67,6 +67,17 @@
                 height: 180px;
                 text-align: left;
                 vertical-align: top;
+
+                &.team-stage-needs-configured {
+                    @line: rgba(122, 122, 122, 1);
+                    background: repeating-linear-gradient(
+                        135deg,
+                        transparent,
+                        @dash-widget-section-highlight 5px,
+                        transparent 5px,
+                        transparent 5px
+                    );
+                }
             }
         }
 

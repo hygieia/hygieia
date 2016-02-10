@@ -91,13 +91,14 @@
         }
 
         // set some basic options so we're not stuck copying them everywhere
-        function getDefaultChartOptions() {
+        function getDefaultChartOptions(yAxisTitle) {
             return {
                 showArea: false,
                 lineSmooth: Chartist.Interpolation.none({
                     fillHoles: true
                 }),
                 fullWidth: true,
+                chartPadding: { top: 10, right: 10, bottom: 10, left: 20 },
                 axisX: {
                     //showLabel: false
                 },
@@ -110,7 +111,21 @@
                     labelInterpolationFnc: function(value) {
                         return value === 0 ? 0 : ((Math.round(value * 100) / 100) + '');
                     }
-                }
+                },
+                plugins: [
+                    Chartist.plugins.ctAxisTitle({
+                        axisY: {
+                            axisTitle: yAxisTitle,
+                            axisClass: 'ct-axis-title',
+                            offset: {
+                                x: 0,
+                                y: 20
+                            },
+                            textAnchor: 'middle',
+                            flipTitle: true
+                        }
+                    })
+                ]
             };
         }
 
@@ -169,9 +184,7 @@
                 }]
             };
 
-            var options = getDefaultChartOptions();
-            //options.low = 0;
-            //options.high = 100;
+            var options = getDefaultChartOptions('% unit tests passed per day');
             ctrl.unitTestChartOptions = options;
         }
 
@@ -187,7 +200,7 @@
                 }]
             };
 
-            ctrl.codeCoverageChartOptions = getDefaultChartOptions();
+            ctrl.codeCoverageChartOptions = getDefaultChartOptions('# of code issues per day');
         }
 
         function prepareCodeIssuesChartData()
@@ -234,23 +247,9 @@
                 ]
             };
 
-            var options = getDefaultChartOptions();
+            var options = getDefaultChartOptions('Avg. code issues per day');
             options.stackBars = true;
-            options.plugins = [
-                Chartist.plugins.tooltip(),
-                Chartist.plugins.ctAxisTitle({
-                    axisY: {
-                        axisTitle: 'Avg. code issues per day',
-                        axisClass: 'ct-axis-title',
-                        offset: {
-                            x: 0,
-                            y: 20
-                        },
-                        textAnchor: 'middle',
-                        flipTitle: true
-                    }
-                })
-            ];
+            options.plugins.push(Chartist.plugins.tooltip());
 
             ctrl.codeIssuesChartOptions = options;
         }
@@ -297,13 +296,10 @@
                 ]
             };
 
-            ctrl.securityAnalysisChartOptions = {
-                plugins: [
-                    Chartist.plugins.tooltip()
-                ],
-                stackBars: true,
-                fullWidth: true
-            }
+            var options = getDefaultChartOptions('# of security issues');
+            options.plugins.push(Chartist.plugins.tooltip());
+            options.stackBars = true;
+            ctrl.securityAnalysisChartOptions = options;
         }
 
         function prepareBuildSuccessChartData() {
@@ -330,7 +326,7 @@
                 }]
             };
 
-            var options = getDefaultChartOptions();
+            var options = getDefaultChartOptions('% build success');
             ctrl.buildSuccessChartOptions = options;
         }
 
@@ -359,27 +355,24 @@
                 ]
             };
 
-            var options = angular.extend(getDefaultChartOptions(), {
-                plugins: [
-                    Chartist.plugins.gridBoundaries(),
-                    Chartist.plugins.tooltip({
-                        className: 'fixed-build-tooltip'
-                    }),
-                    Chartist.plugins.axisLabels({
+            var options = getDefaultChartOptions('Minutes to fix build');
+            options.plugins.push(Chartist.plugins.gridBoundaries());
+            options.plugins.push(Chartist.plugins.tooltip({ className: 'fixed-build-tooltip' }));
+            options.plugins.push(Chartist.plugins.axisLabels({
                         axisX: {
                             labels: getDateLabels(90, true)
                         }
-                    })
-                ],
-                axisX: {
-                    type: Chartist.AutoScaleAxis,
-                    onlyInteger: true,
-                    showLabel: false,
-                    low: -90,
-                    high: 0
-                },
-                showLine: false
-            });
+                    }));
+
+            options.axisX = {
+                type: Chartist.AutoScaleAxis,
+                onlyInteger: true,
+                showLabel: false,
+                low: -90,
+                high: 0
+            };
+            options.showLine = false;
+
             ctrl.fixedBuildChartOptions = options;
         }
 
@@ -434,22 +427,9 @@
                 series: series
             };
 
-            var options = getDefaultChartOptions();
-            options.plugins = [
-                Chartist.plugins.tooltip(),
-                Chartist.plugins.ctAxisTitle({
-                    axisY: {
-                        axisTitle: '% of tests passed by suite',
-                        axisClass: 'ct-axis-title',
-                        offset: {
-                            x: 0,
-                            y: 20
-                        },
-                        textAnchor: 'middle',
-                        flipTitle: true
-                    }
-                })
-            ];
+            var options = getDefaultChartOptions('% of tests passed by suite');
+            options.plugins.push(Chartist.plugins.tooltip());
+
             ctrl.funcTestsPassedChartOptions = options;
 
             var seriesChartNames = ['a','b','c','d'];
@@ -459,7 +439,6 @@
                     chartSeriesName: seriesChartNames[idx % seriesChartNames.length]
                 }
             }).value();
-            console.log(ctrl.funcTestsPassedLegend);
         }
     }
 })();

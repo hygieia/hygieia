@@ -1179,6 +1179,14 @@
                                         teamProdData.trendUp = averageToProdResult.equation[0] > 0;
                                     }
 
+                                    // handle the api telling us which stages need configuration
+                                    if(team.unmappedStages)
+                                    {
+                                        for(var stageName in teamStageData) {
+                                            teamStageData[stageName].needsConfiguration = team.unmappedStages.indexOf(stageName) != -1;
+                                        }
+                                    }
+
                                     setTeamData(team.collectorItemId, {
                                         stages: teamStageData,
                                         prod: teamProdData
