@@ -18,6 +18,7 @@
                     onClick: showDetail
                 }),
                 Chartist.plugins.axisLabels({
+                    stretchFactor: 1.4,
                     axisX: {
                         labels: [
                             moment().subtract(14, 'days').format('MMM DD'),

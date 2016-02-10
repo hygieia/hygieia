@@ -22,7 +22,6 @@
     "hygieia-jstz-detect": "~1.0.5",
     "dexie": "*",
     "regression-js": "*",
-    "typeahead-focus": "*",
     "angular-vs-repeat": "1.1.4"
   },
   "devDependencies": {

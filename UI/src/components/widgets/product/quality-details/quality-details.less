@@ -23,10 +23,22 @@
         }
     }
 
+    // x-axis label
+    .ct-label.ct-horizontal {
+        min-width: 5rem;
+        text-anchor: middle;
+        margin-left: -1.25rem;
+    }
+
     @quality-series-a: lighten(@btn-primary-bg, 75%);
     @quality-series-b: lighten(@btn-primary-bg, 50%);
     @quality-series-c: lighten(@btn-primary-bg, 25%);
     @quality-series-d: @btn-primary-bg;
+
+    // workaround for bar label positioning
+    .ct-chart-bar .ct-label.ct-horizontal.ct-end {
+        justify-content: flex-start;
+    }
 
     .quality-details-series-chart {
         .ct-bar {
@@ -54,21 +66,21 @@
 
         .ct-series.ct-series-c {
             .ct-bar, .ct-line, .ct-point {
-                stroke: @quality-series-d;
-            }
-
-            .ct-area {
-                fill: @quality-series-d;
-            }
-        }
-
-        .ct-series.ct-series-d {
-            .ct-bar, .ct-line, .ct-point {
                 stroke: @quality-series-c;
             }
 
             .ct-area {
                 fill: @quality-series-c;
+            }
+        }
+
+        .ct-series.ct-series-d {
+            .ct-bar, .ct-line, .ct-point {
+                stroke: @quality-series-d;
+            }
+
+            .ct-area {
+                fill: @quality-series-d;
             }
         }
     }

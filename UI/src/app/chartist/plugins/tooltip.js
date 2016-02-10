@@ -7,7 +7,7 @@
     'use strict';
 
     var defaultOptions = {
-
+        className: ''
     };
 
     Chartist.plugins = Chartist.plugins || {};
@@ -31,6 +31,9 @@
                     }, 'ct-tooltip-trigger-area');
 
                     area._node.setAttribute('ct:value', data.value.y);
+                    if(data.meta) {
+                        area._node.setAttribute('ct:meta', data.meta);
+                    }
                     data.group.append(area);
                 }
             });
@@ -65,13 +68,23 @@
                             content.setAttribute('class', 'tooltip-inner');
                             tooltip.appendChild(content);
 
-                            content = angular.element(content);
-
                             svgParent.insertBefore(tooltip, svgParent.firstChild);
                         }
 
-                        var tooltipContent = angular.element(tooltip.querySelector('.tooltip-inner'));
-                        tooltipContent.html(Math.round(angular.element(this).attr('ct:value') * 100) / 100);
+                        var tooltipContent = angular.element(tooltip.querySelector('.tooltip-inner')),
+                            el = angular.element(this),
+                            text = Math.round(el.attr('ct:value') * 100) / 100,
+                            meta = el.attr('ct:meta');
+
+                        tooltipContent.attr('class', 'tooltip-inner ' + options.className);
+
+                        if(meta) {
+                            var div = document.createElement('div');
+                            div.innerHTML = meta;
+                            text = div.childNodes[0].nodeValue;
+                        }
+
+                        tooltipContent.html(text);
 
                         angular.element(tooltip)
                             .css({

@@ -46,7 +46,6 @@ var localStorageSupported = (function () {
         'ngCookies',
         'validation.match',
         'apg.typeaheadDropdown',
-        'typeahead-focus',
         'vs-repeat'
     ])
     .config(['$httpProvider',

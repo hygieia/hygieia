@@ -2,6 +2,7 @@
 [
     {
         "collectorItemId": "56a67a88689a6c2d50757022",
+        "unmappedStages": ["QA", "Prod"],
         "stages": {
             "Dev": [
                 {

@@ -16,8 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class BuildServiceImpl implements BuildService {
@@ -42,7 +41,11 @@ public class BuildServiceImpl implements BuildService {
     @Override
     public DataResponse<Iterable<Build>> search(BuildSearchRequest request) {
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getCollectorItems().get(CollectorType.Build).get(0);
+        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.Build);
+        if(item == null){
+            Iterable<Build> results = new ArrayList<>();
+            return new DataResponse<>(results, new Date().getTime());
+        }
 
         QBuild build = new QBuild("build");
         BooleanBuilder builder = new BooleanBuilder();
