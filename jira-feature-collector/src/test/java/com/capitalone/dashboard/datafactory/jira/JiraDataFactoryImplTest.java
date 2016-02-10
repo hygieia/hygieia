@@ -16,13 +16,7 @@
 
 package com.capitalone.dashboard.datafactory.jira;
 
-import com.atlassian.jira.rest.client.api.domain.BasicProject;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,10 +24,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
 
 /**
  * Tests all facets of the VerisonOneDataFactoryImpl class, which is responsible
@@ -112,7 +111,7 @@ public class JiraDataFactoryImplTest {
 
 	/**
 	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#}
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#JiraDataFactoryImpl(int)}
 	 * .
 	 */
 	@Test
@@ -148,6 +147,132 @@ public class JiraDataFactoryImplTest {
 
 	/**
 	 * Test method for
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#JiraDataFactoryImpl()}
+	 * .
+	 */
+	@Test
+	public void testJiraDataFactoryImpl_InitWithBlankAuthProxy_HandleWithNoAuthProxy() {
+		// Test null proxy - default page size
+		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, null, null);
+		jiraDataFactory.setQuery(query);
+		assertEquals("The lack of a proxy was not handled correctly", 1000,
+				jiraDataFactory.getPageSize());
+
+		try {
+			List<Issue> rs = jiraDataFactory.getJiraIssues();
+
+			if (!rs.isEmpty()) {
+				logger.info("basic query response: " + rs.get(0));
+				assertTrue("No valid data set was found", rs.size() >= 0);
+			} else {
+				// Check blank response
+				assertTrue("Response object was unexpectedly null",
+						rs.equals(new ArrayList<Issue>()));
+			}
+		} catch (Exception e) {
+			fail("There was an unexpected problem while connecting to Jira during the test:\n"
+					+ e.getMessage() + " caused by: " + e.getCause());
+		}
+		// Test null proxy - set page size
+		jiraDataFactory = null;
+		jiraDataFactory = new JiraDataFactoryImpl(1000, jiraCredentials, jiraBaseUri, null, null);
+		jiraDataFactory.setQuery(query);
+		assertEquals("The lack of a proxy was not handled correctly", 1000,
+				jiraDataFactory.getPageSize());
+
+		try {
+			List<Issue> rs = jiraDataFactory.getJiraIssues();
+
+			if (!rs.isEmpty()) {
+				logger.info("basic query response: " + rs.get(0));
+				assertTrue("No valid data set was found", rs.size() >= 0);
+			} else {
+				// Check blank response
+				assertTrue("Response object was unexpectedly null",
+						rs.equals(new ArrayList<Issue>()));
+			}
+		} catch (Exception e) {
+			fail("There was an unexpected problem while connecting to Jira during the test:\n"
+					+ e.getMessage() + " caused by: " + e.getCause());
+		}
+
+		// Test blank proxy - default page size
+		jiraDataFactory = null;
+		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri, "", "");
+		jiraDataFactory.setQuery(query);
+		assertEquals("Blank proxy was not handled correctly", 1000, jiraDataFactory.getPageSize());
+
+		try {
+			List<Issue> rs = jiraDataFactory.getJiraIssues();
+
+			if (!rs.isEmpty()) {
+				logger.info("basic query response: " + rs.get(0));
+				assertTrue("No valid data set was found", rs.size() >= 0);
+			} else {
+				// Check blank response
+				assertTrue("Response object was unexpectedly null",
+						rs.equals(new ArrayList<Issue>()));
+			}
+		} catch (Exception e) {
+			fail("There was an unexpected problem while connecting to Jira during the test:\n"
+					+ e.getMessage() + " caused by: " + e.getCause());
+		}
+		// Test blank proxy - set page size
+		jiraDataFactory = null;
+		jiraDataFactory = new JiraDataFactoryImpl(1000, jiraCredentials, jiraBaseUri, "", "");
+		jiraDataFactory.setQuery(query);
+		assertEquals("Blank proxy was not handled correctly", 1000, jiraDataFactory.getPageSize());
+
+		try {
+			List<Issue> rs = jiraDataFactory.getJiraIssues();
+
+			if (!rs.isEmpty()) {
+				logger.info("basic query response: " + rs.get(0));
+				assertTrue("No valid data set was found", rs.size() >= 0);
+			} else {
+				// Check blank response
+				assertTrue("Response object was unexpectedly null",
+						rs.equals(new ArrayList<Issue>()));
+			}
+		} catch (Exception e) {
+			fail("There was an unexpected problem while connecting to Jira during the test:\n"
+					+ e.getMessage() + " caused by: " + e.getCause());
+		}
+	}
+
+	/**
+	 * Test method for
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#JiraDataFactoryImpl()}
+	 * .
+	 */
+	@Test
+	public void testJiraDataFactoryImpl_InitURIWithoutTailingSlash_ValidResponse() {
+		// Test null proxy
+		jiraDataFactory = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUri.substring(0,
+				jiraBaseUri.length() - 1), null, null);
+		jiraDataFactory.setQuery(query);
+		assertEquals("The lack of a proxy was not handled correctly", 1000,
+				jiraDataFactory.getPageSize());
+
+		try {
+			List<Issue> rs = jiraDataFactory.getJiraIssues();
+
+			if (!rs.isEmpty()) {
+				logger.info("basic query response: " + rs.get(0));
+				assertTrue("No valid data set was found", rs.size() >= 0);
+			} else {
+				// Check blank response
+				assertTrue("Response object was unexpectedly null",
+						rs.equals(new ArrayList<Issue>()));
+			}
+		} catch (Exception e) {
+			fail("There was an unexpected problem while connecting to Jira during the test:\n"
+					+ e.getMessage() + " caused by: " + e.getCause());
+		}
+	}
+
+	/**
+	 * Test method for
 	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#setQuery(java.lang.String)}
 	 * .
 	 */
@@ -162,7 +287,7 @@ public class JiraDataFactoryImplTest {
 
 	/**
 	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl}
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#buildPagingQuery(int)}
 	 * .
 	 */
 	@Test

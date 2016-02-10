@@ -38,4 +38,7 @@ logs
 # Eclipse specific ignore settings
 .settings/
 .project
+.pmdruleset.xml
+.pmd
+.classpath
 application.properties

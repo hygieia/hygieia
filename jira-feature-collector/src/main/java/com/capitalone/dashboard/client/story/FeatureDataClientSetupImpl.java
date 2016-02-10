@@ -74,7 +74,8 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * This method is used to update the database with model defined in the
 	 * collector model definitions.
-	 *
+	 * 
+	 * @see Story
 	 */
 	public void updateObjectInformation() {
 		LOGGER.info("Beginning collection of feature data at " + Calendar.getInstance().getTime());
@@ -89,7 +90,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 			proxyUri = this.featureSettings.getJiraProxyUrl();
 			proxyPort = this.featureSettings.getJiraProxyPort();
 		}
-		JiraDataFactoryImpl jiraDataFactory = new JiraDataFactoryImpl(1000, jiraCredentials,
+		JiraDataFactoryImpl jiraDataFactory = new JiraDataFactoryImpl(pageSize, jiraCredentials,
 				jiraBaseUrl, proxyUri, proxyPort);
 		jiraDataFactory.setQuery(query);
 		boolean hasMore = true;
@@ -97,7 +98,11 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 			for (int i = 0; hasMore; i += pageSize) {
 				jiraDataFactory.setPageIndex(i);
 				List<Issue> rs = jiraDataFactory.getJiraIssues();
-				if (rs.isEmpty()) {
+
+				if (rs == null) {
+					hasMore = false;
+					LOGGER.error("The response from Jira was blank or non existant - please check your property configurations");
+				} else if (rs.isEmpty()) {
 					hasMore = false;
 				}
 
