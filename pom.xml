@@ -23,7 +23,7 @@
 		<jackson.version>2.5.0</jackson.version>
 		<guava.version>16.0.1</guava.version>
 		<pmd.version>3.5</pmd.version>
-		<jacoco.version>0.7.4.201502262128</jacoco.version>
+		<jacoco.version>0.7.5.201505241946</jacoco.version>
 	</properties>
 
   <licenses>
