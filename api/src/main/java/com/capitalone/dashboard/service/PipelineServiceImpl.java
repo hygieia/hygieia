@@ -137,7 +137,11 @@ public class PipelineServiceImpl implements PipelineService {
 
     private Map<String, PipelineCommit> findCommitsForPipelineStageType(Dashboard dashboard, Pipeline pipeline, PipelineStageType stageType) {
         String mappedName = (stageType.equals(PipelineStageType.Build) || stageType.equals(PipelineStageType.Commit)) ? stageType.name() : dashboard.findEnvironmentMappings().get(stageType);
-        return pipeline.getCommitsByStage(mappedName);
+        Map<String, PipelineCommit> commitMap = new HashMap<>();
+        if(mappedName != null){
+            commitMap = pipeline.getCommitsByStage(mappedName);
+        }
+        return commitMap;
     }
 
     public List<PipelineResponseCommit> findNotPropagatedCommits(Dashboard dashboard, Pipeline pipeline, PipelineStageType stage){

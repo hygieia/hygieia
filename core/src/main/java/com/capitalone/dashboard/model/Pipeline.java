@@ -3,6 +3,7 @@ package com.capitalone.dashboard.model;
 import com.capitalone.dashboard.util.PipelineUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.util.*;
 
@@ -56,8 +57,11 @@ public class Pipeline extends BaseModel{
         this.getFailedBuilds().add(failedBuild);
     }
 
-    public Map<String, PipelineCommit> getCommitsByStage(String stage){//, Map<PipelineStageType, String> environmentMappings){
-        EnvironmentStage pipelineStage = this.getStages().get(stage);
+    public Map<String, PipelineCommit> getCommitsByStage(String stage){
+
+        Map<String, EnvironmentStage> caseInsensitiveMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        caseInsensitiveMap.putAll(stages);
+        EnvironmentStage pipelineStage = caseInsensitiveMap.get(stage);
         if(pipelineStage == null) {
             return new HashMap<>();
         }
