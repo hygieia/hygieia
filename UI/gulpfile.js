@@ -191,7 +191,10 @@ gulp.task('themes', function() {
                 hygieia.src + 'components'
             ]
         }))
-        .on('error', console.error.bind(console))
+        .on('error', function(err) {
+            console.error(err.toString());
+            this.emit('end');
+        })
         .pipe(gulp.dest(hygieia.dist + 'styles'));
 });
 
