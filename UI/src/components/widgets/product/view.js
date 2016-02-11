@@ -410,7 +410,7 @@
 
         function collectTeamStageData(teams, ctrlStages) {
             // no need to go further if teams aren't configured
-            if(!teams.length) {
+            if(!teams || !teams.length) {
                 return;
             }
 
