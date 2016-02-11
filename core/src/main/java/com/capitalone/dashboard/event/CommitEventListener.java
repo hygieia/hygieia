@@ -37,6 +37,11 @@ public class CommitEventListener extends HygieiaMongoEventListener<Commit> {
 
     }
 
+    /**
+     * Finds all dashboards for a commit by way of the SCM collector item id of the dashboard that is tied to the commit
+     * @param commit
+     * @return
+     */
     private List<Dashboard> findAllDashboardsForCommit(Commit commit){
         CollectorItem commitCollectorItem = collectorItemRepository.findOne(commit.getCollectorItemId());
         List<Component> components = componentRepository.findBySCMCollectorItemId(commitCollectorItem.getId());
