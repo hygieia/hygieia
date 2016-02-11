@@ -6,13 +6,11 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.HudsonCollector;
 import com.capitalone.dashboard.model.HudsonJob;
-import com.capitalone.dashboard.model.QBuild;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.HudsonCollectorRepository;
 import com.capitalone.dashboard.repository.HudsonJobRepository;
-import com.mysema.query.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,14 +174,6 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         if (!CollectionUtils.isEmpty(deleteJobList)) {
             hudsonJobRepository.delete(deleteJobList);
         }
-        //if we have deleted collector items for the jobs that we no longer collect, delete their corresponding build details too
-        for (HudsonJob job: deleteJobList) {
-            QBuild build = new QBuild("build");
-            BooleanBuilder builder = new BooleanBuilder();
-            builder.and(build.collectorItemId.eq(job.getId()));
-            Iterable<Build> result = buildRepository.findAll(builder.getValue());
-            buildRepository.delete(result);
-        }
     }
 
     /**
@@ -231,7 +221,11 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
         List<HudsonJob> newJobs = new ArrayList<>();
         for (HudsonJob job : jobs) {
-            HudsonJob existing = existingJobs.isEmpty() ? null : existingJobs.get(existingJobs.indexOf(job));
+            HudsonJob existing = null;
+            if (!CollectionUtils.isEmpty(existingJobs) && (existingJobs.contains(job))) {
+                existing = existingJobs.get(existingJobs.indexOf(job));
+            }
+
             String niceName = getNiceName(job, collector);
             if (existing == null) {
                 job.setCollectorId(collector.getId());
@@ -258,8 +252,9 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         if (CollectionUtils.isEmpty(collector.getBuildServers())) return "";
         List<String> servers = collector.getBuildServers();
         List<String> niceNames = collector.getNiceNames();
+        if (CollectionUtils.isEmpty(niceNames)) return "";
         for (int i = 0; i < servers.size(); i++) {
-            if (servers.get(i).equalsIgnoreCase(job.getInstanceUrl())) {
+            if (servers.get(i).equalsIgnoreCase(job.getInstanceUrl()) && (niceNames.size() > (i + 1))) {
                 return niceNames.get(i);
             }
         }

@@ -132,7 +132,6 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-<profiles>
 
      <profiles>
 		<profile>

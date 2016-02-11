@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.model;
 
+import org.springframework.util.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +35,9 @@ public class HudsonCollector extends Collector {
         protoType.setOnline(true);
         protoType.setEnabled(true);
         protoType.getBuildServers().addAll(buildServers);
-        protoType.getNiceNames().addAll(niceNames);
+        if (!CollectionUtils.isEmpty(niceNames)) {
+            protoType.getNiceNames().addAll(niceNames);
+        }
         return protoType;
     }
 }

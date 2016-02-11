@@ -181,11 +181,11 @@ public class DefaultHudsonClient implements HudsonClient {
                 LOG.error("Parsing build: " + buildUrl, e);
             }
         } catch (RestClientException rce) {
-            LOG.error("client exception loading build details", rce);
+            LOG.error("Client exception loading build details: " + rce.getMessage() + ". URL =" + buildUrl );
         } catch (MalformedURLException mfe) {
-            LOG.error("malformed url for loading build details", mfe);
+            LOG.error("Malformed url for loading build details" + mfe.getMessage() + ". URL =" + buildUrl );
         } catch (URISyntaxException use) {
-            LOG.error("uri syntax exception for loading build details", use);
+            LOG.error("Uri syntax exception for loading build details"+ use.getMessage() + ". URL =" + buildUrl );
         } catch (RuntimeException re) {
             LOG.error("Unknown error in getting build details. URL="+ buildUrl, re);
         }
