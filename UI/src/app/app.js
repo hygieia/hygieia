@@ -38,15 +38,12 @@ var localStorageSupported = (function () {
         'ngAnimate',
         'ngSanitize',
         'ngRoute',
-        'typeaheadDropdown.tpl',
         HygieiaConfig.module + '.core',
         'ui.bootstrap',
         'fitText',
         'angular-chartist',
         'ngCookies',
         'validation.match',
-        'apg.typeaheadDropdown',
-        'vs-repeat',
         'as.sortable'
     ])
     .config(['$httpProvider',

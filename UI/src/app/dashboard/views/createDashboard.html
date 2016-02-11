@@ -1,6 +1,6 @@
 <widget-modal widget-modal-title="Create a New Dashboard">
     <form name="cdf" class="form" ng-submit="ctrl.submit(cdf.$valid)" novalidate>
-        <div class="form-group" ng-class="{'has-error': cdf.dashboardType.$invalid && cdf.$submitted}">
+        <form-group input="dashboardType">
             <select name="dashboardType"
                     class="form-control"
                     ng-model="ctrl.dashboardType"
@@ -10,10 +10,9 @@
                 <option value="" disabled>Select a type</option>
             </select>
 
-            <p class="help-block" ng-if="cdf.dashboardType.$error.required">Please select a dashboard type</p>
-        </div>
+        </form-group>
 
-        <div class="form-group" ng-class="{'has-error': cdf.selectedTemplate.$invalid && cdf.$submitted}">
+        <form-group input="selectedTemplate" errors="{required: 'Please select a template'}">
             <select name="selectedTemplate"
                     class="form-control"
                     ng-model="ctrl.selectedTemplate"
@@ -21,11 +20,9 @@
                     required>
                 <option value="" disabled>Select a template</option>
             </select>
+        </form-group>
 
-            <p class="help-block" ng-if="cdf.selectedTemplate.$error.required">Please select a template</p>
-        </div>
-
-        <div class="form-group" ng-class="{'has-error': cdf.dashboardName.$invalid && cdf.$submitted}">
+        <form-group input="dashboardName" errors="{required: 'Template name is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters'}">
             <input
                 type="text"
                 name="dashboardName"
@@ -37,14 +34,9 @@
                 autocomplete="off"
                 minlength="6"/>
 
-            <p class="help-block" ng-if="cdf.dashboardName.$error.required">Template name is required</p>
+        </form-group>
 
-            <p class="help-block" ng-if="cdf.dashboardName.$error.minlength">Min length of 6 characters</p>
-
-            <p class="help-block" ng-if="cdf.dashboardName.$error.maxlength">Max length of 50 characters</p>
-        </div>
-
-        <div class="form-group" ng-class="{'has-error': cdf.applicationName.$invalid && cdf.$submitted}" ng-if="ctrl.isTeamDashboardSelected()">
+        <form-group input="applicationName" errors="{required: 'Application name is required', maxlength: 'Max length of 50 characters'}">
             <input
                 type="text"
                 name="applicationName"
@@ -54,11 +46,7 @@
                 maxlength="50"
                 autocomplete="off"
                 required />
-
-            <p class="help-block" ng-if="cdf.applicationName.$error.required">Application name is required</p>
-
-            <p class="help-block" ng-if="cdf.applicationName.$error.maxlength">Max length of 50 characters</p>
-        </div>
+        </form-group>
 
         <div class="button-row row text-center">
             <button type="submit" class="btn btn-primary btn-wide">Create</button>

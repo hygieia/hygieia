@@ -16,10 +16,7 @@
                                 <div class="dash-modal-row delete-dashboard-row clearfix"
                                     ng-repeat="item in ctrl.dashboards | orderBy:'name'">
                                     <div class="btn-block">{{item.name}}
-                                        <span class="clickable pull-right fa fa-stack" ng-click="ctrl.deleteDashboard(item.id)">
-                                            <span class="fa-circle-thin fa-stack-2x"></span>
-                                            <span class="fa-trash fa-stack-1x"></span>
-                                        </span>
+                                        <dash-trash class="clickable pull-right" ng-click="ctrl.deleteDashboard(item.id)"></dash-trash>
                                     </div>
                                 </div>
                             </div>

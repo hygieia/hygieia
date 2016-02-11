@@ -9,7 +9,7 @@
         .directive('dashTrash', function () {
             return {
                 transclude: true,
-                template: '<span class="clickable fa fa-stack fa-lg">' +
+                template: '<span class="clickable fa fa-stack">' +
                     '<span class="fa-circle-thin fa-stack-2x"></span>' +
                     '<span class="fa-trash fa-stack-1x"></span>' +
                     '</span>'

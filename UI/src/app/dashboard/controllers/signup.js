@@ -31,7 +31,7 @@
 
         function doSignup(valid) {
             if (valid) {
-                signupData.signup(document.suf.username.value, document.suf.password.value).then(processResponse);
+                signupData.signup(document.suf.id.value, document.suf.password.value).then(processResponse);
             }
         }
 
@@ -41,7 +41,7 @@
 
         function processResponse(data) {
             var exists = data == 'User already exists';
-            $scope.suf.username.$setValidity('exists', !exists);
+            $scope.suf.id.$setValidity('exists', !exists);
             signup.userCreated = !exists;
         }
 

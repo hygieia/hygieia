@@ -40,8 +40,7 @@
                 "teams": [
                     {
                         "collectorItemId": "56a67a88689a6c2d50757022",
-                        "name": "Tetris",
-                        "customName": "Some alternate name"
+                        "name": "Tetris"
                     }
                 ]
             }
