@@ -74,8 +74,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * This method is used to update the database with model defined in the
 	 * collector model definitions.
-	 * 
-	 * @see Story
+	 *
 	 */
 	public void updateObjectInformation() {
 		LOGGER.info("Beginning collection of feature data at " + Calendar.getInstance().getTime());

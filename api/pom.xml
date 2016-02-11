@@ -6,7 +6,7 @@
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Hygieia Rest API Layer</description>
   <url>https://github.com/capitalone/Hygieia</url>
-    
+
     <parent>
         <groupId>com.capitalone.dashboard</groupId>
         <artifactId>Hygieia</artifactId>
@@ -139,28 +139,10 @@
       <version>1.9.13</version>
     </dependency>
 
-<!--<dependency> -->
-<!--<groupId>com.fasterxml.jackson.core</groupId> -->
-<!--<artifactId>jackson-core</artifactId> -->
-<!--<version>${jackson.version}</version> -->
-<!--</dependency> -->
-
-<!--<dependency> -->
-<!--<groupId>com.googlecode.json-simple</groupId> -->
-<!--<artifactId>json-simple</artifactId> -->
-<!--<version>1.1</version> -->
-<!--</dependency> -->
-
 <!-- Logging dependencies> -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.0.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
       <version>1.0.3</version>
     </dependency>
 
@@ -205,12 +187,6 @@
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-      <version>0.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.jayway.jsonpath</groupId>
-      <artifactId>json-path-assert</artifactId>
       <version>0.8.1</version>
       <scope>test</scope>
     </dependency>

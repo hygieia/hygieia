@@ -16,7 +16,13 @@
 
 package com.capitalone.dashboard.datafactory.jira;
 
-import static org.junit.Assert.*;
+import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,15 +30,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.atlassian.jira.rest.client.api.domain.BasicProject;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests all facets of the VerisonOneDataFactoryImpl class, which is responsible
@@ -111,7 +112,7 @@ public class JiraDataFactoryImplTest {
 
 	/**
 	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#JiraDataFactoryImpl(int)}
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl(int)}
 	 * .
 	 */
 	@Test
@@ -287,7 +288,7 @@ public class JiraDataFactoryImplTest {
 
 	/**
 	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl#buildPagingQuery(int)}
+	 * {@link com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl}
 	 * .
 	 */
 	@Test

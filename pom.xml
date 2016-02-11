@@ -134,7 +134,7 @@
 	</build>
 
 
-
+     <profiles>
 		<profile>
 			<id>defaultBuild</id>
 			<activation>

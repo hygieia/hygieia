@@ -58,7 +58,7 @@ public class ClientUtil {
 	 * a "" (blank) response for any of the following cases:
 	 * "NULL";"Null";"null";null;""
 	 * 
-	 * @param nativeRs
+	 * @param inNativeRs
 	 *            The string response artifact retrieved from the source system
 	 *            to be sanitized
 	 * @return A UTF-8 sanitized response
