@@ -3,7 +3,6 @@ package com.capitalone.dashboard.model;
 import com.capitalone.dashboard.util.PipelineUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.util.*;
 
@@ -12,14 +11,20 @@ import java.util.*;
  */
 @Document(collection="pipelines")
 public class Pipeline extends BaseModel{
-    /** {@link CollectorItem} teamdashboard collector item id */
+    /**
+     * {@link CollectorItem} teamdashboard collector item id
+     * */
     private ObjectId collectorItemId;
 
-    /** Map of environment name and stage object*/
+    /**
+     * Map of environment name and stage object
+     * */
     private Map<String, EnvironmentStage> stages = new HashMap<>();
 
-    /**not including this in the map above because the enum allows us to
-     * use ordinals to iterate through pipeline progression*/
+    /**
+     * not including this in the map above because the enum allows us to
+     * use ordinals to iterate through pipeline progression
+     * */
     private Set<Build> failedBuilds = new HashSet<>();
 
     public ObjectId getCollectorItemId() {
@@ -38,6 +43,11 @@ public class Pipeline extends BaseModel{
         this.stages = stages;
     }
 
+    /**
+     * Adds a commit to a given stage.  Will create a new stage if it doesn't exist.
+     * @param stage
+     * @param commit
+     */
     public void addCommit(String stage, PipelineCommit commit){
         if(!this.getStages().containsKey(stage)){
             this.getStages().put(stage, new EnvironmentStage());
@@ -57,6 +67,14 @@ public class Pipeline extends BaseModel{
         this.getFailedBuilds().add(failedBuild);
     }
 
+    /**
+     * Gets all pipeline commits as a map of scmrevision number, pipelinecommit for a given stage.
+     *
+     * uses a case insensitive map of the pipeline stage names due tot he way the UI currently stores mapped environments
+     * with lowercase for the stage type and the canonical name
+     * @param stage
+     * @return
+     */
     public Map<String, PipelineCommit> getCommitsByStage(String stage){
 
         Map<String, EnvironmentStage> caseInsensitiveMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);

@@ -31,6 +31,10 @@ public class DashboardEventListener extends AbstractMongoEventListener<Dashboard
         this.collectorItemRepository = collectorItemRepository;
     }
 
+    /**
+     * Creates a collector item for new team dashboards
+     * @param event
+     */
     @Override
     public void onAfterSave(AfterSaveEvent<Dashboard> event) {
         Dashboard dashboard = event.getSource();
@@ -56,6 +60,10 @@ public class DashboardEventListener extends AbstractMongoEventListener<Dashboard
         collectorItemRepository.save(item);
     }
 
+    /**
+     * Removes the collector item for deleted dashboards
+     * @param event
+     */
     @Override
     public void onAfterDelete(AfterDeleteEvent<Dashboard> event) {
         DBObject dbo = event.getDBObject();

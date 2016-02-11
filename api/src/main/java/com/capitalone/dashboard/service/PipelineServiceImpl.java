@@ -1,12 +1,10 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.model.Pipeline;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.request.PipelineSearchRequest;
-import org.apache.catalina.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +37,7 @@ public class PipelineServiceImpl implements PipelineService {
 
     private PipelineResponse buildPipelineResponse(Pipeline pipeline, Long beginDate, Long endDate){
 
+        //sets the lower and upper bound for the prod bucket's commits.  uses constant for lower bound limit and today as default for upper bound
         Long lowerBound = beginDate;
         if(beginDate == null){
             Calendar cal = new GregorianCalendar();
@@ -48,16 +47,25 @@ public class PipelineServiceImpl implements PipelineService {
         }
         Long upperBound = endDate != null ? endDate : new Date().getTime();
 
+        /**
+         * get the collector item and dashboard
+         */
         CollectorItem dashboardCollectorItem = collectorItemRepository.findOne(pipeline.getCollectorItemId());
         Dashboard dashboard = dashboardRepository.findOne(new ObjectId((String)dashboardCollectorItem.getOptions().get("dashboardId")));
 
         PipelineResponse pipelineResponse = new PipelineResponse();
         pipelineResponse.setCollectorItemId(dashboardCollectorItem.getId());
 
+        /**
+         * iterate over the pipeline stages (which are ordered as defined in the enum)
+         * **/
         for(PipelineStageType stage : PipelineStageType.values()){
+
             List<PipelineResponseCommit> commitsForStage = findNotPropagatedCommits(dashboard, pipeline, stage);
             pipelineResponse.getStages().put(stage, commitsForStage);
-            //remove prod commits outside of filter date range
+            /**
+             * remove prod commits outside of filter date range
+             */
             Iterator<PipelineResponseCommit> commitIterator = commitsForStage.iterator();
             if(stage.equals(PipelineStageType.Prod)){
                 while(commitIterator.hasNext()){
@@ -73,7 +81,14 @@ public class PipelineServiceImpl implements PipelineService {
         return pipelineResponse;
     }
 
+    /**
+     * finds any environments for a dashboard that aren't mapped.
+     * @param dashboard
+     * @return
+     */
     private List<PipelineStageType> findUnmappedEnvironments(Dashboard dashboard){
+
+
         Map<String, String> environmentMappings= new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for(Widget widget : dashboard.getWidgets()) {
             if (widget.getName().equalsIgnoreCase("pipeline")) {
@@ -95,7 +110,13 @@ public class PipelineServiceImpl implements PipelineService {
         return unmappedNames;
     }
 
-    //this needs to take into account mapping
+    /**
+     * Finds a map of commits for all stages after the current stage
+     * @param stage
+     * @param pipeline
+     * @param dashboard
+     * @return
+     */
     private Map<String, PipelineCommit> getCommitsAfterStage(PipelineStageType stage, Pipeline pipeline, Dashboard dashboard){
         Map<String, PipelineCommit> unionOfAllSets = new HashMap<>();
         for(PipelineStageType stageType : PipelineStageType.values()){
@@ -108,7 +129,6 @@ public class PipelineServiceImpl implements PipelineService {
     }
 
 
-    //should pull the setting of begin/end date out of this method
     private boolean isBetween(Long commitTimestamp, Long lowerBound, Long upperBound){
         if(lowerBound <= commitTimestamp && commitTimestamp <= upperBound)
         {
@@ -117,6 +137,13 @@ public class PipelineServiceImpl implements PipelineService {
         return false;
     }
 
+    /**
+     * For a given commit, will traverse the pipeline and find the time it entered in each stage of the pipeline
+     * @param commit
+     * @param dashboard
+     * @param pipeline
+     * @return
+     */
     private PipelineResponseCommit applyStageTimestamps(PipelineResponseCommit commit, Dashboard dashboard, Pipeline pipeline){
         PipelineResponseCommit returnCommit = new PipelineResponseCommit(commit);
 
@@ -135,6 +162,13 @@ public class PipelineServiceImpl implements PipelineService {
         return returnCommit;
     }
 
+    /**
+     * Gets all commits for a given pipeline stage, taking into account the mappings for environment stages
+     * @param dashboard
+     * @param pipeline
+     * @param stageType
+     * @return
+     */
     private Map<String, PipelineCommit> findCommitsForPipelineStageType(Dashboard dashboard, Pipeline pipeline, PipelineStageType stageType) {
         String mappedName = (stageType.equals(PipelineStageType.Build) || stageType.equals(PipelineStageType.Commit)) ? stageType.name() : dashboard.findEnvironmentMappings().get(stageType);
         Map<String, PipelineCommit> commitMap = new HashMap<>();
@@ -144,6 +178,13 @@ public class PipelineServiceImpl implements PipelineService {
         return commitMap;
     }
 
+    /**
+     * get the commits for a given stage by finding which commits havent passed to a later stage
+     * @param dashboard dashboard
+     * @param pipeline pipeline for that dashboard
+     * @param stage current stage
+     * @return a list of all commits as pipeline response commits that havent moved past the current stage
+     */
     public List<PipelineResponseCommit> findNotPropagatedCommits(Dashboard dashboard, Pipeline pipeline, PipelineStageType stage){
 
         Map<String, PipelineCommit> startingStage = findCommitsForPipelineStageType(dashboard, pipeline, stage);
