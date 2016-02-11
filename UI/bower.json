@@ -21,6 +21,7 @@
     "bootstrap": "~3.3.2",
     "hygieia-jstz-detect": "~1.0.5",
     "dexie": "*",
+    "ng-sortable": "1.3.2",
     "regression-js": "*",
     "angular-vs-repeat": "1.1.4"
   },

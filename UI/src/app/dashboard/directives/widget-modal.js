@@ -17,7 +17,7 @@
             link: function ($scope, $element, $attributes) {
 
                 $scope.title = $attributes.widgetModalTitle;
-                $scope.close = $attributes.widgetModalClose;
+                $scope.close = $attributes.widgetModalClose != 'false';
             },
             template: '<div class="widget-modal">' +
             '<button type="button" class="widget-modal-close" ng-click="$close()" ng-if="close" aria-hidden="true">&times;</button>' +
