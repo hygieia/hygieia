@@ -3,7 +3,6 @@ package com.capitalone.dashboard.model;
 import com.capitalone.dashboard.util.PipelineUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.util.*;
 
