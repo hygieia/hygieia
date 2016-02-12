@@ -18,7 +18,8 @@
             console.log('Uncaught Dexie error: ' + err);
         });
 
-        // define our schemas
+        // IMPORTANT: when updating schemas be sure to version the database
+        // https://github.com/dfahlander/Dexie.js/wiki/Design#database-versioning
         db.version(1).stores({
             lastRequest: '[type+id]',
             testSuite: '++id,timestamp,[componentId+timestamp]',

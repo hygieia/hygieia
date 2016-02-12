@@ -1,5 +1,5 @@
 /**
- * Separate processing code security analysis data for the product widget
+ * Separate processing code test suite data for the product widget
  */
 (function () {
     'use strict';
