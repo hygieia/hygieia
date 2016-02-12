@@ -232,7 +232,7 @@ var CommitData = {
 
                         // stage deviation
                         deviation: (function(stageData) {
-                            if(!stageData.stageStdDeviation) {
+                            if(stageData.stageStdDeviation == undefined) {
                                 return false;
                             }
 
