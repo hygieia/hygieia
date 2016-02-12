@@ -1,5 +1,18 @@
-var TestSuite = {
-    process: function(dependencies) {
+/**
+ * Separate processing code security analysis data for the product widget
+ */
+(function () {
+    'use strict';
+
+    angular
+        .module(HygieiaConfig.module)
+        .factory('productTestSuiteData', function () {
+            return {
+                process: process
+            }
+        });
+
+    function process(dependencies) {
         var db = dependencies.db,
             componentId = dependencies.componentId,
             collectorItemId = dependencies.collectorItemId,
@@ -8,27 +21,27 @@ var TestSuite = {
             isReload = dependencies.isReload,
             testSuiteData = dependencies.testSuiteData;
 
-        db.lastRequest.where('[type+id]').equals(['test-suite', componentId]).first().then(function(lastRequest) {
+        db.lastRequest.where('[type+id]').equals(['test-suite', componentId]).first().then(function (lastRequest) {
             var now = moment(),
                 dateEnds = now.valueOf(),
                 ninetyDaysAgo = now.add(-90, 'days').valueOf(),
                 dateBegins = ninetyDaysAgo;
 
             // if we already have made a request, just get the delta
-            if(lastRequest) {
+            if (lastRequest) {
                 dateBegins = lastRequest.timestamp;
             }
 
             testSuiteData
-                .details({componentId: componentId, endDateBegins:dateBegins, endDateEnds:dateEnds, depth: 1})
-                .then(function(response) {
+                .details({componentId: componentId, endDateBegins: dateBegins, endDateEnds: dateEnds, depth: 1})
+                .then(function (response) {
                     // since we're only requesting a minute we'll probably have nothing
-                    if(!response || !response.result || !response.result.length) {
+                    if (!response || !response.result || !response.result.length) {
                         return isReload ? $q.reject('No new data') : false;
                     }
 
                     // save the request object so we can get the delta next time as well
-                    if(lastRequest) {
+                    if (lastRequest) {
                         lastRequest.timestamp = dateEnds;
                         lastRequest.save();
                     }
@@ -42,11 +55,11 @@ var TestSuite = {
                     }
 
                     // put all results in the database
-                    _(response.result).forEach(function(result) {
+                    _(response.result).forEach(function (result) {
                         var totalPassed = 0,
                             totalTests = 0;
 
-                        _(result.testCapabilities).forEach(function(capabilityResult) {
+                        _(result.testCapabilities).forEach(function (capabilityResult) {
                             totalPassed += capabilityResult.successTestSuiteCount;
                             totalTests += capabilityResult.totalTestSuiteCount;
                         });
@@ -63,10 +76,10 @@ var TestSuite = {
                         db.testSuite.add(test);
                     });
                 })
-                .then(function() {
+                .then(function () {
                     // now that all the delta data has been saved, request
                     // and process 90 days worth of it
-                    db.testSuite.where('[componentId+timestamp]').between([componentId, ninetyDaysAgo], [componentId, dateEnds]).toArray(function(rows) {
+                    db.testSuite.where('[componentId+timestamp]').between([componentId, ninetyDaysAgo], [componentId, dateEnds]).toArray(function (rows) {
                         if (!rows.length) {
                             return;
                         }
@@ -76,11 +89,11 @@ var TestSuite = {
 
                         // prepare the data for the regression test mapping days ago on the x axis
                         var now = moment(),
-                            data = _(rows).map(function(result) {
+                            data = _(rows).map(function (result) {
                                 var daysAgo = -1 * moment.duration(now.diff(result.timestamp)).asDays(),
                                     totalPassed = result.successCount || 0,
                                     totalTests = result.totalCount,
-                                    percentPassed = totalTests ? totalPassed/totalTests : 0;
+                                    percentPassed = totalTests ? totalPassed / totalTests : 0;
 
                                 return [daysAgo, percentPassed];
                             }).value();
@@ -89,7 +102,7 @@ var TestSuite = {
                             passedPercentTrendUp = passedPercentResult.equation[0] > 0;
 
                         // get the most recent record for current metric for each collectorItem id
-                        var lastRunResults = _(rows).groupBy('collectorItemId').map(function(items, collectorItemId) {
+                        var lastRunResults = _(rows).groupBy('collectorItemId').map(function (items, collectorItemId) {
                             var lastRun = _(items).sortBy('timestamp').reverse().first();
 
                             return {
@@ -98,11 +111,15 @@ var TestSuite = {
                             }
                         });
 
-                        var totalSuccess = lastRunResults.pluck('success').reduce(function(a,b) { return a + b }),
-                            totalResults = lastRunResults.pluck('total').reduce(function(a,b) { return a + b });
+                        var totalSuccess = lastRunResults.pluck('success').reduce(function (a, b) {
+                                return a + b
+                            }),
+                            totalResults = lastRunResults.pluck('total').reduce(function (a, b) {
+                                return a + b
+                            });
 
                         // use $timeout so that it will apply on the next digest
-                        $timeout(function() {
+                        $timeout(function () {
                             // update data for the UI
                             dependencies.setTeamData(collectorItemId, {
                                 data: {
@@ -119,9 +136,9 @@ var TestSuite = {
                         });
                     });
                 })
-                .finally(function() {
+                .finally(function () {
                     dependencies.cleanseData(db.testSuite, ninetyDaysAgo);
                 });
         });
     }
-};
+})();

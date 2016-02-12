@@ -1,5 +1,18 @@
-var SecurityAnalysis = {
-    process: function(dependencies) {
+/**
+ * Separate processing code security analysis data for the product widget
+ */
+(function () {
+    'use strict';
+
+    angular
+        .module(HygieiaConfig.module)
+        .factory('productSecurityAnalysisData', function () {
+            return {
+                process: process
+            }
+        });
+
+    function process(dependencies) {
         // unwrap dependencies
         var db = dependencies.db,
             componentId = dependencies.componentId,
@@ -18,22 +31,22 @@ var SecurityAnalysis = {
 
         // get our security analysis data. start by seeing if we've already run this request
         db.lastRequest.where('[type+id]').equals(['security-analysis', componentId]).first()
-            .then(function(lastRequest) {
+            .then(function (lastRequest) {
                 // if we already have made a request, just get the delta
-                if(lastRequest) {
+                if (lastRequest) {
                     dateBegins = lastRequest.timestamp;
                 }
 
                 codeAnalysisData
                     .securityDetails({componentId: componentId, dateBegins: dateBegins, dateEnds: dateEnds})
-                    .then(function(response) {
+                    .then(function (response) {
                         // since we're only requesting a minute we'll probably have nothing
-                        if(!response || !response.result || !response.result.length) {
+                        if (!response || !response.result || !response.result.length) {
                             return isReload ? $q.reject('No new data') : false;
                         }
 
                         // save the request object so we can get the delta next time as well
-                        if(lastRequest) {
+                        if (lastRequest) {
                             lastRequest.timestamp = dateEnds;
                             lastRequest.save();
                         }
@@ -47,7 +60,7 @@ var SecurityAnalysis = {
                         }
 
                         // put all results in the database
-                        _(response.result).forEach(function(result) {
+                        _(response.result).forEach(function (result) {
                             var metrics = result.metrics,
                                 analysis = {
                                     componentId: componentId,
@@ -60,9 +73,9 @@ var SecurityAnalysis = {
                             db.securityAnalysis.add(analysis);
                         });
                     })
-                    .then(function() {
-                        db.securityAnalysis.where('[componentId+timestamp]').between([componentId, ninetyDaysAgo], [componentId, dateEnds]).toArray(function(rows) {
-                            if(!rows.length) {
+                    .then(function () {
+                        db.securityAnalysis.where('[componentId+timestamp]').between([componentId, ninetyDaysAgo], [componentId, dateEnds]).toArray(function (rows) {
+                            if (!rows.length) {
                                 return;
                             }
 
@@ -71,7 +84,7 @@ var SecurityAnalysis = {
 
                             // prepare the data for the regression test mapping days ago on the x axis
                             var now = moment(),
-                                securityIssues = _(rows).map(function(row) {
+                                securityIssues = _(rows).map(function (row) {
                                     var daysAgo = -1 * moment.duration(now.diff(row.timestamp)).asDays();
                                     return [daysAgo, row.major + row.critical + row.blocker];
                                 }).value();
@@ -84,7 +97,7 @@ var SecurityAnalysis = {
                             var latestResult = rows[0];
 
                             // use $timeout so that it will apply on the next digest
-                            $timeout(function() {
+                            $timeout(function () {
                                 // update data for the UI
                                 dependencies.setTeamData(collectorItemId, {
                                     data: {
@@ -101,9 +114,9 @@ var SecurityAnalysis = {
                             });
                         });
                     })
-                    .finally(function() {
+                    .finally(function () {
                         dependencies.cleanseData(db.securityAnalysis, ninetyDaysAgo);
                     });
             });
     }
-};
+})();

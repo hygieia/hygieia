@@ -1,5 +1,18 @@
-var BuildData = {
-    process: function(dependencies) {
+/**
+ * Separate processing build data for the product widget
+ */
+(function () {
+    'use strict';
+
+    angular
+        .module(HygieiaConfig.module)
+        .factory('productBuildData', function() {
+            return {
+                process: process
+            }
+        });
+
+    function process(dependencies) {
         // unwrap dependencies
         var db = dependencies.db,
             componentId = dependencies.componentId,
@@ -184,4 +197,4 @@ var BuildData = {
             });
         }
     }
-};
+})();

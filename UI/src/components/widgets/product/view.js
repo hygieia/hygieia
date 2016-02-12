@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
-    productViewController.$inject = ['$scope', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData'];
-    function productViewController($scope, $document, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData) {
+    productViewController.$inject = ['$scope', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
+    function productViewController($scope, $document, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -402,10 +402,10 @@
             };
 
             // request and process our data
-            BuildData.process(angular.extend(processDependencyObject, { buildData: buildData }));
-            SecurityAnalysis.process(angular.extend(processDependencyObject, { codeAnalysisData: codeAnalysisData, getCaMetric: getCaMetric }));
-            CodeAnalysis.process(angular.extend(processDependencyObject, { codeAnalysisData: codeAnalysisData, getCaMetric: getCaMetric }));
-            TestSuite.process(angular.extend(processDependencyObject, { testSuiteData: testSuiteData }));
+            productBuildData.process(angular.extend(processDependencyObject, { buildData: buildData }));
+            productSecurityAnalysisData.process(angular.extend(processDependencyObject, { codeAnalysisData: codeAnalysisData, getCaMetric: getCaMetric }));
+            productCodeAnalysisData.process(angular.extend(processDependencyObject, { codeAnalysisData: codeAnalysisData, getCaMetric: getCaMetric }));
+            productTestSuiteData.process(angular.extend(processDependencyObject, { testSuiteData: testSuiteData }));
         }
 
         function collectTeamStageData(teams, ctrlStages) {
@@ -428,7 +428,7 @@
                     ctrlStages: ctrlStages
                 };
 
-                CommitData.process(commitDependencyObject);
+                productCommitData.process(commitDependencyObject);
             });
         }
         //endregion
