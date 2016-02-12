@@ -5,10 +5,9 @@
 
         <div class="box">
 
-            <form-group input="caCollectorItem"
-                        class="text-center">
+            <form-group input="caCollectorItem" class="text-center">
 
-                <div class="text-center form-group modal-label">Static Code Analysis:</div>
+                <div class="text-center modal-label">Static Code Analysis:</div>
 
                 <select name="caCollectorItem"
                         class="form-control"
@@ -22,7 +21,7 @@
 
 
         <div class="form-group text-center">
-            <div class="text-center form-group modal-label">Security Scan:</div>
+            <div class="text-center modal-label">Security Scan:</div>
             <select name="saCollectorItem"
                     class="form-control"
                     ng-model="caWidget.saCollectorItem"
@@ -35,8 +34,9 @@
 
 
         <div class="form-group text-center" ng-repeat="configItem in caWidget.testConfigs">
+            <div class="text-center modal-label">Functional Tests:</div>
+
             <div class="col-sm-3">
-                <div class="form-group text-center modal-label">Functional Tests:</div>
                 <input
                         type="text"
                         name="testJobName"
