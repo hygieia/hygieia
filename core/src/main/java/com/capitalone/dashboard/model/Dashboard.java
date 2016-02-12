@@ -85,8 +85,10 @@ public class Dashboard extends BaseModel {
             }
         }
         Map<PipelineStageType, String> stageTypeToEnvironmentNameMap = new HashMap<>();
-        for (Map.Entry mapping : environmentMappings.entrySet()) {
-            stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
+        if(environmentMappings != null && !environmentMappings.isEmpty()){
+            for (Map.Entry mapping : environmentMappings.entrySet()) {
+                stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
+            }
         }
         return stageTypeToEnvironmentNameMap;
     }
