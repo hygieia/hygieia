@@ -232,12 +232,12 @@ var CommitData = {
 
                         // stage deviation
                         deviation: (function(stageData) {
-                            if(!stageData.stageStdDeviation) {
+                            if(stageData.stageStdDeviation == undefined) {
                                 return false;
                             }
 
                             // determine how to display the standard deviation
-                            var number = 2*moment.duration(stageData.stageStdDeviation).minutes(),
+                            var number = moment.duration(2*stageData.stageStdDeviation).minutes(),
                                 desc = 'min';
 
                             if(number > 60*24) {
