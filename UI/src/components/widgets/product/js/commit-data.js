@@ -237,7 +237,7 @@ var CommitData = {
                             }
 
                             // determine how to display the standard deviation
-                            var number = moment.duration(stageData.stageStdDeviation).minutes(),
+                            var number = 2*moment.duration(stageData.stageStdDeviation).minutes(),
                                 desc = 'min';
 
                             if(number > 60*24) {
