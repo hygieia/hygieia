@@ -29,10 +29,21 @@ public class PipelineServiceImpl implements PipelineService {
     @Override
     public Iterable<PipelineResponse> search(PipelineSearchRequest searchRequest) {
         List<PipelineResponse> pipelineResponses = new ArrayList<>();
-        for (Pipeline pipeline : pipelineRepository.findByCollectorItemIdIn(searchRequest.getCollectorItemId())){
+        for(ObjectId collectorItemId : searchRequest.getCollectorItemId()){
+            Pipeline pipeline = getOrCreatePipeline(collectorItemId);
             pipelineResponses.add(buildPipelineResponse(pipeline, searchRequest.getBeginDate(), searchRequest.getEndDate()));
         }
         return pipelineResponses;
+    }
+
+    protected Pipeline getOrCreatePipeline(ObjectId collectorItemId) {
+        Pipeline pipeline = pipelineRepository.findByCollectorItemId(collectorItemId);
+        if(pipeline == null){
+            pipeline = new Pipeline();
+            pipeline.setCollectorItemId(collectorItemId);
+            pipelineRepository.save(pipeline);
+        }
+        return pipeline;
     }
 
     private PipelineResponse buildPipelineResponse(Pipeline pipeline, Long beginDate, Long endDate){
