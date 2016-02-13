@@ -126,5 +126,5 @@ echo "
 Properties file created:  $PROP_FILE
 Note: passwords hidden
 ===========================================
-`cat $PROP_FILE |egrep -vi password`
+`cat $PROP_FILE |egrep -vi 'password|Credentials'`
 " 

@@ -7,7 +7,6 @@ import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.CommitRequest;
 import com.capitalone.dashboard.service.CommitService;
 import com.capitalone.dashboard.util.TestUtil;
-import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -23,8 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -115,12 +112,6 @@ public class CommitControllerTest {
 
     private int intVal(long value) {
         return Long.valueOf(value).intValue();
-    }
-
-
-    private String getJson(String fileName) throws IOException {
-        InputStream inputStream = CommitControllerTest.class.getResourceAsStream(fileName);
-        return IOUtils.toString(inputStream);
     }
 
 

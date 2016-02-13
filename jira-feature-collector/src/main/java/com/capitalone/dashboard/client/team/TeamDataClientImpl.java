@@ -1,8 +1,5 @@
 package com.capitalone.dashboard.client.team;
 
-import java.util.Iterator;
-import java.util.List;
-
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
@@ -13,6 +10,9 @@ import com.capitalone.dashboard.util.FeatureSettings;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This is the primary implemented/extended data collector for the feature

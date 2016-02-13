@@ -119,7 +119,6 @@ hygieia-jenkins-build-collector:
   links:
   - mongodb:mongo
   - hygieia-api
-# place any values you want to change in docker-compose.override.yml
 #  environment:
 #Jenkins server (required) - Can provide multiple
 #  - JENKINS_MASTER=ttp://jenkins.company.com
@@ -140,7 +139,6 @@ hygieia-jenkins-cucumber-test-collector:
   links:
   - mongodb:mongo
   - hygieia-api
-# place any values you want to change in docker-compose.override.yml
 #  environment:
 #Jenkins server (required) - Can provide multiple
 #  - JENKINS_MASTER=ttp://jenkins.company.com
@@ -152,4 +150,27 @@ hygieia-jenkins-cucumber-test-collector:
 #  - JENKINS_CRON=0 0/5 * * * *
 #Determines if build console log is collected - defaults to false
 #  - JENKINS_SAVE_LOG=true
+
+hygieia-sonar-codequality-collector:
+  image: hygieia-sonar-codequality-collector:latest
+  container_name: hygieia-sonar-codequality
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+#  environment:
+#  - SONAR_CRON=0 0/5 * * * *
+#  - SONAR_URL=http://localhost:9000
+
+hygieia-chat-ops-collector:
+  image: hygieia-chat-ops-collector:latest
+  container_name: hygieia-chat-ops
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+#  environment:
+#  - CHATOPS_CRON=0 0/5 * * * *
 

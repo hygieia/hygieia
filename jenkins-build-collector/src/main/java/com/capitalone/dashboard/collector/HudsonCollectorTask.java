@@ -78,33 +78,30 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         Set<ObjectId> udId = new HashSet<>();
         udId.add(collector.getId());
         List<HudsonJob> existingJobs = hudsonJobRepository.findByCollectorIdIn(udId);
-        List<HudsonJob> latestJobs = new ArrayList<>();
-        List<String> cleanUpServers = new ArrayList<>();
-        cleanUpServers.addAll(collector.getBuildServers());
+        List<HudsonJob> activeJobs = new ArrayList<>();
+        List<String> activeServers = new ArrayList<>();
+        activeServers.addAll(collector.getBuildServers());
 
         clean(collector, existingJobs);
+
         for (String instanceUrl : collector.getBuildServers()) {
             logBanner(instanceUrl);
-
             try {
                 Map<HudsonJob, Set<Build>> buildsByJob = hudsonClient
                         .getInstanceJobs(instanceUrl);
                 log("Fetched jobs", start);
-                latestJobs.addAll(buildsByJob.keySet());
+                activeJobs.addAll(buildsByJob.keySet());
                 addNewJobs(buildsByJob.keySet(), existingJobs, collector);
-
                 addNewBuilds(enabledJobs(collector, instanceUrl), buildsByJob);
-
                 log("Finished", start);
             } catch (RestClientException rce) {
-                cleanUpServers.remove(instanceUrl); // since it was a rest exception, we will not delete this job  and wait for
+                activeServers.remove(instanceUrl); // since it was a rest exception, we will not delete this job  and wait for
                 // rest exceptions to clear up at a later run.
                 log("Error getting jobs for: " + instanceUrl, start);
             }
         }
-        // First delete jobs that will be no longer collected because servers have moved etc.
-        deleteUnwantedJobs(latestJobs, existingJobs, cleanUpServers, collector);
-
+        // Delete jobs that will be no longer collected because servers have moved etc.
+        deleteUnwantedJobs(activeJobs, existingJobs, activeServers, collector);
     }
 
     /**
@@ -145,18 +142,34 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         }
     }
 
-    private void deleteUnwantedJobs(List<HudsonJob> latestJobs, List<HudsonJob> existingJobs, List<String> cleanUpServers, HudsonCollector collector) {
+    /**
+     * Delete orphaned job collector items
+     * @param activeJobs
+     * @param existingJobs
+     * @param activeServers
+     * @param collector
+     */
+    private void deleteUnwantedJobs(List<HudsonJob> activeJobs, List<HudsonJob> existingJobs, List<String> activeServers, HudsonCollector collector) {
 
         List<HudsonJob> deleteJobList = new ArrayList<>();
-        Set<ObjectId> udId = new HashSet<>();
-        udId.add(collector.getId());
         for (HudsonJob job : existingJobs) {
-            if (job.isPushed()) continue;
-            if ((!collector.getBuildServers().contains(job.getInstanceUrl()) ||
-                    (!job.getCollectorId().equals(collector.getId())) ||
-                    (!latestJobs.contains(job))) && cleanUpServers.contains(job.getInstanceUrl())) {
+            if (job.isPushed()) continue; // build servers that push jobs will not be in active servers list by design
+
+            // if we have a collector item for the job in repository but it's build server is not what we collect, remove it.
+            if (!collector.getBuildServers().contains(job.getInstanceUrl())) {
                 deleteJobList.add(job);
             }
+
+            //if the collector id of the collector item for the job in the repo does not match with the collector ID, delete it.
+            if (!job.getCollectorId().equals(collector.getId())) {
+                deleteJobList.add(job);
+            }
+
+            // this is to handle jobs that have been deleted from build servers. Will get 404 if we don't delete them.
+            if (activeServers.contains(job.getInstanceUrl()) && !activeJobs.contains(job)) {
+                deleteJobList.add(job);
+            }
+
         }
         if (!CollectionUtils.isEmpty(deleteJobList)) {
             hudsonJobRepository.delete(deleteJobList);
@@ -208,19 +221,22 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
         List<HudsonJob> newJobs = new ArrayList<>();
         for (HudsonJob job : jobs) {
-            HudsonJob existing = existingJobs.isEmpty() ? null : existingJobs.get(existingJobs.indexOf(job));
+            HudsonJob existing = null;
+            if (!CollectionUtils.isEmpty(existingJobs) && (existingJobs.contains(job))) {
+                existing = existingJobs.get(existingJobs.indexOf(job));
+            }
+
             String niceName = getNiceName(job, collector);
             if (existing == null) {
                 job.setCollectorId(collector.getId());
-                job.setEnabled(false); // Do not enable for collection. Will be
-                // enabled when added to dashboard
+                job.setEnabled(false); // Do not enable for collection. Will be enabled when added to dashboard
                 job.setDescription(job.getJobName());
-                if (!StringUtils.isEmpty(niceName)) {
+                if (StringUtils.isNotEmpty(niceName)) {
                     job.setNiceName(niceName);
                 }
                 newJobs.add(job);
                 count++;
-            } else if (StringUtils.isEmpty(existing.getNiceName()) && !StringUtils.isEmpty(niceName)) {
+            } else if (StringUtils.isEmpty(existing.getNiceName()) && StringUtils.isNotEmpty(niceName)) {
                 existing.setNiceName(niceName);
                 hudsonJobRepository.save(existing);
             }
@@ -236,8 +252,9 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         if (CollectionUtils.isEmpty(collector.getBuildServers())) return "";
         List<String> servers = collector.getBuildServers();
         List<String> niceNames = collector.getNiceNames();
+        if (CollectionUtils.isEmpty(niceNames)) return "";
         for (int i = 0; i < servers.size(); i++) {
-            if (servers.get(i).equalsIgnoreCase(job.getInstanceUrl())) {
+            if (servers.get(i).equalsIgnoreCase(job.getInstanceUrl()) && (niceNames.size() > (i + 1))) {
                 return niceNames.get(i);
             }
         }

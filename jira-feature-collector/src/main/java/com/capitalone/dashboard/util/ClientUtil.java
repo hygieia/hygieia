@@ -43,7 +43,7 @@ import java.util.Set;
 public class ClientUtil {
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClientUtil.class);
-	final static int MAX_ISO_INDEX = 23;
+	private final static int MAX_ISO_INDEX = 23;
 
 	/**
 	 * Default constructor
@@ -265,7 +265,7 @@ public class ClientUtil {
 		}
 		return list;
 	}
-	
+
 	/**
 	 * Jira story estimate in minutes, converted to hours, rounded down: For
 	 * Jira, 8 hours = 1 day; 5 days = 1 week

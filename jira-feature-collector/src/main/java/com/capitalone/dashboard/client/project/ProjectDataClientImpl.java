@@ -32,10 +32,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 
 	/**
 	 * Extends the constructor from the super class.
-	 * 
-	 * @param featureSettings
-     * @param projectRepository
-     * @param featureCollectorRepository
+	 *
 	 */
 	public ProjectDataClientImpl(FeatureSettings featureSettings,
 			ScopeRepository projectRepository, FeatureCollectorRepository featureCollectorRepository) {

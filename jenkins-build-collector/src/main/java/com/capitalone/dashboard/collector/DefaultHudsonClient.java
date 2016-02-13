@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -110,23 +111,20 @@ public class DefaultHudsonClient implements HudsonClient {
 
                         // A basic Build object. This will be fleshed out later if this is a new Build.
                         String dockerLocalHostIP = settings.getDockerLocalHostIP();
-                        String buildNumber = jsonBuild.get("number").toString();                        
+                        String buildNumber = jsonBuild.get("number").toString();
                         if (!buildNumber.equals("0")) {
                             Build hudsonBuild = new Build();
                             hudsonBuild.setNumber(buildNumber);
                             String buildURL = getString(jsonBuild, "url");
-                            
-                            	//Modify localhost if Docker Natting is being done
-		                    if ( ! dockerLocalHostIP.isEmpty() )
-		                    {
-		                    	buildURL = buildURL.replace("localhost", dockerLocalHostIP);
-		                        LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
-		                    }
-		                    else
-		                    {
-		                    	LOG.debug(" Adding Build: " + buildURL);
-		                    }
-		                    
+
+                            //Modify localhost if Docker Natting is being done
+                            if (!dockerLocalHostIP.isEmpty()) {
+                                buildURL = buildURL.replace("localhost", dockerLocalHostIP);
+                                LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
+                            } else {
+                                LOG.debug(" Adding Build: " + buildURL);
+                            }
+
                             hudsonBuild.setBuildUrl(buildURL);
                             builds.add(hudsonBuild);
                         }
@@ -143,7 +141,6 @@ public class DefaultHudsonClient implements HudsonClient {
         } catch (MalformedURLException mfe) {
             LOG.error("malformed url for loading jobs", mfe);
         }
-
         return result;
     }
 
@@ -153,10 +150,14 @@ public class DefaultHudsonClient implements HudsonClient {
             String newUrl = rebuildJobUrl(buildUrl, instanceUrl);
             String url = joinURL(newUrl, BUILD_DETAILS_URL_SUFFIX);
             ResponseEntity<String> result = makeRestCall(url);
-            String returnJSON = result.getBody();
+            String resultJSON = result.getBody();
+            if (StringUtils.isEmpty(resultJSON)) {
+                LOG.error("Error getting build details for. URL=" + url);
+                return null;
+            }
             JSONParser parser = new JSONParser();
             try {
-                JSONObject buildJson = (JSONObject) parser.parse(returnJSON);
+                JSONObject buildJson = (JSONObject) parser.parse(resultJSON);
                 Boolean building = (Boolean) buildJson.get("building");
                 // Ignore jobs that are building
                 if (!building) {
@@ -180,13 +181,13 @@ public class DefaultHudsonClient implements HudsonClient {
                 LOG.error("Parsing build: " + buildUrl, e);
             }
         } catch (RestClientException rce) {
-            LOG.error("client exception loading build details", rce);
+            LOG.error("Client exception loading build details: " + rce.getMessage() + ". URL =" + buildUrl );
         } catch (MalformedURLException mfe) {
-            LOG.error("malformed url for loading build details", mfe);
+            LOG.error("Malformed url for loading build details" + mfe.getMessage() + ". URL =" + buildUrl );
         } catch (URISyntaxException use) {
-            LOG.error("uri syntax exception for loading build details", use);
-        } catch (RuntimeException rte) { //yes, catching RTE.. dont want to impact the whole collection process
-            LOG.error("uri syntax exception for loading build details:" + buildUrl, rte);
+            LOG.error("Uri syntax exception for loading build details"+ use.getMessage() + ". URL =" + buildUrl );
+        } catch (RuntimeException re) {
+            LOG.error("Unknown error in getting build details. URL="+ buildUrl, re);
         }
         return null;
     }
@@ -194,7 +195,7 @@ public class DefaultHudsonClient implements HudsonClient {
 
     //This method will rebuild the API endpoint because the buildUrl obtained via Jenkins API
     //does not save the auth user info and we need to add it back.
-    public static String rebuildJobUrl (String build, String server) throws URISyntaxException, MalformedURLException {
+    public static String rebuildJobUrl(String build, String server) throws URISyntaxException, MalformedURLException {
         URL instanceUrl = new URL(server);
         String userInfo = instanceUrl.getUserInfo();
         String instanceProtocol = instanceUrl.getProtocol();
@@ -203,7 +204,7 @@ public class DefaultHudsonClient implements HudsonClient {
         String buildPath = buildUrl.getPath();
         String host = buildUrl.getHost();
         int port = buildUrl.getPort();
-        URI newUri = new URI(instanceProtocol,userInfo,host,port,buildPath, null, null);
+        URI newUri = new URI(instanceProtocol, userInfo, host, port, buildPath, null, null);
         return newUri.toString();
     }
 
@@ -278,7 +279,7 @@ public class DefaultHudsonClient implements HudsonClient {
 
     private String firstCulprit(JSONObject buildJson) {
         JSONArray culprits = getJsonArray(buildJson, "culprits");
-        if (culprits.isEmpty()) {
+        if (CollectionUtils.isEmpty(culprits)) {
             return null;
         }
         JSONObject culprit = (JSONObject) culprits.get(0);
@@ -352,7 +353,7 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     // join a base url to another path or paths - this will handle trailing or non-trailing /'s
-    public static String joinURL(String base, String ... paths) throws MalformedURLException {
+    public static String joinURL(String base, String... paths) throws MalformedURLException {
         StringBuilder result = new StringBuilder(base);
         for (String path : paths) {
             String p = path.replaceFirst("^(\\/)+", "");

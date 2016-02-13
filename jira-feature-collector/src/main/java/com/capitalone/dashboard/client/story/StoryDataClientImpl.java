@@ -63,11 +63,6 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 
 	/**
 	 * Extends the constructor from the super class.
-	 * 
-	 * @param coreFeatureSettings
-     * @param featureSettings
-     * @param featureRepository
-     * @param featureCollectorRepository
 	 */
 	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings,
 			FeatureSettings featureSettings, FeatureRepository featureRepository,
