@@ -10,6 +10,8 @@ public class PipelineSearchRequest {
     /** {@link CollectorItem} teamdashboard collector item id */
     @NotEmpty
     private List<ObjectId> collectorItemId;
+
+    /** Dates to filter prod bucket's commits by **/
     private Long beginDate;
     private Long endDate;
 

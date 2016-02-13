@@ -27,14 +27,17 @@
             <div class="product-table-th"></div>
             <div class="product-table-th" ng-repeat="stage in ctrl.stages">{{stage}}</div>
         </div>
-        <div class="product-table-tbody">
-            <div class="product-table-tr team-row"
-                ng-repeat="team in ctrl.configuredTeams">
+        <div class="product-table-tbody" as-sortable="ctrl.sortableOptions" ng-model="ctrl.configuredTeams">
+            <div class="product-table-tr"
+                 as-sortable-item
+                 ng-repeat="team in ctrl.configuredTeams">
 
-                <div class="product-table-td team-name-cell">
+                <div class="product-table-td team-name-cell" as-sortable-item-handle>
                     <span class="fa fa-cog" ng-click="ctrl.editTeam(team.collectorItemId)"></span>
 
-                    <a title="{{item.customName || item.name}}" class="team-name" ng-click="ctrl.openDashboard(team)">
+                    <a title="{{item.customName || item.name}}"
+                       class="team-name"
+                       ng-click="ctrl.openDashboard(team)">
                         {{team.customName || team.name}}
                     </a>
 
@@ -44,7 +47,7 @@
                         </div>
 
                         <div class="team-quality-trends">
-                            <div class="trend-wrap-7">
+                            <div class="trend-wrap-animation trend-wrap-7">
                                 <div class="trend">
                                     <product-team-summary-field
                                         ng-click="ctrl.viewQualityDetails(team, stage, 0)"
@@ -114,6 +117,7 @@
                 </div>
 
                 <div class="product-table-td team-data-cell"
+                     as-sortable-item-handle
                      ng-class="{'team-stage-needs-configured': team.stages[stage].needsConfiguration}"
                      ng-repeat="stage in ctrl.stages | filter: '!PROD'"
                      >
@@ -156,7 +160,9 @@
 
                 </div>
 
-                <div class="product-table-td team-prod-cell" ng-class="{'team-stage-needs-configured': team.stages['Prod'].needsConfiguration}">
+                <div class="product-table-td team-prod-cell"
+                     ng-class="{'team-stage-needs-configured': team.stages['Prod'].needsConfiguration}"
+                     as-sortable-item-handle>
                     <div ng-if="team.prod">
                         <div class="clearfix team-prod-average-header">
                             <span class="pull-left team-prod-arrow fa" ng-class="{'fa-long-arrow-up text-danger':team.prod.trendUp == true, 'fa-long-arrow-down text-success': team.prod.trendUp == false}" ng-if="team.prod.trendUp != undefined"></span>
@@ -175,6 +181,8 @@
                     </div>
                 </div>
             </div>
+
+
             <div
                 class="product-table-tr new-team-row"
                 ng-class="{'no-teams': !ctrl.configuredTeams.length}"

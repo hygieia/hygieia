@@ -8,9 +8,13 @@
 #product-dashboard {
     margin-top: -2rem;
 
+
+
     .quality-cell-style(@dash-dashboard-text-hover, @dash-dashboard-text-light);
 
     .product-dash-header {
+        color: @dash-dashboard-text-light;
+
         .product-dash-header-text {
             text-align: center;
             line-height: 46px;
@@ -25,10 +29,25 @@
     .product-table {
         width: 100%;
         display: table;
+        border-collapse: collapse;
         margin-top: 30px;
 
         .product-table-tr {
             display: table-row;
+        }
+
+        .as-sortable-placeholder, .as-sortable-hidden {
+            display: table-row !important;
+            width: auto !important;
+        }
+
+        .as-sortable-placeholder {
+            background-color: fade(@dash-status-pass, 20%) !important;
+
+            .product-table-td {
+                cursor: -webkit-grabbing !important;
+                cursor: -moz-grabbing !important;
+            }
         }
 
         .product-table-th, .product-table-td {
@@ -57,12 +76,16 @@
             display: table-row-group;
 
             .product-table-tr {
-                &:nth-child(odd) {
+                &:nth-of-type(odd) .product-table-td {
                     background-color: @dash-widget-section-highlight;
                 }
             }
 
             .product-table-td {
+                cursor: move;
+                cursor: -webkit-grab;
+                cursor: -moz-grab;
+
                 color: @dash-dashboard-text-light;
                 height: 180px;
                 text-align: left;
@@ -83,7 +106,6 @@
 
         .new-team-row {
             opacity: .3;
-            cursor: pointer;
             background: transparent;
             outline: 3px dashed;
 
@@ -106,6 +128,7 @@
             }
 
             .product-table-td {
+                cursor: pointer;
                 padding-top: 30px;
                 padding-bottom: 30px;
                 text-align: center;
@@ -172,6 +195,10 @@
                 }
             }
 
+            &:hover .team-quality .trend-wrap-animation {
+                animation-play-state: paused;
+            }
+
             .team-quality {
                 position: absolute;
                 bottom: @team-cell-padding;
@@ -201,7 +228,7 @@
                         animation-name: ~'trendticker-@{i}';
                         animation-duration: (@i - 2)*10s;
                         animation-timing-function: cubic-bezier(0.750, -0, 0.250, 1.250);
-                        animation-delay: 5s;
+                        animation-delay: 2s;
                         animation-iteration-count: infinite;
                     }
 

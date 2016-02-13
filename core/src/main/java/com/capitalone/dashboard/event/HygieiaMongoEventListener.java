@@ -31,17 +31,32 @@ public abstract class HygieiaMongoEventListener<T> extends AbstractMongoEventLis
         return productCollectors.get(0);
     }
 
+    /**
+     * Finds the team dashboard collectoritem by dashboard id and product collectorid
+     * @param teamDashboard
+     * @return
+     */
     protected CollectorItem getTeamDashboardCollectorItem(Dashboard teamDashboard) {
         ObjectId productCollectorId = getProductCollector().getId();
         ObjectId dashboardId = teamDashboard.getId();
         return collectorItemRepository.findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(productCollectorId, dashboardId.toString());
     }
 
+    /**
+     * Finds or creates a pipeline for a dashboard
+     * @param teamDashboard
+     * @return
+     */
     protected Pipeline getOrCreatePipeline(Dashboard teamDashboard) {
         CollectorItem teamDashboardCollectorItem = getTeamDashboardCollectorItem(teamDashboard);
         return getOrCreatePipeline(teamDashboardCollectorItem);
     }
 
+    /**
+     * Finds or creates a pipeline for a dashboard collectoritem
+     * @param collectorItem
+     * @return
+     */
     protected Pipeline getOrCreatePipeline(CollectorItem collectorItem) {
         Pipeline pipeline = pipelineRepository.findByCollectorItemId(collectorItem.getId());
         if(pipeline == null){
@@ -51,6 +66,12 @@ public abstract class HygieiaMongoEventListener<T> extends AbstractMongoEventLis
         return pipeline;
     }
 
+    /**
+     * Finds or creates a new environment stage for a pipeline
+     * @param pipeline
+     * @param stageName
+     * @return
+     */
     protected EnvironmentStage getOrCreateEnvironmentStage(Pipeline pipeline, String stageName){
         EnvironmentStage stage = pipeline.getStages().get(stageName);
         if(stage == null){

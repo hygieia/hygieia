@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("PMD")
 @org.springframework.stereotype.Component
 public class EnvironmentComponentEventListener extends HygieiaMongoEventListener<EnvironmentComponent> {
 
@@ -22,7 +21,6 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
     public EnvironmentComponentEventListener(DashboardRepository dashboardRepository,
                               CollectorItemRepository collectorItemRepository,
                               ComponentRepository componentRepository,
-                              EnvironmentComponentRepository environmentComponentRepository,
                               BinaryArtifactRepository binaryArtifactRepository,
                               PipelineRepository pipelineRepository,
                               CollectorRepository collectorRepository) {
@@ -44,6 +42,11 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         processEnvironmentComponent(environmentComponent);
     }
 
+    /**
+     * For the environment component, find all team dashboards related to the environment component and add the
+     * commits to the proper stage
+     * @param environmentComponent
+     */
     private void processEnvironmentComponent(EnvironmentComponent environmentComponent) {
         List<Dashboard> dashboards = findTeamDashboardsForEnvironmentComponent(environmentComponent);
 
@@ -55,8 +58,15 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
 
     }
 
+    /**
+     * Must first start by finding all artifacts that relate to an environment component based on the name, and potentially
+     * the timestamp of the last time an artifact came through the environment.
+     *
+     * Multiple artifacts could have been built but never deployed.
+     * @param environmentComponent
+     * @param pipeline
+     */
     private void addCommitsToEnvironmentStage(EnvironmentComponent environmentComponent, Pipeline pipeline){
-        //find all artifacts by name, only ones that matter are between last artifact and this
         EnvironmentStage currentStage = getOrCreateEnvironmentStage(pipeline, environmentComponent.getEnvironmentName());
 
         Iterable<BinaryArtifact> artifacts;
@@ -69,6 +79,9 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
             artifacts = binaryArtifactRepository.findByArtifactName(environmentComponent.getComponentName());
         }
 
+        /**
+         * Sort the artifacts by timestamp and iterate through each artifact, getting their changesets and adding them to the bucket
+         */
         List<BinaryArtifact> sortedArtifacts = Lists.newArrayList(artifacts);
         Collections.sort(sortedArtifacts, BinaryArtifact.TIMESTAMP_COMPARATOR);
 
@@ -78,6 +91,10 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
                 pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
             }
         }
+
+        /**
+         * Update last artifact on the pipeline
+         */
         if(sortedArtifacts != null && !sortedArtifacts.isEmpty()){
             BinaryArtifact lastArtifact = sortedArtifacts.get(sortedArtifacts.size() - 1);
             currentStage.setLastArtifact(lastArtifact);
@@ -86,6 +103,11 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
 
     }
 
+    /**
+     * Finds team dashboards for a given environment componentby way of the deploy collector item
+     * @param environmentComponent
+     * @return
+     */
     private List<Dashboard> findTeamDashboardsForEnvironmentComponent(EnvironmentComponent environmentComponent){
         List<Dashboard> dashboards;
         CollectorItem deploymentCollectorItem = collectorItemRepository.findOne(environmentComponent.getCollectorItemId());

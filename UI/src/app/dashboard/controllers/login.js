@@ -40,7 +40,7 @@
 
         function doLogin(valid) {
             if (valid) {
-                loginData.login(document.lg.login.value, document.lg.password.value).then(processResponse);
+                loginData.login(document.lg.id.value, document.lg.password.value).then(processResponse);
             }
         }
 
@@ -49,12 +49,12 @@
 
             console.log("Authentication is:" + data);
 
-            $scope.lg.login.$setValidity('invalidUsernamePassword', data);
+            $scope.lg.id.$setValidity('invalidUsernamePassword', data);
 
             if (data) {
 
                 $cookies.authenticated = true;
-                $cookies.username = document.lg.login.value;
+                $cookies.username = document.lg.id.value;
 
                 $location.path('/site');
             }

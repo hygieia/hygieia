@@ -7,13 +7,15 @@ var browserSync = require('browser-sync'),
     tmplCache = require('gulp-angular-templatecache'),
     change = require('gulp-change'),
     clean = require('gulp-clean'),
+    concat = require('gulp-concat'),
     consolidate = require('gulp-consolidate'),
     filter = require('gulp-filter'),
     flatten = require('gulp-flatten'),
     gulpIf = require('gulp-if'),
     inject = require('gulp-inject'),
     less = require('gulp-less'),
-    minifyHtml = require('gulp-minify-html'),
+    minifyHtml = require('gulp-htmlmin'),
+    minifyCss = require('gulp-minify-css'),
     rename = require('gulp-rename'),
     replace = require('gulp-replace'),
     httpProxy = require('http-proxy'),
@@ -85,7 +87,7 @@ gulp.task('default', ['build']);
 
 // moves everything to the build folder
 gulp.task('build', function(callback) {
-    runSequence('clean', ['assets', 'themes', 'fonts', 'js', 'views', 'test-data', 'html'], callback);
+    runSequence('clean', ['assets', 'themes', 'fonts', 'js', 'views', 'test-data'], 'html', callback);
 });
 
 // run the build task, start up a browser, then
@@ -184,22 +186,29 @@ gulp.task('themes', function() {
     });
 
     return gulp.src(themeFiles)
-
         .pipe(replace('/** insert:widgets **/', widgetLessFiles.join('')))
         .pipe(less({
             paths: [
                 hygieia.src + 'components'
             ]
         }))
-        .on('error', console.error.bind(console))
+        .on('error', function(err) {
+            console.error(err.toString());
+            this.emit('end');
+        })
+        .pipe(minifyCss())
         .pipe(gulp.dest(hygieia.dist + 'styles'));
 });
 
 // move js files over
 gulp.task('js', function() {
-    return gulp
-        .src(jsFiles)
-        .pipe(gulp.dest(hygieia.dist));
+    var stream = gulp.src(jsFiles);
+
+    if(!!argv.prod) {
+        stream = stream.pipe(concat('app/app.js'));
+    }
+
+    return stream.pipe(gulp.dest(hygieia.dist));
 });
 
 // move our html views to a template cache folder so each one
@@ -208,9 +217,7 @@ gulp.task('views', function() {
     return gulp
         .src(viewFiles)
         .pipe(minifyHtml({
-            empty: true,
-            spare: true,
-            quotes: true
+            collapseWhitespace: true
         }))
         .pipe(tmplCache('template-cache.js', {
             module: config.module
@@ -243,11 +250,18 @@ gulp.task('html', function() {
         .pipe(filter(['index.html']))
 
         // wiredep replaces bower:js with references to all bower dependencies
-        .pipe(inject(gulp.src(wiredep({exclude: [/bootstrap\.js/, /bootstrap\.css/, /bootstrap\.css/, /foundation\.css/]}).js).pipe(gulp.dest(hygieia.dist + 'bower_components')), { name: 'bower', ignorePath: hygieia.dist, addRootSlash: false }))
+        .pipe(inject(gulp.src(
+            wiredep({
+                exclude: [/bootstrap\.js/, /bootstrap\.css/, /bootstrap\.css/, /foundation\.css/]
+            }).js)
+            .pipe(concat('bower.js'))
+            .pipe(gulp.dest(hygieia.dist + 'bower_components')),
+            { name: 'bower', ignorePath: hygieia.dist, addRootSlash: false })
+        )
         .pipe(gulp.dest(hygieia.dist))
 
         // replace inject:js with script references to all the files in the following sources
-        .pipe(inject(gulp.src(jsFiles), { name: 'hygieia', ignorePath: 'src', addRootSlash: false }))
+        .pipe(inject(gulp.src(!!argv.prod ? ['src/app/app.js'] : jsFiles), { name: 'hygieia', ignorePath: 'src', addRootSlash: false }))
 
         // replace custom placeholders with our configured values
         .pipe(replace('[config]', JSON.stringify(config)))

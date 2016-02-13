@@ -31,6 +31,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
     @Override
     public void onAfterSave(AfterSaveEvent<Build> event) {
         Build build = event.getSource();
+        //if a build is successful, process it
         if(build.getBuildStatus().equals(BuildStatus.Success)){
             processBuild(event.getSource());
         }
@@ -39,6 +40,11 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
         }
     }
 
+    /**
+     * If the build has failed, find the pipelines of the dashboards referencing the build and add the failed build to
+     * the failed builds bucket on the pipeline
+     * @param failedBuild
+     */
     private void processFailedBuild(Build failedBuild){
         List<Dashboard> teamDashboardsReferencingBuild = findAllDashboardsForBuild(failedBuild);
         for(Dashboard teamDashboard : teamDashboardsReferencingBuild){
@@ -48,6 +54,11 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
         }
     }
 
+    /**
+     * Find all dashboards referencing the build and then then for each commit in the changeset of the build (as per jenkins)
+     * add the commit to the pipeline for the dashboard
+     * @param build
+     */
     private void processBuild(Build build){
         List<Dashboard> teamDashboardsReferencingBuild = findAllDashboardsForBuild(build);
 
@@ -68,6 +79,13 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
         }
     }
 
+    /**
+     * Iterate over failed builds, if the failed build collector item id matches the successful builds collector item id
+     * take all the commits from the changeset of the failed build and add them to the pipeline and also to the changeset
+     * of the successful build.  Then remove the failed build from the collection after it has been processed.
+     * @param successfulBuild
+     * @param pipeline
+     */
     private void processPreviousFailedBuilds(Build successfulBuild, Pipeline pipeline){
 
         if(!pipeline.getFailedBuilds().isEmpty()) {

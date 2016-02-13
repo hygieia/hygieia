@@ -73,6 +73,10 @@ public class Dashboard extends BaseModel {
 
     public void setType(DashboardType type) { this.type = type; }
 
+    /**
+     * Finds the mapped names for each stage type from the widget options
+     * @return
+     */
     public Map<PipelineStageType, String> findEnvironmentMappings(){
         Map<String, String> environmentMappings = null;
         for(Widget widget : this.getWidgets()) {
@@ -81,8 +85,10 @@ public class Dashboard extends BaseModel {
             }
         }
         Map<PipelineStageType, String> stageTypeToEnvironmentNameMap = new HashMap<>();
-        for (Map.Entry mapping : environmentMappings.entrySet()) {
-            stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
+        if(environmentMappings != null && !environmentMappings.isEmpty()){
+            for (Map.Entry mapping : environmentMappings.entrySet()) {
+                stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
+            }
         }
         return stageTypeToEnvironmentNameMap;
     }

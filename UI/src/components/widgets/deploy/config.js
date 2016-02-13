@@ -77,7 +77,7 @@
                         id: widgetConfig.options.id
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: form.collectorItemId.value
+                    collectorItemId: form.deployJob.value
                 };
 
                 $modalInstance.close(postObj);
