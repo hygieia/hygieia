@@ -6,11 +6,12 @@
  widgets will use the proper theme color.
  */
 
-@dash-image-path: "../assets/images/";
+@dash-image-path: "../assets/img/";
 
 // applied to all pages
 @dash-bg:                           @panel-default-heading-bg;
 @dash-text:                         @panel-default-text;
+@dash-text-inverse:                 @dash-bg;
 
 // used for hr tags or widgets to split sections or rows
 @dash-divider:                      @dash-text;
@@ -20,21 +21,29 @@
 @dash-dashboard-bg:                 @dash-bg;
 @dash-dashboard-text:               lighten(@dash-text, 20%);
 @dash-dashboard-text-hover:         @dash-text; // on hover, should stand out more than normal text
+@dash-dashboard-text-light:         @dash-text;
 
 // styles for the brand header
 @dash-header-bg:                    @panel-primary-heading-bg;
 @dash-header-text:                  @panel-primary-text;
 @dash-header-font-size:             2.5rem;
 
+// dash secondary styles
+@dash-btn-secondary-bg:             darken(@body-bg, 10%);
+@dash-btn-secondary-border:         lighten(@btn-default-border, 20%);
+@dash-btn-secondary-color:          lighten(@text-color, 20%);
+
 // logo
-@dash-header-logo-url: '@{dash-image-path}hygieia_H.png';
+@dash-header-logo-url: '@{dash-image-path}hygieia_b.png';
 @dash-header-logo-width:            135px;
 @dash-header-logo-height:           35px;
-@dash-header-logo-left:             60px;
-@dash-header-logo-top:              10px;
+@dash-header-logo-left:             10px;
+@dash-header-logo-top:              8px;
+
+@dash-header-logo-inverse-url: '@{dash-image-path}hygieia_w.png';
 
 // logo for smaller screens
-@dash-header-icon-url: '@{dash-image-path}hygieia_H.png';
+@dash-header-icon-url: '@{dash-image-path}hygieia_b.png';
 @dash-header-icon-width:            41px;
 @dash-header-icon-height:           48px;
 @dash-header-icon-left:             60px;
@@ -98,3 +107,6 @@
 
 @dash-text-standard-size:           1.1;
 @dash-text-standard-line-height:    1.2;
+
+@dash-btn-wide: @padding-base-horizontal * 2;
+@dash-btn-wide-2x: @dash-btn-wide * 2;

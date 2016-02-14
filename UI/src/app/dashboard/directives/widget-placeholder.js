@@ -9,7 +9,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard.core')
+        .module(HygieiaConfig.module + '.core')
         .directive('widgetPlaceholder', WidgetPlaceholder);
 
     WidgetPlaceholder.$inject = [];

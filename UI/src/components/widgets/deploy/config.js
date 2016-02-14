@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('deployConfigController', deployConfigController);
 
     deployConfigController.$inject = ['modalData', 'collectorData','$modalInstance'];
@@ -77,7 +77,7 @@
                         id: widgetConfig.options.id
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: form.collectorItemId.value
+                    collectorItemId: form.deployJob.value
                 };
 
                 $modalInstance.close(postObj);

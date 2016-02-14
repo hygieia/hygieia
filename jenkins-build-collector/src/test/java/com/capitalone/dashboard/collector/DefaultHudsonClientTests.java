@@ -193,7 +193,6 @@ public class DefaultHudsonClientTests {
         assertThat(build.getTimestamp(), notNullValue());
         assertThat(build.getNumber(), is("2483"));
         assertThat(build.getBuildUrl(), is(URL_TEST));
-        assertThat(build.getArtifactVersionNumber(), nullValue());
         assertThat(build.getStartTime(), is(1421281415000L));
         assertThat(build.getEndTime(), is(1421284113495L));
         assertThat(build.getDuration(), is(2698495L));

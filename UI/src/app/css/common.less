@@ -1,10 +1,12 @@
-@import '../../../bower_components/bootstrap/less/bootstrap.less';
-@import 'variables.less';
-@import 'mixins.less';
-@import '../chartist/chartist-settings.less';
-@import '../chartist/chartist.less';
-@import '../../../bower_components/components-font-awesome/less/font-awesome.less';
-@import '../../../src/app/index.less';
+@import '../../../bower_components/components-font-awesome/less/font-awesome';
+@import '../../../bower_components/bootstrap/less/bootstrap';
+@import 'variables';
+@import 'mixins';
+@import '../chartist/chartist';
+@import '../../../bower_components/bootstrap-sweetalert/lib/sweet-alert';
+@import 'commit-blocks';
+
+@import 'site';
 
 // TODO: remove
 #__bs_notify__ { display: none !important;}
@@ -31,6 +33,12 @@
     width: 960px;
 }
 
+.tab-content {
+    background: @nav-tabs-active-link-hover-bg;
+    border: 1px solid @nav-tabs-border-color;
+    border-top: 0;
+}
+
 // CHARTIST VARIABLES
 // ========================================
 @ct-series-colors: @dash-status-pass, @dash-status-fail, @dash-status-warn, @dash-text;
@@ -45,7 +53,7 @@
 
 // CHARTIST OVERRIDES
 // ========================================
-#dashboard {
+#dashboard, .modal-content {
     // defining alternative chart colors
     .ct-chart.dash-chart-alt .ct-series {
         .ct-line, .ct-point, .ct-bar, .ct-donut {
@@ -74,6 +82,52 @@
     .ct-grid.ct-grid-threshold {
         stroke: @dash-status-fail;
         stroke-dasharray: none;
+    }
+}
+
+.modal-content {
+    .ct-label {
+        color: @dash-text;
+    }
+
+    text.ct-label {
+        fill: @dash-text;
+    }
+
+    .ct-grid {
+        stroke: @modal-content-bg;
+    }
+
+    .tooltip {
+        @modal-tooltip-bg: darken(@modal-content-bg, 10%);
+        .tooltip-inner {
+            background-color: @modal-tooltip-bg;
+            max-width: none;
+            .tooltip-row {
+                white-space: nowrap;
+                display: block;
+            }
+
+            .tooltip-left {
+                text-align: left;
+            }
+        }
+
+        &.top .tooltip-arrow {
+            border-top-color: @modal-tooltip-bg;
+        }
+
+        &.bottom .tooltip-arrow {
+            border-bottom-color: @modal-tooltip-bg;
+        }
+
+        &.left .tooltip-arrow {
+            border-left-color: @modal-tooltip-bg;
+        }
+
+        &.right .tooltip-arrow {
+            border-right-color: @modal-tooltip-bg;
+        }
     }
 }
 
@@ -110,13 +164,61 @@ body {
     .animate-appear();
 }
 
-// a little bigger button
-.btn-wide {
-    padding-left: @padding-base-horizontal * 2;
-    padding-right: @padding-base-horizontal * 2;
+.list-group-item-right {
+    font-size: 2em;
+    .center-y;
+    right: @padding-base-horizontal;
 }
 
-.button-row {
+
+// a little bigger button
+.btn-wide {
+    padding-left: @dash-btn-wide;
+    padding-right: @dash-btn-wide;
+}
+
+.btn-wide-2x {
+    padding-left: @dash-btn-wide-2x;
+    padding-right: @dash-btn-wide-2x;
+}
+
+// Success appears as green
+.btn-default {
+    .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+}
+.btn-secondary {
+    .button-variant(@dash-btn-secondary-color; @dash-btn-secondary-bg; @dash-btn-secondary-border);
+}
+.btn-primary {
+    .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+}
+// Success appears as green
+.btn-success {
+    .button-variant(@btn-success-color; @btn-success-bg; @btn-success-border);
+}
+// Info appears as blue-green
+.btn-info {
+    .button-variant(@btn-info-color; @btn-info-bg; @btn-info-border);
+}
+// Warning appears as orange
+.btn-warning {
+    .button-variant(@btn-warning-color; @btn-warning-bg; @btn-warning-border);
+}
+// Danger and error appear as red
+.btn-danger {
+    .button-variant(@btn-danger-color; @btn-danger-bg; @btn-danger-border);
+}
+
+.btn-input {
+    //.button-variant(@input-color; @input-bg; @input-border);
+    color: @input-color !important;
+    background-color: @input-bg !important;
+    border-color: @input-border !important;
+
+    .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
+}
+
+.gap, .button-row {
     margin-top: 3.5rem;
 }
 
@@ -133,6 +235,27 @@ body {
     &.ng-enter.ng-enter-active {
         opacity: 1;
         .transition-delay(@fade-timing);
+    }
+}
+
+.welcome-header {
+    color: @dash-text-inverse;
+    font-size: 1.5rem;
+    position: relative;
+    top: 5px;
+
+    .fa-stack {
+        .fa-circle {
+            color: darken(@navbar-inverse-bg, 20%);
+            opacity: 0;
+            .transition(opacity .2s linear);
+        }
+
+        &:hover {
+            .fa-circle {
+                opacity: 1;
+            }
+        }
     }
 }
 
@@ -166,23 +289,29 @@ body {
 //
 // ========================================
 #header {
+    color: @dash-header-text;
     display: block !important;
     background: @dash-header-bg;
-    color: @dash-header-text;
     font-size: @dash-header-font-size;
-    line-height: 2.5*@dash-header-font-size;
-    margin-bottom: @grid-gutter-width / 2;
+    line-height: 48px;
     text-align: center;
     position: relative;
+    margin-bottom: 50px;
 
-    a {
-        background: #fff url(@dash-header-logo-url) no-repeat center center;
+    .dashboard-logo {
+        background: url(@dash-header-logo-url) no-repeat center center;
+        background-size: contain;
         display: inline-block;
         position: absolute;
         left: @dash-header-logo-left;
         top: @dash-header-logo-top;
         width: @dash-header-logo-width;
         height: @dash-header-logo-height;
+
+
+        &.dashboard-logo-inverse {
+            background-image: url(@dash-header-logo-inverse-url);
+        }
     }
 
     // switch between pipeline view
@@ -195,25 +324,6 @@ body {
         width: 5px;
         height: auto;
         display: inline-block;
-    }
-
-    .mycenter {
-        max-width: 180px;
-        display: block;
-        vertical-align: middle;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        margin: auto;
-    }
-}
-
-@media (max-width: @screen-sm-max) {
-    #header a {
-        background-image: url(@dash-header-icon-url);
-        width: @dash-header-icon-width;
-        height: @dash-header-icon-height;
     }
 }
 
@@ -229,12 +339,12 @@ body {
 // WIDGET
 // ========================================
 .widget {
+    padding: 2.5rem 3rem;
+    .border-radius(@dash-widget-border-radius);
+
     .widget {
         margin-bottom: 2rem;
     }
-
-    padding: 2.5rem 3rem;
-    .border-radius(@dash-widget-border-radius);
 
     // heading in a widget
     .widget-heading {
@@ -341,6 +451,29 @@ body {
 .widget-modal {
     padding: 1rem 5rem 3rem;
 
+    .widget-modal-close {
+        background: transparent;
+        cursor: pointer;
+        color: @text-color;
+        font-weight: bold;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 3rem;
+        height: 3rem;
+        border: 0;
+        background-clip: padding-box;
+        text-align: center;
+        opacity: .7;
+        font-size: 1.5em;
+        line-height: 1em;
+        .transition(opacity .2s linear);
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
     .widget-modal-heading {
         border-bottom: 1px solid @dash-modal-heading-border;
         color: @dash-modal-heading-text;
@@ -348,6 +481,19 @@ body {
         margin-bottom: 3rem;
         padding: 1rem;
         text-align: center;
+    }
+
+    .widget-modal-heading-markup {
+        border-bottom: 1px solid @dash-modal-heading-border;
+        padding-bottom: 8px;
+    }
+
+    .text-danger {
+        color: @state-danger-text !important;
+    }
+
+    .text-success {
+        color: @state-success-text !important;
     }
 
     .fa, .glyphicon {
@@ -377,7 +523,7 @@ body {
 // styles for detail/expanded view modals
 .widget-detail {
     padding: 1rem 5rem 3rem;
-    .text-standard-lg;
+    .text-lg;
     color: @dash-detail-heading-text;
 
     .widget-detail-heading {
@@ -551,20 +697,6 @@ tr.dash-row > td {
     font-weight: bolder;
 }
 
-// SITE
-// ========================================
-#site {
-    padding-top: 5rem;
-
-    #filter {
-        margin-bottom: 1rem;
-    }
-
-    .lstDashboards {
-        .animate-appear();
-    }
-}
-
 // ADMIN
 // ========================================
 #admin {
@@ -592,6 +724,7 @@ tr.dash-row > td {
 #dashboard {
     background: @dash-dashboard-bg;
     color: @dash-dashboard-text;
+    overflow-x: scroll;
 
     // styles for chartist charts
     .ct-label {
@@ -641,27 +774,6 @@ tr.dash-row > td {
             position: absolute;
         }
     }
-}
-
-#hgheader {
-
-    .divider {
-        width: 5px;
-        height: auto;
-        display: inline-block;
-    }
-
-    .mycenter {
-        max-width: 180px;
-        display: block;
-        vertical-align: middle;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        margin: auto;
-    }
-
 }
 
 #auth {

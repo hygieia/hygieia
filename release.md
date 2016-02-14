@@ -19,3 +19,4 @@ Release:
 Snapshot:
 
 ``` ./gradlew uploadArchives -Psnapshot ```
+

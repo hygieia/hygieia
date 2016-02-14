@@ -3,7 +3,9 @@ package com.capitalone.dashboard.model;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A collection of widgets, collectors and application components that represent a software
@@ -14,18 +16,21 @@ import java.util.List;
 public class Dashboard extends BaseModel {
     private String template;
     private String title;
-    private Application application;
     private List<Widget> widgets = new ArrayList<>();
     private String owner;
+    private DashboardType type;
+
+    private Application application;
 
     Dashboard() {
     }
 
-    public Dashboard(String template, String title, Application application,String owner) {
+    public Dashboard(String template, String title, Application application,String owner, DashboardType type) {
         this.template = template;
         this.title = title;
         this.application = application;
         this.owner = owner;
+        this.type = type;
     }
 
     public String getTemplate() {
@@ -63,5 +68,29 @@ public class Dashboard extends BaseModel {
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
-    
+
+    public DashboardType getType(){ return this.type; }
+
+    public void setType(DashboardType type) { this.type = type; }
+
+    /**
+     * Finds the mapped names for each stage type from the widget options
+     * @return
+     */
+    public Map<PipelineStageType, String> findEnvironmentMappings(){
+        Map<String, String> environmentMappings = null;
+        for(Widget widget : this.getWidgets()) {
+            if (widget.getName().equalsIgnoreCase("pipeline")) {
+                environmentMappings =  (Map) widget.getOptions().get("mappings");
+            }
+        }
+        Map<PipelineStageType, String> stageTypeToEnvironmentNameMap = new HashMap<>();
+        if(environmentMappings != null && !environmentMappings.isEmpty()){
+            for (Map.Entry mapping : environmentMappings.entrySet()) {
+                stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
+            }
+        }
+        return stageTypeToEnvironmentNameMap;
+    }
+
 }

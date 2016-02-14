@@ -5,55 +5,80 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', '$timeout'];
-    function SiteController($scope, $modal, dashboardData, $location, $cookies, $cookieStore, $timeout) {
+    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
+    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
         var ctrl = this;
 
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
-        ctrl.username=$cookies.username;
+        ctrl.username = $cookies.username;
         ctrl.showAuthentication = $cookies.authenticated;
+        ctrl.templateUrl = 'app/dashboard/views/navheader.html';
+        ctrl.dashboardTypeEnum = DashboardType;
 
-
-        //   ctrl.dashboards = []; //don't default since it's used to determine loading
-        // ctrl.mydash = [];
         // public methods
         ctrl.createDashboard = createDashboard;
         ctrl.deleteDashboard = deleteDashboard;
         ctrl.open = open;
-        ctrl.logout= logout;
+        ctrl.logout = logout;
         ctrl.admin = admin;
-        ctrl.templateUrl = "app/dashboard/views/navheader.html";
+        ctrl.setType = setType;
         ctrl.filterNotOwnedList = filterNotOwnedList;
-
-
+        ctrl.filterDashboards = filterDashboards;
 
         if (ctrl.username === 'admin') {
             ctrl.myadmin = true;
         }
 
+        (function() {
+            // set up the different types of dashboards with a custom icon
+            var types = dashboardData.types();
+            _(types).forEach(function (item) {
+                if(item.id == DashboardType.PRODUCT) {
+                    item.icon = 'fa-cubes';
+                }
+            });
 
+            ctrl.dashboardTypes = types;
 
-        // request dashboards
-        dashboardData.search().then(processResponse);
+            // request dashboards
+            dashboardData.search().then(processDashboardResponse, processDashboardError);
 
-        //find dashboard I own
-        dashboardData.mydashboard(ctrl.username).then(processDashResponse);
+            // request my dashboards
+            dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
+        })();
+
+        function setType(type) {
+            ctrl.dashboardType = type;
+        }
+
+        function filterDashboards(item) {
+            var matchesSearch = (!ctrl.search || item.name.toLowerCase().indexOf(ctrl.search.toLowerCase()) !== -1);
+            if (ctrl.dashboardType == DashboardType.PRODUCT) {
+                return item.isProduct && matchesSearch;
+            }
+
+            if (ctrl.dashboardType == DashboardType.TEAM) {
+                return !item.isProduct && matchesSearch;
+            }
+
+            return matchesSearch;
+        }
 
         function admin() {
-            console.log("sending to admin page");
-            $location.path("/admin");
+            console.log('sending to admin page');
+            $location.path('/admin');
         }
 
         function logout()
         {
-$cookieStore.remove("username");
+            $cookieStore.remove("username");
             $cookieStore.remove("authenticated");
-            $location.path("/");
+            $location.path('/');
         }
 
         // method implementations
@@ -70,36 +95,66 @@ $cookieStore.remove("username");
             $location.path('/dashboard/' + dashboardId);
         }
 
-        function processResponse(data) {
+        function processDashboardResponse(data) {
             // add dashboards to list
             ctrl.dashboards = [];
+            var dashboards = [];
             for (var x = 0; x < data.length; x++) {
-                ctrl.dashboards.push({
+                var board = {
                     id: data[x].id,
-                    name: data[x].title
-                });
+                    name: data[x].title,
+                    isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
+                };
+
+                if(board.isProduct) {
+                    console.log(board);
+                }
+                dashboards.push(board);
             }
+
+            ctrl.dashboards = dashboards;
         }
 
-        function processDashResponse(mydata) {
+        function processDashboardError(data) {
+            ctrl.dashboards = [];
+        }
+
+        function processMyDashboardResponse(mydata) {
+
             // add dashboards to list
             ctrl.mydash = [];
+            var dashboards = [];
             for (var x = 0; x < mydata.length; x++) {
 
-                ctrl.mydash.push({
+                dashboards.push({
                     id: mydata[x].id,
-                    name: mydata[x].title
+                    name: mydata[x].title,
+                    type: mydata[x].type,
+                    isProduct: mydata[x].type && mydata[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
                 });
-
             }
 
+            ctrl.mydash = dashboards;
+        }
+
+        function processMyDashboardError(data) {
+            ctrl.mydash = [];
         }
 
 
-        function deleteDashboard(id) {
+        function deleteDashboard(item) {
+            var id = item.id;
             dashboardData.delete(id).then(function () {
                 _.remove(ctrl.dashboards, {id: id});
                 _.remove(ctrl.mydash, {id: id});
+            }, function(response) {
+                var msg = 'An error occurred while deleting the dashboard';
+
+                if(response.status > 204 && response.status < 500) {
+                    msg = 'The Team Dashboard is currently being used by a Product Dashboard/s. You cannot delete at this time.';
+                }
+
+                swal(msg);
             });
         }
 
@@ -117,11 +172,7 @@ $cookieStore.remove("username");
 
             console.log("size after reduction  is:" + uniqueArray.length);
             ctrl.dashboards = uniqueArray;
-
-        };
-
-
-
+        }
     }
 
 

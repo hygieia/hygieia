@@ -1,0 +1,35 @@
+/* markup specific to site.html view */
+@import 'mixins';
+@import '../../../bower_components/bootstrap/less/variables.less';
+
+#site {
+    #filter {
+        margin-bottom: 1rem;
+    }
+
+    .lstDashboards {
+        .animate-appear();
+    }
+
+    .dashboard-type-list {
+        width: 100%;
+
+        .btn {
+            width: 33.333%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            .transition(~"color .2s linear, background-color .2s linear");
+        }
+    }
+
+    .create-dashboard-button {
+        margin-bottom: 2.5em;
+    }
+}
+
+@media(min-width: @screen-sm-min) {
+    .create-dashboard-button {
+        margin-top: 2.5em;
+        margin-bottom: 0;
+    }
+}

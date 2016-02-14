@@ -1,8 +1,5 @@
 package com.capitalone.dashboard.client.team;
 
-import java.util.Iterator;
-import java.util.List;
-
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
@@ -13,6 +10,9 @@ import com.capitalone.dashboard.util.FeatureSettings;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This is the primary implemented/extended data collector for the feature
@@ -134,8 +134,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
 	 * 
-	 * @param A
-	 *            local repository item ID (not the precise mongoID)
+	 * @param localId repository item ID (not the precise mongoID)
 	 */
 	protected Boolean removeExistingEntity(String localId) {
 		boolean deleted = false;

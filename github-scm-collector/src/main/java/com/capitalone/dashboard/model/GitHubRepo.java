@@ -2,8 +2,6 @@ package com.capitalone.dashboard.model;
 
 import java.util.Date;
 
-
-
 /**
  * CollectorItem extension to store the github repo url and branch.
  */
@@ -46,7 +44,8 @@ public class GitHubRepo extends CollectorItem {
     public void setBranch(String branch) {
         getOptions().put(BRANCH, branch);
     }
-    
+
+
     public Date getLastUpdateTime() {
         Object latest = getOptions().get(LAST_UPDATE_TIME);
         return (Date) latest;
@@ -56,6 +55,9 @@ public class GitHubRepo extends CollectorItem {
         getOptions().put(LAST_UPDATE_TIME, date);
     }
 
+    public void removeLastUpdateDate() {
+        getOptions().remove(LAST_UPDATE_TIME);
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) {

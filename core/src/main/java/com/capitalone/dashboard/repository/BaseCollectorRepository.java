@@ -30,4 +30,14 @@ public interface BaseCollectorRepository<T extends Collector> extends CrudReposi
      * @return list of {@link Collector}s of a given {@link CollectorType}
      */
     List<T> findByCollectorType(CollectorType collectorType);
+
+    /**
+     * Finds all {@link Collector}s of a given {@link CollectorType}.
+     *
+     * @param collectorType a {@link CollectorType}
+     * @param  name
+     * @return list of {@link Collector}s of a given {@link CollectorType}
+     */
+
+    List<T> findByCollectorTypeAndName(CollectorType collectorType, String name);
 }

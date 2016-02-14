@@ -8,6 +8,7 @@ public enum BuildStatus {
     Failure,
     Unstable,
     Aborted,
+    InProgress,
     Unknown;
 
     public static BuildStatus fromString(String value) {

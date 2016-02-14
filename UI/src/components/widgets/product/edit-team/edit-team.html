@@ -1,0 +1,26 @@
+<widget-modal widget-modal-title="Edit Team" class="edit-team-modal" widget-modal-close="true" id="edit-team">
+    <div class="pull-right">
+        <a class="team-delete" ng-click="ctrl.removeTeam()">
+            <span class="fa fa-trash"></span>
+            delete
+        </a>
+    </div>
+    <form name="editTeamForm" ng-submit="ctrl.submit(editTeamForm.$valid)" novalidate="novalidate">
+
+        <label class="modal-label">Team name: {{ctrl.teamName}}</label>
+
+        <div class="form-group">
+            <input class="form-control"
+                   type="text"
+                   name="customName"
+                   ng-model="ctrl.customName"
+                   placeholder="Custom team name (optional)"
+                   autocomplete="off" />
+        </div>
+
+        <div class="button-row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Edit this team</button>
+        </div>
+
+    </form>
+</widget-modal>

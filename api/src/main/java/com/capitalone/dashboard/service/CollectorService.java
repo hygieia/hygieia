@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -42,4 +43,21 @@ public interface CollectorService {
      * @return created CollectorItem
      */
     CollectorItem createCollectorItem(CollectorItem item);
+
+    /**
+     * Creates a new CollectorItem. If a CollectorItem already exists with the
+     * same collector id and niceName, that CollectorItem will be returned instead
+     * of creating a new CollectorItem.
+     *
+     * @param item CollectorItem to create
+     * @return created CollectorItem
+     */
+    CollectorItem createCollectorItemByNiceNameAndJobName(CollectorItem item, String jobName) throws HygieiaException;
+
+    /**
+     * Creates a new Collector.
+     * @param collector Collector to create
+     * @return created Collector
+     */
+    Collector createCollector(Collector collector);
 }

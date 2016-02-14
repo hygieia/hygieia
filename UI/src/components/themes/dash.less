@@ -1,16 +1,12 @@
-@import '../../../bower_components/bootstrap/less/bootstrap.less';
-@import '../../../bower_components/bootstrap/less/mixins/gradients.less';
-@import '../../app/css/variables.less';
 @import '../../app/css/common.less';
-@import '../../app/css/mixins.less';
-@import '../../app/index.less';
+/** insert:widgets **/
 
 // Google fonts is blocked by vpn so the files are downloaded locally.
 // On the google fonts site you can only download formats for your current
 // browser so instead pulled the formats from a helper service.
 // https://google-webfonts-helper.herokuapp.com/fonts/open-sans?subsets=latin
-.register-font(Open Sans, open-sans-regular, 1);
-.register-font(Open Sans, open-sans-600, 1, 600);
+//.register-font(Open Sans, open-sans-regular, 1);
+//.register-font(Open Sans, open-sans-600, 1, 600);
 
 // keyframes
 .blink-keyframe();
@@ -34,15 +30,18 @@
 @btn-primary-color: rgba(255, 255, 255, .9);
 @btn-default-color: rgba(255, 255, 255, .8);
 
+@btn-info-bg: #303e4e;
+
 @tooltip-bg: @white;
 @tooltip-arrow-color: @white;
+
+@dropdown-link-active-bg: @btn-default-bg;
+
+@navbar-default-bg: @white;
 
 
 // BOOTSTRAP OVERRIDES
 // ========================================
-.btn {
-    border-width: 2px;
-}
 
 // custom primary button with gradients
 .btn-primary {
@@ -73,6 +72,16 @@
     }
 }
 
+.btn-link {
+    color: rgba(255, 255, 255, .7);
+    line-height: 2em;
+    .transition(color .2s linear);
+
+    &:hover {
+        color: @white;
+    }
+}
+
 .modal-content .btn-primary {
     .btn-lg;
     .btn-wide;
@@ -91,6 +100,8 @@
 @dash-dashboard-bg: #060610;
 @dash-dashboard-text: rgba(255, 255, 255, .8);
 @dash-dashboard-text-hover: @white;
+
+@dash-dashboard-text-light: rgba(180, 180, 180, .7);
 
 @dash-divider: rgba(255, 255, 255, .50);
 @dash-divider-light: rgba(0, 0, 0, .1);
@@ -138,6 +149,9 @@
 @dash-chart-point-size: 5px;
 @dash-chart-grid: @dash-divider;
 
+@state-danger-text: @dash-status-alert-fail;
+@state-success-text: @dash-status-alert-pass;
+
 // SITE
 // ========================================
 #site {
@@ -165,10 +179,14 @@
         }
     }
 
+    .ct-grid {
+        stroke-dasharray: 2px;
+    }
+
     // chart overrides
     .ct-grid-right-y {
         stroke: @white;
-        stroke-width: 2px;
+        stroke-width: 1px;
         stroke-dasharray: none;
     }
 

@@ -70,4 +70,14 @@ public class TestConfig {
 	public EncryptionService encryptionService() {
 		return Mockito.mock(EncryptionService.class);
 	}
+
+    @Bean
+    public BinaryArtifactService artifactService() {
+        return Mockito.mock(BinaryArtifactService.class);
+    }
+
+	@Bean
+	public PipelineService pipelineService() {
+		return Mockito.mock(PipelineService.class);
+	}
 }

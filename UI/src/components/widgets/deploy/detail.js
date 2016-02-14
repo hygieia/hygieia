@@ -2,15 +2,15 @@
     'use strict';
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .controller('DeployDetailController', DeployDetailController);
 
-    DeployDetailController.$inject = ['$modalInstance', 'environment', 'collectorName', 'DASH_STATUS',];
-    function DeployDetailController($modalInstance, environment, collectorName, DASH_STATUS) {
+    DeployDetailController.$inject = ['$modalInstance', 'environment', 'collectorName', 'DashStatus'];
+    function DeployDetailController($modalInstance, environment, collectorName, DashStatus) {
         /*jshint validthis:true */
         var ctrl = this;
 
-        ctrl.statuses = DASH_STATUS;
+        ctrl.statuses = DashStatus;
         ctrl.environment = environment;
         ctrl.collectorName = collectorName;
 

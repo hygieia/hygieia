@@ -4,8 +4,9 @@
 (function () {
     'use strict';
 
-    angular.module('devops-dashboard').controller('ChatOpsConfigController',
-        ChatOpsConfigController);
+    angular
+        .module(HygieiaConfig.module)
+        .controller('ChatOpsConfigController', ChatOpsConfigController);
 
     ChatOpsConfigController.$inject = ['modalData', '$modalInstance',
         'collectorData'];

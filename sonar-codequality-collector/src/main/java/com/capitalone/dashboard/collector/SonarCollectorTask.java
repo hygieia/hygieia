@@ -96,11 +96,12 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
     }
 
 
-    /**
-     * Clean up unused sonar collector items
-     *
-     * @param collector the {@link SonarCollector}
-     */
+	/**
+	 * Clean up unused sonar collector items
+	 *
+	 * @param collector
+	 *            the {@link SonarCollector}
+	 */
 
     @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed PMD, fixme
     private void clean(SonarCollector collector, List<SonarProject> existingProjects) {

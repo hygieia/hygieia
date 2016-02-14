@@ -3,11 +3,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.capitalone.dashboard</groupId>
-	<artifactId>Hygieia</artifactId>
-	<packaging>pom</packaging>
-	<version>1.5.0-SNAPSHOT</version>
-	<name>${project.groupId}:${project.artifactId}</name>
+  <groupId>com.capitalone.dashboard</groupId>
+  <artifactId>Hygieia</artifactId>
+  <packaging>pom</packaging>
+  <version>2.0.0-SNAPSHOT</version>
+  <name>${project.groupId}:${project.artifactId}</name>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -23,47 +23,47 @@
 		<jackson.version>2.5.0</jackson.version>
 		<guava.version>16.0.1</guava.version>
 		<pmd.version>3.5</pmd.version>
-		<jacoco.version>0.7.4.201502262128</jacoco.version>
+		<jacoco.version>0.7.5.201505241946</jacoco.version>
 	</properties>
 
-	<licenses>
-		<license>
-			<name>The Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-		</license>
-	</licenses>
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
 
-	<developers>
-		<developer>
-			<name>Amit Mawkin</name>
-			<email>amit.mawkin@capitalone.com</email>
-			<organization>CapitalOne</organization>
-			<organizationUrl>http://www.capitalone.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Tapabrata Topo Pal</name>
-			<email>tapabrata.pal@capitalone.com</email>
-			<organization>CapitalOne</organization>
-			<organizationUrl>http://www.capitalone.com</organizationUrl>
-		</developer>
-	</developers>
+  <developers>
+    <developer>
+      <name>Amit Mawkin</name>
+      <email>amit.mawkin@capitalone.com</email>
+      <organization>CapitalOne</organization>
+      <organizationUrl>http://www.capitalone.com</organizationUrl>
+    </developer>
+    <developer>
+   <name>Tapabrata Topo Pal</name>
+   <email>tapabrata.pal@capitalone.com</email>
+   <organization>CapitalOne</organization>
+   <organizationUrl>http://www.capitalone.com</organizationUrl>
+ </developer>
+  </developers>
 
-	<scm>
-		<connection>scm:git:https://github.com/capitalone/Hygieia.git/</connection>
-		<developerConnection>scm:git:https://github.com/capitalone/Hygieia.git/</developerConnection>
-		<url>https://github.com/capitalone/Hygieia.git</url>
-	</scm>
+  <scm>
+    <connection>scm:git:https://github.com/capitalone/Hygieia.git/</connection>
+    <developerConnection>scm:git:https://github.com/capitalone/Hygieia.git/</developerConnection>
+    <url>https://github.com/capitalone/Hygieia.git</url>
+  </scm>
 
 	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
 
 	<build>
@@ -133,9 +133,7 @@
 		</pluginManagement>
 	</build>
 
-
-	<profiles>
-
+     <profiles>
 		<profile>
 			<id>defaultBuild</id>
 			<activation>

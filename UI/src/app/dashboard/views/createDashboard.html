@@ -1,58 +1,56 @@
-<div class="widget-modal">
-    <div class="widget-modal-heading">
-        Create a New Dashboard
-    </div>
-    <div class="widget-modal-body">
-        <form name="cdf" class="form" ng-submit="ctrl.submit(cdf.$valid)" novalidate>
-            <div class="form-group" ng-class="{'has-error': cdf.templateName.$invalid && ctrl.submitted}">
-                <select name="templateName"
-                        class="form-control"
-                        ng-model="ctrl.templateName"
-                        ng-options="item.name for item in ctrl.templates track by item.value"
-                        required>
-                    <option value="">Select a template</option>
-                </select>
+<widget-modal widget-modal-title="Create a New Dashboard">
+    <form name="cdf" class="form" ng-submit="ctrl.submit(cdf.$valid)" novalidate>
+        <form-group input="dashboardType">
+            <select name="dashboardType"
+                    class="form-control"
+                    ng-model="ctrl.dashboardType"
+                    ng-options="item.text for item in ctrl.dashboardTypes track by item.id"
+                    ng-change="ctrl.setAvailableTemplates()"
+                    required>
+                <option value="" disabled>Select a type</option>
+            </select>
 
-                <p class="help-block" ng-if="cdf.dashboardName.$error.required">Please select a template</p>
-            </div>
+        </form-group>
 
-            <div class="form-group" ng-class="{'has-error': cdf.dashboardName.$invalid && ctrl.submitted}">
-                <input
-                        type="text"
-                        name="dashboardName"
-                        class="form-control"
-                        placeholder="Dashboard title"
-                        ng-model="ctrl.dashboardName"
-                        required
-                        maxlength="50"
-                        minlength="6"/>
+        <form-group input="selectedTemplate" errors="{required: 'Please select a template'}">
+            <select name="selectedTemplate"
+                    class="form-control"
+                    ng-model="ctrl.selectedTemplate"
+                    ng-options="item.name for item in ctrl.availableTemplates track by item.value"
+                    required>
+                <option value="" disabled>Select a template</option>
+            </select>
+        </form-group>
 
-                <p class="help-block" ng-if="cdf.dashboardName.$error.required">Template name is required</p>
+        <form-group input="dashboardName" errors="{required: 'Dashboard title is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters'}">
+            <input
+                type="text"
+                name="dashboardName"
+                class="form-control"
+                placeholder="Dashboard title"
+                ng-model="ctrl.dashboardName"
+                required
+                maxlength="50"
+                autocomplete="off"
+                minlength="6"/>
 
-                <p class="help-block" ng-if="cdf.dashboardName.$error.minlength">Min length of 6 characters</p>
+        </form-group>
 
-                <p class="help-block" ng-if="cdf.dashboardName.$error.maxlength">Max length of 50 characters</p>
-            </div>
+        <form-group input="applicationName" errors="{required: 'Application name is required', maxlength: 'Max length of 50 characters'}">
+            <input
+                type="text"
+                name="applicationName"
+                class="form-control"
+                placeholder="Application name"
+                ng-model="ctrl.applicationName"
+                maxlength="50"
+                autocomplete="off"
+                required />
+        </form-group>
 
-            <div class="form-group" ng-class="{'has-error': cdf.applicationName.$invalid && ctrl.submitted}">
-                <input
-                        type="text"
-                        name="applicationName"
-                        class="form-control"
-                        placeholder="Application name"
-                        ng-model="ctrl.applicationName"
-                        maxlength="50"
-                        required/>
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Create</button>
+        </div>
 
-                <p class="help-block" ng-if="cdf.applicationName.$error.required">Application name is required</p>
-
-                <p class="help-block" ng-if="cdf.applicationName.$error.maxlength">Max length of 50 characters</p>
-            </div>
-
-            <div class="button-row row text-center">
-                <button type="submit" class="btn btn-primary btn-wide">Create</button>
-            </div>
-
-        </form>
-    </div>
-</div>
+    </form>
+</widget-modal>

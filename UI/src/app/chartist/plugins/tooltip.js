@@ -7,7 +7,7 @@
     'use strict';
 
     var defaultOptions = {
-
+        className: ''
     };
 
     Chartist.plugins = Chartist.plugins || {};
@@ -16,7 +16,7 @@
         options = Chartist.extend({}, defaultOptions, options);
 
         return function tooltip(chart) {
-            if (!(chart instanceof Chartist.Line) || !(chart instanceof Chartist.Bar)) {
+            if (!(chart instanceof Chartist.Line) && !(chart instanceof Chartist.Bar)) {
                 return;
             }
 
@@ -30,10 +30,10 @@
                         y2: data.y
                     }, 'ct-tooltip-trigger-area');
 
-                    area._node.setAttribute('ct:value', data.value);
-                    /*var parent = data.group._node.parentNode;
-                    parent.insertBefore(area._node, parent.firstChild);*/
-
+                    area._node.setAttribute('ct:value', data.value.y);
+                    if(data.meta) {
+                        area._node.setAttribute('ct:meta', data.meta);
+                    }
                     data.group.append(area);
                 }
             });
@@ -42,36 +42,49 @@
                 var triggerClass = chart instanceof Chartist.Line ?
                     '.ct-tooltip-trigger-area' :
                     '.ct-bar';
+
                 var areas = data.svg.querySelectorAll(triggerClass);
                 if(!areas) {
                     return;
                 }
 
                 var svgParent = data.svg._node.parentNode;
-                var tooltip = svgParent.children[0];
-                var tooltipContent;
-                if(tooltip.getAttribute('class') != 'tooltip top') {
-                    tooltip = document.createElement('div');
-                    tooltip.setAttribute('class', 'tooltip top');
-
-                    var arrow = document.createElement('div');
-                    arrow.setAttribute('class', 'tooltip-arrow');
-                    tooltip.appendChild(arrow);
-
-                    tooltipContent = document.createElement('div');
-                    tooltipContent.setAttribute('class', 'tooltip-inner');
-                    tooltip.appendChild(tooltipContent);
-
-                    tooltipContent = angular.element(tooltipContent);
-
-                    svgParent.insertBefore(tooltip, svgParent.firstChild);
-                }
 
                 for(var x=0; x<areas.svgElements.length; x++) {
                     var node=areas.svgElements[x];
 
                     angular.element(node._node).bind('mouseenter', function(event) {
-                        tooltipContent.html(Math.round(angular.element(this).attr('ct:value') * 100) / 100);
+                        var tooltip = svgParent.querySelector('.tooltip');
+
+                        if(!tooltip) {
+                            tooltip = document.createElement('div');
+                            tooltip.setAttribute('class', 'tooltip top');
+
+                            var arrow = document.createElement('div');
+                            arrow.setAttribute('class', 'tooltip-arrow');
+                            tooltip.appendChild(arrow);
+
+                            var content = document.createElement('div');
+                            content.setAttribute('class', 'tooltip-inner');
+                            tooltip.appendChild(content);
+
+                            svgParent.insertBefore(tooltip, svgParent.firstChild);
+                        }
+
+                        var tooltipContent = angular.element(tooltip.querySelector('.tooltip-inner')),
+                            el = angular.element(this),
+                            text = Math.round(el.attr('ct:value') * 100) / 100,
+                            meta = el.attr('ct:meta');
+
+                        tooltipContent.attr('class', 'tooltip-inner ' + options.className);
+
+                        if(meta) {
+                            var div = document.createElement('div');
+                            div.innerHTML = meta;
+                            text = div.childNodes[0].nodeValue;
+                        }
+
+                        tooltipContent.html(text);
 
                         angular.element(tooltip)
                             .css({
@@ -91,7 +104,7 @@
                     });
 
                     angular.element(node._node).bind('mouseleave', function() {
-                        angular.element(tooltip).css({
+                        angular.element(svgParent.querySelector('.tooltip')).css({
                             display: 'none'
                         });
                     });

@@ -27,6 +27,8 @@ public class CodeQuality extends BaseModel {
     private String url;
     private CodeQualityType type;
     private String version;
+    private  ObjectId buildId;
+
     private Set<CodeQualityMetric> metrics = new HashSet<>();
 
     public ObjectId getCollectorItemId() {
@@ -75,6 +77,14 @@ public class CodeQuality extends BaseModel {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public ObjectId getBuildId() {
+        return buildId;
+    }
+
+    public void setBuildId(ObjectId buildId) {
+        this.buildId = buildId;
     }
 
     public Set<CodeQualityMetric> getMetrics() {

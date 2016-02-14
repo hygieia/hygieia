@@ -1,0 +1,160 @@
+<widget-modal id="quality-details"
+              class="team-environment-commit-detail"
+              widget-modal-title="90-day Pipeline Health Trends"
+              widget-modal-close="true">
+    <tabset justified="true">
+        <tab active="ctrl.tabSettings.unitTests.active" select="ctrl.selectTab(0)">
+            <tab-heading>
+                <product-team-summary-field
+                    number="ctrl.unitTests.number"
+                    percent="true"
+                    trend-up="ctrl.unitTests.trendUp"
+                    success-state="ctrl.unitTests.successState"
+                    caption="Unit tests passed"></product-team-summary-field>
+            </tab-heading>
+
+            <chartist class="ct-chart ct-octave"
+                      chartist-chart-type="Line"
+                      chartist-data="ctrl.unitTestChartData"
+                      chartist-chart-options="ctrl.unitTestChartOptions"
+            ></chartist>
+        </tab>
+        <tab active="ctrl.tabSettings.codeCoverage.active" select="ctrl.selectTab(1)">
+            <tab-heading>
+                <product-team-summary-field
+                    number="ctrl.codeCoverage.number"
+                    percent="true"
+                    trend-up="ctrl.codeCoverage.trendUp"
+                    success-state="ctrl.codeCoverage.successState"
+                    caption="Code coverage"></product-team-summary-field>
+            </tab-heading>
+
+            <chartist class="ct-chart ct-octave"
+                      chartist-chart-type="Line"
+                      chartist-data="ctrl.codeCoverageChartData"
+                      chartist-chart-options="ctrl.codeCoverageChartOptions"
+                      ></chartist>
+        </tab>
+        <tab active="ctrl.tabSettings.codeIssues.active" select="ctrl.selectTab(2)">
+            <tab-heading>
+                <product-team-summary-field
+                    number="ctrl.codeIssues.number"
+                    percent="false"
+                    trend-up="ctrl.codeIssues.trendUp"
+                    success-state="ctrl.codeIssues.successState"
+                    caption="Code issues"></product-team-summary-field>
+            </tab-heading>
+
+            <chartist class="ct-chart ct-octave quality-details-series-chart"
+                      chartist-chart-type="Bar"
+                      chartist-data="ctrl.codeIssuesChartData"
+                      chartist-chart-options="ctrl.codeIssuesChartOptions"
+            ></chartist>
+
+            <div class="code-quality-series-legend">
+                <span class="legend-block legend-block-d">
+                    <span class="legend-square"></span>
+                    <span class="legend-text">Critical</span>
+                </span>
+                <span class="legend-block legend-block-c">
+                    <span class="legend-square"></span>
+                    <span class="legend-text">Blocker</span>
+                </span>
+                <span class="legend-block legend-block-b">
+                    <span class="legend-square"></span>
+                    <span class="legend-text">Major</span>
+                </span>
+                <span class="legend-block legend-block-a">
+                    <span class="legend-square"></span>
+                    <span class="legend-text">Issues</span>
+                </span>
+            </div>
+        </tab>
+        <tab active="ctrl.tabSettings.securityIssues.active" select="ctrl.selectTab(3)">
+            <tab-heading>
+                <product-team-summary-field
+                    number="ctrl.securityIssues.number"
+                    percent="false"
+                    trend-up="ctrl.securityIssues.trendUp"
+                    success-state="ctrl.securityIssues.successState"
+                    caption="Security issues"></product-team-summary-field>
+            </tab-heading>
+
+            <chartist class="ct-chart ct-octave quality-details-series-chart"
+                      chartist-chart-type="Bar"
+                      chartist-data="ctrl.securityAnalysisChartData"
+                      chartist-chart-options="ctrl.securityAnalysisChartOptions"
+            ></chartist>
+
+            <div class="code-quality-series-legend">
+                <span class="legend-block legend-block-d">
+                    <span class="legend-square"></span>
+                    <span class="legend-text">Critical</span>
+                </span>
+                <span class="legend-block legend-block-c">
+                    <span class="legend-square"></span>
+                    <span class="legend-text">Blocker</span>
+                </span>
+                <span class="legend-block legend-block-b">
+                    <span class="legend-square"></span>
+                    <span class="legend-text">Major</span>
+                </span>
+            </div>
+        </tab>
+        <tab active="ctrl.tabSettings.buildSuccess.active" select="ctrl.selectTab(4)">
+            <tab-heading>
+                <product-team-summary-field
+                    number="ctrl.buildSuccess.number"
+                    percent="true"
+                    trend-up="ctrl.buildSuccess.trendUp"
+                    success-state="ctrl.buildSuccess.successState"
+                    caption="Build success"></product-team-summary-field>
+            </tab-heading>
+
+            <chartist class="ct-chart ct-octave"
+                      chartist-chart-type="Line"
+                      chartist-data="ctrl.buildSuccessChartData"
+                      chartist-chart-options="ctrl.buildSuccessChartOptions"
+            ></chartist>
+        </tab>
+        <tab active="ctrl.tabSettings.buildFix.active" select="ctrl.selectTab(5)">
+            <tab-heading>
+                <product-team-summary-field
+                    number="ctrl.buildFix.number"
+                    measurement="{{ctrl.buildFix.metric}}"
+                    trend-up="ctrl.buildFix.trendUp"
+                    success-state="ctrl.buildFix.successState"
+                    caption="Build fix rate"></product-team-summary-field>
+            </tab-heading>
+
+            <chartist class="ct-chart ct-octave fixed-build-chart"
+                      chartist-chart-type="Line"
+                      chartist-data="ctrl.fixedBuildChartData"
+                      chartist-chart-options="ctrl.fixedBuildChartOptions"
+            ></chartist>
+        </tab>
+        <tab active="ctrl.tabSettings.functionalTestsPassed.active" select="ctrl.selectTab(6)">
+            <tab-heading>
+                <product-team-summary-field
+                    number="ctrl.functionalTestsPassed.number"
+                    percent="true"
+                    trend-up="ctrl.functionalTestsPassed.trendUp"
+                    success-state="ctrl.functionalTestsPassed.successState"
+                    caption="Func tests passed"></product-team-summary-field>
+            </tab-heading>
+
+            <chartist class="ct-chart ct-octave quality-details-series-chart"
+                      chartist-chart-type="Line"
+                      chartist-data="ctrl.funcTestsPassedChartData"
+                      chartist-chart-options="ctrl.funcTestsPassedChartOptions"
+            ></chartist>
+
+            <div class="code-quality-series-legend">
+                <span class="legend-block legend-block-{{legend.chartSeriesName}}" ng-repeat="legend in ctrl.funcTestsPassedLegend">
+                    <span class="legend-square"></span>
+                    <span class="legend-text">{{legend.name}}</span>
+                </span>
+            </div>
+        </tab>
+    </tabset>
+</widget-modal>

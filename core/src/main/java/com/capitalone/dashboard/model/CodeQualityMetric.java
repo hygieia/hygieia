@@ -14,6 +14,13 @@ public class CodeQualityMetric {
         this.name = name;
     }
 
+    public CodeQualityMetric() {
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

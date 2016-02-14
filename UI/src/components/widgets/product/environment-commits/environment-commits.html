@@ -1,0 +1,54 @@
+<widget-modal class="team-environment-commit-detail">
+    <div class="widget-modal-heading-markup clearfix">
+        <chartist class="ct-chart ct-square pull-left heading-pie-chart"
+                  chartist-chart-type="Pie"
+                  chartist-data="ctrl.headingPieData"
+                  chartist-chart-options="ctrl.headingPieOptions"
+        ></chartist>
+
+        <span class="heading-num">
+            {{ctrl.totalCommits}}
+        </span>
+        <div class="heading-num-details">
+            <div class="from-team"><ng-pluralize count="ctrl.totalCommits" when="{1:'commit',other:'commits'}"></ng-pluralize></div>
+            <div class="in-environment">from <span class="in-environment-team-name">{{ctrl.displayTeamName}}</span> in {{ctrl.currentStageName}}</div>
+        </div>
+    </div>
+
+    <div class="team-environment-detail-rows">
+        <div class="team-environment-detail-row"
+             ng-class="{'detail-row-expanded': commit.expanded}"
+             ng-repeat="commit in ctrl.commits"
+             ng-click="ctrl.toggleCommitDetails(commit)"
+            >
+            <div class="team-environment-detail-header clearfix">
+                <div class="status-icon-container">
+                    <span class="dash-status-lg" dash-status="false" ng-if="commit.errorState"></span>
+                </div>
+                <div class="team-environment-detail-text">
+                    <!--<span class="team-environment-detail-text-name-link" ng-click="ctrl.viewCommitInRepo(commit, $event)">View in repo</span>-->
+                    <div class="team-environment-detail-text-name" ng-class="{'text-danger' : commit.errorState}">
+                        {{commit.message}}
+                    </div>
+                    <div class="team-environment-detail-text-from">From {{commit.author}} {{ctrl.getCommitDisplayAge(commit)}} <span>#{{commit.id}}</span></div>
+                </div>
+                <div class="team-environment-detail-toggle">
+                    <span class="fa fa-2x fa-plus" ng-class="{'team-environment-detail-open': commit.expanded}"></span>
+                </div>
+            </div>
+            <table class="team-environment-detail-stages clearfix">
+                <thead>
+                <tr>
+                    <th ng-repeat="stage in ctrl.stages">{{stage}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td ng-repeat="stage in ctrl.stages">{{ctrl.getCommitStageTimeDisplay(commit, stage)}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</widget-modal>

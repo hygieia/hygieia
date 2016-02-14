@@ -16,6 +16,7 @@ public class HudsonSettings {
     private String cron;
     private boolean saveLog = false;
     private List<String> servers;
+    private List<String> niceNames;
     private String username;
     private String apiKey;
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
@@ -62,6 +63,14 @@ public class HudsonSettings {
     
     public void setDockerLocalHostIP(String dockerLocalHostIP) {
         this.dockerLocalHostIP = dockerLocalHostIP;
+    }
+
+    public List<String> getNiceNames() {
+        return niceNames;
+    }
+
+    public void setNiceNames(List<String> niceNames) {
+        this.niceNames = niceNames;
     }
 
 	//Docker NATs the real host localhost to 10.0.2.2 when running in docker

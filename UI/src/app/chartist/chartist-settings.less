@@ -6,28 +6,32 @@
 @ct-class-chart: ct-chart;
 @ct-class-chart-line: ct-chart-line;
 @ct-class-chart-bar: ct-chart-bar;
+@ct-class-horizontal-bars: ct-horizontal-bars;
 @ct-class-chart-pie: ct-chart-pie;
+@ct-class-chart-donut: ct-chart-donut;
 @ct-class-label: ct-label;
 @ct-class-series: ct-series;
 @ct-class-line: ct-line;
 @ct-class-point: ct-point;
 @ct-class-area: ct-area;
 @ct-class-bar: ct-bar;
-@ct-class-slice: ct-slice;
-@ct-class-donut: ct-donut;
+@ct-class-slice-pie: ct-slice-pie;
+@ct-class-slice-donut: ct-slice-donut;
 @ct-class-grid: ct-grid;
 @ct-class-vertical: ct-vertical;
 @ct-class-horizontal: ct-horizontal;
+@ct-class-start: ct-start;
+@ct-class-end: ct-end;
 
 // Container ratio
-@ct-container-ratio: 1/1.618;
+@ct-container-ratio: (1/1.618);
 
 // Text styles for labels
 @ct-text-color: rgba(0, 0, 0, 0.4);
-@ct-text-size: 0.9rem;
-@ct-text-align: left;
-@ct-horizontal-text-align: left;
-@ct-vertical-text-align: right;
+@ct-text-size: 0.75rem;
+@ct-text-align: flex-start;
+@ct-text-justify: flex-start;
+@ct-text-line-height: 1;
 
 // Grid styles
 @ct-grid-color: rgba(0, 0, 0, 0.2);
@@ -36,7 +40,7 @@
 
 // Line chart properties
 @ct-line-width: 4px;
-@ct-line-dasharray: 0;
+@ct-line-dasharray: false;
 @ct-point-size: 10px;
 // Line chart point, can be either round or square
 @ct-point-shape: round;
@@ -61,12 +65,20 @@
 @ct-include-alternative-responsive-containers: @ct-include-classes;
 
 // Series names and colors. This can be extended or customized as desired. Just add more series and colors.
-// using `extract()` function, we can extract any value. eg: extract(@vars, 1); 
-@ct-series-names: a, b, c, d;
-@ct-series-colors: #d70206, #F05B4F, #F4C63D, #453D3F;	
-
-
-
-
-
-	
+@ct-series-names: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o;
+@ct-series-colors:
+    #d70206,
+    #f05b4f,
+    #f4c63d,
+    #d17905,
+    #453d3f,
+    #59922b,
+    #0544d3,
+    #6b0392,
+    #f05b4f,
+    #dda458,
+    #eacf7d,
+    #86797d,
+    #b2c326,
+    #6188e2,
+    #a748ca;

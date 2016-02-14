@@ -26,7 +26,6 @@ public class Build extends BaseModel {
 
     private String number;
     private String buildUrl;
-    private String artifactVersionNumber;
     private long startTime;
     private long endTime;
     private long duration;
@@ -69,14 +68,6 @@ public class Build extends BaseModel {
 
     public void setBuildUrl(String buildUrl) {
         this.buildUrl = buildUrl;
-    }
-
-    public String getArtifactVersionNumber() {
-        return artifactVersionNumber;
-    }
-
-    public void setArtifactVersionNumber(String artifactVersionNumber) {
-        this.artifactVersionNumber = artifactVersionNumber;
     }
 
     public long getStartTime() {

@@ -24,8 +24,11 @@ import java.util.Map;
 public class CollectorItem extends BaseModel {
 
     private String description;
+    private String niceName;
     private boolean enabled;
+    private boolean pushed;
     private ObjectId collectorId;
+    private long lastUpdated;
     private Map<String,Object> options = new HashMap<>();
 
     @Transient
@@ -66,5 +69,28 @@ public class CollectorItem extends BaseModel {
     public Map<String, Object> getOptions() {
         return options;
     }
-    
+
+    public boolean isPushed() {
+        return pushed;
+    }
+
+    public void setPushed(boolean pushed) {
+        this.pushed = pushed;
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public String getNiceName() {
+        return niceName;
+    }
+
+    public void setNiceName(String niceName) {
+        this.niceName = niceName;
+    }
 }
