@@ -51,9 +51,8 @@
                     var obj = data[x];
                     var item = {
                         value: obj.id,
-                        name: obj.collector.name + ' - ' + obj.description
+                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description : obj.collector.name + '-' + obj.description)
                     };
-
                     builds.push(item);
 
                     if (currentCollectorItemId !== null && item.value == currentCollectorItemId) {
