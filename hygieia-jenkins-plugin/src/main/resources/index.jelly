@@ -1,0 +1,7 @@
+<!--
+  This view is used to render the plugin list page.
+  Since we don't really have anything dynamic here, let's just use static HTML. 
+-->
+<div>
+  This plugin is publisher that can publish build status to Hygieia Dashboard.
+</div>
