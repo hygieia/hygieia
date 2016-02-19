@@ -19,7 +19,6 @@ import com.capitalone.dashboard.request.CollectorRequest;
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.mysema.query.BooleanBuilder;
-import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +100,8 @@ public class CodeQualityServiceImpl implements CodeQualityService {
             result = codeQualityRepository.findAll(builder.getValue(), pageRequest).getContent();
         }
         Collector collector = collectorRepository.findOne(item.getCollectorId());
-        return new DataResponse<>(result, collector.getLastExecuted());
+        long lastExecuted = (collector == null) ? 0 : collector.getLastExecuted();
+        return new DataResponse<>(result, lastExecuted);
     }
 
     protected CollectorItem getCollectorItem(CodeQualityRequest request) {

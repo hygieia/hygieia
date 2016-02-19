@@ -59,7 +59,6 @@
         collectorData.collectorsByType('ChatOps').then(processCollectorsResponse);
 
         function processCollectorsResponse(data) {
-            console.log(data);
             ctrl.collectors = data;
         }
 
@@ -110,8 +109,6 @@
                 componentId: modalData.dashboard.application.components[0].id,
                 collectorItemId: response.data.id
             };
-
-            console.log("PostObject is:"+JSON.stringify(postObj));
 
             // pass this new config to the modal closing so it's saved
             $modalInstance.close(postObj);

@@ -24,8 +24,8 @@
 			value: 'Stash'
 		}];
 
-console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
-		console.log(JSON.stringify(widgetConfig.options.id));
+//console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
+//		console.log(JSON.stringify(widgetConfig.options.id));
 
 		if (!widgetConfig.options.scm) {
 			ctrl.repoOption="";
@@ -60,7 +60,6 @@ console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
 		collectorData.collectorsByType('scm').then(processCollectorsResponse);
 
 		function processCollectorsResponse(data) {
-			console.log(data);
 			ctrl.collectors = data;
 		}
 
@@ -124,7 +123,6 @@ console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
 					}
 				};
 			}else{
-				console.log(repoTypeName);
 				item = {
 					collectorId : _.findWhere(ctrl.collectors, { name: 'Subversion' }).id,
 					options: {

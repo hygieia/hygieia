@@ -28,16 +28,10 @@
         var tz = jstz.determine(); // Determines the time zone of the browser client
         var completeUrl = ctrl.chatOpsServerUrl + "/v2/room/" + ctrl.chatOpsRoomName + "/history/latest?timezone=" + tz.name() + "&max-results=5&auth_token=" + ctrl.chatOpsRoomAuthToken;
 
-        console.log("Complete URl is :" + completeUrl);
-
-
         ctrl.load = function () {
-            console.log("In load");
             var deferred = $q.defer();
 
             chatOpsData.details(completeUrl).then(function (data) {
-
-                console.log("DATA GOT BACK:" + JSON.stringify(data));
                 if (typeof data.error != 'undefined') {
                     ctrl.apiErrorOccured=true;
                     ctrl.messageArray=data;
