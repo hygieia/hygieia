@@ -38,7 +38,6 @@
                     data[j].displayName = ((data[j].niceName != null) && (data[j].niceName != ""))? data[j].niceName : data[j].collector.name;
                 }
             }
-            console.log(data);
             ctrl.caJobs = data;
 
             ctrl.caCollectorItem = caCollectorItemId ? _.findWhere(ctrl.caJobs, {id: caCollectorItemId}) : null;
