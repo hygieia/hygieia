@@ -33,7 +33,7 @@ For the past two years, we’ve looked for DevOps visualization tools in the com
 #### Team Level Dashboard
 ![Image](/media/images/hygiea-screenshot.jpg)
 
-#### "Prodct" or "Program" Level Dashboard
+#### "Product" or "Program" Level Dashboard
 ![Image](/media/images/hygieia-product-dashboard.png)
 
 ### Contributors :
