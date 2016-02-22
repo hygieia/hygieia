@@ -12,7 +12,6 @@ import com.google.common.collect.Sets;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -72,7 +71,7 @@ public class HudsonCollectorTaskTests {
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(twoJobsWithTwoBuilds(SERVER1, NICENAME1));
         when(dbComponentRepository.findAll()).thenReturn(components());
         task.collect(collectorWithOneServer());
-        ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        //ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(hudsonJobRepository, times(1)).save(anyListOf(HudsonJob.class));
     }
 

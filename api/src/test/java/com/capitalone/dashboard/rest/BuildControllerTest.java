@@ -88,7 +88,8 @@ public class BuildControllerTest {
     @Test
     public void insertBuildGoodRequest() throws Exception {
         BuildDataCreateRequest request = makeBuildRequest();
-        byte[] content = TestUtil.convertObjectToJsonBytes(request);
+        @SuppressWarnings("unused")
+		byte[] content = TestUtil.convertObjectToJsonBytes(request);
         when(buildService.create(Matchers.any(BuildDataCreateRequest.class))).thenReturn("123456");
         mockMvc.perform(post("/build")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -101,7 +102,8 @@ public class BuildControllerTest {
     public void insertBuildBadRequest1() throws Exception {
         BuildDataCreateRequest request = makeBuildRequest();
         request.setJobName(null);
-        byte[] content = TestUtil.convertObjectToJsonBytes(request);
+        @SuppressWarnings("unused")
+		byte[] content = TestUtil.convertObjectToJsonBytes(request);
         when(buildService.create(Matchers.any(BuildDataCreateRequest.class))).thenReturn("123456");
         mockMvc.perform(post("/build")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)

@@ -79,7 +79,8 @@ public class ArtifactControllerTest {
         return artifact;
     }
 
-    private int intVal(long value) {
+    @SuppressWarnings("unused")
+	private int intVal(long value) {
         return Long.valueOf(value).intValue();
     }
 

@@ -43,8 +43,6 @@ public class ChatOpsRepo extends CollectorItem {
         	return false;
         }
 
-        ChatOpsRepo chatOpsRepo = (ChatOpsRepo) o;
-
         return getChatopsServerUrl().equals(ChatOpsRepo.getChatopsServerUrl()) & getChatopsServerUrl().equals(ChatOpsRepo.getChatopsServerUrl()) & getChatopsAuthToken().equals(ChatOpsRepo.getChatopsAuthToken());
     }
 
