@@ -80,7 +80,6 @@ public class DefaultHudsonClient implements HudsonClient {
         this.settings = settings;
     }
 
-    @SuppressWarnings("PMD.D")
     @Override
     public Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl) {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
