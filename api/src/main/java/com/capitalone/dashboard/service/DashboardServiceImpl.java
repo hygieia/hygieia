@@ -20,7 +20,8 @@ public class DashboardServiceImpl implements DashboardService {
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
     private final CollectorItemRepository collectorItemRepository;
-    private final PipelineRepository pipelineRepository;
+    @SuppressWarnings("unused")
+	private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
 
     @Autowired
@@ -248,7 +249,8 @@ public class DashboardServiceImpl implements DashboardService {
 		return dashboardOwner;
 	}
 
-    private DashboardType getDashboardType(Dashboard dashboard){
+    @SuppressWarnings("unused")
+	private DashboardType getDashboardType(Dashboard dashboard){
         if(dashboard.getType() != null){
             return dashboard.getType();
         }

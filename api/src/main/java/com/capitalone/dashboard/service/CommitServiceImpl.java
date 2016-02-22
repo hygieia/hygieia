@@ -126,7 +126,8 @@ public class CommitServiceImpl implements CommitService {
         private String url;
 
         private JSONObject jsonObject;
-        private String jsonString;
+        @SuppressWarnings("unused")
+		private String jsonString;
         JSONParser parser = new JSONParser();
 
 

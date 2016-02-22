@@ -55,7 +55,9 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 			FeatureRepository featureRepository, ScopeOwnerRepository teamRepository,
 			ScopeRepository projectRepository,
 			FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings,VersionOneDataFactoryImpl v1Connection) {
+			FeatureSettings featureSettings 
+			//,VersionOneDataFactoryImpl v1Connection
+			) {
 		super(taskScheduler, Constants.VERSIONONE);
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepository = teamRepository;
