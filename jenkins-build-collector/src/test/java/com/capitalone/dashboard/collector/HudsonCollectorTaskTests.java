@@ -94,7 +94,8 @@ public class HudsonCollectorTaskTests {
     @Test
     public void delete_job() {
         HudsonCollector collector = collectorWithOneServer();
-        collector.setId(new ObjectId().get());
+        new ObjectId();
+		collector.setId(ObjectId.get());
         HudsonJob job1 = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
         job1.setCollectorId(collector.getId());
         HudsonJob job2 = hudsonJob("JOB2", SERVER1, "JOB2_URL", NICENAME1);
@@ -116,7 +117,8 @@ public class HudsonCollectorTaskTests {
     @Test
     public void delete_never_job() {
         HudsonCollector collector = collectorWithOneServer();
-        collector.setId(new ObjectId().get());
+        new ObjectId();
+		collector.setId(ObjectId.get());
         HudsonJob job1 = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
         job1.setCollectorId(collector.getId());
         List<HudsonJob> jobs = new ArrayList<>();

@@ -111,7 +111,6 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
      * @param existingJobs
      */
 
-    @SuppressWarnings("PMD.UnnecessaryFullyQualifiedName")
     private void clean(HudsonCollector collector, List<HudsonJob> existingJobs) {
         Set<ObjectId> uniqueIDs = new HashSet<>();
         for (com.capitalone.dashboard.model.Component comp : dbComponentRepository

@@ -51,7 +51,6 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 *            system
 	 */
 	@Autowired
-	@SuppressWarnings("unused")
 	public FeatureCollectorTask(TaskScheduler taskScheduler,
 			FeatureRepository featureRepository, ScopeOwnerRepository teamRepository,
 			ScopeRepository projectRepository,
