@@ -141,11 +141,7 @@ public class PipelineServiceImpl implements PipelineService {
 
 
     private boolean isBetween(Long commitTimestamp, Long lowerBound, Long upperBound){
-        if(lowerBound <= commitTimestamp && commitTimestamp <= upperBound)
-        {
-            return true;
-        }
-        return false;
+        return (lowerBound <= commitTimestamp && commitTimestamp <= upperBound);
     }
 
     /**
