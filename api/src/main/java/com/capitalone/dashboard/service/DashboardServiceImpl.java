@@ -203,7 +203,7 @@ public class DashboardServiceImpl implements DashboardService {
     private static final class WidgetByIdPredicate implements Predicate<Widget> {
         private final ObjectId widgetId;
 
-        private WidgetByIdPredicate(ObjectId widgetId) {
+        public WidgetByIdPredicate(ObjectId widgetId) {
             this.widgetId = widgetId;
         }
 
