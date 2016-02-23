@@ -146,6 +146,7 @@
 				<module>sonar-codequality-collector</module>
 				<module>subversion-scm-collector</module>
 				<module>github-scm-collector</module>
+				<module>stash-scm-collector</module>
 				<module>versionone-feature-collector</module>
 				<module>udeploy-deployment-collector</module>
 				<module>jira-feature-collector</module>
