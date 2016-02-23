@@ -1,6 +1,7 @@
 package jenkins.plugins.hygieia;
 
 import hudson.ProxyConfiguration;
+import hygieia.utils.WildCardURL;
 import jenkins.model.Jenkins;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -15,8 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 
 public class RestCall {
@@ -27,11 +30,11 @@ public class RestCall {
 
 //Fixme: Need refactoring to remove code duplication.
 
-    protected HttpClient getHttpClient() {
+    protected HttpClient getHttpClient(String url) {
         HttpClient client = new HttpClient();
         if (Jenkins.getInstance() != null) {
             ProxyConfiguration proxy = Jenkins.getInstance().proxy;
-            if (proxy != null) {
+            if ((proxy != null) && (!bypassProxy(url, proxy.getNoProxyHostPatterns()))){
                 client.getHostConfiguration().setProxy(proxy.name, proxy.port);
                 String username = proxy.getUserName();
                 String password = proxy.getPassword();
@@ -45,9 +48,17 @@ public class RestCall {
         return client;
     }
 
+    private boolean bypassProxy (String url, List<Pattern> bypassList)  {
+        for (Pattern bp: bypassList) {
+            WildCardURL wurl = new WildCardURL(bp.toString());
+            if (wurl.matches(url)) return true;
+        }
+        return false;
+    }
+
     public RestCallResponse makeRestCallPost(String url, String jsonString) {
         RestCallResponse response;
-        HttpClient client = getHttpClient();
+        HttpClient client = getHttpClient(url);
 
         PostMethod post = new PostMethod(url);
 
@@ -71,7 +82,7 @@ public class RestCall {
 
     public RestCallResponse makeRestCallGet(String url) {
         RestCallResponse response;
-        HttpClient client = getHttpClient();
+        HttpClient client = getHttpClient(url);
         GetMethod get = new GetMethod(url);
         try {
             get.getParams().setContentCharset("UTF-8");
