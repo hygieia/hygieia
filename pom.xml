@@ -23,10 +23,10 @@
 		<jackson.version>2.5.0</jackson.version>
 		<guava.version>16.0.1</guava.version>
 		<pmd.version>3.6</pmd.version>
-<!--
 		<jacoco.version>0.7.6.201602180812</jacoco.version>
--->
+<!--
 		<jacoco.version>0.7.4.201502262128</jacoco.version>
+-->
 	</properties>
 
   <licenses>
