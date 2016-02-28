@@ -16,12 +16,12 @@ ENV MAVEN_HOME /usr/share/maven
 
 
 #Create a log for jenkins (best practice) per Maxfield Stewart
-RUN mkdir /var/log/jenkins
-RUN chown -R jenkins:jenkins /var/log/jenkins
-RUN mkdir /var/cache/jenkins
-RUN chown -R jenkins:jenkins /var/cache/jenkins
-ENV JAVA_OPTS -Xmx8192m
-ENV JENKINS_OPTS --handlerCountStartup=100 --handlerCountMax=300 --logfile=/var/log/jenkins/jenkins.log  --webroot=/var/cache/jenkins/war
+#RUN mkdir /var/log/jenkins
+#RUN chown -R jenkins:jenkins /var/log/jenkins
+#RUN mkdir /var/cache/jenkins
+#RUN chown -R jenkins:jenkins /var/cache/jenkins
+#ENV JAVA_OPTS -Xmx8192m
+#ENV JENKINS_OPTS --handlerCountStartup=100 --handlerCountMax=300 --logfile=/var/log/jenkins/jenkins.log  --webroot=/var/cache/jenkins/war
 
 
 #setup plugins
