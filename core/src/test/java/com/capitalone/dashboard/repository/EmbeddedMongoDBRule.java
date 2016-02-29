@@ -54,34 +54,38 @@ public class EmbeddedMongoDBRule extends ExternalResource {
 
 				// Case for Proxy authentication required
 				try {
-					StringTokenizer tokenizedUrl = new StringTokenizer(proxyUrl
-							.getUserInfo().toString(), ":");
-					if (tokenizedUrl.hasMoreTokens()) {
-						final String authUser = tokenizedUrl.nextToken();
+					String proxyUserInfo = proxyUrl.getUserInfo();
+					if (proxyUserInfo != null) {
+						StringTokenizer tokenizedUrl = new StringTokenizer(proxyUserInfo, ":");
 						if (tokenizedUrl.hasMoreTokens()) {
-							final String authPassword = tokenizedUrl
-									.nextToken();
+							final String authUser = tokenizedUrl.nextToken();
+							if (tokenizedUrl.hasMoreTokens()) {
+								final String authPassword = tokenizedUrl
+										.nextToken();
 
-							if ((proxy != null && !proxy.isEmpty())
-									&& (authUser != null && !authUser.isEmpty())
-									&& (authUser != null && !authPassword
-											.isEmpty())) {
+								if ((proxy != null && !proxy.isEmpty())
+										&& (authUser != null && !authUser.isEmpty())
+										&& (authUser != null && !authPassword
+												.isEmpty())) {
 
-								Authenticator.setDefault(new Authenticator() {
-									public PasswordAuthentication getPasswordAuthentication() {
-										return new PasswordAuthentication(
-												authUser, authPassword
-														.toCharArray());
-									}
-								});
+									Authenticator.setDefault(new Authenticator() {
+										public PasswordAuthentication getPasswordAuthentication() {
+											return new PasswordAuthentication(
+													authUser, authPassword
+															.toCharArray());
+										}
+									});
 
-								System.setProperty("http.proxyUser", authUser);
-								System.setProperty("http.proxyPassword",
-										authPassword);
+									System.setProperty("http.proxyUser", authUser);
+									System.setProperty("http.proxyPassword",
+											authPassword);
 
+								}
+							} else {
+								LOGGER.warn("Proxy Authentication did not contain a valid password parameter\nSkipping Authenticated proxy step.");
 							}
 						} else {
-							LOGGER.warn("Proxy Authentication did not contain a valid password parameter\nSkipping Authenticated proxy step.");
+							LOGGER.warn("Proxy Authentication did not contain user info\nSkipping Authenticated proxy step.");
 						}
 					} else {
 						LOGGER.info("Proxy did not contain authentication parameters - assuming non-authenticated proxy");
