@@ -79,7 +79,7 @@ public class SonarBuilder {
     public CodeQualityCreateRequest getSonarMetrics() throws ParseException {
         if (StringUtils.isEmpty(sonarServer) || StringUtils.isEmpty(sonarProjectID)) return null;
         String url = String.format(sonarServer + URL_METRIC_FRAGMENT, sonarProjectID, METRICS);
-        RestCall restCall = new RestCall();
+        RestCall restCall = new RestCall(publisher.getDescriptor().isUseProxy());
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
         int responseCode = callResponse.getResponseCode();
         if (responseCode == HttpStatus.SC_OK) {
@@ -176,7 +176,7 @@ public class SonarBuilder {
 
     private String getSonarProjectID(String project) throws IOException, URISyntaxException, ParseException {
         String url = String.format(sonarServer + URL_PROJECT_ID_FRAGMENT, project);
-        RestCall restCall = new RestCall();
+        RestCall restCall = new RestCall(publisher.getDescriptor().isUseProxy());
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
         int responseCode = callResponse.getResponseCode();
         if (responseCode == HttpStatus.SC_OK) {

@@ -11,7 +11,7 @@ public class DefaultHygieiaServiceTest {
      */
     @Test
     public void publishWithBadHostShouldNotRethrowExceptions() {
-        DefaultHygieiaService service = new DefaultHygieiaService("foo", "token", "myname");
+        DefaultHygieiaService service = new DefaultHygieiaService("foo", "token", "myname", false);
         service.setHygieiaAPIUrl("hostvaluethatwillcausepublishtofail");
 
         service.publishBuildData(makeBuildDataRequestData());
@@ -23,7 +23,7 @@ public class DefaultHygieiaServiceTest {
      */
     @Test
     public void invalidTokenShouldFail() {
-        DefaultHygieiaService service = new DefaultHygieiaService("tinyspeck", "token", "myname");
+        DefaultHygieiaService service = new DefaultHygieiaService("tinyspeck", "token", "myname", false);
         service.publishBuildData(makeBuildDataRequestData());
     }
 
