@@ -79,6 +79,10 @@ You can pick and choose which collectors are applicable for your DevOps toolset 
 Please click on the link below to learn about how to build and run the UI layer
  * [UI](/UI)
 
+#### Plugin / Webhook
+You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia. 
+* [Hygieia Jenkins Plugin](/hygieia-jenkins-plugin)
+
 ### Configure Proxy
 
 Hygieia supports proxy authentication for working behind corporate firewalls.  For development, please refer to the following configuration differences; for deployment/operations, please refer to the subsequent sub-section:
