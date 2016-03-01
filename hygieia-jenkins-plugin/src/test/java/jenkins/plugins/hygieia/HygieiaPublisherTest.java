@@ -58,7 +58,7 @@ public class HygieiaPublisherTest extends TestCase {
         }
         descriptor.setHygieiaService(hygieiaServiceStub);
         try {
-            FormValidation result = descriptor.doTestConnection("hygieaUrl", "authToken", "myname");
+            FormValidation result = descriptor.doTestConnection("hygieaUrl", "authToken", "myname", "true");
             assertEquals(result.kind, expectedResult);
         } catch (Descriptor.FormException e) {
             e.printStackTrace();
