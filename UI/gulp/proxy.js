@@ -22,7 +22,7 @@ var args = require('yargs').argv;
 /*
  * Location of your backend server
  */
-var proxyTarget = args.api || 'http://localhost:8080';
+var proxyTarget = args.api || 'http://localhost:8082';
 
 var proxy = httpProxy.createProxyServer({
   target: proxyTarget
