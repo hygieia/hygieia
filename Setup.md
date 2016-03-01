@@ -84,7 +84,7 @@ You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia. Cu
 * [Hygieia Jenkins Plugin](/hygieia-jenkins-plugin)
 
 You can use GitHub webhook to publish commit information to Hygieia. If you use webhook, you will not need to run github collector.
-* Your Github webhook's payload url should be set to: http://<hygieia base url>/api/commit/github/v3
+* Your Github webhook's payload url should be set to: http://hygieia-base-url/api/commit/github/v3
 * Select to publish just the "push" events
 
 
