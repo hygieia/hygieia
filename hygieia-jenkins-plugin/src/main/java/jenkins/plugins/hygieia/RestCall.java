@@ -25,16 +25,19 @@ import java.util.regex.Pattern;
 public class RestCall {
     private static final Logger logger = Logger.getLogger(RestCall.class.getName());
 
-    public RestCall() {
+    private boolean useProxy;
+
+    public RestCall(boolean useProxy) {
+        this.useProxy = useProxy;
     }
 
 //Fixme: Need refactoring to remove code duplication.
 
-    protected HttpClient getHttpClient(String url) {
+    protected HttpClient getHttpClient() {
         HttpClient client = new HttpClient();
         if (Jenkins.getInstance() != null) {
             ProxyConfiguration proxy = Jenkins.getInstance().proxy;
-            if ((proxy != null) && (!bypassProxy(url, proxy.getNoProxyHostPatterns()))){
+            if (useProxy && (proxy != null)){
                 client.getHostConfiguration().setProxy(proxy.name, proxy.port);
                 String username = proxy.getUserName();
                 String password = proxy.getPassword();
@@ -58,7 +61,7 @@ public class RestCall {
 
     public RestCallResponse makeRestCallPost(String url, String jsonString) {
         RestCallResponse response;
-        HttpClient client = getHttpClient(url);
+        HttpClient client = getHttpClient();
 
         PostMethod post = new PostMethod(url);
 
@@ -82,7 +85,7 @@ public class RestCall {
 
     public RestCallResponse makeRestCallGet(String url) {
         RestCallResponse response;
-        HttpClient client = getHttpClient(url);
+        HttpClient client = getHttpClient();
         GetMethod get = new GetMethod(url);
         try {
             get.getParams().setContentCharset("UTF-8");

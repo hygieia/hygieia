@@ -21,6 +21,9 @@
     <f:entry title="Name your Jenkins" help="${rootURL}/plugin/hygieia-publisher/help-globalConfig-hygieiaBuildServerUrl.html">
         <f:textbox field="hygieiaJenkinsName" name="hygieiaJenkinsName" value="${descriptor.getHygieiaJenkinsName()}" />
     </f:entry>
+    <f:entry title="Use Proxy" help="${rootURL}/plugin/hygieia-publisher/help-globalConfig-hygieiaBuildServerUrl.html">
+        <f:checkbox field="useProxy" name="useProxy" checked="${descriptor.isUseProxy()}" />
+    </f:entry>
     <f:validateButton
         title="${%Test Connection}" progress="${%Testing...}"
         method="testConnection" with="hygieiaToken,hygieaAPIUrl" />
