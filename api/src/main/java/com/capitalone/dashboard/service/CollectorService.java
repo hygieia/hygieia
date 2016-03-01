@@ -54,6 +54,17 @@ public interface CollectorService {
      */
     CollectorItem createCollectorItemByNiceNameAndJobName(CollectorItem item, String jobName) throws HygieiaException;
 
+
+    /**
+     * Creates a new CollectorItem. If a CollectorItem already exists with the
+     * same collector id and niceName, that CollectorItem will be returned instead
+     * of creating a new CollectorItem.
+     *
+     * @param item CollectorItem to create
+     * @return created CollectorItem
+     */
+    CollectorItem createCollectorItemByNiceNameAndProjectId(CollectorItem item, String projectId) throws HygieiaException;
+
     /**
      * Creates a new Collector.
      * @param collector Collector to create
