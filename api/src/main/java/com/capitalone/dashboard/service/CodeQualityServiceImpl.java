@@ -19,6 +19,7 @@ import com.capitalone.dashboard.request.CollectorRequest;
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.mysema.query.BooleanBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,12 +172,11 @@ public class CodeQualityServiceImpl implements CodeQualityService {
         option.put("instanceUrl", request.getServerUrl());
         tempCi.getOptions().putAll(option);
         tempCi.setNiceName(request.getNiceName());
-        // FIXME: CollectorItem creation via nice name is broken!
-//        if (StringUtils.isEmpty(tempCi.getNiceName())) {
-//            return collectorService.createCollectorItem(tempCi);
-//        }
-//        return collectorService.createCollectorItemByNiceName(tempCi);
-        return collectorService.createCollectorItem(tempCi);
+
+        if (StringUtils.isEmpty(tempCi.getNiceName())) {
+            return collectorService.createCollectorItem(tempCi);
+        }
+        return collectorService.createCollectorItemByNiceNameAndProjectId(tempCi, request.getProjectId());
     }
 
     private CodeQuality createCodeQuality(CollectorItem collectorItem, CodeQualityCreateRequest request) {
