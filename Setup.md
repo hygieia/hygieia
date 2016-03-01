@@ -148,8 +148,8 @@ mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user:
 ```
 
 ## Create a docker-compose.override.yml to configure your environment
-### These are the most common entries, the uncommented ones are mandatory if you want the collector to work
-### For dev/testing you will find it useful to change the CRON entries to "0 * * * * *"
+These are the most common entries, the uncommented ones are mandatory if you want the collector to work. 
+For dev/testing you will find it useful to change the CRON entries to ``"0 * * * * *"``
 ```
 hygieia-github-scm-collector:
   environment:
