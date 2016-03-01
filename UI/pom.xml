@@ -84,6 +84,7 @@
         <artifactId>docker-maven-plugin</artifactId>
         <version>0.3.3</version>
         <configuration>
+	  <skipDockerBuild>false</skipDockerBuild>
           <imageName>hygieia-ui</imageName>
           <dockerDirectory>${project.basedir}/docker</dockerDirectory>
           <resources>
