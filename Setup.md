@@ -1,4 +1,4 @@
-:<img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/images/Hygieia_b.png)
+:<img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/img/hygieia_b.png)
 --
 
 ### Build Hygieia
@@ -79,6 +79,15 @@ You can pick and choose which collectors are applicable for your DevOps toolset 
 Please click on the link below to learn about how to build and run the UI layer
  * [UI](/UI)
 
+#### Plugin / Webhook
+You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia. Currently, you can publish build, artifact info, sonar results, deployment results and cucumber test results. You may not need to run corresponding collectors if you use Jenkins for build, deploy, sonar analysis and running cucumber tests.
+* [Hygieia Jenkins Plugin](/hygieia-jenkins-plugin)
+
+You can use GitHub webhook to publish commit information to Hygieia. If you use webhook, you will not need to run github collector.
+* Your Github webhook's payload url should be set to: http://<hygieia base url>/api/commit/github/v3
+* Select to publish just the "push" events
+
+
 ### Configure Proxy
 
 Hygieia supports proxy authentication for working behind corporate firewalls.  For development, please refer to the following configuration differences; for deployment/operations, please refer to the subsequent sub-section:
@@ -148,8 +157,8 @@ mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user:
 ```
 
 ## Create a docker-compose.override.yml to configure your environment
-### These are the most common entries, the uncommented ones are mandatory if you want the collector to work
-### For dev/testing you will find it useful to change the CRON entries to "0 * * * * *"
+These are the most common entries, the uncommented ones are mandatory if you want the collector to work. 
+For dev/testing you will find it useful to change the CRON entries to ``"0 * * * * *"``
 ```
 hygieia-github-scm-collector:
   environment:
