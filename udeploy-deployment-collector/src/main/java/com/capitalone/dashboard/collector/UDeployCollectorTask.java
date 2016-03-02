@@ -272,11 +272,13 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
                 application.getApplicationId()) == null;
     }
 
-    private boolean changed(EnvironmentStatus status, EnvironmentStatus existing) {
+    @SuppressWarnings("unused")
+	private boolean changed(EnvironmentStatus status, EnvironmentStatus existing) {
         return existing.isOnline() != status.isOnline();
     }
 
-    private EnvironmentStatus findExistingStatus(
+    @SuppressWarnings("unused")
+	private EnvironmentStatus findExistingStatus(
             final EnvironmentStatus proposed,
             List<EnvironmentStatus> existingStatuses) {
 
@@ -294,13 +296,15 @@ public class UDeployCollectorTask extends CollectorTask<UDeployCollector> {
                 }).orNull();
     }
 
-    private boolean changed(EnvironmentComponent component,
+    @SuppressWarnings("unused")
+	private boolean changed(EnvironmentComponent component,
                             EnvironmentComponent existing) {
         return existing.isDeployed() != component.isDeployed()
                 || existing.getAsOfDate() != component.getAsOfDate() || !existing.getComponentVersion().equalsIgnoreCase(component.getComponentVersion());
     }
 
-    private EnvironmentComponent findExistingComponent(
+    @SuppressWarnings("unused")
+	private EnvironmentComponent findExistingComponent(
             final EnvironmentComponent proposed,
             List<EnvironmentComponent> existingComponents) {
 

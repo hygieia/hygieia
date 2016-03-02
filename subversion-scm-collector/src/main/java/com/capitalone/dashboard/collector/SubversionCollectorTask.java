@@ -28,7 +28,7 @@ import java.util.Set;
  */
 @Component
 public class SubversionCollectorTask extends CollectorTask<Collector> {
-    @SuppressWarnings("PMD.UnusedPrivateField")
+    @SuppressWarnings({ "PMD.UnusedPrivateField", "unused" })
     private static final Log LOG = LogFactory.getLog(SubversionCollectorTask.class);
 
     private final BaseCollectorRepository<Collector> collectorRepository;

@@ -171,7 +171,8 @@ public class PipelineServiceTest {
         return pipelineResponse;
     }
 
-    private void applyTimestamps(Pipeline pipeline, PipelineResponseCommit commit){
+    @SuppressWarnings("unused")
+	private void applyTimestamps(Pipeline pipeline, PipelineResponseCommit commit){
         throw new NotImplementedException();
     }
 }

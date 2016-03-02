@@ -1,7 +1,8 @@
 package com.capitalone.dashboard.misc;
 
 public class HygieiaException extends Exception {
-    public static final int NOTHING_TO_UPDATE = 0;
+	private static final long serialVersionUID = 4596406816345733781L;
+	public static final int NOTHING_TO_UPDATE = 0;
     public static final int JSON_FORMAT_ERROR = -1;
     public static final int COLLECTOR_CREATE_ERROR = -10;
     public static final int COLLECTOR_ITEM_CREATE_ERROR = -11;

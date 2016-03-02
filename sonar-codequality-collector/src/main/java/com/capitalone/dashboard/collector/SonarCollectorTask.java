@@ -25,7 +25,7 @@ import java.util.Set;
 
 @Component
 public class SonarCollectorTask extends CollectorTask<SonarCollector> {
-    @SuppressWarnings("PMD.UnusedPrivateField")
+    @SuppressWarnings({ "PMD.UnusedPrivateField", "unused" })
     private static final Log LOG = LogFactory.getLog(SonarCollectorTask.class);
 
     private final SonarCollectorRepository sonarCollectorRepository;
@@ -192,7 +192,8 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         log("New projects", start, count);
     }
 
-    private boolean isNewProject(SonarCollector collector, SonarProject application) {
+    @SuppressWarnings("unused")
+	private boolean isNewProject(SonarCollector collector, SonarProject application) {
         return sonarProjectRepository.findSonarProject(
                 collector.getId(), application.getInstanceUrl(), application.getProjectId()) == null;
     }
