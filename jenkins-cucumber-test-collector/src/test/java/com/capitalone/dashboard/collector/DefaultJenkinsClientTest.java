@@ -142,8 +142,6 @@ public class DefaultJenkinsClientTest {
     public void test_endToend () throws Exception {
 
         String artifacts = getJson("job-artifacts.json");
-//        JSONParser parser = new JSONParser();
-//        JSONObject artObj = (JSONObject) parser.parse(artifacts);
         String cucumberJson = getJson("two-features.json");
 
         URI lastBuildArtifactUri = URI.create("http://server/job/job1/lastSuccessfulBuild/api/json?tree=timestamp,duration,number,fullDisplayName,building,artifacts[fileName,relativePath]");

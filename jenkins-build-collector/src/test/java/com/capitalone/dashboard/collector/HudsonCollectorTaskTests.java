@@ -71,7 +71,6 @@ public class HudsonCollectorTaskTests {
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(twoJobsWithTwoBuilds(SERVER1, NICENAME1));
         when(dbComponentRepository.findAll()).thenReturn(components());
         task.collect(collectorWithOneServer());
-        //ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(hudsonJobRepository, times(1)).save(anyListOf(HudsonJob.class));
     }
 
@@ -93,7 +92,6 @@ public class HudsonCollectorTaskTests {
     @Test
     public void delete_job() {
         HudsonCollector collector = collectorWithOneServer();
-        new ObjectId();
 		collector.setId(ObjectId.get());
         HudsonJob job1 = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
         job1.setCollectorId(collector.getId());
@@ -116,7 +114,6 @@ public class HudsonCollectorTaskTests {
     @Test
     public void delete_never_job() {
         HudsonCollector collector = collectorWithOneServer();
-        new ObjectId();
 		collector.setId(ObjectId.get());
         HudsonJob job1 = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
         job1.setCollectorId(collector.getId());

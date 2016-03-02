@@ -20,7 +20,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
     private final CollectorItemRepository collectorItemRepository;
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
 
@@ -36,7 +36,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
         this.serviceRepository = serviceRepository;
-        this.pipelineRepository = pipelineRepository;
+        this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
     }
 
     @Override
