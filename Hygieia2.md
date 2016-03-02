@@ -59,7 +59,7 @@ Jenkins plugin allows Hygieia to create link between code commit, build, artifac
 
 ##### Deployment Stages:
 
-![Image](/media/images/h2-deploy-stage.png)
+![Image](/media/images/h2-deploy-stages.png)
 
 ##### Production Stage:
 
@@ -67,7 +67,7 @@ Jenkins plugin allows Hygieia to create link between code commit, build, artifac
 
 ##### Commit Details at every stage:
 
-![Image](/media/images/h2-commit-details.png)
+![Image](/media/images/h2-commit-details-stage.png)
 
 
 ##### Pipeline Health:
