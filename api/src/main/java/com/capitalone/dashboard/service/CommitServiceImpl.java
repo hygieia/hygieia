@@ -126,15 +126,12 @@ public class CommitServiceImpl implements CommitService {
         private String url;
 
         private JSONObject jsonObject;
-        @SuppressWarnings("unused")
-		private String jsonString;
         JSONParser parser = new JSONParser();
 
 
         public GitHubv3(String json) throws ParseException, HygieiaException {
 
             this.jsonObject = (JSONObject) parser.parse(json);
-            this.jsonString = jsonObject.toJSONString();
             buildCommits();
             if (!CollectionUtils.isEmpty(commits)) {
                 buildCollectorItem();

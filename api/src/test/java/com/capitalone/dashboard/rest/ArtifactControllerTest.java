@@ -78,10 +78,4 @@ public class ArtifactControllerTest {
         artifact.setArtifactVersion("1.1.0.0");
         return artifact;
     }
-
-    @SuppressWarnings("unused")
-	private int intVal(long value) {
-        return Long.valueOf(value).intValue();
-    }
-
 }
