@@ -92,7 +92,8 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void verifyBasicAuth() throws Exception {
-        URL u = new URL(new URL("http://jenkins.com"), "/api/json?tree=jobs[name,url," +
+        @SuppressWarnings("unused")
+		URL u = new URL(new URL("http://jenkins.com"), "/api/json?tree=jobs[name,url," +
                 "builds[number,url]]");
 
         HttpHeaders headers = defaultHudsonClient.createHeaders("Aladdin:open sesame");
