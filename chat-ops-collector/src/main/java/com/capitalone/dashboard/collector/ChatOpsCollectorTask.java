@@ -113,7 +113,8 @@ public class ChatOpsCollectorTask extends CollectorTask<Collector> {
         }
     }
 
-    private DateTime lastUpdated(ChatOpsRepo repo) {
+    @SuppressWarnings("unused")
+	private DateTime lastUpdated(ChatOpsRepo repo) {
         return repo.getLastUpdateTime();
     }
 

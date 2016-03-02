@@ -24,6 +24,7 @@
 		<guava.version>16.0.1</guava.version>
 		<pmd.version>3.5</pmd.version>
 		<jacoco.version>0.7.5.201505241946</jacoco.version>
+		<joda-time.version>2.7</joda-time.version>
 	</properties>
 
   <licenses>

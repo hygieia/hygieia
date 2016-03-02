@@ -111,7 +111,6 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
      * @param existingJobs
      */
 
-    @SuppressWarnings("PMD.UnnecessaryFullyQualifiedName")
     private void clean(HudsonCollector collector, List<HudsonJob> existingJobs) {
         Set<ObjectId> uniqueIDs = new HashSet<>();
         for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
@@ -267,7 +266,8 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
                 instanceUrl);
     }
 
-    private HudsonJob getExistingJob(HudsonCollector collector, HudsonJob job) {
+    @SuppressWarnings("unused")
+	private HudsonJob getExistingJob(HudsonCollector collector, HudsonJob job) {
         return hudsonJobRepository.findHudsonJob(collector.getId(),
                 job.getInstanceUrl(), job.getJobName());
     }
