@@ -33,7 +33,7 @@ For the past two years, we’ve looked for DevOps visualization tools in the com
 #### Team Level Dashboard
 ![Image](/media/images/hygiea-screenshot.jpg)
 
-#### "Product" or "Program" Level Dashboard
+#### "Product" or "Program" Level Dashboard (Hygieia 2.0 feature)
 ![Image](/media/images/hygieia-product-dashboard.png)
 
 ### Contributors :
@@ -48,4 +48,7 @@ This project adheres to the [Open Code of Conduct][code-of-conduct]. By particip
 
 ### How to Start
 [Setup Instructions](Setup.md)
+
+### What's new in Hygieia 2.0
+[Read about Hygieia 2.0](Hygieia2.md)
 
