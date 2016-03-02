@@ -20,7 +20,8 @@ public class DashboardServiceImpl implements DashboardService {
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
     private final CollectorItemRepository collectorItemRepository;
-    private final PipelineRepository pipelineRepository;
+	@SuppressWarnings("unused")
+	private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
 
     @Autowired
@@ -35,7 +36,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
         this.serviceRepository = serviceRepository;
-        this.pipelineRepository = pipelineRepository;
+        this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
     }
 
     @Override
@@ -86,7 +87,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         // Remove this Dashboard's services and service dependencies
         serviceRepository.delete(serviceRepository.findByDashboardId(id));
-        for (com.capitalone.dashboard.model.Service service : serviceRepository.findByDependedBy(id)) {
+        for (com.capitalone.dashboard.model.Service service : serviceRepository.findByDependedBy(id)) { //NOPMD - using fully qualified or we pickup an incorrect spring class
             service.getDependedBy().remove(id);
             serviceRepository.save(service);
         }
@@ -134,7 +135,7 @@ public class DashboardServiceImpl implements DashboardService {
             return null;
         }
 
-        com.capitalone.dashboard.model.Component component = componentRepository.findOne(componentId);
+        com.capitalone.dashboard.model.Component component = componentRepository.findOne(componentId); //NOPMD - using fully qualified name for clarity
         //we can not assume what collector item is added, what is removed etc so, we will
         //refresh the association. First disable all collector items, then remove all and re-add
 
@@ -202,7 +203,7 @@ public class DashboardServiceImpl implements DashboardService {
     private static final class WidgetByIdPredicate implements Predicate<Widget> {
         private final ObjectId widgetId;
 
-        private WidgetByIdPredicate(ObjectId widgetId) {
+        public WidgetByIdPredicate(ObjectId widgetId) {
             this.widgetId = widgetId;
         }
 
@@ -248,7 +249,8 @@ public class DashboardServiceImpl implements DashboardService {
 		return dashboardOwner;
 	}
 
-    private DashboardType getDashboardType(Dashboard dashboard){
+    @SuppressWarnings("unused")
+	private DashboardType getDashboardType(Dashboard dashboard){
         if(dashboard.getType() != null){
             return dashboard.getType();
         }

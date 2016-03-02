@@ -21,7 +21,8 @@ public class DefaultChatOpsClient implements ChatOpsClient {
     }
 
 
-    private ResponseEntity<String> makeRestCall(String url) {
+    @SuppressWarnings("unused")
+	private ResponseEntity<String> makeRestCall(String url) {
         return restOperations.exchange(url, HttpMethod.GET, null, String.class);
     }
 }

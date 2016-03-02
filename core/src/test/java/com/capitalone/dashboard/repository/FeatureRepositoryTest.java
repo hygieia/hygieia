@@ -42,7 +42,7 @@ public class FeatureRepositoryTest {
 	private static String maxDateLoser = new String();
 	private static String currentSprintEndDate = new String();
 	private static final ObjectId jiraCollectorId = new ObjectId();
-	private static final ObjectId v1CollectorId = new ObjectId();
+//	private static final ObjectId v1CollectorId = new ObjectId();
 
 	@ClassRule
 	public static final EmbeddedMongoDBRule RULE = new EmbeddedMongoDBRule();

@@ -110,7 +110,8 @@ public class BuildServiceTest {
     }
 
 
-    private BuildDataCreateRequest makeBuildRequest() {
+    @SuppressWarnings("unused")
+	private BuildDataCreateRequest makeBuildRequest() {
         BuildDataCreateRequest build = new BuildDataCreateRequest();
         build.setNumber("1");
         build.setBuildUrl("buildUrl");
