@@ -142,6 +142,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
 
         // First delete collector items that are not supposed to be collected anymore because the servers have moved(?)
         for (SonarProject job : existingProjects) {
+            if (job.isPushed()) continue; // do not delete jobs that are being pushed via API
             if (!collector.getSonarServers().contains(job.getInstanceUrl()) ||
                     (!job.getCollectorId().equals(collector.getId())) ||
                     (!latestProjects.contains(job))) {
