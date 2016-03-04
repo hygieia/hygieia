@@ -77,16 +77,16 @@ public class Dashboard extends BaseModel {
      * Finds the mapped names for each stage type from the widget options
      * @return
      */
-    public Map<PipelineStageType, String> findEnvironmentMappings(){
+	public Map<PipelineStageType, String> findEnvironmentMappings(){
         Map<String, String> environmentMappings = null;
         for(Widget widget : this.getWidgets()) {
             if (widget.getName().equalsIgnoreCase("pipeline")) {
-                environmentMappings =  (Map) widget.getOptions().get("mappings");
+                environmentMappings =  (Map<String, String>) widget.getOptions().get("mappings");
             }
         }
         Map<PipelineStageType, String> stageTypeToEnvironmentNameMap = new HashMap<>();
         if(environmentMappings != null && !environmentMappings.isEmpty()){
-            for (Map.Entry mapping : environmentMappings.entrySet()) {
+            for (Map.Entry<String,String> mapping : environmentMappings.entrySet()) {
                 stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
             }
         }
