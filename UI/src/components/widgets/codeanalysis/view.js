@@ -52,7 +52,9 @@
             ctrl.rulesCompliance = getMetric(caData.metrics, 'violations_density');
 
             ctrl.technicalDebt = getMetric(caData.metrics, 'sqale_index');
-            ctrl.technicalDebt.formattedValue = calculateTechnicalDebt(ctrl.technicalDebt.value);
+	 
+            //ctrl.technicalDebt.formattedValue = calculateTechnicalDebt(ctrl.technicalDebt.value);
+            ctrl.technicalDebt.formattedValue = ctrl.technicalDebt.formattedValue;
 
             ctrl.linesofCode = getMetric(caData.metrics, 'ncloc');
 
@@ -156,24 +158,32 @@
             return angular.extend((_.findWhere(metrics, { name: metricName }) || { name: title }), { name: title });
         }
 
+/*
         function calculateTechnicalDebt(value) {
             var factor, suffix;
+            var hour = 60;
+            var day = hour * 8;	//assume 8 hours/day 
+            var year = day * 230;	//assume 230 days = 46 work weeks (assume 2 weeks Holidays & 4 weeks vacation)
+            
             if (!value) return '-';
-            if (value < 1440) {
+            if (value < day) {
                 // hours
-                factor = 60;
+                factor = hour;
                 suffix = 'h';
-            } else if (value < 525600) {
+            } else if (value < year) {
                 // days
-                factor = 1440;
+                factor = day;
                 suffix = 'd';
             } else {
                 // years
-                factor = 525600;
+                factor = year;
                 suffix = 'y';
             }
-            return Math.ceil(value/factor) + suffix;
+		//unable to find an exact calc, but reviewing several cases it looks like the sonar UI truncates the #
+		//soi this should tie out closer to what people are seeing in SONAR UI
+            return Math.floor(value/factor) + suffix;
         }
+*/
 
         function showStatusIcon(item) {
             return item.status && item.status.toLowerCase() != 'ok';
