@@ -69,8 +69,10 @@
                 }
             }
             var index;
-            for (index = 0; index < testCollectorItems.length; ++index) {
-                testCollectorItemIds.push(testCollectorItems[index].id);
+            if (testCollectorItems != null) {
+                for (index = 0; index < testCollectorItems.length; ++index) {
+                    testCollectorItemIds.push(testCollectorItems[index].id);
+                }
             }
             for (index = 0; index < testCollectorItemIds.length; ++index) {
                 var testItem = testCollectorItemIds ? _.findWhere(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
@@ -116,7 +118,6 @@
         }
 
         function deleteTestConfig(item) {
-            debugger;
             ctrl.testConfigs.pop(item);
         }
     }
