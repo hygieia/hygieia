@@ -32,36 +32,38 @@
         </div>
 
 
-
-        <div class="form-group text-center" ng-repeat="configItem in caWidget.testConfigs">
+        <form-group class="text-center">
             <div class="text-center modal-label">Functional Tests:</div>
 
-            <div class="col-sm-3">
-                <input
-                        type="text"
-                        name="testJobName"
-                        class="form-control-inline text-center"
-                        ng-model="configItem.testJobName"
-                        minlength="1"
-                        maxlength="8"
-                        required>
+            <div class="form-group text-center" ng-repeat="configItem in caWidget.testConfigs">
+                <div class="col-sm-3">
+                    <input
+                            type="text"
+                            name="testJobName"
+                            class="form-control-inline text-center"
+                            ng-model="configItem.testJobName"
+                            minlength="1"
+                            maxlength="8"
+                            required>
+                </div>
+                <div class="col-sm-8">
+                    <select class="form-control" name="collectorItemList"
+                            ng-model="configItem.testCollectorItem"
+                            ng-options="(item.description) for item in configItem.testJob | orderBy:['collector.name','description'] track by item.id"
+                            ng-disabled="caWidget.testJobs.length === 0">
+                        <option value="">{{caWidget.testToolsDropdownPlaceholder}}</option>
+                    </select>
+                </div>
+                <dash-trash class="fa-lg" ng-click="caWidget.deleteTestConfig(configItem)"></dash-trash>
             </div>
-            <div class="col-sm-8">
-                <select class="form-control" name="collectorItemList"
-                        ng-model="configItem.testCollectorItem"
-                        ng-options="(item.description) for item in configItem.testJob | orderBy:['collector.name','description'] track by item.id"
-                        ng-disabled="caWidget.testJobs.length === 0">
-                    <option value="">{{caWidget.testToolsDropdownPlaceholder}}</option>
-                </select>
+            <div class="form-group text-center"
+                 ng-show="caWidget.testConfigs.length==0 || caWidget.testConfigs[caWidget.testConfigs.length-1].testCollectorItem != null">
+                <span class="fa fa-plus-circle fa-2x clickable" ng-click="caWidget.addTestConfig()"></span>
             </div>
-            <dash-trash class="fa-lg" ng-click="caWidget.deleteTestConfig(configItem)"></dash-trash>
-        </div>
-        <div class="form-group text-center" ng-show="caWidget.testConfigs.length==0 || caWidget.testConfigs[caWidget.testConfigs.length-1].testCollectorItem != null">
-            <span class="fa fa-plus-circle fa-2x clickable" ng-click="caWidget.addTestConfig()"></span>
-        </div>
-        <div class="form group text-center">
-            <label></label>
-            <button type="submit" class="btn btn-primary btn-wide">Save</button>
-        </div>
+            <div class="form group text-center">
+                <label></label>
+                <button type="submit" class="btn btn-primary btn-wide">Save</button>
+            </div>
+        </form-group>
     </form>
 </widget-modal>
