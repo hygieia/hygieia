@@ -8,9 +8,10 @@ public class RequestLog extends BaseModel {
     private String client;
     private String endpoint;
     private String method;
-    private Object parameter;
+    private String parameter;
     private Object requestBody;
     private Object responseBody;
+    private int responseCode;
     private long timestamp;
 
     public String getClient() {
@@ -37,11 +38,11 @@ public class RequestLog extends BaseModel {
         this.method = method;
     }
 
-    public Object getParameter() {
+    public String getParameter() {
         return parameter;
     }
 
-    public void setParameter(Object parameter) {
+    public void setParameter(String parameter) {
         this.parameter = parameter;
     }
 
@@ -67,5 +68,13 @@ public class RequestLog extends BaseModel {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public int getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(int responseCode) {
+        this.responseCode = responseCode;
     }
 }
