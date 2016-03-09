@@ -41,7 +41,7 @@ import java.util.Map;
 public class LoggingFilter implements Filter {
 
 
-    private static final Logger logger = Logger.getLogger(LoggingFilter.class);
+    private static final Logger LOGGER = Logger.getLogger(LoggingFilter.class);
 
     @Autowired
     private RequestLogRepository requestLogRepository;
@@ -88,7 +88,7 @@ public class LoggingFilter implements Filter {
                 .append("] [STATUS:")
                 .append(bufferedResponse.getStatus())
                 .append("]");
-        logger.info(logMessage.toString());
+        LOGGER.info(logMessage.toString());
 
         if (httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
                 (httpServletRequest.getMethod().equals(HttpMethod.POST.toString())) ||
