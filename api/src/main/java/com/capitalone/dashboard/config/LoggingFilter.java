@@ -88,7 +88,7 @@ public class LoggingFilter implements Filter {
                 .append("] [STATUS:")
                 .append(bufferedResponse.getStatus())
                 .append("]");
-        logger.info(logMessage);
+        logger.info(logMessage.toString());
 
         if (httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
                 (httpServletRequest.getMethod().equals(HttpMethod.POST.toString())) ||
@@ -101,10 +101,12 @@ public class LoggingFilter implements Filter {
     private Map<String, String> getTypesafeRequestMap(HttpServletRequest request) {
         Map<String, String> typesafeRequestMap = new HashMap<String, String>();
         Enumeration<?> requestParamNames = request.getParameterNames();
-        while (requestParamNames.hasMoreElements()) {
-            String requestParamName = (String) requestParamNames.nextElement();
-            String requestParamValue = request.getParameter(requestParamName);
-            typesafeRequestMap.put(requestParamName, requestParamValue);
+        if (requestParamNames != null) {
+            while (requestParamNames.hasMoreElements()) {
+                String requestParamName = (String) requestParamNames.nextElement();
+                String requestParamValue = request.getParameter(requestParamName);
+                typesafeRequestMap.put(requestParamName, requestParamValue);
+            }
         }
         return typesafeRequestMap;
     }
@@ -249,7 +251,8 @@ public class LoggingFilter implements Filter {
         }
 
         public String getContent() {
-            return bos.toString();
+
+            return (bos == null) ? "" : bos.toString();
         }
 
         @Override
