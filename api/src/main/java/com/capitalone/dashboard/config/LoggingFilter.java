@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.config;
 
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.RequestLog;
 import com.capitalone.dashboard.repository.RequestLogRepository;
 import com.mongodb.util.JSON;
@@ -45,6 +46,8 @@ public class LoggingFilter implements Filter {
 
     @Autowired
     private RequestLogRepository requestLogRepository;
+    @Autowired
+    private ApiSettings settings;
 
 
     @Override
@@ -55,6 +58,8 @@ public class LoggingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+
+
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
@@ -74,26 +79,33 @@ public class LoggingFilter implements Filter {
         requestLog.setResponseBody(JSON.parse(bufferedResponse.getContent()));
         requestLog.setResponseCode(bufferedResponse.getStatus());
         requestLog.setTimestamp(System.currentTimeMillis());
-        final StringBuilder logMessage = new StringBuilder("REST Request - ")
-                .append("[")
-                .append(httpServletRequest.getMethod())
-                .append("] [PATH:")
-                .append(httpServletRequest.getPathInfo())
-                .append("] [PARAMETERS:")
-                .append(requestMap)
-                .append("] [BODY:")
-                .append(bufferedRequest.getRequestBody())
-                .append("] [REMOTE:")
-                .append(httpServletRequest.getRemoteAddr())
-                .append("] [STATUS:")
-                .append(bufferedResponse.getStatus())
-                .append("]");
-        LOGGER.info(logMessage.toString());
+        if (settings.isLogRequest()) {
+            final StringBuilder logMessage = new StringBuilder("REST Request - ")
+                    .append("[")
+                    .append(httpServletRequest.getMethod())
+                    .append("] [PATH:")
+                    .append(httpServletRequest.getPathInfo())
+                    .append("] [PARAMETERS:")
+                    .append(requestMap)
+                    .append("] [BODY:")
+                    .append(bufferedRequest.getRequestBody())
+                    .append("] [REMOTE:")
+                    .append(httpServletRequest.getRemoteAddr())
+                    .append("] [STATUS:")
+                    .append(bufferedResponse.getStatus())
+                    .append("]");
 
-        if (httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
-                (httpServletRequest.getMethod().equals(HttpMethod.POST.toString())) ||
-                (httpServletRequest.getMethod().equals(HttpMethod.DELETE.toString()))) {
-            requestLogRepository.save(requestLog);
+            if (httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
+                    (httpServletRequest.getMethod().equals(HttpMethod.POST.toString())) ||
+                    (httpServletRequest.getMethod().equals(HttpMethod.DELETE.toString()))) {
+                try {
+                    requestLogRepository.save(requestLog);
+                } catch (RuntimeException re) {
+                    LOGGER.info(logMessage);
+                }
+            }
+        } else {
+            LOGGER.info("Logging Request is turned off");
         }
     }
 
@@ -128,12 +140,14 @@ public class LoggingFilter implements Filter {
         public BufferedRequestWrapper(HttpServletRequest req) throws IOException {
             super(req);
             // Read InputStream and store its content in a buffer.
-            InputStream is = req.getInputStream();
+
             this.baos = new ByteArrayOutputStream();
             byte buf[] = new byte[1024];
             int letti;
-            while ((letti = is.read(buf)) > 0) {
-                this.baos.write(buf, 0, letti);
+            try (InputStream is = req.getInputStream()) {
+                while ((letti = is.read(buf)) > 0) {
+                    this.baos.write(buf, 0, letti);
+                }
             }
             this.buffer = this.baos.toByteArray();
         }
@@ -146,18 +160,18 @@ public class LoggingFilter implements Filter {
             return this.bsis;
         }
 
-
         String getRequestBody() throws IOException {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(this.getInputStream()));
             String line = null;
             StringBuilder inputBuffer = new StringBuilder();
-            do {
-                line = reader.readLine();
-                if (null != line) {
-                    inputBuffer.append(line.trim());
-                }
-            } while (line != null);
-            reader.close();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(this.getInputStream()))) {
+                do {
+                    line = reader.readLine();
+                    if (null != line) {
+                        inputBuffer.append(line.trim());
+                    }
+                } while (line != null);
+                reader.close();
+            }
             return inputBuffer.toString().trim();
         }
 
