@@ -7,14 +7,14 @@
 <img width="150";height="50"/>![Image](/UI/src/assets/img/hygieia_b.png)
 --------------------
 
-### What is Hygieia
+### What is Hygieia℠
 
 #####Pronunciation:      hi-gee-ya (origin Greek)
-Hygieia is a single, configurable, easy to use dashboard to visualize near real-time status of the entire delivery pipeline.
+Hygieia℠ is a single, configurable, easy to use dashboard to visualize near real-time status of the entire delivery pipeline.
 
 Please view a video below to see Hygieia in action
 
- [![Hygieia Is AWESOME](/media/images/video-shot.png)](https://www.youtube.com/watch?v=SoNTA78j0tc "Hygieia Is AWESOME")
+ [![Hygieia℠ Is AWESOME](/media/images/video-shot.png)](https://www.youtube.com/watch?v=SoNTA78j0tc "Hygieia Is AWESOME")
 
 We use tools for everything today and each tool has its own unique dashboard to present information. What is lacking is a near real time consolidated view of the end-to-end delivery pipeline.  This view and a continuous feedback loop are critical to the success of
 any DevOps organization.
