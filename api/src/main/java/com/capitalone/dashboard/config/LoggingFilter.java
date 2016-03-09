@@ -39,6 +39,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+
 public class LoggingFilter implements Filter {
 
 
@@ -62,24 +65,34 @@ public class LoggingFilter implements Filter {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        if (settings.isLogRequest() && (httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
+                (httpServletRequest.getMethod().equals(HttpMethod.POST.toString())) ||
+                (httpServletRequest.getMethod().equals(HttpMethod.DELETE.toString())))) {
+            Map<String, String> requestMap = this.getTypesafeRequestMap(httpServletRequest);
+            BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
+            BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
 
-        Map<String, String> requestMap = this.getTypesafeRequestMap(httpServletRequest);
-        BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
-        BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
 
+            RequestLog requestLog = new RequestLog();
+            requestLog.setClient(httpServletRequest.getRemoteAddr());
+            requestLog.setEndpoint(httpServletRequest.getRequestURI());
+            requestLog.setMethod(httpServletRequest.getMethod());
+            requestLog.setParameter(requestMap.toString());
+            requestLog.setRequestSize(httpServletRequest.getContentLengthLong());
+            requestLog.setRequestContentType(httpServletRequest.getContentType());
+            if (httpServletRequest.getContentType().startsWith(APPLICATION_JSON_VALUE)) {
+                requestLog.setRequestBody(JSON.parse(bufferedRequest.getRequestBody()));
+            }
 
-        RequestLog requestLog = new RequestLog();
-        requestLog.setClient(httpServletRequest.getRemoteAddr());
-        requestLog.setEndpoint(httpServletRequest.getRequestURI());
-        requestLog.setMethod(httpServletRequest.getMethod());
-        requestLog.setParameter(requestMap.toString());
-        requestLog.setRequestBody(JSON.parse(bufferedRequest.getRequestBody()));
+            chain.doFilter(bufferedRequest, bufferedResponse);
+            requestLog.setResponseContentType(httpServletResponse.getContentType());
+            if (httpServletResponse.getContentType().startsWith(APPLICATION_JSON_VALUE)) {
+                requestLog.setResponseBody(JSON.parse(bufferedResponse.getContent()));
+            }
+            requestLog.setResponseSize(bufferedResponse.getContent().length());
 
-        chain.doFilter(bufferedRequest, bufferedResponse);
-        requestLog.setResponseBody(JSON.parse(bufferedResponse.getContent()));
-        requestLog.setResponseCode(bufferedResponse.getStatus());
-        requestLog.setTimestamp(System.currentTimeMillis());
-        if (settings.isLogRequest()) {
+            requestLog.setResponseCode(bufferedResponse.getStatus());
+            requestLog.setTimestamp(System.currentTimeMillis());
             final StringBuilder logMessage = new StringBuilder("REST Request - ")
                     .append("[")
                     .append(httpServletRequest.getMethod())
@@ -105,7 +118,7 @@ public class LoggingFilter implements Filter {
                 }
             }
         } else {
-            LOGGER.info("Logging Request is turned off");
+            chain.doFilter(request, response);
         }
     }
 
@@ -167,12 +180,11 @@ public class LoggingFilter implements Filter {
                 do {
                     line = reader.readLine();
                     if (null != line) {
-                        inputBuffer.append(line.trim());
+                        inputBuffer.append(line);
                     }
                 } while (line != null);
-                reader.close();
             }
-            return inputBuffer.toString().trim();
+            return inputBuffer.toString();
         }
 
     }
