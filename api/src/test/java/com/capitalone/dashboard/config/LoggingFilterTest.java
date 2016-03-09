@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.config;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.RequestLog;
 import com.capitalone.dashboard.repository.RequestLogRepository;
 import org.apache.log4j.Logger;
@@ -34,6 +35,8 @@ public class LoggingFilterTest {
     @Autowired
     LoggingFilter loggingFilter;
 
+    @Mock
+    private ApiSettings settings;
     @Test
     public void testDoFilterPut() throws Exception {
         HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
@@ -42,7 +45,10 @@ public class LoggingFilterTest {
         when(httpServletRequest.getInputStream()).thenReturn(Mockito.mock(ServletInputStream.class));
         when(httpServletRequest.getRequestURI()).thenReturn("Success");
         when(httpServletRequest.getMethod()).thenReturn(HttpMethod.PUT.toString());
+        when(settings.isLogRequest()).thenReturn(true);
         when(requestLogRepository.save(any(RequestLog.class))).thenReturn(new RequestLog());
+        when(httpServletRequest.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(httpServletResponse.getContentType()).thenReturn("application/json;charset=UTF-8");
         loggingFilter.doFilter(httpServletRequest, httpServletResponse,
                 filterChain);
         verify(requestLogRepository, times(1)).save(any(RequestLog.class));
@@ -57,6 +63,9 @@ public class LoggingFilterTest {
         when(httpServletRequest.getRequestURI()).thenReturn("Success");
         when(httpServletRequest.getMethod()).thenReturn(HttpMethod.GET.toString());
         when(requestLogRepository.save(any(RequestLog.class))).thenReturn(new RequestLog());
+        when(httpServletRequest.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(httpServletResponse.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(settings.isLogRequest()).thenReturn(true);
         loggingFilter.doFilter(httpServletRequest, httpServletResponse,
                 filterChain);
         verify(requestLogRepository, times(0)).save(any(RequestLog.class));
@@ -72,6 +81,9 @@ public class LoggingFilterTest {
         when(httpServletRequest.getRequestURI()).thenReturn("Success");
         when(httpServletRequest.getMethod()).thenReturn(HttpMethod.POST.toString());
         when(requestLogRepository.save(any(RequestLog.class))).thenReturn(new RequestLog());
+        when(httpServletRequest.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(httpServletResponse.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(settings.isLogRequest()).thenReturn(true);
         loggingFilter.doFilter(httpServletRequest, httpServletResponse,
                 filterChain);
         verify(requestLogRepository, times(1)).save(any(RequestLog.class));
@@ -88,6 +100,9 @@ public class LoggingFilterTest {
         when(httpServletRequest.getRequestURI()).thenReturn("Success");
         when(httpServletRequest.getMethod()).thenReturn(HttpMethod.DELETE.toString());
         when(requestLogRepository.save(any(RequestLog.class))).thenReturn(new RequestLog());
+        when(httpServletRequest.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(httpServletResponse.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(settings.isLogRequest()).thenReturn(true);
         loggingFilter.doFilter(httpServletRequest, httpServletResponse,
                 filterChain);
         verify(requestLogRepository, times(1)).save(any(RequestLog.class));

@@ -108,15 +108,12 @@ public class LoggingFilter implements Filter {
                     .append(bufferedResponse.getStatus())
                     .append("]");
 
-            if (httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
-                    (httpServletRequest.getMethod().equals(HttpMethod.POST.toString())) ||
-                    (httpServletRequest.getMethod().equals(HttpMethod.DELETE.toString()))) {
-                try {
-                    requestLogRepository.save(requestLog);
-                } catch (RuntimeException re) {
-                    LOGGER.info(logMessage);
-                }
+            try {
+                requestLogRepository.save(requestLog);
+            } catch (RuntimeException re) {
+                LOGGER.info(logMessage);
             }
+
         } else {
             chain.doFilter(request, response);
         }
