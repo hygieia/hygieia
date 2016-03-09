@@ -7,6 +7,7 @@ import com.mongodb.util.JSON;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -53,23 +55,46 @@ public class LoggingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-            HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
-            Map<String, String> requestMap = this.getTypesafeRequestMap(httpServletRequest);
-            BufferedRequestWrapper bufferedReqest = new BufferedRequestWrapper(httpServletRequest);
-            BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
+        Map<String, String> requestMap = this.getTypesafeRequestMap(httpServletRequest);
+        BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
+        BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
 
-            RequestLog requestLog = new RequestLog();
-            requestLog.setClient(httpServletRequest.getRemoteAddr());
-            requestLog.setEndpoint(httpServletRequest.getRequestURI());
-            requestLog.setMethod(httpServletRequest.getMethod());
-            requestLog.setParameter(JSON.parse(requestMap.toString()));
-            requestLog.setRequestBody(JSON.parse(bufferedReqest.getRequestBody()));
 
-            chain.doFilter(bufferedReqest, bufferedResponse);
-            requestLog.setResponseBody(JSON.parse(bufferedResponse.getContent()));
+        RequestLog requestLog = new RequestLog();
+        requestLog.setClient(httpServletRequest.getRemoteAddr());
+        requestLog.setEndpoint(httpServletRequest.getRequestURI());
+        requestLog.setMethod(httpServletRequest.getMethod());
+        requestLog.setParameter(requestMap.toString());
+        requestLog.setRequestBody(JSON.parse(bufferedRequest.getRequestBody()));
+
+        chain.doFilter(bufferedRequest, bufferedResponse);
+        requestLog.setResponseBody(JSON.parse(bufferedResponse.getContent()));
+        requestLog.setResponseCode(bufferedResponse.getStatus());
+        requestLog.setTimestamp(System.currentTimeMillis());
+        final StringBuilder logMessage = new StringBuilder("REST Request - ")
+                .append("[")
+                .append(httpServletRequest.getMethod())
+                .append("] [PATH:")
+                .append(httpServletRequest.getPathInfo())
+                .append("] [PARAMETERS:")
+                .append(requestMap)
+                .append("] [BODY:")
+                .append(bufferedRequest.getRequestBody())
+                .append("] [REMOTE:")
+                .append(httpServletRequest.getRemoteAddr())
+                .append("] [STATUS:")
+                .append(bufferedResponse.getStatus())
+                .append("]");
+        logger.info(logMessage);
+
+        if (httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
+                (httpServletRequest.getMethod().equals(HttpMethod.POST.toString())) ||
+                (httpServletRequest.getMethod().equals(HttpMethod.DELETE.toString()))) {
             requestLogRepository.save(requestLog);
+        }
     }
 
 
@@ -215,8 +240,9 @@ public class LoggingFilter implements Filter {
     public class BufferedResponseWrapper implements HttpServletResponse {
 
         HttpServletResponse original;
-        TeeServletOutputStream tee;
+        TeeServletOutputStream teeStream;
         ByteArrayOutputStream bos;
+        PrintWriter teeWriter;
 
         public BufferedResponseWrapper(HttpServletResponse response) {
             original = response;
@@ -226,17 +252,23 @@ public class LoggingFilter implements Filter {
             return bos.toString();
         }
 
+        @Override
         public PrintWriter getWriter() throws IOException {
-            return original.getWriter();
+
+            if (this.teeWriter == null) {
+                this.teeWriter = new PrintWriter(new OutputStreamWriter(getOutputStream()));
+            }
+            return this.teeWriter;
         }
 
+        @Override
         public ServletOutputStream getOutputStream() throws IOException {
-            if (tee == null) {
-                bos = new ByteArrayOutputStream();
-                tee = new TeeServletOutputStream(original.getOutputStream(), bos);
-            }
-            return tee;
 
+            if (LoggingFilter.BufferedResponseWrapper.this.teeStream == null) {
+                bos = new ByteArrayOutputStream();
+                LoggingFilter.BufferedResponseWrapper.this.teeStream = new TeeServletOutputStream(original.getOutputStream(), bos);
+            }
+            return LoggingFilter.BufferedResponseWrapper.this.teeStream;
         }
 
         @Override
@@ -279,9 +311,15 @@ public class LoggingFilter implements Filter {
             return original.getBufferSize();
         }
 
+
         @Override
         public void flushBuffer() throws IOException {
-            tee.flush();
+            if (teeStream != null) {
+                teeStream.flush();
+            }
+            if (this.teeWriter != null) {
+                this.teeWriter.flush();
+            }
         }
 
         @Override
@@ -399,7 +437,7 @@ public class LoggingFilter implements Filter {
 
         @Override
         public int getStatus() {
-            return 0;
+            return original.getStatus();
         }
 
         @Override
