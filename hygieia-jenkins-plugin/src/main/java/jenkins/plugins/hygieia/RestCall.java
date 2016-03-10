@@ -1,6 +1,7 @@
 package jenkins.plugins.hygieia;
 
 import hudson.ProxyConfiguration;
+import hygieia.utils.WildCardURL;
 import jenkins.model.Jenkins;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -15,14 +16,19 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 
 public class RestCall {
     private static final Logger logger = Logger.getLogger(RestCall.class.getName());
 
-    public RestCall() {
+    private boolean useProxy;
+
+    public RestCall(boolean useProxy) {
+        this.useProxy = useProxy;
     }
 
 //Fixme: Need refactoring to remove code duplication.
@@ -31,7 +37,7 @@ public class RestCall {
         HttpClient client = new HttpClient();
         if (Jenkins.getInstance() != null) {
             ProxyConfiguration proxy = Jenkins.getInstance().proxy;
-            if (proxy != null) {
+            if (useProxy && (proxy != null)){
                 client.getHostConfiguration().setProxy(proxy.name, proxy.port);
                 String username = proxy.getUserName();
                 String password = proxy.getPassword();
@@ -43,6 +49,14 @@ public class RestCall {
             }
         }
         return client;
+    }
+
+    private boolean bypassProxy (String url, List<Pattern> bypassList)  {
+        for (Pattern bp: bypassList) {
+            WildCardURL wurl = new WildCardURL(bp.toString());
+            if (wurl.matches(url)) return true;
+        }
+        return false;
     }
 
     public RestCallResponse makeRestCallPost(String url, String jsonString) {

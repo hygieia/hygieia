@@ -233,13 +233,13 @@
 
                 function all(data) {
                     return _.filter(data, function (build) {
-                        return build.endTime >= fifteenDays.getTime();
+                        return build.endTime >= fifteenDays.getTime() && (build.buildStatus !== 'InProgress');
                     });
                 }
 
                 function failed(data) {
                     return _.filter(data, function (build) {
-                        return build.endTime >= fifteenDays.getTime() && build.buildStatus !== 'Success';
+                        return build.endTime >= fifteenDays.getTime() && (build.buildStatus !== 'Success') && (build.buildStatus !== 'InProgress');
                     });
                 }
 
@@ -273,7 +273,7 @@
                 // loop and convert time to readable format
                 data = _.map(data, function (item) {
                     return {
-                        passed: item.buildStatus == 'Success',
+                        status : item.buildStatus.toLowerCase(),
                         number: item.number,
                         endTime: item.endTime,
                         url: item.buildUrl
@@ -287,7 +287,7 @@
                 // order by end time and limit to last 5
                 data = _.sortBy(data, 'endTime').reverse().slice(0, failureThreshold);
                 data = _.where(data, function (item) {
-                    return item.buildStatus != 'Success';
+                    return (item.buildStatus.toLowerCase() != 'success') &&  (item.buildStatus.toLowerCase() != 'inprogress') ;
                 });
 
                 cb(data && data.length >= failureThreshold);

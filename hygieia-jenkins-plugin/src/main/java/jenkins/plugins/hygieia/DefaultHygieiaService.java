@@ -32,14 +32,16 @@ public class DefaultHygieiaService implements HygieiaService {
     private String hygieiaAPIUrl = "";
     private String hygieiaToken = "";
     private String hygieiaJenkinsName = "";
+    private boolean useProxy = false;
     private BuildListener listener;
 
 
-    public DefaultHygieiaService(String hygieiaAPIUrl, String hygieiaToken, String hygieiaJenkinsName) {
+    public DefaultHygieiaService(String hygieiaAPIUrl, String hygieiaToken, String hygieiaJenkinsName, boolean useProxy) {
         super();
         this.hygieiaAPIUrl = hygieiaAPIUrl;
         this.hygieiaToken = hygieiaToken;
         this.hygieiaJenkinsName = hygieiaJenkinsName;
+        this.useProxy = useProxy;
     }
 
     void setHygieiaAPIUrl(String hygieiaAPIUrl) {
@@ -51,7 +53,7 @@ public class DefaultHygieiaService implements HygieiaService {
         int responseCode = HttpStatus.SC_NO_CONTENT;
         try {
             String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
-            RestCall restCall = new RestCall();
+            RestCall restCall = new RestCall(useProxy);
             RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/build", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString().replaceAll("\"", "");
@@ -72,7 +74,7 @@ public class DefaultHygieiaService implements HygieiaService {
         int responseCode = HttpStatus.SC_NO_CONTENT;
         try {
             String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
-            RestCall restCall = new RestCall();
+            RestCall restCall = new RestCall(useProxy);
             RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/artifact", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString();
@@ -92,7 +94,7 @@ public class DefaultHygieiaService implements HygieiaService {
         int responseCode = HttpStatus.SC_NO_CONTENT;
         try {
             String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
-            RestCall restCall = new RestCall();
+            RestCall restCall = new RestCall(useProxy);
             RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/quality/test", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString();
@@ -112,7 +114,7 @@ public class DefaultHygieiaService implements HygieiaService {
         int responseCode = HttpStatus.SC_NO_CONTENT;
         try {
             String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
-            RestCall restCall = new RestCall();
+            RestCall restCall = new RestCall(useProxy);
             RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/quality/static-analysis", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString();
@@ -130,7 +132,7 @@ public class DefaultHygieiaService implements HygieiaService {
         int responseCode = HttpStatus.SC_NO_CONTENT;
         try {
             String jsonString = new String(HygieiaUtils.convertObjectToJsonBytes(request));
-            RestCall restCall = new RestCall();
+            RestCall restCall = new RestCall(useProxy);
             RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(hygieiaAPIUrl + "/deploy", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString();
@@ -146,7 +148,7 @@ public class DefaultHygieiaService implements HygieiaService {
     }
 
     private String getCollectorItemJSON(String type) {
-        RestCall restCall = new RestCall();
+        RestCall restCall = new RestCall(useProxy);
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(hygieiaAPIUrl + "/collector/item/type/" + type);
         int responseCode = callResponse.getResponseCode();
         if (responseCode != HttpStatus.SC_OK) {
@@ -158,7 +160,7 @@ public class DefaultHygieiaService implements HygieiaService {
 
     private String getDeploymentDetailsJSON(String appName) {
         ///deploy/status/application/
-        RestCall restCall = new RestCall();
+        RestCall restCall = new RestCall(useProxy);
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(hygieiaAPIUrl + "/deploy/status/application/" + appName);
         int responseCode = callResponse.getResponseCode();
         if (responseCode != HttpStatus.SC_OK) {
@@ -209,7 +211,7 @@ public class DefaultHygieiaService implements HygieiaService {
 
 
     public boolean testConnection() {
-        RestCall restCall = new RestCall();
+        RestCall restCall = new RestCall(useProxy);
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(hygieiaAPIUrl + "/ping");
         int responseCode = callResponse.getResponseCode();
 

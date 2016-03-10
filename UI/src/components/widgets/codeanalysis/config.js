@@ -29,10 +29,17 @@
         collectorData.itemsByType('test').then(processTestsResponse);
 
         function processCaResponse(data) {
+
             var caCollectorItems = component.collectorItems.CodeQuality;
             var caCollectorItemId = _.isEmpty(caCollectorItems) ? null : caCollectorItems[0].id;
-
+            if (data != null) {
+                var j;
+                for (j = 0; j < data.length; ++j) {
+                    data[j].displayName = ((data[j].niceName != null) && (data[j].niceName != ""))? data[j].niceName : data[j].collector.name;
+                }
+            }
             ctrl.caJobs = data;
+
             ctrl.caCollectorItem = caCollectorItemId ? _.findWhere(ctrl.caJobs, {id: caCollectorItemId}) : null;
             ctrl.caToolsDropdownPlaceholder = data.length ? 'Select a Code Analysis Job' : 'No Code Analysis Job Found';
         }
@@ -62,8 +69,10 @@
                 }
             }
             var index;
-            for (index = 0; index < testCollectorItems.length; ++index) {
-                testCollectorItemIds.push(testCollectorItems[index].id);
+            if (testCollectorItems != null) {
+                for (index = 0; index < testCollectorItems.length; ++index) {
+                    testCollectorItemIds.push(testCollectorItems[index].id);
+                }
             }
             for (index = 0; index < testCollectorItemIds.length; ++index) {
                 var testItem = testCollectorItemIds ? _.findWhere(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
@@ -109,7 +118,6 @@
         }
 
         function deleteTestConfig(item) {
-            debugger;
             ctrl.testConfigs.pop(item);
         }
     }

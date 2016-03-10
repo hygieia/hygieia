@@ -25,7 +25,7 @@ import java.util.Set;
 
 @Component
 public class SonarCollectorTask extends CollectorTask<SonarCollector> {
-    @SuppressWarnings("PMD.UnusedPrivateField")
+    @SuppressWarnings({ "PMD.UnusedPrivateField", "unused" })
     private static final Log LOG = LogFactory.getLog(SonarCollectorTask.class);
 
     private final SonarCollectorRepository sonarCollectorRepository;
@@ -142,6 +142,7 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
 
         // First delete collector items that are not supposed to be collected anymore because the servers have moved(?)
         for (SonarProject job : existingProjects) {
+            if (job.isPushed()) continue; // do not delete jobs that are being pushed via API
             if (!collector.getSonarServers().contains(job.getInstanceUrl()) ||
                     (!job.getCollectorId().equals(collector.getId())) ||
                     (!latestProjects.contains(job))) {
@@ -192,7 +193,8 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         log("New projects", start, count);
     }
 
-    private boolean isNewProject(SonarCollector collector, SonarProject application) {
+    @SuppressWarnings("unused")
+	private boolean isNewProject(SonarCollector collector, SonarProject application) {
         return sonarProjectRepository.findSonarProject(
                 collector.getId(), application.getInstanceUrl(), application.getProjectId()) == null;
     }

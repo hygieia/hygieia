@@ -100,10 +100,22 @@ public class CollectorServiceImpl implements CollectorService {
     }
 
     @Override
+    public CollectorItem createCollectorItemByNiceNameAndProjectId(CollectorItem item, String projectId) throws HygieiaException {
+        //Try to find a matching by collector ID and niceName.
+        CollectorItem existing = collectorItemRepository.findByCollectorIdNiceNameAndProjectId(item.getCollectorId(), item.getNiceName(), projectId);
+
+        //if not found, call the method to look up by collector ID and options. NiceName would be saved too
+        if (existing == null) return createCollectorItem(item);
+
+        //Flow is here because there is only one collector item with the same collector id and niceName. So, update with
+        // the new info - keep the same collector item id. Save = Update or Insert.
+        item.setId(existing.getId());
+
+        return collectorItemRepository.save(item);
+    }
+
+    @Override
     public CollectorItem createCollectorItemByNiceNameAndJobName(CollectorItem item, String jobName) throws HygieiaException {
-        /*
-         * FIXME - This logic is currently broken!!
-         */
         //Try to find a matching by collector ID and niceName.
         CollectorItem existing = collectorItemRepository.findByCollectorIdNiceNameAndJobName(item.getCollectorId(), item.getNiceName(), jobName);
 

@@ -143,7 +143,8 @@ public class CodeQualityControllerTest {
     @Test
     public void insertStaticAnalysisTest1() throws Exception {
         CodeQualityCreateRequest request = makeCodeQualityRequest();
-        byte[] content = TestUtil.convertObjectToJsonBytes(request);
+        @SuppressWarnings("unused")
+		byte[] content = TestUtil.convertObjectToJsonBytes(request);
         when(codeQualityService.create(Matchers.any(CodeQualityCreateRequest.class))).thenReturn("123456");
         mockMvc.perform(post("/quality/static-analysis")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -156,7 +157,8 @@ public class CodeQualityControllerTest {
     public void insertStaticAnalysisTest2() throws Exception {
         CodeQualityCreateRequest request = makeCodeQualityRequest();
         request.setProjectName(null);
-        byte[] content = TestUtil.convertObjectToJsonBytes(request);
+        @SuppressWarnings("unused")
+		byte[] content = TestUtil.convertObjectToJsonBytes(request);
         when(codeQualityService.create(Matchers.any(CodeQualityCreateRequest.class))).thenReturn("1234");
         mockMvc.perform(post("/quality/static-analysis")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -168,7 +170,8 @@ public class CodeQualityControllerTest {
     @Test
     public void insertStaticAnalysisTest3() throws Exception {
         CodeQualityCreateRequest request = makeCodeQualityRequest();
-        byte[] content = TestUtil.convertObjectToJsonBytes(request);
+        @SuppressWarnings("unused")
+		byte[] content = TestUtil.convertObjectToJsonBytes(request);
         when(codeQualityService.create(Matchers.any(CodeQualityCreateRequest.class))).thenThrow(new HygieiaException("This is bad", HygieiaException.COLLECTOR_CREATE_ERROR));
         mockMvc.perform(post("/quality/static-analysis")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)

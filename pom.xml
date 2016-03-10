@@ -24,6 +24,7 @@
 		<guava.version>16.0.1</guava.version>
 		<pmd.version>3.5</pmd.version>
 		<jacoco.version>0.7.5.201505241946</jacoco.version>
+		<joda-time.version>2.7</joda-time.version>
 	</properties>
 
   <licenses>
@@ -125,8 +126,8 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<configuration>
-						<source>1.7</source>
-						<target>1.7</target>
+						<source>1.8</source>
+						<target>1.8</target>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -160,8 +161,8 @@
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-compiler-plugin</artifactId>
 							<configuration>
-								<source>1.7</source>
-								<target>1.7</target>
+								<source>1.8</source>
+								<target>1.8</target>
 							</configuration>
 						</plugin>
 					</plugins>
@@ -190,8 +191,8 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
 						<configuration>
-							<source>1.7</source>
-							<target>1.7</target>
+							<source>1.8</source>
+							<target>1.8</target>
 						</configuration>
 					</plugin>
 					<plugin>

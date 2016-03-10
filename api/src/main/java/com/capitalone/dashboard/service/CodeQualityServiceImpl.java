@@ -101,7 +101,8 @@ public class CodeQualityServiceImpl implements CodeQualityService {
             result = codeQualityRepository.findAll(builder.getValue(), pageRequest).getContent();
         }
         Collector collector = collectorRepository.findOne(item.getCollectorId());
-        return new DataResponse<>(result, collector.getLastExecuted());
+        long lastExecuted = (collector == null) ? 0 : collector.getLastExecuted();
+        return new DataResponse<>(result, lastExecuted);
     }
 
     protected CollectorItem getCollectorItem(CodeQualityRequest request) {
@@ -171,12 +172,11 @@ public class CodeQualityServiceImpl implements CodeQualityService {
         option.put("instanceUrl", request.getServerUrl());
         tempCi.getOptions().putAll(option);
         tempCi.setNiceName(request.getNiceName());
-        // FIXME: CollectorItem creation via nice name is broken!
-//        if (StringUtils.isEmpty(tempCi.getNiceName())) {
-//            return collectorService.createCollectorItem(tempCi);
-//        }
-//        return collectorService.createCollectorItemByNiceName(tempCi);
-        return collectorService.createCollectorItem(tempCi);
+
+        if (StringUtils.isEmpty(tempCi.getNiceName())) {
+            return collectorService.createCollectorItem(tempCi);
+        }
+        return collectorService.createCollectorItemByNiceNameAndProjectId(tempCi, request.getProjectId());
     }
 
     private CodeQuality createCodeQuality(CollectorItem collectorItem, CodeQualityCreateRequest request) {
