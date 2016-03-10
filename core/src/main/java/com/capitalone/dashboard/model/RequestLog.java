@@ -113,4 +113,8 @@ public class RequestLog extends BaseModel {
     public void setResponseContentType(String responseContentType) {
         this.responseContentType = responseContentType;
     }
+
+    public String toString() {
+        return "REST Request - " + "[" + this.method + "] [PARAMETERS:" + parameter + "] [BODY:" + requestBody + "] [REMOTE:" + client + "] [STATUS:" + responseCode + "]";
+    }
 }
