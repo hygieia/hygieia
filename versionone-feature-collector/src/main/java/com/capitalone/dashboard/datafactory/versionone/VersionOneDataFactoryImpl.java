@@ -21,6 +21,8 @@ import com.versionone.apiclient.Services;
 import com.versionone.apiclient.V1Connector;
 import com.versionone.apiclient.exceptions.V1Exception;
 import com.versionone.apiclient.interfaces.IServices;
+
+import org.apache.http.auth.AuthenticationException;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -36,7 +38,8 @@ import java.util.Map;
 @Component
 public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VersionOneDataFactoryImpl.class);
-	@SuppressWarnings("PMD.AvoidUsingHardCodedIP") // not an IP
+	@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
+	// not an IP
 	private static final String AGENT_VER = "01.00.00.01";
 	private static final String AGENT_NAME = "Hygieia Dashboard - VersionOne Feature Collector";
 
@@ -65,7 +68,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	/**
 	 * Constructs V1 data factory, but defaults the page size to the page size
 	 * parameter given, and the page index to 0.
-	 *
+	 * 
 	 * @param inPageSize
 	 *            A default page size to give the class on construction
 	 */
@@ -77,7 +80,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Used for establishing connection to VersionOne based on authentication
-	 *
+	 * 
 	 * @param auth
 	 *            A key-value pairing of authentication values
 	 * @return A V1Connector connection instance
@@ -87,35 +90,27 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 		try {
 			if (!auth.get("v1ProxyUrl").equalsIgnoreCase(null)) {
-				ProxyProvider proxyProvider = new ProxyProvider(new URI(
-						auth.get("v1ProxyUrl")), "", "");
+				ProxyProvider proxyProvider = new ProxyProvider(new URI(auth.get("v1ProxyUrl")),
+						"", "");
 
-				connector = V1Connector
-						.withInstanceUrl(auth.get("v1BaseUri"))
+				connector = V1Connector.withInstanceUrl(auth.get("v1BaseUri"))
 						.withUserAgentHeader(AGENT_NAME, AGENT_VER)
-						.withAccessToken(auth.get("v1AccessToken"))
-						.withProxy(proxyProvider).build();
+						.withAccessToken(auth.get("v1AccessToken")).withProxy(proxyProvider)
+						.build();
 			} else {
-				connector = V1Connector
-						.withInstanceUrl(auth.get("v1BaseUri"))
+				connector = V1Connector.withInstanceUrl(auth.get("v1BaseUri"))
 						.withUserAgentHeader(AGENT_NAME, AGENT_VER)
 						.withAccessToken(auth.get("v1AccessToken")).build();
 			}
 		} catch (MalformedURLException | V1Exception e) {
 			LOGGER.error("There was a problem connecting and authenticating with VersionOne:\n"
-					+ e.getMessage()
-					+ " | "
-					+ e.getCause());
+					+ e.getMessage() + " | " + e.getCause());
 		} catch (URISyntaxException e) {
 			LOGGER.error("There was a problem connecting and authenticating with VersionOne while creating a proxy:\n"
-					+ e.getMessage()
-					+ " | "
-					+ e.getCause());
+					+ e.getMessage() + " | " + e.getCause());
 		} catch (Exception e) {
 			LOGGER.error("There was an unexpected problem connecting and authenticating with VersionOne:\n"
-					+ e.getMessage()
-					+ " | "
-					+ e.getCause());
+					+ e.getMessage() + " | " + e.getCause());
 		}
 
 		return connector;
@@ -123,7 +118,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Sets the local query value on demand based on a given basic query.
-	 *
+	 * 
 	 * @param query
 	 *            A query in YAML syntax as a String
 	 * @return The saved YAML-syntax basic query
@@ -137,15 +132,14 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	 * Creates a query on demand based on a given basic query and a specified
 	 * page index value. It is recommended to use this method in a loop to
 	 * ensure all pages are covered.
-	 *
+	 * 
 	 * @param inPageIndex
 	 *            A given query's current page index, from 0-oo
 	 * @return A JSON-formatted response
 	 */
 	public String buildPagingQuery(int inPageIndex) {
 		this.setPageIndex(inPageIndex);
-		String pageFilter = "\npage:\n" + "   size: " + pageSize + "\n"
-				+ "   start: " + pageIndex;
+		String pageFilter = "\npage:\n" + "   size: " + pageSize + "\n" + "   start: " + pageIndex;
 		this.setPagingQuery(this.getBasicQuery() + pageFilter);
 		return this.getPagingQuery();
 	}
@@ -155,13 +149,22 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	 * YAML-formatted query. This requires a pre-formatted paged query to run,
 	 * and will not perform the paging for you - there are other helper methods
 	 * for this.
-	 *
+	 * 
 	 * @return A formatted JSONArray response
+	 * @throws AuthenticationException
 	 */
-	public JSONArray getPagingQueryResponse() {
+	public JSONArray getPagingQueryResponse() throws ClassCastException, AuthenticationException {
 		synchronized (this.v1Service) {
-			this.setJsonOutputArray(this.v1Service.executePassThroughQuery(this
-					.getPagingQuery()));
+			Object obj = this.v1Service.executePassThroughQuery(this.getPagingQuery());
+			if (obj != null) {
+				if (!obj.toString().equalsIgnoreCase("{\"error\":\"Unauthorized\"}")) {
+					this.setJsonOutputArray(obj.toString());
+				} else {
+					throw new AuthenticationException();
+				}
+			} else {
+				throw new ClassCastException();
+			}
 		}
 
 		return this.getJsonOutputArray();
@@ -171,13 +174,21 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	 * Runs the VersionOneConnection library tools against a given
 	 * YAML-formatted query. This requires a pre-formatted basic query
 	 * (single-use).
-	 *
+	 * 
 	 * @return A formatted JSONArray response
 	 */
-	public JSONArray getQueryResponse() {
+	public JSONArray getQueryResponse() throws ClassCastException, AuthenticationException {
 		synchronized (this.v1Service) {
-			this.setJsonOutputArray(this.v1Service.executePassThroughQuery(this
-					.getBasicQuery()));
+			Object obj = this.v1Service.executePassThroughQuery(this.getBasicQuery());
+			if (obj != null) {
+				if (!obj.toString().equalsIgnoreCase("{\"error\":\"Unauthorized\"}")) {
+					this.setJsonOutputArray(obj.toString());
+				} else {
+					throw new AuthenticationException();
+				}
+			} else {
+				throw new ClassCastException();
+			}
 		}
 
 		return this.getJsonOutputArray();
@@ -185,7 +196,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for page index.
-	 *
+	 * 
 	 * @param pageIndex
 	 *            Page index of query
 	 */
@@ -195,7 +206,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for page size.
-	 *
+	 * 
 	 * @param pageIndex
 	 *            Page index of query
 	 */
@@ -205,7 +216,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Accessor method for page index.
-	 *
+	 * 
 	 * @return Page index of query
 	 */
 	public int getPageIndex() {
@@ -214,7 +225,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Accessor method for JSON response output array.
-	 *
+	 * 
 	 * @return JSON response array from VersionOne
 	 */
 	private JSONArray getJsonOutputArray() {
@@ -223,7 +234,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for JSON response output array.
-	 *
+	 * 
 	 * @return JSON response array from VersionOne
 	 */
 	private void setJsonOutputArray(String stringResult) {
@@ -233,9 +244,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 			nativeRs = parser.parse(stringResult);
 		} catch (ParseException e) {
 			LOGGER.error("There was a problem parsing the JSONArray response value from the source system:\n"
-					+ e.getMessage()
-					+ " | "
-					+ e.getCause());
+					+ e.getMessage() + " | " + e.getCause());
 		}
 		JSONArray canonicalRs = (JSONArray) nativeRs;
 		this.jsonOutputArray = canonicalRs;
@@ -243,7 +252,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Accessor method for basic query formatted object.
-	 *
+	 * 
 	 * @return Basic VersionOne YAML query
 	 */
 	public String getBasicQuery() {
@@ -252,7 +261,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for basic query formatted object.
-	 *
+	 * 
 	 * @param Basic
 	 *            VersionOne YAML query
 	 */
@@ -262,7 +271,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Accessor method for retrieving paged query.
-	 *
+	 * 
 	 * @return The paged YAML query
 	 */
 	public String getPagingQuery() {
@@ -271,7 +280,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for setting paged query
-	 *
+	 * 
 	 * @param pagingQuery
 	 *            The paged YAML query
 	 */

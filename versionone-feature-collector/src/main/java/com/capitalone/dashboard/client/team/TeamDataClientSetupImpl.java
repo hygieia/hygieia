@@ -8,6 +8,8 @@ import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
+
+import org.apache.http.auth.AuthenticationException;
 import org.json.simple.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +93,12 @@ public abstract class TeamDataClientSetupImpl implements DataClientSetup {
 				}
 				tmpDetailArray = (JSONArray) outPutMainArray.get(0);
 			}
+		} catch (AuthenticationException e) {
+			LOGGER.error("VersionOne is not authenticated properly: " + e.getClass().getName()
+					+ "\n[" + e.getMessage() + "]");
+		} catch (ClassCastException e) {
+			LOGGER.error("Data returned from VersionOne did not match the expected JSON class type: "
+					+ e.getClass().getName() + "\n[" + e.getMessage() + "]");
 		} catch (Exception e) {
 			LOGGER.error("Unexpected error in VersionOne paging request of "
 					+ e.getClass().getName() + "\n[" + e.getMessage() + "]");

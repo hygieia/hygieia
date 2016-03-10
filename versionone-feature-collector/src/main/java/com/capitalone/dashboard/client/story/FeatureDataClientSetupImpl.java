@@ -8,6 +8,8 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.Constants;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
+
+import org.apache.http.auth.AuthenticationException;
 import org.json.simple.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +22,9 @@ import java.util.List;
 /**
  * Implemented class which is extended by children to perform actual
  * source-system queries as a service and to update the MongoDB in accordance.
- *
+ * 
  * @author kfk884
- *
+ * 
  */
 @Component
 public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
@@ -38,7 +40,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 
 	/**
 	 * Constructs the feature data collection based on system settings.
-	 *
+	 * 
 	 * @param featureSettings
 	 *            Feature collector system settings
 	 * @param featureCollectorRepository
@@ -60,7 +62,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * This method is used to update the database with model defined in the
 	 * collector model definitions.
-	 *
+	 * 
 	 * @see Story
 	 */
 	public void updateObjectInformation() {
@@ -91,6 +93,12 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 				}
 				tmpDetailArray = (JSONArray) outPutMainArray.get(0);
 			}
+		} catch (AuthenticationException e) {
+			LOGGER.error("VersionOne is not authenticated properly: " + e.getClass().getName()
+					+ "\n[" + e.getMessage() + "]");
+		} catch (ClassCastException e) {
+			LOGGER.error("Data returned from VersionOne did not match the expected JSON class type: "
+					+ e.getClass().getName() + "\n[" + e.getMessage() + "]");
 		} catch (Exception e) {
 			LOGGER.error("Unexpected error in VersionOne paging request of "
 					+ e.getClass().getName() + "\n[" + e.getMessage() + "]");
@@ -102,7 +110,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 
 	/**
 	 * Generates and retrieves the local server time stamp in Unix Epoch format.
-	 *
+	 * 
 	 * @param unixTimeStamp
 	 *            The current millisecond value of since the Unix Epoch
 	 * @return Unix Epoch-formatted time stamp for the current date/time
@@ -120,7 +128,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * Generates and retrieves the change date that occurs a minute prior to the
 	 * specified change date in ISO format.
-	 *
+	 * 
 	 * @param changeDateISO
 	 *            A given change date in ISO format
 	 * @return The ISO-formatted date/time stamp for a minute prior to the given
@@ -134,7 +142,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 
 	/**
 	 * Generates and retrieves the sprint start date in ISO format.
-	 *
+	 * 
 	 * @return The ISO-formatted date/time stamp for the sprint start date
 	 */
 	public String getSprintBeginDateFilter() {
@@ -145,7 +153,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 
 	/**
 	 * Generates and retrieves the sprint end date in ISO format.
-	 *
+	 * 
 	 * @return The ISO-formatted date/time stamp for the sprint end date
 	 */
 	public String getSprintEndDateFilter() {
@@ -157,7 +165,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * Generates and retrieves the difference between the sprint start date and
 	 * the sprint end date in ISO format.
-	 *
+	 * 
 	 * @return The ISO-formatted date/time stamp for the sprint start date
 	 */
 	public String getSprintDeltaDateFilter() {
@@ -182,27 +190,28 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 
 	/**
 	 * Retrieves the maximum change date for a given query.
-	 *
+	 * 
 	 * @return A list object of the maximum change date
 	 */
-	@SuppressWarnings("PMD.AvoidCatchingNPE") // agreed, fixme
+	@SuppressWarnings("PMD.AvoidCatchingNPE")
+	// agreed, fixme
 	public String getMaxChangeDate() {
 		String data = null;
 
 		try {
 			List<Feature> response = featureRepo
-					.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(featureCollectorRepository
-							.findByName(Constants.VERSIONONE).getId(), featureSettings
-							.getDeltaStartDate());
+					.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+							featureCollectorRepository.findByName(Constants.VERSIONONE).getId(),
+							featureSettings.getDeltaStartDate());
 			if (!response.isEmpty()) {
 				data = response.get(0).getChangeDate();
 			}
 		} catch (NullPointerException npe) {
-			LOGGER.debug("No data was currently available in the local database that corresponded" +
-					" to a max change date\nReturning null", npe);
+			LOGGER.debug("No data was currently available in the local database that corresponded"
+					+ " to a max change date\nReturning null", npe);
 		} catch (Exception e) {
-			LOGGER.error("There was a problem retrieving or parsing data from the local " +
-					"repository while retrieving a max change date\nReturning null", e);
+			LOGGER.error("There was a problem retrieving or parsing data from the local "
+					+ "repository while retrieving a max change date\nReturning null", e);
 		}
 
 		return data;
@@ -211,7 +220,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * Abstract method required by children methods to update the MongoDB with a
 	 * JSONArray received from the source system back-end.
-	 *
+	 * 
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
 	 * @return

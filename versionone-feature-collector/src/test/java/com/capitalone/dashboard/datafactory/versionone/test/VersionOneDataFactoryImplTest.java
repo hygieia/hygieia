@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.auth.AuthenticationException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.After;
@@ -24,18 +25,16 @@ import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl
 /**
  * Tests all facets of the VerisonOneDataFactoryImpl class, which is responsible
  * for handling all transactions to the source system, VersionOne.
- *
+ * 
  * @author KFK884
- *
+ * 
  */
 public class VersionOneDataFactoryImplTest {
-	private static Logger logger = LoggerFactory
-			.getLogger("VersionOneDataFactoryImplTest");
+	private static Logger logger = LoggerFactory.getLogger("VersionOneDataFactoryImplTest");
 	protected static String queryName;
 	protected static String query;
 	protected static String yesterday;
-	protected static DateFormat dateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm:ss");
+	protected static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	protected static Map<String, String> auth;
 	protected static VersionOneDataFactoryImpl v1DataFactory;
 
@@ -47,33 +46,32 @@ public class VersionOneDataFactoryImplTest {
 
 	/**
 	 * Runs actions before test is initialized.
-	 *
+	 * 
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		logger.info("Beginning tests for com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl");
 		auth = new HashMap<String, String>();
-		// TODO:  Include your own company proxy
+		// TODO: Include your own company proxy
 		auth.put("v1ProxyUrl", "");
-		// TODO:  Include your own base uri for VersionOne
+		// TODO: Include your own base uri for VersionOne
 		auth.put("v1BaseUri", "");
-		// TODO:  Include your own v1 auth token
+		// TODO: Include your own v1 auth token
 		auth.put("v1AccessToken", "");
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -3);
 		yesterday = dateFormat.format(cal.getTime());
 		yesterday = yesterday.replace(" ", "T");
 
-		query = "from: Story\n" + "select:\n" + "  - Number\n" + "filter:\n"
-				+ "  - ChangeDate>'" + yesterday + "'\n"
-				+ "  - (IsDeleted='False'|IsDeleted='True')\n";
+		query = "from: Story\n" + "select:\n" + "  - Number\n" + "filter:\n" + "  - ChangeDate>'"
+				+ yesterday + "'\n" + "  - (IsDeleted='False'|IsDeleted='True')\n";
 		v1DataFactory = new VersionOneDataFactoryImpl(auth);
 	}
 
 	/**
 	 * Runs actions after test is complete.
-	 *
+	 * 
 	 * @throws java.lang.Exception
 	 */
 	@AfterClass
@@ -86,7 +84,7 @@ public class VersionOneDataFactoryImplTest {
 
 	/**
 	 * Performs these actions before each test.
-	 *
+	 * 
 	 * @throws java.lang.Exception
 	 */
 	@Before
@@ -95,7 +93,7 @@ public class VersionOneDataFactoryImplTest {
 
 	/**
 	 * Performs these actions after each test completes.
-	 *
+	 * 
 	 * @throws java.lang.Exception
 	 */
 	@After
@@ -111,12 +109,9 @@ public class VersionOneDataFactoryImplTest {
 	public void testBuildPagingQuery() {
 		v1DataFactory.setPageSize(1);
 		v1DataFactory.buildPagingQuery(30);
-		assertNotNull("The basic query was created",
-				v1DataFactory.getPagingQuery());
-		assertEquals("The page size was accurate", 1,
-				v1DataFactory.getPageSize());
-		assertEquals("The page index was accurate", 30,
-				v1DataFactory.getPageIndex());
+		assertNotNull("The basic query was created", v1DataFactory.getPagingQuery());
+		assertEquals("The page size was accurate", 1, v1DataFactory.getPageSize());
+		assertEquals("The page index was accurate", 30, v1DataFactory.getPageIndex());
 	}
 
 	/**
@@ -142,8 +137,8 @@ public class VersionOneDataFactoryImplTest {
 			dataMainObj = (JSONObject) dataMainArry.get(0);
 
 			// number
-			assertTrue("No valid Number was found", dataMainObj.get("Number")
-					.toString().length() >= 7);
+			assertTrue("No valid Number was found",
+					dataMainObj.get("Number").toString().length() >= 7);
 		} catch (NullPointerException npe) {
 			fail("There was a problem with an object used to connect to VersionOne during the test");
 		} catch (ArrayIndexOutOfBoundsException aioobe) {
@@ -151,7 +146,12 @@ public class VersionOneDataFactoryImplTest {
 		} catch (IndexOutOfBoundsException ioobe) {
 			logger.info("JSON artifact may be empty - re-running test to prove this out...");
 
-			JSONArray rs = v1DataFactory.getPagingQueryResponse();
+			JSONArray rs = new JSONArray();
+			try {
+				rs = v1DataFactory.getPagingQueryResponse();
+			} catch (AuthenticationException | ClassCastException e) {
+				fail("There was an unexpected problem while connecting to VersionOne during the test");
+			}
 
 			/*
 			 * Testing actual JSON for values
@@ -174,8 +174,8 @@ public class VersionOneDataFactoryImplTest {
 	 */
 	@Test
 	public void testVersionOneDataFactoryImpl() {
-		assertEquals("The compared contructed page size values did not match",
-				2000, v1DataFactory.getPageSize());
+		assertEquals("The compared contructed page size values did not match", 2000,
+				v1DataFactory.getPageSize());
 	}
 
 	/**
@@ -186,8 +186,8 @@ public class VersionOneDataFactoryImplTest {
 	@Test
 	public void testVersionOneDataFactoryImplInt() {
 		v1DataFactory.setPageSize(1000);
-		assertEquals("The compared contructed page size values did not match",
-				1000, v1DataFactory.getPageSize());
+		assertEquals("The compared contructed page size values did not match", 1000,
+				v1DataFactory.getPageSize());
 	}
 
 	/**
@@ -199,12 +199,9 @@ public class VersionOneDataFactoryImplTest {
 	public void testBuildBasicQuery() {
 		v1DataFactory.setPageSize(1);
 		v1DataFactory.buildBasicQuery(query);
-		assertNotNull("The basic query was created",
-				v1DataFactory.getBasicQuery());
-		assertEquals("The page size was accurate", 1,
-				v1DataFactory.getPageSize());
-		assertEquals("The page index was accurate", 0,
-				v1DataFactory.getPageIndex());
+		assertNotNull("The basic query was created", v1DataFactory.getBasicQuery());
+		assertEquals("The page size was accurate", 1, v1DataFactory.getPageSize());
+		assertEquals("The page index was accurate", 0, v1DataFactory.getPageIndex());
 	}
 
 	/**
@@ -229,8 +226,8 @@ public class VersionOneDataFactoryImplTest {
 			dataMainObj = (JSONObject) dataMainArry.get(0);
 
 			// number
-			assertTrue("No valid Number was found", dataMainObj.get("Number")
-					.toString().length() >= 7);
+			assertTrue("No valid Number was found",
+					dataMainObj.get("Number").toString().length() >= 7);
 		} catch (NullPointerException npe) {
 			fail("There was a problem with an object used to connect to VersionOne during the test");
 		} catch (ArrayIndexOutOfBoundsException aioobe) {
@@ -238,7 +235,12 @@ public class VersionOneDataFactoryImplTest {
 		} catch (IndexOutOfBoundsException ioobe) {
 			logger.info("JSON artifact may be empty - re-running test to prove this out...");
 
-			JSONArray rs = v1DataFactory.getQueryResponse();
+			JSONArray rs = new JSONArray();
+			try {
+				rs = v1DataFactory.getQueryResponse();
+			} catch (AuthenticationException | ClassCastException e) {
+				fail("There was an unexpected problem while connecting to VersionOne during the test");
+			}
 
 			/*
 			 * Testing actual JSON for values

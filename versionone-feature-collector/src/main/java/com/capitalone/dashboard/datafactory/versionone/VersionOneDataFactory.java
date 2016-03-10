@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.datafactory.versionone;
 
+import org.apache.http.auth.AuthenticationException;
 import org.json.simple.JSONArray;
 
 import com.capitalone.dashboard.datafactory.DataFactory;
@@ -16,9 +17,9 @@ public interface VersionOneDataFactory extends DataFactory{
 
 	String buildPagingQuery(int inPageIndex);
 
-	JSONArray getPagingQueryResponse();
+	JSONArray getPagingQueryResponse() throws ClassCastException, AuthenticationException;
 
-	JSONArray getQueryResponse();
+	JSONArray getQueryResponse() throws ClassCastException, AuthenticationException;
 
 	String getBasicQuery();
 
