@@ -182,7 +182,7 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 	/**
 	 * Mutator method for setting today's date in ISO format
 	 */
-	public void setTodayDateISO(String todayDateISO) {
+	public final void setTodayDateISO(String todayDateISO) {
 		this.todayDateISO = todayDateISO;
 	}
 

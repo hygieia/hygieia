@@ -244,6 +244,7 @@ public class HygieiaPublisher extends Notifier {
         String hygieiaAPIUrl = getDescriptor().getHygieiaAPIUrl();
         String hygieiaToken = getDescriptor().getHygieiaToken();
         String hygieiaJenkinsName = getDescriptor().getHygieiaJenkinsName();
+        boolean useProxy = getDescriptor().isUseProxy();
         EnvVars env;
         try {
             env = r.getEnvironment(listener);
@@ -254,8 +255,7 @@ public class HygieiaPublisher extends Notifier {
         hygieiaAPIUrl = env.expand(hygieiaAPIUrl);
         hygieiaToken = env.expand(hygieiaToken);
         hygieiaJenkinsName = env.expand(hygieiaJenkinsName);
-
-        return new DefaultHygieiaService(hygieiaAPIUrl, hygieiaToken, hygieiaJenkinsName);
+        return new DefaultHygieiaService(hygieiaAPIUrl, hygieiaToken, hygieiaJenkinsName, useProxy);
     }
 
     @Override
@@ -270,6 +270,7 @@ public class HygieiaPublisher extends Notifier {
         private String hygieiaAPIUrl;
         private String hygieiaToken;
         private String hygieiaJenkinsName;
+        private boolean useProxy;
         private Set<String> deployAppNames = new HashSet<String>();
         private Set<String> deployEnvNames = new HashSet<String>();
 
@@ -297,6 +298,10 @@ public class HygieiaPublisher extends Notifier {
             return hygieiaJenkinsName;
         }
 
+        public boolean isUseProxy() {
+            return useProxy;
+        }
+
         public ListBoxModel doFillTestTypeItems(String testType) {
             ListBoxModel model = new ListBoxModel();
 
@@ -317,7 +322,8 @@ public class HygieiaPublisher extends Notifier {
          */
         public AutoCompletionCandidates doAutoCompleteApplicationName(@QueryParameter String value, @QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
                                                                       @QueryParameter("hygieiaToken") final String hygieiaToken,
-                                                                      @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName) {
+                                                                      @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
+                                                                      @QueryParameter("useProxy") final String sUseProxy) {
 
             String hostUrl = hygieiaAPIUrl;
             if (StringUtils.isEmpty(hostUrl)) {
@@ -331,8 +337,12 @@ public class HygieiaPublisher extends Notifier {
             if (StringUtils.isEmpty(niceName)) {
                 niceName = this.hygieiaJenkinsName;
             }
+            boolean bProxy = "true".equalsIgnoreCase(sUseProxy);
+            if (StringUtils.isEmpty(sUseProxy)) {
+                bProxy = this.useProxy;
+            }
             AutoCompletionCandidates c = new AutoCompletionCandidates();
-            if (CollectionUtils.isEmpty(deployAppNames)) fillApplicationNames(hostUrl, targetToken, niceName);
+            if (CollectionUtils.isEmpty(deployAppNames)) fillApplicationNames(hostUrl, targetToken, niceName, bProxy);
             for (String aN : deployAppNames) {
                 if (aN.toLowerCase().startsWith(value.toLowerCase())) {
                     c.add(aN);
@@ -350,7 +360,8 @@ public class HygieiaPublisher extends Notifier {
          */
         public AutoCompletionCandidates doAutoCompleteEnvironmentName(@QueryParameter String value, @QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
                                                                       @QueryParameter("hygieiaToken") final String hygieiaToken,
-                                                                      @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName) {
+                                                                      @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
+                                                                      @QueryParameter("useProxy") final String sUseProxy) {
             String hostUrl = hygieiaAPIUrl;
             if (StringUtils.isEmpty(hostUrl)) {
                 hostUrl = this.hygieiaAPIUrl;
@@ -363,9 +374,13 @@ public class HygieiaPublisher extends Notifier {
             if (StringUtils.isEmpty(niceName)) {
                 niceName = this.hygieiaJenkinsName;
             }
+            boolean bProxy = "true".equalsIgnoreCase(sUseProxy);
+            if (StringUtils.isEmpty(sUseProxy)) {
+                bProxy = this.useProxy;
+            }
 
             if (!StringUtils.isEmpty(deployApplicationNameSelected)) {
-                deployEnvNames = getHygieiaService(hostUrl, targetToken, niceName)
+                deployEnvNames = getHygieiaService(hostUrl, targetToken, niceName, bProxy)
                         .getDeploymentEnvironments(deployApplicationNameSelected);
             }
             AutoCompletionCandidates c = new AutoCompletionCandidates();
@@ -378,8 +393,8 @@ public class HygieiaPublisher extends Notifier {
         }
 
 
-        private void fillApplicationNames(String hostUrl, String targetToken, String niceName) {
-            for (org.json.simple.JSONObject item : getHygieiaService(hostUrl, targetToken, niceName)
+        private void fillApplicationNames(String hostUrl, String targetToken, String niceName, boolean useProxy) {
+            for (org.json.simple.JSONObject item : getHygieiaService(hostUrl, targetToken, niceName, useProxy)
                     .getCollectorItemOptions(HygieiaConstants.COLLECTOR_ITEM_DEPLOYMENT)) {
                 String name = (String) item.get("applicationName");
                 if (!StringUtils.isEmpty(name)) {
@@ -396,7 +411,8 @@ public class HygieiaPublisher extends Notifier {
          */
         public AutoCompletionCandidates doAutoCompleteTestApplicationName(@QueryParameter String value, @QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
                                                                           @QueryParameter("hygieiaToken") final String hygieiaToken,
-                                                                          @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName) {
+                                                                          @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
+                                                                          @QueryParameter("useProxy") final String sUseProxy) {
 
             String hostUrl = hygieiaAPIUrl;
             if (StringUtils.isEmpty(hostUrl)) {
@@ -410,8 +426,12 @@ public class HygieiaPublisher extends Notifier {
             if (StringUtils.isEmpty(niceName)) {
                 niceName = this.hygieiaJenkinsName;
             }
+            boolean bProxy = "true".equalsIgnoreCase(sUseProxy);
+            if (StringUtils.isEmpty(sUseProxy)) {
+                bProxy = this.useProxy;
+            }
             AutoCompletionCandidates c = new AutoCompletionCandidates();
-            if (CollectionUtils.isEmpty(deployAppNames)) fillApplicationNames(hostUrl, targetToken, niceName);
+            if (CollectionUtils.isEmpty(deployAppNames)) fillApplicationNames(hostUrl, targetToken, niceName, bProxy);
             for (String aN : deployAppNames) {
                 if (aN.toLowerCase().startsWith(value.toLowerCase())) {
                     c.add(aN);
@@ -428,7 +448,8 @@ public class HygieiaPublisher extends Notifier {
          */
         public AutoCompletionCandidates doAutoCompleteTestEnvironmentName(@QueryParameter String value, @QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
                                                                           @QueryParameter("hygieiaToken") final String hygieiaToken,
-                                                                          @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName) {
+                                                                          @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
+                                                                          @QueryParameter("useProxy") final String sUseProxy) {
             String hostUrl = hygieiaAPIUrl;
             if (StringUtils.isEmpty(hostUrl)) {
                 hostUrl = this.hygieiaAPIUrl;
@@ -441,9 +462,12 @@ public class HygieiaPublisher extends Notifier {
             if (StringUtils.isEmpty(niceName)) {
                 niceName = this.hygieiaJenkinsName;
             }
-
+            boolean bProxy = "true".equalsIgnoreCase(sUseProxy);
+            if (StringUtils.isEmpty(sUseProxy)) {
+                bProxy = this.useProxy;
+            }
             if (!StringUtils.isEmpty(testApplicationNameSelected)) {
-                deployEnvNames = getHygieiaService(hostUrl, targetToken, niceName)
+                deployEnvNames = getHygieiaService(hostUrl, targetToken, niceName, bProxy)
                         .getDeploymentEnvironments(testApplicationNameSelected);
             }
 
@@ -476,12 +500,13 @@ public class HygieiaPublisher extends Notifier {
             hygieiaAPIUrl = sr.getParameter("hygieiaAPIUrl");
             hygieiaToken = sr.getParameter("hygieiaToken");
             hygieiaJenkinsName = sr.getParameter("hygieiaJenkinsName");
+            useProxy = "on".equals(sr.getParameter("useProxy"));
             save();
             return super.configure(sr, formData);
         }
 
-        HygieiaService getHygieiaService(final String hygieiaAPIUrl, final String hygieiaToken, final String hygieiaJenkinsName) {
-            return new DefaultHygieiaService(hygieiaAPIUrl, hygieiaToken, hygieiaJenkinsName);
+        HygieiaService getHygieiaService(final String hygieiaAPIUrl, final String hygieiaToken, final String hygieiaJenkinsName, final boolean useProxy) {
+            return new DefaultHygieiaService(hygieiaAPIUrl, hygieiaToken, hygieiaJenkinsName, useProxy);
         }
 
         @Override
@@ -491,7 +516,8 @@ public class HygieiaPublisher extends Notifier {
 
         public FormValidation doTestConnection(@QueryParameter("hygieiaAPIUrl") final String hygieiaAPIUrl,
                                                @QueryParameter("hygieiaToken") final String hygieiaToken,
-                                               @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName) throws FormException {
+                                               @QueryParameter("hygieiaJenkinsName") final String hygieiaJenkinsName,
+                                               @QueryParameter("useProxy") final String sUseProxy) throws FormException {
 
             String hostUrl = hygieiaAPIUrl;
             if (StringUtils.isEmpty(hostUrl)) {
@@ -505,7 +531,11 @@ public class HygieiaPublisher extends Notifier {
             if (StringUtils.isEmpty(name)) {
                 name = this.hygieiaJenkinsName;
             }
-            HygieiaService testHygieiaService = getHygieiaService(hostUrl, targetToken, name);
+            boolean bProxy = "true".equalsIgnoreCase(sUseProxy);
+            if (StringUtils.isEmpty(sUseProxy)) {
+                bProxy = this.useProxy;
+            }
+            HygieiaService testHygieiaService = getHygieiaService(hostUrl, targetToken, name, bProxy);
             if (testHygieiaService != null) {
                 boolean success = testHygieiaService.testConnection();
                 return success ? FormValidation.ok("Success") : FormValidation.error("Failure");

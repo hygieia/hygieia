@@ -4,7 +4,8 @@ package com.capitalone.dashboard.util;
  * Created by jkc on 1/20/16.
  */
 public class UnsafeDeleteException extends RuntimeException {
-    public UnsafeDeleteException() {
+	private static final long serialVersionUID = -664077740219817001L;
+	public UnsafeDeleteException() {
         super();
     }
     public UnsafeDeleteException(String s) {

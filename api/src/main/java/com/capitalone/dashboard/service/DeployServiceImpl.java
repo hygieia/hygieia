@@ -135,7 +135,7 @@ public class DeployServiceImpl implements DeployService {
     private class ComponentMatches implements Predicate<EnvironmentStatus> {
         private EnvironmentComponent component;
 
-        private ComponentMatches(EnvironmentComponent component) {
+        public ComponentMatches(EnvironmentComponent component) {
             this.component = component;
         }
 

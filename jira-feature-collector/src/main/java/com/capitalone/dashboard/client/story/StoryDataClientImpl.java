@@ -54,7 +54,6 @@ import java.util.Map;
 public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements StoryDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StoryDataClientImpl.class);
 
-	@SuppressWarnings("unused")
 	private final CoreFeatureSettings coreFeatureSettings;
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;

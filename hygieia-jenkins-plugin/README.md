@@ -1,4 +1,4 @@
-# Hygieia plugin for Jenkins - (started with Slack publisher)
+# Hygieia℠ plugin for Jenkins - (started with Slack publisher)
 
 # Developer instructions
 
@@ -18,5 +18,11 @@ Create an HPI file to install in Jenkins (HPI file will be in `target/hygieia-pu
 1. Install the plugin by using "Advanced" option in Jenkins Plugin Management option to manually upload the file from local disk.
 2. Restart jenkins.
 3. Configure Global Hygieia Publisher in Jenkins Manage Jenkins/Configure System. Enter Hygieia API url such as `http://localhost:8090/api`. There is no API token implented at this time and it is work in progress.
-4. For a build job, add a Post build action "Hygieia Publisher". Select to send build data to Hygieia. Can also send artifact info. Test data pubishing is work in progress.
-5.
+
+![Image](../media/images/jenkins-global.png)
+
+4. For a build job, add a Post build action "Hygieia Publisher". 
+5. Select what to send to Hygieia. Currently, "Build", "Artifact Info", "Sonar Anslysis", "Deployment" and "Cucumber Test Results" can be published. 
+
+![Image](../media/images/jenkins-job-config.png)
+

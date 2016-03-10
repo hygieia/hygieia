@@ -218,7 +218,8 @@ public class JenkinsCucumberTestCollectorTask extends
                 job.getId(), build.getNumber()) == null;
     }
 
-    private Set<Build> nullSafe(Set<Build> builds) {
+    @SuppressWarnings("unused")
+	private Set<Build> nullSafe(Set<Build> builds) {
         return builds == null ? new HashSet<Build>() : builds;
     }
 }
