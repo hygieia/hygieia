@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -40,6 +42,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+//import org.springframework.util.MimeType;
 
 
 public class LoggingFilter implements Filter {
@@ -80,38 +84,27 @@ public class LoggingFilter implements Filter {
             requestLog.setParameter(requestMap.toString());
             requestLog.setRequestSize(httpServletRequest.getContentLengthLong());
             requestLog.setRequestContentType(httpServletRequest.getContentType());
-            if (httpServletRequest.getContentType().startsWith(APPLICATION_JSON_VALUE)) {
-                requestLog.setRequestBody(JSON.parse(bufferedRequest.getRequestBody()));
-            }
 
             chain.doFilter(bufferedRequest, bufferedResponse);
             requestLog.setResponseContentType(httpServletResponse.getContentType());
-            if (httpServletResponse.getContentType().startsWith(APPLICATION_JSON_VALUE)) {
-                requestLog.setResponseBody(JSON.parse(bufferedResponse.getContent()));
+            try {
+                if (new MimeType(httpServletRequest.getContentType()).match(new MimeType(APPLICATION_JSON_VALUE))) {
+                    requestLog.setRequestBody(JSON.parse(bufferedRequest.getRequestBody()));
+                }
+                if (new MimeType(bufferedResponse.getContentType()).match(new MimeType(APPLICATION_JSON_VALUE))){
+                    requestLog.setResponseBody(JSON.parse(bufferedResponse.getContent()));
+                }
+            } catch (MimeTypeParseException e) {
+                LOGGER.error("Invalid MIME Type detected. Request MIME type=" + httpServletRequest.getContentType() + ". Response MIME Type=" + bufferedResponse.getContentType());
             }
             requestLog.setResponseSize(bufferedResponse.getContent().length());
 
             requestLog.setResponseCode(bufferedResponse.getStatus());
             requestLog.setTimestamp(System.currentTimeMillis());
-            final StringBuilder logMessage = new StringBuilder("REST Request - ")
-                    .append("[")
-                    .append(httpServletRequest.getMethod())
-                    .append("] [PATH:")
-                    .append(httpServletRequest.getPathInfo())
-                    .append("] [PARAMETERS:")
-                    .append(requestMap)
-                    .append("] [BODY:")
-                    .append(bufferedRequest.getRequestBody())
-                    .append("] [REMOTE:")
-                    .append(httpServletRequest.getRemoteAddr())
-                    .append("] [STATUS:")
-                    .append(bufferedResponse.getStatus())
-                    .append("]");
-
             try {
                 requestLogRepository.save(requestLog);
             } catch (RuntimeException re) {
-                LOGGER.info(logMessage);
+                LOGGER.info(requestLog.toString());
             }
 
         } else {
@@ -121,7 +114,7 @@ public class LoggingFilter implements Filter {
 
 
     private Map<String, String> getTypesafeRequestMap(HttpServletRequest request) {
-        Map<String, String> typesafeRequestMap = new HashMap<String, String>();
+        Map<String, String> typesafeRequestMap = new HashMap<>();
         Enumeration<?> requestParamNames = request.getParameterNames();
         if (requestParamNames != null) {
             while (requestParamNames.hasMoreElements()) {
@@ -171,7 +164,7 @@ public class LoggingFilter implements Filter {
         }
 
         String getRequestBody() throws IOException {
-            String line = null;
+            String line;
             StringBuilder inputBuffer = new StringBuilder();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(this.getInputStream()))) {
                 do {

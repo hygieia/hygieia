@@ -29,6 +29,7 @@ public class LoggingFilterTest {
 
     @Mock
     private RequestLogRepository requestLogRepository;
+
     @Mock
     private Logger logger;
     @InjectMocks
@@ -53,6 +54,7 @@ public class LoggingFilterTest {
                 filterChain);
         verify(requestLogRepository, times(1)).save(any(RequestLog.class));
     }
+
 
     @Test
     public void testDoFilterGet() throws Exception {
@@ -106,5 +108,78 @@ public class LoggingFilterTest {
         loggingFilter.doFilter(httpServletRequest, httpServletResponse,
                 filterChain);
         verify(requestLogRepository, times(1)).save(any(RequestLog.class));
+    }
+
+    @Test
+    public void testDoFilterPutSettingOff() throws Exception {
+        HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse httpServletResponse =  Mockito.mock(HttpServletResponse.class);
+        FilterChain filterChain =  Mockito.mock(FilterChain.class);
+        when(httpServletRequest.getInputStream()).thenReturn(Mockito.mock(ServletInputStream.class));
+        when(httpServletRequest.getRequestURI()).thenReturn("Success");
+        when(httpServletRequest.getMethod()).thenReturn(HttpMethod.PUT.toString());
+        when(settings.isLogRequest()).thenReturn(false);
+        when(requestLogRepository.save(any(RequestLog.class))).thenReturn(new RequestLog());
+        when(httpServletRequest.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(httpServletResponse.getContentType()).thenReturn("application/json;charset=UTF-8");
+        loggingFilter.doFilter(httpServletRequest, httpServletResponse,
+                filterChain);
+
+        verify(requestLogRepository, times(0)).save(any(RequestLog.class));
+    }
+
+
+    @Test
+    public void testDoFilterGetSettingsOff() throws Exception {
+        HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse httpServletResponse =  Mockito.mock(HttpServletResponse.class);
+        FilterChain filterChain =  Mockito.mock(FilterChain.class);
+        when(httpServletRequest.getInputStream()).thenReturn(Mockito.mock(ServletInputStream.class));
+        when(httpServletRequest.getRequestURI()).thenReturn("Success");
+        when(httpServletRequest.getMethod()).thenReturn(HttpMethod.GET.toString());
+        when(requestLogRepository.save(any(RequestLog.class))).thenReturn(new RequestLog());
+        when(httpServletRequest.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(httpServletResponse.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(settings.isLogRequest()).thenReturn(false);
+        loggingFilter.doFilter(httpServletRequest, httpServletResponse,
+                filterChain);
+        verify(requestLogRepository, times(0)).save(any(RequestLog.class));
+    }
+
+
+    @Test
+    public void testDoFilterPostSettingsOff() throws Exception {
+        HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse httpServletResponse =  Mockito.mock(HttpServletResponse.class);
+        FilterChain filterChain =  Mockito.mock(FilterChain.class);
+        when(httpServletRequest.getInputStream()).thenReturn(Mockito.mock(ServletInputStream.class));
+        when(httpServletRequest.getRequestURI()).thenReturn("Success");
+        when(httpServletRequest.getMethod()).thenReturn(HttpMethod.POST.toString());
+        when(requestLogRepository.save(any(RequestLog.class))).thenReturn(new RequestLog());
+        when(httpServletRequest.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(httpServletResponse.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(settings.isLogRequest()).thenReturn(false);
+        loggingFilter.doFilter(httpServletRequest, httpServletResponse,
+                filterChain);
+        verify(requestLogRepository, times(0)).save(any(RequestLog.class));
+    }
+
+
+
+    @Test
+    public void testDoFilterDeleteSettingsOff() throws Exception {
+        HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse httpServletResponse =  Mockito.mock(HttpServletResponse.class);
+        FilterChain filterChain =  Mockito.mock(FilterChain.class);
+        when(httpServletRequest.getInputStream()).thenReturn(Mockito.mock(ServletInputStream.class));
+        when(httpServletRequest.getRequestURI()).thenReturn("Success");
+        when(httpServletRequest.getMethod()).thenReturn(HttpMethod.DELETE.toString());
+        when(requestLogRepository.save(any(RequestLog.class))).thenReturn(new RequestLog());
+        when(httpServletRequest.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(httpServletResponse.getContentType()).thenReturn("application/json;charset=UTF-8");
+        when(settings.isLogRequest()).thenReturn(false);
+        loggingFilter.doFilter(httpServletRequest, httpServletResponse,
+                filterChain);
+        verify(requestLogRepository, times(0)).save(any(RequestLog.class));
     }
 }
