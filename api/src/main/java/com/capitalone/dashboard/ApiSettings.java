@@ -11,6 +11,7 @@ public class ApiSettings {
      * encryptionKey to be specific. For now (for backwards compatibility) keeping it as it was.
      */
     private String key;
+    private boolean logRequest;
 
     public String getKey() {
         return key;
@@ -18,5 +19,13 @@ public class ApiSettings {
 
     public void setKey(final String key) {
         this.key = key;
+    }
+
+    public boolean isLogRequest() {
+        return logRequest;
+    }
+
+    public void setLogRequest(boolean logRequest) {
+        this.logRequest = logRequest;
     }
 }
