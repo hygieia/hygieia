@@ -22,7 +22,7 @@ The API layer needs a property file in following format:
 
 ```properties
 # dashboard.properties
-dbname=dashboard
+dbname=dashboarddb
 dbusername=[MogoDb Database Username, defaults to empty]
 dbpassword=[MongoDb Database Password, defaults to empty]
 dbhost=[Host on which MongoDb is running, defaults to localhost]
