@@ -148,6 +148,15 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
 
+
+        <!-- Swagger API -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+
         <!-- Misc Deps -->
         <dependency>
             <groupId>commons-lang</groupId>
