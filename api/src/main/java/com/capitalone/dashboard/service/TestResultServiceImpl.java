@@ -10,6 +10,7 @@ import com.capitalone.dashboard.request.TestDataCreateRequest;
 import com.capitalone.dashboard.request.TestResultRequest;
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -181,12 +182,10 @@ public class TestResultServiceImpl implements TestResultService {
         option.put("instanceUrl", request.getServerUrl());
         tempCi.getOptions().putAll(option);
         tempCi.setNiceName(request.getNiceName());
-        // FIXME: CollectorItem creation via nice name is broken!
-//        if (StringUtils.isEmpty(tempCi.getNiceName())) {
-//            return collectorService.createCollectorItem(tempCi);
-//        }
-//        return collectorService.createCollectorItemByNiceName(tempCi);
-        return collectorService.createCollectorItem(tempCi);
+        if (StringUtils.isEmpty(tempCi.getNiceName())) {
+            return collectorService.createCollectorItem(tempCi);
+        }
+        return collectorService.createCollectorItemByNiceNameAndJobName(tempCi, request.getTestJobName());
     }
 
     private TestResult createTest(CollectorItem collectorItem, TestDataCreateRequest request) {
