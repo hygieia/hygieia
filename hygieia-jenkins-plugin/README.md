@@ -1,4 +1,4 @@
-# Hygieia plugin for Jenkins - (started with Slack publisher)
+# Hygieia℠ plugin for Jenkins - (started with Slack publisher)
 
 # Developer instructions
 

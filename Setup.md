@@ -1,14 +1,14 @@
 :<img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/img/hygieia_b.png)
 --
 
-### Build Hygieia
+### Build Hygieia℠
 ```bash
 mvn clean install package
 ```
 The above command will build all components for Hygieia.
 
-### Hygieia Setup Instructions
-The following components are required to run Hygieia:
+### Hygieia℠ Setup Instructions
+The following components are required to run Hygieia℠:
 
 #### Database
 * MongoDB 3.0+
