@@ -47,8 +47,8 @@ import java.util.List;
  *
  * @author kfk884
  */
-public class ProjectDataClientImpl  {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectDataClientImpl.class);
+public class ProjectDataClient extends BaseClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectDataClient.class);
 
     private final FeatureSettings featureSettings;
     private final FeatureWidgetQueries featureWidgetQueries;
@@ -59,10 +59,10 @@ public class ProjectDataClientImpl  {
     /**
      * Extends the constructor from the super class.
      */
-    public ProjectDataClientImpl(FeatureSettings featureSettings,
-                                 ScopeRepository projectRepository,
-                                 FeatureCollectorRepository featureCollectorRepository,
-                                 VersionOneDataFactoryImpl vOneApi) {
+    public ProjectDataClient(FeatureSettings featureSettings,
+                             ScopeRepository projectRepository,
+                             FeatureCollectorRepository featureCollectorRepository,
+                             VersionOneDataFactoryImpl vOneApi) {
         LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
         this.featureSettings = featureSettings;
@@ -78,7 +78,6 @@ public class ProjectDataClientImpl  {
      * back-end with story-based data.
      *
      * @param tmpMongoDetailArray A JSON response in JSONArray format from the source system
-     *
      */
     @SuppressWarnings("unchecked")
     protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
@@ -131,24 +130,13 @@ public class ProjectDataClientImpl  {
         }
     }
 
-    private String getJSONString(JSONObject obj, String field) {
-        return ClientUtil.sanitizeResponse((String) obj.get(field));
-    }
-
-    private String getJSONDateString(JSONObject obj, String field) {
-        return ClientUtil.toCanonicalDate(getJSONString(obj, field));
-    }
-
-
-
-
     public String getMaxChangeDate() {
         Collector col = featureCollectorRepository.findByName(Constants.VERSIONONE);
         if (col == null) return "";
         if (StringUtils.isEmpty(featureSettings.getDeltaStartDate())) return "";
 
-            List<Scope> response = projectRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(col.getId(), featureSettings
-                    .getDeltaStartDate());
+        List<Scope> response = projectRepo.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(col.getId(), featureSettings
+                .getDeltaStartDate());
         if (!CollectionUtils.isEmpty(response)) return response.get(0).getChangeDate();
         return "";
     }
@@ -156,7 +144,7 @@ public class ProjectDataClientImpl  {
 
     public void updateProjectInformation() throws HygieiaException {
         String returnDate = this.featureSettings.getDeltaStartDate();
-        if (getMaxChangeDate() != null) {
+        if (!StringUtils.isEmpty(getMaxChangeDate())) {
             returnDate = getMaxChangeDate();
         }
         returnDate = DateUtil.getChangeDateMinutePrior(returnDate, this.featureSettings.getScheduledPriorMin()); //getChangeDateMinutePrior(returnDate);

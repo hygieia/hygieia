@@ -29,8 +29,8 @@ import java.util.List;
  *
  * @author kfk884
  */
-public class StoryDataClientImpl {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StoryDataClientImpl.class);
+public class StoryDataClient extends BaseClient{
+    private static final Logger LOGGER = LoggerFactory.getLogger(StoryDataClient.class);
 
     private final FeatureSettings featureSettings;
     private final FeatureWidgetQueries featureWidgetQueries;
@@ -41,10 +41,10 @@ public class StoryDataClientImpl {
     /**
      * Extends the constructor from the super class.
      */
-    public StoryDataClientImpl(FeatureSettings featureSettings,
-                               FeatureRepository featureRepository,
-                               FeatureCollectorRepository featureCollectorRepository,
-                               VersionOneDataFactoryImpl vOneApi) {
+    public StoryDataClient(FeatureSettings featureSettings,
+                           FeatureRepository featureRepository,
+                           FeatureCollectorRepository featureCollectorRepository,
+                           VersionOneDataFactoryImpl vOneApi) {
         LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
         this.featureSettings = featureSettings;
@@ -244,22 +244,13 @@ public class StoryDataClientImpl {
         }
     }
 
-
-    private String getJSONString(JSONObject obj, String field) {
-        return ClientUtil.sanitizeResponse((String) obj.get(field));
-    }
-
-    private String getJSONDateString(JSONObject obj, String field) {
-        return ClientUtil.toCanonicalDate(getJSONString(obj, field));
-    }
-
     /**
      * Explicitly updates queries for the source system, and initiates the
      * update to MongoDB from those calls.
      */
     public void updateStoryInformation() throws HygieiaException {
         String returnDate = this.featureSettings.getDeltaStartDate();
-        if (getMaxChangeDate() != null) {
+        if (!StringUtils.isEmpty(getMaxChangeDate())) {
             returnDate = getMaxChangeDate();
         }
         returnDate = DateUtil.getChangeDateMinutePrior(returnDate, this.featureSettings.getScheduledPriorMin()); //getChangeDateMinutePrior(returnDate);
