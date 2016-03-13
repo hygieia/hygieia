@@ -1,8 +1,8 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.client.ProjectDataClientImpl;
-import com.capitalone.dashboard.client.StoryDataClientImpl;
-import com.capitalone.dashboard.client.TeamDataClientImpl;
+import com.capitalone.dashboard.client.ProjectDataClient;
+import com.capitalone.dashboard.client.StoryDataClient;
+import com.capitalone.dashboard.client.TeamDataClient;
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
@@ -100,19 +100,19 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         LOGGER.info("Starting Feature collection...");
 
         try {
-            TeamDataClientImpl teamData = new TeamDataClientImpl(
+            TeamDataClient teamData = new TeamDataClient(
                     this.featureCollectorRepository, this.featureSettings,
                     this.teamRepository, this.v1Connection);
 
             teamData.updateTeamInformation();
 
 
-            ProjectDataClientImpl projectData = new ProjectDataClientImpl(
+            ProjectDataClient projectData = new ProjectDataClient(
                     this.featureSettings, this.projectRepository,
                     this.featureCollectorRepository, this.v1Connection);
             projectData.updateProjectInformation();
 
-            StoryDataClientImpl storyData = new StoryDataClientImpl(
+            StoryDataClient storyData = new StoryDataClient(
                     this.featureSettings, this.featureRepository,
                     this.featureCollectorRepository, this.v1Connection);
             storyData.updateStoryInformation();
