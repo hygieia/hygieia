@@ -47,8 +47,8 @@ import java.util.List;
  *
  * @author kfk884
  */
-public class TeamDataClientImpl {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientImpl.class);
+public class TeamDataClient extends  BaseClient{
+    private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClient.class);
     private final FeatureSettings featureSettings;
     private final FeatureWidgetQueries featureWidgetQueries;
     private final ScopeOwnerRepository teamRepo;
@@ -62,9 +62,9 @@ public class TeamDataClientImpl {
      *
      *
      */
-    public TeamDataClientImpl(FeatureCollectorRepository featureCollectorRepository,
-                              FeatureSettings featureSettings, ScopeOwnerRepository teamRepository,
-                              VersionOneDataFactoryImpl vOneApi) {
+    public TeamDataClient(FeatureCollectorRepository featureCollectorRepository,
+                          FeatureSettings featureSettings, ScopeOwnerRepository teamRepository,
+                          VersionOneDataFactoryImpl vOneApi) {
         //super(featureSettings, teamRepository, featureCollectorRepository, vOneApi);
         LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
@@ -116,9 +116,6 @@ public class TeamDataClientImpl {
         }
     }
 
-    private String getJSONString(JSONObject obj, String field) {
-        return ClientUtil.sanitizeResponse((String) obj.get(field));
-    }
 
     /**
      * Removes scope-owners (teams) from the collection which have went to an
@@ -151,7 +148,6 @@ public class TeamDataClientImpl {
         String queryName = this.featureSettings.getTeamQuery();
         String query = this.featureWidgetQueries.getQuery(returnDate, queryName);
         updateObjectInformation(query);
-
     }
 
     /**
