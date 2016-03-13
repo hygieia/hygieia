@@ -27,6 +27,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -57,9 +58,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	 * Default constructor, which sets page size to 2000 and page index to 0.
 	 */
 	public VersionOneDataFactoryImpl(Map<String, String> auth) {
-		this.v1Service = new Services(versionOneAuthentication(auth));
-		this.pageSize = 2000;
-		this.pageIndex = 0;
+        this(2000, auth);
 	}
 
 	/**
@@ -86,7 +85,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 		V1Connector connector = null;
 
 		try {
-			if (!auth.get("v1ProxyUrl").equalsIgnoreCase(null)) {
+			if (!StringUtils.isEmpty(auth.get("v1ProxyUrl"))) {
 				ProxyProvider proxyProvider = new ProxyProvider(new URI(
 						auth.get("v1ProxyUrl")), "", "");
 
@@ -111,13 +110,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 					+ e.getMessage()
 					+ " | "
 					+ e.getCause());
-		} catch (Exception e) {
-			LOGGER.error("There was an unexpected problem connecting and authenticating with VersionOne:\n"
-					+ e.getMessage()
-					+ " | "
-					+ e.getCause());
 		}
-
 		return connector;
 	}
 
@@ -196,7 +189,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	/**
 	 * Mutator method for page size.
 	 *
-	 * @param pageIndex
+	 * @param pageSize
 	 *            Page index of query
 	 */
 	public void setPageSize(int pageSize) {
@@ -223,22 +216,20 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 
 	/**
 	 * Mutator method for JSON response output array.
-	 *
-	 * @return JSON response array from VersionOne
 	 */
 	private void setJsonOutputArray(String stringResult) {
 		JSONParser parser = new JSONParser();
-		Object nativeRs = null;
+
 		try {
-			nativeRs = parser.parse(stringResult);
+            this.jsonOutputArray = (JSONArray) parser.parse(stringResult);
 		} catch (ParseException e) {
 			LOGGER.error("There was a problem parsing the JSONArray response value from the source system:\n"
 					+ e.getMessage()
 					+ " | "
 					+ e.getCause());
+            this.jsonOutputArray = new JSONArray();
 		}
-		JSONArray canonicalRs = (JSONArray) nativeRs;
-		this.jsonOutputArray = canonicalRs;
+
 	}
 
 	/**
@@ -253,7 +244,7 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
 	/**
 	 * Mutator method for basic query formatted object.
 	 *
-	 * @param Basic
+	 * @param basicQuery
 	 *            VersionOne YAML query
 	 */
 	private void setBasicQuery(String basicQuery) {
