@@ -9,6 +9,8 @@
 
 ## Hygieia is 2015 Blackduck OpenSource Rookie of the year
 <img width="150";height="50"/>![Image](/media/images/rookei1.png)
+---------------------
+
 
 ### What is Hygieia℠
 
