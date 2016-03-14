@@ -112,14 +112,20 @@
                 };
                 // Aggregate the counts of all Functional test suites
                 var aggregate = _.reduce(_.filter(testResult.testCapabilities, {type: "Functional"}), function (result, capability) {
-                    var ind;
-                    for (ind = 0; ind < capability.testSuites.length; ++ind) {
-                        var testSuite = capability.testSuites[ind];
-                        result.failureCount += testSuite.failedTestCaseCount;
-                        result.successCount += testSuite.successTestCaseCount;
-                        result.skippedCount += testSuite.skippedTestCaseCount;
-                        result.totalCount += testSuite.totalTestCaseCount;
-                    }
+                    //var ind;
+                    //for (ind = 0; ind < testCap.testSuites.length; ++ind) {
+                    //    var testSuite = capability.testSuites[ind];
+                    //    result.failureCount += testSuite.failedTestCaseCount;
+                    //    result.successCount += testSuite.successTestCaseCount;
+                    //    result.skippedCount += testSuite.skippedTestCaseCount;
+                    //    result.totalCount += testSuite.totalTestCaseCount;
+                    //}
+                    //New calculation: 3/10/16 - Topo Pal
+                        result.failureCount += capability.failedTestSuiteCount;
+                        result.successCount += capability.successTestSuiteCount;
+                        result.skippedCount += capability.skippedTestSuiteCount;
+                        result.totalCount += capability.totalTestSuiteCount;
+
                     return result;
                 }, allZeros);
                 var passed = aggregate.successCount;

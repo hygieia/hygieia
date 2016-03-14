@@ -49,7 +49,7 @@
                 <div class="col-sm-8">
                     <select class="form-control" name="collectorItemList"
                             ng-model="configItem.testCollectorItem"
-                            ng-options="(item.description) for item in configItem.testJob | orderBy:['collector.name','description'] track by item.id"
+                            ng-options="(item.niceName + '-' + item.description) for item in configItem.testJob | orderBy:['collector.name','description'] track by item.id"
                             ng-disabled="caWidget.testJobs.length === 0">
                         <option value="">{{caWidget.testToolsDropdownPlaceholder}}</option>
                     </select>
