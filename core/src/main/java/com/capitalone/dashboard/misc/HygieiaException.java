@@ -8,6 +8,7 @@ public class HygieiaException extends Exception {
     public static final int COLLECTOR_ITEM_CREATE_ERROR = -11;
     public static final int ERROR_INSERTING_DATA = -12;
     public static final int DUPLICATE_DATA = -13;
+    public static final int HTTP_AUTHENTICATION_ERROR = -403;
     private int errorCode = 0;
 
     public HygieiaException(String message, int errorCode) {

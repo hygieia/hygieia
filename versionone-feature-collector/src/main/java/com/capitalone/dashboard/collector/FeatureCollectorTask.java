@@ -1,17 +1,20 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.client.project.ProjectDataClientImpl;
-import com.capitalone.dashboard.client.story.StoryDataClientImpl;
-import com.capitalone.dashboard.client.team.TeamDataClientImpl;
+import com.capitalone.dashboard.client.ProjectDataClient;
+import com.capitalone.dashboard.client.StoryDataClient;
+import com.capitalone.dashboard.client.TeamDataClient;
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
-import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
+
+import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,23 +52,28 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 * @param featureSettings
 	 *            The settings being used for feature collection from the source
 	 *            system
+	 * @throws HygieiaException
 	 */
 	@Autowired
-	public FeatureCollectorTask(TaskScheduler taskScheduler,
-			FeatureRepository featureRepository, ScopeOwnerRepository teamRepository,
-			ScopeRepository projectRepository,
-			FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings 
-			//,VersionOneDataFactoryImpl v1Connection
-			) {
-		super(taskScheduler, Constants.VERSIONONE);
+	public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureRepository featureRepository,
+			ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
+			FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings)
+			throws HygieiaException {
+		super(taskScheduler, FeatureCollectorConstants.VERSIONONE);
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepository = teamRepository;
 		this.projectRepository = projectRepository;
 		this.featureRepository = featureRepository;
 		this.featureSettings = featureSettings;
 
-		this.v1Connection = connectToPersistentClient();
+		if (StringUtils.isNotEmpty(featureSettings.getVersionOneProxyUrl())
+				|| StringUtils.isNotEmpty(featureSettings.getVersionOneBaseUri())
+				|| StringUtils.isNotEmpty(featureSettings.getVersionOneAccessToken())) {
+			this.v1Connection = connectToPersistentClient();
+		} else {
+			throw new HygieiaException("FAILED: VersionOne connection properties are not valid",
+					HygieiaException.HTTP_AUTHENTICATION_ERROR);
+		}
 	}
 
 	/**
@@ -101,30 +109,33 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	public void collect(FeatureCollector collector) {
 		LOGGER.info("Starting Feature collection...");
 
-		TeamDataClientImpl teamData = new TeamDataClientImpl(
-				this.featureCollectorRepository, this.featureSettings,
-				this.teamRepository, this.v1Connection);
-		teamData.updateTeamInformation();
+		try {
+			TeamDataClient teamData = new TeamDataClient(this.featureCollectorRepository,
+					this.featureSettings, this.teamRepository, this.v1Connection);
 
-		ProjectDataClientImpl projectData = new ProjectDataClientImpl(
-				this.featureSettings, this.projectRepository,
-				this.featureCollectorRepository, this.v1Connection);
-		projectData.updateProjectInformation();
+			teamData.updateTeamInformation();
 
-		StoryDataClientImpl storyData = new StoryDataClientImpl(
-				this.featureSettings, this.featureRepository,
-				this.featureCollectorRepository, this.v1Connection);
-		storyData.updateStoryInformation();
+			ProjectDataClient projectData = new ProjectDataClient(this.featureSettings,
+					this.projectRepository, this.featureCollectorRepository, this.v1Connection);
+			projectData.updateProjectInformation();
+
+			StoryDataClient storyData = new StoryDataClient(this.featureSettings,
+					this.featureRepository, this.featureCollectorRepository, this.v1Connection);
+			storyData.updateStoryInformation();
+		} catch (HygieiaException he) {
+			LOGGER.error("Error in collecting Version One Data: [" + he.getErrorCode() + "] "
+					+ he.getMessage());
+		}
 
 		LOGGER.info("Feature Data Collection Finished");
+
 	}
 
-	private VersionOneDataFactoryImpl connectToPersistentClient() {
+	private VersionOneDataFactoryImpl connectToPersistentClient() throws HygieiaException {
 		Map<String, String> auth = new HashMap<>();
 		auth.put("v1ProxyUrl", this.featureSettings.getVersionOneProxyUrl());
 		auth.put("v1BaseUri", this.featureSettings.getVersionOneBaseUri());
-		auth.put("v1AccessToken",
-				this.featureSettings.getVersionOneAccessToken());
+		auth.put("v1AccessToken", this.featureSettings.getVersionOneAccessToken());
 
 		return new VersionOneDataFactoryImpl(auth);
 	}

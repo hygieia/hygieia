@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.auth.AuthenticationException;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.After;
@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
+import com.capitalone.dashboard.misc.HygieiaException;
 
 /**
  * Tests all facets of the VerisonOneDataFactoryImpl class, which is responsible
@@ -51,7 +52,8 @@ public class VersionOneDataFactoryImplTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		logger.info("Beginning tests for com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl");
+		logger.info(
+				"Beginning tests for com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl");
 		auth = new HashMap<String, String>();
 		// TODO: Include your own company proxy
 		auth.put("v1ProxyUrl", "");
@@ -66,7 +68,13 @@ public class VersionOneDataFactoryImplTest {
 
 		query = "from: Story\n" + "select:\n" + "  - Number\n" + "filter:\n" + "  - ChangeDate>'"
 				+ yesterday + "'\n" + "  - (IsDeleted='False'|IsDeleted='True')\n";
-		v1DataFactory = new VersionOneDataFactoryImpl(auth);
+		if (StringUtils.isNotEmpty(auth.get("v1BaseUri"))) {
+			v1DataFactory = new VersionOneDataFactoryImpl(auth);
+		} else {
+			logger.warn(
+					"Switching to generic V1 data factory connnection (with no auth). This should eventually be resolved by mocking a V1 response model in testing");
+			v1DataFactory = new VersionOneDataFactoryImpl();
+		}
 	}
 
 	/**
@@ -149,7 +157,7 @@ public class VersionOneDataFactoryImplTest {
 			JSONArray rs = new JSONArray();
 			try {
 				rs = v1DataFactory.getPagingQueryResponse();
-			} catch (AuthenticationException | ClassCastException e) {
+			} catch (HygieiaException e) {
 				fail("There was an unexpected problem while connecting to VersionOne during the test");
 			}
 
@@ -238,7 +246,7 @@ public class VersionOneDataFactoryImplTest {
 			JSONArray rs = new JSONArray();
 			try {
 				rs = v1DataFactory.getQueryResponse();
-			} catch (AuthenticationException | ClassCastException e) {
+			} catch (HygieiaException e) {
 				fail("There was an unexpected problem while connecting to VersionOne during the test");
 			}
 

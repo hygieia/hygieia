@@ -9,11 +9,15 @@ package com.capitalone.dashboard.util;
  * @author kfk884
  * 
  */
-public final class Constants {
+public final class FeatureCollectorConstants {
 	public static final String JIRA = "Jira";
 	public static final String VERSIONONE = "VersionOne";
+	@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
+	// not an IP
+	public static final String AGENT_VER = "01.00.00.01";
+	public static final String AGENT_NAME = "Hygieia Dashboard - VersionOne Feature Collector";
 
-	private Constants() {
+	private FeatureCollectorConstants() {
 		// This class should not be instantiable
 	}
 }

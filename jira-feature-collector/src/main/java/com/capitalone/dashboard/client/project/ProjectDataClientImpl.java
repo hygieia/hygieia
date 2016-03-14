@@ -5,7 +5,7 @@ import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.util.ClientUtil;
-import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -75,7 +75,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 					 * Project Data
 					 */
 					// collectorId
-					scope.setCollectorId(featureCollectorRepository.findByName(Constants.JIRA)
+					scope.setCollectorId(featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA)
 							.getId());
 
 					// ID;
