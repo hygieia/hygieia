@@ -70,8 +70,8 @@ public class StoryDataClient extends BaseClient {
 			removeExistingEntity(getJSONString(dataMainObj, "_oid"));
 
 			// collectorId
-			feature.setCollectorId(
-					featureCollectorRepository.findByName(FeatureCollectorConstants.VERSIONONE).getId());
+			feature.setCollectorId(featureCollectorRepository
+					.findByName(FeatureCollectorConstants.VERSIONONE).getId());
 
 			// ID
 			feature.setsId(getJSONString(dataMainObj, "_oid"));
@@ -247,7 +247,7 @@ public class StoryDataClient extends BaseClient {
 			returnDate = getMaxChangeDate();
 		}
 		returnDate = DateUtil.getChangeDateMinutePrior(returnDate,
-				this.featureSettings.getScheduledPriorMin()); // getChangeDateMinutePrior(returnDate);
+				this.featureSettings.getScheduledPriorMin());
 		String queryName = this.featureSettings.getStoryQuery();
 		updateObjectInformation(featureWidgetQueries.getQuery(returnDate, queryName));
 	}
