@@ -16,7 +16,7 @@
 
 package com.capitalone.dashboard.model;
 
-import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.FeatureCollectorConstants;
 
 /**
  * Collector implementation for Feature that stores system configuration
@@ -34,7 +34,7 @@ public class FeatureCollector extends Collector {
 	 */
 	public static FeatureCollector prototype() {
 		FeatureCollector protoType = new FeatureCollector();
-		protoType.setName(Constants.VERSIONONE);
+		protoType.setName(FeatureCollectorConstants.VERSIONONE);
 		protoType.setOnline(true);
         protoType.setEnabled(true);
 		protoType.setCollectorType(CollectorType.ScopeOwner);
