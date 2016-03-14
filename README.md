@@ -7,6 +7,8 @@
 <img width="150";height="50"/>![Image](/UI/src/assets/img/hygieia_b.png)
 --------------------
 
+[![Hygieia℠ is now BlackDuck 2015 OpenSource Rookie of the year](/media/images/Rookies_Award_Badge.png)](https://info.blackducksoftware.com/OpenSourceRookies2015.html)
+
 ### What is Hygieia℠
 
 #####Pronunciation:      hi-gee-ya (origin Greek)
