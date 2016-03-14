@@ -7,6 +7,9 @@
 <img width="150";height="50"/>![Image](/UI/src/assets/img/hygieia_b.png)
 --------------------
 
+## Hygieia is 2015 Blackduck OpenSource Rookie of the year
+<img width="150";height="50"/>![Image](/media/images/rookei1.png)
+
 ### What is Hygieia℠
 
 #####Pronunciation:      hi-gee-ya (origin Greek)
