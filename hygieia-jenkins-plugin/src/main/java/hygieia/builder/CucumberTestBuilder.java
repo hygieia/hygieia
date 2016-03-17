@@ -57,11 +57,12 @@ public class CucumberTestBuilder {
 
         String path = env.expand("$WORKSPACE");
 
-        if (directory.startsWith("/")) {
+        if (directory.startsWith(File.separator)) {
             path = path + directory;
         } else {
-            path = path + "/" + directory;
+            path = path + File.separator + directory;
         }
+        listener.getLogger().println("Hygieia Test Result Publisher - Looking for file pattern '" + filePattern + "' in directory " + path);
         List<File> testFiles = HygieiaUtils.getArtifactFiles(new File(path), filePattern, new ArrayList<File>());
         testResult = buildTestResultObject(getCapabilities(testFiles));
     }
