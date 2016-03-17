@@ -14,6 +14,24 @@
 
   <build>
     <plugins>
+	<plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+            </executions>
+        </plugin>
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
@@ -85,9 +103,9 @@
         <configuration>
 	  <skipDockerBuild>false</skipDockerBuild>
           <imageName>hygieia-ui</imageName>
+	  <skipDockerBuild>false</skipDockerBuild> 
           <dockerDirectory>${project.basedir}/docker</dockerDirectory>
           <resources>
-
              <resource>
                <targetPath>html</targetPath>
                <directory>${project.basedir}/dist</directory>
