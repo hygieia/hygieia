@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.config;
+package com.capitalone.dashboard.filter;
 
 
 import com.capitalone.dashboard.ApiSettings;
