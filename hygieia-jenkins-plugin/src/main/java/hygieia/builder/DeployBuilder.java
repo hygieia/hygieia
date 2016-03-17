@@ -52,12 +52,12 @@ public class DeployBuilder {
 
         String path = env.expand("$WORKSPACE");
 
-        if (directory.startsWith("/")) {
+        if (directory.startsWith(File.separator)) {
             path = path + directory;
         } else {
-            path = path + "/" + directory;
+            path = path + File.separator + directory;
         }
-
+        listener.getLogger().println("Hygieia Deployment Publisher - Looking for file pattern '" + filePattern + "' in directory " + path);
         List<File> artifactFiles = HygieiaUtils.getArtifactFiles(new File(path), filePattern, new ArrayList<File>());
 
         for (File f : artifactFiles) {
