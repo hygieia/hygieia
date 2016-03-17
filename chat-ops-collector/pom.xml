@@ -48,6 +48,25 @@
 					</resources>
 				</configuration>
 			</plugin>
+
+			    <plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+				    <execution>
+					<goals>
+					    <goal>prepare-agent</goal>
+					</goals>
+				    </execution>
+				    <execution>
+					<id>report</id>
+					<phase>verify</phase>
+					<goals>
+					    <goal>report</goal>
+					</goals>
+				    </execution>
+				</executions>
+			    </plugin>
 		</plugins>
 
 		<testResources>
@@ -113,6 +132,12 @@
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.joda</groupId>
+		    <artifactId>joda-convert</artifactId>
+		    <version>1.8.1</version>
+		    <scope>provided</scope>
 		</dependency>
 	</dependencies>
 
