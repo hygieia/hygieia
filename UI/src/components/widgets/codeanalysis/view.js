@@ -52,7 +52,9 @@
             ctrl.rulesCompliance = getMetric(caData.metrics, 'violations_density');
 
             ctrl.technicalDebt = getMetric(caData.metrics, 'sqale_index');
-            ctrl.technicalDebt.formattedValue = calculateTechnicalDebt(ctrl.technicalDebt.value);
+
+		//the JSON contains the required info in ctrl.technicalDebt.formattedValue, no need to calculate	 
+            //ctrl.technicalDebt.formattedValue = calculateTechnicalDebt(ctrl.technicalDebt.value);
 
             ctrl.linesofCode = getMetric(caData.metrics, 'ncloc');
 
