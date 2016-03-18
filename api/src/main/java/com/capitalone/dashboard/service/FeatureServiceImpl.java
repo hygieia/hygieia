@@ -59,6 +59,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 * @return A data response list of type Feature containing a single story
 	 */
 	@Override
+	@SuppressWarnings("PMD.AvoidCatchingNPE") // TODO:...
 	public DataResponse<List<Feature>> getStory(ObjectId componentId, String storyNumber) {
 		Component component = componentRepository.findOne(componentId);
 		DataResponse<List<Feature>> rs;
@@ -97,6 +98,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 * @return A data response list of type Feature containing all features for
 	 *         the given team and current sprint
 	 */
+	@SuppressWarnings("PMD.AvoidCatchingNPE") // TODO: Avoid catching NullPointerException; consider removing the cause of the NPE
 	@Override
 	public DataResponse<List<Feature>> getRelevantStories(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
@@ -140,6 +142,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         features plus their sub features' estimates associated to the
 	 *         current sprint and team
 	 */
+	@SuppressWarnings("PMD.AvoidCatchingNPE") // TODO: Avoid catching NullPointerException; consider removing the cause of the NPE
 	@Override
 	public DataResponse<List<Feature>> getFeatureEstimates(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
@@ -228,6 +231,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 * @return A data response list of type Feature containing the total
 	 *         estimate number for all features
 	 */
+	@SuppressWarnings("PMD.AvoidCatchingNPE") // TODO: Avoid catching NullPointerException; consider removing the cause of the NPE
 	@Override
 	public DataResponse<List<Feature>> getTotalEstimate(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
@@ -281,6 +285,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 * @return A data response list of type Feature containing the in-progress
 	 *         estimate number for all features
 	 */
+	@SuppressWarnings("PMD.AvoidCatchingNPE") // TODO: Avoid catching NullPointerException; consider removing the cause of the NPE
 	@Override
 	public DataResponse<List<Feature>> getInProgressEstimate(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
@@ -334,6 +339,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 * @return A data response list of type Feature containing the done estimate
 	 *         number for all features
 	 */
+	@SuppressWarnings("PMD.AvoidCatchingNPE") // TODO: Avoid catching NullPointerException; consider removing the cause of the NPE
 	@Override
 	public DataResponse<List<Feature>> getDoneEstimate(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);
@@ -386,6 +392,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 * @return A data response list of type Feature containing several relevant
 	 *         sprint fields for the current team's sprint
 	 */
+	@SuppressWarnings("PMD.AvoidCatchingNPE") // TODO: Avoid catching NullPointerException; consider removing the cause of the NPE
 	@Override
 	public DataResponse<List<Feature>> getCurrentSprintDetail(ObjectId componentId, String teamId) {
 		Component component = componentRepository.findOne(componentId);

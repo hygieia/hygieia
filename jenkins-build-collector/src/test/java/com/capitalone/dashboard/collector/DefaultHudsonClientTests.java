@@ -103,7 +103,10 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void verifyAuthCredentials() throws Exception {
-        HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("user:pass"));
+        //TODO: This change to clear a JAVA Warning should be correct but test fails, need to investigate
+        //HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("user:pass"));
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+		HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("user:pass"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class)))
                 .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -117,7 +120,10 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void verifyAuthCredentialsBySettings() throws Exception {
-        HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("does:matter"));
+        //TODO: This change to clear a JAVA Warnings should be correct but test fails, need to investigate
+        //HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("does:matter"));
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+		HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("does:matter"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class)))
                 .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -131,6 +137,9 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void verifyGetLogUrl() throws Exception {
+        //TODO: This change should be correct but test fails, need to investigate
+    	//HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("does:matter"));
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("does:matter"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class)))

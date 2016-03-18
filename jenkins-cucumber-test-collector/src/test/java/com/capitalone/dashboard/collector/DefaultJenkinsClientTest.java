@@ -69,6 +69,9 @@ public class DefaultJenkinsClientTest {
 
     @Test
     public void verifyAuthCredentials() throws Exception {
+        //TODO: This change to clear a JAVA Warning should be correct but test fails, need to investigate
+        //HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultJenkinsClient.createHeaders("user:pass"));
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         HttpEntity headers = new HttpEntity(defaultJenkinsClient.createHeaders("user:pass"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class)))
@@ -83,6 +86,9 @@ public class DefaultJenkinsClientTest {
 
     @Test
     public void verifyAuthCredentialsBySettings() throws Exception {
+        //TODO: This change to clear a JAVA Warning should be correct but test fails, need to investigate
+        //HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultJenkinsClient.createHeaders("user:pass"));
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         HttpEntity headers = new HttpEntity(defaultJenkinsClient.createHeaders("does:matter"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class)))
