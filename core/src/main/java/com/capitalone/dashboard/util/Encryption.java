@@ -7,7 +7,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-@SuppressWarnings("PMD.AvoidCatchingNPE") // TODO:...
+@SuppressWarnings("PMD.AvoidCatchingNPE") // TODO: Avoid catching NullPointerException; consider removing the cause of the NPE
 public final class Encryption {
 
     private static final String ALGO = "DESede";

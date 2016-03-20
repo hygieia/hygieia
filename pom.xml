@@ -22,9 +22,10 @@
 		<spring.version>4.1.7.RELEASE</spring.version>
 		<jackson.version>2.5.0</jackson.version>
 		<guava.version>16.0.1</guava.version>
-		<pmd.version>3.5</pmd.version>
-		<jacoco.version>0.7.5.201505241946</jacoco.version>
+		<pmd.version>3.6</pmd.version>
+		<jacoco.version>0.7.6.201602180812</jacoco.version>
 		<joda-time.version>2.7</joda-time.version>
+		<joda-convert.version>1.8.1</joda-convert.version>
 	</properties>
 
   <licenses>
@@ -118,17 +119,41 @@
 					<version>0.4.0</version>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.sonar</groupId>
+					<groupId>org.codehaus.mojo</groupId>
+<!--
+					<groupId>org.sonarsource.scanner.maven</groupId>
+-->
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>4.5.6</version>
+					<version>3.0.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.5.1</version>
 					<configuration>
 						<source>1.8</source>
 						<target>1.8</target>
 					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>${jacoco.version}</version> 
+					<executions>
+					    <execution>
+						<goals>
+						    <goal>prepare-agent</goal>
+						</goals>
+					    </execution>
+					    <execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+						    <goal>report</goal>
+						</goals>
+					    </execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -147,6 +172,7 @@
 				<module>sonar-codequality-collector</module>
 				<module>subversion-scm-collector</module>
 				<module>github-scm-collector</module>
+				<module>stash-scm-collector</module>
 				<module>versionone-feature-collector</module>
 				<module>udeploy-deployment-collector</module>
 				<module>jira-feature-collector</module>
@@ -160,6 +186,7 @@
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.5.1</version>
 							<configuration>
 								<source>1.8</source>
 								<target>1.8</target>
@@ -190,6 +217,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.5.1</version>
 						<configuration>
 							<source>1.8</source>
 							<target>1.8</target>

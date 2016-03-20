@@ -4,8 +4,11 @@
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Join the chat at https://gitter.im/capitalone/Hygieia](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/capitalone/Hygieia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-<img width="150";height="50"/>![Image](/UI/src/assets/img/hygieia_b.png)
+<img width="600" src="/UI/src/assets/img/hygieia_b.png">
 --------------------
+
+<a href="https://info.blackducksoftware.com/OpenSourceRookies2015.html" ><img src="/media/images/Rookies_Award_Badge.png" width="150" alt="Hygieia℠ is now BlackDuck 2015 OpenSource Rookie of the year"></a>
+
 
 ### What is Hygieia℠
 
