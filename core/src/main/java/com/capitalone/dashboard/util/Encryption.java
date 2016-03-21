@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.util;
 
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
@@ -11,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 public final class Encryption {
 
     private static final String ALGO = "DESede";
+    private static final Logger LOGGER = LoggerFactory.getLogger(Encryption.class);
 
     private Encryption() {
         // util class.
@@ -117,7 +120,7 @@ public final class Encryption {
         return decryptedMessage;
     }
 
-    @SuppressWarnings({"PMD.SystemPrintln", "PMD.AvoidPrintStackTrace"})
+
     public static void main(String[] args) {
         try {
             String k = Encryption.getStringKey();
@@ -126,7 +129,7 @@ public final class Encryption {
             System.out.println("Sample encrypted string with the above key for 'thisIsMyPassword' is:");
             System.out.println(Encryption.encryptString("thisIsMyPassword", k));
         } catch (EncryptionException e) {
-            e.printStackTrace();
+            LOGGER.error("Encryption error: ", e);
         }
     }
 }
