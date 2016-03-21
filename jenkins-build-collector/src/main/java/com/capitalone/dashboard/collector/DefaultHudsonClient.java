@@ -23,10 +23,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -187,6 +189,8 @@ public class DefaultHudsonClient implements HudsonClient {
             LOG.error("Uri syntax exception for loading build details"+ use.getMessage() + ". URL =" + buildUrl );
         } catch (RuntimeException re) {
             LOG.error("Unknown error in getting build details. URL="+ buildUrl, re);
+        } catch (UnsupportedEncodingException unse) {
+            LOG.error("Unsupported Encoding Exception in getting build details. URL=" + buildUrl, unse);
         }
         return null;
     }
@@ -194,13 +198,15 @@ public class DefaultHudsonClient implements HudsonClient {
 
     //This method will rebuild the API endpoint because the buildUrl obtained via Jenkins API
     //does not save the auth user info and we need to add it back.
-    public static String rebuildJobUrl(String build, String server) throws URISyntaxException, MalformedURLException {
+    public static String rebuildJobUrl(String build, String server) throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
         URL instanceUrl = new URL(server);
         String userInfo = instanceUrl.getUserInfo();
         String instanceProtocol = instanceUrl.getProtocol();
 
-        URL buildUrl = new URL(build);
+        //decode to handle spaces in the job name.
+        URL buildUrl = new URL(URLDecoder.decode(build, "UTF-8"));
         String buildPath = buildUrl.getPath();
+
         String host = buildUrl.getHost();
         int port = buildUrl.getPort();
         URI newUri = new URI(instanceProtocol, userInfo, host, port, buildPath, null, null);

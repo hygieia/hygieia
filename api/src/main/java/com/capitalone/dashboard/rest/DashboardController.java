@@ -53,7 +53,7 @@ public class DashboardController {
     }
 
     @RequestMapping(value = "/dashboard/{id}", method = DELETE)
-    public ResponseEntity deleteDashboard(@PathVariable ObjectId id) {
+    public ResponseEntity<Void> deleteDashboard(@PathVariable ObjectId id) {
         dashboardService.delete(id);
         return ResponseEntity.noContent().build();
     }

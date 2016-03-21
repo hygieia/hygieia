@@ -74,7 +74,7 @@ public class ServiceController {
     }
 
     @RequestMapping(value = "/dashboard/{id}/service/{serviceId}", method = DELETE)
-    public ResponseEntity deleteService(@PathVariable ObjectId id, @PathVariable ObjectId serviceId) {
+    public ResponseEntity<Void> deleteService(@PathVariable ObjectId id, @PathVariable ObjectId serviceId) {
         serviceService.delete(id, serviceId);
         return ResponseEntity.noContent().build();
     }
@@ -88,7 +88,7 @@ public class ServiceController {
     }
 
     @RequestMapping(value = "/dashboard/{id}/dependent-service/{serviceId}", method = DELETE)
-    public ResponseEntity deleteDependentService(@PathVariable ObjectId id, @PathVariable ObjectId serviceId) {
+    public ResponseEntity<Void> deleteDependentService(@PathVariable ObjectId id, @PathVariable ObjectId serviceId) {
         serviceService.deleteDependentService(id, serviceId);
         return ResponseEntity.noContent().build();
     }
