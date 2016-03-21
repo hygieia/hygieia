@@ -56,8 +56,8 @@ public class DefaultGitHubClient implements GitHubClient {
 		this.restOperations = restOperationsSupplier.get();
 	}
 
-	@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"}) // agreed, fixme
 	@Override
+	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
 	public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) {
 
 		List<Commit> commits = new ArrayList<>();

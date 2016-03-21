@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Locale;
@@ -60,9 +61,18 @@ public class MarkdownTest {
     }
 
     CharSequence fromFile(String filename) throws IOException {
-        try (FileChannel channel = new FileInputStream(filename).getChannel()) {
+    	FileInputStream input = null;
+        try {
+        	input = new FileInputStream(filename);
+        	FileChannel channel = input.getChannel();
             ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, (int) channel.size());
-            return Charset.forName("8859_1").newDecoder().decode(buffer);
+            CharBuffer result = Charset.forName("8859_1").newDecoder().decode(buffer);
+            input.close();
+			return result;
+        } catch (Exception e) {
+        	if (input != null)
+        		input.close();
+        	throw e;
         }
     }
 }

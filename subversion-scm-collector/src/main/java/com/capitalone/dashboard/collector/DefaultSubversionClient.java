@@ -64,7 +64,8 @@ public class DefaultSubversionClient implements SubversionClient {
         return 0;
     }
 
-    private Collection getHistory(String url, long startRevision) {
+    @SuppressWarnings("unchecked")
+    private Collection<SVNLogEntry> getHistory(String url, long startRevision) {
         long endRevision = -1; //HEAD (the latest) revision
 
         try {

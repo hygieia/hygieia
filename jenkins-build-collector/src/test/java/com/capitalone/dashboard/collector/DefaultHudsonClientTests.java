@@ -88,6 +88,10 @@ public class DefaultHudsonClientTests {
 
         String u4 = DefaultHudsonClient.rebuildJobUrl("http://jenkins.com/job/job1", "http://123456:234567@jenkins.com");
         assertEquals("http://123456:234567@jenkins.com/job/job1", u4);
+
+        String orig = "http://jenkins.com/job/job1%20with%20space";
+        String u5 = DefaultHudsonClient.rebuildJobUrl(orig, "http://jenkins.com");
+        assertEquals(orig, u5);
     }
 
     @Test
@@ -103,7 +107,10 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void verifyAuthCredentials() throws Exception {
-        HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("user:pass"));
+        //TODO: This change to clear a JAVA Warning should be correct but test fails, need to investigate
+        //HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("user:pass"));
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+		HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("user:pass"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class)))
                 .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -117,7 +124,10 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void verifyAuthCredentialsBySettings() throws Exception {
-        HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("does:matter"));
+        //TODO: This change to clear a JAVA Warnings should be correct but test fails, need to investigate
+        //HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("does:matter"));
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+		HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("does:matter"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class)))
                 .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -131,6 +141,9 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void verifyGetLogUrl() throws Exception {
+        //TODO: This change should be correct but test fails, need to investigate
+    	//HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("does:matter"));
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         HttpEntity headers = new HttpEntity(defaultHudsonClient.createHeaders("does:matter"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class)))
@@ -146,7 +159,7 @@ public class DefaultHudsonClientTests {
     @Test
     public void instanceJobs_emptyResponse_returnsEmptyMap() {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>("", HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
         Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
 
@@ -156,7 +169,7 @@ public class DefaultHudsonClientTests {
     @Test
     public void instanceJobs_twoJobsTwoBuilds() throws Exception {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<String>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
 
         Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
 

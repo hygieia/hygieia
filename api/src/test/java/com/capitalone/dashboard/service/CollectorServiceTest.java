@@ -27,6 +27,7 @@ public class CollectorServiceTest {
     @InjectMocks private CollectorServiceImpl collectorService;
 
     @Test
+    @SuppressWarnings("unchecked")
     public void collectorItemsByType() {
         Collector c = makeCollector();
         CollectorItem item1 = makeCollectorItem();

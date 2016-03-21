@@ -174,3 +174,102 @@ hygieia-chat-ops-collector:
 #  environment:
 #  - CHATOPS_CRON=0 0/5 * * * *
 
+hygieia-subversion-scm-collector:
+  image: hygieia-subversion-scm-collector:latest
+  container_name: hygieia-subversion
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+#  environment:
+#  - SUBVERSION_CRON:-0 0/5 * * * *
+
+#Shared subversion username and password
+#  - SUBVERSION_USERNAME=
+#  - SUBVERSION_PASSWORD=
+
+#Maximum number of days to go back in time when fetching commits
+#  - SUBVERSION_COMMIT_THRESHOLD_DAYS=15
+
+hygieia-stash-scm-collector:
+  image: hygieia-stash-scm-collector:latest
+  container_name: hygieia-stash
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+#  environment:
+    #mandatory
+#  - STASH_HOST=mystashrepo.com/
+#  - STASH_API=/rest/api/1.0/
+
+#  - STASH_CRON:-0 0/5 * * * *
+
+#Maximum number of days to go back in time when fetching commits
+#  - STASH_COMMIT_THRESHOLD_DAYS=15
+
+hygieia-versionone-collector:
+  image: hygieia-versionone-collector:latest
+  container_name: hygieia-versionone
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+#  environment:
+#Page size for data calls (VersionOne recommended 2000)
+#  - VERSIONONE_PAGE_SIZE=2000
+
+#In-built folder housing prepared REST queries (required)
+#  - VERSIONONE_QUERY_FOLDER=v1api-queries
+
+#Jira API Query file names (String template requires the files to have .st extension) (required)
+#  - VERSIONONE_STORY_QUERY=story
+#  - VERSIONONE_EPIC_QUERY=epicinfo
+#  - VERSIONONE_PROJECT_QUERY=projectinfo
+#  - VERSIONONE_MEMBBER_QUERY=memberinfo
+#  - VERSIONONE_SPRINT_QUERY=sprintinfo
+#  - VERSIONONE_TEAM_QUERY=teaminfo
+#  - VERSIONONE_TRENDING_QUERY=trendinginfo
+
+# Trending Query:  Number of days in a sprint (not-required)
+#  - VERSIONONE_SPRINT_DAYS=60
+# Trending Query:  Length of sprint week (not-required)
+#  - VERSIONONE_SPRINT_END_PRIOR=7
+
+#Scheduled Job prior minutes to recover data created during execution time (usually, 2 minutes is enough)
+#  - VERSIONONE_SCHEDULED_PRIOR_MIN=2
+
+#Delta change date that modulates the collector item task - should be about as far back as possible, in ISO format (required)
+#  - VERSIONONE_DELTA_COLLECTORITEM_START_DATE=2008-01-01T00:00:00.000000
+
+#VersionOne Connection Details
+#Proxy assumes a host:port syntax
+#  - VERSIONONE_PROXY_URL=""
+#  - VERSIONONE_URL=https://www.versionone.com/our-company-instance/
+#Access token provided by VersionOne
+#  - VERSIONONE_ACCESS_TOKEN=accessToken
+
+#Start dates from which to begin collector data, if no other data is present - usually, a month back is appropriate (required)
+#  - VERSIONONE_DELTA_START_DATE=2015-03-01T00:00:00.000000
+#  - VERSIONONE_MASTER_START_DATE=2008-01-01T00:00:00.000000
+
+hygieia-udeploy-collector:
+  image: hygieia-udeploy-collector:latest
+  container_name: hygieia-udeploy
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+  environment:
+#UDeploy server (required) - Can provide multiple
+  - UDEPLOY_URL:-http://udeploy.company.com
+#UDeploy user name (required)
+  - UDEPLOY_USERNAME:-bobama
+#UDeploy password (required)
+  - UDEPLOY_PASSWORD:-s3cr3t
+#Collector schedule (required)
+#  - UDEPLOY_CRON:-0 0/5 * * * *
