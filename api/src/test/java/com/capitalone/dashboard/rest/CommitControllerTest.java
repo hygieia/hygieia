@@ -7,6 +7,8 @@ import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.CommitRequest;
 import com.capitalone.dashboard.service.CommitService;
 import com.capitalone.dashboard.util.TestUtil;
+import com.google.common.io.Resources;
+import com.google.common.primitives.Ints;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -63,8 +65,8 @@ public class CommitControllerTest {
                 .andExpect(jsonPath("$result", hasSize(1)))
                 .andExpect(jsonPath("$result[0].scmUrl", is(commit.getScmUrl())))
                 .andExpect(jsonPath("$result[0].scmRevisionNumber", is(commit.getScmRevisionNumber())))
-                .andExpect(jsonPath("$result[0].numberOfChanges", is(intVal(commit.getNumberOfChanges()))))
-                .andExpect(jsonPath("$result[0].scmCommitTimestamp", is(intVal(commit.getScmCommitTimestamp()))))
+                .andExpect(jsonPath("$result[0].numberOfChanges", is(Ints.saturatedCast(commit.getNumberOfChanges()))))
+                .andExpect(jsonPath("$result[0].scmCommitTimestamp", is(Ints.saturatedCast(commit.getScmCommitTimestamp()))))
                 .andExpect(jsonPath("$result[0].scmCommitLog", is(commit.getScmCommitLog())))
                 .andExpect(jsonPath("$result[0].scmAuthor", is(commit.getScmAuthor())));
     }
@@ -76,9 +78,7 @@ public class CommitControllerTest {
 
     @Test
     public void insertCommitGoodRequest() throws Exception {
-        String json = github_push;
-        byte[] content = json.getBytes();
-        System.out.println(new String(content, StandardCharsets.UTF_8));
+        byte[] content = Resources.asByteSource(Resources.getResource("github-push-v3.json")).read();
         when(commitService.createFromGitHubv3(Matchers.any(JSONObject.class))).thenReturn("123456");
         mockMvc.perform(post("/commit/github/v3")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -112,6 +112,7 @@ public class CommitControllerTest {
         return commit;
     }
 
+<<<<<<< HEAD
     private int intVal(long value) {
         return Long.valueOf(value).intValue();
     }
@@ -279,4 +280,6 @@ public class CommitControllerTest {
             "  }\n" +
             "}";
 
+=======
+>>>>>>> master
 }
