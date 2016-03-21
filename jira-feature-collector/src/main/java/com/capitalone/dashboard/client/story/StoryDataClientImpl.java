@@ -27,7 +27,7 @@ import com.capitalone.dashboard.model.FeatureStatus;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.ClientUtil;
-import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
@@ -126,7 +126,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 							super.featureSettings.getJiraIssueTypeId())) {
 						// collectorId
 						feature.setCollectorId(featureCollectorRepository
-								.findByName(Constants.JIRA).getId());
+								.findByName(FeatureCollectorConstants.JIRA).getId());
 
 						// ID
 						feature.setsId(TOOLS.sanitizeResponse(issue.getId()));
