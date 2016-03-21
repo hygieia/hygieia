@@ -2,6 +2,7 @@ package com.capitalone.dashboard.datafactory.versionone;
 
 import org.json.simple.JSONArray;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 /**
  * Interface for VersionOne data connection. An implemented class should be able to create a formatted request,
  * and retrieve a response in JSON syntax from that request to VersionOne.
@@ -14,9 +15,9 @@ public interface VersionOneDataFactory {
 
 	String buildPagingQuery(int inPageIndex);
 
-	JSONArray getPagingQueryResponse();
+	JSONArray getPagingQueryResponse() throws HygieiaException;
 
-	JSONArray getQueryResponse();
+	JSONArray getQueryResponse() throws HygieiaException;
 
 	String getBasicQuery();
 
