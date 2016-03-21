@@ -9,6 +9,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.List;
@@ -20,6 +21,17 @@ public class WebMVCConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable("api");
+    }
+
+    /*
+    Added for Swagger
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String[] staticResourceMappingPath = {"classpath:/static/"};
+
+        registry.addResourceHandler("/**").addResourceLocations(
+                staticResourceMappingPath);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.rest;
+package com.capitalone.dashboard.exception;
 
 import com.capitalone.dashboard.Application;
 import com.capitalone.dashboard.misc.HygieiaException;
