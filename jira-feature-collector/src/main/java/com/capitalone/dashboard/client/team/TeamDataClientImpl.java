@@ -5,7 +5,7 @@ import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
-import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -86,7 +86,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 					}
 
 					// collectorId
-					team.setCollectorId(featureCollectorRepository.findByName(Constants.JIRA)
+					team.setCollectorId(featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA)
 							.getId());
 
 					// teamId

@@ -9,7 +9,7 @@ import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
-import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 			TaskScheduler taskScheduler, FeatureRepository featureRepository,
 			ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
 			FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings) {
-		super(taskScheduler, Constants.JIRA);
+		super(taskScheduler, FeatureCollectorConstants.JIRA);
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepository = teamRepository;
 		this.projectRepository = projectRepository;
