@@ -11,8 +11,10 @@ import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
-import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
+
+import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,108 +31,112 @@ import java.util.Map;
  */
 @Component
 public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 
-    private final FeatureRepository featureRepository;
-    private final ScopeOwnerRepository teamRepository;
-    private final ScopeRepository projectRepository;
-    private final FeatureCollectorRepository featureCollectorRepository;
-    private final FeatureSettings featureSettings;
-    private final VersionOneDataFactoryImpl v1Connection;
+	private final FeatureRepository featureRepository;
+	private final ScopeOwnerRepository teamRepository;
+	private final ScopeRepository projectRepository;
+	private final FeatureCollectorRepository featureCollectorRepository;
+	private final FeatureSettings featureSettings;
+	private final VersionOneDataFactoryImpl v1Connection;
 
-    /**
-     * Default constructor for the collector task. This will construct this
-     * collector task with all repository, scheduling, and settings
-     * configurations custom to this collector.
-     *
-     * @param taskScheduler   A task scheduler artifact
-     * @param teamRepository  The repository being use for feature collection
-     * @param featureSettings The settings being used for feature collection from the source
-     *                        system
-     */
-    @Autowired
-    public FeatureCollectorTask(TaskScheduler taskScheduler,
-                                FeatureRepository featureRepository, ScopeOwnerRepository teamRepository,
-                                ScopeRepository projectRepository,
-                                FeatureCollectorRepository featureCollectorRepository,
-                                FeatureSettings featureSettings
-                                //,VersionOneDataFactoryImpl v1Connection
-    ) {
-        super(taskScheduler, Constants.VERSIONONE);
-        this.featureCollectorRepository = featureCollectorRepository;
-        this.teamRepository = teamRepository;
-        this.projectRepository = projectRepository;
-        this.featureRepository = featureRepository;
-        this.featureSettings = featureSettings;
+	/**
+	 * Default constructor for the collector task. This will construct this
+	 * collector task with all repository, scheduling, and settings
+	 * configurations custom to this collector.
+	 *
+	 * @param taskScheduler
+	 *            A task scheduler artifact
+	 * @param teamRepository
+	 *            The repository being use for feature collection
+	 * @param featureSettings
+	 *            The settings being used for feature collection from the source
+	 *            system
+	 * @throws HygieiaException
+	 */
+	@Autowired
+	public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureRepository featureRepository,
+			ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
+			FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings)
+			throws HygieiaException {
+		super(taskScheduler, FeatureCollectorConstants.VERSIONONE);
+		this.featureCollectorRepository = featureCollectorRepository;
+		this.teamRepository = teamRepository;
+		this.projectRepository = projectRepository;
+		this.featureRepository = featureRepository;
+		this.featureSettings = featureSettings;
 
-        this.v1Connection = connectToPersistentClient();
-    }
+		if (StringUtils.isNotEmpty(featureSettings.getVersionOneProxyUrl())
+				|| StringUtils.isNotEmpty(featureSettings.getVersionOneBaseUri())
+				|| StringUtils.isNotEmpty(featureSettings.getVersionOneAccessToken())) {
+			this.v1Connection = connectToPersistentClient();
+		} else {
+			throw new HygieiaException("FAILED: VersionOne connection properties are not valid",
+					HygieiaException.INVALID_CONFIGURATION);
+		}
+	}
 
-    /**
-     * Accessor method for the collector prototype object
-     */
-    @Override
-    public FeatureCollector getCollector() {
-        return FeatureCollector.prototype();
-    }
+	/**
+	 * Accessor method for the collector prototype object
+	 */
+	@Override
+	public FeatureCollector getCollector() {
+		return FeatureCollector.prototype();
+	}
 
-    /**
-     * Accessor method for the collector repository
-     */
-    @Override
-    public BaseCollectorRepository<FeatureCollector> getCollectorRepository() {
-        return featureCollectorRepository;
-    }
+	/**
+	 * Accessor method for the collector repository
+	 */
+	@Override
+	public BaseCollectorRepository<FeatureCollector> getCollectorRepository() {
+		return featureCollectorRepository;
+	}
 
-    /**
-     * Accessor method for the current chronology setting, for the scheduler
-     */
-    @Override
-    public String getCron() {
-        return featureSettings.getCron();
-    }
+	/**
+	 * Accessor method for the current chronology setting, for the scheduler
+	 */
+	@Override
+	public String getCron() {
+		return featureSettings.getCron();
+	}
 
-    /**
-     * The collection action. This is the task which will run on a schedule to
-     * gather data from the feature content source system and update the
-     * repository with retrieved data.
-     */
-    @Override
-    public void collect(FeatureCollector collector) {
-        LOGGER.info("Starting Feature collection...");
+	/**
+	 * The collection action. This is the task which will run on a schedule to
+	 * gather data from the feature content source system and update the
+	 * repository with retrieved data.
+	 */
+	@Override
+	public void collect(FeatureCollector collector) {
+		LOGGER.info("Starting Feature collection...");
 
-        try {
-            TeamDataClient teamData = new TeamDataClient(
-                    this.featureCollectorRepository, this.featureSettings,
-                    this.teamRepository, this.v1Connection);
+		try {
+			TeamDataClient teamData = new TeamDataClient(this.featureCollectorRepository,
+					this.featureSettings, this.teamRepository, this.v1Connection);
 
-            teamData.updateTeamInformation();
+			teamData.updateTeamInformation();
 
+			ProjectDataClient projectData = new ProjectDataClient(this.featureSettings,
+					this.projectRepository, this.featureCollectorRepository, this.v1Connection);
+			projectData.updateProjectInformation();
 
-            ProjectDataClient projectData = new ProjectDataClient(
-                    this.featureSettings, this.projectRepository,
-                    this.featureCollectorRepository, this.v1Connection);
-            projectData.updateProjectInformation();
+			StoryDataClient storyData = new StoryDataClient(this.featureSettings,
+					this.featureRepository, this.featureCollectorRepository, this.v1Connection);
+			storyData.updateStoryInformation();
+		} catch (HygieiaException he) {
+			LOGGER.error("Error in collecting Version One Data: [" + he.getErrorCode() + "] "
+					+ he.getMessage());
+		}
 
-            StoryDataClient storyData = new StoryDataClient(
-                    this.featureSettings, this.featureRepository,
-                    this.featureCollectorRepository, this.v1Connection);
-            storyData.updateStoryInformation();
-        } catch (HygieiaException he) {
-            LOGGER.error("Error in collecting Version One Data");
-        }
+		LOGGER.info("Feature Data Collection Finished");
 
-        LOGGER.info("Feature Data Collection Finished");
+	}
 
-    }
+	private VersionOneDataFactoryImpl connectToPersistentClient() throws HygieiaException {
+		Map<String, String> auth = new HashMap<>();
+		auth.put("v1ProxyUrl", this.featureSettings.getVersionOneProxyUrl());
+		auth.put("v1BaseUri", this.featureSettings.getVersionOneBaseUri());
+		auth.put("v1AccessToken", this.featureSettings.getVersionOneAccessToken());
 
-    private VersionOneDataFactoryImpl connectToPersistentClient() {
-        Map<String, String> auth = new HashMap<>();
-        auth.put("v1ProxyUrl", this.featureSettings.getVersionOneProxyUrl());
-        auth.put("v1BaseUri", this.featureSettings.getVersionOneBaseUri());
-        auth.put("v1AccessToken",
-                this.featureSettings.getVersionOneAccessToken());
-
-        return new VersionOneDataFactoryImpl(auth);
-    }
+		return new VersionOneDataFactoryImpl(auth);
+	}
 }
