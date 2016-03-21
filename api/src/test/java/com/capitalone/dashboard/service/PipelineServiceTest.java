@@ -67,7 +67,7 @@ public class PipelineServiceTest {
 
         PipelineResponse expected = makePipelineResponse(pipeline, dashboard);
 
-        List<PipelineResponse> pipelineResponses = (List<PipelineResponse>)pipelineService.search(request);
+        List<PipelineResponse> pipelineResponses = (List<PipelineResponse>) pipelineService.search(request);
         PipelineResponse actual = pipelineResponses.get(0);
 
         assertEquals(actual.getCollectorItemId(), expected.getCollectorItemId());

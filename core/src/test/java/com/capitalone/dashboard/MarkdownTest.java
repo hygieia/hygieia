@@ -61,18 +61,18 @@ public class MarkdownTest {
     }
 
     CharSequence fromFile(String filename) throws IOException {
-    	FileInputStream input = null;
+        FileInputStream input = null;
         try {
-        	input = new FileInputStream(filename);
-        	FileChannel channel = input.getChannel();
+            input = new FileInputStream(filename);
+            FileChannel channel = input.getChannel();
             ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, (int) channel.size());
             CharBuffer result = Charset.forName("8859_1").newDecoder().decode(buffer);
             input.close();
-			return result;
+            return result;
         } catch (Exception e) {
-        	if (input != null)
-        		input.close();
-        	throw e;
+            if (input != null)
+                input.close();
+            throw e;
         }
     }
 }

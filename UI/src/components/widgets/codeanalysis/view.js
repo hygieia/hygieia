@@ -53,7 +53,7 @@
 
             ctrl.technicalDebt = getMetric(caData.metrics, 'sqale_index');
 
-		//the JSON contains the required info in ctrl.technicalDebt.formattedValue, no need to calculate	 
+            //the JSON contains the required info in ctrl.technicalDebt.formattedValue, no need to calculate
             //ctrl.technicalDebt.formattedValue = calculateTechnicalDebt(ctrl.technicalDebt.value);
 
             ctrl.linesofCode = getMetric(caData.metrics, 'ncloc');

@@ -103,7 +103,7 @@ public class PipelineServiceImpl implements PipelineService {
         Map<String, String> environmentMappings= new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for(Widget widget : dashboard.getWidgets()) {
             if (widget.getName().equalsIgnoreCase("pipeline")) {
-                environmentMappings.putAll((Map<String,String>)widget.getOptions().get("mappings"));
+                environmentMappings.putAll((Map<String, String>) widget.getOptions().get("mappings"));
             }
         }
 
@@ -198,7 +198,7 @@ public class PipelineServiceImpl implements PipelineService {
         Map<String, PipelineCommit> commitsInLaterStages = getCommitsAfterStage(stage, pipeline, dashboard);
 
         List<PipelineResponseCommit> notPropagatedCommits = new ArrayList<>();
-        for(Map.Entry<String,PipelineCommit> entry : startingStage.entrySet()){
+        for (Map.Entry<String, PipelineCommit> entry : startingStage.entrySet()) {
             if(!commitsInLaterStages.containsKey(entry.getKey())){
                 PipelineResponseCommit commit = applyStageTimestamps(new PipelineResponseCommit((PipelineCommit)entry.getValue()), dashboard, pipeline);
                 notPropagatedCommits.add(commit);
