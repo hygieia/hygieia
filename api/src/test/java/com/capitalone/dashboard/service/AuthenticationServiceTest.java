@@ -53,7 +53,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate()  {
         String res = "User is created";
         Authentication authentication = new Authentication("u1", "p1");
         when (authRepo.save(authentication)).thenReturn(authentication);
@@ -62,7 +62,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testCreateExists() throws Exception {
+    public void testCreateExists()  {
         String res = "User already exists";
         Authentication authentication = new Authentication("u1", "p1");
         when(authRepo.save(any(Authentication.class))).thenThrow(DuplicateKeyException.class);
@@ -70,7 +70,7 @@ public class AuthenticationServiceTest {
         verify(authRepo, times(0)).save(authentication);
     }
     @Test
-    public void testUpdate() throws Exception {
+    public void testUpdate()  {
         String res = "User is updated";
         Authentication authentication = new Authentication("u1", "p1");
         when (authRepo.findByUsername(authentication.getUsername())).thenReturn(authentication);
@@ -88,7 +88,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void testDelete()  {
         Authentication authentication = new Authentication("u1", "p1");
         when (authRepo.findByUsername(authentication.getUsername())).thenReturn(authentication);
         authService.delete(authentication.getUsername());
@@ -96,7 +96,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testDeleteByKey() throws Exception {
+    public void testDeleteByKey() {
         Authentication authentication = new Authentication("u1", "p1");
         ObjectId obj = new ObjectId();
         when (authRepo.findOne(any(ObjectId.class))).thenReturn(authentication);
@@ -105,7 +105,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testDeleteByKeyExists() throws Exception {
+    public void testDeleteByKeyExists() {
         Authentication authentication = new Authentication("u1", "p1");
         ObjectId obj = new ObjectId();
         when (authRepo.findOne(any(ObjectId.class))).thenReturn(null);
@@ -113,7 +113,4 @@ public class AuthenticationServiceTest {
         verify(authRepo, times(0)).delete(authentication);
     }
 
-    public void testAuthenticate() throws Exception {
-
-    }
 }
