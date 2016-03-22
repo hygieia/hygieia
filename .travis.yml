@@ -9,11 +9,11 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: false     # default: false
   email:
-      recipients:
-        - amit.mawkin@capitalone.com
-        - tapabrata.pal@capigtalone.com
-      on_success: always [always|never|change] # default: change
-      on_failure: always [always|never|change] # default: always
+    recipients:
+      - amit.mawkin@capitalone.com
+      - tapabrata.pal@capitalone.com
+    on_success: always [always|never|change] # default: change
+    on_failure: always [always|never|change] # default: always
 
 after_success:
   - codecov
