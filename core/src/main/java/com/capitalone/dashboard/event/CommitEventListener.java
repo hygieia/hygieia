@@ -28,13 +28,19 @@ public class CommitEventListener extends HygieiaMongoEventListener<Commit> {
     public void onAfterSave(AfterSaveEvent<Commit> event) {
         Commit commit = event.getSource();
 
-        for (Dashboard teamDashboard : findAllDashboardsForCommit(commit)) {
-            PipelineCommit pipelineCommit = new PipelineCommit(commit, commit.getScmCommitTimestamp());
-            Pipeline pipeline = getOrCreatePipeline(teamDashboard);
-            pipeline.addCommit(PipelineStageType.Commit.name(), pipelineCommit);
-            pipelineRepository.save(pipeline);
-        }
-
+        // Add the commit to all pipelines associated with the team dashboards
+        // this commit is part of. But only if there is a build collector item
+        // configured on that dashboard. Otherwise, the commit will be orphaned
+        // in the commit stage.
+        findAllDashboardsForCommit(commit)
+                .stream()
+                .filter(this::dashboardHasBuildCollector)
+                .forEach(teamDashboard -> {
+                    PipelineCommit pipelineCommit = new PipelineCommit(commit, commit.getScmCommitTimestamp());
+                    Pipeline pipeline = getOrCreatePipeline(teamDashboard);
+                    pipeline.addCommit(PipelineStageType.Commit.name(), pipelineCommit);
+                    pipelineRepository.save(pipeline);
+                });
     }
 
     /**
@@ -46,6 +52,21 @@ public class CommitEventListener extends HygieiaMongoEventListener<Commit> {
         CollectorItem commitCollectorItem = collectorItemRepository.findOne(commit.getCollectorItemId());
         List<Component> components = componentRepository.findBySCMCollectorItemId(commitCollectorItem.getId());
         return dashboardRepository.findByApplicationComponentsIn(components);
+    }
+
+    /**
+     * Returns true if the provided dashboard has a build CollectorItem registered.
+     *
+     * @param teamDashboard a team Dashboard
+     * @return true if build CollectorItem found
+     */
+    private boolean dashboardHasBuildCollector(Dashboard teamDashboard) {
+        return teamDashboard.getApplication().getComponents()
+                .stream()
+                .anyMatch(c -> {
+                    List<CollectorItem> buildCollectorItems = c.getCollectorItems(CollectorType.Build);
+                    return buildCollectorItems != null && !buildCollectorItems.isEmpty();
+                });
     }
 
 }
