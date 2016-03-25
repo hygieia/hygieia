@@ -22,7 +22,7 @@ import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
-import com.capitalone.dashboard.util.Constants;
+import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.slf4j.Logger;
@@ -196,7 +196,7 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 		try {
 			List<Scope> response = projectRepo
 					.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
-							featureCollectorRepository.findByName(Constants.JIRA).getId(),
+							featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId(),
 							featureSettings.getDeltaStartDate());
 			if ((response != null) && !response.isEmpty()) {
 				data = response.get(0).getChangeDate();

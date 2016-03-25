@@ -36,9 +36,7 @@ public final class DateUtil {
 		} else {
 			calendar.add(Calendar.DATE, 1);
 		}
-
-		Date nextBusinessDate = calendar.getTime();
-		return nextBusinessDate;
+		return calendar.getTime();
 	}
 
 	public static boolean isToday(Date iDate) {
@@ -49,9 +47,7 @@ public final class DateUtil {
 
 	public static String toISODateTimeFormat(Date iDate) {
 		DateFormat df = new SimpleDateFormat(ISO_DATE_FORMAT);
-		String isoDateString = df.format(iDate) + ISO_TIME_FORMAT;
-
-		return isoDateString;
+		return df.format(iDate) + ISO_TIME_FORMAT;
 	}
 
 	public static String toISODateFormat(Date iDate) {
@@ -82,15 +78,12 @@ public final class DateUtil {
 	}
 
 	public static Date getTodayNoTime() {
-		Date today = new Date();
-		return DateUtil.getDateNoTime(today);
+		return DateUtil.getDateNoTime(new Date());
 	}
 
 	public static String toDisplayDateFormat(Date iDate) {
 		DateFormat df = new SimpleDateFormat(DISPLAY_DATE_FORMAT);
-		String displayDateString = df.format(iDate);
-
-		return displayDateString;
+		return df.format(iDate);
 	}
 
 	public static Date fromISODateTimeFormat(String isoString) {
@@ -99,10 +92,7 @@ public final class DateUtil {
 		if (charIndex != -1){
 			iString = iString.substring(0, charIndex);
 		}
-		if (iString == null)
-			return null;
 		Date dt = null;
-
 		try {
 			dt = new SimpleDateFormat(ISO_DATE_TIME_FORMAT).parse(iString);
 		} catch (ParseException e) {
@@ -127,8 +117,7 @@ public final class DateUtil {
 
 	public static String toISODateRealTimeFormat(Date iDate) {
 		DateFormat df = new SimpleDateFormat(ISO_DATE_TIME_FORMAT);
-		String isoDateString = df.format(iDate);
-		return isoDateString;
+		return df.format(iDate);
 	}
 
 	public static int differenceInDays(Date newerDate, Date olderDate) {
@@ -139,16 +128,28 @@ public final class DateUtil {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(fromDate);
 		calendar.add(Calendar.DAY_OF_MONTH, -1 * numberOfDays);
-		Date daysAgo = calendar.getTime();
-		return daysAgo;
+		return calendar.getTime();
 	}
 
 	public static Date getDatePriorToMinutes(Date fromDate, int minutes) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(fromDate);
 		calendar.add(Calendar.MINUTE, -1 * minutes);
-		Date daysAgo = calendar.getTime();
-		return daysAgo;
+		return calendar.getTime();
 	}
+
+    /**
+     * Generates and retrieves the change date that occurs a minute prior to the
+     * specified change date in ISO format.
+     *
+     * @param changeDateISO
+     *            A given change date in ISO format
+     * @return The ISO-formatted date/time stamp for a minute prior to the given
+     *         change date
+     */
+    public static String getChangeDateMinutePrior(String changeDateISO, int priorMinutes) {
+        return DateUtil.toISODateRealTimeFormat(DateUtil.getDatePriorToMinutes(
+                DateUtil.fromISODateTimeFormat(changeDateISO), priorMinutes));
+    }
 
 }
