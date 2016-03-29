@@ -1,13 +1,7 @@
 package com.capitalone.dashboard.datafactory.versionone.test;
 
-import static org.junit.Assert.*;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
+import com.capitalone.dashboard.misc.HygieiaException;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,8 +14,16 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
-import com.capitalone.dashboard.misc.HygieiaException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests all facets of the VerisonOneDataFactoryImpl class, which is responsible
@@ -54,7 +56,7 @@ public class VersionOneDataFactoryImplTest {
 	public static void setUpBeforeClass() throws Exception {
 		logger.info(
 				"Beginning tests for com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl");
-		auth = new HashMap<String, String>();
+		auth = new HashMap<>();
 		// TODO: Include your own company proxy
 		auth.put("v1ProxyUrl", "");
 		// TODO: Include your own base uri for VersionOne
@@ -116,6 +118,7 @@ public class VersionOneDataFactoryImplTest {
 	@Test
 	public void testBuildPagingQuery() {
 		v1DataFactory.setPageSize(1);
+        v1DataFactory.setBasicQuery(query);
 		v1DataFactory.buildPagingQuery(30);
 		assertNotNull("The basic query was created", v1DataFactory.getPagingQuery());
 		assertEquals("The page size was accurate", 1, v1DataFactory.getPageSize());
@@ -131,7 +134,7 @@ public class VersionOneDataFactoryImplTest {
 	@Test
 	public void testGetPagingQueryResponse() {
 		v1DataFactory.setPageSize(1);
-		v1DataFactory.buildBasicQuery(query);
+        v1DataFactory.setBasicQuery(query);
 		v1DataFactory.buildPagingQuery(0);
 		try {
 			JSONArray rs = v1DataFactory.getPagingQueryResponse();
@@ -139,10 +142,9 @@ public class VersionOneDataFactoryImplTest {
 			/*
 			 * Testing actual JSON for values
 			 */
-			JSONArray dataMainArry = new JSONArray();
-			JSONObject dataMainObj = new JSONObject();
-			dataMainArry = (JSONArray) rs.get(0);
-			dataMainObj = (JSONObject) dataMainArry.get(0);
+
+            JSONArray dataMainArry = (JSONArray) rs.get(0);
+            JSONObject dataMainObj = (JSONObject) dataMainArry.get(0);
 
 			// number
 			assertTrue("No valid Number was found",
@@ -164,8 +166,7 @@ public class VersionOneDataFactoryImplTest {
 			/*
 			 * Testing actual JSON for values
 			 */
-			String strRs = new String();
-			strRs = rs.toString();
+			String strRs = rs.toString();
 
 			assertEquals(
 					"There was nothing returned from VersionOne that is consistent with a valid response.",
@@ -175,22 +176,14 @@ public class VersionOneDataFactoryImplTest {
 		}
 	}
 
-	/**
-	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl#VersionOneDataFactoryImpl()}
-	 * .
-	 */
+
 	@Test
 	public void testVersionOneDataFactoryImpl() {
 		assertEquals("The compared contructed page size values did not match", 2000,
 				v1DataFactory.getPageSize());
 	}
 
-	/**
-	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl#VersionOneDataFactoryImpl(int)}
-	 * .
-	 */
+
 	@Test
 	public void testVersionOneDataFactoryImplInt() {
 		v1DataFactory.setPageSize(1000);
@@ -198,40 +191,30 @@ public class VersionOneDataFactoryImplTest {
 				v1DataFactory.getPageSize());
 	}
 
-	/**
-	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl#buildBasicQuery(java.lang.String)}
-	 * .
-	 */
+
 	@Test
 	public void testBuildBasicQuery() {
 		v1DataFactory.setPageSize(1);
-		v1DataFactory.buildBasicQuery(query);
+        v1DataFactory.setBasicQuery(query);
 		assertNotNull("The basic query was created", v1DataFactory.getBasicQuery());
 		assertEquals("The page size was accurate", 1, v1DataFactory.getPageSize());
 		assertEquals("The page index was accurate", 0, v1DataFactory.getPageIndex());
 	}
 
-	/**
-	 * Test method for
-	 * {@link com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl#getQueryResponse(java.lang.String)}
-	 * .
-	 */
+
 	@Ignore
 	@Test
 	public void testGetQueryResponse() {
 		v1DataFactory.setPageSize(1);
-		v1DataFactory.buildBasicQuery(query);
+        v1DataFactory.setBasicQuery(query);
 		try {
 			JSONArray rs = v1DataFactory.getQueryResponse();
 
 			/*
 			 * Testing actual JSON for values
 			 */
-			JSONArray dataMainArry = new JSONArray();
-			JSONObject dataMainObj = new JSONObject();
-			dataMainArry = (JSONArray) rs.get(0);
-			dataMainObj = (JSONObject) dataMainArry.get(0);
+            JSONArray dataMainArry = (JSONArray) rs.get(0);
+            JSONObject dataMainObj = (JSONObject) dataMainArry.get(0);
 
 			// number
 			assertTrue("No valid Number was found",
@@ -253,8 +236,7 @@ public class VersionOneDataFactoryImplTest {
 			/*
 			 * Testing actual JSON for values
 			 */
-			String strRs = new String();
-			strRs = rs.toString();
+			String strRs = rs.toString();
 
 			assertEquals(
 					"There was nothing returned from VersionOne that is consistent with a valid response.",

@@ -11,8 +11,6 @@ import com.capitalone.dashboard.misc.HygieiaException;
  *
  */
 public interface VersionOneDataFactory {
-	String buildBasicQuery(String query);
-
 	String buildPagingQuery(int inPageIndex);
 
 	JSONArray getPagingQueryResponse() throws HygieiaException;
