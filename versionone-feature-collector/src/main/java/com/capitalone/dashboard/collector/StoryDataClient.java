@@ -1,6 +1,5 @@
-package com.capitalone.dashboard.client;
+package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.collector.FeatureSettings;
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;

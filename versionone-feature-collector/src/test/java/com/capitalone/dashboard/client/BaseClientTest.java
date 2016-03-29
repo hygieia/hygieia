@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.client;
 
+import com.capitalone.dashboard.collector.BaseClient;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

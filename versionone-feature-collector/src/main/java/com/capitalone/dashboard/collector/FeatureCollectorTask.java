@@ -1,8 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.client.ProjectDataClient;
-import com.capitalone.dashboard.client.StoryDataClient;
-import com.capitalone.dashboard.client.TeamDataClient;
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
