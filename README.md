@@ -7,8 +7,7 @@
 <img width="600" src="/UI/src/assets/img/hygieia_b.png">
 --------------------
 
-<a href="https://info.blackducksoftware.com/OpenSourceRookies2015.html" ><img src="images/hygieia_b.png" width="150" alt="Hygieia℠ is now BlackDuck 2015 OpenSource Rookie of the year"></a>
-
+<a href="https://info.blackducksoftware.com/OpenSourceRookies2015.html" ><img src="/media/images/Rookies_Award_Badge.png" width="150" alt="Hygieia℠ is now BlackDuck 2015 OpenSource Rookie of the year"></a>
 
 ### What is Hygieia℠
 
