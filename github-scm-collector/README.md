@@ -24,7 +24,7 @@ for information about sourcing this properties file.
 ###Sample application.properties file
 --------------------------------------
     #Database Name 
-    database=dashboarddb
+    dbname=dashboarddb
 
     #Database HostName - default is localhost
     dbhost=10.0.1.1
