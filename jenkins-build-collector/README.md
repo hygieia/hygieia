@@ -23,7 +23,7 @@ for information about sourcing this properties file.
 --------------------------------------
 
     #Database Name 
-    dbname=dashboarddb
+    dbname=dashboard
 
     #Database HostName - default is localhost
     dbhost=localhost
