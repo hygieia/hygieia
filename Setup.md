@@ -24,22 +24,22 @@ The following components are required to run Hygieia℠:
          MongoDB shell version: 3.0.4
          connecting to: test  
 
-         > use dashboardb
-         switched to db dashboardb
+         > use dashboarddb
+         switched to db dashboarddb
          > db.createUser(
                   {
-                    user: "db",
+                    user: "dbuser",
                     pwd: "dbpass",
                     roles: [
-                       {role: "readWrite", db: "dashboard"}
+                       {role: "readWrite", db: "dashboarddb"}
                             ]
                     })
                 Successfully added user: {
-                  "user" : "db",
+                  "user" : "dbuser",
                   "roles" : [
                   {
                     "role" : "readWrite",
-                    "db" : "dashboard"
+                    "db" : "dashboarddb"
                   }
                   ]
                 }  
