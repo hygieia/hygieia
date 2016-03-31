@@ -23,7 +23,7 @@ for information about sourcing this properties file.
 --------------------------------------
 
     #Database Name 
-    spring.data.mongodb.database=dashboarddb
+    spring.data.mongodb.database=dashboard
 
     #Database HostName - default is localhost
     spring.data.mongodb.host=10.0.1.1
