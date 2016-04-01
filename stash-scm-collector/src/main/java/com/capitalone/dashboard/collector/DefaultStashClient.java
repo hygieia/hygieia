@@ -59,7 +59,7 @@ public class DefaultStashClient implements GitClient {
 		List<Commit> commits = new ArrayList<>();
 
 		// format URL
-		String repoUrl = (String) repo.getOptions().get("url");
+		String repoUrl = (String) repo.getOptions().get("repoUrl");
 		if (repoUrl.endsWith(".git")) {
 			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
 		}
