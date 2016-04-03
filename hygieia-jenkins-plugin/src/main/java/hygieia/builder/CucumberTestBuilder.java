@@ -123,14 +123,22 @@ public class CucumberTestBuilder {
         return capabilities;
     }
 
-    private String getCapabilityDescription(File file) {
-        String newFileName = file.getPath().replace("/" + file.getName(), "");
-        int lastFolderIndex = newFileName.lastIndexOf("/");
+    private static String getCapabilityDescription(File file) {
+        String newFileName = file.getPath().replace(file.getName(), "");
+        boolean isUnix = newFileName.endsWith("/");
+        int lastFolderIndex = -1;
+        newFileName = newFileName.substring(0, newFileName.length() - 1);
+        if (isUnix) {
+            lastFolderIndex = newFileName.lastIndexOf("/");
+        } else {
+            lastFolderIndex = newFileName.lastIndexOf("\\");
+        }
         if (lastFolderIndex > 0) {
             return newFileName.substring(lastFolderIndex);
         }
         return newFileName;
     }
+
 
     private TestResult buildTestResultObject(List<TestCapability> capabilities) {
         if (!capabilities.isEmpty()) {
