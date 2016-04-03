@@ -48,11 +48,7 @@ public class ArtifactBuilder {
 
         String path = env.expand("$WORKSPACE");
 
-        if (directory.startsWith(File.separator)) {
-            path = path + directory;
-        } else {
-            path = path + File.separator + directory;
-        }
+        path = path + directory;
         listener.getLogger().println("Hygieia Build Artifact Publisher - Looking for file pattern '" + filePattern + "' in directory " + path);
         List<File> artifactFiles = HygieiaUtils.getArtifactFiles(new File(path), filePattern, new ArrayList<File>());
 
