@@ -2,7 +2,7 @@
 
 # Developer instructions
 
-Install Maven and JDK.  This was last build with Maven 3.2.5 and OpenJDK
+Install Maven and JDK.  This was last built with Maven 3.2.5 and OpenJDK
 1.7.0\_75 
 
 Run unit tests
@@ -12,6 +12,9 @@ Run unit tests
 Create an HPI file to install in Jenkins (HPI file will be in `target/hygieia-publisher.hpi`).
 
     mvn clean package 
+
+# Important
+This plugin uses the Hygieia core package. The main project is JDK 1.8 compiled, if you have Jenkins running on previous Java versions, make sure to recompile core package with that previous version and then build this Jenkins plugin.
 
 # Jenkins instruction
 
