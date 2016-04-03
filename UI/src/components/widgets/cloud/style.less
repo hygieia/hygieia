@@ -1,0 +1,101 @@
+@import '../../../app/css/variables.less';
+@import '../../../app/css/mixins.less';
+
+/* Add custom styles here. Any properties involving colors
+   should considering using values from the variables.less file.
+   All dash variables are prefixed with @dash.
+
+   Widget styles should only consume variables from dash and never
+   set a dash or bootstrap variables. This allows the theme to maintain
+   control of overall styles
+*/
+
+.table-overflow {
+  height: 550px;
+  overflow: auto
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.cloud-view {
+
+  .pass {
+    color: @dash-status-pass;
+
+  }
+  .warn {
+    color: @dash-status-warn;
+  }
+  .fail {
+    color: @dash-status-fail;
+  }
+  .hover-effects:hover {
+    -o-transition: color .2s ease-out, background 2s ease-in;
+    -ms-transition: color .2s ease-out, background 2s ease-in;
+    -moz-transition: color .2s ease-out, background 2s ease-in;
+    -webkit-transition: color .2s ease-out, background 2s ease-in;
+    color: grey;
+  }
+  .enlarge-hover:hover {
+    transform: scale(1.3, 1.3);
+    transition: all 0.1s ease-out;
+  }
+
+  .percent {
+    font-size: 50%;
+    display: inline-block;
+    vertical-align: super;
+  }
+
+  .cloud-value {
+    .text-standard-lg;
+    text-align: center;
+    margin-top: .5rem;
+  }
+
+  .legend-box {
+    float: left;
+    width: 10px;
+    height: 10px;
+    margin: 5px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, .2);
+    background-color: @dash-status-pass;
+  }
+
+}
+
+.widget-detail {
+  width: 400px;
+  .widget-heading {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    padding-bottom: 20px
+  }
+  .tab-head {
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-family: 'Open Sans', sans-serif;
+    padding-bottom: 5px;
+  }
+}
+
+.modal-content {
+  width: 500px;
+}
+
+.cloud-count {
+  border-bottom: 1px solid @dash-divider;
+  font-size: 4rem;
+  margin-bottom: .5rem;
+  text-align: center;
+}
+
+.cloud-count-type {
+  .text-standard;
+  text-align: center;
+}
