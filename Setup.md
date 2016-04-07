@@ -24,8 +24,8 @@ The following components are required to run Hygieia℠:
          MongoDB shell version: 3.0.4
          connecting to: test  
 
-         > use dashboardb
-         switched to db dashboardb
+         > use dashboard
+         switched to db dashboard
          > db.createUser(
                   {
                     user: "db",
@@ -35,7 +35,7 @@ The following components are required to run Hygieia℠:
                             ]
                     })
                 Successfully added user: {
-                  "user" : "db",
+                  "user" : "dbuser",
                   "roles" : [
                   {
                     "role" : "readWrite",
@@ -47,7 +47,7 @@ The following components are required to run Hygieia℠:
 
 
 We recommend that you download  MongoDB clients(RoboMongo etc) to connect to your local
-running Database and make sure that dashboarddb is created and you are successfully able to connect to it.
+running Database and make sure that database: dashboard is created and you are successfully able to connect to it.
 
 #### API Layer
 Please click on the link below to learn about how to build and run the API layer
