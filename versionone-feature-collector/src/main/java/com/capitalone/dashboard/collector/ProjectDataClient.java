@@ -1,22 +1,5 @@
-/*************************
- * DA-BOARD-LICENSE-START*********************************
- * Copyright 2014 CapitalOne, LLC.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ************************DA-BOARD-LICENSE-END
- *********************************/
 
-package com.capitalone.dashboard.client;
+package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.misc.HygieiaException;
@@ -24,11 +7,8 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
-import com.capitalone.dashboard.util.ClientUtil;
-import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.DateUtil;
-import com.capitalone.dashboard.util.FeatureSettings;
-import com.capitalone.dashboard.util.FeatureWidgetQueries;
+import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -44,17 +24,13 @@ import java.util.List;
  * collector. This will get data from the source system, but will grab the
  * majority of needed data and aggregate it in a single, flat MongoDB collection
  * for consumption.
- *
- * @author kfk884
  */
 public class ProjectDataClient extends BaseClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectDataClient.class);
 
 	private final FeatureSettings featureSettings;
-	private final FeatureWidgetQueries featureWidgetQueries;
 	private final ScopeRepository projectRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
-	private final VersionOneDataFactoryImpl vOneApi;
 
 	/**
 	 * Extends the constructor from the super class.
@@ -62,13 +38,12 @@ public class ProjectDataClient extends BaseClient {
 	public ProjectDataClient(FeatureSettings featureSettings, ScopeRepository projectRepository,
 			FeatureCollectorRepository featureCollectorRepository,
 			VersionOneDataFactoryImpl vOneApi) {
-		LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
+        super(vOneApi, featureSettings);
+        LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 
 		this.featureSettings = featureSettings;
 		this.projectRepo = projectRepository;
 		this.featureCollectorRepository = featureCollectorRepository;
-		this.featureWidgetQueries = new FeatureWidgetQueries(this.featureSettings);
-		this.vOneApi = vOneApi;
 	}
 
 	/**
@@ -78,6 +53,7 @@ public class ProjectDataClient extends BaseClient {
 	 * @param tmpMongoDetailArray
 	 *            A JSON response in JSONArray format from the source system
 	 */
+    @Override
 	@SuppressWarnings("unchecked")
 	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
 		for (Object obj : tmpMongoDetailArray) {
@@ -85,26 +61,26 @@ public class ProjectDataClient extends BaseClient {
 
 			Scope scope = new Scope();
 
-			removeExistingEntity(getJSONDateString(dataMainObj, "_oid"));
+			removeExistingEntity(getJSONString(dataMainObj, "_oid"));
 
 			// collectorId
 			scope.setCollectorId(
 					featureCollectorRepository.findByName(FeatureCollectorConstants.VERSIONONE).getId());
 
 			// ID;
-			scope.setpId(getJSONDateString(dataMainObj, "_oid"));
+			scope.setpId(getJSONString(dataMainObj, "_oid"));
 
 			// name;
-			scope.setName(getJSONDateString(dataMainObj, "Name"));
+			scope.setName(getJSONString(dataMainObj, "Name"));
 
 			// beginDate;
-			scope.setBeginDate(getJSONDateString(dataMainObj, "BeginDate"));
+			scope.setBeginDate(getJSONString(dataMainObj, "BeginDate"));
 
 			// endDate;
-			scope.setEndDate(getJSONDateString(dataMainObj, "EndDate"));
+			scope.setEndDate(getJSONString(dataMainObj, "EndDate"));
 
 			// changeDate;
-			scope.setChangeDate(getJSONDateString(dataMainObj, "ChangeDate"));
+			scope.setChangeDate(getJSONString(dataMainObj, "ChangeDate"));
 
 			// assetState;
 			scope.setAssetState(getJSONString(dataMainObj, "AssetState"));
@@ -123,12 +99,13 @@ public class ProjectDataClient extends BaseClient {
 			} else {
 				projPath = "All-->" + projPath;
 			}
-			scope.setProjectPath(ClientUtil.sanitizeResponse(projPath));
+			scope.setProjectPath(sanitizeResponse(projPath));
 
 			projectRepo.save(scope);
 		}
 	}
 
+    @Override
 	public String getMaxChangeDate() {
 		Collector col = featureCollectorRepository.findByName(FeatureCollectorConstants.VERSIONONE);
 		if (col == null)
@@ -138,7 +115,7 @@ public class ProjectDataClient extends BaseClient {
 
 		List<Scope> response = projectRepo
 				.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(col.getId(),
-						featureSettings.getDeltaStartDate());
+                        featureSettings.getDeltaStartDate());
 		if (!CollectionUtils.isEmpty(response))
 			return response.get(0).getChangeDate();
 		return "";
@@ -152,42 +129,9 @@ public class ProjectDataClient extends BaseClient {
 		returnDate = DateUtil.getChangeDateMinutePrior(returnDate,
 				this.featureSettings.getScheduledPriorMin()); // getChangeDateMinutePrior(returnDate);
 		String queryName = this.featureSettings.getProjectQuery();
-		updateObjectInformation(featureWidgetQueries.getQuery(returnDate, queryName));
+		updateObjectInformation(getQuery(returnDate, queryName));
 	}
 
-	public void updateObjectInformation(String query) throws HygieiaException {
-		long start = System.nanoTime();
-		int pageIndex = 0;
-		int pageSize = this.featureSettings.getPageSize();
-		vOneApi.setPageSize(pageSize);
-
-		vOneApi.buildBasicQuery(query);
-		vOneApi.buildPagingQuery(0);
-		JSONArray outPutMainArray = vOneApi.getPagingQueryResponse();
-		if (!CollectionUtils.isEmpty(outPutMainArray)) {
-			JSONArray tmpDetailArray = (JSONArray) outPutMainArray.get(0);
-			while (!CollectionUtils.isEmpty(tmpDetailArray)) {
-				updateMongoInfo(tmpDetailArray);
-				pageIndex = pageIndex + pageSize;
-				vOneApi.buildPagingQuery(pageIndex);
-				outPutMainArray = vOneApi.getPagingQueryResponse();
-				if (outPutMainArray == null) {
-					LOGGER.info("FAILED: Script Completed with Error");
-					throw new HygieiaException(
-							"FAILED: Nothing to update from VersionOne's response",
-							HygieiaException.NOTHING_TO_UPDATE);
-				}
-				tmpDetailArray = (JSONArray) outPutMainArray.get(0);
-			}
-		} else {
-			throw new HygieiaException(
-					"FAILED: FAILED: VersionOne response included unexpected JSON format",
-					HygieiaException.JSON_FORMAT_ERROR);
-		}
-
-		double elapsedTime = (System.nanoTime() - start) / 1000000000.0;
-		LOGGER.info("Process took :" + elapsedTime + " seconds to update");
-	}
 
 	/**
 	 * Validates current entry and removes new entry if an older item exists in
