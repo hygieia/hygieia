@@ -16,7 +16,7 @@
  * ************************DA-BOARD-LICENSE-END
  *********************************/
 
-package com.capitalone.dashboard.client;
+package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.misc.HygieiaException;
@@ -24,11 +24,8 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
-import com.capitalone.dashboard.util.ClientUtil;
-import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.DateUtil;
-import com.capitalone.dashboard.util.FeatureSettings;
-import com.capitalone.dashboard.util.FeatureWidgetQueries;
+import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -49,11 +46,9 @@ import java.util.List;
  */
 public class TeamDataClient extends BaseClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClient.class);
-	private final FeatureSettings featureSettings;
-	private final FeatureWidgetQueries featureWidgetQueries;
+
 	private final ScopeOwnerRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
-	private final VersionOneDataFactoryImpl vOneApi;
 	private ObjectId oldTeamId;
 	private boolean oldTeamEnabledState;
 
@@ -65,16 +60,11 @@ public class TeamDataClient extends BaseClient {
 	public TeamDataClient(FeatureCollectorRepository featureCollectorRepository,
 			FeatureSettings featureSettings, ScopeOwnerRepository teamRepository,
 			VersionOneDataFactoryImpl vOneApi) {
-		// super(featureSettings, teamRepository, featureCollectorRepository,
-		// vOneApi);
-		LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
-
-		this.featureSettings = featureSettings;
+        super(vOneApi, featureSettings);
+        LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepo = teamRepository;
-		this.featureWidgetQueries = new FeatureWidgetQueries(this.featureSettings);
 		teamRepo.delete("Closed");
-		this.vOneApi = vOneApi;
 	}
 
 	/**
@@ -85,6 +75,7 @@ public class TeamDataClient extends BaseClient {
 	 *            A JSON response in JSONArray format from the source system
 	 *
 	 */
+    @Override
 	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
 		for (Object obj : tmpMongoDetailArray) {
 			JSONObject dataMainObj = (JSONObject) obj;
@@ -109,7 +100,7 @@ public class TeamDataClient extends BaseClient {
 				team.setName(getJSONString(dataMainObj, "Name"));
 				// changeDate;
 				team.setChangeDate(
-						ClientUtil.toCanonicalDate(getJSONString(dataMainObj, "ChangeDate")));
+						getJSONString(dataMainObj, "ChangeDate"));
 				// assetState
 				team.setAssetState(getJSONString(dataMainObj, "AssetState"));
 				// isDeleted;
@@ -144,14 +135,14 @@ public class TeamDataClient extends BaseClient {
 	 */
 	public void updateTeamInformation() throws HygieiaException {
 		// super.objClass = ScopeOwnerCollectorItem.class;
-		String returnDate = this.featureSettings.getDeltaCollectorItemStartDate();
+		String returnDate = getFeatureSettings().getDeltaCollectorItemStartDate();
 		if (!StringUtils.isEmpty(getMaxChangeDate())) {
 			returnDate = getMaxChangeDate();
 		}
 		returnDate = DateUtil.getChangeDateMinutePrior(returnDate,
-				this.featureSettings.getScheduledPriorMin());
-		String queryName = this.featureSettings.getTeamQuery();
-		String query = this.featureWidgetQueries.getQuery(returnDate, queryName);
+				getFeatureSettings().getScheduledPriorMin());
+		String queryName = getFeatureSettings().getTeamQuery();
+		String query = getQuery(returnDate, queryName);
 		updateObjectInformation(query);
 	}
 
@@ -179,52 +170,22 @@ public class TeamDataClient extends BaseClient {
 
 	}
 
-	public void updateObjectInformation(String query) throws HygieiaException {
-		long start = System.nanoTime();
-		int pageIndex = 0;
-		int pageSize = this.featureSettings.getPageSize();
-		vOneApi.setPageSize(pageSize);
-		vOneApi.buildBasicQuery(query);
-		vOneApi.buildPagingQuery(0);
-		JSONArray outPutMainArray = vOneApi.getPagingQueryResponse();
-		if (!CollectionUtils.isEmpty(outPutMainArray)) {
-			JSONArray tmpDetailArray = (JSONArray) outPutMainArray.get(0);
-			while (tmpDetailArray.size() > 0) {
-				updateMongoInfo(tmpDetailArray);
-				pageIndex = pageIndex + pageSize;
-				vOneApi.buildPagingQuery(pageIndex);
-				outPutMainArray = vOneApi.getPagingQueryResponse();
-				if (CollectionUtils.isEmpty(outPutMainArray)) {
-					LOGGER.info("FAILED: Script Completed with Error");
-					throw new HygieiaException(
-							"FAILED: Nothing to update from VersionOne's response",
-							HygieiaException.NOTHING_TO_UPDATE);
-				}
-				tmpDetailArray = (JSONArray) outPutMainArray.get(0);
-			}
-		} else {
-			throw new HygieiaException(
-					"FAILED: VersionOne response included unexpected JSON format",
-					HygieiaException.JSON_FORMAT_ERROR);
-		}
-		double elapsedTime = (System.nanoTime() - start) / 1000000000.0;
-		LOGGER.info("Process took :" + elapsedTime + " seconds to update");
-	}
 
 	/**
 	 * Retrieves the maximum change date for a given query.
 	 *
 	 * @return A list object of the maximum change date
 	 */
+    @Override
 	public String getMaxChangeDate() {
 		Collector col = featureCollectorRepository.findByName(FeatureCollectorConstants.VERSIONONE);
 		if (col == null)
 			return "";
-		if (StringUtils.isEmpty(featureSettings.getDeltaCollectorItemStartDate()))
+		if (StringUtils.isEmpty(getFeatureSettings().getDeltaCollectorItemStartDate()))
 			return "";
 
 		List<ScopeOwnerCollectorItem> response = teamRepo.findTopByChangeDateDesc(col.getId(),
-				featureSettings.getDeltaCollectorItemStartDate());
+				getFeatureSettings().getDeltaCollectorItemStartDate());
 		if (!CollectionUtils.isEmpty(response))
 			return response.get(0).getChangeDate();
 		return "";
