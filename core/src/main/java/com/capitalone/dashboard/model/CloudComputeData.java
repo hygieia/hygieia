@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CloudComputeData {
@@ -17,7 +16,7 @@ public class CloudComputeData {
     private double estimatedCharge;
     private String currency = "USD";
     private long lastUpdated;
-    private ArrayList<CloudComputeInstanceData> instanceDetailList;
+    private List<CloudComputeInstanceData> instanceDetailList;
 
     public int getNonEncryptedCount() {
         return nonEncryptedCount;
@@ -92,7 +91,7 @@ public class CloudComputeData {
     }
 
     public void setDetailList(
-            ArrayList<CloudComputeInstanceData> instanceDetailList) {
+            List<CloudComputeInstanceData> instanceDetailList) {
         this.instanceDetailList = instanceDetailList;
     }
 
