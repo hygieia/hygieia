@@ -1,10 +1,6 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.model.CloudComputeData;
-import com.capitalone.dashboard.model.CloudComputeInstanceData;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.request.CollectorItemRequest;
 import com.capitalone.dashboard.service.CloudService;
 import com.capitalone.dashboard.service.CollectorService;
@@ -34,10 +30,9 @@ public class CloudController {
     private final CollectorService collectorService;
 
     @Autowired
-    public CloudController(EncryptionService encryptionService,
-                           CloudService cloudService, CollectorService collectorService) {
-        this.cloudService = cloudService;
+    public CloudController(EncryptionService encryptionService,CloudService cloudService, CollectorService collectorService) {
         this.encryptionService = encryptionService;
+        this.cloudService = cloudService;
         this.collectorService = collectorService;
     }
 

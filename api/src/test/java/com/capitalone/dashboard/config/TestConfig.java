@@ -42,6 +42,11 @@ public class TestConfig {
 	}
 
 	@Bean
+	public CloudService cloudService() {
+		return Mockito.mock(CloudService.class);
+	}
+
+	@Bean
 	public CodeQualityService codeQualityService() {
 		return Mockito.mock(CodeQualityService.class);
 	}
