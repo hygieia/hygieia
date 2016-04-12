@@ -13,6 +13,7 @@ describe('CapOneTemplateController', function () {
     // inject the required services and instantiate the controller
     beforeEach(inject(function ($rootScope, $controller) {
 
+
         scope = $rootScope.$new();
         controller = $controller('CapOneTemplateController', {$scope: scope});
     }));
@@ -28,7 +29,7 @@ describe('CapOneTemplateController', function () {
     });
 
     describe('ToggleView', function () {
-        describe('When I call with an index that exists', function () {
+       describe('When I call ToggleView with an index that exists', function () {
             it('Then I expect the correct name to be assigned to widgetView', function () {
 
                 //Arrange
@@ -43,5 +44,22 @@ describe('CapOneTemplateController', function () {
             });
         });
 
+        describe('When I call ToggleView with an index that does not exists', function () {
+            it('Then I expect the default name "Widget" to be assigned to widgetView', function () {
+
+                //Arrange
+                var index = -50;
+                var result = "Widget";
+
+                //Act
+                controller.toggleView(index);
+
+                //Assert
+                expect(controller.widgetView).toBe(result);
+            });
+        });
+
     });
+
+
 });
