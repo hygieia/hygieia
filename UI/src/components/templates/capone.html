@@ -11,23 +11,12 @@
 
                      ng-show="template.hasComponents(ctrl.dashboard, ['Deployment'])">
 
-                    <span class="btn" ng-repeat="tab in template.tabs" ng-click="template.toggleView($index)">
+                    <span class="btn" ng-repeat="tab in template.tabs" ng-click="template.toggleView($index)"
+                          ng-class="tab.name == template.widgetView ? 'btn-primary' : 'btn-default'">
                         <span ng-class="tab.name === 'Widget' ? 'fa fa-th' : tab.name === 'Pipeline' ? 'fa fa-task' : 'fa fa-cloud'"></span>
                         {{tab.name}}
                     </span>
 
-                   <!-- <span class="btn" ng-class="{'btn-primary':template.widgetView, 'btn-default': !template.widgetView}">
-                        <span class="fa fa-th"></span>
-                        Widget
-                    </span>
-                    <span class="btn" ng-class="{'btn-primary':!template.widgetView, 'btn-default': template.widgetView}">
-                        <span class="fa fa-tasks"></span>
-                        Pipeline
-                    </span>
-                    <span class="btn" ng-class="{'btn-primary':!template.widgetView, 'btn-default': template.widgetView}">
-                        <span class="fa fa-cloud"></span>
-                        Cloud
-                    </span> -->
                 </div>
             </div>
         </nav>

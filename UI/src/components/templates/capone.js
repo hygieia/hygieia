@@ -21,7 +21,7 @@
 
         ctrl.widgetView = ctrl.tabs[0].name;
         ctrl.toggleView = function (index) {
-            ctrl.widgetView = ctrl.tabs[index].name;
+            ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
         };
 
         ctrl.hasComponents = function (dashboard, names) {
