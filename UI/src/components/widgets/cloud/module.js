@@ -11,14 +11,14 @@
                 defaults: {
                     title: 'Cloud' // widget title
                 },
-                controller: 'BuildWidgetViewController',
-                controllerAs: 'buildView',
-                templateUrl: 'components/widgets/build/view.html'
+                controller: 'CloudWidgetViewController',
+                controllerAs: 'cloudView',
+                templateUrl: 'components/widgets/cloud/view.html'
             },
             config: {
-                controller: 'BuildWidgetConfigController',
-                controllerAs: 'buildConfig',
-                templateUrl: 'components/widgets/build/config.html'
+                controller: 'CloudWidgetConfigController',
+                controllerAs: 'cloudConfig',
+                templateUrl: 'components/widgets/cloud/config.html'
             },
             getState: getState,
             collectors: ['cloud']
@@ -36,7 +36,7 @@
 
     function getState(config) {
         // make sure config values are set
-        return HygieiaConfig.local || (config.id && config.options.buildDurationThreshold && config.options.consecutiveFailureThreshold) ?
+        return HygieiaConfig.local ?
             widget_state.READY :
             widget_state.CONFIGURE;
     }
