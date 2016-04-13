@@ -7,7 +7,10 @@
   <artifactId>Hygieia</artifactId>
   <packaging>pom</packaging>
   <version>2.0.0-SNAPSHOT</version>
-  <name>${project.groupId}:${project.artifactId}</name>
+    <modules>
+        <module>aws-lamda</module>
+    </modules>
+    <name>${project.groupId}:${project.artifactId}</name>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

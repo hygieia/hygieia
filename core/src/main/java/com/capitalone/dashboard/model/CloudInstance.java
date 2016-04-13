@@ -1,37 +1,50 @@
 package com.capitalone.dashboard.model;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an EC2 instance from AWS
- * <p>
- * Possible collectors: AWS, Microsoft Azure
  */
-public class CloudComputeInstanceData {
+@Document(collection = "cloud_instance")
+public class CloudInstance {
+    @Indexed
     private String instanceId;
+    private ObjectId collectorItemId;
     private String instanceType;
     private String imageId;
+    private long imageExpirationDate;
+    private boolean imageApproved;
+    private String instanceOwner;
     private boolean isMonitored;
     private String privateDns;
     private String privateIp;
     private String publicDns;
     private String publicIp;
     private String subnetId;
-    private String virtualPrivateCloudId;
+    private String virtualNetworkId;
     private int age;
     private boolean isEncrypted;
+    private String status;
     private boolean isStopped;
     private boolean isTagged;
     private double cpuUtilization;
     private Date timestamp;
-    private List<String> securityGroupNames = new ArrayList<>();
+    private List<String> securityGroups = new ArrayList<>();
+    private Map<String, String> tags = new HashMap<>();
     private double networkIn;
     private double networkOut;
     private double diskRead;
     private double diskWrite;
     private String rootDeviceName;
+
 
     public String getInstanceId() {
         return instanceId;
@@ -153,20 +166,20 @@ public class CloudComputeInstanceData {
         this.subnetId = subnetId;
     }
 
-    public String getVirtualPrivateCloudId() {
-        return virtualPrivateCloudId;
+    public String getVirtualNetworkId() {
+        return virtualNetworkId;
     }
 
-    public void setVirtualPrivateCloudId(String virtualPrivateCloudId) {
-        this.virtualPrivateCloudId = virtualPrivateCloudId;
+    public void setVirtualNetworkId(String virtualNetworkId) {
+        this.virtualNetworkId = virtualNetworkId;
     }
 
     public List<String> getSecurityGroups() {
-        return securityGroupNames;
+        return securityGroups;
     }
 
     public void addSecurityGroups(String securityGroupName) {
-        this.securityGroupNames.add(securityGroupName);
+        this.securityGroups.add(securityGroupName);
     }
 
     public String getRootDeviceName() {
@@ -209,4 +222,47 @@ public class CloudComputeInstanceData {
         this.diskWrite = diskWrite;
     }
 
+    public long getImageExpirationDate() {
+        return imageExpirationDate;
+    }
+
+    public void setImageExpirationDate(long imageExpirationDate) {
+        this.imageExpirationDate = imageExpirationDate;
+    }
+
+    public boolean isImageApproved() {
+        return imageApproved;
+    }
+
+    public void setImageApproved(boolean imageApproved) {
+        this.imageApproved = imageApproved;
+    }
+
+    public String getInstanceOwner() {
+        return instanceOwner;
+    }
+
+    public void setInstanceOwner(String instanceOwner) {
+        this.instanceOwner = instanceOwner;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Map<String, String> getTags() {
+        return tags;
+    }
+
+    public ObjectId getCollectorItemId() {
+        return collectorItemId;
+    }
+
+    public void setCollectorItemId(ObjectId collectorItemId) {
+        this.collectorItemId = collectorItemId;
+    }
 }

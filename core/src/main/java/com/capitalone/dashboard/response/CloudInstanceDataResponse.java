@@ -1,8 +1,10 @@
-package com.capitalone.dashboard.model;
+package com.capitalone.dashboard.response;
+
+import com.capitalone.dashboard.model.CloudInstance;
 
 import java.util.List;
 
-public class CloudComputeData {
+public class CloudInstanceDataResponse {
     private int nonEncryptedCount;
     private int nonTaggedCount;
     private int stoppedCount;
@@ -16,7 +18,7 @@ public class CloudComputeData {
     private double estimatedCharge;
     private String currency = "USD";
     private long lastUpdated;
-    private List<CloudComputeInstanceData> instanceDetailList;
+    private List<CloudInstance> instanceDetailList;
 
     public int getNonEncryptedCount() {
         return nonEncryptedCount;
@@ -91,11 +93,11 @@ public class CloudComputeData {
     }
 
     public void setDetailList(
-            List<CloudComputeInstanceData> instanceDetailList) {
+            List<CloudInstance> instanceDetailList) {
         this.instanceDetailList = instanceDetailList;
     }
 
-    public List<CloudComputeInstanceData> getDetailList() {
+    public List<CloudInstance> getDetailList() {
         return instanceDetailList;
     }
 
