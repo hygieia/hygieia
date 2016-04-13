@@ -19,7 +19,7 @@ describe('CapOneTemplateController', function () {
     }));
 
 
-    describe('Constructor', function () {
+    describe('constructor', function () {
 
         describe('When I instantiate the controller', function () {
             it('Then it should be defined', function () {
@@ -28,8 +28,8 @@ describe('CapOneTemplateController', function () {
         });
     });
 
-    describe('ToggleView', function () {
-       describe('When I call ToggleView with an index that exists', function () {
+    describe('toggleView()', function () {
+       describe('When I call toggleView with an index that exists', function () {
             it('Then I expect the correct name to be assigned to widgetView', function () {
 
                 //Arrange
@@ -44,7 +44,7 @@ describe('CapOneTemplateController', function () {
             });
         });
 
-        describe('When I call ToggleView with an index that does not exists', function () {
+        describe('When I call toggleView with an index that does not exists', function () {
             it('Then I expect the default name "Widget" to be assigned to widgetView', function () {
 
                 //Arrange

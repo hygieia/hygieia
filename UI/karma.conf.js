@@ -10,7 +10,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'sinon'],
 
 
     // list of files / patterns to load in the browser
@@ -26,10 +26,13 @@ module.exports = function(config) {
       'bower_components/angular-cookies/angular-cookies.js',
       'bower_components/angular-validation-match/src/angular-validation-match.js',
       'bower_components/ng-sortable/dist/ng-sortable.js',
+      'bower_components/sinonjs/sinon.js',
+      'bower_components/jasmine-sinon/lib/jasmine-sinon.js',
       'test/appGlobals.js',
       'src/app/dashboard/core/module.js',
       'src/app/app.js',
       'src/components/templates/capone.js',
+      'src/components/widgets/cloud/view.js',
       'test/**/*.test.js'
     ],
 
