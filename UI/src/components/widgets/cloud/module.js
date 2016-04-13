@@ -21,7 +21,7 @@
                 templateUrl: 'components/widgets/build/config.html'
             },
             getState: getState,
-            collectors: ['build']
+            collectors: ['cloud']
         };
 
     angular
