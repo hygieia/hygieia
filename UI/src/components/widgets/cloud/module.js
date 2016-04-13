@@ -1,3 +1,7 @@
+/**
+ * Created by hyw912 on 4/12/16.
+ */
+
 (function () {
     'use strict';
 
@@ -7,32 +11,34 @@
                 defaults: {
                     title: 'Cloud' // widget title
                 },
-                controller: 'cloudViewController',
-                controllerAs: 'cloudView', // defaults to ctrl
-                templateUrl: 'components/widgets/cloud/view.html'
+                controller: 'BuildWidgetViewController',
+                controllerAs: 'buildView',
+                templateUrl: 'components/widgets/build/view.html'
             },
             config: {
-                controller: 'cloudConfigController',
-                controllerAs: 'cloudConfig', // defaults to ctrl
-                templateUrl: 'components/widgets/cloud/config.html'
+                controller: 'BuildWidgetConfigController',
+                controllerAs: 'buildConfig',
+                templateUrl: 'components/widgets/build/config.html'
             },
-            getState: getState
+            getState: getState,
+            collectors: ['build']
         };
 
     angular
-        .module('devops-dashboard')
+        .module(HygieiaConfig.module)
         .config(register);
 
-    register.$inject = ['widgetManagerProvider', 'WIDGET_STATE'];
-    function register(widgetManagerProvider, WIDGET_STATE) {
-        widget_state = WIDGET_STATE;
+    register.$inject = ['widgetManagerProvider', 'WidgetState'];
+    function register(widgetManagerProvider, WidgetState) {
+        widget_state = WidgetState;
         widgetManagerProvider.register('cloud', config);
     }
 
-    // implement custom logic for determining the widget state in this method
-    function getState(widgetConfig) {
-        return localTesting || widgetConfig.id ?
+    function getState(config) {
+        // make sure config values are set
+        return HygieiaConfig.local || (config.id && config.options.buildDurationThreshold && config.options.consecutiveFailureThreshold) ?
             widget_state.READY :
             widget_state.CONFIGURE;
     }
 })();
+
