@@ -9,7 +9,14 @@
         .module(HygieiaConfig.module + '.core')
         .factory('cloudData', cloudData);
 
-    function cloudData($http) {
+    function cloudData() {
 
+        return {
+            getData: getData
+        };
+
+        function getData() {
+            return "hello";
+        }
     }
 })();
