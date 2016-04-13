@@ -12,10 +12,10 @@
     function cloudData() {
 
         return {
-            getData: getData
+            getASV: getASV
         };
 
-        function getData() {
+        function getASV() {
             return "hello";
         }
     }

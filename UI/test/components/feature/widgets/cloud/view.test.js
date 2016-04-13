@@ -73,7 +73,7 @@ describe('CloudWidgetViewController', function () {
     });
 
     describe('load()', function() {
-        describe('When I call load()', function () {
+        describe('When I call load() and data is available', function () {
             it('Then I expect AMI data to be retrieved', function() {
 
                 //Arrange
