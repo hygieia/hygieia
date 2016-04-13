@@ -2,6 +2,7 @@ package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.request.CollectorItemRequest;
+import com.capitalone.dashboard.response.CloudInstanceDataResponse;
 import com.capitalone.dashboard.service.CloudService;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.EncryptionService;
@@ -39,7 +40,7 @@ public class CloudController {
     @RequestMapping(value = "/cloud/{componentId}/aggregate", method = GET, consumes =
             APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    public DataResponse<CloudComputeData> getAggregatedData(
+    public DataResponse<CloudInstanceDataResponse> getAggregatedData(
             @Valid ObjectId componentId) {
         return cloudService.getAggregatedData(componentId);
     }
@@ -47,7 +48,7 @@ public class CloudController {
     @RequestMapping(value = "/cloud/{componentId}/details", method = GET, consumes =
             APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    public DataResponse<List<CloudComputeInstanceData>> getInstanceDetails(
+    public DataResponse<List<CloudInstance>> getInstanceDetails(
             @Valid ObjectId componentId) {
         return cloudService.getInstanceDetails(componentId);
     }
