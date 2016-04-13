@@ -17,7 +17,7 @@
             { name: "Widget"},
             { name: "Pipeline"},
             { name: "Cloud"}
-           ]
+           ];
 
         ctrl.widgetView = ctrl.tabs[0].name;
         ctrl.toggleView = function (index) {
