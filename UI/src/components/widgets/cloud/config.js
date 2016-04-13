@@ -1,97 +1,137 @@
+/**
+ * Created by hyw912 on 4/13/16.
+ */
+
+/**
+ * Build widget configuration
+ */
 (function () {
     'use strict';
 
     angular
-        .module('devops-dashboard')
-        .controller('cloudConfigController', cloudConfigController);
+        .module(HygieiaConfig.module)
+        .controller('CloudWidgetConfigController', CloudWidgetConfigController);
 
-    cloudConfigController.$inject = ['$scope', 'modalData', 'cloudData', '$modalInstance', 'collectorData'];
-    function cloudConfigController($scope, modalData, cloudData, $modalInstance, collectorData) {
+    CloudWidgetConfigController.$inject = ['modalData', '$scope', 'cloudData', '$modalInstance'];
+    function CloudWidgetConfigController(modalData, $scope, cloudData, $modalInstance) {
+
         var ctrl = this;
-
-
-        ctrl.services = [{'name': 'AWS'}];
-        ctrl.toolsDropdownDisabled = true;
-        ctrl.toolsDropdownPlaceholder = 'Select a service';
-        ctrl.submitted = false;
-        ctrl.validAccess = false;
-
         var widgetConfig = modalData.widgetConfig;
 
+        // public variables
+        ctrl.asvDropdownPlaceholder = 'Loading ASV List...';
+        ctrl.asvDropdownDisabled = true;
+
         // public methods
-        ctrl.showError = showError;
-        ctrl.submit = submitConfig;
-
-        console.log("WidgetConfig:", widgetConfig);
-        console.log("Ctrl: ", ctrl);
-        // Request collectors
-        collectorData.collectorsByType('cloud').then(processCollectorsResponse);
-
-        var idx;
-
-        for (var v = 0; v < ctrl.services.length; v++) {
-            if (ctrl.services[v].name == widgetConfig.options.cloudProvider) {
-                console.log("Matched with :", widgetConfig.options.cloudProvider);
-                //console.log("Selected Index =", ctrl.services.selectedIndex);
-                idx = v;
-                ctrl.service = ctrl.services[idx].name;
-                ctrl.services.selectedIndex = idx;
-
-            }
-        }
-        ctrl.service = "AWS";
-        ctrl.accessKey = widgetConfig.options.accessKey;
-        ctrl.secretKey = widgetConfig.options.secretKey;
-
-
-        function processCollectorsResponse(data) {
-            console.log(data);
-            ctrl.collectors = data;
-        }
-
-        function showError(element) {
-            // tell the view whether or not to show errors only once the form has been submitted once
-            return element.$invalid && ctrl.submitted;
-        }
-
-        function submitConfig(valid, cloudProvider) {
-            ctrl.submitted = true;
-
+        ctrl.submit = function (valid) {
             if (valid) {
-                //make get request to validate access and secret key
-                var item = {};
 
-                item = {
-                    collectorId: _.findWhere(ctrl.collectors, {name: 'AWSCloud'}).id,
+                var postObj = {};
+
+                /*var form = document.buildConfigForm;
+                var postObj = {
+                    name: 'build',
                     options: {
-                        accessKey: ctrl.accessKey,
-                        secretKey: ctrl.secretKey,
-                        cloudProvider: ctrl.service
-                    }
+                        id: widgetConfig.options.id,
+                        buildDurationThreshold: parseFloat(form.buildDurationThreshold.value),
+                        consecutiveFailureThreshold: parseFloat(form.buildConsecutiveFailureThreshold.value)
+                    },
+                    componentId: modalData.dashboard.application.components[0].id,
+                    collectorItemId: form.collectorItemId.value
                 };
-                console.log(item);
-                cloudData.saveConfig(item).then(processCollectorItemResponse);
+                */
+                // pass this new config to the modal closing so it's saved
+                $modalInstance.close(postObj);
             }
         }
 
+        // public variables
+      /*  ctrl.toolsDropdownPlaceholder = 'Loading Build Jobs...';
+        ctrl.toolsDropdownDisabled = true;
 
-        function processCollectorItemResponse(response) {
-            ctrl.validAccess = true;
-            console.log(response);
-            var postObj = {
-                name: "cloud",
-                options: {
-                    id: widgetConfig.options.id,
-                    accessKey: response.options.accessKey,
-                    secretKey: response.options.secretKey,
-                    cloudProvider: ctrl.service
-                },
-                componentId: modalData.dashboard.application.components[0].id,
-                collectorItemId: response.id
+        ctrl.buildDurationThreshold = 3;
+        ctrl.buildConsecutiveFailureThreshold = 5;
+
+        // set values from config
+        if (widgetConfig) {
+            if (widgetConfig.options.buildDurationThreshold) {
+                ctrl.buildDurationThreshold = widgetConfig.options.buildDurationThreshold;
+            }
+
+            if (widgetConfig.options.consecutiveFailureThreshold) {
+                ctrl.buildConsecutiveFailureThreshold = widgetConfig.options.consecutiveFailureThreshold;
+            }
+        }
+
+        // public methods
+        ctrl.submit = submitForm;
+
+        // request all the build collector items
+        cloudData.itemsByType('build').then(processResponse);
+
+        // method implementations
+        function processResponse(data) {
+            var worker = {
+                getBuildJobs: getBuildJobs
             };
 
-            // pass this new config to the modal closing so it's saved
-            $modalInstance.close(postObj);
+            function getBuildJobs(data, currentCollectorItemId, cb) {
+                var builds = [],
+                    selectedIndex = null;
+
+                for (var x = 0; x < data.length; x++) {
+                    var obj = data[x];
+                    var item = {
+                        value: obj.id,
+                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description : obj.collector.name + '-' + obj.description)
+                    };
+                    builds.push(item);
+
+                    if (currentCollectorItemId !== null && item.value == currentCollectorItemId) {
+                        selectedIndex = x;
+                    }
+                }
+
+                cb({
+                    builds: builds,
+                    selectedIndex: selectedIndex
+                });
+            }
+
+            var buildCollector = modalData.dashboard.application.components[0].collectorItems.Build;
+            var buildCollectorId = buildCollector ? buildCollector[0].id : null;
+            worker.getBuildJobs(data, buildCollectorId, getBuildsCallback);
         }
+
+        function getBuildsCallback(data) {
+            //$scope.$apply(function () {
+            ctrl.buildJobs = data.builds;
+            ctrl.toolsDropdownPlaceholder = 'Select a Build Job';
+            ctrl.toolsDropdownDisabled = false;
+
+            if (data.selectedIndex !== null) {
+                ctrl.collectorItemId = ctrl.buildJobs[data.selectedIndex];
+            }
+            //});
+        }
+
+        function submitForm(valid) {
+            if (valid) {
+                var form = document.buildConfigForm;
+                var postObj = {
+                    name: 'build',
+                    options: {
+                        id: widgetConfig.options.id,
+                        buildDurationThreshold: parseFloat(form.buildDurationThreshold.value),
+                        consecutiveFailureThreshold: parseFloat(form.buildConsecutiveFailureThreshold.value)
+                    },
+                    componentId: modalData.dashboard.application.components[0].id,
+                    collectorItemId: form.collectorItemId.value
+                };
+
+                // pass this new config to the modal closing so it's saved
+                $modalInstance.close(postObj);
+            }
+        } */
     }
 })();
