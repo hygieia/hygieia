@@ -19,7 +19,7 @@
 
         var ctrl = this;
         ctrl.load = function() {
-            return cloudData.cloudData;
+            return cloudData.getData();
         }
     }
 })();

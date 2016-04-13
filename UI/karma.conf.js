@@ -26,11 +26,10 @@ module.exports = function(config) {
       'bower_components/angular-cookies/angular-cookies.js',
       'bower_components/angular-validation-match/src/angular-validation-match.js',
       'bower_components/ng-sortable/dist/ng-sortable.js',
-      'bower_components/sinonjs/sinon.js',
-      'bower_components/jasmine-sinon/lib/jasmine-sinon.js',
       'test/appGlobals.js',
       'src/app/dashboard/core/module.js',
       'src/app/app.js',
+      'src/app/dashboard/core/data-factories/cloud-data.js',
       'src/components/templates/capone.js',
       'src/components/widgets/cloud/view.js',
       'test/**/*.test.js'
