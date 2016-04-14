@@ -17,7 +17,8 @@
 		</select>
 	</form-group>
 
-	<form-group input="repoUrl"
+	<form-group ng-if="repoConfig.repoOption.name == 'GitHub (public)' || repoConfig.repoOption.name == 'GitHub'  || repoConfig.repoOption.name == 'Stash'"
+                input="repoUrl"
 				class="text-center"
 				errors="{required:'Repository URL is required', url: 'Please enter a valid URL'}">
 
@@ -26,12 +27,28 @@
 			   name="repoUrl"
 			   class="form-control text-center"
 			   ng-model="repoConfig.repoUrl"
-			   placeholder="Enter URL"
+			   placeholder="Enter URL/Project"
 			   autocomplete="off"
 			   required />
 	</form-group>
 
-	<form-group ng-if="repoConfig.repoOption.name == 'GitHub (public)' || repoConfig.repoOption.name == 'GitHub'  || repoConfig.repoOption.name == 'Stash'"
+    <form-group ng-if="repoConfig.repoOption.name == 'Gerrit'"
+                input="repoUrl"
+                class="text-center"
+                errors="{required:'Project Name is Required'}">
+
+        <label class="modal-label">Gerrit Project</label>
+        <input type="text"
+               name="repoUrl"
+               class="form-control text-center"
+               ng-model="repoConfig.repoUrl"
+               placeholder="Enter Project"
+               autocomplete="off"
+               required />
+    </form-group>
+
+	<form-group ng-if="repoConfig.repoOption.name == 'GitHub (public)' || repoConfig.repoOption.name == 'GitHub'  || repoConfig.repoOption.name == 'Stash' ||
+	repoConfig.repoOption.name == 'Gerrit'"
 				errors="{required:'Branch is required'}"
 				input="gitBranch"
 				class="text-center">

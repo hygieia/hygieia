@@ -22,7 +22,10 @@
 		},{
 			name: 'Stash',
 			value: 'Stash'
-		}];
+		}, {
+            name: 'Gerrit',
+            value: 'Gerrit'
+        }];
 
 //console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
 //		console.log(JSON.stringify(widgetConfig.options.id));
@@ -122,6 +125,16 @@
 						branch: branch
 					}
 				};
+            } else if (repoTypeName.indexOf("Gerrit") != -1) {
+
+                item = {
+                    collectorId: _.findWhere(ctrl.collectors, {name: 'Gerrit'}).id,
+                    options: {
+                        scm: 'Gerrit',
+                        url: url,
+                        branch: branch
+                    }
+                };
 			}else{
 				item = {
 					collectorId : _.findWhere(ctrl.collectors, { name: 'Subversion' }).id,
