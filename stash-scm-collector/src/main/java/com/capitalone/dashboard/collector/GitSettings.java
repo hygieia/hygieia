@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.GitRepo;
-import com.capitalone.dashboard.support.DateUtils;
+import com.capitalone.dashboard.util.DateUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 

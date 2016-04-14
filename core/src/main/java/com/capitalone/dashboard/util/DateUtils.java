@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.support;
+package com.capitalone.dashboard.util;
 
 import java.util.Calendar;
 import java.util.Date;

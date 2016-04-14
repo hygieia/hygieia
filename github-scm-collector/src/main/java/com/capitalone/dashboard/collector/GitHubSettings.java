@@ -1,7 +1,11 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.util.DateUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 /**
  * Bean to hold settings specific to the UDeploy collector.
@@ -46,4 +50,19 @@ public class GitHubSettings {
 	public void setFirstRunHistoryDays(int firstRunHistoryDays) {
 		this.firstRunHistoryDays = firstRunHistoryDays;
 	}
+
+    private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
+
+    Date getRunDate(GitHubRepo repo, boolean firstRun) {
+        if (firstRun) {
+            int firstRunDaysHistory = this.getFirstRunHistoryDays();
+            if (firstRunDaysHistory > 0) {
+                return DateUtils.getDate(new Date(), -firstRunDaysHistory, 0);
+            } else {
+                return DateUtils.getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
+            }
+        } else {
+            return DateUtils.getDate(repo.getLastUpdateTime(), 0, -10);
+        }
+    }
 }
