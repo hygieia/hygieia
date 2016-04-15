@@ -180,7 +180,7 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
         try {
             changes = gerritApi.changes().query("status:merged+project:"+project+"+branch:"+branch).get();
         } catch (RestApiException e) {
-            log("Repo Count" + e.getStackTrace());
+            log("Error getting changes:" + e.getStackTrace());
         }
         return changes;
     }
