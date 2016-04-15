@@ -38,7 +38,6 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
     private final BaseCollectorRepository<Collector> collectorRepository;
     private final GerritRepoRepository gerritRepoRepository;
     private final CommitRepository commitRepository;
-    //    private final GerritClient gerritClient;
     private final GerritSettings gerritSettings;
     private final ComponentRepository dbComponentRepository;
 
@@ -47,14 +46,12 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
                                BaseCollectorRepository<Collector> collectorRepository,
                                GerritRepoRepository gerritRepoRepository,
                                CommitRepository commitRepository,
-//                               GerritClient gerritClient,
                                GerritSettings gerritSettings,
                                ComponentRepository dbComponentRepository) {
         super(taskScheduler, "Gerrit");
         this.collectorRepository = collectorRepository;
         this.gerritRepoRepository = gerritRepoRepository;
         this.commitRepository = commitRepository;
-//        this.gerritClient = gerritClient;
         this.gerritSettings = gerritSettings;
         this.dbComponentRepository = dbComponentRepository;
     }
@@ -171,7 +168,7 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
         try {
             return gerritApi.changes().query("status:" + gerritSettings.getStatusToCollect()+"+project:" + project + "+branch:" + branch).get();
         } catch (RestApiException e) {
-            log("Error Getting Gerrit Changes." + e.getStackTrace());
+            log("Error Getting Gerrit Changes." + e.getMessage());
         }
         return new ArrayList<>();
     }
