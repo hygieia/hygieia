@@ -140,6 +140,11 @@
 		    <version>${joda-convert.version}</version>
 		    <scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>com.urswolfer.gerrit.client.rest</groupId>
+            <artifactId>gerrit-rest-java-client</artifactId>
+            <version>0.8.7</version>
+        </dependency>
 	</dependencies>
 
 </project>

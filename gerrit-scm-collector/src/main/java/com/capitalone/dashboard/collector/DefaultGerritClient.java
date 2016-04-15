@@ -122,7 +122,6 @@ public class DefaultGerritClient implements GerritClient {
             return restOperations.exchange(url, HttpMethod.GET, null,
                     String.class);
         }
-
     }
 
     private HttpHeaders createHeaders(final String userId, final String password) {

@@ -10,6 +10,11 @@ import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GerritRepoRepository;
+import com.google.gerrit.extensions.api.GerritApi;
+import com.google.gerrit.extensions.common.ChangeInfo;
+import com.google.gerrit.extensions.restapi.RestApiException;
+import com.urswolfer.gerrit.client.rest.GerritAuthData;
+import com.urswolfer.gerrit.client.rest.GerritRestApiFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -32,7 +37,7 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
     private final BaseCollectorRepository<Collector> collectorRepository;
     private final GerritRepoRepository gerritRepoRepository;
     private final CommitRepository commitRepository;
-    private final GerritClient gerritClient;
+//    private final GerritClient gerritClient;
     private final GerritSettings gerritSettings;
     private final ComponentRepository dbComponentRepository;
 
@@ -41,14 +46,14 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
                                BaseCollectorRepository<Collector> collectorRepository,
                                GerritRepoRepository gerritRepoRepository,
                                CommitRepository commitRepository,
-                               GerritClient gerritClient,
+//                               GerritClient gerritClient,
                                GerritSettings gerritSettings,
                                ComponentRepository dbComponentRepository) {
         super(taskScheduler, "Gerrit");
         this.collectorRepository = collectorRepository;
         this.gerritRepoRepository = gerritRepoRepository;
         this.commitRepository = commitRepository;
-        this.gerritClient = gerritClient;
+//        this.gerritClient = gerritClient;
         this.gerritSettings = gerritSettings;
         this.dbComponentRepository = dbComponentRepository;
     }
@@ -126,13 +131,14 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
 
         clean(collector);
         for (GerritRepo repo : enabledRepos(collector)) {
-        	boolean firstRun = false;
-        	if (repo.getLastUpdated() == 0) firstRun = true;
+//        	boolean firstRun = false;
+//        	if (repo.getLastUpdated() == 0) firstRun = true;
         	repo.setLastUpdated(System.currentTimeMillis());
             repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
             gerritRepoRepository.save(repo);
             LOG.debug(repo.getOptions().toString()+"::"+repo.getBranch());
-            for (Commit commit : gerritClient.getCommits(repo, firstRun)) {
+
+            for (Commit commit : getCommits(repo)) {
             	LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
@@ -140,7 +146,6 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
                     commitCount++;
                 }
             }
-
             repoCount++;
         }
         log("Repo Count", start, repoCount);
@@ -149,6 +154,36 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
         log("Finished", start);
     }
 
+    private List<Commit> getCommits (GerritRepo repo) {
+        List<Commit> commits = new ArrayList<>();
+        List<ChangeInfo> changes = getChanges(repo.getProject(), repo.getBranch());
+        for (ChangeInfo ci : changes) {
+            Commit commit = new Commit();
+            commit.setTimestamp(System.currentTimeMillis());
+            commit.setScmUrl(gerritSettings.getHost() + "/" + repo.getProject() + "/" + repo.getBranch());
+            commit.setScmRevisionNumber(ci.changeId);
+            commit.setScmAuthor(ci.owner.name);
+            commit.setScmCommitLog(ci.subject);
+            commit.setScmCommitTimestamp(ci.updated.getTime());
+            commit.setNumberOfChanges(ci._number);
+            commits.add(commit);
+        }
+        return commits;
+    }
+
+
+    private List<ChangeInfo> getChanges(String project, String branch) {
+        GerritRestApiFactory gerritRestApiFactory = new GerritRestApiFactory();
+        GerritAuthData.Basic authData = new GerritAuthData.Basic(gerritSettings.getHost(), gerritSettings.getUser(), gerritSettings.getPassword());
+        GerritApi gerritApi = gerritRestApiFactory.create(authData);
+        List<ChangeInfo> changes = null;
+        try {
+            changes = gerritApi.changes().query("status:merged+project:"+project+"+branch:"+branch).get();
+        } catch (RestApiException e) {
+            log("Repo Count" + e.getStackTrace());
+        }
+        return changes;
+    }
 
     private List<GerritRepo> enabledRepos(Collector collector) {
         return gerritRepoRepository.findEnabledGitHubRepos(collector.getId());
