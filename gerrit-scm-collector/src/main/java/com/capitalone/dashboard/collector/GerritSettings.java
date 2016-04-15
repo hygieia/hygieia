@@ -13,6 +13,7 @@ public class GerritSettings {
     private String host;
     private String user;
     private String password;
+    private String statusToCollect;
     private int firstRunHistoryDays;
 
 
@@ -54,5 +55,13 @@ public class GerritSettings {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getStatusToCollect() {
+        return statusToCollect;
+    }
+
+    public void setStatusToCollect(String statusToCollect) {
+        this.statusToCollect = statusToCollect;
     }
 }

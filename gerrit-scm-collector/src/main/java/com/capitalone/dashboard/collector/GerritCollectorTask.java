@@ -21,6 +21,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +38,7 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
     private final BaseCollectorRepository<Collector> collectorRepository;
     private final GerritRepoRepository gerritRepoRepository;
     private final CommitRepository commitRepository;
-//    private final GerritClient gerritClient;
+    //    private final GerritClient gerritClient;
     private final GerritSettings gerritSettings;
     private final ComponentRepository dbComponentRepository;
 
@@ -78,47 +79,41 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
         return gerritSettings.getCron();
     }
 
-	/**
-	 * Clean up unused deployment collector items
-	 *
-	 * @param collector
-	 *            the {@link Collector}
-	 */
-    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, fixme
-	private void clean(Collector collector) {
-		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
-		/**
-		 * Logic: For each component, retrieve the collector item list of the type SCM.
-		 * Store their IDs in a unique set ONLY if their collector IDs match with GitHub collectors ID.
-		 */
-		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
-			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
-				List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
-				if (itemList != null) {
-					for (CollectorItem ci : itemList) {
-						if (ci != null && ci.getCollectorId().equals(collector.getId())){
-							uniqueIDs.add(ci.getId());
-						}
-					}
-				}
-			}
-		}
-
-		/**
-		 * Logic: Get all the collector items from the collector_item collection for this collector.
-		 * If their id is in the unique set (above), keep them enabled; else, disable them.
-		 */
-		List<GerritRepo> repoList = new ArrayList<>();
-		Set<ObjectId> gitID = new HashSet<>();
-		gitID.add(collector.getId());
-		for (GerritRepo repo : gerritRepoRepository.findByCollectorIdIn(gitID)) {
-			if (repo != null) {
-				repo.setEnabled(uniqueIDs.contains(repo.getId()));
-				repoList.add(repo);
-			}
-		}
-		gerritRepoRepository.save(repoList);
-	}
+    /**
+     * Clean up unused deployment collector items
+     *
+     * @param collector the {@link Collector}
+     */
+    private void clean(Collector collector) {
+        Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+        /**
+         * Logic: For each component, retrieve the collector item list of the type SCM.
+         * Store their IDs in a unique set ONLY if their collector IDs match with Gerrit collectors ID.
+         */
+        for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
+            if (CollectionUtils.isEmpty(comp.getCollectorItems())) continue;
+            List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
+            if (CollectionUtils.isEmpty(itemList)) continue;
+            for (CollectorItem ci : itemList) {
+                if (ci != null && ci.getCollectorId().equals(collector.getId())) {
+                    uniqueIDs.add(ci.getId());
+                }
+            }
+        }
+        /**
+         * Logic: Get all the collector items from the collector_item collection for this collector.
+         * If their id is in the unique set (above), keep them enabled; else, disable them.
+         */
+        List<GerritRepo> repoList = new ArrayList<>();
+        Set<ObjectId> gitID = new HashSet<>();
+        gitID.add(collector.getId());
+        for (GerritRepo repo : gerritRepoRepository.findByCollectorIdIn(gitID)) {
+            if (repo == null) continue;
+            repo.setEnabled(uniqueIDs.contains(repo.getId()));
+            repoList.add(repo);
+        }
+        gerritRepoRepository.save(repoList);
+    }
 
 
     @Override
@@ -131,15 +126,13 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
 
         clean(collector);
         for (GerritRepo repo : enabledRepos(collector)) {
-//        	boolean firstRun = false;
-//        	if (repo.getLastUpdated() == 0) firstRun = true;
-        	repo.setLastUpdated(System.currentTimeMillis());
+            repo.setLastUpdated(System.currentTimeMillis());
             repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
             gerritRepoRepository.save(repo);
-            LOG.debug(repo.getOptions().toString()+"::"+repo.getBranch());
+            LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
 
             for (Commit commit : getCommits(repo)) {
-            	LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
+                LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
                     commitRepository.save(commit);
@@ -150,11 +143,10 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
         }
         log("Repo Count", start, repoCount);
         log("New Commits", start, commitCount);
-
         log("Finished", start);
     }
 
-    private List<Commit> getCommits (GerritRepo repo) {
+    private List<Commit> getCommits(GerritRepo repo) {
         List<Commit> commits = new ArrayList<>();
         List<ChangeInfo> changes = getChanges(repo.getProject(), repo.getBranch());
         for (ChangeInfo ci : changes) {
@@ -176,13 +168,12 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
         GerritRestApiFactory gerritRestApiFactory = new GerritRestApiFactory();
         GerritAuthData.Basic authData = new GerritAuthData.Basic(gerritSettings.getHost(), gerritSettings.getUser(), gerritSettings.getPassword());
         GerritApi gerritApi = gerritRestApiFactory.create(authData);
-        List<ChangeInfo> changes = null;
         try {
-            changes = gerritApi.changes().query("status:merged+project:"+project+"+branch:"+branch).get();
+            return gerritApi.changes().query("status:" + gerritSettings.getStatusToCollect()+"+project:" + project + "+branch:" + branch).get();
         } catch (RestApiException e) {
-            log("Error getting changes:" + e.getStackTrace());
+            log("Error Getting Gerrit Changes." + e.getStackTrace());
         }
-        return changes;
+        return new ArrayList<>();
     }
 
     private List<GerritRepo> enabledRepos(Collector collector) {
@@ -193,6 +184,4 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
         return commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo.getId(), commit.getScmRevisionNumber()) == null;
     }
-
-
 }
