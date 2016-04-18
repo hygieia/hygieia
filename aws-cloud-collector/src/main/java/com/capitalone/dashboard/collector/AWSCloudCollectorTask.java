@@ -28,8 +28,6 @@ import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.capitalone.dashboard.repository.CloudSubNetworkRepository;
 import com.capitalone.dashboard.repository.CloudVirtualNetworkRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -43,8 +41,6 @@ import java.util.List;
  */
 @Component
 public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
-    private static final Log logger = LogFactory
-            .getLog(AWSCloudCollectorTask.class);
 
     private final CloudInstanceRepository cloudInstanceRepository;
     private final CloudVirtualNetworkRepository cloudVirtualNetworkRepository;
@@ -103,13 +99,13 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
      * repository with retrieved .
      */
     public void collect(AWSCloudCollector collector) {
-        logger.info("Starting AWS collection...");
-        logger.info("Collecting AWS Cloud Data...");
+        log("Starting AWS collection...");
+        log("Collecting AWS Cloud Data...");
 
         collectInstances();
 
 
-        logger.info("Finished Cloud collection.");
+        log("Finished Cloud collection.");
     }
 
     private void collectInstances() {
