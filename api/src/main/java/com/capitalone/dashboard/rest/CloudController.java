@@ -1,97 +1,87 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.request.CollectorItemRequest;
-import com.capitalone.dashboard.response.CloudInstanceDataResponse;
-import com.capitalone.dashboard.service.CloudService;
-import com.capitalone.dashboard.service.CollectorService;
-import com.capitalone.dashboard.service.EncryptionService;
+import com.capitalone.dashboard.model.CloudInstance;
+import com.capitalone.dashboard.model.NameValue;
+import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
+import com.capitalone.dashboard.service.CloudInstanceService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-/**
- * REST service managing all requests to the feature repository.
- */
 @RestController
 public class CloudController {
-    private final CloudService cloudService;
-    private final EncryptionService encryptionService;
-    private final CollectorService collectorService;
+    private final CloudInstanceService cloudInstanceService;
+
 
     @Autowired
-    public CloudController(EncryptionService encryptionService,CloudService cloudService, CollectorService collectorService) {
-        this.encryptionService = encryptionService;
-        this.cloudService = cloudService;
-        this.collectorService = collectorService;
+    public CloudController(CloudInstanceService cloudInstanceService) {
+        this.cloudInstanceService = cloudInstanceService;
+
     }
 
-    @RequestMapping(value = "/cloud/{componentId}/aggregate", method = GET, consumes =
-            APPLICATION_JSON_VALUE,
+    //Cloud Instance Endpoints
+
+    @RequestMapping(value = "/cloud/instance/create", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    public DataResponse<CloudInstanceDataResponse> getAggregatedData(
-            @Valid ObjectId componentId) {
-        return cloudService.getAggregatedData(componentId);
+    public ResponseEntity<List<ObjectId>> upsertInstance(
+            @Valid @RequestBody List<CloudInstance> request) {
+        return ResponseEntity.ok().body(cloudInstanceService.upsertInstance(request));
     }
 
-    @RequestMapping(value = "/cloud/{componentId}/details", method = GET, consumes =
-            APPLICATION_JSON_VALUE,
-            produces = APPLICATION_JSON_VALUE)
-    public DataResponse<List<CloudInstance>> getInstanceDetails(
-            @Valid ObjectId componentId) {
-        return cloudService.getInstanceDetails(componentId);
+
+    @RequestMapping(value = "/cloud/instance/details/component/{componentId}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CloudInstance>> getInstanceDetails(
+            @PathVariable ObjectId componentId) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetails(componentId));
     }
 
-    @RequestMapping(value = "/cloud/config", method = POST, consumes = APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/cloud/instance/details/instance/{instanceId}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<CloudInstance> getInstanceDetails(
+            @PathVariable String instanceId) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetails(instanceId));
+    }
+
+    @RequestMapping(value = "/cloud/instance/ids", method = GET, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<CollectorItem> createCloudConfigCollectorItem(
-            @Valid @RequestBody CollectorItemRequest request) {
+    public ResponseEntity<Collection<CloudInstance>> getInstanceDetails(
+            @Valid @RequestBody List<String> instanceIds) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetails(instanceIds));
+    }
 
-        final String ACCESS_KEY = "accessKey";
-        final String SECRET_KEY = "secretKey";
-        @SuppressWarnings("unused")
-        final String PROVIDER = "cloudProvider";
+    @RequestMapping(value = "/cloud/instance/tags", method = GET, consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CloudInstance>> getInstanceDetailsByTags(
+            @Valid @RequestBody List<NameValue> tags) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByTags(tags));
+    }
 
-        CollectorItem item = null;
+    @RequestMapping(value = "/cloud/instance/aggregate/component/{componentId}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedData(
+            @PathVariable ObjectId componentId) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(componentId));
+    }
 
-        List<CollectorItem> items = collectorService.collectorItemsByType(CollectorType.Cloud);
-        for (CollectorItem i : items) {
-            if (i.getCollectorId().equals(request.getCollectorId()) &&
-                    request.getOptions().equals(i.getOptions())) {
-                item = i;
-                break;
-            }
-        }
+    @RequestMapping(value = "/cloud/instance/aggregate/tags", method = GET, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedDataByInstanceIds(
+            @Valid @RequestBody List<String> instanceIds) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(instanceIds));
+    }
 
-        if (item == null) {
-            String encAccessKey = encryptionService.encrypt((String) request
-                    .getOptions().get(ACCESS_KEY));
-            String encSecretKey = encryptionService.encrypt((String) request
-                    .getOptions().get(SECRET_KEY));
-            if (!"ERROR".equalsIgnoreCase(encAccessKey)
-                    && !"ERROR".equalsIgnoreCase(encSecretKey)) {
-                request.getOptions().put(ACCESS_KEY, encAccessKey);
-                request.getOptions().put(SECRET_KEY, encSecretKey);
-
-                item = collectorService.createCollectorItem(request
-                        .toCollectorItem());
-                return ResponseEntity.status(HttpStatus.CREATED).body(item);
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(request.toCollectorItem());
-            }
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(item);
+    @RequestMapping(value = "/cloud/instance/aggregate/tags", method = GET, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedDataByTags(
+            @Valid @RequestBody List<NameValue> tags) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedDataByTags(tags));
     }
 }

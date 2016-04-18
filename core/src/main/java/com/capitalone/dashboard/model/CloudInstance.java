@@ -6,15 +6,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * Represents an EC2 instance from AWS
  */
 @Document(collection = "cloud_instance")
-public class CloudInstance {
+public class CloudInstance extends BaseModel{
     @Indexed
     private String instanceId;
     private ObjectId collectorItemId;
@@ -36,14 +35,15 @@ public class CloudInstance {
     private boolean isStopped;
     private boolean isTagged;
     private double cpuUtilization;
-    private Date timestamp;
+    private Date lastUpdatedDate;
     private List<String> securityGroups = new ArrayList<>();
-    private Map<String, String> tags = new HashMap<>();
+    private List<NameValue> tags = new ArrayList<>();
     private double networkIn;
     private double networkOut;
     private double diskRead;
     private double diskWrite;
     private String rootDeviceName;
+    private String lastAction;
 
 
     public String getInstanceId() {
@@ -94,12 +94,12 @@ public class CloudInstance {
         this.cpuUtilization = cpuUtilization;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    public Date getLastUpdatedDate() {
+        return lastUpdatedDate;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    public void setLastUpdatedDate(Date lastUpdatedDate) {
+        this.lastUpdatedDate = lastUpdatedDate;
     }
 
     public String getInstanceType() {
@@ -254,7 +254,7 @@ public class CloudInstance {
         this.status = status;
     }
 
-    public Map<String, String> getTags() {
+    public List<NameValue> getTags() {
         return tags;
     }
 
@@ -264,5 +264,26 @@ public class CloudInstance {
 
     public void setCollectorItemId(ObjectId collectorItemId) {
         this.collectorItemId = collectorItemId;
+    }
+
+    public String getLastAction() {
+        return lastAction;
+    }
+
+    public void setLastAction(String lastAction) {
+        this.lastAction = lastAction;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(instanceId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this==obj) return true;
+        if(!(obj instanceof CloudInstance)) return false;
+        CloudInstance c =(CloudInstance) obj;
+        return Objects.equals(getInstanceId(), c.getInstanceId());
     }
 }
