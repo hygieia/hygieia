@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.model;
 
 
+import java.util.Objects;
+
 public class NameValue {
 
     private String name;
@@ -25,6 +27,11 @@ public class NameValue {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name,value);
     }
 
     @Override
