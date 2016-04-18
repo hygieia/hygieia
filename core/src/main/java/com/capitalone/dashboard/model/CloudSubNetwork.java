@@ -7,9 +7,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Document(collection = "cloud_subnetwork")
-public class CloudSubNetwork {
+public class CloudSubNetwork extends BaseModel{
     @Indexed
     private String subnetId;
     private ObjectId collectorItemId;
@@ -115,5 +116,18 @@ public class CloudSubNetwork {
 
     public Map<String, String> getTags() {
         return tags;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(subnetId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this==obj) return true;
+        if(!(obj instanceof CloudSubNetwork)) return false;
+        CloudSubNetwork c =(CloudSubNetwork) obj;
+        return Objects.equals(getSubnetId(), c.getSubnetId());
     }
 }

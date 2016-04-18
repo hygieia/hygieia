@@ -7,10 +7,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Document(collection = "cloud_virtual_network")
-public class CloudVirtualNetwork {
+public class CloudVirtualNetwork extends BaseModel{
     @Indexed
     private String virtualNetworkId;
     private ObjectId collectorItemId;
@@ -71,5 +72,18 @@ public class CloudVirtualNetwork {
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(virtualNetworkId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this==obj) return true;
+        if(!(obj instanceof CloudVirtualNetwork)) return false;
+        CloudVirtualNetwork c =(CloudVirtualNetwork) obj;
+        return Objects.equals(getVirtualNetworkId(), c.getVirtualNetworkId());
     }
 }
