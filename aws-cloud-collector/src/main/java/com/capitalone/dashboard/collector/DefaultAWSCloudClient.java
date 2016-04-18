@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -67,7 +68,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
             instanceList.addAll(currInstanceList);
         }
         List<Volume> volumes = volumeResult.getVolumes();
-        HashMap<String, Volume> instanceVolMap = new HashMap<>();
+        Map<String, Volume> instanceVolMap = new HashMap<>();
         for (Volume volume : volumes) {
             List<VolumeAttachment> attaches = volume.getAttachments();
             for (VolumeAttachment volumeAttachment : attaches) {
@@ -90,7 +91,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     }
 
     private CloudInstance getCloudInstanceDetails(
-            Instance currInstance, HashMap<String, Volume> instanceVolMap,
+            Instance currInstance, Map<String, Volume> instanceVolMap,
             AmazonCloudWatchClient cwClient, CloudInstanceRepository repository) {
 
         long lastUpdated = System.currentTimeMillis();
@@ -152,7 +153,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
      * so this checks if AMI is encrypted. Uses the AMI Id.
      */
     private static boolean isInstanceVolumneEncrypted(Instance myInstance,
-                                                      HashMap<String, Volume> instanceVolMap) {
+                                                      Map<String, Volume> instanceVolMap) {
         Volume vol = instanceVolMap.get(myInstance.getInstanceId());
         return ((vol != null) ? vol.isEncrypted() : false);
     }
@@ -181,9 +182,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 .getMetricStatistics(request);
         // to read data
         List<Datapoint> datapoints = result.getDatapoints();
-        if (datapoints.size() == 0) {
-            return 0.0;
-        }
+        if (CollectionUtils.isEmpty(datapoints)) return 0.0;
         Datapoint datapoint = datapoints.get(0);
         return datapoint.getAverage();
     }
@@ -211,10 +210,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 .getMetricStatistics(request);
         // to read data
         List<Datapoint> datapoints = result.getDatapoints();
-        if (datapoints.size() == 0) {
-            // This instance has no CPU Util
-            return 0.0;
-        }
+        if (CollectionUtils.isEmpty(datapoints)) return 0.0;
         Datapoint datapoint = datapoints.get(0);
         return datapoint.getAverage();
     }
@@ -243,10 +239,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
         // to read data
         List<Datapoint> datapoints = result.getDatapoints();
-        if (datapoints.size() == 0) {
-            // This instance has no CPU Util
-            return 0.0;
-        }
+        if (CollectionUtils.isEmpty(datapoints)) return 0.0;
         Datapoint datapoint = datapoints.get(0);
         return datapoint.getAverage();
     }
@@ -278,10 +271,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
         // to read data
         List<Datapoint> datapoints = result.getDatapoints();
-        if (datapoints.size() == 0) {
-            // This instance has no CPU Util
-            return 0.0;
-        }
+        if (CollectionUtils.isEmpty(datapoints)) return 0.0;
         Datapoint datapoint = datapoints.get(0);
         return datapoint.getAverage();
     }
@@ -307,10 +297,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
         // to read data
         List<Datapoint> datapoints = result.getDatapoints();
-        if (datapoints.size() == 0) {
-            // This instance has no CPU Util
-            return 0.0;
-        }
+        if (CollectionUtils.isEmpty(datapoints)) return 0.0;
         Datapoint datapoint = datapoints.get(0);
         return datapoint.getAverage();
     }
@@ -337,10 +324,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 .getMetricStatistics(request);
         // to read data
         List<Datapoint> datapoints = result.getDatapoints();
-
-        if (CollectionUtils.isEmpty(datapoints)) {
-            return 0.0;
-        }
+        if (CollectionUtils.isEmpty(datapoints)) return 0.0;
         Datapoint datapoint = datapoints.get(0);
         return datapoint.getAverage();
     }
