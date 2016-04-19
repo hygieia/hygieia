@@ -13,13 +13,19 @@
         .module(HygieiaConfig.module)
         .controller('CloudWidgetViewController', CloudWidgetViewController);
 
-    CloudWidgetViewController.$inject = ['$scope', '$modal', 'cloudData'];
+    CloudWidgetViewController.$inject = ['$scope', 'cloudData'];
 
-    function CloudWidgetViewController($scope, $modal, cloudData) {
+    function CloudWidgetViewController($scope, cloudData) {
+
+
 
         var ctrl = this;
+        ctrl.tag = $scope.widgetConfig.options.tag || "";
+
         ctrl.load = function() {
-            return cloudData.getData();
+            return cloudData.getEC2Data();
         }
+
+
     }
 })();
