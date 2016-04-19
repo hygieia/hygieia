@@ -11,24 +11,8 @@ describe('CloudWidgetViewController', function () {
     var controller;
     var scope;
     var cloudData;
-    var testData = [{
-        "ec2InstanceId": "i-8572b106",
-        "amiId": "ami-6eb7ee04",
-        "amiEndOfLifeDate": "2016-03-01",
-        "ec2InstanceUsingApprovedAmi": true,
-        "ec2InstanceUsingExpiredAmi": true,
-        "ec2InstanceUsingAmiExpiringInTwoWeeks": false,
-        "ec2InstanceOwnerId": "mhi299"
-    }, {
-        "ec2InstanceId": "i-e92f2d5a",
-        "amiId": "ami-f7cc809d",
-        "amiEndOfLifeDate": "2016-02-01",
-        "ec2InstanceUsingApprovedAmi": true,
-        "ec2InstanceUsingExpiredAmi": true,
-        "ec2InstanceUsingAmiExpiringInTwoWeeks": false,
-        "ec2InstanceOwnerId": "arn:aws:sns:us-east-1:685250009713:EFIT_MongoDB_PERF_TEST_3"
+    var ec2Data = {"instanceId":"id-1234","instanceType":"m3-large","imageId":"img-1234","imageExpirationDate":0,"imageApproved":false,"instanceOwner":"owner-1234","isMonitored":false,"privateDns":"whatever","privateIp":"1.1.1.1","publicDns":"whatever","publicIp":"1.1.1.1","subnetId":"sn-1234","virtualNetworkId":"vpc-1234","age":10,"isEncrypted":false,"status":"running","isStopped":false,"isTagged":false,"cpuUtilization":0.0,"lastUpdatedDate":"Apr 16, 2016 4:14:37 PM","securityGroups":["sg-01"],"tags":[{"name":"tag1","value":"value1"},{"name":"tag2","value":"value2"}],"networkIn":0.0,"networkOut":0.0,"diskRead":0.0,"diskWrite":0.0,"rootDeviceName":"Any/Device","lastAction":"stop"};
 
-    }];
 
 
     // load the controller's module
@@ -39,11 +23,11 @@ describe('CloudWidgetViewController', function () {
         $provide.factory('cloudData', function() {
 
             return {
-                getData: getData
+                getEC2Data: getEC2Data
             };
 
-            function getData() {
-                return testData;
+            function getEC2Data() {
+                return ec2Data;
             };
 
         })}));
@@ -52,28 +36,24 @@ describe('CloudWidgetViewController', function () {
     // inject the required services and instantiate the controller
     beforeEach(
         function() {
-            inject(function ($rootScope, $modal, cloudData, $controller) {
+            inject(function ($rootScope, cloudData, $controller) {
                 scope = $rootScope.$new();
+
+                scope.widgetConfig = {
+                    options: {
+                        tag: "MyTag"
+                    }
+                };
+
                 controller = $controller('CloudWidgetViewController', {
                     $scope: scope,
-                    $modal: $modal,
                     cloudData: cloudData
                 });
             })});
 
 
-
-    describe('constructor', function () {
-
-        describe('When I instantiate the controller', function () {
-            it('Then it should be defined', function () {
-                expect(controller).not.toBeUndefined();
-            });
-        });
-    });
-
     describe('load()', function() {
-        describe('When I call load() and data is available', function () {
+        describe('When I call load', function () {
             it('Then I expect AMI data to be retrieved', function() {
 
                 //Arrange
@@ -82,7 +62,7 @@ describe('CloudWidgetViewController', function () {
                 var data = controller.load();
 
                 //Assert
-                var result = angular.equals( data,testData );
+                var result = angular.equals( data,ec2Data );
                 expect(result).toBeTruthy();
             });
         });

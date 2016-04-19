@@ -5,18 +5,26 @@
 (function () {
     'use strict';
 
+
     angular
         .module(HygieiaConfig.module + '.core')
         .factory('cloudData', cloudData);
 
-    function cloudData() {
+    function cloudData($http) {
+
+        var testDataRoute = 'asv_data.json';
+        var cloudDataRoute = '/api/asv/';
 
         return {
             getASV: getASV
         };
 
         function getASV() {
-            return "hello";
+            return JSON.parse('[{ "name": "IRIS"},{ "name": "Chordiant"},{ "name": "EASE"}]');
+            return $http.get(HygieiaConfig.local ? testDataRoute : cloudDataRoute)
+                .then(function (response) {
+                   return response.data[0].result;
+                });
         }
     }
 })();

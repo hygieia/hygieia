@@ -8,24 +8,12 @@ describe('CloudWidgetConfigController', function () {
     var controller;
     var scope;
     var cloudData;
-    var testData = [{
-        "ec2InstanceId": "i-8572b106",
-        "amiId": "ami-6eb7ee04",
-        "amiEndOfLifeDate": "2016-03-01",
-        "ec2InstanceUsingApprovedAmi": true,
-        "ec2InstanceUsingExpiredAmi": true,
-        "ec2InstanceUsingAmiExpiringInTwoWeeks": false,
-        "ec2InstanceOwnerId": "mhi299"
-    }, {
-        "ec2InstanceId": "i-e92f2d5a",
-        "amiId": "ami-f7cc809d",
-        "amiEndOfLifeDate": "2016-02-01",
-        "ec2InstanceUsingApprovedAmi": true,
-        "ec2InstanceUsingExpiredAmi": true,
-        "ec2InstanceUsingAmiExpiringInTwoWeeks": false,
-        "ec2InstanceOwnerId": "arn:aws:sns:us-east-1:685250009713:EFIT_MongoDB_PERF_TEST_3"
+    var asvData =  [
+            { "name": "IRIS"},
+            { "name": "Chordiant"},
+            { "name": "EASE"}
+        ];
 
-    }];
 
     var modalInstance;
 
@@ -37,8 +25,19 @@ describe('CloudWidgetConfigController', function () {
 
         $provide.factory('modalData', function() {
             return {
-                dashboard: function() { return ""; },
-                widgetConfig: function() { return ""; }
+                dashboard: {
+                    application: {
+                        components: [{
+                            id: "myid"
+                        }]
+                    }
+                    //dashboard.application.components[0].id
+                },
+                widgetConfig: {
+                    options: {
+                        id: "myid"
+                    }
+                }
             };
         });
 
@@ -48,9 +47,8 @@ describe('CloudWidgetConfigController', function () {
             };
 
             function getASV() {
-                return testData;
-            };
-
+                return asvData;
+            }
         })
     }));
 
@@ -68,25 +66,54 @@ describe('CloudWidgetConfigController', function () {
 
             inject(function ($rootScope, modalData, cloudData, $controller) {
                 scope = $rootScope.$new();
+
+
                 controller = $controller('CloudWidgetConfigController', {
                     $scope: scope,
                     modalData: modalData,
                     cloudData: cloudData,
                     $modalInstance: modalInstance
                 });
-            })});
+             })
+        });
 
 
-    describe('constructor', function () {
-        describe('When I instantiate the controller', function () {
-            it('Then it should be defined', function () {
-                expect(controller).not.toBeUndefined();
-            });
+    describe('asvDropdownDisabled', function() {
+
+        describe('When ASV data is retrieved with one or more records', function() {
+            it('Then I expect asvDropdownDisabled to be set to "false"', function() {
+
+                //Arrange/Act
+                //Handled by the instantiation of the controller
+
+                //Assert
+                expect(controller.asvDropdownDisabled).toBeFalsy();
+
+            })
+        });
+
+
+
+    });
+
+
+    describe('constructor', function() {
+        describe('When I call the constructor', function() {
+            it('Then I expect ASV data to be retrieved', function() {
+
+                //Arrange/Act
+                //Handled by the instantiation of the controller
+
+                //Assert
+                expect(angular.equals(controller.ASVs, asvData)).toBeTruthy();
+
+            })
         });
     });
 
     describe('submit()', function () {
         describe('When I submit a valid form', function () {
+
             it('Then I expect the modal dialog to be closed', function () {
 
                 //Arrange
