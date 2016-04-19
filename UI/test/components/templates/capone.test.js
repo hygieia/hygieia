@@ -19,14 +19,7 @@ describe('CapOneTemplateController', function () {
     }));
 
 
-    describe('constructor', function () {
 
-        describe('When I instantiate the controller', function () {
-            it('Then it should be defined', function () {
-                expect(controller).not.toBeUndefined();
-            });
-        });
-    });
 
     describe('toggleView()', function () {
        describe('When I call toggleView with an index that exists', function () {
