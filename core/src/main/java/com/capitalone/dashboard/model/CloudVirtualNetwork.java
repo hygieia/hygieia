@@ -14,6 +14,7 @@ import java.util.Objects;
 public class CloudVirtualNetwork extends BaseModel{
     @Indexed
     private String virtualNetworkId;
+    private String accountNumber;
     private ObjectId collectorItemId;
     private String cidrBlock;
     private boolean defaultNetwork;
@@ -72,6 +73,22 @@ public class CloudVirtualNetwork extends BaseModel{
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public ObjectId getCollectorItemId() {
+        return collectorItemId;
+    }
+
+    public void setCollectorItemId(ObjectId collectorItemId) {
+        this.collectorItemId = collectorItemId;
     }
 
     @Override

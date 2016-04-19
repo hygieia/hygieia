@@ -8,6 +8,7 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.repository.CloudSubNetworkRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudSubNetworkAggregatedResponse;
 import com.capitalone.dashboard.util.HygieiaUtils;
 import org.apache.commons.logging.Log;
@@ -56,7 +57,28 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
     }
 
     @Override
-    public List<ObjectId> upsertSubNetwork(List<CloudSubNetwork> subnets){
+    public Collection<String> refreshSubnets(CloudInstanceListRefreshRequest request) {
+
+        Collection<CloudSubNetwork> existing = cloudSubNetworkRepository.findByAccountNumber(request.getAccountNumber());
+        Set<CloudSubNetwork> toDelete = new HashSet<>();
+        Set<String> deletedIds = new HashSet<>();
+        if (CollectionUtils.isEmpty(request.getInstanceIds()) || CollectionUtils.isEmpty(existing))
+            return new ArrayList<>();
+
+        for (CloudSubNetwork ci : existing) {
+            if (!request.getInstanceIds().contains(ci.getSubnetId())) {
+                toDelete.add(ci);
+                deletedIds.add(ci.getSubnetId());
+            }
+        }
+        if (CollectionUtils.isEmpty(toDelete)) {
+            cloudSubNetworkRepository.delete(toDelete);
+        }
+        return deletedIds;
+    }
+
+    @Override
+    public List<ObjectId> upsertSubNetwork(List<CloudSubNetwork> subnets) {
         List<ObjectId> objectIds = new ArrayList<>();
         for (CloudSubNetwork ci : subnets) {
             CloudSubNetwork existing = getSubNetworkDetails(ci.getSubnetId());

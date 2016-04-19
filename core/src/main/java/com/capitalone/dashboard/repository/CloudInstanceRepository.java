@@ -20,12 +20,15 @@ public interface CloudInstanceRepository extends
     @Query(value = "{instanceId : ?0}")
     CloudInstance findByInstanceId(String instanceId);
 
-    @Query(value= "{ tags: ?0 }")
+    @Query(value = "{ tags: ?0 }")
     Collection<CloudInstance> findByTags(List<NameValue> tags);
 
     @Query(value = "{ 'tags.name' : ?0, 'tags.value' : ?1 }")
     Collection<CloudInstance> findByTagNameAndValue(String name, String value);
 
     Collection<CloudInstance> findByInstanceIdIn(List<String> instanceId);
+
+    @Query(value = "{accountNumber : ?0}")
+    Collection<CloudInstance> findByAccountNumber(String accountNumber);
 
 }

@@ -14,15 +14,18 @@ public class CloudSubNetwork extends BaseModel{
     @Indexed
     private String subnetId;
     private ObjectId collectorItemId;
+    private String accountNumber;
     private String virtualNetworkId;
     private String cidrBlock;
+    private int cidrCount;
     private String zone;
     private int availableIPCount;
     private int usedIPCount;
     private boolean defaultForZone;
     private String state;
     private long creationDate;
-    private Date lastUpdateDate;
+    private Date lastUpdateDate;  ///vpc
+
 
     private Map<String, String> tags = new HashMap<>();
 
@@ -116,6 +119,22 @@ public class CloudSubNetwork extends BaseModel{
 
     public Map<String, String> getTags() {
         return tags;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public int getCidrCount() {
+        return cidrCount;
+    }
+
+    public void setCidrCount(int cidrCount) {
+        this.cidrCount = cidrCount;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     @Override

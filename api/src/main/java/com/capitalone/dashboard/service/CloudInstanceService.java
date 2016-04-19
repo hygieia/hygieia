@@ -2,6 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.NameValue;
+import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 import org.bson.types.ObjectId;
 
@@ -13,6 +14,8 @@ import java.util.List;
  */
 public interface CloudInstanceService {
     //Instance Services
+
+    Collection<String> refreshInstances(CloudInstanceListRefreshRequest request);
 
     //Instance Upsert
     List<ObjectId> upsertInstance(List<CloudInstance> instance);
@@ -39,4 +42,6 @@ public interface CloudInstanceService {
     CloudInstanceAggregatedResponse getInstanceAggregatedData(ObjectId componentId);
     CloudInstanceAggregatedResponse getInstanceAggregatedData(List<String> instanceIds);
     CloudInstanceAggregatedResponse getInstanceAggregatedDataByTags(List<NameValue> tags);
+
+
 }

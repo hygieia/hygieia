@@ -16,7 +16,10 @@ import java.util.Objects;
 public class CloudInstance extends BaseModel{
     @Indexed
     private String instanceId;
+
     private ObjectId collectorItemId;
+
+    private String accountNumber;
     private String instanceType;
     private String imageId;
     private long imageExpirationDate;
@@ -272,6 +275,14 @@ public class CloudInstance extends BaseModel{
 
     public void setLastAction(String lastAction) {
         this.lastAction = lastAction;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     @Override

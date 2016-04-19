@@ -1,6 +1,9 @@
 package com.capitalone.dashboard.collector;
 
+import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.Dimension;
@@ -54,9 +57,15 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
     @Override
     public List<CloudInstance> getCloundInstances(CloudInstanceRepository repository) {
+
         DefaultAWSCredentialsProviderChain creds = new DefaultAWSCredentialsProviderChain();
-        AmazonEC2Client ec2Client = new AmazonEC2Client(creds);
-        AmazonCloudWatchClient cwClient = new AmazonCloudWatchClient(creds);
+
+        AmazonEC2Client ec2Client = new AmazonEC2Client(new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(),
+                new ProfileCredentialsProvider(settings.getProfile())));
+
+        AmazonCloudWatchClient cloudWatchClient = new AmazonCloudWatchClient(new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(),
+                new ProfileCredentialsProvider(settings.getProfile())));
+
         DescribeInstancesResult instanceResult = ec2Client.describeInstances();
 
 //        DescribeImagesResult imageResult = ec2Client.describeImages();
@@ -84,7 +93,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
             LOGGER.info("Collecting instance details for " + i + " of "
                     + instanceList.size() + ". Instance ID="+currInstance.getInstanceId());
             CloudInstance object = getCloudInstanceDetails(
-                    currInstance, instanceVolMap, cwClient, repository);
+                    currInstance, instanceVolMap, cloudWatchClient, repository);
             rawDataList.add(object);
         }
         return rawDataList;
