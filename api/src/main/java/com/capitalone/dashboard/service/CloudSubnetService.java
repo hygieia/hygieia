@@ -2,6 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.NameValue;
+import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudSubNetworkAggregatedResponse;
 import org.bson.types.ObjectId;
 
@@ -16,6 +17,8 @@ public interface CloudSubnetService {
     //Subnetwork Service
 
     //Upsert Subnetwork
+    Collection<String> refreshSubnets(CloudInstanceListRefreshRequest request);
+
     List<ObjectId> upsertSubNetwork(List<CloudSubNetwork> subnet);
     /**
      *     Subnetwork Details by
@@ -38,9 +41,6 @@ public interface CloudSubnetService {
      */
     CloudSubNetworkAggregatedResponse getSubNetworkAggregatedData (ObjectId componentId);
     CloudSubNetworkAggregatedResponse getSubNetworkAggregatedDataByTags (List<NameValue> tags);
-
-
-
 
 
 

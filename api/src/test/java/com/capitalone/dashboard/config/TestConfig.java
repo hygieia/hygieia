@@ -85,4 +85,19 @@ public class TestConfig {
 	public PipelineService pipelineService() {
 		return Mockito.mock(PipelineService.class);
 	}
+
+    @Bean
+    public CloudInstanceService cloudInstanceService() {
+        return Mockito.mock(CloudInstanceService.class);
+    }
+
+    @Bean
+    public CloudSubnetService cloudSubnetService() {
+        return Mockito.mock(CloudSubnetService.class);
+    }
+
+    @Bean
+    public CloudVirtualNetworkService cloudVirtualNetworkService() {
+        return Mockito.mock(CloudVirtualNetworkService.class);
+    }
 }

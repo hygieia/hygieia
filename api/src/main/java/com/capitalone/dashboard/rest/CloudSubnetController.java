@@ -2,6 +2,7 @@ package com.capitalone.dashboard.rest;
 
 
 import com.capitalone.dashboard.model.CloudSubNetwork;
+import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudSubNetworkAggregatedResponse;
 import com.capitalone.dashboard.service.CloudSubnetService;
 import org.bson.types.ObjectId;
@@ -31,6 +32,13 @@ public class CloudSubnetController {
     }
 
     // Cloud Subnet End Points
+
+    @RequestMapping(value = "/cloud/subnet/refresh", method = POST, consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<String>> refreshInstances(
+            @Valid @RequestBody CloudInstanceListRefreshRequest request) {
+        return ResponseEntity.ok().body(cloudSubnetService.refreshSubnets(request));
+    }
 
     @RequestMapping(value = "/cloud/subnet/create", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)

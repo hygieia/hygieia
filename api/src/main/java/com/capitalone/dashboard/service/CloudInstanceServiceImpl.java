@@ -8,6 +8,7 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 import com.capitalone.dashboard.util.HygieiaUtils;
 import org.apache.commons.logging.Log;
@@ -160,6 +161,25 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         return null;
     }
 
+
+    @Override
+    public Collection<String> refreshInstances(CloudInstanceListRefreshRequest request) {
+        Collection<CloudInstance> existing = cloudInstanceRepository.findByAccountNumber(request.getAccountNumber());
+        Set<CloudInstance> toDelete = new HashSet<>();
+        Set<String> deletedIds = new HashSet<>();
+        if (CollectionUtils.isEmpty(request.getInstanceIds()) || CollectionUtils.isEmpty(existing)) return new ArrayList<>();
+
+        for (CloudInstance ci : existing) {
+            if (!request.getInstanceIds().contains(ci.getInstanceId())) {
+                toDelete.add(ci);
+                deletedIds.add(ci.getInstanceId());
+            }
+        }
+        if (CollectionUtils.isEmpty(toDelete)) {
+            cloudInstanceRepository.delete(toDelete);
+        }
+        return deletedIds;
+    }
 
     @Override
     public List<ObjectId> upsertInstance(List<CloudInstance> instances) {

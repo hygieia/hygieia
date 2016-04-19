@@ -2,6 +2,7 @@ package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.NameValue;
+import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 import com.capitalone.dashboard.service.CloudInstanceService;
 import org.bson.types.ObjectId;
@@ -21,17 +22,24 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-public class CloudController {
+public class CloudInstanceController {
     private final CloudInstanceService cloudInstanceService;
 
 
     @Autowired
-    public CloudController(CloudInstanceService cloudInstanceService) {
+    public CloudInstanceController(CloudInstanceService cloudInstanceService) {
         this.cloudInstanceService = cloudInstanceService;
 
     }
 
     //Cloud Instance Endpoints
+    @RequestMapping(value = "/cloud/instance/refresh", method = POST, consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE)
+
+    public ResponseEntity<Collection<String>> refreshInstances(
+            @Valid @RequestBody CloudInstanceListRefreshRequest request) {
+        return ResponseEntity.ok().body(cloudInstanceService.refreshInstances(request));
+    }
 
     @RequestMapping(value = "/cloud/instance/create", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
@@ -73,7 +81,7 @@ public class CloudController {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(componentId));
     }
 
-    @RequestMapping(value = "/cloud/instance/aggregate/tags", method = GET, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/cloud/instance/aggregate/instanceIds", method = GET, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedDataByInstanceIds(
             @Valid @RequestBody List<String> instanceIds) {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(instanceIds));
