@@ -16,14 +16,23 @@
         var cloudDataRoute = '/api/asv/';
 
         return {
-            getASV: getASV
+            getASV: getASV,
+            getEC2Data: getEC2Data
         };
 
         function getASV() {
             return JSON.parse('[{ "name": "IRIS"},{ "name": "Chordiant"},{ "name": "EASE"}]');
             return $http.get(HygieiaConfig.local ? testDataRoute : cloudDataRoute)
                 .then(function (response) {
-                   return response.data[0].result;
+                    return response.data[0].result;
+                });
+        }
+
+        function getEC2Data() {
+            return JSON.parse('[{ "name": "IRIS"},{ "name": "Chordiant"},{ "name": "EASE"}]');
+            return $http.get(HygieiaConfig.local ? testDataRoute : cloudDataRoute)
+                .then(function (response) {
+                    return response.data[0].result;
                 });
         }
     }
