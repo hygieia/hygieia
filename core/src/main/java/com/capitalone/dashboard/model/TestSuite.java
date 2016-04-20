@@ -3,9 +3,12 @@ package com.capitalone.dashboard.model;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import lombok.Data;
+
 /**
  * A collection of {@link TestCase}s of a particular {@link TestSuiteType}.
  */
+@Data
 public class TestSuite {
 
     private String id;
@@ -60,104 +63,4 @@ public class TestSuite {
      */
     private Collection<TestCase> testCases = new ArrayList<>();
 
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public TestSuiteType getType() {
-        return type;
-    }
-
-    public void setType(TestSuiteType type) {
-        this.type = type;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
-    public long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(long endTime) {
-        this.endTime = endTime;
-    }
-
-    public long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
-    public TestCaseStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TestCaseStatus status) {
-        this.status = status;
-    }
-
-    public int getFailedTestCaseCount() {
-        return failedTestCaseCount;
-    }
-
-    public int getTotalTestCaseCount() {
-        return totalTestCaseCount;
-    }
-
-    public void setTotalTestCaseCount(int totalTestCaseCount) {
-        this.totalTestCaseCount = totalTestCaseCount;
-    }
-
-    public void setFailedTestCaseCount(int failedTestCaseCount) {
-        this.failedTestCaseCount = failedTestCaseCount;
-    }
-
-    public int getSuccessTestCaseCount() {
-        return successTestCaseCount;
-    }
-
-    public void setSuccessTestCaseCount(int successTestCaseCount) {
-        this.successTestCaseCount = successTestCaseCount;
-    }
-
-    public int getSkippedTestCaseCount() {
-        return skippedTestCaseCount;
-    }
-
-    public void setSkippedTestCaseCount(int skippedTestCaseCount) {
-        this.skippedTestCaseCount = skippedTestCaseCount;
-    }
-
-    public int getUnknownStatusCount() {
-        return unknownStatusCount;
-    }
-
-    public void setUnknownStatusCount(int unknownStatusCount) {
-        this.unknownStatusCount = unknownStatusCount;
-    }
-
-    public Collection<TestCase> getTestCases() {
-        return testCases;
-    }
 }

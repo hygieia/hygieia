@@ -2,6 +2,8 @@ package com.capitalone.dashboard.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.Map;
  * project under development and/or in production use.
  *
  */
+@Data
 @Document(collection="dashboards")
 public class Dashboard extends BaseModel {
     private String template;
@@ -32,46 +35,6 @@ public class Dashboard extends BaseModel {
         this.owner = owner;
         this.type = type;
     }
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(String template) {
-        this.template = template;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Application getApplication() {
-        return application;
-    }
-
-    public void setApplication(Application application) {
-        this.application = application;
-    }
-
-    public List<Widget> getWidgets() {
-        return widgets;
-    }
-
-	public String getOwner() {
-		return owner;
-	}
-
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-
-    public DashboardType getType(){ return this.type; }
-
-    public void setType(DashboardType type) { this.type = type; }
 
     /**
      * Finds the mapped names for each stage type from the widget options

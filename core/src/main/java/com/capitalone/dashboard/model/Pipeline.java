@@ -1,6 +1,9 @@
 package com.capitalone.dashboard.model;
 
 import com.capitalone.dashboard.util.PipelineUtils;
+
+import lombok.Data;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,6 +12,7 @@ import java.util.*;
 /**
  * Document containing the details of a Pipeline for a TeamDashboardCollectorItem
  */
+@Data
 @Document(collection="pipelines")
 public class Pipeline extends BaseModel{
     /**

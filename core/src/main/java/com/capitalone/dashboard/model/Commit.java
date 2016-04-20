@@ -4,6 +4,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.Data;
+
 /**
  * A specific commit in a version control repository.
  *
@@ -16,34 +18,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *  Unfuddle
  *
  */
+@Data
 @Document(collection="commits")
 public class Commit extends SCM {
     @Id
     private ObjectId id;
     private ObjectId collectorItemId;
     private long timestamp;
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    void setId(ObjectId id) {
-        this.id = id;
-    }
-
-    public ObjectId getCollectorItemId() {
-        return collectorItemId;
-    }
-
-    public void setCollectorItemId(ObjectId collectorItemId) {
-        this.collectorItemId = collectorItemId;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
 }

@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.model;
 
+import lombok.Data;
 
+@Data
 public class TestCaseStep {
 
     /**
@@ -22,38 +24,5 @@ public class TestCaseStep {
      * Status of the test case step
      */
     private TestCaseStatus status;
-
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
-    public TestCaseStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TestCaseStatus status) {
-        this.status = status;
-    }
 
 }
