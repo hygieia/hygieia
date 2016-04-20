@@ -11,6 +11,10 @@ describe('CloudWidgetViewController', function () {
     var controller;
     var scope;
     var cloudData;
+    var instanceData = {
+
+    };
+
     var ec2DataSummarizedByTag = {
         "ageAlert": 0,
         "ageError": 0,
@@ -35,7 +39,7 @@ describe('CloudWidgetViewController', function () {
         "nonTaggedCount": 0,
         "stoppedCount": 0,
         "totalInstanceCount": 0
-    }
+    };
 
 
     // load the controller's module
@@ -51,8 +55,7 @@ describe('CloudWidgetViewController', function () {
 
             function getEC2DataSummarizedByTag() {
                 return ec2DataSummarizedByTag;
-            };
-
+            }
         })}));
 
 
