@@ -29,6 +29,29 @@ public class Component extends BaseModel {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public Map<CollectorType, List<CollectorItem>> getCollectorItems() {
+        return collectorItems;
+    }
+
+    public List<CollectorItem> getCollectorItems(CollectorType type) {
+        return collectorItems.get(type);
+    }
 
     public void addCollectorItem(CollectorType collectorType, CollectorItem collectorItem) {
         // Currently only one collectorItem per collectorType is supported

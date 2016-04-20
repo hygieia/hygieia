@@ -76,7 +76,7 @@
     <exclude name="TooManyStaticImports"/>
     <exclude name="UncommentedEmptyConstructor"/>
     <exclude name="UncommentedEmptyMethodBody"/>
-    <exclude name="UnusedPrivateMethod"/>
+    
     <exclude name="UnnecessaryConstructor"/>
     <exclude name="UnnecessaryLocalBeforeReturn"/>
     <exclude name="UnnecessaryParentheses"/>
