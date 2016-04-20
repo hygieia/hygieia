@@ -11,8 +11,31 @@ describe('CloudWidgetViewController', function () {
     var controller;
     var scope;
     var cloudData;
-    var ec2Data = {"instanceId":"id-1234","instanceType":"m3-large","imageId":"img-1234","imageExpirationDate":0,"imageApproved":false,"instanceOwner":"owner-1234","isMonitored":false,"privateDns":"whatever","privateIp":"1.1.1.1","publicDns":"whatever","publicIp":"1.1.1.1","subnetId":"sn-1234","virtualNetworkId":"vpc-1234","age":10,"isEncrypted":false,"status":"running","isStopped":false,"isTagged":false,"cpuUtilization":0.0,"lastUpdatedDate":"Apr 16, 2016 4:14:37 PM","securityGroups":["sg-01"],"tags":[{"name":"tag1","value":"value1"},{"name":"tag2","value":"value2"}],"networkIn":0.0,"networkOut":0.0,"diskRead":0.0,"diskWrite":0.0,"rootDeviceName":"Any/Device","lastAction":"stop"};
-
+    var ec2DataSummarizedByTag = {
+        "ageAlert": 0,
+        "ageError": 0,
+        "ageGood": 0,
+        "cpuAlert": 0,
+        "cpuHigh": 0,
+        "cpuLow": 0,
+        "currency": "string",
+        "diskAlert": 0,
+        "diskHigh": 0,
+        "diskLow": 0,
+        "estimatedCharge": 0,
+        "expiredImageCount": 0,
+        "lastUpdated": 0,
+        "memoryAlert": 0,
+        "memoryHigh": 0,
+        "memoryLow": 0,
+        "networkAlert": 0,
+        "networkHigh": 0,
+        "networkLow": 0,
+        "nonEncryptedCount": 0,
+        "nonTaggedCount": 0,
+        "stoppedCount": 0,
+        "totalInstanceCount": 0
+    }
 
 
     // load the controller's module
@@ -23,11 +46,11 @@ describe('CloudWidgetViewController', function () {
         $provide.factory('cloudData', function() {
 
             return {
-                getEC2Data: getEC2Data
+                getEC2DataSummarizedByTag: getEC2DataSummarizedByTag
             };
 
-            function getEC2Data() {
-                return ec2Data;
+            function getEC2DataSummarizedByTag() {
+                return ec2DataSummarizedByTag;
             };
 
         })}));
@@ -62,7 +85,7 @@ describe('CloudWidgetViewController', function () {
                 var data = controller.load();
 
                 //Assert
-                var result = angular.equals( data,ec2Data );
+                var result = angular.equals( data,ec2DataSummarizedByTag );
                 expect(result).toBeTruthy();
             });
         });
