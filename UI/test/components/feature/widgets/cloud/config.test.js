@@ -14,9 +14,12 @@ describe('CloudWidgetConfigController', function () {
             { "name": "EASE"}
         ];
 
-
     var modalInstance;
 
+
+    var createProviders = function() {
+
+    }
 
     // load the controller's module
     beforeEach(module(HygieiaConfig.module));
@@ -31,7 +34,6 @@ describe('CloudWidgetConfigController', function () {
                             id: "myid"
                         }]
                     }
-                    //dashboard.application.components[0].id
                 },
                 widgetConfig: {
                     options: {
