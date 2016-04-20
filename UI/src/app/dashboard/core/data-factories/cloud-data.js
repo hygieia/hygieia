@@ -28,6 +28,10 @@
                 });
         }
 
+        function getInstanceData() {
+            return JSON.parse('');
+        }
+
         function getEC2DataSummarizedByTag(tag) {
             return JSON.parse('[{ "name": "IRIS"},{ "name": "Chordiant"},{ "name": "EASE"}]');
             return $http.get(HygieiaConfig.local ? testDataRoute : cloudDataRoute)
