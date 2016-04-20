@@ -17,7 +17,7 @@
 
         return {
             getASV: getASV,
-            getEC2Data: getEC2Data
+            getEC2DataSummarizedByTag: getEC2DataSummarizedByTag
         };
 
         function getASV() {
@@ -28,7 +28,7 @@
                 });
         }
 
-        function getEC2Data() {
+        function getEC2DataSummarizedByTag(tag) {
             return JSON.parse('[{ "name": "IRIS"},{ "name": "Chordiant"},{ "name": "EASE"}]');
             return $http.get(HygieiaConfig.local ? testDataRoute : cloudDataRoute)
                 .then(function (response) {

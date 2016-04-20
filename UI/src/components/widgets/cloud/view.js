@@ -23,7 +23,7 @@
         ctrl.tag = $scope.widgetConfig.options.tag || "";
 
         ctrl.load = function() {
-            return cloudData.getEC2Data();
+            return cloudData.getEC2DataSummarizedByTag(ctrl.tag);
         }
 
 
