@@ -171,5 +171,15 @@
 	    <version>1.8.1</version>
 	    <scope>provided</scope>
 	</dependency>
-   </dependencies>
+	<!-- Lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.16.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-velocity</artifactId>
+		</dependency>
+    </dependencies>
 </project>

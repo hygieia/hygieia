@@ -64,7 +64,7 @@ public class ScopeRepositoryTest {
 		mockV1Scope.setId(ObjectId.get());
 		mockV1Scope.setIsDeleted("False");
 		mockV1Scope.setName("Massive Project");
-		mockV1Scope.setpId("Scope:14327");
+		mockV1Scope.setPId("Scope:14327");
 		mockV1Scope
 				.setProjectPath("This -> Is -> C -> Project -> Path -> " + mockV1Scope.getName());
 
@@ -80,7 +80,7 @@ public class ScopeRepositoryTest {
 		mockJiraScope.setId(ObjectId.get());
 		mockJiraScope.setIsDeleted("False");
 		mockJiraScope.setName("Yet Another Agile Scope");
-		mockJiraScope.setpId("110213780");
+		mockJiraScope.setPId("110213780");
 		mockJiraScope.setProjectPath("This -> Is -> B -> Project -> Path -> "
 				+ mockJiraScope.getName());
 
@@ -95,7 +95,7 @@ public class ScopeRepositoryTest {
 		mockJiraScope2.setId(ObjectId.get());
 		mockJiraScope2.setIsDeleted("False");
 		mockJiraScope2.setName("This One Is Serious");
-		mockJiraScope2.setpId("11978790");
+		mockJiraScope2.setPId("11978790");
 		mockJiraScope2.setProjectPath("This -> Is -> A -> Project -> Path -> "
 				+ mockJiraScope2.getName());
 	}
@@ -123,10 +123,10 @@ public class ScopeRepositoryTest {
 		scopeRepo.save(mockV1Scope);
 		scopeRepo.save(mockJiraScope);
 		scopeRepo.save(mockJiraScope2);
-		String testScopeId = mockJiraScope.getpId();
+		String testScopeId = mockJiraScope.getPId();
 
 		assertEquals("Expected scope ID did not match actual scope ID", testScopeId, scopeRepo
-				.getScopeIdById(testScopeId).get(0).getpId().toString());
+				.getScopeIdById(testScopeId).get(0).getPId().toString());
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class ScopeRepositoryTest {
 		scopeRepo.save(mockV1Scope);
 		scopeRepo.save(mockJiraScope);
 		scopeRepo.save(mockJiraScope2);
-		String testScopeId = mockJiraScope.getpId();
+		String testScopeId = mockJiraScope.getPId();
 
 		assertEquals("Expected scope Name did not match actual scope Name",
 				mockJiraScope.getName(), scopeRepo.getScopeById(testScopeId).get(0).getName()
@@ -147,12 +147,12 @@ public class ScopeRepositoryTest {
 		scopeRepo.save(mockJiraScope2);
 		scopeRepo.save(mockJiraScope);
 
-		assertEquals("Expected scope ID did not match actual scope ID", mockV1Scope.getpId(),
-				scopeRepo.findByOrderByProjectPathDesc().get(0).getpId().toString());
-		assertEquals("Expected scope ID did not match actual scope ID", mockJiraScope.getpId(),
-				scopeRepo.findByOrderByProjectPathDesc().get(1).getpId().toString());
-		assertEquals("Expected scope ID did not match actual scope ID", mockJiraScope2.getpId(),
-				scopeRepo.findByOrderByProjectPathDesc().get(2).getpId().toString());
+		assertEquals("Expected scope ID did not match actual scope ID", mockV1Scope.getPId(),
+				scopeRepo.findByOrderByProjectPathDesc().get(0).getPId().toString());
+		assertEquals("Expected scope ID did not match actual scope ID", mockJiraScope.getPId(),
+				scopeRepo.findByOrderByProjectPathDesc().get(1).getPId().toString());
+		assertEquals("Expected scope ID did not match actual scope ID", mockJiraScope2.getPId(),
+				scopeRepo.findByOrderByProjectPathDesc().get(2).getPId().toString());
 	}
 
 	@Test

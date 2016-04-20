@@ -2,12 +2,15 @@ package com.capitalone.dashboard.model;
 
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import lombok.Data;
+
 /**
  * Collector implementation for Feature that stores system configuration
  * settings required for source system data connection (e.g., API tokens, etc.)
  *
  * @author KFK884
  */
+@Data
 public class ScopeOwnerCollectorItem extends CollectorItem {
 	@Indexed
 	private static final String TEAM_ID = "teamId";

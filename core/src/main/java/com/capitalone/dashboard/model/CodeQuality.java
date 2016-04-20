@@ -3,6 +3,8 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.Data;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,6 +20,7 @@ import java.util.Set;
  *  Various build system test results
  *
  */
+@Data
 @Document(collection="code_quality")
 public class CodeQuality extends BaseModel {
     private ObjectId collectorItemId;
@@ -30,62 +33,6 @@ public class CodeQuality extends BaseModel {
     private  ObjectId buildId;
 
     private Set<CodeQualityMetric> metrics = new HashSet<>();
-
-    public ObjectId getCollectorItemId() {
-        return collectorItemId;
-    }
-
-    public void setCollectorItemId(ObjectId collectorItemId) {
-        this.collectorItemId = collectorItemId;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public CodeQualityType getType() {
-        return type;
-    }
-
-    public void setType(CodeQualityType type) {
-        this.type = type;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public ObjectId getBuildId() {
-        return buildId;
-    }
-
-    public void setBuildId(ObjectId buildId) {
-        this.buildId = buildId;
-    }
 
     public Set<CodeQualityMetric> getMetrics() {
         return metrics;

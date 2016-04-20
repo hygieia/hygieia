@@ -4,6 +4,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.Data;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ import java.util.Map;
  *      Ideally, the description will be unique for a given {@link Collector}.
  * </p>
  */
+@Data
 @Document(collection="collector_items")
 public class CollectorItem extends BaseModel {
 
@@ -34,63 +37,4 @@ public class CollectorItem extends BaseModel {
     @Transient
     private Collector collector;
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public ObjectId getCollectorId() {
-        return collectorId;
-    }
-
-    public void setCollectorId(ObjectId collectorId) {
-        this.collectorId = collectorId;
-    }
-
-    public Collector getCollector() {
-        return collector;
-    }
-
-    public void setCollector(Collector collector) {
-        this.collector = collector;
-    }
-
-    public Map<String, Object> getOptions() {
-        return options;
-    }
-
-    public boolean isPushed() {
-        return pushed;
-    }
-
-    public void setPushed(boolean pushed) {
-        this.pushed = pushed;
-    }
-
-    public long getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(long lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
-    public String getNiceName() {
-        return niceName;
-    }
-
-    public void setNiceName(String niceName) {
-        this.niceName = niceName;
-    }
 }

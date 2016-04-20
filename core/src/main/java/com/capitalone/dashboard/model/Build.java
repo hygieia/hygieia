@@ -3,6 +3,8 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import java.util.List;
  *  TravisCI
  *
  */
+@Data
 @Document(collection="builds")
 public class Build extends BaseModel {
     private ObjectId collectorItemId;
@@ -33,94 +36,6 @@ public class Build extends BaseModel {
     private String startedBy;
     private String log;
     private List<SCM> sourceChangeSet = new ArrayList<>();
-
-    public ObjectId getCollectorItemId() {
-        return collectorItemId;
-    }
-
-    public void setCollectorItemId(ObjectId collectorItemId) {
-        this.collectorItemId = collectorItemId;
-    }
-
-    public void setSourceChangeSet(List<SCM> sourceChangeSet) {
-        this.sourceChangeSet = sourceChangeSet;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getBuildUrl() {
-        return buildUrl;
-    }
-
-    public void setBuildUrl(String buildUrl) {
-        this.buildUrl = buildUrl;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
-    public long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(long endTime) {
-        this.endTime = endTime;
-    }
-
-    public long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
-    public BuildStatus getBuildStatus() {
-        return buildStatus;
-    }
-
-    public void setBuildStatus(BuildStatus buildStatus) {
-        this.buildStatus = buildStatus;
-    }
-
-    public String getStartedBy() {
-        return startedBy;
-    }
-
-    public void setStartedBy(String startedBy) {
-        this.startedBy = startedBy;
-    }
-
-    public String getLog() {
-        return log;
-    }
-
-    public void setLog(String log) {
-        this.log = log;
-    }
-
-    public List<SCM> getSourceChangeSet() {
-        return sourceChangeSet;
-    }
 
     public void addSourceChangeSet(SCM scm) {
         getSourceChangeSet().add(scm);
