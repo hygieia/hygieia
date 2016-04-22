@@ -1,0 +1,50 @@
+<div class="widget-detail" ng-model="cloudView.detail">
+    <a href="" class="detail-close" ng-click="detail.close()"><span class="fa fa-2x fa-times-circle-o"></span></a>
+
+    <div class="widget-detail-heading">
+        CPU Utilization
+    </div>
+    <div class="widget-detail-body">
+        <table class="table">
+            <thead>
+            <th></th>
+            <th ng-click="reverse=!reverse;order('stopped', reverse)"> <span ng-if="reverse"
+                                                                             class="fa fa-arrow-up"></span> <span
+                    ng-if="!reverse" class="fa fa-arrow-down"></span></th>
+            <th ng-click="reverse=!reverse;order('id', reverse)">ID <span ng-if="reverse"
+                                                                          class="fa fa-arrow-up"></span> <span
+                    ng-if="!reverse" class="fa fa-arrow-down"></span></th>
+            <th ng-click="reverse=!reverse;order('cpuUtilization', reverse)">CPU <span ng-if="reverse"
+                                                                                       class="fa fa-arrow-up"></span> <span
+                    ng-if="!reverse" class="fa fa-arrow-down"></span></th>
+            <th ng-click="reverse=!reverse;order('instanceType', reverse)">Type <span ng-if="reverse"
+                                                                                      class="fa fa-arrow-up"></span> <span
+                    ng-if="!reverse" class="fa fa-arrow-down"></span></th>
+            <th ng-click="reverse=!reverse;order('imageId', reverse)">Image <span ng-if="reverse"
+                                                                                  class="fa fa-arrow-up"></span> <span
+                    ng-if="!reverse" class="fa fa-arrow-down"></span></th>
+            <th>Disk I/O (KB)</th>
+            <th>N/W I/O (KB)</th>
+            <th>VPC</th>
+
+            </thead>
+            <tbody>
+            <tr ng-repeat="data in cloudView.tableData">
+                <td><span ng-if="(data.age > 7)&&
+                    ((data.networkIn/1024|number:1)==0)&&
+                    ((data.networkOut/1024|number:1)==0) &&
+                    (data.cpuUtilization ==0)"
+                          class="fa fa-thumbs-down instance-terminateable"></span></td>
+                <td><span ng-if="data.stopped" class="fa fa-circle instance-stop"></span></td>
+                <td>{{data.instanceId}}</td>
+                <td>{{data.cpuUtilization|number:2}}%</td>
+                <td>{{data.instanceType}}</td>
+                <td>{{data.imageId}}</td>
+                <td>{{(data.diskRead/1024| number:1)}}/{{(data.diskWrite/1024)| number:1}}</td>
+                <td>{{(data.networkIn/1024| number:1)}}/{{(data.networkOut/1024)| number:1}}</td>
+                <td>{{data.virtualNetworkId}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
