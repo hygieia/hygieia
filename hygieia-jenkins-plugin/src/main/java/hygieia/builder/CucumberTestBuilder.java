@@ -56,12 +56,7 @@ public class CucumberTestBuilder {
         }
 
         String path = env.expand("$WORKSPACE");
-
-        if (directory.startsWith(File.separator)) {
-            path = path + directory;
-        } else {
-            path = path + File.separator + directory;
-        }
+        path = path + directory;
         listener.getLogger().println("Hygieia Test Result Publisher - Looking for file pattern '" + filePattern + "' in directory " + path);
         List<File> testFiles = HygieiaUtils.getArtifactFiles(new File(path), filePattern, new ArrayList<File>());
         testResult = buildTestResultObject(getCapabilities(testFiles));
@@ -128,14 +123,23 @@ public class CucumberTestBuilder {
         return capabilities;
     }
 
-    private String getCapabilityDescription (File file) {
-        String newFileName = file.getPath().replace("/"+file.getName(), "");
-        int lastFolderIndex = newFileName.lastIndexOf("/");
+    private static String getCapabilityDescription(File file) {
+        String newFileName = file.getPath().replace(file.getName(), "");
+        boolean isUnix = newFileName.endsWith("/");
+        int lastFolderIndex = -1;
+        newFileName = newFileName.substring(0, newFileName.length() - 1);
+        if (isUnix) {
+            lastFolderIndex = newFileName.lastIndexOf("/");
+        } else {
+            lastFolderIndex = newFileName.lastIndexOf("\\");
+        }
         if (lastFolderIndex > 0) {
             return newFileName.substring(lastFolderIndex);
         }
         return newFileName;
     }
+
+
     private TestResult buildTestResultObject(List<TestCapability> capabilities) {
         if (!capabilities.isEmpty()) {
             // There are test suites so let's construct a TestResult to encapsulate these results
@@ -147,7 +151,7 @@ public class CucumberTestBuilder {
             testResult.setDuration(build.getDuration());
             testResult.setEndTime(build.getStartTimeInMillis() + build.getDuration());
             testResult.setStartTime(build.getStartTimeInMillis());
-                testResult.getTestCapabilities().addAll(capabilities);  //add all capabilities
+            testResult.getTestCapabilities().addAll(capabilities);  //add all capabilities
             testResult.setTotalCount(capabilities.size());
             testResult.setTimestamp(System.currentTimeMillis());
             int testCapabilitySkippedCount = 0, testCapabilitySuccessCount = 0, testCapabilityFailCount = 0;
@@ -194,7 +198,7 @@ public class CucumberTestBuilder {
         return array == null ? new JSONArray() : (JSONArray) array;
     }
 
-    public TestDataCreateRequest getTestDataCreateRequest () {
+    public TestDataCreateRequest getTestDataCreateRequest() {
 
         if (testResult != null) {
             TestDataCreateRequest request = new TestDataCreateRequest();

@@ -14,7 +14,7 @@
  * limitations under the License.
  *************************DA-BOARD-LICENSE-END*********************************/
 
-package com.capitalone.dashboard.util;
+package com.capitalone.dashboard.collector;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
