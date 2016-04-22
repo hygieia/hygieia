@@ -1,0 +1,30 @@
+<div class="widget">
+    <div class="widget-heading">
+        Counts
+    </div>
+    <div class="widget-body">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="cloud-count">
+                    {{cloudView.stoppedCount}}
+                </div>
+                <div class="cloud-count-type">Stopped</div>
+            </div>
+            <div class="col-lg-6">
+                <div class="cloud-count">
+                    {{cloudView.totalCount}}
+                </div>
+                <div class="cloud-count-type">Total</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-11">
+                <div class="cloud-count">
+                    ${{cloudView.estimatedCharge | number:0}}
+                </div>
+                <div class="cloud-count-type">Estimated Charge</div>
+                <div class="cloud-count-type"> Per Day</div>
+            </div>
+        </div>
+    </div>
+</div>
