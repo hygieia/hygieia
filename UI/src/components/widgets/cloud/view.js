@@ -18,14 +18,19 @@
     function CloudWidgetViewController($scope, cloudData) {
 
 
-
         var ctrl = this;
+
+        ctrl.awsOverview;
         ctrl.tag = $scope.widgetConfig.options.tag || "";
 
-        ctrl.load = function() {
-            return cloudData.getEC2DataSummarizedByTag(ctrl.tag);
+
+        ctrl.load = function () {
+            ctrl.awsOverview = cloudData.getAWSGlobalData();
         }
 
 
+        ctrl.load();
+
     }
+
 })();
