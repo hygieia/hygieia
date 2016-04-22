@@ -1,10 +1,7 @@
 /**
- * Created by hyw912 on 4/12/16.
+ * Created by nmande on 4/12/16.
  */
 
-/**
- * Created by hyw912 on 4/11/16.
- */
 
 describe('CloudWidgetViewController', function () {
 
