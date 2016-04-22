@@ -1,12 +1,13 @@
 package com.capitalone.dashboard.model;
 
 
-import java.util.Objects;
-
 public class NameValue {
 
     private String name;
     private String value;
+
+    public NameValue () {
+    }
 
     public NameValue(String name, String value) {
         this.name = name;
@@ -30,21 +31,21 @@ public class NameValue {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(name,value);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NameValue nameValue = (NameValue) o;
+
+        if (!name.equals(nameValue.name)) return false;
+        return value.equals(nameValue.value);
+
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        NameValue nv = (NameValue) o;
-
-        return getValue().equals(nv.getValue()) && getName().equals(nv.getName());
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
     }
 }

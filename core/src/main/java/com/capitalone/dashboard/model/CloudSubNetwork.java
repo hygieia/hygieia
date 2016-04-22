@@ -1,19 +1,24 @@
 package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Document(collection = "cloud_subnetwork")
 public class CloudSubNetwork extends BaseModel{
     @Indexed
+    @NotNull
+    @NotBlank
     private String subnetId;
     private ObjectId collectorItemId;
+    @NotNull
+    @NotBlank
     private String accountNumber;
     private String virtualNetworkId;
     private String cidrBlock;
@@ -24,10 +29,9 @@ public class CloudSubNetwork extends BaseModel{
     private boolean defaultForZone;
     private String state;
     private long creationDate;
-    private Date lastUpdateDate;  ///vpc
+    private long lastUpdateDate;
 
-
-    private Map<String, String> tags = new HashMap<>();
+    private List<NameValue> tags = new ArrayList<>();
 
     public String getSubnetId() {
         return subnetId;
@@ -109,15 +113,15 @@ public class CloudSubNetwork extends BaseModel{
         this.creationDate = creationDate;
     }
 
-    public Date getLastUpdateDate() {
+    public long getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(Date lastUpdateDate) {
+    public void setLastUpdateDate(long lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public Map<String, String> getTags() {
+    public List<NameValue> getTags() {
         return tags;
     }
 
