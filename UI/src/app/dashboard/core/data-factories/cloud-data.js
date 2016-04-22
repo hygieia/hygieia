@@ -17,7 +17,8 @@
 
         return {
             getASV: getASV,
-            getEC2DataSummarizedByTag: getEC2DataSummarizedByTag
+            getEC2DataSummarizedByTag: getEC2DataSummarizedByTag,
+            getAWSGlobalData: getAWSGlobalData
         };
 
         function getASV() {
@@ -28,16 +29,28 @@
                 });
         }
 
-        function getInstanceData() {
-            return JSON.parse('');
+
+        function getAWSGlobalData() {
+            return {
+                "compute": {
+                    "ec2Instances": 3015,
+                    "running": 1900,
+                    "stopped": 300,
+                    "excluded": 910
+                },
+                "s3": {
+                    "s3Buckets": 9000,
+                    "encrypted": 35,
+                    "tagged": 45,
+                    "compliant": 54
+                }
+            };
         }
+
 
         function getEC2DataSummarizedByTag(tag) {
             return JSON.parse('[{ "name": "IRIS"},{ "name": "Chordiant"},{ "name": "EASE"}]');
-            return $http.get(HygieiaConfig.local ? testDataRoute : cloudDataRoute)
-                .then(function (response) {
-                    return response.data[0].result;
-                });
         }
+
     }
 })();
