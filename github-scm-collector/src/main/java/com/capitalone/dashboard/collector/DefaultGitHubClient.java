@@ -47,7 +47,6 @@ public class DefaultGitHubClient implements GitHubClient {
 	private static final String SEGMENT_API = "/api/v3/repos/";
 	private static final String PUBLIC_GITHUB_REPO_HOST = "api.github.com/repos/";
 	private static final String PUBLIC_GITHUB_HOST_NAME = "github.com";
-	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
 
 	@Autowired
 	public DefaultGitHubClient(GitHubSettings settings,
@@ -87,17 +86,7 @@ public class DefaultGitHubClient implements GitHubClient {
 			apiUrl = protocol + "://" + hostName + SEGMENT_API + repoName;
 			LOG.debug("API URL IS:"+apiUrl);
 		}
-		Date dt;
-		if (firstRun) {
-			int firstRunDaysHistory = settings.getFirstRunHistoryDays();
-			if (firstRunDaysHistory > 0) {
-				dt = getDate(new Date(), -firstRunDaysHistory, 0);
-			} else {
-				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
-			}
-		} else {
-			dt = getDate(new Date(repo.getLastUpdated()), 0, -10);
-		}
+		Date dt = settings.getRunDate(repo, firstRun);
 		Calendar calendar = new GregorianCalendar();
 		TimeZone timeZone = calendar.getTimeZone();
 		Calendar cal = Calendar.getInstance(timeZone);
@@ -162,14 +151,6 @@ public class DefaultGitHubClient implements GitHubClient {
 			}
 		}
 		return commits;
-	}
-
-	private Date getDate(Date dateInstance, int offsetDays, int offsetMinutes) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(dateInstance);
-		cal.add(Calendar.DATE, offsetDays);
-		cal.add(Calendar.MINUTE, offsetMinutes);
-		return cal.getTime();
 	}
 
 	private boolean isThisLastPage(ResponseEntity<String> response) {

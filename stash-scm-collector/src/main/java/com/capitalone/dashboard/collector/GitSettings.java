@@ -1,7 +1,11 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.model.GitRepo;
+import com.capitalone.dashboard.util.DateUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 /**
  * Bean to hold settings specific to the git collector.
@@ -55,4 +59,19 @@ public class GitSettings {
 	public void setApi(String api) {
 		this.api = api;
 	}
+
+    private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
+
+    Date getRunDate(GitRepo repo, boolean firstRun) {
+        if (firstRun) {
+            int firstRunDaysHistory = this.getFirstRunHistoryDays();
+            if (firstRunDaysHistory > 0) {
+                return DateUtils.getDate(new Date(), -firstRunDaysHistory, 0);
+            } else {
+                return DateUtils.getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
+            }
+        } else {
+            return DateUtils.getDate(repo.getLastUpdateTime(), 0, -10);
+        }
+    }
 }
