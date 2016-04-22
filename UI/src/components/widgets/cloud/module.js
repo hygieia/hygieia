@@ -1,6 +1,3 @@
-/**
- * Created by hyw912 on 4/12/16.
- */
 
 (function () {
     'use strict';
@@ -35,10 +32,8 @@
     }
 
     function getState(config) {
-        // make sure config values are set
         return HygieiaConfig.local ?
             widget_state.READY :
             widget_state.CONFIGURE;
     }
 })();
-
