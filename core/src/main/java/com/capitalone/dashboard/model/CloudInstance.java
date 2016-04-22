@@ -1,11 +1,12 @@
 package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,10 +16,14 @@ import java.util.Objects;
 @Document(collection = "cloud_instance")
 public class CloudInstance extends BaseModel{
     @Indexed
+    @NotNull
+    @NotBlank
     private String instanceId;
 
     private ObjectId collectorItemId;
 
+    @NotNull
+    @NotBlank
     private String accountNumber;
     private String instanceType;
     private String imageId;
@@ -38,7 +43,7 @@ public class CloudInstance extends BaseModel{
     private boolean isStopped;
     private boolean isTagged;
     private double cpuUtilization;
-    private Date lastUpdatedDate;
+    private long lastUpdatedDate;
     private List<String> securityGroups = new ArrayList<>();
     private List<NameValue> tags = new ArrayList<>();
     private double networkIn;
@@ -97,11 +102,11 @@ public class CloudInstance extends BaseModel{
         this.cpuUtilization = cpuUtilization;
     }
 
-    public Date getLastUpdatedDate() {
+    public long getLastUpdatedDate() {
         return lastUpdatedDate;
     }
 
-    public void setLastUpdatedDate(Date lastUpdatedDate) {
+    public void setLastUpdatedDate(long lastUpdatedDate) {
         this.lastUpdatedDate = lastUpdatedDate;
     }
 

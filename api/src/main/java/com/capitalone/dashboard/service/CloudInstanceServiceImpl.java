@@ -184,6 +184,7 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
     @Override
     public List<ObjectId> upsertInstance(List<CloudInstance> instances) {
         List<ObjectId> objectIds = new ArrayList<>();
+        if (CollectionUtils.isEmpty(instances))
         for (CloudInstance ci : instances) {
             CloudInstance existing = cloudInstanceRepository.findByInstanceId(ci.getInstanceId());
             if (existing == null) {

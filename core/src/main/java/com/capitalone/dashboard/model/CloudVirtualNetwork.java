@@ -1,10 +1,11 @@
 package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -13,7 +14,11 @@ import java.util.Objects;
 @Document(collection = "cloud_virtual_network")
 public class CloudVirtualNetwork extends BaseModel{
     @Indexed
+    @NotNull
+    @NotBlank
     private String virtualNetworkId;
+    @NotNull
+    @NotBlank
     private String accountNumber;
     private ObjectId collectorItemId;
     private String cidrBlock;
@@ -21,7 +26,7 @@ public class CloudVirtualNetwork extends BaseModel{
     private String state; //pending, available etc.
     private Map<String, String> tags = new HashMap<>();
     private long creationDate;
-    private Date lastUpdateDate;
+    private long lastUpdateDate;
 
     public String getVirtualNetworkId() {
         return virtualNetworkId;
@@ -67,11 +72,11 @@ public class CloudVirtualNetwork extends BaseModel{
         this.creationDate = creationDate;
     }
 
-    public Date getLastUpdateDate() {
+    public long getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(Date lastUpdateDate) {
+    public void setLastUpdateDate(long lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 

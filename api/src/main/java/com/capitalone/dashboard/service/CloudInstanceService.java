@@ -9,9 +9,6 @@ import org.bson.types.ObjectId;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Created by yaf107 on 4/17/16.
- */
 public interface CloudInstanceService {
     //Instance Services
 
