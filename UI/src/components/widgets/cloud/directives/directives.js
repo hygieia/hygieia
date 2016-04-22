@@ -2,25 +2,17 @@
     'use strict';
 
     var app = angular
-        .module('devops-dashboard');
+        .module(HygieiaConfig.module)
+        .directive('metricCategory',metricCategory);
 
-    var directives = [
-        'fullTable',
-        'agePieChart',
-        'cpuPieChart',
-        'notEncryptedPercent',
-        'notTaggedPercent',
-        'counts'
-    ];
-
-    _(directives).forEach(function (name) {
-        app.directive(name, function () {
-            return {
-                restrict: 'E',
-                templateUrl: 'components/widgets/cloud/directives/' + name + '.html'
-            };
-        });
-    });
-
+    function metricCategory() {
+        return {
+            restrict: 'E',
+            scope: { data: '=data'},
+            templateUrl: 'components/widgets/cloud/directives/metricCategory.html'
+        };
+    }
 
 })();
+
+
