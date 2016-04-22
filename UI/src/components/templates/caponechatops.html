@@ -17,16 +17,22 @@
                 <span class="fa fa-tasks"></span>
                 Pipeline
             </span>
+               <span id="cloud" class="btn"
+                     ng-class="{'btn-primary':template.widgetView[2], 'btn-default': !template.widgetView[2]}">
+                <span class="fa fa-cloud"></span>
+                Cloud
+            </span>
         </div>
 
         <div class="clear"></div>
     </div>
 
-    <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView">
+    <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard"
+         ng-if="template.widgetView">
         <div class="row">
             <div class="col-md-3">
                 <!--<div class="col-sm-6 col-md-12">-->
-                    <!--<widget name="nada" widget-title="Feature"></widget>-->
+                <!--<widget name="nada" widget-title="Feature"></widget>-->
                 <!--</div>-->
                 <!--<div class="col-sm-6 col-md-12">-->
                 <div class="col-xs-12">
@@ -44,7 +50,7 @@
 
             <div class="col-md-3">
                 <div class="col-sm-6 col-md-12">
-                <widget name="chatops" widget-title="ChatOps"></widget>
+                    <widget name="chatops" widget-title="ChatOps"></widget>
                 </div>
                 <div class="col-sm-6 col-md-12">
                     <widget name="deploy"></widget>
@@ -58,7 +64,9 @@
             <widget name="pipeline" widget-title="Delivery Pipeline"></widget>
         </div>
     </div>
+    <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView[2]">
+        <div class="col-xs-6">
+            <widget name="cloud"></widget>
 
-
-
-</div>
+        </div>
+    </div>

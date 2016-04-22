@@ -182,5 +182,14 @@
         <artifactId>commons-io</artifactId>
 	<version>2.1</version>
     </dependency>
+      <dependency>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>com.google.code.gson</groupId>
+          <artifactId>gson</artifactId>
+          <scope>test</scope>
+      </dependency>
   </dependencies>
 </project>

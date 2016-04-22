@@ -1,0 +1,40 @@
+
+<div class="col-xs-8">
+  <div class="widget">
+        <div class="widget-heading">
+            Subnet IP Utilization (vpc-45741f21)
+        </div>
+        <div class="widget-body" ng-init="getSubnets()">
+            <div ng-repeat="availZone in subnets | orderBy: 'name' " class="col-xs-3">
+                <div class="widget-heading">{{availZone.name}}</div>
+                <div ng-repeat="item in availZone.subnets" ng-init="utilization = subnetVisigothView.utilizationPercent(item.percentUsedIps)">
+                <div class="subnet-heading">{{ item.subnet.subnetId }} 
+                <div class="subnet-name-text">{{getSubnetName(item.subnet)}}</div>
+                </div>
+                                <div guage-container>
+                    <div class="ct-wrapper clearfix"
+                         ng-class="{'clickable': false}"
+                         popover-html-unsafe="{{item.subnet.subnetId}}"
+                         popover-trigger="focus"
+                         popover-placement="right"
+                         tabindex="0">
+                        <chartist
+                                class="ct-chart ct-square db-chart-primary ct-chart-Ok"
+                                chartist-data="utilization"
+                                chartist-chart-options="subnetVisigothView.pieOptions"
+                                chartist-chart-type="Pie"></chartist>
+                        <div class="guage-number">
+                            <span fit-text>{{item.percentUsedIps | number:0 }}<small class="percent">%</small></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="ca-value text-center">{{item.usedIps}} out of {{item.maxIps}}</div>
+                <div class="padding_bottom">&nbsp;</div>   
+
+             </div>
+           </div>
+            
+        </div>
+    </div>    
+</div>
