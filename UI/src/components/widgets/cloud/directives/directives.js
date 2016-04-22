@@ -8,7 +8,7 @@
     function metricCategory() {
         return {
             restrict: 'E',
-            scope: { data: '=data'},
+            scope: { data: '='},
             templateUrl: 'components/widgets/cloud/directives/metricCategory.html'
         };
     }
