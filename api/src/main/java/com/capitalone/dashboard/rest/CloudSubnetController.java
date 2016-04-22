@@ -2,6 +2,7 @@ package com.capitalone.dashboard.rest;
 
 
 import com.capitalone.dashboard.model.CloudSubNetwork;
+import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudSubNetworkAggregatedResponse;
 import com.capitalone.dashboard.service.CloudSubnetService;
@@ -58,6 +59,13 @@ public class CloudSubnetController {
             @PathVariable String subnetId) {
         return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetails(subnetId));
     }
+
+    @RequestMapping(value = "/cloud/subnet/details/tags", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CloudSubNetwork>> getSubNetworkDetailsByTag(
+            @Valid @RequestBody List<NameValue> tags) {
+        return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetailsByTags(tags));
+    }
+
 
     @RequestMapping(value = "/cloud/subnet/aggregate/{componentId}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CloudSubNetworkAggregatedResponse> getSubNetworkAggregatedData(

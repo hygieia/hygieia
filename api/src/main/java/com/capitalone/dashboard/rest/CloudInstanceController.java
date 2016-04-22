@@ -61,14 +61,14 @@ public class CloudInstanceController {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetails(instanceId));
     }
 
-    @RequestMapping(value = "/cloud/instance/ids", method = GET, consumes = APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/cloud/instance/ids", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<CloudInstance>> getInstanceDetails(
             @Valid @RequestBody List<String> instanceIds) {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetails(instanceIds));
     }
 
-    @RequestMapping(value = "/cloud/instance/tags", method = GET, consumes = APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/cloud/instance/tags", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<CloudInstance>> getInstanceDetailsByTags(
             @Valid @RequestBody List<NameValue> tags) {
@@ -81,13 +81,13 @@ public class CloudInstanceController {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(componentId));
     }
 
-    @RequestMapping(value = "/cloud/instance/aggregate/instanceIds", method = GET, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/cloud/instance/aggregate/instanceIds", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedDataByInstanceIds(
             @Valid @RequestBody List<String> instanceIds) {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(instanceIds));
     }
 
-    @RequestMapping(value = "/cloud/instance/aggregate/tags", method = GET, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/cloud/instance/aggregate/tags", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedDataByTags(
             @Valid @RequestBody List<NameValue> tags) {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedDataByTags(tags));
