@@ -19,13 +19,13 @@
 
 
 
+
         var ctrl = this;
         ctrl.tag = $scope.widgetConfig.options.tag || "";
 
         ctrl.load = function() {
             return cloudData.getEC2DataSummarizedByTag(ctrl.tag);
         }
-
-
     }
+
 })();
