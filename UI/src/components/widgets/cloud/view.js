@@ -18,21 +18,7 @@
     function CloudWidgetViewController($scope, cloudData) {
 
 
-<<<<<<< HEAD
-        var ctrl = this;
 
-        ctrl.awsOverview;
-        ctrl.tag = $scope.widgetConfig.options.tag || "";
-
-
-        ctrl.load = function () {
-            ctrl.awsOverview = cloudData.getAWSGlobalData();
-        }
-
-
-        ctrl.load();
-
-=======
 
         var ctrl = this;
         ctrl.tag = $scope.widgetConfig.options.tag || "";
@@ -40,9 +26,6 @@
         ctrl.load = function() {
             return cloudData.getEC2DataSummarizedByTag(ctrl.tag);
         }
-
-
->>>>>>> 7f4dd7b36c6b3f02f3cad54fa8a23342bae9a08c
     }
 
 })();
