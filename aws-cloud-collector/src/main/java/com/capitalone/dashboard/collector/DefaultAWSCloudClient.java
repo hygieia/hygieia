@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.collector;
 
 import com.amazonaws.auth.AWSCredentialsProviderChain;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
@@ -10,15 +9,7 @@ import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.DescribeVolumesResult;
-import com.amazonaws.services.ec2.model.GroupIdentifier;
-import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.InstanceState;
-import com.amazonaws.services.ec2.model.Reservation;
-import com.amazonaws.services.ec2.model.Tag;
-import com.amazonaws.services.ec2.model.Volume;
-import com.amazonaws.services.ec2.model.VolumeAttachment;
+import com.amazonaws.services.ec2.model.*;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.CloudVirtualNetwork;
@@ -32,11 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,7 +45,14 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     @Override
     public List<CloudInstance> getCloundInstances(CloudInstanceRepository repository) {
 
-        DefaultAWSCredentialsProviderChain creds = new DefaultAWSCredentialsProviderChain();
+        System.out.println("Settig HTTP Proxies");
+        System.getProperties().put("http.proxyHost", "localhost");
+        System.getProperties().put("http.proxyPort", "8099");
+        System.getProperties().put("https.proxyHost", "localhost");
+        System.getProperties().put("https.proxyPort", "8099");
+        System.getProperties().put("http.nonProxyHosts", "169.254.169.254");
+
+       // DefaultAWSCredentialsProviderChain creds = new DefaultAWSCredentialsProviderChain();
 
         AmazonEC2Client ec2Client = new AmazonEC2Client(new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(),
                 new ProfileCredentialsProvider(settings.getProfile())));
@@ -106,25 +100,20 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         long lastUpdated = System.currentTimeMillis();
         CloudInstance instance = repository.findByInstanceId(currInstance.getInstanceId());
         if (instance != null) {
-            lastUpdated = instance.getLastUpdatedDate().getTime();
+            lastUpdated = instance.getLastUpdatedDate();
         }
         CloudInstance object = new CloudInstance();
-        object.setLastUpdatedDate(new Date());
+        object.setLastUpdatedDate(System.currentTimeMillis());
         object.setAge(getInstanceAge(currInstance));
         object.setEncrypted(isInstanceVolumneEncrypted(currInstance,
                 instanceVolMap));
-        object.setCpuUtilization(getInstanceCPUSinceLastRun(
-                currInstance.getInstanceId(), cwClient, lastUpdated));
+      //  object.setCpuUtilization(getInstanceCPUSinceLastRun(currInstance.getInstanceId(), cwClient, lastUpdated));
         object.setTagged(isInstanceTagged(currInstance));
         object.setStopped(isInstanceStopped(currInstance));
-        object.setNetworkIn(getLastHourInstanceNetworkIn(
-                currInstance.getInstanceId(), cwClient, lastUpdated));
-        object.setNetworkOut(getLastHourIntanceNetworkOut(
-                currInstance.getInstanceId(), cwClient, lastUpdated));
-        object.setDiskRead(getLastHourInstanceDiskRead(
-                currInstance.getInstanceId(), cwClient, lastUpdated));
-        object.setDiskWrite(getLastInstanceHourDiskWrite(
-                currInstance.getInstanceId(), cwClient));
+//        object.setNetworkIn(getLastHourInstanceNetworkIn(currInstance.getInstanceId(), cwClient, lastUpdated));
+// object.setNetworkOut(getLastHourIntanceNetworkOut(currInstance.getInstanceId(), cwClient, lastUpdated));
+ //       object.setDiskRead(getLastHourInstanceDiskRead(currInstance.getInstanceId(), cwClient, lastUpdated));
+ //       object.setDiskWrite(getLastInstanceHourDiskWrite(currInstance.getInstanceId(), cwClient));
         // rest of the details
         object.setImageId(currInstance.getImageId());
         object.setInstanceId(currInstance.getInstanceId());
@@ -175,6 +164,10 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 System.currentTimeMillis() - lastUpdated);
         Dimension instanceDimension = new Dimension().withName("InstanceId")
                 .withValue(instanceId);
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+        long oneDayAgo = cal.getTimeInMillis();
         GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
                 .withMetricName("CPUUtilization")
                 .withNamespace("AWS/EC2")
@@ -184,8 +177,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 // to get metrics a specific
                 // instance
                 .withStatistics("Average")
-                .withStartTime(
-                        new Date(new Date().getTime() - offsetInMilliseconds))
+                .withStartTime(new Date(new Date().getTime() - oneDayAgo))
                 .withEndTime(new Date());
         GetMetricStatisticsResult result = ec2Client
                 .getMetricStatistics(request);
@@ -240,8 +232,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 // to get metrics a specific
                 // instance
                 .withStatistics("Average")
-                .withStartTime(
-                        new Date(new Date().getTime() - offsetInMilliseconds))
+                .withStartTime(new Date(new Date().getTime() - offsetInMilliseconds))
                 .withEndTime(new Date());
         GetMetricStatisticsResult result = ec2Client
                 .getMetricStatistics(request);
