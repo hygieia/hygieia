@@ -23,16 +23,11 @@ import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.CloudVirtualNetwork;
 import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.repository.AWSConfigRepository;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.CloudInstanceRepository;
-import com.capitalone.dashboard.repository.CloudSubNetworkRepository;
-import com.capitalone.dashboard.repository.CloudVirtualNetworkRepository;
+import com.capitalone.dashboard.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -111,7 +106,7 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
     private void collectInstances() {
         List<CloudInstance> cloudInstances = awsClient.getCloundInstances(cloudInstanceRepository);
         for (CloudInstance ci : cloudInstances) {
-            ci.setLastUpdatedDate(new Date());
+            ci.setLastUpdatedDate(System.currentTimeMillis());
         }
         cloudInstanceRepository.save(cloudInstances);
     }
@@ -119,13 +114,13 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 
     private void collectVPC () {
         CloudVirtualNetwork cloudVirtualNetwork = awsClient.getCloudVPC(cloudVirtualNetworkRepository);
-        cloudVirtualNetwork.setLastUpdateDate(new Date());
+        cloudVirtualNetwork.setLastUpdateDate(System.currentTimeMillis());
         cloudVirtualNetworkRepository.save(cloudVirtualNetwork);
     }
 
     private void collectSubNet() {
         CloudSubNetwork cloudSubNetwork = awsClient.getCloudSubnet(cloudSubNetworkRepository);
-        cloudSubNetwork.setLastUpdateDate(new Date());
+        cloudSubNetwork.setLastUpdateDate(System.currentTimeMillis());
         cloudSubNetworkRepository.save(cloudSubNetwork);
     }
 
