@@ -9,10 +9,19 @@ import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.*;
+import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.DescribeVolumesResult;
+import com.amazonaws.services.ec2.model.GroupIdentifier;
+import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.InstanceState;
+import com.amazonaws.services.ec2.model.Reservation;
+import com.amazonaws.services.ec2.model.Tag;
+import com.amazonaws.services.ec2.model.Volume;
+import com.amazonaws.services.ec2.model.VolumeAttachment;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.CloudVirtualNetwork;
+import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.capitalone.dashboard.repository.CloudSubNetworkRepository;
 import com.capitalone.dashboard.repository.CloudVirtualNetworkRepository;
@@ -23,7 +32,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,6 +56,11 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         this.settings = settings;
     }
 
+    /**
+     * Calls AWS API and collects instance details.
+     * @param repository
+     * @return List of CloudInstance
+     */
     @Override
     public List<CloudInstance> getCloundInstances(CloudInstanceRepository repository) {
 
@@ -64,10 +83,16 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
 //        DescribeImagesResult imageResult = ec2Client.describeImages();
         DescribeVolumesResult volumeResult = ec2Client.describeVolumes();
+        Map<String, List<Instance>> ownerInstanceMap = new HashMap<>();
         List<Instance> instanceList = new ArrayList<>();
         List<Reservation> reservations = instanceResult.getReservations();
         for (Reservation currRes : reservations) {
             List<Instance> currInstanceList = currRes.getInstances();
+            if (CollectionUtils.isEmpty(ownerInstanceMap.get(currRes.getOwnerId()))) {
+                ownerInstanceMap.put(currRes.getOwnerId(), currRes.getInstances());
+            } else {
+                ownerInstanceMap.get(currRes.getOwnerId()).addAll(currRes.getInstances());
+            }
             instanceList.addAll(currInstanceList);
         }
         List<Volume> volumes = volumeResult.getVolumes();
@@ -82,18 +107,29 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
         ArrayList<CloudInstance> rawDataList = new ArrayList<>();
         int i = 0;
-        for (Instance currInstance : instanceList) {
-            i = i + 1;
-            LOGGER.info("Collecting instance details for " + i + " of "
-                    + instanceList.size() + ". Instance ID="+currInstance.getInstanceId());
-            CloudInstance object = getCloudInstanceDetails(
-                    currInstance, instanceVolMap, cloudWatchClient, repository);
-            rawDataList.add(object);
+        for (String acct: ownerInstanceMap.keySet()) {
+            for (Instance currInstance : ownerInstanceMap.get(acct)) {
+                i = i + 1;
+                LOGGER.info("Collecting instance details for " + i + " of "
+                        + instanceList.size() + ". Instance ID=" + currInstance.getInstanceId());
+                CloudInstance object = getCloudInstanceDetails(acct,
+                        currInstance, instanceVolMap, cloudWatchClient, repository);
+                rawDataList.add(object);
+            }
         }
         return rawDataList;
     }
 
-    private CloudInstance getCloudInstanceDetails(
+    /**
+     * Fill out the CloudInstance object
+     * @param account
+     * @param currInstance
+     * @param instanceVolMap
+     * @param cwClient
+     * @param repository
+     * @return A single CloundInstance
+     */
+    private CloudInstance getCloudInstanceDetails(String account,
             Instance currInstance, Map<String, Volume> instanceVolMap,
             AmazonCloudWatchClient cwClient, CloudInstanceRepository repository) {
 
@@ -103,6 +139,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
             lastUpdated = instance.getLastUpdatedDate();
         }
         CloudInstance object = new CloudInstance();
+        object.setAccountNumber(account);
         object.setLastUpdatedDate(System.currentTimeMillis());
         object.setAge(getInstanceAge(currInstance));
         object.setEncrypted(isInstanceVolumneEncrypted(currInstance,
@@ -126,7 +163,14 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         object.setVirtualNetworkId(currInstance.getVpcId());
         object.setRootDeviceName(currInstance.getRootDeviceName());
         object.setSubnetId(currInstance.getSubnetId());
+        List<Tag> tags = currInstance.getTags();
 
+        if (!CollectionUtils.isEmpty(tags)) {
+            for (Tag tag : tags) {
+                NameValue nv = new NameValue(tag.getKey(), tag.getValue());
+                object.getTags().add(nv);
+            }
+        }
         List<GroupIdentifier> groups = currInstance.getSecurityGroups();
         for (GroupIdentifier gi : groups) {
             object.addSecurityGroups(gi.getGroupName());
@@ -329,7 +373,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         return datapoint.getAverage();
     }
 
-    /* If the instance is tagged with ASV or ENV */
+    /* If the instance is tagged with correct */
     private boolean isInstanceTagged(Instance currInstance) {
         List<Tag> tags = currInstance.getTags();
         if (settings.getValidTagKey().isEmpty())
