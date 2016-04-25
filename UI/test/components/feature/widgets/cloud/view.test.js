@@ -8,36 +8,20 @@ describe('CloudWidgetViewController', function () {
     var controller;
     var scope;
     var cloudData;
-    var instanceData = {
-
+    var AWSGlobalData = {
+        "compute": {
+            "ec2Instances": 3015,
+            "running": 1900,
+            "stopped": 300,
+            "excluded": 910
+        },
+        "s3": {
+            "s3Buckets": 9000,
+            "encrypted": 35,
+            "tagged": 45,
+            "compliant": 54
+        }
     };
-
-    var ec2DataSummarizedByTag = {
-        "ageAlert": 0,
-        "ageError": 0,
-        "ageGood": 0,
-        "cpuAlert": 0,
-        "cpuHigh": 0,
-        "cpuLow": 0,
-        "currency": "string",
-        "diskAlert": 0,
-        "diskHigh": 0,
-        "diskLow": 0,
-        "estimatedCharge": 0,
-        "expiredImageCount": 0,
-        "lastUpdated": 0,
-        "memoryAlert": 0,
-        "memoryHigh": 0,
-        "memoryLow": 0,
-        "networkAlert": 0,
-        "networkHigh": 0,
-        "networkLow": 0,
-        "nonEncryptedCount": 0,
-        "nonTaggedCount": 0,
-        "stoppedCount": 0,
-        "totalInstanceCount": 0
-    };
-
 
     // load the controller's module
     beforeEach(module(HygieiaConfig.module));
@@ -47,11 +31,11 @@ describe('CloudWidgetViewController', function () {
         $provide.factory('cloudData', function() {
 
             return {
-                getEC2DataSummarizedByTag: getEC2DataSummarizedByTag
+                getAWSGlobalData: getAWSGlobalData
             };
 
-            function getEC2DataSummarizedByTag() {
-                return ec2DataSummarizedByTag;
+            function getAWSGlobalData() {
+                return AWSGlobalData;
             }
         })}));
 
@@ -77,16 +61,45 @@ describe('CloudWidgetViewController', function () {
 
     describe('load()', function() {
         describe('When I call load', function () {
-            it('Then I expect AMI data to be retrieved', function() {
+            it('Then I expect AMI data to be retrieved into awsOverview', function() {
 
-                //Arrange
-
-                //Act
-                var data = controller.load();
+                //Act-Arrange
 
                 //Assert
-                var result = angular.equals( data,ec2DataSummarizedByTag );
+                var result = angular.equals( controller.awsOverview,AWSGlobalData );
                 expect(result).toBeTruthy();
+            });
+        });
+    });
+
+    describe('toggleView()', function() {
+        describe('When I call toggleView and isDetail is false', function () {
+            it('Then I expect isDetail to change to true', function() {
+
+                //Arrange
+                controller.isDetail = false;
+
+                //Act
+                controller.toggleView();
+
+                //Assert
+
+                expect(controller.isDetail).toBeTruthy();
+            });
+        });
+
+        describe('When I call toggleView and isDetail is true', function () {
+            it('Then I expect isDetail to change to false', function() {
+
+                //Arrange
+                controller.isDetail = true;
+
+                //Act
+                controller.toggleView();
+
+                //Assert
+
+                expect(controller.isDetail).toBeFalsy();
             });
         });
     });

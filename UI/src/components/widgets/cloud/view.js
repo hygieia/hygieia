@@ -21,9 +21,13 @@
         var ctrl = this;
 
         ctrl.awsOverview;
+
+        ctrl.isDetail = false;
+        ctrl.toggleView = function() {
+            ctrl.isDetail = (ctrl.isDetail == false);
+        }
+
         ctrl.tag = $scope.widgetConfig.options.tag || "";
-
-
         ctrl.load = function () {
             ctrl.awsOverview = cloudData.getAWSGlobalData();
         }

@@ -1,4 +1,14 @@
 <div class="row ca-view">
+    <div class="container-fluid pipeline-toggle btn-group" ng-click="cloudView.toggleView()">
+        <span class="btn" ng-class="{'btn-primary':!cloudView.isDetail, 'btn-default': cloudView.isDetail}">
+            <span class="fa fa-th-large"></span>
+            Overview
+            </span>
+        <span class="btn" ng-class="{'btn-primary':cloudView.isDetail, 'btn-default': !cloudView.isDetail}">
+            <span class="fa fa-tasks"></span>
+            Tag
+            </span>
+    </div>
     <div class="col-lg-4 col-sm-12">
         <metric-category data="cloudView.awsOverview.compute" category='Compute'></metric-category>
     </div>
