@@ -17,12 +17,11 @@
 
         return {
             getASV: getASV,
-            getEC2DataSummarizedByTag: getEC2DataSummarizedByTag,
             getAWSGlobalData: getAWSGlobalData
         };
 
         function getASV() {
-            return JSON.parse('[{ "name": "IRIS"},{ "name": "Chordiant"},{ "name": "EASE"}]');
+            //return JSON.parse('[{ "name": "IRIS"},{ "name": "Chordiant"},{ "name": "EASE"}]');
             return $http.get(HygieiaConfig.local ? testDataRoute : cloudDataRoute)
                 .then(function (response) {
                     return response.data[0].result;
@@ -46,11 +45,5 @@
                 }
             };
         }
-
-
-        function getEC2DataSummarizedByTag(tag) {
-            return JSON.parse('[{ "name": "IRIS"},{ "name": "Chordiant"},{ "name": "EASE"}]');
-        }
-
-    }
+   }
 })();
