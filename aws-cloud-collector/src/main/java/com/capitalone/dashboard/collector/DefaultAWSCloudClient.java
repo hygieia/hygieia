@@ -90,6 +90,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                     currInstance, instanceVolMap, cloudWatchClient, repository);
             rawDataList.add(object);
         }
+        repository.save(rawDataList);
         return rawDataList;
     }
 
@@ -107,13 +108,13 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         object.setAge(getInstanceAge(currInstance));
         object.setEncrypted(isInstanceVolumneEncrypted(currInstance,
                 instanceVolMap));
-      //  object.setCpuUtilization(getInstanceCPUSinceLastRun(currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setCpuUtilization(getInstanceCPUSinceLastRun(currInstance.getInstanceId(), cwClient, lastUpdated));
         object.setTagged(isInstanceTagged(currInstance));
         object.setStopped(isInstanceStopped(currInstance));
-//        object.setNetworkIn(getLastHourInstanceNetworkIn(currInstance.getInstanceId(), cwClient, lastUpdated));
-// object.setNetworkOut(getLastHourIntanceNetworkOut(currInstance.getInstanceId(), cwClient, lastUpdated));
- //       object.setDiskRead(getLastHourInstanceDiskRead(currInstance.getInstanceId(), cwClient, lastUpdated));
- //       object.setDiskWrite(getLastInstanceHourDiskWrite(currInstance.getInstanceId(), cwClient));
+       object.setNetworkIn(getLastHourInstanceNetworkIn(currInstance.getInstanceId(), cwClient, lastUpdated));
+ object.setNetworkOut(getLastHourIntanceNetworkOut(currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setDiskRead(getLastHourInstanceDiskRead(currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setDiskWrite(getLastInstanceHourDiskWrite(currInstance.getInstanceId(), cwClient));
         // rest of the details
         object.setImageId(currInstance.getImageId());
         object.setInstanceId(currInstance.getInstanceId());
@@ -177,7 +178,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 // to get metrics a specific
                 // instance
                 .withStatistics("Average")
-                .withStartTime(new Date(new Date().getTime() - oneDayAgo))
+                .withStartTime(new Date(new Date().getTime() - 1440 *1000))
                 .withEndTime(new Date());
         GetMetricStatisticsResult result = ec2Client
                 .getMetricStatistics(request);
@@ -264,7 +265,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 // instance
                 .withStatistics("Average")
                 .withStartTime(
-                        new Date(new Date().getTime() - offsetInMilliseconds))
+                        new Date(new Date().getTime() - 1440 * 1000))
                 .withEndTime(new Date());
         GetMetricStatisticsResult result = ec2Client
                 .getMetricStatistics(request);
@@ -277,8 +278,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     }
 
     /* Averages CPUUtil every minute for the last hour */
-    private static Double getLastInstanceHourDiskWrite(String instanceId,
-                                                       AmazonCloudWatchClient ec2Client) {
+    private static Double getLastInstanceHourDiskWrite(String instanceId, AmazonCloudWatchClient ec2Client) {
         Dimension instanceDimension = new Dimension().withName("InstanceId")
                 .withValue(instanceId);
         GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
