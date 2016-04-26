@@ -1,7 +1,5 @@
 package com.capitalone.dashboard.model;
 
-import org.bson.types.ObjectId;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,13 +15,9 @@ import java.util.Objects;
 public class CloudInstance extends BaseModel{
     @Indexed
     @NotNull
-    @NotBlank
     private String instanceId;
 
-    private ObjectId collectorItemId;
-
     @NotNull
-    @NotBlank
     private String accountNumber;
     private String instanceType;
     private String imageId;
@@ -264,14 +258,6 @@ public class CloudInstance extends BaseModel{
 
     public List<NameValue> getTags() {
         return tags;
-    }
-
-    public ObjectId getCollectorItemId() {
-        return collectorItemId;
-    }
-
-    public void setCollectorItemId(ObjectId collectorItemId) {
-        this.collectorItemId = collectorItemId;
     }
 
     public String getLastAction() {
