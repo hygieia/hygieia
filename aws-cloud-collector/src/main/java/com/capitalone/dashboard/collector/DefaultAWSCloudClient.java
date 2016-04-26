@@ -62,14 +62,12 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
      * @return List of CloudInstance
      */
     @Override
-    public List<CloudInstance> getCloundInstances(CloudInstanceRepository repository) {
-
-        System.out.println("Settig HTTP Proxies");
-        System.getProperties().put("http.proxyHost", "localhost");
-        System.getProperties().put("http.proxyPort", "8099");
-        System.getProperties().put("https.proxyHost", "localhost");
-        System.getProperties().put("https.proxyPort", "8099");
-        System.getProperties().put("http.nonProxyHosts", "169.254.169.254");
+    public Map<String, List<CloudInstance>> getCloundInstances(CloudInstanceRepository repository) {
+        System.getProperties().put("http.proxyHost", settings.getProxyHost());
+        System.getProperties().put("http.proxyPort", settings.getProxyPort());
+        System.getProperties().put("https.proxyHost", settings.getProxyHost());
+        System.getProperties().put("https.proxyPort", settings.getProxyPort());
+        System.getProperties().put("http.nonProxyHosts", settings.getNonProxy());
 
        // DefaultAWSCredentialsProviderChain creds = new DefaultAWSCredentialsProviderChain();
 
@@ -105,9 +103,11 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
             }
         }
 
-        ArrayList<CloudInstance> rawDataList = new ArrayList<>();
+
+        Map<String, List<CloudInstance>> returnList = new HashMap<>();
         int i = 0;
         for (String acct: ownerInstanceMap.keySet()) {
+            ArrayList<CloudInstance> rawDataList = new ArrayList<>();
             for (Instance currInstance : ownerInstanceMap.get(acct)) {
                 i = i + 1;
                 LOGGER.info("Collecting instance details for " + i + " of "
@@ -116,8 +116,13 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                         currInstance, instanceVolMap, cloudWatchClient, repository);
                 rawDataList.add(object);
             }
+            if (CollectionUtils.isEmpty(returnList.get(acct))) {
+                returnList.put(acct, rawDataList);
+            } else {
+                returnList.get(acct).addAll(rawDataList);
+            }
         }
-        return rawDataList;
+        return returnList;
     }
 
     /**
@@ -394,7 +399,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
      */
     public boolean isInstanceStopped(Instance myInstance) {
         InstanceState instanceState = myInstance.getState();
-        return (instanceState.getName().equals("stopped") ? true : false);
+        return (instanceState.getName().equals("stopped"));
     }
 
 
