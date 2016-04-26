@@ -49,15 +49,21 @@ public class CloudSubnetController {
     }
 
     @RequestMapping(value = "/cloud/subnet/details/component/{componentId}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<CloudSubNetwork>> getSubNetworkDetails(
-            @PathVariable ObjectId componentId) {
-        return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetails(componentId));
+    public ResponseEntity<Collection<CloudSubNetwork>> getSubNetworkDetailsByComponentId(
+            @PathVariable String componentId) {
+        return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetailsByComponentId(componentId));
     }
 
     @RequestMapping(value = "/cloud/subnet/details/subnet/{subnetId}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<CloudSubNetwork> getSubNetworkDetails(
+    public ResponseEntity<CloudSubNetwork> getSubNetworkDetailsBySubnetId(
             @PathVariable String subnetId) {
-        return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetails(subnetId));
+        return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetailsBySubnetId(subnetId));
+    }
+
+    @RequestMapping(value = "/cloud/subnet/details/subnet", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CloudSubNetwork>> getSubNetworkDetailsBySubnetIds(
+            @Valid @RequestBody List<String> subnetIds) {
+        return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetailsBySubnetIds(subnetIds));
     }
 
     @RequestMapping(value = "/cloud/subnet/details/tags", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -66,10 +72,9 @@ public class CloudSubnetController {
         return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetailsByTags(tags));
     }
 
-
     @RequestMapping(value = "/cloud/subnet/aggregate/{componentId}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CloudSubNetworkAggregatedResponse> getSubNetworkAggregatedData(
-            @PathVariable ObjectId componentId) {
+            @PathVariable String componentId) {
         return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkAggregatedData(componentId));
     }
 }

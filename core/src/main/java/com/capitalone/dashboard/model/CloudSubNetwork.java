@@ -1,25 +1,18 @@
 package com.capitalone.dashboard.model;
 
-import org.bson.types.ObjectId;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Document(collection = "cloud_subnetwork")
 public class CloudSubNetwork extends BaseModel{
     @Indexed
-    @NotNull
-    @NotBlank
     private String subnetId;
-    private ObjectId collectorItemId;
-    @NotNull
-    @NotBlank
-    private String accountNumber;
     private String virtualNetworkId;
     private String cidrBlock;
     private int cidrCount;
@@ -30,23 +23,18 @@ public class CloudSubNetwork extends BaseModel{
     private String state;
     private long creationDate;
     private long lastUpdateDate;
-
     private List<NameValue> tags = new ArrayList<>();
+    private Map<NameValue, Integer> ipUsage = new HashMap<>();
 
+
+
+    
     public String getSubnetId() {
         return subnetId;
     }
 
     public void setSubnetId(String subnetId) {
         this.subnetId = subnetId;
-    }
-
-    public ObjectId getCollectorItemId() {
-        return collectorItemId;
-    }
-
-    public void setCollectorItemId(ObjectId collectorItemId) {
-        this.collectorItemId = collectorItemId;
     }
 
     public String getVirtualNetworkId() {
@@ -125,10 +113,6 @@ public class CloudSubNetwork extends BaseModel{
         return tags;
     }
 
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
     public int getCidrCount() {
         return cidrCount;
     }
@@ -137,8 +121,13 @@ public class CloudSubNetwork extends BaseModel{
         this.cidrCount = cidrCount;
     }
 
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
+
+    public Map<NameValue, Integer> getIpUsage() {
+        return ipUsage;
+    }
+
+    public void setIpUsage(Map<NameValue, Integer> ipUsage) {
+        this.ipUsage = ipUsage;
     }
 
     @Override
