@@ -8,6 +8,7 @@ import com.capitalone.dashboard.repository.CloudSubNetworkRepository;
 import com.capitalone.dashboard.repository.CloudVirtualNetworkRepository;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface AWSCloudClient {
@@ -15,7 +16,7 @@ public interface AWSCloudClient {
 	/**
 	 *
 	 */
-	List<CloudInstance> getCloundInstances(CloudInstanceRepository repository);
+	Map<String, List<CloudInstance>> getCloundInstances(CloudInstanceRepository repository);
     CloudVirtualNetwork getCloudVPC(CloudVirtualNetworkRepository repository);
     CloudSubNetwork getCloudSubnet(CloudSubNetworkRepository repository);
 
