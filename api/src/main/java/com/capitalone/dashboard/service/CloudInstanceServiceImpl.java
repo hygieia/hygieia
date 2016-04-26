@@ -80,6 +80,11 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
     }
 
     @Override
+    public Collection<CloudInstance> getInstanceDetailsByAccount(String accountNumber) {
+        return cloudInstanceRepository.findByAccountNumber(accountNumber);
+    }
+
+    @Override
     public CloudInstanceAggregatedResponse getInstanceAggregatedData(ObjectId componentId) {
         CollectorItem item = getCollectorItem(componentId);
         CloudInstanceAggregatedResponse response = new CloudInstanceAggregatedResponse();

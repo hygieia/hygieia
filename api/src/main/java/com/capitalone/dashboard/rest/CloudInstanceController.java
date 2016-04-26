@@ -61,14 +61,21 @@ public class CloudInstanceController {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetails(instanceId));
     }
 
-    @RequestMapping(value = "/cloud/instance/ids", method = POST, consumes = APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/cloud/instance/details/account/{accountNumber}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CloudInstance>> getInstanceDetailsByAccount(
+            @PathVariable String accountNumber) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByAccount(accountNumber));
+    }
+
+
+    @RequestMapping(value = "/cloud/instance/details/ids", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<CloudInstance>> getInstanceDetails(
             @Valid @RequestBody List<String> instanceIds) {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetails(instanceIds));
     }
 
-    @RequestMapping(value = "/cloud/instance/tags", method = POST, consumes = APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/cloud/instance/details/tags", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<CloudInstance>> getInstanceDetailsByTags(
             @Valid @RequestBody List<NameValue> tags) {

@@ -23,11 +23,13 @@ public interface CloudInstanceService {
      *          (b) instanceId
      *          (c) List of instance Ids
      *          (d) List of Tags
+     *          (e) Account Number
      */
     Collection<CloudInstance> getInstanceDetails(ObjectId componentId);
     CloudInstance getInstanceDetails(String instanceId);
     Collection<CloudInstance> getInstanceDetails(List<String> instanceId);
     Collection<CloudInstance> getInstanceDetailsByTags(List<NameValue> tags);
+    Collection<CloudInstance> getInstanceDetailsByAccount(String accountNumber);
 
 
     /**
