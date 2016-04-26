@@ -8,6 +8,7 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 import com.capitalone.dashboard.util.HygieiaUtils;
@@ -56,17 +57,17 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
     }
 
     @Override
-    public Collection<CloudInstance> getInstanceDetails(ObjectId componentId) {
-        return getInstanceDetails(getCollectorItem(componentId));
+    public Collection<CloudInstance> getInstanceDetailsByComponentId(String componentIdString) {
+        return getInstanceDetails(getCollectorItem(new ObjectId(componentIdString)));
     }
 
     @Override
-    public CloudInstance getInstanceDetails(String instanceId) {
+    public CloudInstance getInstanceDetailsByInstanceId(String instanceId) {
         return cloudInstanceRepository.findByInstanceId(instanceId);
     }
 
     @Override
-    public Collection<CloudInstance> getInstanceDetails(List<String> instanceIds) {
+    public Collection<CloudInstance> getInstanceDetailsByInstanceIds(List<String> instanceIds) {
         return cloudInstanceRepository.findByInstanceIdIn(instanceIds);
     }
 
@@ -85,87 +86,34 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
     }
 
     @Override
-    public CloudInstanceAggregatedResponse getInstanceAggregatedData(ObjectId componentId) {
-        CollectorItem item = getCollectorItem(componentId);
+    public CloudInstanceAggregatedResponse getInstanceAggregatedData(String componentIdString) {
+        CollectorItem item = getCollectorItem(new ObjectId(componentIdString));
         CloudInstanceAggregatedResponse response = new CloudInstanceAggregatedResponse();
         Collection<CloudInstance> instances = getInstanceDetails(item);
         if ((item != null) && !(item instanceof CloudConfig)) return response;
         CloudConfig config = (CloudConfig) item;
         if (CollectionUtils.isEmpty(instances)) return response;
-        int ageAlertCount = 0;
-        int ageErrorCount = 0;
-        int ageGoodCount = 0;
-        int cpuHighCount = 0;
-        int cpuAlertCount = 0;
-        int cpuLowCount = 0;
-        int unEcryptedComputeCount = 0;
-        int unTaggedCount = 0;
-        int stoppedCount = 0;
-        int totalCount = 0;
-        /** For future enhancements
-         double estimatedCharge = 0.0;
-         int memoryHighCount = 0;
-         int memoryAlertCount = 0;
-         int memoryLowCount = 0;
-         int diskHighCount = 0;
-         int diskAlertCount = 0;
-         int diskLowCount = 0;
-         int networkHighCount = 0;
-         int networkAlertCount = 0;
-         int networkLowCount = 0;
-         **/
+        return aggregate(instances, config);
+    }
 
-
-        for (CloudInstance rd : instances) {
-            totalCount = totalCount + 1;
-
-            if (!rd.isEncrypted()) {
-                unEcryptedComputeCount = unEcryptedComputeCount + 1;
-            }
-            if (rd.isStopped()) {
-                stoppedCount = stoppedCount + 1;
-            }
-            if (!rd.isTagged()) {
-                unTaggedCount = unTaggedCount + 1;
-            }
-            if (rd.getAge() >= config.getAgeError()) {
-                ageErrorCount = ageErrorCount + 1;
-            }
-            if ((rd.getAge() < config.getAgeError()) && (rd.getAge() >= config.getAgeAlert())) {
-                ageAlertCount = ageAlertCount + 1;
-            }
-            if (rd.getAge() < config.getAgeAlert()) {
-                ageGoodCount = ageGoodCount + 1;
-            }
-            if (rd.getCpuUtilization() >= config.getCpuError()) {
-                cpuHighCount = cpuHighCount + 1;
-            }
-            if ((rd.getCpuUtilization() < config.getCpuError()) && (rd.getCpuUtilization() >= config.getCpuAlert())) {
-                cpuAlertCount = cpuAlertCount + 1;
-            }
-            if (rd.getCpuUtilization() < config.getCpuAlert()) {
-                cpuLowCount = cpuLowCount + 1;
+    @Override
+    public CloudInstanceAggregatedResponse getInstanceAggregatedData(CloudInstanceAggregateRequest request) {
+        Set<CloudInstance> instances = new HashSet<>();
+        if (!CollectionUtils.isEmpty(request.getInstanceIds())) {
+            Collection<CloudInstance> ins = getInstanceDetailsByInstanceIds(request.getInstanceIds());
+            if (!CollectionUtils.isEmpty(ins)) {
+                instances.addAll(ins);
             }
         }
-        response.setAgeAlert(ageAlertCount);
-        response.setAgeError(ageErrorCount);
-        response.setAgeGood(ageGoodCount);
-        response.setCpuAlert(cpuAlertCount);
-        response.setCpuHigh(cpuHighCount);
-        response.setCpuLow(cpuLowCount);
-        return response;
-    }
 
-    @Override
-    public CloudInstanceAggregatedResponse getInstanceAggregatedData(List<String> instanceIds) {
-        return null;
+        if (!CollectionUtils.isEmpty(request.getTags())) {
+            Collection<CloudInstance> ins = getInstanceDetailsByTags(request.getTags());
+            if (!CollectionUtils.isEmpty(ins)) {
+                instances.addAll(ins);
+            }
+        }
+        return aggregate(instances, request.getConfig());
     }
-
-    @Override
-    public CloudInstanceAggregatedResponse getInstanceAggregatedDataByTags(List<NameValue> tags) {
-        return null;
-    }
-
 
     @Override
     public Collection<String> refreshInstances(CloudInstanceListRefreshRequest request) {
@@ -208,5 +156,71 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         return objectIds;
     }
 
+    private CloudInstanceAggregatedResponse aggregate(Collection<CloudInstance> instances, CloudConfig config) {
+        if (config == null) {
+            config = new CloudConfig();
+        }
+        int ageAlertCount = 0;
+        int ageErrorCount = 0;
+        int ageGoodCount = 0;
+        int cpuHighCount = 0;
+        int cpuAlertCount = 0;
+        int cpuLowCount = 0;
+        int unEcryptedComputeCount = 0;
+        int unTaggedCount = 0;
+        int stoppedCount = 0;
+        int totalCount = 0;
+        /** For future enhancements
+         double estimatedCharge = 0.0;
+         int memoryHighCount = 0;
+         int memoryAlertCount = 0;
+         int memoryLowCount = 0;
+         int diskHighCount = 0;
+         int diskAlertCount = 0;
+         int diskLowCount = 0;
+         int networkHighCount = 0;
+         int networkAlertCount = 0;
+         int networkLowCount = 0;
+         **/
+        CloudInstanceAggregatedResponse response = new CloudInstanceAggregatedResponse();
+        for (CloudInstance rd : instances) {
+            totalCount = totalCount + 1;
+
+            if (!rd.isEncrypted()) {
+                unEcryptedComputeCount = unEcryptedComputeCount + 1;
+            }
+            if (rd.isStopped()) {
+                stoppedCount = stoppedCount + 1;
+            }
+            if (!rd.isTagged()) {
+                unTaggedCount = unTaggedCount + 1;
+            }
+            if (rd.getAge() >= config.getAgeError()) {
+                ageErrorCount = ageErrorCount + 1;
+            }
+            if ((rd.getAge() < config.getAgeError()) && (rd.getAge() >= config.getAgeAlert())) {
+                ageAlertCount = ageAlertCount + 1;
+            }
+            if (rd.getAge() < config.getAgeAlert()) {
+                ageGoodCount = ageGoodCount + 1;
+            }
+            if (rd.getCpuUtilization() >= config.getCpuError()) {
+                cpuHighCount = cpuHighCount + 1;
+            }
+            if ((rd.getCpuUtilization() < config.getCpuError()) && (rd.getCpuUtilization() >= config.getCpuAlert())) {
+                cpuAlertCount = cpuAlertCount + 1;
+            }
+            if (rd.getCpuUtilization() < config.getCpuAlert()) {
+                cpuLowCount = cpuLowCount + 1;
+            }
+        }
+        response.setAgeAlert(ageAlertCount);
+        response.setAgeError(ageErrorCount);
+        response.setAgeGood(ageGoodCount);
+        response.setCpuAlert(cpuAlertCount);
+        response.setCpuHigh(cpuHighCount);
+        response.setCpuLow(cpuLowCount);
+        return response;
+    }
 
 }
