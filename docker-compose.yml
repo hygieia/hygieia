@@ -8,7 +8,7 @@ mongodb:
    - ./mongo:/data/db:rw
   volume_driver: local
 hygieia-api:
-  image: hygieia-api:latest
+  image: capitalone/hygieia-api:latest
   container_name: hygieia-api
   ports:
   - "8080:8080"
@@ -17,7 +17,7 @@ hygieia-api:
   links:
   - mongodb:mongo
 hygieia-ui:
-  image: hygieia-ui:latest
+  image: capitalone/hygieia-ui:latest
   container_name: hygieia-ui
   ports:
   - "8088:80"
@@ -26,7 +26,7 @@ hygieia-ui:
 
 
 hygieia-github-scm-collector:
-  image: hygieia-github-scm-collector:latest
+  image: capitalone/hygieia-github-scm-collector:latest
   container_name: hygieia-github
   volumes:
   - ./logs:/hygieia/logs
@@ -41,7 +41,7 @@ hygieia-github-scm-collector:
 
 
 hygieia-jira-feature-collector:
-  image: hygieia-jira-feature-collector:latest
+  image: capitalone/hygieia-jira-feature-collector:latest
   container_name: hygieia-jira
   volumes:
   - ./logs:/hygieia/logs
@@ -112,7 +112,7 @@ hygieia-jira-feature-collector:
 
 
 hygieia-jenkins-build-collector:
-  image: hygieia-jenkins-build-collector:latest
+  image: capitalone/hygieia-jenkins-build-collector:latest
   container_name: hygieia-jenkins-build
   volumes:
   - ./logs:/hygieia/logs
@@ -132,7 +132,7 @@ hygieia-jenkins-build-collector:
 #  - JENKINS_SAVE_LOG=true
 
 hygieia-jenkins-cucumber-test-collector:
-  image: hygieia-jenkins-cucumber-test-collector:latest
+  image: capitalone/hygieia-jenkins-cucumber-test-collector:latest
   container_name: hygieia-jenkins-cucumber
   volumes:
   - ./logs:/hygieia/logs
@@ -152,7 +152,7 @@ hygieia-jenkins-cucumber-test-collector:
 #  - JENKINS_SAVE_LOG=true
 
 hygieia-sonar-codequality-collector:
-  image: hygieia-sonar-codequality-collector:latest
+  image: capitalone/hygieia-sonar-codequality-collector:latest
   container_name: hygieia-sonar-codequality
   volumes:
   - ./logs:/hygieia/logs
@@ -164,7 +164,7 @@ hygieia-sonar-codequality-collector:
 #  - SONAR_URL=http://localhost:9000
 
 hygieia-chat-ops-collector:
-  image: hygieia-chat-ops-collector:latest
+  image: capitalone/hygieia-chat-ops-collector:latest
   container_name: hygieia-chat-ops
   volumes:
   - ./logs:/hygieia/logs
@@ -175,7 +175,7 @@ hygieia-chat-ops-collector:
 #  - CHATOPS_CRON=0 0/5 * * * *
 
 hygieia-subversion-scm-collector:
-  image: hygieia-subversion-scm-collector:latest
+  image: capitalone/hygieia-subversion-scm-collector:latest
   container_name: hygieia-subversion
   volumes:
   - ./logs:/hygieia/logs
@@ -193,7 +193,7 @@ hygieia-subversion-scm-collector:
 #  - SUBVERSION_COMMIT_THRESHOLD_DAYS=15
 
 hygieia-stash-scm-collector:
-  image: hygieia-stash-scm-collector:latest
+  image: capitalone/hygieia-stash-scm-collector:latest
   container_name: hygieia-stash
   volumes:
   - ./logs:/hygieia/logs
@@ -211,7 +211,7 @@ hygieia-stash-scm-collector:
 #  - STASH_COMMIT_THRESHOLD_DAYS=15
 
 hygieia-versionone-collector:
-  image: hygieia-versionone-collector:latest
+  image: capitalone/hygieia-versionone-collector:latest
   container_name: hygieia-versionone
   volumes:
   - ./logs:/hygieia/logs
@@ -257,7 +257,7 @@ hygieia-versionone-collector:
 #  - VERSIONONE_MASTER_START_DATE=2008-01-01T00:00:00.000000
 
 hygieia-udeploy-collector:
-  image: hygieia-udeploy-collector:latest
+  image: capitalone/hygieia-udeploy-collector:latest
   container_name: hygieia-udeploy
   volumes:
   - ./logs:/hygieia/logs
