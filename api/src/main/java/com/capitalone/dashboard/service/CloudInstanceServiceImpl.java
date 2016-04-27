@@ -8,6 +8,8 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
+import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 import com.capitalone.dashboard.util.HygieiaUtils;
@@ -56,17 +58,17 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
     }
 
     @Override
-    public Collection<CloudInstance> getInstanceDetails(ObjectId componentId) {
-        return getInstanceDetails(getCollectorItem(componentId));
+    public Collection<CloudInstance> getInstanceDetailsByComponentId(String componentIdString) {
+        return getInstanceDetails(getCollectorItem(new ObjectId(componentIdString)));
     }
 
     @Override
-    public CloudInstance getInstanceDetails(String instanceId) {
+    public CloudInstance getInstanceDetailsByInstanceId(String instanceId) {
         return cloudInstanceRepository.findByInstanceId(instanceId);
     }
 
     @Override
-    public Collection<CloudInstance> getInstanceDetails(List<String> instanceIds) {
+    public Collection<CloudInstance> getInstanceDetailsByInstanceIds(List<String> instanceIds) {
         return cloudInstanceRepository.findByInstanceIdIn(instanceIds);
     }
 
@@ -80,13 +82,118 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
     }
 
     @Override
-    public CloudInstanceAggregatedResponse getInstanceAggregatedData(ObjectId componentId) {
-        CollectorItem item = getCollectorItem(componentId);
+    public Collection<CloudInstance> getInstanceDetailsByAccount(String accountNumber) {
+        return cloudInstanceRepository.findByAccountNumber(accountNumber);
+    }
+
+    @Override
+    public CloudInstanceAggregatedResponse getInstanceAggregatedData(String componentIdString) {
+        CollectorItem item = getCollectorItem(new ObjectId(componentIdString));
         CloudInstanceAggregatedResponse response = new CloudInstanceAggregatedResponse();
         Collection<CloudInstance> instances = getInstanceDetails(item);
         if ((item != null) && !(item instanceof CloudConfig)) return response;
         CloudConfig config = (CloudConfig) item;
         if (CollectionUtils.isEmpty(instances)) return response;
+        return aggregate(instances, config);
+    }
+
+    @Override
+    public CloudInstanceAggregatedResponse getInstanceAggregatedData(CloudInstanceAggregateRequest request) {
+        Set<CloudInstance> instances = new HashSet<>();
+        if (!CollectionUtils.isEmpty(request.getInstanceIds())) {
+            Collection<CloudInstance> ins = getInstanceDetailsByInstanceIds(request.getInstanceIds());
+            if (!CollectionUtils.isEmpty(ins)) {
+                instances.addAll(ins);
+            }
+        }
+
+        if (!CollectionUtils.isEmpty(request.getTags())) {
+            Collection<CloudInstance> ins = getInstanceDetailsByTags(request.getTags());
+            if (!CollectionUtils.isEmpty(ins)) {
+                instances.addAll(ins);
+            }
+        }
+        return aggregate(instances, request.getConfig());
+    }
+
+    @Override
+    public Collection<String> refreshInstances(CloudInstanceListRefreshRequest request) {
+        Collection<CloudInstance> existing = cloudInstanceRepository.findByAccountNumber(request.getAccountNumber());
+        Set<CloudInstance> toDelete = new HashSet<>();
+        Set<String> deletedIds = new HashSet<>();
+        if (CollectionUtils.isEmpty(request.getInstanceIds()) || CollectionUtils.isEmpty(existing)) return new ArrayList<>();
+
+        for (CloudInstance ci : existing) {
+            if (!request.getInstanceIds().contains(ci.getInstanceId())) {
+                toDelete.add(ci);
+                deletedIds.add(ci.getInstanceId());
+            }
+        }
+        if (CollectionUtils.isEmpty(toDelete)) {
+            cloudInstanceRepository.delete(toDelete);
+        }
+        return deletedIds;
+    }
+
+    private CloudInstance createCloudInstanceObject (CloudInstanceCreateRequest request) {
+        CloudInstance instance = new CloudInstance();
+        instance.setAccountNumber(request.getAccountNumber());
+        instance.setRootDeviceName(request.getRootDeviceName());
+        instance.setCpuUtilization(request.getCpuUtilization());
+        instance.setVirtualNetworkId(request.getVirtualNetworkId());
+        instance.setSubnetId(request.getSubnetId());
+        instance.setStatus(request.getStatus());
+        instance.setAge(request.getAge());
+        instance.setDiskRead(request.getDiskRead());
+        instance.setDiskWrite(request.getDiskWrite());
+        instance.setEncrypted(request.isEncrypted());
+        instance.setImageApproved(request.isImageApproved());
+        instance.setImageId(request.getImageId());
+        instance.setImageExpirationDate(request.getImageExpirationDate());
+        instance.setInstanceId(request.getInstanceId());
+        instance.setInstanceOwner(request.getInstanceOwner());
+        instance.setInstanceType(request.getInstanceType());
+        instance.setLastAction(request.getLastAction());
+        instance.setMonitored(request.isMonitored());
+        instance.setNetworkIn(request.getNetworkIn());
+        instance.setNetworkOut(request.getNetworkOut());
+        instance.setLastUpdatedDate(request.getLastUpdatedDate());
+        instance.setPrivateDns(request.getPrivateDns());
+        instance.setPublicIp(request.getPublicIp());
+        instance.setStopped(request.isStopped());
+        instance.setTagged(request.isTagged());
+        instance.getTags().addAll(request.getTags());
+        instance.getSecurityGroups().addAll(request.getSecurityGroups());
+        return instance;
+    }
+
+    @Override
+    public List<String> upsertInstance(List<CloudInstanceCreateRequest> instances) {
+        List<String> objectIds = new ArrayList<>();
+        if (CollectionUtils.isEmpty(instances))
+        for (CloudInstanceCreateRequest ci : instances) {
+            CloudInstance newObject = createCloudInstanceObject(ci);
+            CloudInstance existing = cloudInstanceRepository.findByInstanceId(ci.getInstanceId());
+            if (existing == null) {
+                CloudInstance in = cloudInstanceRepository.save(newObject);
+                objectIds.add(in.getId().toString());
+            } else {
+                try {
+                    HygieiaUtils.mergeObjects(existing, newObject);
+                    cloudInstanceRepository.save(existing);
+                    objectIds.add(existing.getId().toString());
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    logger.error("Error saving cloud instance info for instanceID: " + ci.getInstanceId(), e);
+                }
+            }
+        }
+        return objectIds;
+    }
+
+    private CloudInstanceAggregatedResponse aggregate(Collection<CloudInstance> instances, CloudConfig config) {
+        if (config == null) {
+            config = new CloudConfig();
+        }
         int ageAlertCount = 0;
         int ageErrorCount = 0;
         int ageGoodCount = 0;
@@ -109,8 +216,7 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
          int networkAlertCount = 0;
          int networkLowCount = 0;
          **/
-
-
+        CloudInstanceAggregatedResponse response = new CloudInstanceAggregatedResponse();
         for (CloudInstance rd : instances) {
             totalCount = totalCount + 1;
 
@@ -150,58 +256,5 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         response.setCpuLow(cpuLowCount);
         return response;
     }
-
-    @Override
-    public CloudInstanceAggregatedResponse getInstanceAggregatedData(List<String> instanceIds) {
-        return null;
-    }
-
-    @Override
-    public CloudInstanceAggregatedResponse getInstanceAggregatedDataByTags(List<NameValue> tags) {
-        return null;
-    }
-
-
-    @Override
-    public Collection<String> refreshInstances(CloudInstanceListRefreshRequest request) {
-        Collection<CloudInstance> existing = cloudInstanceRepository.findByAccountNumber(request.getAccountNumber());
-        Set<CloudInstance> toDelete = new HashSet<>();
-        Set<String> deletedIds = new HashSet<>();
-        if (CollectionUtils.isEmpty(request.getInstanceIds()) || CollectionUtils.isEmpty(existing)) return new ArrayList<>();
-
-        for (CloudInstance ci : existing) {
-            if (!request.getInstanceIds().contains(ci.getInstanceId())) {
-                toDelete.add(ci);
-                deletedIds.add(ci.getInstanceId());
-            }
-        }
-        if (CollectionUtils.isEmpty(toDelete)) {
-            cloudInstanceRepository.delete(toDelete);
-        }
-        return deletedIds;
-    }
-
-    @Override
-    public List<ObjectId> upsertInstance(List<CloudInstance> instances) {
-        List<ObjectId> objectIds = new ArrayList<>();
-        if (CollectionUtils.isEmpty(instances))
-        for (CloudInstance ci : instances) {
-            CloudInstance existing = cloudInstanceRepository.findByInstanceId(ci.getInstanceId());
-            if (existing == null) {
-                CloudInstance in = cloudInstanceRepository.save(ci);
-                objectIds.add(in.getId());
-            } else {
-                try {
-                    HygieiaUtils.mergeObjects(existing, ci);
-                    cloudInstanceRepository.save(existing);
-                    objectIds.add(existing.getId());
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    logger.error("Error saving cloud instance info for instanceID: " + ci.getInstanceId(), e);
-                }
-            }
-        }
-        return objectIds;
-    }
-
 
 }

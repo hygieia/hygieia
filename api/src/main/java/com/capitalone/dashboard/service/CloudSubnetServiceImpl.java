@@ -9,6 +9,7 @@ import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.repository.CloudSubNetworkRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
+import com.capitalone.dashboard.request.CloudSubnetCreateRequest;
 import com.capitalone.dashboard.response.CloudSubNetworkAggregatedResponse;
 import com.capitalone.dashboard.util.HygieiaUtils;
 import org.apache.commons.logging.Log;
@@ -77,21 +78,40 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
         return deletedIds;
     }
 
+    private CloudSubNetwork createSubnetworkObject (CloudSubnetCreateRequest request) {
+        CloudSubNetwork subnet = new CloudSubNetwork();
+        subnet.setAvailableIPCount(request.getAvailableIPCount());
+        subnet.setDefaultForZone(request.isDefaultForZone());
+        subnet.setState(request.getState());
+        subnet.setVirtualNetworkId(request.getVirtualNetworkId());
+        subnet.setZone(request.getZone());
+        subnet.setCidrBlock(request.getCidrBlock());
+        subnet.setCidrCount(request.getCidrCount());
+        subnet.setCreationDate(request.getCreationDate());
+        subnet.setLastUpdateDate(request.getLastUpdateDate());
+        subnet.setSubnetId(request.getSubnetId());
+        subnet.setUsedIPCount(request.getUsedIPCount());
+        subnet.getTags().addAll(request.getTags());
+        subnet.getIpUsage().addAll(request.getIpUsage());
+        return subnet;
+    }
+
     @Override
-    public List<ObjectId> upsertSubNetwork(List<CloudSubNetwork> subnets) {
-        List<ObjectId> objectIds = new ArrayList<>();
-        for (CloudSubNetwork ci : subnets) {
-            CloudSubNetwork existing = getSubNetworkDetails(ci.getSubnetId());
+    public List<String> upsertSubNetwork(List<CloudSubnetCreateRequest> subnets) {
+        List<String> objectIds = new ArrayList<>();
+        for (CloudSubnetCreateRequest csn : subnets) {
+            CloudSubNetwork newObject = createSubnetworkObject(csn);
+            CloudSubNetwork existing = getSubNetworkDetailsBySubnetId(csn.getSubnetId());
             if (existing == null) {
-                CloudSubNetwork in = cloudSubNetworkRepository.save(ci);
-                objectIds.add(in.getId());
+                CloudSubNetwork sn = cloudSubNetworkRepository.save(newObject);
+                objectIds.add(sn.getId().toString());
             } else {
                 try {
-                    HygieiaUtils.mergeObjects(existing, ci);
+                    HygieiaUtils.mergeObjects(existing, newObject);
                     cloudSubNetworkRepository.save(existing);
-                    objectIds.add(existing.getId());
+                    objectIds.add(existing.getId().toString());
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    logger.error("Error saving cloud instance info for instanceID: " + ci.getSubnetId(), e);
+                    logger.error("Error saving cloud subnet information info for subnetId: " + csn.getSubnetId(), e);
                 }
             }
         }
@@ -99,17 +119,17 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
     }
 
     @Override
-    public Collection<CloudSubNetwork> getSubNetworkDetails(ObjectId componentId) {
-        return getSubNetworkDetails(getCollectorItem(componentId));
+    public Collection<CloudSubNetwork> getSubNetworkDetailsByComponentId(String componentIdString) {
+        return getSubNetworkDetails(getCollectorItem(new ObjectId(componentIdString)));
     }
 
     @Override
-    public CloudSubNetwork getSubNetworkDetails(String subnetId) {
+    public CloudSubNetwork getSubNetworkDetailsBySubnetId(String subnetId) {
         return cloudSubNetworkRepository.findBySubnetId(subnetId);
     }
 
     @Override
-    public Collection<CloudSubNetwork> getSubNetworkDetails(List<String> subnetIds) {
+    public Collection<CloudSubNetwork> getSubNetworkDetailsBySubnetIds(List<String> subnetIds) {
         return cloudSubNetworkRepository.findBySubnetIdIn(subnetIds);
     }
 
@@ -123,7 +143,7 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
     }
 
     @Override
-    public CloudSubNetworkAggregatedResponse getSubNetworkAggregatedData(ObjectId componentId) {
+    public CloudSubNetworkAggregatedResponse getSubNetworkAggregatedData(String componentIdString) {
         return new CloudSubNetworkAggregatedResponse();
     }
 
