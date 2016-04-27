@@ -3,10 +3,10 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
+import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 import com.capitalone.dashboard.service.CloudInstanceService;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,8 +44,8 @@ public class CloudInstanceController {
 
     @RequestMapping(value = "/cloud/instance/create", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ObjectId>> upsertInstance(
-            @Valid @RequestBody List<CloudInstance> request) {
+    public ResponseEntity<List<String>> upsertInstance(
+            @Valid @RequestBody List<CloudInstanceCreateRequest> request) {
         return ResponseEntity.ok().body(cloudInstanceService.upsertInstance(request));
     }
 
@@ -75,6 +75,7 @@ public class CloudInstanceController {
             @Valid @RequestBody List<String> instanceIds) {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByInstanceIds(instanceIds));
     }
+
 
     @RequestMapping(value = "/cloud/instance/details/tags", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)

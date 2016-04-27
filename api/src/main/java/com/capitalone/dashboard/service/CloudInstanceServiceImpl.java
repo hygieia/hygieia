@@ -9,6 +9,7 @@ import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
+import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 import com.capitalone.dashboard.util.HygieiaUtils;
@@ -134,20 +135,53 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         return deletedIds;
     }
 
+    private CloudInstance createCloudInstanceObject (CloudInstanceCreateRequest request) {
+        CloudInstance instance = new CloudInstance();
+        instance.setAccountNumber(request.getAccountNumber());
+        instance.setRootDeviceName(request.getRootDeviceName());
+        instance.setCpuUtilization(request.getCpuUtilization());
+        instance.setVirtualNetworkId(request.getVirtualNetworkId());
+        instance.setSubnetId(request.getSubnetId());
+        instance.setStatus(request.getStatus());
+        instance.setAge(request.getAge());
+        instance.setDiskRead(request.getDiskRead());
+        instance.setDiskWrite(request.getDiskWrite());
+        instance.setEncrypted(request.isEncrypted());
+        instance.setImageApproved(request.isImageApproved());
+        instance.setImageId(request.getImageId());
+        instance.setImageExpirationDate(request.getImageExpirationDate());
+        instance.setInstanceId(request.getInstanceId());
+        instance.setInstanceOwner(request.getInstanceOwner());
+        instance.setInstanceType(request.getInstanceType());
+        instance.setLastAction(request.getLastAction());
+        instance.setMonitored(request.isMonitored());
+        instance.setNetworkIn(request.getNetworkIn());
+        instance.setNetworkOut(request.getNetworkOut());
+        instance.setLastUpdatedDate(request.getLastUpdatedDate());
+        instance.setPrivateDns(request.getPrivateDns());
+        instance.setPublicIp(request.getPublicIp());
+        instance.setStopped(request.isStopped());
+        instance.setTagged(request.isTagged());
+        instance.getTags().addAll(request.getTags());
+        instance.getSecurityGroups().addAll(request.getSecurityGroups());
+        return instance;
+    }
+
     @Override
-    public List<ObjectId> upsertInstance(List<CloudInstance> instances) {
-        List<ObjectId> objectIds = new ArrayList<>();
+    public List<String> upsertInstance(List<CloudInstanceCreateRequest> instances) {
+        List<String> objectIds = new ArrayList<>();
         if (CollectionUtils.isEmpty(instances))
-        for (CloudInstance ci : instances) {
+        for (CloudInstanceCreateRequest ci : instances) {
+            CloudInstance newObject = createCloudInstanceObject(ci);
             CloudInstance existing = cloudInstanceRepository.findByInstanceId(ci.getInstanceId());
             if (existing == null) {
-                CloudInstance in = cloudInstanceRepository.save(ci);
-                objectIds.add(in.getId());
+                CloudInstance in = cloudInstanceRepository.save(newObject);
+                objectIds.add(in.getId().toString());
             } else {
                 try {
-                    HygieiaUtils.mergeObjects(existing, ci);
+                    HygieiaUtils.mergeObjects(existing, newObject);
                     cloudInstanceRepository.save(existing);
-                    objectIds.add(existing.getId());
+                    objectIds.add(existing.getId().toString());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     logger.error("Error saving cloud instance info for instanceID: " + ci.getInstanceId(), e);
                 }

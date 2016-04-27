@@ -1,15 +1,16 @@
-package com.capitalone.dashboard.model;
+package com.capitalone.dashboard.request;
 
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.capitalone.dashboard.model.CloudSubNetwork;
+import com.capitalone.dashboard.model.NameValue;
+import com.capitalone.dashboard.model.NameValueCount;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Document(collection = "cloud_subnetwork")
-public class CloudSubNetwork extends BaseModel{
-    @Indexed
+public class CloudSubnetCreateRequest {
+    @NotNull
     private String subnetId;
     private String virtualNetworkId;
     private String cidrBlock;

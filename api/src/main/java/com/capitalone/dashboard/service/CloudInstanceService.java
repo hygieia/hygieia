@@ -3,9 +3,9 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
+import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
-import org.bson.types.ObjectId;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +16,7 @@ public interface CloudInstanceService {
     Collection<String> refreshInstances(CloudInstanceListRefreshRequest request);
 
     //Instance Upsert
-    List<ObjectId> upsertInstance(List<CloudInstance> instance);
+    List<String> upsertInstance(List<CloudInstanceCreateRequest> instance);
 
     /**
      *     Instance Details by
