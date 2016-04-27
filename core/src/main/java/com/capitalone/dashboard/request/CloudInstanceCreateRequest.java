@@ -1,21 +1,18 @@
-package com.capitalone.dashboard.model;
+package com.capitalone.dashboard.request;
 
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.capitalone.dashboard.model.CloudInstance;
+import com.capitalone.dashboard.model.NameValue;
+
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Represents an EC2 instance from AWS
- */
-@Document(collection = "cloud_instance")
-public class CloudInstance extends BaseModel{
-    @Indexed
+public class CloudInstanceCreateRequest {
+    @NotNull
     private String instanceId;
-
-    @Indexed
+    @NotNull
     private String accountNumber;
     private String instanceType;
     private String imageId;

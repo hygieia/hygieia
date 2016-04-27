@@ -3,8 +3,8 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
+import com.capitalone.dashboard.request.CloudSubnetCreateRequest;
 import com.capitalone.dashboard.response.CloudSubNetworkAggregatedResponse;
-import org.bson.types.ObjectId;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,7 +19,7 @@ public interface CloudSubnetService {
     //Upsert Subnetwork
     Collection<String> refreshSubnets(CloudInstanceListRefreshRequest request);
 
-    List<ObjectId> upsertSubNetwork(List<CloudSubNetwork> subnet);
+    List<String> upsertSubNetwork(List<CloudSubnetCreateRequest> requests);
     /**
      *     Subnetwork Details by
      *          (a) componentId - for UI mostly

@@ -4,6 +4,7 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
+import com.capitalone.dashboard.request.CloudSubnetCreateRequest;
 import com.capitalone.dashboard.response.CloudSubNetworkAggregatedResponse;
 import com.capitalone.dashboard.service.CloudSubnetService;
 import org.bson.types.ObjectId;
@@ -43,8 +44,8 @@ public class CloudSubnetController {
 
     @RequestMapping(value = "/cloud/subnet/create", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ObjectId>> upsertSubNetwork(
-            @Valid @RequestBody List<CloudSubNetwork> request) {
+    public ResponseEntity<List<String>> upsertSubNetwork(
+            @Valid @RequestBody List<CloudSubnetCreateRequest> request) {
         return ResponseEntity.ok().body(cloudSubnetService.upsertSubNetwork(request));
     }
 
