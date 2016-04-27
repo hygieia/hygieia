@@ -2,10 +2,11 @@ package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.NameValue;
+import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
+import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 import com.capitalone.dashboard.service.CloudInstanceService;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,32 +44,40 @@ public class CloudInstanceController {
 
     @RequestMapping(value = "/cloud/instance/create", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ObjectId>> upsertInstance(
-            @Valid @RequestBody List<CloudInstance> request) {
+    public ResponseEntity<List<String>> upsertInstance(
+            @Valid @RequestBody List<CloudInstanceCreateRequest> request) {
         return ResponseEntity.ok().body(cloudInstanceService.upsertInstance(request));
     }
 
 
     @RequestMapping(value = "/cloud/instance/details/component/{componentId}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<CloudInstance>> getInstanceDetails(
-            @PathVariable ObjectId componentId) {
-        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetails(componentId));
+    public ResponseEntity<Collection<CloudInstance>> getInstanceDetailsByComponentId(
+            @PathVariable String componentId) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByComponentId(componentId));
     }
 
     @RequestMapping(value = "/cloud/instance/details/instance/{instanceId}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<CloudInstance> getInstanceDetails(
+    public ResponseEntity<CloudInstance> getInstanceDetailsByInstanceId(
             @PathVariable String instanceId) {
-        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetails(instanceId));
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByInstanceId(instanceId));
     }
 
-    @RequestMapping(value = "/cloud/instance/ids", method = POST, consumes = APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/cloud/instance/details/account/{accountNumber}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CloudInstance>> getInstanceDetailsByAccount(
+            @PathVariable String accountNumber) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByAccount(accountNumber));
+    }
+
+
+    @RequestMapping(value = "/cloud/instance/details/ids", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<CloudInstance>> getInstanceDetails(
+    public ResponseEntity<Collection<CloudInstance>> getInstanceDetailsByInstanceIds(
             @Valid @RequestBody List<String> instanceIds) {
-        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetails(instanceIds));
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByInstanceIds(instanceIds));
     }
 
-    @RequestMapping(value = "/cloud/instance/tags", method = POST, consumes = APPLICATION_JSON_VALUE,
+
+    @RequestMapping(value = "/cloud/instance/details/tags", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<CloudInstance>> getInstanceDetailsByTags(
             @Valid @RequestBody List<NameValue> tags) {
@@ -77,19 +86,13 @@ public class CloudInstanceController {
 
     @RequestMapping(value = "/cloud/instance/aggregate/component/{componentId}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedData(
-            @PathVariable ObjectId componentId) {
+            @PathVariable String componentId) {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(componentId));
     }
 
-    @RequestMapping(value = "/cloud/instance/aggregate/instanceIds", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/cloud/instance/aggregate", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedDataByInstanceIds(
-            @Valid @RequestBody List<String> instanceIds) {
-        return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(instanceIds));
-    }
-
-    @RequestMapping(value = "/cloud/instance/aggregate/tags", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedDataByTags(
-            @Valid @RequestBody List<NameValue> tags) {
-        return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedDataByTags(tags));
+            @Valid @RequestBody CloudInstanceAggregateRequest request) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(request));
     }
 }

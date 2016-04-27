@@ -2,9 +2,10 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.NameValue;
+import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
+import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
-import org.bson.types.ObjectId;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +16,7 @@ public interface CloudInstanceService {
     Collection<String> refreshInstances(CloudInstanceListRefreshRequest request);
 
     //Instance Upsert
-    List<ObjectId> upsertInstance(List<CloudInstance> instance);
+    List<String> upsertInstance(List<CloudInstanceCreateRequest> instance);
 
     /**
      *     Instance Details by
@@ -23,22 +24,21 @@ public interface CloudInstanceService {
      *          (b) instanceId
      *          (c) List of instance Ids
      *          (d) List of Tags
+     *          (e) Account Number
      */
-    Collection<CloudInstance> getInstanceDetails(ObjectId componentId);
-    CloudInstance getInstanceDetails(String instanceId);
-    Collection<CloudInstance> getInstanceDetails(List<String> instanceId);
+    Collection<CloudInstance> getInstanceDetailsByComponentId(String componentId);
+    CloudInstance getInstanceDetailsByInstanceId(String instanceId);
+    Collection<CloudInstance> getInstanceDetailsByInstanceIds(List<String> instanceId);
     Collection<CloudInstance> getInstanceDetailsByTags(List<NameValue> tags);
+    Collection<CloudInstance> getInstanceDetailsByAccount(String accountNumber);
 
 
     /**
      *     Instance Aggregated Data by
      *          (a) componentId - for UI mostly
-     *          (b) List of instance Ids
+     *          (b) Custom request object
      *          (d) List of Tags
      */
-    CloudInstanceAggregatedResponse getInstanceAggregatedData(ObjectId componentId);
-    CloudInstanceAggregatedResponse getInstanceAggregatedData(List<String> instanceIds);
-    CloudInstanceAggregatedResponse getInstanceAggregatedDataByTags(List<NameValue> tags);
-
-
+    CloudInstanceAggregatedResponse getInstanceAggregatedData(String componentId);
+    CloudInstanceAggregatedResponse getInstanceAggregatedData(CloudInstanceAggregateRequest request);
 }
