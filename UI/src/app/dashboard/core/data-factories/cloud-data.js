@@ -16,12 +16,12 @@
         var cloudDataRoute = '/api/asv/';
 
         return {
-            getASV: getASV,
+            getAccounts: getAccounts,
             getAWSGlobalData: getAWSGlobalData
         };
 
-        function getASV() {
-            //return JSON.parse('[{ "name": "IRIS"},{ "name": "Chordiant"},{ "name": "EASE"}]');
+        function getAccounts() {
+            return JSON.parse('[{ "name": "Development Account"},{ "name": "Production Account"}]');
             return $http.get(HygieiaConfig.local ? testDataRoute : cloudDataRoute)
                 .then(function (response) {
                     return response.data[0].result;
