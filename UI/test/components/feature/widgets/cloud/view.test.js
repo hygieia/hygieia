@@ -5,6 +5,9 @@
 
 describe('CloudWidgetViewController', function () {
 
+
+
+
     var controller;
     var scope;
     var cloudData;
@@ -22,6 +25,19 @@ describe('CloudWidgetViewController', function () {
             "compliant": 54
         }
     };
+
+    function retrieveTestDate(dayOffset) {
+        var currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() + dayOffset);
+        var dd = currentDate.getDate();
+        var mm = currentDate.getMonth()+1;
+        var yyyy = currentDate.getFullYear();
+
+        if(dd<10) { dd='0'+dd }
+        if(mm<10) { mm='0'+mm }
+
+       return mm+'/'+dd+'/'+yyyy;
+    }
 
     // load the controller's module
     beforeEach(module(HygieiaConfig.module));
@@ -58,6 +74,108 @@ describe('CloudWidgetViewController', function () {
                 });
             })});
 
+
+    describe('checkImageAgeStatus()', function() {
+        describe('When I call checkImageAgeStatus', function () {
+            describe('And the expiration date is earlier than today', function () {
+                it('Then I expect "RED" to be returned', function() {
+
+                    //Arrange
+                    var expirationDate = retrieveTestDate(-10);
+                    var expected = "RED";
+
+                    //Act
+                    var actual = controller.checkImageAgeStatus(expirationDate);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And the expiration date is today', function () {
+                it('Then I expect "YELLOW" to be returned', function() {
+
+                    //Arrange
+                    var expirationDate = retrieveTestDate(0);
+                    var expected = "YELLOW";
+
+                    //Act
+                    var actual = controller.checkImageAgeStatus(expirationDate);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And the expiration date is 15 days from now', function () {
+                it('Then I expect "YELLOW" to be returned', function() {
+
+                    //Arrange
+                    var expirationDate = retrieveTestDate(15);
+                    var expected = "YELLOW";
+
+                    //Act
+                    var actual = controller.checkImageAgeStatus(expirationDate);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And the expiration date is 16 days from now', function () {
+                it('Then I expect "GREEN" to be returned', function() {
+
+                    //Arrange
+                    var expirationDate = retrieveTestDate(16);
+                    var expected = "GREEN";
+
+                    //Act
+                    var actual = controller.checkImageAgeStatus(expirationDate);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+        });
+    });
+
+
+
+    describe('checkNOTTStatus()', function() {
+        describe('When I call checkNOTTStatus', function () {
+            describe('And the status is "Excluded"', function () {
+                it('Then I expect "RED" to be returned', function() {
+
+                    //Arrange
+                    var status = "Excluded";
+                    var expected = "RED";
+
+                    //Act
+                    var actual = controller.checkNOTTStatus(status);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And the status is not "Excluded"', function () {
+                it('Then I expect "RED" to be returned', function() {
+
+                    //Arrange
+                    var status = "notExcluded";
+                    var expected = "GREEN";
+
+                    //Act
+                    var actual = controller.checkNOTTStatus(status);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+
+        });
+    });
 
     describe('load()', function() {
         describe('When I call load', function () {
