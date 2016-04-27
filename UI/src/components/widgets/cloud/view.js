@@ -1,5 +1,6 @@
 /**
  * Created by nmande on 4/12/16.
+ * Modified by nmande on 04/27/16
  */
 
 
@@ -50,6 +51,15 @@
         ctrl.checkNOTTStatus = function(status) {
             return status.toUpperCase() == "EXCLUDED" ? "RED" : "GREEN";
         }
+
+        ctrl.checkMonitoredStatus = function(status) {
+            return status ? "GREEN" : "RED";
+        }
+
+        ctrl.checkUtilizationStatus = function(status) {
+            return status > 30 ? "GREEN" : "RED";
+        }
+
 
         ctrl.tag = $scope.widgetConfig.options.tag || "";
         ctrl.load = function () {

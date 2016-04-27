@@ -139,8 +139,6 @@ describe('CloudWidgetViewController', function () {
         });
     });
 
-
-
     describe('checkNOTTStatus()', function() {
         describe('When I call checkNOTTStatus', function () {
             describe('And the status is "Excluded"', function () {
@@ -173,6 +171,92 @@ describe('CloudWidgetViewController', function () {
                 });
             });
 
+
+        });
+    });
+
+    describe('checkMonitoredStatus()', function() {
+        describe('When I call checkMonitoredStatus', function () {
+            describe('And the status is "true"', function () {
+                it('Then I expect "GREEN" to be returned', function() {
+
+                    //Arrange
+                    var status = true;
+                    var expected = "GREEN";
+
+                    //Act
+                    var actual = controller.checkMonitoredStatus(status);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And the status is "false"', function () {
+                it('Then I expect "RED" to be returned', function() {
+
+                    //Arrange
+                    var status = false;
+                    var expected = "RED";
+
+                    //Act
+                    var actual = controller.checkMonitoredStatus(status);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+
+        });
+    });
+
+    describe('checkUtilizationStatus()', function() {
+        describe('When I call checkUtilizationStatus', function () {
+            describe('And the status is greater than 30', function () {
+                it('Then I expect "GREEN" to be returned', function() {
+
+                    //Arrange
+                    var status = 31;
+                    var expected = "GREEN";
+
+                    //Act
+                    var actual = controller.checkUtilizationStatus(status);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And the status is less than 30', function () {
+                it('Then I expect "RED" to be returned', function() {
+
+                    //Arrange
+                    var status = 29;
+                    var expected = "RED";
+
+                    //Act
+                    var actual = controller.checkUtilizationStatus(status);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And the status is 30', function () {
+                it('Then I expect "RED" to be returned', function() {
+
+                    //Arrange
+                    var status = 30;
+                    var expected = "RED";
+
+                    //Act
+                    var actual = controller.checkUtilizationStatus(status);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
 
         });
     });
