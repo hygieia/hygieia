@@ -9,15 +9,7 @@ import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.DescribeVolumesResult;
-import com.amazonaws.services.ec2.model.GroupIdentifier;
-import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.InstanceState;
-import com.amazonaws.services.ec2.model.Reservation;
-import com.amazonaws.services.ec2.model.Tag;
-import com.amazonaws.services.ec2.model.Volume;
-import com.amazonaws.services.ec2.model.VolumeAttachment;
+import com.amazonaws.services.ec2.model.*;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.CloudVirtualNetwork;
@@ -32,12 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,6 +45,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
     /**
      * Calls AWS API and collects instance details.
+     *
      * @param repository
      * @return List of CloudInstance
      */
@@ -106,7 +94,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
         Map<String, List<CloudInstance>> returnList = new HashMap<>();
         int i = 0;
-        for (String acct: ownerInstanceMap.keySet()) {
+        for (String acct : ownerInstanceMap.keySet()) {
             ArrayList<CloudInstance> rawDataList = new ArrayList<>();
             for (Instance currInstance : ownerInstanceMap.get(acct)) {
                 i = i + 1;
@@ -127,6 +115,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
     /**
      * Fill out the CloudInstance object
+     *
      * @param account
      * @param currInstance
      * @param instanceVolMap
@@ -149,13 +138,13 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         object.setAge(getInstanceAge(currInstance));
         object.setEncrypted(isInstanceVolumneEncrypted(currInstance,
                 instanceVolMap));
-      //  object.setCpuUtilization(getInstanceCPUSinceLastRun(currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setCpuUtilization(getInstanceCPUSinceLastRun(currInstance.getInstanceId(), cwClient, lastUpdated));
         object.setTagged(isInstanceTagged(currInstance));
         object.setStopped(isInstanceStopped(currInstance));
-//        object.setNetworkIn(getLastHourInstanceNetworkIn(currInstance.getInstanceId(), cwClient, lastUpdated));
-// object.setNetworkOut(getLastHourIntanceNetworkOut(currInstance.getInstanceId(), cwClient, lastUpdated));
- //       object.setDiskRead(getLastHourInstanceDiskRead(currInstance.getInstanceId(), cwClient, lastUpdated));
- //       object.setDiskWrite(getLastInstanceHourDiskWrite(currInstance.getInstanceId(), cwClient));
+        object.setNetworkIn(getLastHourInstanceNetworkIn(currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setNetworkOut(getLastHourIntanceNetworkOut(currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setDiskRead(getLastHourInstanceDiskRead(currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setDiskWrite(getLastInstanceHourDiskWrite(currInstance.getInstanceId(), cwClient));
         // rest of the details
         object.setImageId(currInstance.getImageId());
         object.setInstanceId(currInstance.getInstanceId());
@@ -209,14 +198,14 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     private static Double getInstanceCPUSinceLastRun(String instanceId,
                                                      AmazonCloudWatchClient ec2Client, long lastUpdated) {
 
-        long offsetInMilliseconds = Math.min(ONE_DAY_MILLI_SECOND,
-                System.currentTimeMillis() - lastUpdated);
+        // long offsetInMilliseconds = Math.min(ONE_DAY_MILLI_SECOND,System.currentTimeMillis() - lastUpdated);
         Dimension instanceDimension = new Dimension().withName("InstanceId")
                 .withValue(instanceId);
 
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_YEAR, -1);
         long oneDayAgo = cal.getTimeInMillis();
+
         GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
                 .withMetricName("CPUUtilization")
                 .withNamespace("AWS/EC2")
@@ -226,7 +215,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 // to get metrics a specific
                 // instance
                 .withStatistics("Average")
-                .withStartTime(new Date(new Date().getTime() - oneDayAgo))
+                .withStartTime(new Date(new Date().getTime() - 1440 * 1000))
                 .withEndTime(new Date());
         GetMetricStatisticsResult result = ec2Client
                 .getMetricStatistics(request);

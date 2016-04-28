@@ -1,11 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.config.collector.CloudConfig;
-import com.capitalone.dashboard.model.CloudInstance;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.NameValue;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
@@ -21,11 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class CloudInstanceServiceImpl implements CloudInstanceService {
@@ -170,8 +162,9 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
     @Override
     public List<String> upsertInstance(List<CloudInstanceCreateRequest> instances) {
         List<String> objectIds = new ArrayList<>();
-        if (CollectionUtils.isEmpty(instances))
+        if (!CollectionUtils.isEmpty(instances))
         for (CloudInstanceCreateRequest ci : instances) {
+            logger.debug("in API IS:" + ci.getImageId());
             CloudInstance newObject = createCloudInstanceObject(ci);
             CloudInstance existing = cloudInstanceRepository.findByInstanceId(ci.getInstanceId());
             if (existing == null) {
