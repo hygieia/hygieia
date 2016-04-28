@@ -53,8 +53,15 @@
             return difference < 0 ? "fail" : difference >= 0 && difference <= 15 ? "warn" : "pass";
         }
 
-        ctrl.checkNOTTStatus = function(status) {
-            return status.toUpperCase() == "EXCLUDED" ? "fail" : "pass";
+
+        ctrl.checkNOTTDisabledStatus = function(tags) {
+            for(var i = 0; i < tags.length; i++) {
+                var item = tags[i];
+                if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDED") {
+                    return true;
+                }
+            }
+            return false;
         }
 
         ctrl.checkMonitoredStatus = function(status) {
@@ -64,6 +71,7 @@
         ctrl.checkUtilizationStatus = function(status) {
             return status > 30 ? "pass" : "fail";
         }
+
 
 
 
