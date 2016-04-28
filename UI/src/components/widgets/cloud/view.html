@@ -21,10 +21,6 @@
 
     <div class="container-fluid" ng-if="cloudView.isDetail">
         <div class="row">
-            <div class="col-xs-12">
-                Detail
-            </div>
-
             <div>
                 <table class="widget table">
                     <thead>
@@ -36,39 +32,28 @@
                         <th ng-click="reverse=!reverse;order('IPAddress', reverse)">IP Address</th>
                         <th ng-click="reverse=!reverse;order('VPCIP', reverse)">VPC ID</th>
                         <th ng-click="reverse=!reverse;order('status', reverse)">Status</th>
+                        <th ng-click="reverse=!reverse;order('status', reverse)">NOTT</th>
                         <th ng-click="reverse=!reverse;order('monitored', reverse)">Monitored</th>
+                        <th ng-click="reverse=!reverse;order('utilization', reverse)">Utilization</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr class="hover-effects" ng-repeat="instance in cloudView.instancesByTag">
                         <td>{{instance.instanceId}}</td>
                         <td>{{instance.instanceType}}</td>
-                            <td ng-class="cloudView.checkImageAgeStatus(instance.imageExpirationDate) == 'fail' ? 'widget-font-fail' :
-                                       cloudView.checkImageAgeStatus(instance.imageExpirationDate) == 'warn' ? 'widget-font-warn' : 'widget-font-pass'">{{instance.imageId}}</td>
-                            <td ng-bind="cloudView.getDaysToExpiration(instance.imageExpirationDate)" ng-class="cloudView.checkImageAgeStatus(instance.imageExpirationDate) == 'fail' ? 'widget-font-fail' :
-                                       cloudView.checkImageAgeStatus(instance.imageExpirationDate) == 'warn' ? 'widget-font-warn' : 'widget-font-pass'"></td>
+                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">{{instance.imageId}}</td>
+                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">{{cloudView.getDaysToExpiration(instance.imageExpirationDate)}}</td>
                         <td>{{instance.privateIp}}</td>
                         <td>{{instance.subnetId}}</td>
-                        <td ng-bind="instance.stopped == false ? 'Running' : 'Stopped'"></td>
-                        <td ng-class="cloudView.checkMonitoredStatus(instance.monitored) == 'fail' ? 'widget-font-fail' : 'widget-font-pass'">{{instance.monitored}}</td>
+                        <td ng-bind="instance.stopped == false ? 'running' : 'stopped'"></td>
+                        <td ng-class="'widget-font-' + cloudView.checkNOTTDisabledStatus(instance.tags) == true ? 'fail': 'pass'"
+                            ng-bind="cloudView.checkNOTTDisabledStatus(instance.tags) ? 'disabled' : 'enabled'"></td>
+                        <td ng-class="'widget-font-' + cloudView.checkMonitoredStatus(instance.monitored)">{{instance.monitored}}</td>
+                        <td ng-class="'widget-font-' + cloudView.checkUtilizationStatus(instance.cpuUtilization)">{{instance.cpuUtilization | number:1}}%</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-            <!--  <div class="widget-body table-overflow">
-                   <table class="table widget">
-                       <tbody>
-                       <tr class="hover-effects" ng-repeat="instance in cloudView.instancesByTag">
-                           <td>{{instance.instanceId}}</td>
-                           <td>{{instance.instanceType}}</td>
-                           <td>
-                               <span class="{{cloudView.checkImageAgeStatus(instance.imageExpirationDate)}}">
-                               {{instance.imageId}}</span>
-                           </td>
-                          </tr>
-                       </tbody>
-                   </table>
-               </div> -->
-        </div>
+         </div>
     </div>
 </div>
