@@ -2,11 +2,11 @@ package com.capitalone.dashboard.request;
 
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.NameValue;
-import com.capitalone.dashboard.model.NameValueCount;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class CloudSubnetCreateRequest {
@@ -23,7 +23,7 @@ public class CloudSubnetCreateRequest {
     private long creationDate;
     private long lastUpdateDate;
     private List<NameValue> tags = new ArrayList<>();
-    private List<NameValueCount> ipUsage = new ArrayList<>();
+    private Map<String, Integer> ipUsage;
 
 
 
@@ -120,8 +120,12 @@ public class CloudSubnetCreateRequest {
         this.cidrCount = cidrCount;
     }
 
-    public List<NameValueCount> getIpUsage() {
+    public Map<String, Integer> getIpUsage() {
         return ipUsage;
+    }
+
+    public void setIpUsage(Map<String, Integer> ipUsage) {
+        this.ipUsage = ipUsage;
     }
 
     @Override
