@@ -18,17 +18,20 @@
 
     function CloudWidgetViewController($scope, cloudData) {
 
-
         var ctrl = this;
 
         ctrl.awsOverview;
+        ctrl.instancesByTag;
 
         ctrl.isDetail = false;
+        ctrl.tag = $scope.widgetConfig.options.tag || "";
+
         ctrl.toggleView = function() {
+            ctrl.retrieveInstancesByTag("Tag","Value");
             ctrl.isDetail = (ctrl.isDetail == false);
         }
 
-        ctrl.checkImageAgeStatus = function(expirationDate) {
+        ctrl.getDaysToExpiration = function(expirationDate) {
 
             var expirationDate = new Date(expirationDate);
 
@@ -40,31 +43,39 @@
 
             if(dd<10) { dd='0'+dd }
             if(mm<10) { mm='0'+mm }
-
             today = mm+'/'+dd+'/'+yyyy;
 
-            var difference = Math.floor(( Date.parse(expirationDate) - Date.parse(today) ) / 86400000);
-            return difference < 0 ? "RED" : difference >= 0 && difference <= 15 ? "YELLOW" : "GREEN";
+            return Math.floor(( Date.parse(expirationDate) - Date.parse(today) ) / 86400000);
+
+        }
+        ctrl.checkImageAgeStatus = function(expirationDate) {
+            var difference = ctrl.getDaysToExpiration(expirationDate);
+            return difference < 0 ? "fail" : difference >= 0 && difference <= 15 ? "warn" : "pass";
         }
 
-
         ctrl.checkNOTTStatus = function(status) {
-            return status.toUpperCase() == "EXCLUDED" ? "RED" : "GREEN";
+            return status.toUpperCase() == "EXCLUDED" ? "fail" : "pass";
         }
 
         ctrl.checkMonitoredStatus = function(status) {
-            return status ? "GREEN" : "RED";
+            return status ? "pass" : "fail";
         }
 
         ctrl.checkUtilizationStatus = function(status) {
-            return status > 30 ? "GREEN" : "RED";
+            return status > 30 ? "pass" : "fail";
         }
 
 
-        ctrl.tag = $scope.widgetConfig.options.tag || "";
+
+
         ctrl.load = function () {
             ctrl.awsOverview = cloudData.getAWSGlobalData();
         }
+
+        ctrl.retrieveInstancesByTag = function(tag, value) {
+            ctrl.instancesByTag = cloudData.getAWSInstancesByTag(tag, value);
+        }
+
 
 
         ctrl.load();

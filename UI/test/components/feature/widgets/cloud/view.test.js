@@ -78,11 +78,11 @@ describe('CloudWidgetViewController', function () {
     describe('checkImageAgeStatus()', function() {
         describe('When I call checkImageAgeStatus', function () {
             describe('And the expiration date is earlier than today', function () {
-                it('Then I expect "RED" to be returned', function() {
+                it('Then I expect "fail" to be returned', function() {
 
                     //Arrange
                     var expirationDate = retrieveTestDate(-10);
-                    var expected = "RED";
+                    var expected = "fail";
 
                     //Act
                     var actual = controller.checkImageAgeStatus(expirationDate);
@@ -93,11 +93,11 @@ describe('CloudWidgetViewController', function () {
             });
 
             describe('And the expiration date is today', function () {
-                it('Then I expect "YELLOW" to be returned', function() {
+                it('Then I expect "warn" to be returned', function() {
 
                     //Arrange
                     var expirationDate = retrieveTestDate(0);
-                    var expected = "YELLOW";
+                    var expected = "warn";
 
                     //Act
                     var actual = controller.checkImageAgeStatus(expirationDate);
@@ -108,11 +108,11 @@ describe('CloudWidgetViewController', function () {
             });
 
             describe('And the expiration date is 15 days from now', function () {
-                it('Then I expect "YELLOW" to be returned', function() {
+                it('Then I expect "warn" to be returned', function() {
 
                     //Arrange
                     var expirationDate = retrieveTestDate(15);
-                    var expected = "YELLOW";
+                    var expected = "warn";
 
                     //Act
                     var actual = controller.checkImageAgeStatus(expirationDate);
@@ -123,11 +123,11 @@ describe('CloudWidgetViewController', function () {
             });
 
             describe('And the expiration date is 16 days from now', function () {
-                it('Then I expect "GREEN" to be returned', function() {
+                it('Then I expect "pass" to be returned', function() {
 
                     //Arrange
                     var expirationDate = retrieveTestDate(16);
-                    var expected = "GREEN";
+                    var expected = "pass";
 
                     //Act
                     var actual = controller.checkImageAgeStatus(expirationDate);
@@ -142,11 +142,11 @@ describe('CloudWidgetViewController', function () {
     describe('checkNOTTStatus()', function() {
         describe('When I call checkNOTTStatus', function () {
             describe('And the status is "Excluded"', function () {
-                it('Then I expect "RED" to be returned', function() {
+                it('Then I expect "fail" to be returned', function() {
 
                     //Arrange
                     var status = "Excluded";
-                    var expected = "RED";
+                    var expected = "fail";
 
                     //Act
                     var actual = controller.checkNOTTStatus(status);
@@ -157,11 +157,11 @@ describe('CloudWidgetViewController', function () {
             });
 
             describe('And the status is not "Excluded"', function () {
-                it('Then I expect "RED" to be returned', function() {
+                it('Then I expect "pass" to be returned', function() {
 
                     //Arrange
                     var status = "notExcluded";
-                    var expected = "GREEN";
+                    var expected = "pass";
 
                     //Act
                     var actual = controller.checkNOTTStatus(status);
@@ -178,11 +178,11 @@ describe('CloudWidgetViewController', function () {
     describe('checkMonitoredStatus()', function() {
         describe('When I call checkMonitoredStatus', function () {
             describe('And the status is "true"', function () {
-                it('Then I expect "GREEN" to be returned', function() {
+                it('Then I expect "pass" to be returned', function() {
 
                     //Arrange
                     var status = true;
-                    var expected = "GREEN";
+                    var expected = "pass";
 
                     //Act
                     var actual = controller.checkMonitoredStatus(status);
@@ -193,11 +193,11 @@ describe('CloudWidgetViewController', function () {
             });
 
             describe('And the status is "false"', function () {
-                it('Then I expect "RED" to be returned', function() {
+                it('Then I expect "fail" to be returned', function() {
 
                     //Arrange
                     var status = false;
-                    var expected = "RED";
+                    var expected = "fail";
 
                     //Act
                     var actual = controller.checkMonitoredStatus(status);
@@ -214,11 +214,11 @@ describe('CloudWidgetViewController', function () {
     describe('checkUtilizationStatus()', function() {
         describe('When I call checkUtilizationStatus', function () {
             describe('And the status is greater than 30', function () {
-                it('Then I expect "GREEN" to be returned', function() {
+                it('Then I expect "pass" to be returned', function() {
 
                     //Arrange
                     var status = 31;
-                    var expected = "GREEN";
+                    var expected = "pass";
 
                     //Act
                     var actual = controller.checkUtilizationStatus(status);
@@ -229,11 +229,11 @@ describe('CloudWidgetViewController', function () {
             });
 
             describe('And the status is less than 30', function () {
-                it('Then I expect "RED" to be returned', function() {
+                it('Then I expect "fail" to be returned', function() {
 
                     //Arrange
                     var status = 29;
-                    var expected = "RED";
+                    var expected = "fail";
 
                     //Act
                     var actual = controller.checkUtilizationStatus(status);
@@ -244,11 +244,11 @@ describe('CloudWidgetViewController', function () {
             });
 
             describe('And the status is 30', function () {
-                it('Then I expect "RED" to be returned', function() {
+                it('Then I expect "fail" to be returned', function() {
 
                     //Arrange
                     var status = 30;
-                    var expected = "RED";
+                    var expected = "fail";
 
                     //Act
                     var actual = controller.checkUtilizationStatus(status);
