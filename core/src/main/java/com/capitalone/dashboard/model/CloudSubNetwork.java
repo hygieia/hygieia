@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Document(collection = "cloud_subnetwork")
@@ -22,10 +23,16 @@ public class CloudSubNetwork extends BaseModel{
     private long creationDate;
     private long lastUpdateDate;
     private List<NameValue> tags = new ArrayList<>();
-    private List<NameValueCount> ipUsage = new ArrayList<>();
+    private Map<String, Integer> ipUsage;
 
 
+    public Map<String, Integer> getIpUsage() {
+        return ipUsage;
+    }
 
+    public void setIpUsage(Map<String, Integer> ipUsage) {
+        this.ipUsage = ipUsage;
+    }
 
     public String getSubnetId() {
         return subnetId;
@@ -119,9 +126,6 @@ public class CloudSubNetwork extends BaseModel{
         this.cidrCount = cidrCount;
     }
 
-    public List<NameValueCount> getIpUsage() {
-        return ipUsage;
-    }
 
     @Override
     public int hashCode() {
