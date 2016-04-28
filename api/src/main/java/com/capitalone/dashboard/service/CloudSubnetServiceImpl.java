@@ -1,11 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.config.collector.CloudConfig;
-import com.capitalone.dashboard.model.CloudSubNetwork;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.NameValue;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CloudSubNetworkRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
@@ -20,11 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class CloudSubnetServiceImpl implements CloudSubnetService {
@@ -92,7 +84,7 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
         subnet.setSubnetId(request.getSubnetId());
         subnet.setUsedIPCount(request.getUsedIPCount());
         subnet.getTags().addAll(request.getTags());
-        subnet.getIpUsage().addAll(request.getIpUsage());
+        subnet.setIpUsage(request.getIpUsage());
         return subnet;
     }
 
