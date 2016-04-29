@@ -2,6 +2,8 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.GitHubOrg;
+import com.capitalone.dashboard.model.GitRepoData;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
@@ -46,15 +48,118 @@ public class DefaultGitHubClient implements GitHubClient {
 	private final RestOperations restOperations;
 	private static final String SEGMENT_API = "/api/v3/repos/";
 	private static final String PUBLIC_GITHUB_REPO_HOST = "api.github.com/repos/";
+	private static final String SEGMENT_API_REPOS = "/api/v3/orgs/";
+	private static final String PUBLIC_GITHUB_REPO_HOST_REPOS = "api.github.com/orgs/";
+
 	private static final String PUBLIC_GITHUB_HOST_NAME = "github.com";
 	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
 
 	@Autowired
 	public DefaultGitHubClient(GitHubSettings settings,
-			Supplier<RestOperations> restOperationsSupplier) {
+							   Supplier<RestOperations> restOperationsSupplier) {
 		this.settings = settings;
 		this.restOperations = restOperationsSupplier.get();
 	}
+
+	@Override
+	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
+	public List<GitRepoData> getRepoNames(GitHubOrg repo, boolean firstRun) {
+
+		List<GitRepoData> repos = new ArrayList<>();
+
+		// format URL
+		String repoUrl = (String) repo.getOptions().get("url");
+		if (repoUrl.endsWith(".git")) {
+			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
+		}
+		URL url = null;
+		String hostName = "";
+		String protocol = "";
+		try {
+			url = new URL(repoUrl);
+			hostName = url.getHost();
+			protocol = url.getProtocol();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			LOG.error(e.getMessage());
+		}
+		String hostUrl = protocol + "://" + hostName + "/";
+		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
+		String orgName = repoName.substring(0,repoName.indexOf("/"));
+		String apiUrl = "";
+		if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
+			apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST_REPOS + orgName;
+		} else {
+			apiUrl = protocol + "://" + hostName + SEGMENT_API_REPOS + orgName;
+			LOG.debug("API URL IS:"+apiUrl);
+		}
+		Date dt;
+		if (firstRun) {
+			int firstRunDaysHistory = settings.getFirstRunHistoryDays();
+			if (firstRunDaysHistory > 0) {
+				dt = getDate(new Date(), -firstRunDaysHistory, 0);
+			} else {
+				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
+			}
+		} else {
+			dt = getDate(new Date(repo.getLastUpdated()), 0, -10);
+		}
+
+		String queryUrl = apiUrl.concat("/repos");
+		LOG.debug("Query URL is " + queryUrl);
+		/*
+		 * Calendar cal = Calendar.getInstance(); cal.setTime(dateInstance);
+		 * cal.add(Calendar.DATE, -30); Date dateBefore30Days = cal.getTime();
+		 */
+
+		// decrypt password
+		String decryptedPassword = "";
+		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
+			try {
+				decryptedPassword = Encryption.decryptString(
+						repo.getPassword(), settings.getKey());
+			} catch (EncryptionException e) {
+				LOG.error(e.getMessage());
+			}
+		}
+		boolean lastPage = false;
+		int pageNumber = 1;
+		String queryUrlPage = queryUrl;
+		while (!lastPage) {
+			try {
+				ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+				JSONArray jsonArray = paresAsArray(response);
+				for (Object item : jsonArray) {
+					JSONObject jsonObject = (JSONObject) item;
+
+					String sha = str(jsonObject, "sha");
+					String repo_name = (String ) jsonObject.get("full_name");
+
+					GitRepoData repo1 = new GitRepoData();
+					repo1.setTimestamp(System.currentTimeMillis());
+					repo1.setScmUrl(repo.getOrgUrl());
+					repo1.setScmRevisionNumber(sha);
+					repo1.setName(repo_name);
+					repo1.setNumberOfChanges(1);
+					repos.add(repo1);
+				}
+				if (jsonArray == null || jsonArray.isEmpty()) {
+					lastPage = true;
+				} else {
+					lastPage = isThisLastPage(response);
+					pageNumber++;
+					queryUrlPage = queryUrl + "&page=" + pageNumber;
+				}
+
+			} catch (RestClientException re) {
+				LOG.error(re.getMessage() + ":" + queryUrl);
+				lastPage = true;
+
+			}
+		}
+		return repos;
+	}
+
 
 	@Override
 	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
@@ -189,7 +294,7 @@ public class DefaultGitHubClient implements GitHubClient {
 	}
 
 	private ResponseEntity<String> makeRestCall(String url, String userId,
-			String password) {
+												String password) {
 		// Basic Auth only.
 		if (!"".equals(userId) && !"".equals(password)) {
 			return restOperations.exchange(url, HttpMethod.GET,

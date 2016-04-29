@@ -100,15 +100,15 @@
 						<ruleset>${project.parent.basedir}/pmd.xml</ruleset>
 					</rulesets>
 				</configuration>
-				<executions>
+				<!--<executions>
 					<execution>
 						<phase>validate</phase>
 						<goals>
 							<goal>check</goal>
-							<!-- disabled for now <goal>cpd-check</goal> -->
+							&lt;!&ndash; disabled for now <goal>cpd-check</goal> &ndash;&gt;
 						</goals>
 					</execution>
-				</executions>
+				</executions>-->
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -118,14 +118,7 @@
 					<artifactId>docker-maven-plugin</artifactId>
 					<version>0.4.0</version>
 				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-<!--
-					<groupId>org.sonarsource.scanner.maven</groupId>
--->
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.0.1</version>
-				</plugin>
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -169,7 +162,7 @@
 				<module>core</module>
 				<module>api</module>
 				<module>jenkins-build-collector</module>
-				<module>sonar-codequality-collector</module>
+				<!--module>sonar-codequality-collector</module-->
 				<module>subversion-scm-collector</module>
 				<module>github-scm-collector</module>
 				<module>stash-scm-collector</module>
@@ -203,7 +196,7 @@
 				<module>core</module>
 				<module>api</module>
 				<module>jenkins-build-collector</module>
-				<module>sonar-codequality-collector</module>
+				<!--module>sonar-codequality-collector</module-->
 				<module>subversion-scm-collector</module>
 				<module>github-scm-collector</module>
 				<module>versionone-feature-collector</module>

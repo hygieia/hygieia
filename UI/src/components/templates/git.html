@@ -1,0 +1,58 @@
+<div ng-controller="CapOneTemplateController as template">
+    <div id="header">
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+
+                <a ng-href="#/" class="dashboard-logo"></a>
+
+                {{::ctrl.dashboard.title}}
+
+                <div class="pipeline-toggle btn-group"
+                     ng-click="template.toggleView()"
+                     ng-show="template.hasComponents(ctrl.dashboard, ['Deployment'])">
+                    <span class="btn" ng-class="{'btn-primary':template.widgetView, 'btn-default': !template.widgetView}">
+                        <span class="fa fa-th"></span>
+                        Widget
+                    </span>
+                    <span class="btn" ng-class="{'btn-primary':!template.widgetView, 'btn-default': template.widgetView}">
+                        <span class="fa fa-tasks"></span>
+                        Pipeline
+                    </span>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <widget name="repo" widget-title="Repo"></widget>
+                        <widget name="repo" widget-title="Contribuitions"></widget>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                        <widget name="repo" widget-title="Pulls"></widget>
+                        <widget name="repo" widget-title="Issues"></widget>
+            </div>
+            <div class="col-md-3">
+                <div class="row">
+                    <div class="col-sm-6 col-md-12">
+                        <widget name="repo" widget-title="Users"></widget>
+                        <widget name="repo" widget-title="Organizations"></widget>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="!template.widgetView">
+        <div class="row">
+            <div class="col-xs-12">
+                <widget name="pipeline" widget-title="Git Metrics"></widget>
+            </div>
+        </div>
+    </div>
+</div>

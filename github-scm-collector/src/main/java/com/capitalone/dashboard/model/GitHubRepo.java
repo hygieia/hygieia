@@ -13,7 +13,7 @@ public class GitHubRepo extends CollectorItem {
     private static final String LAST_UPDATE_TIME = "lastUpdate";
 
     public String getUserId() {
-        return (String) getOptions().get(USER_ID);
+            return (String) getOptions().get(USER_ID);
     }
 
     public void setUserId(String userId) {
