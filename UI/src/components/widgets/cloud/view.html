@@ -1,8 +1,77 @@
-<div class="row ca-view">
-    <div class="col-lg-4 col-sm-12">
-        <metric-category data="cloudView.awsOverview"></metric-category>
+<div>
+    <div class="container-fluid pipeline-toggle btn-group" ng-click="cloudView.toggleView()">
+        <span class="btn" ng-class="{'btn-primary':!cloudView.isDetail, 'btn-default': cloudView.isDetail}">
+            <span class="fa fa-th-large"></span>
+            Overview
+            </span>
+        <span class="btn" ng-class="{'btn-primary':cloudView.isDetail, 'btn-default': !cloudView.isDetail}">
+            <span class="fa fa-tasks"></span>
+            Detail
+            </span>
+    </div>
+
+    <div class="container-fluid" ng-if="!cloudView.isDetail">
+        <div class="row">
+            <div class="col-xs-12">
+                Summary
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid" ng-if="cloudView.isDetail">
+        <div class="row">
+            <div class="col-md-12">
+                <div>
+                    <h2>Your Instances</h2>
+                    <hr>
+                    <div>
+                        <div>
+                            <div>
+                                <table class="table widget-striped table-hover">
+                                    <thead>
+                                    <tr class="widget-font-bold">
+                                        <th ng-click="('instanceId', reverse)">Instance ID&nbsp;<span class="fa fa-long-arrow-down"></span></th>
+                                        <th ng-click="reverse=!reverse;order('type', reverse)">Type</th>
+                                        <th ng-click="reverse=!reverse;order('AMI', reverse)">AMI</th>
+                                        <th ng-click="reverse=!reverse;order('DaysLeft', reverse)">Days Left</th>
+                                        <th ng-click="reverse=!reverse;order('IPAddress', reverse)">IP Address</th>
+                                        <th ng-click="reverse=!reverse;order('VPCIP', reverse)">VPC ID</th>
+                                        <th ng-click="reverse=!reverse;order('status', reverse)">Status</th>
+                                        <th ng-click="reverse=!reverse;order('status', reverse)">NOTT</th>
+                                        <th ng-click="reverse=!reverse;order('monitored', reverse)">Monitored</th>
+                                        <th ng-click="reverse=!reverse;order('utilization', reverse)">Utilization</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="instance in cloudView.instancesByTag">
+                                        <td>{{instance.instanceId}}</td>
+                                        <td>{{instance.instanceType}}</td>
+                                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
+                                            {{instance.imageId}}
+                                        </td>
+                                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
+                                            {{cloudView.getDaysToExpiration(instance.imageExpirationDate)}}
+                                        </td>
+                                        <td>{{instance.privateIp}}</td>
+                                        <td>{{instance.subnetId}}</td>
+                                        <td ng-bind="instance.stopped == false ? 'running' : 'stopped'"></td>
+                                        <td ng-class="'widget-font-' + (cloudView.checkNOTTDisabledStatus(instance.tags) == true ? 'fail': 'pass')"
+                                            ng-bind="cloudView.checkNOTTDisabledStatus(instance.tags) ? 'disabled' : 'enabled'"></td>
+                                        <td ng-class="'widget-font-' + cloudView.checkMonitoredStatus(instance.monitored)">
+                                            {{instance.monitored}}
+                                        </td>
+                                        <td ng-class="'widget-font-' + cloudView.checkUtilizationStatus(instance.cpuUtilization)">
+                                            {{instance.cpuUtilization | number:1}}%
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-=======
-<div>Hello frank</div>
-
