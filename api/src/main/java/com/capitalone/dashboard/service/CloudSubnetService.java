@@ -3,8 +3,8 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
+import com.capitalone.dashboard.request.CloudSubnetCreateRequest;
 import com.capitalone.dashboard.response.CloudSubNetworkAggregatedResponse;
-import org.bson.types.ObjectId;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,7 +19,7 @@ public interface CloudSubnetService {
     //Upsert Subnetwork
     Collection<String> refreshSubnets(CloudInstanceListRefreshRequest request);
 
-    List<ObjectId> upsertSubNetwork(List<CloudSubNetwork> subnet);
+    List<String> upsertSubNetwork(List<CloudSubnetCreateRequest> requests);
     /**
      *     Subnetwork Details by
      *          (a) componentId - for UI mostly
@@ -27,9 +27,9 @@ public interface CloudSubnetService {
      *          (c) List of subnet Ids
      *          (d) List of Tags
      */
-    Collection<CloudSubNetwork> getSubNetworkDetails (ObjectId componentId);
-    CloudSubNetwork getSubNetworkDetails(String subnetId);
-    Collection<CloudSubNetwork> getSubNetworkDetails (List<String> subnetId);
+    Collection<CloudSubNetwork> getSubNetworkDetailsByComponentId (String componentIdString);
+    CloudSubNetwork getSubNetworkDetailsBySubnetId(String subnetId);
+    Collection<CloudSubNetwork> getSubNetworkDetailsBySubnetIds (List<String> subnetId);
     Collection<CloudSubNetwork> getSubNetworkDetailsByTags (List<NameValue> tags);
 
     /**
@@ -39,7 +39,7 @@ public interface CloudSubnetService {
      *          (c) List of subnet Ids
      *          (d) List of Tags
      */
-    CloudSubNetworkAggregatedResponse getSubNetworkAggregatedData (ObjectId componentId);
+    CloudSubNetworkAggregatedResponse getSubNetworkAggregatedData (String componentIdString);
     CloudSubNetworkAggregatedResponse getSubNetworkAggregatedDataByTags (List<NameValue> tags);
 
 
