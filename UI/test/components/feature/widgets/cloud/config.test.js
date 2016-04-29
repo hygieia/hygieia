@@ -8,10 +8,9 @@ describe('CloudWidgetConfigController', function () {
     var controller;
     var scope;
     var cloudData;
-    var asvData =  [
-            { "name": "IRIS"},
-            { "name": "Chordiant"},
-            { "name": "EASE"}
+    var accountData =  [
+            { "name": "Development Account"},
+            { "name": "Production Account"}
         ];
 
     var modalInstance;
@@ -45,11 +44,11 @@ describe('CloudWidgetConfigController', function () {
 
         $provide.factory('cloudData', function() {
             return {
-                getASV: getASV
+                getAccounts: getAccounts
             };
 
-            function getASV() {
-                return asvData;
+            function getAccounts() {
+                return accountData;
             }
         })
     }));
@@ -80,16 +79,16 @@ describe('CloudWidgetConfigController', function () {
         });
 
 
-    describe('asvDropdownDisabled', function() {
+    describe('accountsDropdownDisabled', function() {
 
-        describe('When ASV data is retrieved with one or more records', function() {
-            it('Then I expect asvDropdownDisabled to be set to "false"', function() {
+        describe('When account data is retrieved with one or more records', function() {
+            it('Then I expect accountsDropdownDisabled to be set to "false"', function() {
 
                 //Arrange/Act
                 //Handled by the instantiation of the controller
 
                 //Assert
-                expect(controller.asvDropdownDisabled).toBeFalsy();
+                expect(controller.accountsDropdownDisabled).toBeFalsy();
 
             })
         });
@@ -101,13 +100,13 @@ describe('CloudWidgetConfigController', function () {
 
     describe('constructor', function() {
         describe('When I call the constructor', function() {
-            it('Then I expect ASV data to be retrieved', function() {
+            it('Then I expect account data to be retrieved', function() {
 
                 //Arrange/Act
                 //Handled by the instantiation of the controller
 
                 //Assert
-                expect(angular.equals(controller.ASVs, asvData)).toBeTruthy();
+                expect(angular.equals(controller.accounts, accountData)).toBeTruthy();
 
             })
         });
