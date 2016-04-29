@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.collector;
 
 import com.amazonaws.auth.AWSCredentialsProviderChain;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
@@ -10,18 +9,11 @@ import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.DescribeVolumesResult;
-import com.amazonaws.services.ec2.model.GroupIdentifier;
-import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.InstanceState;
-import com.amazonaws.services.ec2.model.Reservation;
-import com.amazonaws.services.ec2.model.Tag;
-import com.amazonaws.services.ec2.model.Volume;
-import com.amazonaws.services.ec2.model.VolumeAttachment;
+import com.amazonaws.services.ec2.model.*;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.CloudVirtualNetwork;
+import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.capitalone.dashboard.repository.CloudSubNetworkRepository;
 import com.capitalone.dashboard.repository.CloudVirtualNetworkRepository;
@@ -32,11 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -55,10 +43,21 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         this.settings = settings;
     }
 
+    /**
+     * Calls AWS API and collects instance details.
+     *
+     * @param repository
+     * @return List of CloudInstance
+     */
     @Override
-    public List<CloudInstance> getCloundInstances(CloudInstanceRepository repository) {
+    public Map<String, List<CloudInstance>> getCloundInstances(CloudInstanceRepository repository) {
+        System.getProperties().put("http.proxyHost", settings.getProxyHost());
+        System.getProperties().put("http.proxyPort", settings.getProxyPort());
+        System.getProperties().put("https.proxyHost", settings.getProxyHost());
+        System.getProperties().put("https.proxyPort", settings.getProxyPort());
+        System.getProperties().put("http.nonProxyHosts", settings.getNonProxy());
 
-        DefaultAWSCredentialsProviderChain creds = new DefaultAWSCredentialsProviderChain();
+       // DefaultAWSCredentialsProviderChain creds = new DefaultAWSCredentialsProviderChain();
 
         AmazonEC2Client ec2Client = new AmazonEC2Client(new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(),
                 new ProfileCredentialsProvider(settings.getProfile())));
@@ -70,10 +69,16 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
 //        DescribeImagesResult imageResult = ec2Client.describeImages();
         DescribeVolumesResult volumeResult = ec2Client.describeVolumes();
+        Map<String, List<Instance>> ownerInstanceMap = new HashMap<>();
         List<Instance> instanceList = new ArrayList<>();
         List<Reservation> reservations = instanceResult.getReservations();
         for (Reservation currRes : reservations) {
             List<Instance> currInstanceList = currRes.getInstances();
+            if (CollectionUtils.isEmpty(ownerInstanceMap.get(currRes.getOwnerId()))) {
+                ownerInstanceMap.put(currRes.getOwnerId(), currRes.getInstances());
+            } else {
+                ownerInstanceMap.get(currRes.getOwnerId()).addAll(currRes.getInstances());
+            }
             instanceList.addAll(currInstanceList);
         }
         List<Volume> volumes = volumeResult.getVolumes();
@@ -86,45 +91,60 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
             }
         }
 
-        ArrayList<CloudInstance> rawDataList = new ArrayList<>();
+
+        Map<String, List<CloudInstance>> returnList = new HashMap<>();
         int i = 0;
-        for (Instance currInstance : instanceList) {
-            i = i + 1;
-            LOGGER.info("Collecting instance details for " + i + " of "
-                    + instanceList.size() + ". Instance ID="+currInstance.getInstanceId());
-            CloudInstance object = getCloudInstanceDetails(
-                    currInstance, instanceVolMap, cloudWatchClient, repository);
-            rawDataList.add(object);
+        for (String acct : ownerInstanceMap.keySet()) {
+            ArrayList<CloudInstance> rawDataList = new ArrayList<>();
+            for (Instance currInstance : ownerInstanceMap.get(acct)) {
+                i = i + 1;
+                LOGGER.info("Collecting instance details for " + i + " of "
+                        + instanceList.size() + ". Instance ID=" + currInstance.getInstanceId());
+                CloudInstance object = getCloudInstanceDetails(acct,
+                        currInstance, instanceVolMap, cloudWatchClient, repository);
+                rawDataList.add(object);
+            }
+            if (CollectionUtils.isEmpty(returnList.get(acct))) {
+                returnList.put(acct, rawDataList);
+            } else {
+                returnList.get(acct).addAll(rawDataList);
+            }
         }
-        return rawDataList;
+        return returnList;
     }
 
-    private CloudInstance getCloudInstanceDetails(
+    /**
+     * Fill out the CloudInstance object
+     *
+     * @param account
+     * @param currInstance
+     * @param instanceVolMap
+     * @param cwClient
+     * @param repository
+     * @return A single CloundInstance
+     */
+    private CloudInstance getCloudInstanceDetails(String account,
             Instance currInstance, Map<String, Volume> instanceVolMap,
             AmazonCloudWatchClient cwClient, CloudInstanceRepository repository) {
 
         long lastUpdated = System.currentTimeMillis();
         CloudInstance instance = repository.findByInstanceId(currInstance.getInstanceId());
         if (instance != null) {
-            lastUpdated = instance.getLastUpdatedDate().getTime();
+            lastUpdated = instance.getLastUpdatedDate();
         }
         CloudInstance object = new CloudInstance();
-        object.setLastUpdatedDate(new Date());
+        object.setAccountNumber(account);
+        object.setLastUpdatedDate(System.currentTimeMillis());
         object.setAge(getInstanceAge(currInstance));
         object.setEncrypted(isInstanceVolumneEncrypted(currInstance,
                 instanceVolMap));
-        object.setCpuUtilization(getInstanceCPUSinceLastRun(
-                currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setCpuUtilization(getInstanceCPUSinceLastRun(currInstance.getInstanceId(), cwClient, lastUpdated));
         object.setTagged(isInstanceTagged(currInstance));
         object.setStopped(isInstanceStopped(currInstance));
-        object.setNetworkIn(getLastHourInstanceNetworkIn(
-                currInstance.getInstanceId(), cwClient, lastUpdated));
-        object.setNetworkOut(getLastHourIntanceNetworkOut(
-                currInstance.getInstanceId(), cwClient, lastUpdated));
-        object.setDiskRead(getLastHourInstanceDiskRead(
-                currInstance.getInstanceId(), cwClient, lastUpdated));
-        object.setDiskWrite(getLastInstanceHourDiskWrite(
-                currInstance.getInstanceId(), cwClient));
+        object.setNetworkIn(getLastHourInstanceNetworkIn(currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setNetworkOut(getLastHourIntanceNetworkOut(currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setDiskRead(getLastHourInstanceDiskRead(currInstance.getInstanceId(), cwClient, lastUpdated));
+        object.setDiskWrite(getLastInstanceHourDiskWrite(currInstance.getInstanceId(), cwClient));
         // rest of the details
         object.setImageId(currInstance.getImageId());
         object.setInstanceId(currInstance.getInstanceId());
@@ -137,7 +157,14 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         object.setVirtualNetworkId(currInstance.getVpcId());
         object.setRootDeviceName(currInstance.getRootDeviceName());
         object.setSubnetId(currInstance.getSubnetId());
+        List<Tag> tags = currInstance.getTags();
 
+        if (!CollectionUtils.isEmpty(tags)) {
+            for (Tag tag : tags) {
+                NameValue nv = new NameValue(tag.getKey(), tag.getValue());
+                object.getTags().add(nv);
+            }
+        }
         List<GroupIdentifier> groups = currInstance.getSecurityGroups();
         for (GroupIdentifier gi : groups) {
             object.addSecurityGroups(gi.getGroupName());
@@ -171,10 +198,14 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     private static Double getInstanceCPUSinceLastRun(String instanceId,
                                                      AmazonCloudWatchClient ec2Client, long lastUpdated) {
 
-        long offsetInMilliseconds = Math.min(ONE_DAY_MILLI_SECOND,
-                System.currentTimeMillis() - lastUpdated);
+        // long offsetInMilliseconds = Math.min(ONE_DAY_MILLI_SECOND,System.currentTimeMillis() - lastUpdated);
         Dimension instanceDimension = new Dimension().withName("InstanceId")
                 .withValue(instanceId);
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+        long oneDayAgo = cal.getTimeInMillis();
+
         GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
                 .withMetricName("CPUUtilization")
                 .withNamespace("AWS/EC2")
@@ -184,8 +215,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 // to get metrics a specific
                 // instance
                 .withStatistics("Average")
-                .withStartTime(
-                        new Date(new Date().getTime() - offsetInMilliseconds))
+                .withStartTime(new Date(new Date().getTime() - 1440 * 1000))
                 .withEndTime(new Date());
         GetMetricStatisticsResult result = ec2Client
                 .getMetricStatistics(request);
@@ -240,8 +270,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 // to get metrics a specific
                 // instance
                 .withStatistics("Average")
-                .withStartTime(
-                        new Date(new Date().getTime() - offsetInMilliseconds))
+                .withStartTime(new Date(new Date().getTime() - offsetInMilliseconds))
                 .withEndTime(new Date());
         GetMetricStatisticsResult result = ec2Client
                 .getMetricStatistics(request);
@@ -338,7 +367,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         return datapoint.getAverage();
     }
 
-    /* If the instance is tagged with ASV or ENV */
+    /* If the instance is tagged with correct */
     private boolean isInstanceTagged(Instance currInstance) {
         List<Tag> tags = currInstance.getTags();
         if (settings.getValidTagKey().isEmpty())
@@ -359,7 +388,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
      */
     public boolean isInstanceStopped(Instance myInstance) {
         InstanceState instanceState = myInstance.getState();
-        return (instanceState.getName().equals("stopped") ? true : false);
+        return (instanceState.getName().equals("stopped"));
     }
 
 

@@ -23,21 +23,18 @@ import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.CloudVirtualNetwork;
 import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.repository.AWSConfigRepository;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.CloudInstanceRepository;
-import com.capitalone.dashboard.repository.CloudSubNetworkRepository;
-import com.capitalone.dashboard.repository.CloudVirtualNetworkRepository;
+import com.capitalone.dashboard.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Collects {@link AWSCloudCollector} data from feature content source system.
- *
  */
 @Component
 public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
@@ -54,7 +51,6 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 
 
     /**
-     *
      * @param taskScheduler
      * @param collectorRepository
      * @param cloudSettings
@@ -109,23 +105,26 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
     }
 
     private void collectInstances() {
-        List<CloudInstance> cloudInstances = awsClient.getCloundInstances(cloudInstanceRepository);
-        for (CloudInstance ci : cloudInstances) {
-            ci.setLastUpdatedDate(new Date());
+        Map<String, List<CloudInstance>> cloudInstanceMap = awsClient.getCloundInstances(cloudInstanceRepository);
+        for (String account : cloudInstanceMap.keySet()) {
+            Collection<CloudInstance> existing = cloudInstanceRepository.findByAccountNumber(account);
+            if (!CollectionUtils.isEmpty(existing)) {
+                cloudInstanceRepository.delete(existing);
+            }
+            cloudInstanceRepository.save(cloudInstanceMap.get(account));
         }
-        cloudInstanceRepository.save(cloudInstances);
     }
 
 
-    private void collectVPC () {
+    private void collectVPC() {
         CloudVirtualNetwork cloudVirtualNetwork = awsClient.getCloudVPC(cloudVirtualNetworkRepository);
-        cloudVirtualNetwork.setLastUpdateDate(new Date());
+        cloudVirtualNetwork.setLastUpdateDate(System.currentTimeMillis());
         cloudVirtualNetworkRepository.save(cloudVirtualNetwork);
     }
 
     private void collectSubNet() {
         CloudSubNetwork cloudSubNetwork = awsClient.getCloudSubnet(cloudSubNetworkRepository);
-        cloudSubNetwork.setLastUpdateDate(new Date());
+        cloudSubNetwork.setLastUpdateDate(System.currentTimeMillis());
         cloudSubNetworkRepository.save(cloudSubNetwork);
     }
 
