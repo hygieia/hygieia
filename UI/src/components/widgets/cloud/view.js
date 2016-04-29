@@ -33,7 +33,9 @@
 
         ctrl.getDaysToExpiration = function(expirationDate) {
 
-            var expirationDate = new Date(expirationDate);
+
+            var date = new Date(expirationDate * 1000)
+            var expirationDate = date.toLocaleString();
 
             //get todays date
             var today = new Date();
@@ -57,7 +59,7 @@
         ctrl.checkNOTTDisabledStatus = function(tags) {
             for(var i = 0; i < tags.length; i++) {
                 var item = tags[i];
-                if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDED") {
+                if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDE") {
                     return true;
                 }
             }
