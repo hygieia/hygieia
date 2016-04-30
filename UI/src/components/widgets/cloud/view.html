@@ -26,25 +26,29 @@
                     <h2>Your Instances</h2>
                     <hr>
                     <div>
+                        <div class="pull-right"><label>Search: <input type="text" class="form-control" placeholder="Enter a value" ng-model="cloudView.searchFilter"/></label></div>
                         <div>
                             <div>
-                                <table class="table widget-striped table-hover">
+                                <table class="table widget-striped">
                                     <thead>
                                     <tr class="widget-font-bold">
-                                        <th ng-click="('instanceId', reverse)">Instance ID&nbsp;<span class="fa fa-long-arrow-down"></span></th>
-                                        <th ng-click="reverse=!reverse;order('type', reverse)">Type</th>
-                                        <th ng-click="reverse=!reverse;order('AMI', reverse)">AMI</th>
-                                        <th ng-click="reverse=!reverse;order('DaysLeft', reverse)">Days Left</th>
-                                        <th ng-click="reverse=!reverse;order('IPAddress', reverse)">IP Address</th>
-                                        <th ng-click="reverse=!reverse;order('VPCIP', reverse)">VPC ID</th>
-                                        <th ng-click="reverse=!reverse;order('status', reverse)">Status</th>
-                                        <th ng-click="reverse=!reverse;order('status', reverse)">NOTT</th>
-                                        <th ng-click="reverse=!reverse;order('monitored', reverse)">Monitored</th>
-                                        <th ng-click="reverse=!reverse;order('utilization', reverse)">Utilization</th>
+                                        <th ng-click="cloudView.changeSortDirection('instanceId')">Instance ID&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('instanceId')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('instanceType')">Type&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('instanceType')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('imageId')">AMI&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('imageId')"></span></th>
+                                        <th ng-click="">Days Left</th>
+                                        <th ng-click="">IP Address</th>
+                                        <th ng-click="">VPC ID</th>
+                                        <th ng-click="">Status</th>
+                                        <th ng-click="">NOTT</th>
+                                        <th ng-click="">Monitored</th>
+                                        <th ng-click="">Utilization</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="instance in cloudView.instancesByTag">
+                                    <tr ng-repeat="instance in cloudView.instancesByTag | orderBy:cloudView.sortType | filter:cloudView.searchFilter">
                                         <td>{{instance.instanceId}}</td>
                                         <td>{{instance.instanceType}}</td>
                                         <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
