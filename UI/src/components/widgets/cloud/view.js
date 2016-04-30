@@ -19,15 +19,15 @@
     function CloudWidgetViewController($scope, cloudData) {
 
 
-
+        //private variables
         var ctrl = this;
-
-        //private variables/functions
         var sortDictionary = {};
 
+        //public variables
         ctrl.awsOverview;
         ctrl.instancesByTag;
         ctrl.sortType = [];
+        ctrl.searchFilter = '';
 
         ctrl.isDetail = false;
         ctrl.tag = $scope.widgetConfig.options.tag || "";
@@ -72,9 +72,22 @@
                     changedSortType.push(item);
                 }
             }
-
             ctrl.sortType = changedSortType;
+        };
 
+        ctrl.getSortDirection = function(key) {
+
+            var item = sortDictionary[key];
+
+            if (item == undefined) {
+                return "unsorted";
+            }
+
+            if (item == "+") {
+                return "sort-amount-asc";
+            }
+
+            return "sort-amount-desc";
         };
 
 
