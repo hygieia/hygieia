@@ -25,6 +25,7 @@ describe('CloudWidgetViewController', function () {
     };
 
     function retrieveTestDate(dayOffset) {
+
         var currentDate = new Date();
         currentDate.setDate(currentDate.getDate() + dayOffset);
         var dd = currentDate.getDate();
@@ -38,7 +39,8 @@ describe('CloudWidgetViewController', function () {
             mm = '0' + mm
         }
 
-        return mm + '/' + dd + '/' + yyyy;
+        var dateString = mm + '/' + dd + '/' + yyyy;
+        return new Date(dateString).getTime();
     }
 
     // load the controller's module
@@ -269,69 +271,69 @@ describe('CloudWidgetViewController', function () {
     });
 
 
-    /*describe('checkImageAgeStatus()', function() {
-     describe('When I call checkImageAgeStatus', function () {
-     describe('And the expiration date is earlier than today', function () {
-     it('Then I expect "fail" to be returned', function() {
+    describe('checkImageAgeStatus()', function() {
+        describe('When I call checkImageAgeStatus', function () {
+            describe('And the expiration date is earlier than today', function () {
+                it('Then I expect "fail" to be returned', function() {
 
-     //Arrange
-     var expirationDate = retrieveTestDate(-10);
-     var expected = "fail";
+                    //Arrange
+                    var expirationDate = retrieveTestDate(-10);
+                    var expected = "fail";
 
-     //Act
-     var actual = controller.checkImageAgeStatus(expirationDate);
+                    //Act
+                    var actual = controller.checkImageAgeStatus(expirationDate);
 
-     //Assert
-     expect(actual).toBe(expected);
-     });
-     });
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
 
-     describe('And the expiration date is today', function () {
-     it('Then I expect "warn" to be returned', function() {
+            describe('And the expiration date is today', function () {
+                it('Then I expect "warn" to be returned', function() {
 
-     //Arrange
-     var expirationDate = retrieveTestDate(0);
-     var expected = "warn";
+                    //Arrange
+                    var expirationDate = retrieveTestDate(0);
+                    var expected = "warn";
 
-     //Act
-     var actual = controller.checkImageAgeStatus(expirationDate);
+                    //Act
+                    var actual = controller.checkImageAgeStatus(expirationDate);
 
-     //Assert
-     expect(actual).toBe(expected);
-     });
-     });
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
 
-     describe('And the expiration date is 15 days from now', function () {
-     it('Then I expect "warn" to be returned', function() {
+            describe('And the expiration date is 15 days from now', function () {
+                it('Then I expect "warn" to be returned', function() {
 
-     //Arrange
-     var expirationDate = retrieveTestDate(15);
-     var expected = "warn";
+                    //Arrange
+                    var expirationDate = retrieveTestDate(15);
+                    var expected = "warn";
 
-     //Act
-     var actual = controller.checkImageAgeStatus(expirationDate);
+                    //Act
+                    var actual = controller.checkImageAgeStatus(expirationDate);
 
-     //Assert
-     expect(actual).toBe(expected);
-     });
-     });
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
 
-     describe('And the expiration date is 16 days from now', function () {
-     it('Then I expect "pass" to be returned', function() {
+            describe('And the expiration date is 16 days from now', function () {
+                it('Then I expect "pass" to be returned', function() {
 
-     //Arrange
-     var expirationDate = retrieveTestDate(16);
-     var expected = "pass";
+                    //Arrange
+                    var expirationDate = retrieveTestDate(16);
+                    var expected = "pass";
 
-     //Act
-     var actual = controller.checkImageAgeStatus(expirationDate);
+                    //Act
+                    var actual = controller.checkImageAgeStatus(expirationDate);
 
-     //Assert
-     expect(actual).toBe(expected);
-     });
-     });
-     });
-     });*/
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+        });
+    });
 
     describe('checkNOTTDisabledStatus()', function () {
         describe('When I call checkNOTTDisabledStatus', function () {

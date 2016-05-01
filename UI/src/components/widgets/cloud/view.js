@@ -33,10 +33,17 @@
         ctrl.tag = $scope.widgetConfig.options.tag || "";
 
 
-        ctrl.getDaysToExpiration = function(expirationDate) {
+        ctrl.getDaysToExpiration = function(epochTime) {
 
-            var date = new Date(expirationDate * 1000);
-            var localDate = date.toLocaleString();
+            if (epochTime == 0) {
+                return 'N/A';
+            }
+
+            var epochDate = new Date(epochTime);
+            var epochDD = ('0' + epochDate.getDate()).slice(-2);
+            var epochMM = ('0' + (epochDate.getMonth() + 1)).slice(-2);
+            var epochYYYY = epochDate.getFullYear();
+            var imageDate = epochMM + '/'+ epochDD + '/' + epochYYYY;
 
             //get todays date
             var today = new Date();
@@ -48,8 +55,7 @@
             if(mm<10) { mm='0'+mm }
             today = mm+'/'+dd+'/'+yyyy;
 
-            return Math.floor(( Date.parse(localDate) - Date.parse(today) ) / 86400000);
-
+            return Math.floor(( Date.parse(imageDate) - Date.parse(today) ) / 86400000);
         };
 
 
