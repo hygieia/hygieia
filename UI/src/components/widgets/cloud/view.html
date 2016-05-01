@@ -11,15 +11,129 @@
     </div>
 
     <div class="container-fluid" ng-if="!cloudView.isDetail">
+        <h3>Your Account Overview</h3>
+        <hr>
+
         <div class="row">
-            <div class="col-xs-12">
-                Summary
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-info" style="width: 20%;"><span class="fa fa-server header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspTotal Instances 3,015</h3>
+                </div>
             </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-success" style="width: 20%;"><span class="fa fa-arrow-up header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspInstances Running 1,900</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-warning" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspUsage Growth 20%</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-usd header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspAvg Monthly Cost $800,000</h3>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="well override-background-color">
+                    <h3>Compute</h3>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="canvas-holder">
+                                <chartist></chartist>
+                                <canvas id="chart-area" width="300" height="300"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <!-- <blockquote style="border-left:5px solid #2DB5D7;"><p>Total EC2 Instances - 3015</p></blockquote> -->
+                            <blockquote style="border-left:5px solid #46BFBD;"><p>Running - 1900</p></blockquote>
+                            <blockquote style="border-left:5px solid #FF5A5E;"><p>Stopped - 300</p></blockquote>
+                            <blockquote style="border-left:5px solid #949FB1;"><p>Excluded - 910</p></blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="well override-background-color">
+                    <h3>Instances by Age</h3>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="canvas-holder">
+                                <canvas id="chart-area2" width="300" height="300"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <blockquote style="border-left:5px solid #2DB5D7;"><p>&#60; 45 days old</p></blockquote>
+                            <blockquote style="border-left:5px solid #46BFBD;"><p>&#60; 60 days old</p></blockquote>
+                            <blockquote style="border-left:5px solid #FF5A5E;"><p>&#60; 15 days old</p></blockquote>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="well override-background-color">
+                    <h3>
+                        Subnet
+                    </h3>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="canvas-holder" style="width:100%">
+                                <canvas id="polar-chart-area" width="300" height="300"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <blockquote style="border-left:5px solid #46BFBD;"><p>Available - 3,500</p></blockquote>
+                            <blockquote style="border-left:5px solid #FF5A5E;"><p>Used - 2,500</p></blockquote>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <blockquote style="border-left:5px solid #949FB1;">
+                                <p>Total IP's</p>
+                                <h1>6,000</h1>
+                            </blockquote>
+                        </div>
+                        <div class="col-lg-6">
+                            <blockquote style="border-left:5px solid #949FB1;">
+                                <p>Avg Utilization</p>
+                                <h1>50%</h1>
+                            </blockquote>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="#subnet-details-modal" data-toggle="modal">View subnet details</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
         </div>
     </div>
 
+
     <div class="container-fluid" ng-if="cloudView.isDetail">
-        <h3>Your Instances</h3>
+        <h3>Your Tag Detail</h3>
         <hr>
 
         <div class="row">
@@ -109,6 +223,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
+
