@@ -83,6 +83,119 @@ describe('CloudWidgetViewController', function () {
             })
         });
 
+
+    describe('calculateUtilization()', function () {
+        describe('When I call calculateUtilization', function () {
+            describe('And AWS instances is undefined', function () {
+                it('Then I expect "N/A" to be returned', function () {
+
+                    //Arrange
+                    controller.instancesByTag = undefined;
+                    var expected = 'N/A';
+
+                    //Act
+                    var actual = controller.calculateUtilization();
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And no AWS instances exists', function () {
+                it('Then I expect "N/A" to be returned', function () {
+
+                    //Arrange
+                    controller.instancesByTag = [];
+                    var expected = 'N/A';
+
+                    //Act
+                    var actual = controller.calculateUtilization();
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And AWS instances exist with the cpu utilization values', function () {
+                it('Then I expect the average of the cpu utilization to be returned', function () {
+
+                    //Arrange
+                    controller.instancesByTag = [
+                        { "cpuUtilization": 10 },
+                        { "cpuUtilization": 20 },
+                        { "cpuUtilization": 30 },
+                    ];
+                    var expected = 20;
+
+                    //Act
+                    var actual = controller.calculateUtilization();
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+
+
+        });
+    });
+
+
+    describe('getSortDirection()', function () {
+        describe('When I call getSortDirection', function () {
+            describe('And no sort key has been created', function () {
+                it('Then I expect "unsorted" to be returned', function () {
+
+                    //Arrange
+                    var key = 'AMI';
+                    var expected = "unsorted";
+
+                    //Act
+                    var actual = controller.getSortDirection(key);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And the sort key is "-"', function () {
+                it('Then I expect "sort-amount-desc" to be returned', function () {
+
+                    //Arrange
+                    var key = 'AMI';
+                    var expected = "sort-amount-desc";
+
+                    //Act
+                    controller.changeSortDirection(key);
+                    var actual = controller.getSortDirection(key);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And the sort key is "+"', function () {
+                it('Then I expect "sort-amount-asc" to be returned', function () {
+
+                    //Arrange
+                    var key = 'AMI';
+                    var expected = "sort-amount-asc";
+
+                    //Act
+                    controller.changeSortDirection(key);
+                    controller.changeSortDirection(key);
+                    var actual = controller.getSortDirection(key);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+        });
+    });
+
+
+
     describe('changeSortDirection()', function () {
         describe('When I call changeSortDirection', function () {
             describe('And no sort key has been created', function () {
