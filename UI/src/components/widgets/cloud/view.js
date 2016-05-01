@@ -53,6 +53,25 @@
         };
 
 
+        ctrl.calculateUtilization = function() {
+
+            if (ctrl.instancesByTag == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = ctrl.instancesByTag.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            var total = ctrl.instancesByTag.reduce(function(sum, currentValue) {
+                return sum + currentValue.cpuUtilization;
+            }, 0);
+
+            return (total / cnt);
+        }
+
         ctrl.changeSortDirection = function(key) {
             var value = sortDictionary[key];
             if (value == undefined) {
@@ -120,13 +139,13 @@
             ctrl.awsOverview = cloudData.getAWSGlobalData();
         };
 
-        ctrl.retrieveInstancesByTag = function(tag, value) {
+        ctrl.getInstancesByTag = function(tag, value) {
             ctrl.instancesByTag = cloudData.getAWSInstancesByTag(tag, value);
         };
 
         //tested
         ctrl.toggleView = function() {
-            ctrl.retrieveInstancesByTag("Tag","Value");
+            ctrl.getInstancesByTag("Tag","Value");
             ctrl.isDetail = (ctrl.isDetail == false);
         };
 
