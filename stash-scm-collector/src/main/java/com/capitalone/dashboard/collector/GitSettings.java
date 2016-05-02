@@ -14,9 +14,26 @@ public class GitSettings {
     private String key;
     private int firstRunHistoryDays;
     private String api;
+    private String userId;
+    private String password;
 
+    public String getUserId() {
+        return userId;
+    }
 
-	public String getHost() {
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getHost() {
 		return host;
 	}
 
