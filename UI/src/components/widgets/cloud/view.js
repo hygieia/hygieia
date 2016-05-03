@@ -25,12 +25,12 @@
 
         //public variables
         ctrl.awsOverview;
-        ctrl.instancesByTag;
+        ctrl.instancesByAccount;
         ctrl.sortType = [];
         ctrl.searchFilter = '';
 
         ctrl.isDetail = false;
-        ctrl.tag = $scope.widgetConfig.options.tag || "";
+        ctrl.accountNumber = $scope.widgetConfig.options.accountNumber || "";
 
 
         ctrl.getDaysToExpiration = function(epochTime) {
@@ -61,21 +61,26 @@
 
         ctrl.calculateUtilization = function() {
 
-            if (ctrl.instancesByTag == undefined) {
-                return 'N/A';
-            }
+            /*
+             if (ctrl.instancesByAccount == undefined) {
+             return 'N/A';
+             }
 
-            var cnt = ctrl.instancesByTag.length;
+             var cnt = ctrl.instancesByAccount.length;
 
-            if (cnt == 0) {
-                return 'N/A';
-            }
+             if (cnt == 0) {
+             return 'N/A';
+             }
 
-            var total = ctrl.instancesByTag.reduce(function(sum, currentValue) {
-                return sum + currentValue.cpuUtilization;
-            }, 0);
+             var total = ctrl.instancesByAccount.reduce(function(sum, currentValue) {
+             return sum + currentValue.cpuUtilization;
+             }, 0);
 
-            return (total / cnt);
+             return (total / cnt);
+
+             */
+
+            return 0;
         }
 
         ctrl.changeSortDirection = function(key) {
@@ -123,6 +128,11 @@
 
 
         ctrl.checkNOTTDisabledStatus = function(tags) {
+
+            if (tags == undefined) {
+                return false;
+            }
+
             for(var i = 0; i < tags.length; i++) {
                 var item = tags[i];
                 if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDE") {
@@ -142,21 +152,20 @@
 
 
         ctrl.load = function () {
-            ctrl.awsOverview = cloudData.getAWSGlobalData();
-        };
-
-        ctrl.getInstancesByTag = function(tag, value) {
-            ctrl.instancesByTag = cloudData.getAWSInstancesByTag(tag, value);
+            //ctrl.awsOverview = cloudData.getAWSGlobalData();
         };
 
         //tested
         ctrl.toggleView = function() {
-            ctrl.getInstancesByTag("Tag","Value");
             ctrl.isDetail = (ctrl.isDetail == false);
+
+            if (ctrl.isDetail) {
+                cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
+                    .then(function(data) {
+                        console.log(data.length);
+                        ctrl.instancesByAccount = data;
+                    });
+            }
         };
-
-
-        ctrl.load();
-
     }
 })();

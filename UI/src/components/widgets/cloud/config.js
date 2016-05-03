@@ -19,10 +19,7 @@
         var widgetConfig = modalData.widgetConfig;
 
         // public variables
-        ctrl.accountsDropdownPlaceholder = 'Please select an account...';
-        ctrl.accounts = cloudData.getAccounts();
-        ctrl.accountsDropdownDisabled = (ctrl.accounts.length <= 0);
-        ctrl.selectedItem = undefined;
+        ctrl.accountNumber = undefined;
 
         // public methods
         ctrl.submit = function (valid) {
@@ -35,7 +32,7 @@
                     name: 'cloud',
                     options: {
                         id: widgetConfig.options.id,
-                        tag: ctrl.selectedItem
+                        accountNumber: ctrl.accountNumber
                     },
                     componentId: modalData.dashboard.application.components[0].id
                 };
