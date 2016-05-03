@@ -8,7 +8,7 @@ import java.util.Date;
  * CollectorItem extension to store the git repo url and branch.
  */
 public class GitRepo extends CollectorItem {
-    private static final String REPO_URL = "repoUrl"; // http://git.company.com/jack/somejavacode
+    private static final String REPO_URL = "url"; // http://git.company.com/jack/somejavacode
     private static final String BRANCH = "branch"; // master, development etc.
     private static final String USER_ID = "userID";
     private static final String PASSWORD = "password";
