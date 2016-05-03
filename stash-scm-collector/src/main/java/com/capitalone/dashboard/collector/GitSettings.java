@@ -15,8 +15,7 @@ public class GitSettings {
     private int firstRunHistoryDays;
     private String api;
 
-
-	public String getHost() {
+    public String getHost() {
 		return host;
 	}
 
