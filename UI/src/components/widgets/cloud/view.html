@@ -45,90 +45,6 @@
             </div>
 
         </div>
-
-        <div class="row">
-            <div class="col-md-4">
-                <div class="well override-background-color">
-                    <h3>Compute</h3>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div id="canvas-holder">
-                                <chartist></chartist>
-                                <canvas id="chart-area" width="300" height="300"/>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <!-- <blockquote style="border-left:5px solid #2DB5D7;"><p>Total EC2 Instances - 3015</p></blockquote> -->
-                            <blockquote style="border-left:5px solid #46BFBD;"><p>Running - 1900</p></blockquote>
-                            <blockquote style="border-left:5px solid #FF5A5E;"><p>Stopped - 300</p></blockquote>
-                            <blockquote style="border-left:5px solid #949FB1;"><p>Excluded - 910</p></blockquote>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="well override-background-color">
-                    <h3>Instances by Age</h3>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div id="canvas-holder">
-                                <canvas id="chart-area2" width="300" height="300"/>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <blockquote style="border-left:5px solid #2DB5D7;"><p>&#60; 45 days old</p></blockquote>
-                            <blockquote style="border-left:5px solid #46BFBD;"><p>&#60; 60 days old</p></blockquote>
-                            <blockquote style="border-left:5px solid #FF5A5E;"><p>&#60; 15 days old</p></blockquote>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="col-md-4">
-
-                <div class="well override-background-color">
-                    <h3>
-                        Subnet
-                    </h3>
-
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div id="canvas-holder" style="width:100%">
-                                <canvas id="polar-chart-area" width="300" height="300"/>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <blockquote style="border-left:5px solid #46BFBD;"><p>Available - 3,500</p></blockquote>
-                            <blockquote style="border-left:5px solid #FF5A5E;"><p>Used - 2,500</p></blockquote>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <blockquote style="border-left:5px solid #949FB1;">
-                                <p>Total IP's</p>
-                                <h1>6,000</h1>
-                            </blockquote>
-                        </div>
-                        <div class="col-lg-6">
-                            <blockquote style="border-left:5px solid #949FB1;">
-                                <p>Avg Utilization</p>
-                                <h1>50%</h1>
-                            </blockquote>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <a href="#subnet-details-modal" data-toggle="modal">View subnet details</a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-
-        </div>
     </div>
 
 
@@ -194,26 +110,26 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="instance in cloudView.instancesByTag | orderBy:cloudView.sortType | filter:cloudView.searchFilter">
+                                    <tr ng-repeat="instance in cloudView.instancesByAccount | orderBy:cloudView.sortType | filter:cloudView.searchFilter">
                                         <td>{{instance.instanceId}}</td>
-                                        <td>{{instance.instanceType}}</td>
+                                         <td>{{instance.instanceType}}</td>
                                         <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
-                                            {{instance.imageId}}
-                                        </td>
-                                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
-                                            {{cloudView.getDaysToExpiration(instance.imageExpirationDate)}}
-                                        </td>
-                                        <td>{{instance.privateIp}}</td>
-                                        <td>{{instance.subnetId}}</td>
-                                        <td ng-bind="instance.stopped == false ? 'running' : 'stopped'"></td>
-                                        <td ng-class="'widget-font-' + (cloudView.checkNOTTDisabledStatus(instance.tags) == true ? 'fail': 'pass')"
-                                            ng-bind="cloudView.checkNOTTDisabledStatus(instance.tags) ? 'disabled' : 'enabled'"></td>
-                                        <td ng-class="'widget-font-' + cloudView.checkMonitoredStatus(instance.monitored)">
-                                            {{instance.monitored}}
-                                        </td>
-                                        <td ng-class="'widget-font-' + cloudView.checkUtilizationStatus(instance.cpuUtilization)">
-                                            {{instance.cpuUtilization | number:1}}%
-                                        </td>
+                                             {{instance.imageId}}
+                                         </td>
+                                         <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
+                                             {{cloudView.getDaysToExpiration(instance.imageExpirationDate)}}
+                                         </td>
+                                         <td>{{instance.privateIp}}</td>
+                                         <td>{{instance.subnetId}}</td>
+                                         <td ng-bind="instance.stopped == false ? 'running' : 'stopped'"></td>
+                                         <td ng-class="'widget-font-' + (cloudView.checkNOTTDisabledStatus(instance.tags) == true ? 'fail': 'pass')"
+                                             ng-bind="cloudView.checkNOTTDisabledStatus(instance.tags) ? 'disabled' : 'enabled'"></td>
+                                         <td ng-class="'widget-font-' + cloudView.checkMonitoredStatus(instance.monitored)">
+                                             {{instance.monitored}}
+                                         </td>
+                                         <td ng-class="'widget-font-' + cloudView.checkUtilizationStatus(instance.cpuUtilization)">
+                                             {{instance.cpuUtilization | number:1}}%
+                                         </td>
                                     </tr>
                                     </tbody>
                                 </table>

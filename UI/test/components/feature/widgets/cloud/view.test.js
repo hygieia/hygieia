@@ -52,14 +52,14 @@ describe('CloudWidgetViewController', function () {
 
             return {
                 getAWSGlobalData: getAWSGlobalData,
-                getAWSInstancesByTag: getAWSInstancesByTag
+                getAWSInstancesByAccount: getAWSInstancesByAccount
             };
 
             function getAWSGlobalData() {
                 return AWSGlobalData;
             }
 
-            function getAWSInstancesByTag() {
+            function getAWSInstancesByAccount() {
                 return null;
             }
         })

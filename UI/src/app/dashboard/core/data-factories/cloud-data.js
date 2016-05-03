@@ -10,24 +10,15 @@
         .module(HygieiaConfig.module + '.core')
         .factory('cloudData', cloudData);
 
-    function cloudData($http) {
+    function cloudData($http, $q) {
 
         var testDataRoute = 'asv_data.json';
-        var cloudDataRoute = '/api/asv/';
+        var cloudInstanceDataRoute = '/api/cloud/instance/details/account';
 
         return {
-            getAccounts: getAccounts,
             getAWSGlobalData: getAWSGlobalData,
-            getAWSInstancesByTag: getAWSInstancesByTag
+            getAWSInstancesByAccount: getAWSInstancesByAccount
         };
-
-        function getAccounts() {
-            return JSON.parse('[{ "name": "Development Account"},{ "name": "Production Account"}]');
-            return $http.get(HygieiaConfig.local ? testDataRoute : cloudDataRoute)
-                .then(function (response) {
-                    return response.data[0].result;
-                });
-        }
 
 
         function getAWSGlobalData() {
@@ -49,11 +40,23 @@
              }; */
         }
 
-        function getAWSInstancesByTag(tag, value) {
-            return $http.get(HygieiaConfig.local ? testDataRoute : cloudDataRoute)
-                .then(function (response) {
-                    return response.data[0].result;
+        function getAWSInstancesByAccount(value) {
+
+            var deferred = $q.defer();
+
+            var route = (HygieiaConfig.local ? testDataRoute : cloudInstanceDataRoute) + "/" + value;
+            $http.get(route)
+                .success(function (data) {
+                    deferred.resolve(data);
+                })
+                .error(function(error) {
+                    deferred.reject(error);
                 });
+
+            return deferred.promise;
         }
+
+
+
     }
 })();

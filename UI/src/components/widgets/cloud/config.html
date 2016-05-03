@@ -1,14 +1,13 @@
 <widget-modal widget-modal-title="Configure Cloud Widget" class="cloud-config">
     <form name="cloudConfigForm" role="form" ng-submit="cloudConfig.submit(cloudConfigForm.$valid)" novalidate="novalidate">
-        <form-group class="text-center" input="name" errors="{required: 'Please select an account'}">
-            <select name="cloudTag"
-                    class="form-control"
-                    ng-model="cloudConfig.selectedItem"
-                    ng-options="item.name for item in cloudConfig.accounts | orderBy: 'name'"
-                    ng-disabled="cloudConfig.accountsDropdownDisabled"
+        <form-group class="text-center" input="name" errors="{required: 'Please enter an account number'}">
+            <label class="modal-label">Account number</label>
+            <input
+                    type="text"
+                    name="accountNumber"
+                    class="form-control-inline text-center"
+                    ng-model="cloudConfig.accountNumber"
                     required>
-                <option value="">{{cloudConfig.accountsDropdownPlaceholder}}</option>
-            </select>
         </form-group>
 
         <div class="button-row row text-center">
