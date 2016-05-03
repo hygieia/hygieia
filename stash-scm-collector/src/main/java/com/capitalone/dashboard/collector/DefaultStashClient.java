@@ -17,6 +17,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -35,7 +36,7 @@ import java.util.TimeZone;
  * Subversion repositories.
  */
 
-
+@Component
 public class DefaultStashClient implements GitClient {
 	private static final Log LOG = LogFactory.getLog(DefaultStashClient.class);
 
@@ -59,7 +60,7 @@ public class DefaultStashClient implements GitClient {
 		List<Commit> commits = new ArrayList<>();
 
 		// format URL
-		String repoUrl = (String) repo.getOptions().get("repoUrl");
+		String repoUrl = (String) repo.getOptions().get("url");
 		if (repoUrl.endsWith(".git")) {
 			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
 		}
