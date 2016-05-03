@@ -4,12 +4,12 @@
 (function() {
 	'use strict';
 
-	angular.module(HygieiaConfig.module).controller('OrgsRepoConfigController',
-			OrgsRepoConfigController);
+	angular.module(HygieiaConfig.module).controller('PullConfigController',
+			PullConfigController);
 
-	OrgsRepoConfigController.$inject = [ 'modalData', '$modalInstance',
+	PullConfigController.$inject = [ 'modalData', '$modalInstance',
 			'collectorData' ];
-	function OrgsRepoConfigController(modalData, $modalInstance, collectorData) {
+	function PullConfigController(modalData, $modalInstance, collectorData) {
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
 
@@ -136,7 +136,7 @@
 
 		function processCollectorItemResponse(response) {
 			var postObj = {
-				name : "repo",
+				name : "pull",
 				options : {
 					id : widgetConfig.options.id,
 					scm : ctrl.repoOption,

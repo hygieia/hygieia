@@ -5,16 +5,16 @@
         config = {
         view: {
             defaults: {
-                title: 'Contributions Repo' // widget title
+                title: 'Issues Data' // widget title
             },
-            controller: 'OrgsRepoViewController',
-            controllerAs: 'repoView',
-            templateUrl: 'components/widgets/contributions/view.html'
+            controller: 'IssueViewController',
+            controllerAs: 'issueView',
+            templateUrl: 'components/widgets/issues/view.html'
         },
         config: {
-            controller: 'OrgsRepoConfigController',
-            controllerAs: 'contributionsConfig',
-            templateUrl: 'components/widgets/contributions/config.html'
+            controller: 'IssueConfigController',
+            controllerAs: 'issueConfig',
+            templateUrl: 'components/widgets/issues/config.html'
         },
         getState: getState
     };
@@ -26,7 +26,7 @@
     register.$inject = ['widgetManagerProvider', 'WidgetState'];
     function register(widgetManagerProvider, WidgetState) {
         widget_state = WidgetState;
-        widgetManagerProvider.register('contributions', config);
+        widgetManagerProvider.register('issues', config);
     }
 
     function getState(widgetConfig) {

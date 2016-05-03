@@ -3,10 +3,10 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('RepoDetailController', RepoDetailController);
+        .controller('OrgsRepoDetailsController', OrgsRepoDetailsController);
 
-    RepoDetailController.$inject = ['$modalInstance', 'commits', 'DashStatus'];
-    function RepoDetailController($modalInstance, commits, DashStatus) {
+    OrgsRepoDetailsController.$inject = ['$modalInstance', 'commits', 'DashStatus'];
+    function OrgsRepoDetailsController($modalInstance, commits, DashStatus) {
         /*jshint validthis:true */
         var ctrl = this;
 

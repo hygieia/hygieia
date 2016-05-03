@@ -4,12 +4,12 @@
 (function() {
 	'use strict';
 
-	angular.module(HygieiaConfig.module).controller('OrgsRepoConfigController',
-			OrgsRepoConfigController);
+	angular.module(HygieiaConfig.module).controller('IssueConfigController',
+		IssueConfigController);
 
-	OrgsRepoConfigController.$inject = [ 'modalData', '$modalInstance',
-			'collectorData' ];
-	function OrgsRepoConfigController(modalData, $modalInstance, collectorData) {
+	IssueConfigController.$inject = [ 'modalData', '$modalInstance',
+		'collectorData' ];
+	function IssueConfigController(modalData, $modalInstance, collectorData) {
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
 
@@ -74,19 +74,19 @@
 			if (valid && ctrl.collectors.length) {
 				if (repoType == 'GitHub (public)') {
 					createCollectorItem(url, repoType, ctrl.gitBranch).then(
-							processCollectorItemResponse);
+						processCollectorItemResponse);
 				} else if (repoType == 'GitHub (private)') {
 					var httpReplace = ("http://").concat(ctrl.username).concat(
-							":").concat(ctrl.password).concat("@");
+						":").concat(ctrl.password).concat("@");
 					var httpsReplace = ("https://").concat(ctrl.username)
-							.concat(":").concat(ctrl.password).concat("@");
+						.concat(":").concat(ctrl.password).concat("@");
 					var url2 = url.replace("http://", httpReplace);
 					var url3 = url2.replace("https://", httpsReplace);
 					createCollectorItem(url3, repoType, ctrl.gitBranch).then(
-							processCollectorItemResponse);
+						processCollectorItemResponse);
 				} else {
 					createCollectorItem(url, repoType.name, ctrl.gitBranch).then(
-							processCollectorItemResponse);
+						processCollectorItemResponse);
 				}
 			}
 		}
@@ -136,7 +136,7 @@
 
 		function processCollectorItemResponse(response) {
 			var postObj = {
-				name : "repo",
+				name : "issue",
 				options : {
 					id : widgetConfig.options.id,
 					scm : ctrl.repoOption,

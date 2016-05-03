@@ -1,0 +1,25 @@
+<widget-modal widget-modal-close="true">
+    <div class="widget-detail pull-detail">
+        <div class="widget-detail-body">
+            <span class="no-changesets" ng-hide="detail.pulls.length">No Changes</span>
+            <table class="table" ng-show="detail.pulls.length">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Developer</th>
+                    <th>Title</th>
+                    <th>Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="pull in detail.pulls">
+                    <td>{{::pull.Id | limitTo:8}}</td>
+                    <td>{{::pull.Developer}}</td>
+                    <td>{{::pull.Title}}</td>
+                    <td>{{::pull.Timestamp | date:'MMM d, HH:mm:ss'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</widget-modal>

@@ -16,19 +16,46 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *  Unfuddle
  *
  */
-@Document(collection="commits")
-public class Commit extends SCM {
+@Document(collection="pulls")
+public class Pull extends SCM {
     @Id
     private ObjectId id;
+    private String number;
+    private String name;
+
+    private String repoName;
     private ObjectId collectorItemId;
     private long timestamp;
-    private String repoName;
+
     public ObjectId getId() {
         return id;
     }
 
     void setId(ObjectId id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getRepoName() {
+        return repoName;
+    }
+
+    public void setRepoName(String repoName) {
+        this.repoName = repoName;
+    }
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public ObjectId getCollectorItemId() {
@@ -45,12 +72,5 @@ public class Commit extends SCM {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-    public String getRepoName() {
-        return repoName;
-    }
-
-    public void setRepoName(String repoName) {
-        this.repoName = repoName;
     }
 }

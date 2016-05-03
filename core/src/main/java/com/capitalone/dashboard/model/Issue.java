@@ -16,11 +16,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *  Unfuddle
  *
  */
-@Document(collection="gitrepos")
-public class GitRepoData extends SCM {
+@Document(collection="issues")
+public class Issue extends SCM {
     @Id
     private ObjectId id;
+    private String name;
     private String repoName;
+
+    private String number;
+
     private ObjectId collectorItemId;
     private long timestamp;
 
@@ -31,13 +35,26 @@ public class GitRepoData extends SCM {
     void setId(ObjectId id) {
         this.id = id;
     }
+    public String getNumber() {
+        return number;
+    }
 
+    public void setNumber(String number) {
+        this.number = number;
+    }
     public String getName() {
-        return repoName;
+        return name;
     }
 
     public void setName(String name) {
-        this.repoName = name;
+        this.name = name;
+    }
+    public String getRepoName() {
+        return repoName;
+    }
+
+    public void setRepoName(String repoName) {
+        this.repoName = repoName;
     }
 
     public ObjectId getCollectorItemId() {

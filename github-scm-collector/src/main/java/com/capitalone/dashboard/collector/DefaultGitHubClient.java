@@ -1,9 +1,7 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.model.GitHubRepo;
-import com.capitalone.dashboard.model.GitHubOrg;
-import com.capitalone.dashboard.model.GitRepoData;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
@@ -27,12 +25,7 @@ import org.springframework.web.client.RestOperations;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * GitHubClient implementation that uses SVNKit to fetch information about
@@ -46,13 +39,17 @@ public class DefaultGitHubClient implements GitHubClient {
 	private final GitHubSettings settings;
 
 	private final RestOperations restOperations;
-	private static final String SEGMENT_API = "/api/v3/repos/";
+
+	private static final String ROOT_SEGMENT_API = "/api/v3/";
+	private static final String ROOT_PUBLIC_GITHUB_HOST = "api.github.com/";
+
+	private static final String REPO_SEGMENT_API = "/api/v3/repos/";
 	private static final String PUBLIC_GITHUB_REPO_HOST = "api.github.com/repos/";
-	private static final String SEGMENT_API_REPOS = "/api/v3/orgs/";
-	private static final String PUBLIC_GITHUB_REPO_HOST_REPOS = "api.github.com/orgs/";
+	private static final String ORG_SEGMENT_API = "/api/v3/orgs/";
+	private static final String PUBLIC_GITHUB_ORG_HOST = "api.github.com/orgs/";
 
 	private static final String PUBLIC_GITHUB_HOST_NAME = "github.com";
-	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
+	private static final int FIRST_RUN_HISTORY_DEFAULT = 90;
 
 	@Autowired
 	public DefaultGitHubClient(GitHubSettings settings,
@@ -61,38 +58,14 @@ public class DefaultGitHubClient implements GitHubClient {
 		this.restOperations = restOperationsSupplier.get();
 	}
 
+
 	@Override
 	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
-	public List<GitRepoData> getRepoNames(GitHubOrg repo, boolean firstRun) {
+	public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) {
+		List<Commit> commits = new ArrayList<>();
 
-		List<GitRepoData> repos = new ArrayList<>();
+		String apiUrl = getUrl(repo, REPO_SEGMENT_API, firstRun);
 
-		// format URL
-		String repoUrl = (String) repo.getOptions().get("url");
-		if (repoUrl.endsWith(".git")) {
-			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
-		}
-		URL url = null;
-		String hostName = "";
-		String protocol = "";
-		try {
-			url = new URL(repoUrl);
-			hostName = url.getHost();
-			protocol = url.getProtocol();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			LOG.error(e.getMessage());
-		}
-		String hostUrl = protocol + "://" + hostName + "/";
-		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
-		String orgName = repoName.substring(0,repoName.indexOf("/"));
-		String apiUrl = "";
-		if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
-			apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST_REPOS + orgName;
-		} else {
-			apiUrl = protocol + "://" + hostName + SEGMENT_API_REPOS + orgName;
-			LOG.debug("API URL IS:"+apiUrl);
-		}
 		Date dt;
 		if (firstRun) {
 			int firstRunDaysHistory = settings.getFirstRunHistoryDays();
@@ -102,17 +75,13 @@ public class DefaultGitHubClient implements GitHubClient {
 				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
 			}
 		} else {
-			dt = getDate(new Date(repo.getLastUpdated()), 0, -10);
+			dt = getDate(new Date(repo.getLastUpdated()), -90, -10);
 		}
-
-		String queryUrl = apiUrl.concat("/repos");
-		LOG.debug("Query URL is " + queryUrl);
-		/*
-		 * Calendar cal = Calendar.getInstance(); cal.setTime(dateInstance);
-		 * cal.add(Calendar.DATE, -30); Date dateBefore30Days = cal.getTime();
-		 */
-
-		// decrypt password
+		Calendar calendar = new GregorianCalendar();
+		TimeZone timeZone = calendar.getTimeZone();
+		Calendar cal = Calendar.getInstance(timeZone);
+		cal.setTime(dt);
+		String thisMoment = String.format("%tFT%<tRZ", cal);
 		String decryptedPassword = "";
 		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
 			try {
@@ -122,76 +91,85 @@ public class DefaultGitHubClient implements GitHubClient {
 				LOG.error(e.getMessage());
 			}
 		}
-		boolean lastPage = false;
-		int pageNumber = 1;
-		String queryUrlPage = queryUrl;
-		while (!lastPage) {
-			try {
-				ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-				JSONArray jsonArray = paresAsArray(response);
-				for (Object item : jsonArray) {
-					JSONObject jsonObject = (JSONObject) item;
+		//Find All Repo's of this org
+		String repoUrl = getOrgUrl(repo, firstRun).concat("repos");
+		List <String> repos = new ArrayList<>();
 
-					String sha = str(jsonObject, "sha");
-					String repo_name = (String ) jsonObject.get("full_name");
-
-					GitRepoData repo1 = new GitRepoData();
-					repo1.setTimestamp(System.currentTimeMillis());
-					repo1.setScmUrl(repo.getOrgUrl());
-					repo1.setScmRevisionNumber(sha);
-					repo1.setName(repo_name);
-					repo1.setNumberOfChanges(1);
-					repos.add(repo1);
-				}
-				if (jsonArray == null || jsonArray.isEmpty()) {
-					lastPage = true;
-				} else {
-					lastPage = isThisLastPage(response);
-					pageNumber++;
-					queryUrlPage = queryUrl + "&page=" + pageNumber;
-				}
-
-			} catch (RestClientException re) {
-				LOG.error(re.getMessage() + ":" + queryUrl);
-				lastPage = true;
-
+		try {
+			ResponseEntity<String> response = makeRestCall(repoUrl, repo.getUserId(), decryptedPassword);
+			JSONArray jsonArray = paresAsArray(response);
+			for (Object item : jsonArray) {
+				JSONObject jsonObject = (JSONObject) item;
+				String name = str(jsonObject, "name");
+				repos.add(name);
 			}
 		}
-		return repos;
+		catch (RestClientException re) {
+			LOG.error(re.getMessage());
+		}
+
+		if (repos.size() == 0)
+			return commits;
+
+		Iterator iter = repos.iterator();
+		while (iter.hasNext()) {
+			String repoName = (String )iter.next();
+			String queryUrl = apiUrl.concat(repoName + "/commits?sha=" + repo.getBranch()
+					+ "&since=" + thisMoment);
+
+			boolean lastPage = false;
+			int pageNumber = 1;
+			String queryUrlPage = queryUrl;
+			while (!lastPage) {
+				try {
+					ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+					JSONArray jsonArray = paresAsArray(response);
+					for (Object item : jsonArray) {
+						JSONObject jsonObject = (JSONObject) item;
+						String sha = str(jsonObject, "sha");
+						JSONObject commitObject = (JSONObject) jsonObject.get("commit");
+						JSONObject authorObject = (JSONObject) commitObject.get("author");
+						String message = str(commitObject, "message");
+						String author = str(authorObject, "name");
+						long timestamp = new DateTime(str(authorObject, "date"))
+								.getMillis();
+
+						Commit commit = new Commit();
+						commit.setTimestamp(System.currentTimeMillis());
+						commit.setScmUrl(repo.getRepoUrl());
+						commit.setScmRevisionNumber(sha);
+						commit.setScmAuthor(author);
+						commit.setScmCommitLog(message);
+						commit.setScmCommitTimestamp(timestamp);
+						commit.setNumberOfChanges(1);
+						commit.setRepoName(repoName);
+						commits.add(commit);
+					}
+					if (jsonArray == null || jsonArray.isEmpty()) {
+						lastPage = true;
+					} else {
+						lastPage = isThisLastPage(response);
+						pageNumber++;
+						queryUrlPage = queryUrl + "&page=" + pageNumber;
+					}
+
+				} catch (RestClientException re) {
+					LOG.error(re.getMessage() + ":" + queryUrl);
+					lastPage = true;
+
+				}
+			}
+		}
+		return commits;
+
 	}
-
-
 	@Override
 	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
-	public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) {
+	public List<Pull> getPulls(GitHubRepo repo, boolean firstRun) {
+		List<Pull> pulls = new ArrayList<>();
 
-		List<Commit> commits = new ArrayList<>();
+		String apiUrl = getUrl(repo, REPO_SEGMENT_API, firstRun);
 
-		// format URL
-		String repoUrl = (String) repo.getOptions().get("url");
-		if (repoUrl.endsWith(".git")) {
-			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
-		}
-		URL url = null;
-		String hostName = "";
-		String protocol = "";
-		try {
-			url = new URL(repoUrl);
-			hostName = url.getHost();
-			protocol = url.getProtocol();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			LOG.error(e.getMessage());
-		}
-		String hostUrl = protocol + "://" + hostName + "/";
-		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
-		String apiUrl = "";
-		if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
-			apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + repoName;
-		} else {
-			apiUrl = protocol + "://" + hostName + SEGMENT_API + repoName;
-			LOG.debug("API URL IS:"+apiUrl);
-		}
 		Date dt;
 		if (firstRun) {
 			int firstRunDaysHistory = settings.getFirstRunHistoryDays();
@@ -201,7 +179,114 @@ public class DefaultGitHubClient implements GitHubClient {
 				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
 			}
 		} else {
-			dt = getDate(new Date(repo.getLastUpdated()), 0, -10);
+			dt = getDate(new Date(repo.getLastUpdated()), -90, -10);
+		}
+		Calendar calendar = new GregorianCalendar();
+		TimeZone timeZone = calendar.getTimeZone();
+		Calendar cal = Calendar.getInstance(timeZone);
+		cal.setTime(dt);
+		String thisMoment = String.format("%tFT%<tRZ", cal);
+		String decryptedPassword = "";
+		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
+			try {
+				decryptedPassword = Encryption.decryptString(
+						repo.getPassword(), settings.getKey());
+			} catch (EncryptionException e) {
+				LOG.error(e.getMessage());
+			}
+		}
+		//Find All Repo's of this org
+		String repoUrl = getOrgUrl(repo, firstRun).concat("repos");
+		List <String> repos = new ArrayList<>();
+
+		try {
+			ResponseEntity<String> response = makeRestCall(repoUrl, repo.getUserId(), decryptedPassword);
+			JSONArray jsonArray = paresAsArray(response);
+			for (Object item : jsonArray) {
+				JSONObject jsonObject = (JSONObject) item;
+				String name = str(jsonObject, "name");
+				repos.add(name);
+			}
+		}
+		catch (RestClientException re) {
+			LOG.error(re.getMessage());
+		}
+
+		if (repos.size() == 0)
+			return pulls;
+
+		Iterator iter = repos.iterator();
+		while (iter.hasNext()) {
+			String repoName = (String )iter.next();
+			String queryUrl = apiUrl.concat(repoName + "/pulls?sha=" + repo.getBranch()
+					+ "&since=" + thisMoment);
+
+			// decrypt password
+			boolean lastPage = false;
+			int pageNumber = 1;
+			String queryUrlPage = queryUrl;
+			while (!lastPage) {
+				try {
+					ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+					JSONArray jsonArray = paresAsArray(response);
+					for (Object item : jsonArray) {
+						JSONObject jsonObject = (JSONObject) item;
+						String message = str(jsonObject, "title");
+						String number = str(jsonObject, "number");
+						JSONObject userObject = (JSONObject) jsonObject.get("user");
+						String name = str(userObject, "login");
+						long timestamp = new DateTime(str(jsonObject, "created_at"))
+								.getMillis();
+
+						Pull pull = new Pull();
+						pull.setTimestamp(System.currentTimeMillis());
+						pull.setScmUrl(repo.getRepoUrl());
+						pull.setScmCommitTimestamp(timestamp);
+						pull.setScmRevisionNumber(number);
+						pull.setScmCommitLog(message);
+						pull.setTimestamp(timestamp);
+						pull.setName(name);
+						pull.setNumber(number);
+						pull.setRepoName(repoName);
+						pull.setNumberOfChanges(1);
+						pulls.add(pull);
+					}
+					if (jsonArray == null || jsonArray.isEmpty()) {
+						lastPage = true;
+					} else {
+						lastPage = isThisLastPage(response);
+						pageNumber++;
+						queryUrlPage = queryUrl + "&page=" + pageNumber;
+					}
+
+				} catch (RestClientException re) {
+					LOG.error(re.getMessage() + ":" + queryUrl);
+					lastPage = true;
+
+				}
+			}
+		}
+		return pulls;
+	}
+
+	@Override
+	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
+	public List<Issue> getIssues(GitHubRepo repo, boolean firstRun) {
+
+		List<Issue> issues = new ArrayList<>();
+
+		String apiUrl = getUrl(repo, REPO_SEGMENT_API, firstRun);
+
+		Date dt;
+		if (firstRun) {
+			int firstRunDaysHistory = settings.getFirstRunHistoryDays();
+			if (firstRunDaysHistory > 0) {
+				dt = getDate(new Date(), -firstRunDaysHistory, 0);
+			} else {
+				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
+			}
+		} else {
+			dt = getDate(new Date(repo.getLastUpdated()), -90, -10);
 		}
 		Calendar calendar = new GregorianCalendar();
 		TimeZone timeZone = calendar.getTimeZone();
@@ -209,14 +294,6 @@ public class DefaultGitHubClient implements GitHubClient {
 		cal.setTime(dt);
 		String thisMoment = String.format("%tFT%<tRZ", cal);
 
-		String queryUrl = apiUrl.concat("/commits?sha=" + repo.getBranch()
-				+ "&since=" + thisMoment);
-		/*
-		 * Calendar cal = Calendar.getInstance(); cal.setTime(dateInstance);
-		 * cal.add(Calendar.DATE, -30); Date dateBefore30Days = cal.getTime();
-		 */
-
-		// decrypt password
 		String decryptedPassword = "";
 		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
 			try {
@@ -226,49 +303,81 @@ public class DefaultGitHubClient implements GitHubClient {
 				LOG.error(e.getMessage());
 			}
 		}
-		boolean lastPage = false;
-		int pageNumber = 1;
-		String queryUrlPage = queryUrl;
-		while (!lastPage) {
-			try {
-				ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+		//Find All Repo's of this org
+		String repoUrl = getOrgUrl(repo, firstRun).concat("repos");
+		List <String> repos = new ArrayList<>();
+
+		try {
+				ResponseEntity<String> response = makeRestCall(repoUrl, repo.getUserId(), decryptedPassword);
 				JSONArray jsonArray = paresAsArray(response);
 				for (Object item : jsonArray) {
 					JSONObject jsonObject = (JSONObject) item;
-					String sha = str(jsonObject, "sha");
-					JSONObject commitObject = (JSONObject) jsonObject.get("commit");
-					JSONObject authorObject = (JSONObject) commitObject.get("author");
-					String message = str(commitObject, "message");
-					String author = str(authorObject, "name");
-					long timestamp = new DateTime(str(authorObject, "date"))
-							.getMillis();
-					Commit commit = new Commit();
-					commit.setTimestamp(System.currentTimeMillis());
-					commit.setScmUrl(repo.getRepoUrl());
-					commit.setScmRevisionNumber(sha);
-					commit.setScmAuthor(author);
-					commit.setScmCommitLog(message);
-					commit.setScmCommitTimestamp(timestamp);
-					commit.setNumberOfChanges(1);
-					commits.add(commit);
+					String name = str(jsonObject, "name");
+					repos.add(name);
 				}
-				if (jsonArray == null || jsonArray.isEmpty()) {
+		}
+		catch (RestClientException re) {
+			LOG.error(re.getMessage());
+		}
+
+		if (repos.size() == 0)
+			return issues;
+
+		Iterator iter = repos.iterator();
+		while (iter.hasNext()) {
+
+			String repoName = (String )iter.next();
+			String queryUrl = apiUrl.concat(repoName + "/issues?sha=" + repo.getBranch()
+					+ "&since=" + thisMoment);
+
+			// decrypt password
+
+			boolean lastPage = false;
+			int pageNumber = 1;
+			String queryUrlPage = queryUrl;
+			while (!lastPage) {
+				try {
+					ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+					JSONArray jsonArray = paresAsArray(response);
+					for (Object item : jsonArray) {
+						JSONObject jsonObject = (JSONObject) item;
+						String message = str(jsonObject, "title");
+						String number = str(jsonObject, "number");
+						JSONObject userObject = (JSONObject) jsonObject.get("user");
+						String name = str(userObject, "login");
+						long timestamp = new DateTime(str(jsonObject, "created_at"))
+								.getMillis();
+
+						Issue issue = new Issue();
+						issue.setTimestamp(System.currentTimeMillis());
+						issue.setScmUrl(repo.getRepoUrl());
+						issue.setScmCommitTimestamp(timestamp);
+						issue.setScmRevisionNumber(number);
+						issue.setScmCommitLog(message);
+						issue.setTimestamp(timestamp);
+						issue.setName(name);
+						issue.setNumber(number);
+						issue.setRepoName(repoName);
+						issue.setNumberOfChanges(1);
+						issues.add(issue);
+					}
+					if (jsonArray == null || jsonArray.isEmpty()) {
+						lastPage = true;
+					} else {
+						lastPage = isThisLastPage(response);
+						pageNumber++;
+						queryUrlPage = queryUrl + "&page=" + pageNumber;
+					}
+
+				} catch (RestClientException re) {
+					LOG.error(re.getMessage() + ":" + queryUrl);
 					lastPage = true;
-				} else {
-					lastPage = isThisLastPage(response);
-					pageNumber++;
-					queryUrlPage = queryUrl + "&page=" + pageNumber;
+
 				}
-
-			} catch (RestClientException re) {
-				LOG.error(re.getMessage() + ":" + queryUrl);
-				lastPage = true;
-
 			}
 		}
-		return commits;
+		return issues;
 	}
-
 	private Date getDate(Date dateInstance, int offsetDays, int offsetMinutes) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(dateInstance);
@@ -332,4 +441,72 @@ public class DefaultGitHubClient implements GitHubClient {
 		return value == null ? null : value.toString();
 	}
 
+	private List<String> getRepoNames(String url)
+	{
+		List list = new ArrayList();
+		list.add("engine");
+		list.add("migrator-tool");
+		return list;
+	}
+	private String getUrl(GitHubRepo repo, String urlPart, boolean firstRun)
+	{
+		// format URL
+		String repoUrl = (String) repo.getOptions().get("url");
+		if (repoUrl.endsWith(".git")) {
+			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
+		}
+		URL url = null;
+		String hostName = "";
+		String protocol = "";
+		try {
+			url = new URL(repoUrl);
+			hostName = url.getHost();
+			protocol = url.getProtocol();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			LOG.error(e.getMessage());
+		}
+
+		String hostUrl = protocol + "://" + hostName + "/";
+		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
+		String apiUrl = "";
+		if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
+			apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + repoName ;
+		} else {
+			apiUrl = protocol + "://" + hostName + urlPart + repoName ;
+			LOG.debug("API URL IS:"+apiUrl);
+		}
+		return apiUrl;
+
+	}
+	private String getOrgUrl(GitHubRepo repo, boolean firstRun)
+	{
+		// format URL
+		String repoUrl = (String) repo.getOptions().get("url");
+		if (repoUrl.endsWith(".git")) {
+			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
+		}
+		URL url = null;
+		String hostName = "";
+		String protocol = "";
+		try {
+			url = new URL(repoUrl);
+			hostName = url.getHost();
+			protocol = url.getProtocol();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			LOG.error(e.getMessage());
+		}
+
+		String hostUrl = protocol + "://" + hostName + "/";
+		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
+		String apiUrl = "";
+		if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
+			apiUrl = protocol + "://" + PUBLIC_GITHUB_ORG_HOST + repoName ;
+		} else {
+			apiUrl = protocol + "://" + hostName + ORG_SEGMENT_API + repoName ;
+			LOG.debug("API URL IS:"+apiUrl);
+		}
+		return apiUrl;
+	}
 }

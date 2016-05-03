@@ -1,10 +1,10 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.GitRepoData;
+import com.capitalone.dashboard.model.Issue;
 import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.request.GitreposRequest;
-import com.capitalone.dashboard.service.GitreposService;
+import com.capitalone.dashboard.request.IssueRequest;
+import com.capitalone.dashboard.service.IssueService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,29 +21,29 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-public class GitreposController {
+public class IssueController {
 
 
 
-    private final GitreposService service;
+    private final IssueService IssueService;
 
     @Autowired
-    public GitreposController(GitreposService commitService) {
-        this.service = commitService;
+    public IssueController(IssueService IssueService) {
+        this.IssueService = IssueService;
     }
 
-    @RequestMapping(value = "/repos", method = GET, produces = APPLICATION_JSON_VALUE)
-    public DataResponse<Iterable<GitRepoData>> search(@Valid GitreposRequest request) {
-        return service.search(request);
+    @RequestMapping(value = "/issues", method = GET, produces = APPLICATION_JSON_VALUE)
+    public DataResponse<Iterable<Issue>> search(@Valid IssueRequest request) {
+        return IssueService.search(request);
     }
 
 
-    /*@RequestMapping(value = "/repos/github/v3", method = POST,
+    @RequestMapping(value = "/issues/github/v3", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createGitHubv3(@RequestBody JSONObject request) throws ParseException, HygieiaException {
-        String response = service.createFromGitHubv3(request);
+        String response = IssueService.createFromGitHubv3(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
-    }*/
+    }
 }
