@@ -22,6 +22,7 @@ import com.capitalone.dashboard.config.collector.CloudConfig;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.CloudVirtualNetwork;
+import com.capitalone.dashboard.model.CloudVolumeStorage;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
     private final CloudInstanceRepository cloudInstanceRepository;
     private final CloudVirtualNetworkRepository cloudVirtualNetworkRepository;
     private final CloudSubNetworkRepository cloudSubNetworkRepository;
+    private final CloudVolumeRepository cloudVolumeRepository;
 
 
     private final AWSCloudSettings awsSetting;
@@ -57,8 +59,9 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
      * @param cloudClient
      * @param awsConfigRepository
      * @param cloudInstanceRepository
-     * @param cloudSubNetworkRepository
      * @param cloudVirtualNetworkRepository
+     * @param cloudSubNetworkRepository
+     * @param cloudVolumeRepository
      */
     @Autowired
     public AWSCloudCollectorTask(TaskScheduler taskScheduler,
@@ -67,7 +70,7 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
                                  AWSConfigRepository awsConfigRepository,
                                  CloudInstanceRepository cloudInstanceRepository,
                                  CloudVirtualNetworkRepository cloudVirtualNetworkRepository,
-                                 CloudSubNetworkRepository cloudSubNetworkRepository) {
+                                 CloudSubNetworkRepository cloudSubNetworkRepository, CloudVolumeRepository cloudVolumeRepository) {
         super(taskScheduler, "AWSCloud");
         this.collectorRepository = collectorRepository;
         this.awsClient = cloudClient;
@@ -76,6 +79,7 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
         this.cloudInstanceRepository = cloudInstanceRepository;
         this.cloudVirtualNetworkRepository = cloudVirtualNetworkRepository;
         this.cloudSubNetworkRepository = cloudSubNetworkRepository;
+        this.cloudVolumeRepository = cloudVolumeRepository;
     }
 
     public AWSCloudCollector getCollector() {
@@ -98,8 +102,9 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
         log("Starting AWS collection...");
         log("Collecting AWS Cloud Data...");
 
-        collectInstances();
+//        collectInstances();
 
+        collectVolume();
 
         log("Finished Cloud collection.");
     }
@@ -126,6 +131,17 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
         CloudSubNetwork cloudSubNetwork = awsClient.getCloudSubnet(cloudSubNetworkRepository);
         cloudSubNetwork.setLastUpdateDate(System.currentTimeMillis());
         cloudSubNetworkRepository.save(cloudSubNetwork);
+    }
+
+    private void collectVolume() {
+        Map<String, List<CloudVolumeStorage>> accountVolume = awsClient.getCloudVolumes();
+        for (String account : accountVolume.keySet()) {
+            Collection<CloudVolumeStorage> existing = cloudVolumeRepository.findByAccountNumber(account);
+            if (!CollectionUtils.isEmpty(existing)) {
+                cloudVolumeRepository.delete(existing);
+            }
+            cloudVolumeRepository.save(accountVolume.get(account));
+        }
     }
 
     @Override
