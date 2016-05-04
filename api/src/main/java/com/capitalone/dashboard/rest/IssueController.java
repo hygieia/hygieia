@@ -25,23 +25,23 @@ public class IssueController {
 
 
 
-    private final IssueService IssueService;
+    private final IssueService issueService;
 
     @Autowired
-    public IssueController(IssueService IssueService) {
-        this.IssueService = IssueService;
+    public IssueController(IssueService issueService) {
+        this.issueService = issueService;
     }
 
     @RequestMapping(value = "/issues", method = GET, produces = APPLICATION_JSON_VALUE)
     public DataResponse<Iterable<Issue>> search(@Valid IssueRequest request) {
-        return IssueService.search(request);
+        return issueService.search(request);
     }
 
 
     @RequestMapping(value = "/issues/github/v3", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createGitHubv3(@RequestBody JSONObject request) throws ParseException, HygieiaException {
-        String response = IssueService.createFromGitHubv3(request);
+        String response = issueService.createFromGitHubv3(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);

@@ -1,18 +1,27 @@
 package com.capitalone.dashboard.collector;
 
 
+
+
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.Issue;
+import com.capitalone.dashboard.model.Pull;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.CommitRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.GitHubRepoRepository;
+import com.capitalone.dashboard.repository.IssueRepository;
+import com.capitalone.dashboard.repository.PullRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
+
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,7 +31,7 @@ import java.util.Set;
 /**
  * CollectorTask that fetches Commit information from GitHub
  */
-@Component
+@org.springframework.stereotype.Component
 public class GitHubCollectorTask extends CollectorTask<Collector> {
     private static final Log LOG = LogFactory.getLog(GitHubCollectorTask.class);
 
@@ -41,14 +50,14 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
     @Autowired
     public GitHubCollectorTask(TaskScheduler taskScheduler,
-                                   BaseCollectorRepository<Collector> collectorRepository,
-                                   GitHubRepoRepository gitHubRepoRepository,
-                                    CommitRepository commitRepository,
-                                    PullRepository pullRepository,
-                                    IssueRepository issueRepository,
-                                   GitHubClient gitHubClient,
-                                   GitHubSettings gitHubSettings,
-                                   ComponentRepository dbComponentRepository) {
+                               BaseCollectorRepository<Collector> collectorRepository,
+                               GitHubRepoRepository gitHubRepoRepository,
+                               CommitRepository commitRepository,
+                               PullRepository pullRepository,
+                               IssueRepository issueRepository,
+                               GitHubClient gitHubClient,
+                               GitHubSettings gitHubSettings,
+                               ComponentRepository dbComponentRepository) {
         super(taskScheduler, "GitHub");
         this.collectorRepository = collectorRepository;
         this.gitHubRepoRepository = gitHubRepoRepository;
@@ -81,33 +90,32 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         return gitHubSettings.getCron();
     }
 
-	/**
-	 * Clean up unused deployment collector items
-	 *
-	 * @param collector
-	 *            the {@link Collector}
-	 */
+    /**
+     * Clean up unused deployment collector items
+     *
+     * @param collector the {@link Collector}
+     */
     @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, fixme
-	private void clean(Collector collector) {
-		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
-		/**
-		 * Logic: For each component, retrieve the collector item list of the type SCM.
-		 * Store their IDs in a unique set ONLY if their collector IDs match with GitHub collectors ID.
-		 */
-		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
-			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
-				List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
-				if (itemList != null) {
-					for (CollectorItem ci : itemList) {
-						if (ci != null && ci.getCollectorId().equals(collector.getId())){
-							uniqueIDs.add(ci.getId());
-						}
-					}
-				}
-			}
-		}
+    private void clean(Collector collector) {
+        Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+        /**
+         * Logic: For each component, retrieve the collector item list of the type SCM.
+         * Store their IDs in a unique set ONLY if their collector IDs match with GitHub collectors ID.
+         */
+        for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
+            if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
+                List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
+                if (itemList != null) {
+                    for (CollectorItem ci : itemList) {
+                        if (ci != null && ci.getCollectorId().equals(collector.getId())) {
+                            uniqueIDs.add(ci.getId());
+                        }
+                    }
+                }
+            }
+        }
 
-		/**
+        /**
          * Logic: Get all the collector items from the collector_item collection for this collector.
          * If their id is in the unique set (above), keep them enabled; else, disable them.
          */
@@ -126,19 +134,19 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
          * Logic: Get all the collector items from the collector_item collection for this collector.
          * If their id is in the unique set (above), keep them enabled; else, disable them.
 
-        List<GitHubOrg> reposList = new ArrayList<>();
-        Set<ObjectId> gitID1 = new HashSet<>();
-        gitID1.add(collector.getId());
-        for (GitHubOrg repo : gitRepoRepository.findByCollectorIdIn(gitID)) {
-            if (repo != null) {
-                repo.setEnabled(uniqueIDs.contains(repo.getId()));
-                reposList.add(repo);
-            }
-        }
-        gitRepoRepository.save(reposList);
+         List<GitHubOrg> reposList = new ArrayList<>();
+         Set<ObjectId> gitID1 = new HashSet<>();
+         gitID1.add(collector.getId());
+         for (GitHubOrg repo : gitRepoRepository.findByCollectorIdIn(gitID)) {
+         if (repo != null) {
+         repo.setEnabled(uniqueIDs.contains(repo.getId()));
+         reposList.add(repo);
+         }
+         }
+         gitRepoRepository.save(reposList);
 
          */
-	}
+    }
 
 
     @Override
@@ -151,14 +159,14 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
         clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
-        	boolean firstRun = false;
-        	if (repo.getLastUpdated() == 0) firstRun = true;
-        	repo.setLastUpdated(System.currentTimeMillis());
+            boolean firstRun = false;
+            if (repo.getLastUpdated() == 0) firstRun = true;
+            repo.setLastUpdated(System.currentTimeMillis());
             repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
             gitHubRepoRepository.save(repo);
-            LOG.debug(repo.getOptions().toString()+"::"+repo.getBranch());
+            LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
             for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
-            	LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
+                LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
                     commitRepository.save(commit);
@@ -199,6 +207,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         return commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo.getId(), commit.getScmRevisionNumber()) == null;
     }
+
     private boolean isNewPull(GitHubRepo repo, Pull commit) {
         return pullRepository.findByCollectorItemIdAndNumber(
                 repo.getId(), commit.getScmRevisionNumber()) == null;

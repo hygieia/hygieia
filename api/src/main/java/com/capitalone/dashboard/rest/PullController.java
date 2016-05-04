@@ -25,23 +25,23 @@ public class PullController {
 
 
 
-    private final PullService PullService;
+    private final PullService pullService;
 
     @Autowired
-    public PullController(PullService PullService) {
-        this.PullService = PullService;
+    public PullController(PullService pullService) {
+        this.pullService = pullService;
     }
 
     @RequestMapping(value = "/pulls", method = GET, produces = APPLICATION_JSON_VALUE)
     public DataResponse<Iterable<Pull>> search(@Valid PullRequest request) {
-        return PullService.search(request);
+        return pullService.search(request);
     }
 
 
     @RequestMapping(value = "/pulls/github/v3", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createGitHubv3(@RequestBody JSONObject request) throws ParseException, HygieiaException {
-        String response = PullService.createFromGitHubv3(request);
+        String response = pullService.createFromGitHubv3(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);

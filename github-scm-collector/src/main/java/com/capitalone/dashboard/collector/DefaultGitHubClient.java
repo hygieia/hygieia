@@ -40,8 +40,6 @@ public class DefaultGitHubClient implements GitHubClient {
 
 	private final RestOperations restOperations;
 
-	private static final String ROOT_SEGMENT_API = "/api/v3/";
-	private static final String ROOT_PUBLIC_GITHUB_HOST = "api.github.com/";
 
 	private static final String REPO_SEGMENT_API = "/api/v3/repos/";
 	private static final String PUBLIC_GITHUB_REPO_HOST = "api.github.com/repos/";
@@ -64,7 +62,7 @@ public class DefaultGitHubClient implements GitHubClient {
 	public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) {
 		List<Commit> commits = new ArrayList<>();
 
-		String apiUrl = getUrl(repo, REPO_SEGMENT_API, firstRun);
+		String apiUrl = getUrl(repo, REPO_SEGMENT_API);
 
 		Date dt;
 		if (firstRun) {
@@ -92,7 +90,7 @@ public class DefaultGitHubClient implements GitHubClient {
 			}
 		}
 		//Find All Repo's of this org
-		String repoUrl = getOrgUrl(repo, firstRun).concat("repos");
+		String repoUrl = getOrgUrl(repo).concat("repos");
 		List <String> repos = new ArrayList<>();
 
 		try {
@@ -107,9 +105,6 @@ public class DefaultGitHubClient implements GitHubClient {
 		catch (RestClientException re) {
 			LOG.error(re.getMessage());
 		}
-
-		if (repos.size() == 0)
-			return commits;
 
 		Iterator iter = repos.iterator();
 		while (iter.hasNext()) {
@@ -168,7 +163,7 @@ public class DefaultGitHubClient implements GitHubClient {
 	public List<Pull> getPulls(GitHubRepo repo, boolean firstRun) {
 		List<Pull> pulls = new ArrayList<>();
 
-		String apiUrl = getUrl(repo, REPO_SEGMENT_API, firstRun);
+		String apiUrl = getUrl(repo, REPO_SEGMENT_API);
 
 		Date dt;
 		if (firstRun) {
@@ -196,7 +191,7 @@ public class DefaultGitHubClient implements GitHubClient {
 			}
 		}
 		//Find All Repo's of this org
-		String repoUrl = getOrgUrl(repo, firstRun).concat("repos");
+		String repoUrl = getOrgUrl(repo).concat("repos");
 		List <String> repos = new ArrayList<>();
 
 		try {
@@ -212,8 +207,6 @@ public class DefaultGitHubClient implements GitHubClient {
 			LOG.error(re.getMessage());
 		}
 
-		if (repos.size() == 0)
-			return pulls;
 
 		Iterator iter = repos.iterator();
 		while (iter.hasNext()) {
@@ -275,7 +268,7 @@ public class DefaultGitHubClient implements GitHubClient {
 
 		List<Issue> issues = new ArrayList<>();
 
-		String apiUrl = getUrl(repo, REPO_SEGMENT_API, firstRun);
+		String apiUrl = getUrl(repo, REPO_SEGMENT_API);
 
 		Date dt;
 		if (firstRun) {
@@ -304,7 +297,7 @@ public class DefaultGitHubClient implements GitHubClient {
 			}
 		}
 		//Find All Repo's of this org
-		String repoUrl = getOrgUrl(repo, firstRun).concat("repos");
+		String repoUrl = getOrgUrl(repo).concat("repos");
 		List <String> repos = new ArrayList<>();
 
 		try {
@@ -320,8 +313,6 @@ public class DefaultGitHubClient implements GitHubClient {
 			LOG.error(re.getMessage());
 		}
 
-		if (repos.size() == 0)
-			return issues;
 
 		Iterator iter = repos.iterator();
 		while (iter.hasNext()) {
@@ -441,14 +432,8 @@ public class DefaultGitHubClient implements GitHubClient {
 		return value == null ? null : value.toString();
 	}
 
-	private List<String> getRepoNames(String url)
-	{
-		List list = new ArrayList();
-		list.add("engine");
-		list.add("migrator-tool");
-		return list;
-	}
-	private String getUrl(GitHubRepo repo, String urlPart, boolean firstRun)
+
+	private String getUrl(GitHubRepo repo, String urlPart)
 	{
 		// format URL
 		String repoUrl = (String) repo.getOptions().get("url");
@@ -479,7 +464,7 @@ public class DefaultGitHubClient implements GitHubClient {
 		return apiUrl;
 
 	}
-	private String getOrgUrl(GitHubRepo repo, boolean firstRun)
+	private String getOrgUrl(GitHubRepo repo)
 	{
 		// format URL
 		String repoUrl = (String) repo.getOptions().get("url");
