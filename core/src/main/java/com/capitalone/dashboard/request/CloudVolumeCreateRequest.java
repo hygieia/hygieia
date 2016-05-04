@@ -1,14 +1,14 @@
-package com.capitalone.dashboard.model;
+package com.capitalone.dashboard.request;
 
 
+import com.capitalone.dashboard.model.CloudVolumeStorage;
+import com.capitalone.dashboard.model.NameValue;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "cloud_volume")
-public class CloudVolumeStorage extends BaseModel{
+public class CloudVolumeCreateRequest {
     @Indexed
     private String volumeId;
 
@@ -102,7 +102,7 @@ public class CloudVolumeStorage extends BaseModel{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CloudVolumeStorage that = (CloudVolumeStorage) o;
+        CloudVolumeCreateRequest that = (CloudVolumeCreateRequest) o;
 
         return volumeId != null ? volumeId.equals(that.volumeId) : that.volumeId == null;
 
