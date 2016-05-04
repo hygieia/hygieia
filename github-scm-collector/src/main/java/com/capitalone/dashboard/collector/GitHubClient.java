@@ -1,7 +1,10 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.Issue;
+import com.capitalone.dashboard.model.Pull;
+
 
 import java.util.List;
 

@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
 
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import java.util.Set;
 /**
  * CollectorTask that fetches Commit information from GitHub
  */
-@org.springframework.stereotype.Component
+@Component
 public class GitHubCollectorTask extends CollectorTask<Collector> {
     private static final Log LOG = LogFactory.getLog(GitHubCollectorTask.class);
 
