@@ -30,7 +30,6 @@ public class CloudInstance extends BaseModel{
     private String subnetId;
     private String virtualNetworkId;
     private int age;
-    private boolean isEncrypted;
     private String status;
     private boolean isStopped;
     private boolean isTagged;
@@ -60,14 +59,6 @@ public class CloudInstance extends BaseModel{
 
     public void setAge(int age) {
         this.age = age;
-    }
-
-    public boolean isEncrypted() {
-        return isEncrypted;
-    }
-
-    public void setEncrypted(boolean isEncrypted) {
-        this.isEncrypted = isEncrypted;
     }
 
     public boolean isStopped() {
