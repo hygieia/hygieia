@@ -12,8 +12,8 @@
         .module(HygieiaConfig.module)
         .controller('CloudWidgetConfigController', CloudWidgetConfigController);
 
-    CloudWidgetConfigController.$inject = ['modalData', '$scope', 'collectorData', '$modalInstance'];
-    function CloudWidgetConfigController(modalData, $scope, collectorData, $modalInstance) {
+    CloudWidgetConfigController.$inject = ['modalData', 'collectorData', '$modalInstance'];
+    function CloudWidgetConfigController(modalData, collectorData, $modalInstance) {
 
 
         //private properties/methods
@@ -35,9 +35,7 @@
         }
 
         function passDataToView() {
-            var postObj = {};
 
-            var form = document.cloudConfigForm;
             var postObj = {
                 name: 'cloud',
                 options: {

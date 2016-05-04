@@ -15,12 +15,7 @@ describe('CloudWidgetConfigController', function () {
 
     var modalInstance;
 
-
-    var createProviders = function() {
-
-    }
-
-    // load the controller's module
+  // load the controller's module
     beforeEach(module(HygieiaConfig.module));
     beforeEach(module(HygieiaConfig.module + '.core'));
     beforeEach(module(function($provide) {

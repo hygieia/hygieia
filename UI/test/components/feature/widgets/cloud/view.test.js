@@ -125,7 +125,7 @@ describe('CloudWidgetViewController', function () {
                     controller.instancesByTag = [
                         { "cpuUtilization": 10 },
                         { "cpuUtilization": 20 },
-                        { "cpuUtilization": 30 },
+                        { "cpuUtilization": 30 }
                     ];
                     var expected = 20;
 
