@@ -102,7 +102,7 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
         log("Starting AWS collection...");
         log("Collecting AWS Cloud Data...");
 
-//        collectInstances();
+        collectInstances();
 
         collectVolume();
 
