@@ -19,28 +19,28 @@
             <div class="col-md-3">
                 <div class="progress progress-headers">
                     <div class="progress-bar progress-bar-info" style="width: 20%;"><span class="fa fa-server header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspTotal Instances 3,015</h3>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspEC2 {{cloudView.instancesByAccount.length}}</h3>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="progress progress-headers">
                     <div class="progress-bar progress-bar-success" style="width: 20%;"><span class="fa fa-arrow-up header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspInstances Running 1,900</h3>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspInstances Running N/A</h3>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="progress progress-headers">
                     <div class="progress-bar progress-bar-warning" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspUsage Growth 20%</h3>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspUsage Growth N/A</h3>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="progress progress-headers">
                     <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-usd header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspAvg Monthly Cost $800,000</h3>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspAvg Monthly Cost N/A</h3>
                 </div>
             </div>
 
@@ -57,7 +57,7 @@
             <div class="col-md-3">
                 <div class="progress progress-headers">
                     <div class="progress-bar progress-bar-info" style="width: 20%;"><span class="fa fa-server header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspEC2 {{cloudView.instancesByTag.length}}</h3>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspEC2 {{cloudView.instancesByAccount.length}}</h3>
                 </div>
             </div>
 
@@ -110,26 +110,26 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="instance in cloudView.instancesByAccount | orderBy:cloudView.sortType | filter:cloudView.searchFilter">
+                                    <tr ng-repeat="instance in cloudView.instancesByAccount | orderBy:cloudView.sortType | filter:cloudView.searchFilter | limitTo:20">
                                         <td>{{instance.instanceId}}</td>
-                                         <td>{{instance.instanceType}}</td>
+                                        <td>{{instance.instanceType}}</td>
                                         <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
-                                             {{instance.imageId}}
-                                         </td>
-                                         <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
-                                             {{cloudView.getDaysToExpiration(instance.imageExpirationDate)}}
-                                         </td>
-                                         <td>{{instance.privateIp}}</td>
-                                         <td>{{instance.subnetId}}</td>
-                                         <td ng-bind="instance.stopped == false ? 'running' : 'stopped'"></td>
-                                         <td ng-class="'widget-font-' + (cloudView.checkNOTTDisabledStatus(instance.tags) == true ? 'fail': 'pass')"
-                                             ng-bind="cloudView.checkNOTTDisabledStatus(instance.tags) ? 'disabled' : 'enabled'"></td>
-                                         <td ng-class="'widget-font-' + cloudView.checkMonitoredStatus(instance.monitored)">
-                                             {{instance.monitored}}
-                                         </td>
-                                         <td ng-class="'widget-font-' + cloudView.checkUtilizationStatus(instance.cpuUtilization)">
-                                             {{instance.cpuUtilization | number:1}}%
-                                         </td>
+                                            {{instance.imageId}}
+                                        </td>
+                                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
+                                            {{cloudView.getDaysToExpiration(instance.imageExpirationDate)}}
+                                        </td>
+                                        <td>{{instance.privateIp}}</td>
+                                        <td>{{instance.subnetId}}</td>
+                                        <td ng-bind="instance.stopped == false ? 'running' : 'stopped'"></td>
+                                        <td ng-class="'widget-font-' + (cloudView.checkNOTTDisabledStatus(instance.tags) == true ? 'fail': 'pass')"
+                                            ng-bind="cloudView.checkNOTTDisabledStatus(instance.tags) ? 'disabled' : 'enabled'"></td>
+                                        <td ng-class="'widget-font-' + cloudView.checkMonitoredStatus(instance.monitored)">
+                                            {{instance.monitored}}
+                                        </td>
+                                        <td ng-class="'widget-font-' + cloudView.checkUtilizationStatus(instance.cpuUtilization)">
+                                            {{instance.cpuUtilization | number:1}}%
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>
