@@ -31,6 +31,8 @@
 
         ctrl.isDetail = false;
         ctrl.accountNumber = $scope.widgetConfig.options.accountNumber || "";
+        ctrl.tagName = $scope.widgetConfig.options.tagName || "";
+        ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
 
 
         ctrl.getDaysToExpiration = function(epochTime) {
@@ -61,7 +63,7 @@
 
         ctrl.calculateUtilization = function() {
 
-            /*
+
              if (ctrl.instancesByAccount == undefined) {
              return 'N/A';
              }
@@ -77,11 +79,7 @@
              }, 0);
 
              return (total / cnt);
-
-             */
-
-            return 0;
-        }
+        };
 
         ctrl.changeSortDirection = function(key) {
             var value = sortDictionary[key];
@@ -162,7 +160,6 @@
             if (ctrl.isDetail) {
                 cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
                     .then(function(data) {
-                        console.log(data.length);
                         ctrl.instancesByAccount = data;
                     });
             }
