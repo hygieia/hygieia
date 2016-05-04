@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.response;
 
 public class CloudInstanceAggregatedResponse {
-    private int nonEncryptedCount;
     private int nonTaggedCount;
     private int stoppedCount;
     private int expiredImageCount;
@@ -24,14 +23,6 @@ public class CloudInstanceAggregatedResponse {
     private double estimatedCharge;
     private String currency = "USD";
     private long lastUpdated;
-
-    public int getNonEncryptedCount() {
-        return nonEncryptedCount;
-    }
-
-    public void setNonEncryptedCount(int nonEncryptedCount) {
-        this.nonEncryptedCount = nonEncryptedCount;
-    }
 
     public int getNonTaggedCount() {
         return nonTaggedCount;
