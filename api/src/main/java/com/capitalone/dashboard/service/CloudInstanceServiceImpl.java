@@ -138,7 +138,6 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         instance.setAge(request.getAge());
         instance.setDiskRead(request.getDiskRead());
         instance.setDiskWrite(request.getDiskWrite());
-        instance.setEncrypted(request.isEncrypted());
         instance.setImageApproved(request.isImageApproved());
         instance.setImageId(request.getImageId());
         instance.setImageExpirationDate(request.getImageExpirationDate());
@@ -193,7 +192,6 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         int cpuHighCount = 0;
         int cpuAlertCount = 0;
         int cpuLowCount = 0;
-        int unEcryptedComputeCount = 0;
         int unTaggedCount = 0;
         int stoppedCount = 0;
         int totalCount = 0;
@@ -213,9 +211,6 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         for (CloudInstance rd : instances) {
             totalCount = totalCount + 1;
 
-            if (!rd.isEncrypted()) {
-                unEcryptedComputeCount = unEcryptedComputeCount + 1;
-            }
             if (rd.isStopped()) {
                 stoppedCount = stoppedCount + 1;
             }

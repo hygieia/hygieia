@@ -9,18 +9,13 @@ describe('CloudWidgetConfigController', function () {
     var scope;
     var cloudData;
     var accountData =  [
-            { "name": "Development Account"},
-            { "name": "Production Account"}
-        ];
+        { "name": "Development Account"},
+        { "name": "Production Account"}
+    ];
 
     var modalInstance;
 
-
-    var createProviders = function() {
-
-    }
-
-    // load the controller's module
+  // load the controller's module
     beforeEach(module(HygieiaConfig.module));
     beforeEach(module(HygieiaConfig.module + '.core'));
     beforeEach(module(function($provide) {
@@ -75,42 +70,9 @@ describe('CloudWidgetConfigController', function () {
                     cloudData: cloudData,
                     $modalInstance: modalInstance
                 });
-             })
-        });
-
-
-    describe('accountsDropdownDisabled', function() {
-
-        describe('When account data is retrieved with one or more records', function() {
-            it('Then I expect accountsDropdownDisabled to be set to "false"', function() {
-
-                //Arrange/Act
-                //Handled by the instantiation of the controller
-
-                //Assert
-                expect(controller.accountsDropdownDisabled).toBeFalsy();
-
             })
         });
 
-
-
-    });
-
-
-    describe('constructor', function() {
-        describe('When I call the constructor', function() {
-            it('Then I expect account data to be retrieved', function() {
-
-                //Arrange/Act
-                //Handled by the instantiation of the controller
-
-                //Assert
-                expect(angular.equals(controller.accounts, accountData)).toBeTruthy();
-
-            })
-        });
-    });
 
     describe('submit()', function () {
         describe('When I submit a valid form', function () {
