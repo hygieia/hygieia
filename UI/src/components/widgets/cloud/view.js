@@ -30,8 +30,8 @@
         var ctrl = this;
         var sortDictionary = {};
 
+
         //public variables
-        ctrl.awsOverview;
         ctrl.instancesByAccount;
         ctrl.sortType = [];
         ctrl.searchFilter = '';
@@ -45,10 +45,7 @@
         ctrl.curPage = 0;
         ctrl.pageSize = 8;
 
-        ctrl.tabs = [
-            { name: "Overview"},
-            { name: "Detail"}
-        ];
+
 
 
         ctrl.getDaysToExpiration = function(epochTime) {
@@ -77,25 +74,44 @@
         };
 
 
-        ctrl.calculateUtilization = function() {
-
-
-             if (ctrl.instancesByAccount == undefined) {
-             return 'N/A';
+        ctrl.calculateUtilization = function(instances) {
+             if (instances == undefined) {
+                return 'N/A';
              }
 
-             var cnt = ctrl.instancesByAccount.length;
+             var cnt = instances.length;
 
              if (cnt == 0) {
              return 'N/A';
              }
 
-             var total = ctrl.instancesByAccount.reduce(function(sum, currentValue) {
-             return sum + currentValue.cpuUtilization;
+             var total = instances.reduce(function(sum, currentValue) {
+                return sum + currentValue.cpuUtilization;
              }, 0);
 
              return (total / cnt);
         };
+
+        ctrl.calculateCostAverage = function(instances) {
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            var total = instances.reduce(function(sum, currentValue) {
+                return sum +
+                    (currentValue.stopped ? 0 :
+                        ctrl.checkNOTTDisabledStatus(currentValue.tags) == true ?
+                            24 * currentValue.hourlyCost :
+                            12 * currentValue.hourlyCost);
+            }, 0);
+            return (total / cnt);
+        }
 
         ctrl.changeSortDirection = function(key) {
             var value = sortDictionary[key];
@@ -173,25 +189,19 @@
         };
 
 
-        ctrl.widgetView = ctrl.tabs[0].name;
+        ctrl.tabs = [
+            { name: "Overview"},
+            { name: "Detail"}
+        ];
+
+        ctrl.toggledView = ctrl.tabs[0].name;
         ctrl.toggleView = function (index) {
-            ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
+            ctrl.toggledView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
         };
 
-        //tested
-        /* ctrl.toggleView = function() {
-            ctrl.isDetail = (ctrl.isDetail == false);
 
-            if (ctrl.isDetail) {
-                cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
-                    .then(function(data) {
-                        ctrl.instancesByAccount = data;
-                    });
-            }
-        }; */
-
-        ctrl.numberOfPages = function()  {
-            return Math.ceil(ctrl.instancesByAccount.length / ctrl.pageSize);
+        ctrl.numberOfPages = function(length)  {
+            return Math.ceil(length/ ctrl.pageSize);
         };
 
         ctrl.load();

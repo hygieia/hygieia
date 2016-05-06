@@ -9,20 +9,11 @@ describe('CloudWidgetViewController', function () {
     var controller;
     var scope;
     var cloudData;
-    var AWSGlobalData = {
-        "compute": {
-            "ec2Instances": 3015,
-            "running": 1900,
-            "stopped": 300,
-            "excluded": 910
-        },
-        "s3": {
-            "s3Buckets": 9000,
-            "encrypted": 35,
-            "tagged": 45,
-            "compliant": 54
-        }
-    };
+    var q;
+    var deferred;
+    var mockInstanceData = [{"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6","cpuUtilization": 10 }, {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 20}, {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 30}];
+
+
 
     function retrieveTestDate(dayOffset) {
 
@@ -47,29 +38,24 @@ describe('CloudWidgetViewController', function () {
     beforeEach(module(HygieiaConfig.module));
     beforeEach(module(HygieiaConfig.module + '.core'));
 
-    beforeEach(module(function ($provide) {
-        $provide.factory('cloudData', function () {
 
-            return {
-                getAWSGlobalData: getAWSGlobalData,
-                getAWSInstancesByAccount: getAWSInstancesByAccount
-            };
 
-            function getAWSGlobalData() {
-                return AWSGlobalData;
+
+    // define the mock people service
+    beforeEach(function() {
+        cloudData = {
+            getAWSInstancesByAccount: function(accountNumber) {
+                deferred = q.defer();
+                deferred.resolve(mockInstanceData);
+                return deferred.promise;
             }
-
-            function getAWSInstancesByAccount() {
-                return null;
-            }
-        })
-    }));
-
+        };
+    });
 
     // inject the required services and instantiate the controller
     beforeEach(
         function () {
-            inject(function ($rootScope, cloudData, $controller) {
+            inject(function ($rootScope, cloudData, $controller,$q) {
                 scope = $rootScope.$new();
 
                 scope.widgetConfig = {
@@ -80,7 +66,8 @@ describe('CloudWidgetViewController', function () {
 
                 controller = $controller('CloudWidgetViewController', {
                     $scope: scope,
-                    cloudData: cloudData
+                    cloudData: cloudData,
+                    $q: $q
                 });
             })
         });
@@ -92,11 +79,11 @@ describe('CloudWidgetViewController', function () {
                 it('Then I expect "N/A" to be returned', function () {
 
                     //Arrange
-                    controller.instancesByTag = undefined;
+                    var undefinedInstances = undefined;
                     var expected = 'N/A';
 
                     //Act
-                    var actual = controller.calculateUtilization();
+                    var actual = controller.calculateUtilization(undefinedInstances);
 
                     //Assert
                     expect(actual).toBe(expected);
@@ -107,11 +94,11 @@ describe('CloudWidgetViewController', function () {
                 it('Then I expect "N/A" to be returned', function () {
 
                     //Arrange
-                    controller.instancesByTag = [];
+                   var emptyInstances = [];
                     var expected = 'N/A';
 
                     //Act
-                    var actual = controller.calculateUtilization();
+                    var actual = controller.calculateUtilization(emptyInstances);
 
                     //Assert
                     expect(actual).toBe(expected);
@@ -122,23 +109,15 @@ describe('CloudWidgetViewController', function () {
                 it('Then I expect the average of the cpu utilization to be returned', function () {
 
                     //Arrange
-                    controller.instancesByTag = [
-                        { "cpuUtilization": 10 },
-                        { "cpuUtilization": 20 },
-                        { "cpuUtilization": 30 }
-                    ];
                     var expected = 20;
 
                     //Act
-                    var actual = controller.calculateUtilization();
+                    var actual = controller.calculateUtilization(mockInstanceData);
 
                     //Assert
                     expect(actual).toBe(expected);
                 });
             });
-
-
-
         });
     });
 
@@ -460,48 +439,103 @@ describe('CloudWidgetViewController', function () {
         });
     });
 
-    describe('load()', function () {
-        describe('When I call load', function () {
-            it('Then I expect AMI data to be retrieved into awsOverview', function () {
 
-                //Act-Arrange
+    describe('calculateCostAverage()', function () {
+        describe('When I call calculateCostAverage', function () {
+            describe('And all the instances are stopped', function () {
+                it('Then I expect the average cost to be zero', function () {
 
-                //Assert
-                var result = angular.equals(controller.awsOverview, AWSGlobalData);
-                expect(result).toBeTruthy();
+                    //Arrange
+                    var fakeData = [{"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6","cpuUtilization": 10, "stopped": true },
+                        {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 20, "stopped": true}
+                    ];
+
+                    var expected = 0;
+
+                    //Act
+                    var actual = controller.calculateCostAverage(fakeData);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+            describe('And all running instances have NOTT applied', function () {
+                it('Then I expect the average cost to be the hourly rate * 12 hours', function () {
+
+                    //Arrange
+                    var fakeData = [{"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6","cpuUtilization": 10, "hourlyCost": 0.25, "tags": [{"name": "Owner", "value": "joe.doe@email.com"}]},
+                        {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 20, "hourlyCost": 0.25, "tags": [{"name": "Owner", "value": "joe.doe@email.com"}]}
+                    ];
+
+                    var expected = 3; // formula = (12 hours * $0.25 * 2 instances)/2 instances
+
+                    //Act
+                    var actual = controller.calculateCostAverage(fakeData);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
+            });
+
+
+            describe('And all running instances do not have NOTT applied', function () {
+                it('Then I expect the average cost to be the hourly rate * 12 hours', function () {
+
+                    //Arrange
+                    var fakeData = [{"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6","cpuUtilization": 10, "hourlyCost": 0.25, "tags": [{"name": "Owner", "value": "joe.doe@email.com"}, {
+                        "name": "visigoths:nott",
+                        "value": "exclude"
+                    }]},
+                        {"id":"571f9af9ed678095d297aaca","instanceId":"i-5b5f99c6", "cpuUtilization": 20, "hourlyCost": 0.25, "tags": [{"name": "Owner", "value": "joe.doe@email.com"}, {
+                            "name": "visigoths:nott",
+                            "value": "exclude"
+                        }]}
+                    ];
+
+                    var expected = 6; // formula = (24 hours * $0.25 * 2 instances)/2 instances
+
+                    //Act
+                    var actual = controller.calculateCostAverage(fakeData);
+
+                    //Assert
+                    expect(actual).toBe(expected);
+                });
             });
         });
     });
 
+
     describe('toggleView()', function () {
-        describe('When I call toggleView and isDetail is false', function () {
-            it('Then I expect isDetail to change to true', function () {
+            describe('When I call toggleView with an index that exists', function () {
+                it('Then I expect the correct name to be assigned to toggledView', function () {
 
-                //Arrange
-                controller.isDetail = false;
+                    //Arrange
+                    var index = 1;
+                    var result = "Detail";
 
-                //Act
-                controller.toggleView();
+                    //Act
+                    controller.toggleView(index);
 
-                //Assert
-
-                expect(controller.isDetail).toBeTruthy();
+                    //Assert
+                    expect(controller.toggledView).toBe(result);
+                });
             });
-        });
 
-        describe('When I call toggleView and isDetail is true', function () {
-            it('Then I expect isDetail to change to false', function () {
+            describe('When I call toggleView with an index that does not exists', function () {
+                it('Then I expect the default name "Overview" to be assigned to toggledView', function () {
 
-                //Arrange
-                controller.isDetail = true;
+                    //Arrange
+                    var index = -50;
+                    var result = "Overview";
 
-                //Act
-                controller.toggleView();
+                    //Act
+                    controller.toggleView(index);
 
-                //Assert
-
-                expect(controller.isDetail).toBeFalsy();
+                    //Assert
+                    expect(controller.toggledView).toBe(result);
+                });
             });
-        });
+
     });
 });

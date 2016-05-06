@@ -2,13 +2,13 @@
 
     <div class="pipeline-toggle btn-group">
                     <span class="btn" ng-repeat="tab in cloudView.tabs" ng-click="cloudView.toggleView($index)"
-                          ng-class="tab.name == cloudView.widgetView ? 'btn-primary' : 'btn-default'">
+                          ng-class="tab.name == cloudView.toggledView ? 'btn-primary' : 'btn-default'">
                         <span ng-class="tab.name === 'Overview' ? 'fa fa-th-large' : 'fa fa-task'"></span>
                         {{tab.name}}
                     </span>
     </div>
 
-    <div class="container-fluid" ng-if="cloudView.widgetView == 'Overview'">
+    <div class="container-fluid" ng-if="cloudView.toggledView == 'Overview'">
         <h3>Account Overview</h3>
         <hr>
 
@@ -28,6 +28,7 @@
                 </div>
             </div>
 
+            <div class="col-md-3">
             <div class="col-md-3">
                 <div class="progress progress-headers">
                     <div class="progress-bar progress-bar-warning" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
@@ -49,7 +50,7 @@
     </div>
 
 
-    <div class="container-fluid" ng-if="cloudView.widgetView == 'Detail'">
+    <div class="container-fluid" ng-if="cloudView.toggledView == 'Detail'">
         <h3>Account Detail</h3>
         <hr>
 
@@ -79,7 +80,7 @@
             <div class="col-md-3">
                 <div class="progress progress-headers">
                     <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspUtilization {{cloudView.calculateUtilization() | number:1}}%</h3>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspUtilization {{cloudView.calculateUtilization(cloudView.instancesByAccount) | number:1}}%</h3>
                 </div>
             </div>
 
@@ -92,7 +93,7 @@
                         <div class="pull-right"><label>Search: <input type="text" class="form-control" placeholder="Enter a value" ng-model="cloudView.searchFilter"/></label></div>
                         <div>
                             <div>
-                                    <table class="table widget-striped">
+                                <table class="table widget-striped">
                                     <thead>
                                     <tr class="widget-font-bold">
                                         <th ng-click="cloudView.changeSortDirection('instanceId')">Instance ID&nbsp;
@@ -111,7 +112,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                   <tr ng-repeat="instance in cloudView.instancesByAccount | orderBy:cloudView.sortType | filter:cloudView.searchFilter | pagination: cloudView.curPage * cloudView.pageSize | limitTo: cloudView.pageSize">
+                                    <tr ng-repeat="instance in cloudView.instancesByAccount | orderBy:cloudView.sortType | filter:cloudView.searchFilter | pagination: cloudView.curPage * cloudView.pageSize | limitTo: cloudView.pageSize">
                                         <td>{{instance.instanceId}}</td>
                                         <td>{{instance.instanceType}}</td>
                                         <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
@@ -146,7 +147,7 @@
                     <span class="fa fa-chevron-left"></span>
                     Prev
                 </button></td>
-                    <td><input class="form-control input-sm" readonly value="Page {{cloudView.curPage + 1}} of {{ cloudView.numberOfPages() }}"/></td>
+                    <td><input class="form-control input-sm" readonly value="Page {{cloudView.curPage + 1}} of {{ cloudView.numberOfPages }}"/></td>
                     <td><button class="btn btn-default" ng-disabled="curPage >= cloudView.instancesByAccount.length/pageSize-1" ng-click="cloudView.curPage = cloudView.curPage+1">
                         <span class="fa fa-chevron-right"></span>
                         Next
