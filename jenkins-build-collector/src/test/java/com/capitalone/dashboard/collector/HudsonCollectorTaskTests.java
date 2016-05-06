@@ -10,6 +10,7 @@ import com.capitalone.dashboard.repository.HudsonCollectorRepository;
 import com.capitalone.dashboard.repository.HudsonJobRepository;
 import com.google.common.collect.Sets;
 import org.bson.types.ObjectId;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -87,7 +88,6 @@ public class HudsonCollectorTaskTests {
 
         verify(hudsonJobRepository, never()).save(job);
     }
-
 
     @Test
     public void delete_job() {
@@ -172,6 +172,71 @@ public class HudsonCollectorTaskTests {
         task.collect(collector);
 
         verify(buildRepository, times(1)).save(build);
+    }
+
+    @Test
+    public void getCollector_combinesAllServers() {
+        HudsonCollector hudsonCollector = collectorWithOneServer();
+        ArrayList<String> buildServers = new ArrayList<>();
+        buildServers.add("server2");
+        ArrayList<String> niceNames = new ArrayList<>();
+        niceNames.add("niceName2");
+
+        when(hudsonCollectorRepository.findByName("Hudson")).thenReturn(hudsonCollector);
+        when(hudsonSettings.getServers()).thenReturn(buildServers);
+        when(hudsonSettings.getNiceNames()).thenReturn(niceNames);
+
+        HudsonCollector combinedServerLists = task.getCollector();
+        Assert.assertTrue("contains server2", combinedServerLists.getBuildServers().contains("server2"));
+        Assert.assertTrue("contains niceName2", combinedServerLists.getNiceNames().contains("niceName2"));
+        Assert.assertTrue("contains server1", combinedServerLists.getBuildServers().contains(SERVER1));
+        Assert.assertTrue("contains niceName1", combinedServerLists.getNiceNames().contains(NICENAME1));
+    }
+
+    @Test
+    public void getCollector_handlesMissingHudsonCollector() {
+        ArrayList<String> buildServers = new ArrayList<>();
+        buildServers.add("server2");
+        ArrayList<String> niceNames = new ArrayList<>();
+        niceNames.add("niceName2");
+
+        when(hudsonSettings.getServers()).thenReturn(buildServers);
+        when(hudsonSettings.getNiceNames()).thenReturn(niceNames);
+
+        HudsonCollector combinedServerLists = task.getCollector();
+
+        Assert.assertTrue("contains server2", combinedServerLists.getBuildServers().contains("server2"));
+        Assert.assertTrue("contains niceName2", combinedServerLists.getNiceNames().contains("niceName2"));
+    }
+
+    @Test
+    public void getCollector_handlesNoNiceNames() {
+        HudsonCollector hudsonCollector = HudsonCollector.prototype(Arrays.asList(SERVER1), new ArrayList<>());
+
+        ArrayList<String> buildServers = new ArrayList<>();
+        buildServers.add("server2");
+
+        when(hudsonCollectorRepository.findByName("Hudson")).thenReturn(hudsonCollector);
+        when(hudsonSettings.getServers()).thenReturn(buildServers);
+
+        HudsonCollector combinedServerLists = task.getCollector();
+        Assert.assertTrue("contains server2", combinedServerLists.getBuildServers().contains("server2"));
+        Assert.assertTrue("contains server1", combinedServerLists.getBuildServers().contains(SERVER1));
+    }
+
+    @Test
+    public void getCollector_handlesMissingNiceName() {
+        HudsonCollector hudsonCollector = collectorWithOneServer();
+        ArrayList<String> buildServers = new ArrayList<>();
+        buildServers.add("server2");
+
+        when(hudsonCollectorRepository.findByName("Hudson")).thenReturn(hudsonCollector);
+        when(hudsonSettings.getServers()).thenReturn(buildServers);
+
+        HudsonCollector combinedServerLists = task.getCollector();
+        Assert.assertTrue("contains server2", combinedServerLists.getBuildServers().contains("server2"));
+        Assert.assertTrue("contains server1", combinedServerLists.getBuildServers().contains(SERVER1));
+        Assert.assertTrue("contains niceName1", combinedServerLists.getNiceNames().contains(NICENAME1));
     }
 
     private HudsonCollector collectorWithOneServer() {

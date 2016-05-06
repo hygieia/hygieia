@@ -5,6 +5,8 @@ import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
+import com.capitalone.dashboard.request.BuildServerWatchRequest;
+import org.springframework.http.ResponseEntity;
 
 public interface BuildService {
 
@@ -17,4 +19,6 @@ public interface BuildService {
     DataResponse<Iterable<Build>> search(BuildSearchRequest request);
 
     String create(BuildDataCreateRequest request) throws HygieiaException;
+
+    ResponseEntity watch(BuildServerWatchRequest request);
 }

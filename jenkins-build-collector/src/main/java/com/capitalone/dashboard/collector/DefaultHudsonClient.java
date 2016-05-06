@@ -87,11 +87,11 @@ public class DefaultHudsonClient implements HudsonClient {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
         try {
             String url = joinURL(instanceUrl, JOBS_URL_SUFFIX);
-            ResponseEntity<String> responseEntity = makeRestCall(url);
-            String returnJSON = responseEntity.getBody();
-            JSONParser parser = new JSONParser();
 
             try {
+                ResponseEntity<String> responseEntity = makeRestCall(url);
+                String returnJSON = responseEntity.getBody();
+                JSONParser parser = new JSONParser();
                 JSONObject object = (JSONObject) parser.parse(returnJSON);
 
                 for (Object job : getJsonArray(object, "jobs")) {
@@ -141,6 +141,8 @@ public class DefaultHudsonClient implements HudsonClient {
             throw rce;
         } catch (MalformedURLException mfe) {
             LOG.error("malformed url for loading jobs", mfe);
+        } catch (IllegalArgumentException ie) {
+            LOG.error("illegal argument", ie);
         }
         return result;
     }

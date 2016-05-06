@@ -1,26 +1,29 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
+import com.capitalone.dashboard.request.BuildServerWatchRequest;
 import com.mysema.query.types.Predicate;
+import org.apache.catalina.connector.Response;
+import org.apache.commons.logging.Log;
 import org.bson.types.ObjectId;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.joda.time.LocalDate;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 
 import java.util.Arrays;
 
@@ -74,6 +77,95 @@ public class BuildServiceTest {
         String expectedPredicate = "build.collectorItemId = " + collectorItemId.toString() + " && build.endTime >= " + endTimeTarget;
         verify(buildRepository, times(1)).findAll(argThat(hasPredicate(expectedPredicate)));
     }
+
+
+    @Test
+    public void watch_validRequest() {
+
+        BuildServerWatchRequest request = new BuildServerWatchRequest();
+        request.setBuildServerUrl("http://jenkins.com/path/to/job");
+        request.setCollectorName("Hudson");
+
+        HudsonCollector hudsonCollector = new HudsonCollector();
+
+        when(collectorRepository.findByName("Hudson")).thenReturn(hudsonCollector);
+        when(collectorRepository.save(hudsonCollector)).thenReturn(hudsonCollector);
+
+        ResponseEntity responseEntity = buildService.watch(request);
+        int httpReturnCode = responseEntity.getStatusCode().value();
+        Assert.assertTrue("body response is " + responseEntity.getBody() , httpReturnCode == HttpStatus.OK.value());
+        verify(collectorRepository, times(1)).save(hudsonCollector);
+
+    }
+
+    @Test
+    public void watch_duplicateUrl() {
+
+        BuildServerWatchRequest request = new BuildServerWatchRequest();
+        request.setBuildServerUrl("http://jenkins.com/path/to/job");
+        request.setCollectorName("Hudson");
+
+        HudsonCollector hudsonCollector = new HudsonCollector();
+
+        when(collectorRepository.findByName("Hudson")).thenReturn(hudsonCollector);
+
+        buildService.watch(request);
+        int httpReturnCode = buildService.watch(request).getStatusCode().value();
+        Assert.assertTrue(httpReturnCode == HttpStatus.OK.value());
+    }
+
+    @Test
+    public void watch_internalError() {
+
+        BuildServerWatchRequest request = new BuildServerWatchRequest();
+        request.setBuildServerUrl("http://jenkins.com/path/to/job");
+        request.setCollectorName("Hudson");
+
+        //test for when collector is not found
+        when(collectorRepository.findByName("Hudson")).thenReturn(null);
+
+        int httpReturnCode = buildService.watch(request).getStatusCode().value();
+        Assert.assertTrue(httpReturnCode == HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+        //test when save fails
+        HudsonCollector hudsonCollector = new HudsonCollector();
+
+        when(collectorRepository.findByName("Hudson")).thenReturn(hudsonCollector);
+        when(collectorRepository.save(hudsonCollector)).thenReturn(null);
+
+        httpReturnCode = buildService.watch(request).getStatusCode().value();
+        Assert.assertTrue(httpReturnCode == HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @Test
+    public void watch_unsupportedBuildCollectorName() {
+
+        BuildServerWatchRequest request = new BuildServerWatchRequest();
+        request.setBuildServerUrl("http://jenkins.com/path/to/job");
+        request.setCollectorName("Unsupported");
+
+        int httpReturnCode = buildService.watch(request).getStatusCode().value();
+        Assert.assertTrue(httpReturnCode == HttpStatus.NOT_IMPLEMENTED.value());
+
+    }
+
+    @Test
+    public void watch_invalidBuildServerUrl() {
+        BuildServerWatchRequest request = new BuildServerWatchRequest();
+        request.setBuildServerUrl("ftp://jenkins.com/path/to/job");
+        request.setCollectorName("Hudson");
+
+        HudsonCollector hudsonCollector = new HudsonCollector();
+
+        when(collectorRepository.findByName("Hudson")).thenReturn(hudsonCollector);
+        when(collectorRepository.save(hudsonCollector)).thenReturn(hudsonCollector);
+
+        ResponseEntity responseEntity = buildService.watch(request);
+        int httpReturnCode = responseEntity.getStatusCode().value();
+        Assert.assertTrue("reponse body: " + responseEntity.getBody(), httpReturnCode == HttpStatus.BAD_REQUEST.value());
+
+    }
+
 
     private Component makeComponent(ObjectId collectorItemId, ObjectId collectorId) {
         CollectorItem item = new CollectorItem();

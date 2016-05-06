@@ -2,12 +2,11 @@ package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
+import com.capitalone.dashboard.request.BuildServerWatchRequest;
 import com.capitalone.dashboard.service.BuildService;
 import com.capitalone.dashboard.util.TestUtil;
 import org.bson.types.ObjectId;
@@ -15,8 +14,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -111,6 +113,53 @@ public class BuildControllerTest {
                 .andExpect(status().isBadRequest());
 
     }
+
+    @Test
+    public void watchBuildServerGoodRequest() throws Exception {
+        BuildServerWatchRequest request = makeBuildServerWatchRequest();
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.ACCEPTED).body("added to watch list");
+
+        when(buildService.watch(Matchers.any(BuildServerWatchRequest.class))).thenReturn(response);
+        mockMvc.perform(post("/build/server")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isAccepted());
+    }
+
+    @Test
+    public void watchBuildServerFailsOnMissingUrl() throws Exception {
+        BuildServerWatchRequest request = makeBuildServerWatchRequest();
+        request.setBuildServerUrl(null);
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.ACCEPTED).body("added to watch list");
+
+        when(buildService.watch(Matchers.any(BuildServerWatchRequest.class))).thenReturn(response);
+        mockMvc.perform(post("/build/server")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void watchBuildServerFailsMissingCollectorName() throws Exception {
+        BuildServerWatchRequest request = makeBuildServerWatchRequest();
+        request.setCollectorName(null);
+        ResponseEntity<String> response = ResponseEntity.status(HttpStatus.ACCEPTED).body("added to watch list");
+
+        when(buildService.watch(Matchers.any(BuildServerWatchRequest.class))).thenReturn(response);
+        mockMvc.perform(post("/build/server")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    private BuildServerWatchRequest makeBuildServerWatchRequest() {
+        BuildServerWatchRequest buildServerWatchRequest = new BuildServerWatchRequest();
+        buildServerWatchRequest.setBuildServerUrl("http://jenkins.com/path/to/job");
+        buildServerWatchRequest.setCollectorName("Hudson");
+        return buildServerWatchRequest;
+    }
+
     private Build makeBuild() {
         Build build = new Build();
         build.setId(ObjectId.get());
