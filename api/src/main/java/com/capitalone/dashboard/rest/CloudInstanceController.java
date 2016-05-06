@@ -1,11 +1,10 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.CloudInstance;
+import com.capitalone.dashboard.model.CloudInstanceHistory;
 import com.capitalone.dashboard.model.NameValue;
-import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
 import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
-import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 import com.capitalone.dashboard.service.CloudInstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -84,15 +83,9 @@ public class CloudInstanceController {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByTags(tags));
     }
 
-    @RequestMapping(value = "/cloud/instance/aggregate/component/{componentId}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedData(
-            @PathVariable String componentId) {
-        return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(componentId));
-    }
-
-    @RequestMapping(value = "/cloud/instance/aggregate", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<CloudInstanceAggregatedResponse> getInstanceAggregatedDataByInstanceIds(
-            @Valid @RequestBody CloudInstanceAggregateRequest request) {
-        return ResponseEntity.ok().body(cloudInstanceService.getInstanceAggregatedData(request));
+    @RequestMapping(value = "/cloud/instance/history/account/{accountNumber}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CloudInstanceHistory>> getInstanceAggregatedDataByAccount(
+            @PathVariable String accountNumber) {
+        return ResponseEntity.ok().body(cloudInstanceService.getInstanceHistoryByAccount(accountNumber));
     }
 }

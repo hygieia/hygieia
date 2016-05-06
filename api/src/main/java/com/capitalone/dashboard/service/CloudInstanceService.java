@@ -1,11 +1,10 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.CloudInstance;
+import com.capitalone.dashboard.model.CloudInstanceHistory;
 import com.capitalone.dashboard.model.NameValue;
-import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
 import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
-import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,11 +33,7 @@ public interface CloudInstanceService {
 
 
     /**
-     *     Instance Aggregated Data by
-     *          (a) componentId - for UI mostly
-     *          (b) Custom request object
-     *          (d) List of Tags
+     *     Instance History Aggregated Data by account
      */
-    CloudInstanceAggregatedResponse getInstanceAggregatedData(String componentId);
-    CloudInstanceAggregatedResponse getInstanceAggregatedData(CloudInstanceAggregateRequest request);
+    Collection<CloudInstanceHistory> getInstanceHistoryByAccount(String account);
 }
