@@ -11,40 +11,109 @@
     </div>
 
     <div class="container-fluid" ng-if="!cloudView.isDetail">
+        <h3>Your Account Overview</h3>
+        <hr>
+
         <div class="row">
-            <div class="col-xs-12">
-                Summary
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-info" style="width: 20%;"><span class="fa fa-server header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspEC2 {{cloudView.instancesByAccount.length}}</h3>
+                </div>
             </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-success" style="width: 20%;"><span class="fa fa-arrow-up header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspInstances Running N/A</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-warning" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspUsage Growth N/A</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-usd header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspAvg Monthly Cost N/A</h3>
+                </div>
+            </div>
+
+        </div>
+        <div>
+            Put your subnet code here....
         </div>
     </div>
 
 
     <div class="container-fluid" ng-if="cloudView.isDetail">
+        <h3>Your Tag Detail</h3>
+        <hr>
+
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-info" style="width: 20%;"><span class="fa fa-server header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspEC2 {{cloudView.instancesByAccount.length}}</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-success" style="width: 20%;"><span class="fa fa-database header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspStorage N/A</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-warning" style="width: 20%;"><span class="fa fa-usd header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspCost/Day N/A</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspUtilization {{cloudView.calculateUtilization() | number:1}}%</h3>
+                </div>
+            </div>
+
+        </div>
+
         <div class="row">
             <div class="col-md-12">
                 <div>
-                    <h2>Your Instances</h2>
-                    <hr>
                     <div>
+                        <div class="pull-right"><label>Search: <input type="text" class="form-control" placeholder="Enter a value" ng-model="cloudView.searchFilter"/></label></div>
                         <div>
                             <div>
-                                <table class="table widget-striped table-hover">
+                                <table class="table widget-striped">
                                     <thead>
                                     <tr class="widget-font-bold">
-                                        <th ng-click="reverse=!reverse;order('instanceId', reverse)">Instance ID</th>
-                                        <th ng-click="reverse=!reverse;order('type', reverse)">Type</th>
-                                        <th ng-click="reverse=!reverse;order('AMI', reverse)">AMI</th>
-                                        <th ng-click="reverse=!reverse;order('DaysLeft', reverse)">Days Left</th>
-                                        <th ng-click="reverse=!reverse;order('IPAddress', reverse)">IP Address</th>
-                                        <th ng-click="reverse=!reverse;order('VPCIP', reverse)">VPC ID</th>
-                                        <th ng-click="reverse=!reverse;order('status', reverse)">Status</th>
-                                        <th ng-click="reverse=!reverse;order('status', reverse)">NOTT</th>
-                                        <th ng-click="reverse=!reverse;order('monitored', reverse)">Monitored</th>
-                                        <th ng-click="reverse=!reverse;order('utilization', reverse)">Utilization</th>
+                                        <th ng-click="cloudView.changeSortDirection('instanceId')">Instance ID&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('instanceId')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('instanceType')">Type&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('instanceType')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('imageId')">AMI&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('imageId')"></span></th>
+                                        <th ng-click="">Days Left</th>
+                                        <th ng-click="">IP Address</th>
+                                        <th ng-click="">VPC ID</th>
+                                        <th ng-click="">Status</th>
+                                        <th ng-click="">NOTT</th>
+                                        <th ng-click="">Monitored</th>
+                                        <th ng-click="">Utilization</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="instance in cloudView.instancesByTag">
+                                    <tr ng-repeat="instance in cloudView.instancesByAccount | orderBy:cloudView.sortType | filter:cloudView.searchFilter | limitTo:20">
                                         <td>{{instance.instanceId}}</td>
                                         <td>{{instance.instanceType}}</td>
                                         <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
@@ -75,3 +144,4 @@
         </div>
     </div>
 </div>
+
