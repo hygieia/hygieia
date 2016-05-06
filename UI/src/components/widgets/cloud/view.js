@@ -12,7 +12,14 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('CloudWidgetViewController', CloudWidgetViewController);
+        .controller('CloudWidgetViewController', CloudWidgetViewController)
+        .filter('pagination', function() {
+            return function(data, start)
+            {
+                start = +start;
+                return data.slice(start);
+            };
+        });
 
     CloudWidgetViewController.$inject = ['$scope', 'cloudData'];
 
@@ -33,6 +40,15 @@
         ctrl.accountNumber = $scope.widgetConfig.options.accountNumber || "";
         ctrl.tagName = $scope.widgetConfig.options.tagName || "";
         ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
+
+        // pagination
+        ctrl.curPage = 0;
+        ctrl.pageSize = 8;
+
+        ctrl.tabs = [
+            { name: "Overview"},
+            { name: "Detail"}
+        ];
 
 
         ctrl.getDaysToExpiration = function(epochTime) {
@@ -150,11 +166,20 @@
 
 
         ctrl.load = function () {
-            //ctrl.awsOverview = cloudData.getAWSGlobalData();
+            cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
+                .then(function(data) {
+                    ctrl.instancesByAccount = data;
+                });
+        };
+
+
+        ctrl.widgetView = ctrl.tabs[0].name;
+        ctrl.toggleView = function (index) {
+            ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
         };
 
         //tested
-        ctrl.toggleView = function() {
+        /* ctrl.toggleView = function() {
             ctrl.isDetail = (ctrl.isDetail == false);
 
             if (ctrl.isDetail) {
@@ -163,6 +188,12 @@
                         ctrl.instancesByAccount = data;
                     });
             }
+        }; */
+
+        ctrl.numberOfPages = function()  {
+            return Math.ceil(ctrl.instancesByAccount.length / ctrl.pageSize);
         };
+
+        ctrl.load();
     }
 })();

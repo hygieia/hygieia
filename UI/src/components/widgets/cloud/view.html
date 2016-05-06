@@ -1,17 +1,15 @@
 <div>
-    <div class="container-fluid pipeline-toggle btn-group" ng-click="cloudView.toggleView()">
-        <span class="btn" ng-class="{'btn-primary':!cloudView.isDetail, 'btn-default': cloudView.isDetail}">
-            <span class="fa fa-th-large"></span>
-            Overview
-            </span>
-        <span class="btn" ng-class="{'btn-primary':cloudView.isDetail, 'btn-default': !cloudView.isDetail}">
-            <span class="fa fa-tasks"></span>
-            Detail
-            </span>
+
+    <div class="pipeline-toggle btn-group">
+                    <span class="btn" ng-repeat="tab in cloudView.tabs" ng-click="cloudView.toggleView($index)"
+                          ng-class="tab.name == cloudView.widgetView ? 'btn-primary' : 'btn-default'">
+                        <span ng-class="tab.name === 'Overview' ? 'fa fa-th-large' : 'fa fa-task'"></span>
+                        {{tab.name}}
+                    </span>
     </div>
 
-    <div class="container-fluid" ng-if="!cloudView.isDetail">
-        <h3>Your Account Overview</h3>
+    <div class="container-fluid" ng-if="cloudView.widgetView == 'Overview'">
+        <h3>Account Overview</h3>
         <hr>
 
         <div class="row">
@@ -51,8 +49,8 @@
     </div>
 
 
-    <div class="container-fluid" ng-if="cloudView.isDetail">
-        <h3>Your Tag Detail</h3>
+    <div class="container-fluid" ng-if="cloudView.widgetView == 'Detail'">
+        <h3>Account Detail</h3>
         <hr>
 
         <div class="row">
@@ -94,7 +92,7 @@
                         <div class="pull-right"><label>Search: <input type="text" class="form-control" placeholder="Enter a value" ng-model="cloudView.searchFilter"/></label></div>
                         <div>
                             <div>
-                                <table class="table widget-striped">
+                                    <table class="table widget-striped">
                                     <thead>
                                     <tr class="widget-font-bold">
                                         <th ng-click="cloudView.changeSortDirection('instanceId')">Instance ID&nbsp;
@@ -113,7 +111,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="instance in cloudView.instancesByAccount | orderBy:cloudView.sortType | filter:cloudView.searchFilter | limitTo:20">
+                                   <tr ng-repeat="instance in cloudView.instancesByAccount | orderBy:cloudView.sortType | filter:cloudView.searchFilter | pagination: cloudView.curPage * cloudView.pageSize | limitTo: cloudView.pageSize">
                                         <td>{{instance.instanceId}}</td>
                                         <td>{{instance.instanceType}}</td>
                                         <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
@@ -140,6 +138,21 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="container-fluid pipeline-toggle btn-group pull-right" ng-show="cloudView.instancesByAccount.length">
+                <table><tr><td><button class="btn btn-default" ng-disabled="cloudView.curPage == 0" ng-click="cloudView.curPage=cloudView.curPage-1">
+                    <span class="fa fa-chevron-left"></span>
+                    Prev
+                </button></td>
+                    <td><input class="form-control input-sm" readonly value="Page {{cloudView.curPage + 1}} of {{ cloudView.numberOfPages() }}"/></td>
+                    <td><button class="btn btn-default" ng-disabled="curPage >= cloudView.instancesByAccount.length/pageSize-1" ng-click="cloudView.curPage = cloudView.curPage+1">
+                        <span class="fa fa-chevron-right"></span>
+                        Next
+                    </button></td>
+                </tr>
+                </table>
             </div>
         </div>
     </div>
