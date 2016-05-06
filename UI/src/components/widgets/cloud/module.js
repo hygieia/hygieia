@@ -32,8 +32,6 @@
     }
 
     function getState(config) {
-        return HygieiaConfig.local ?
-            widget_state.READY :
-            widget_state.CONFIGURE;
+        return HygieiaConfig.local || (config.options.accountNumber) ? widget_state.READY : widget_state.CONFIGURE;
     }
 })();

@@ -8,7 +8,7 @@
         .module(HygieiaConfig.module + '.core')
         .factory('collectorData', collectorData);
 
-    function collectorData($http) {
+    function collectorData($http, $q) {
         var itemRoute = '/api/collector/item';
         var itemsByTypeRoute = '/api/collector/item/type/';
         var collectorsByTypeRoute = '/api/collector/type/';
@@ -26,7 +26,16 @@
         }
 
         function createCollectorItem(collectorItem) {
-            return $http.post(itemRoute, collectorItem);
+
+            var deferred = $q.defer();
+            $http.post(itemRoute, collectorItem).success(function (data) {
+                    deferred.resolve(data);
+                })
+                .error(function(error) {
+                    deferred.reject(error);
+                });
+
+            return deferred.promise;
         }
 
         function collectorsByType(type) {
