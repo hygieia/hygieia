@@ -14,9 +14,6 @@ public interface CloudInstanceRepository extends
         CrudRepository<CloudInstance, ObjectId>,
         QueryDslPredicateExecutor<CloudInstance> {
 
-    @Query(value = "{ collectorItemId:  ?0 }")
-    Collection<CloudInstance> findByCollectorItemId(ObjectId collectorItemId);
-
     @Query(value = "{instanceId : ?0}")
     CloudInstance findByInstanceId(String instanceId);
 
