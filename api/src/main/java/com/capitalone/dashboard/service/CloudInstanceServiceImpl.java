@@ -149,6 +149,16 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
             } else {
                 try {
                     HygieiaUtils.mergeObjects(existing, newObject);
+                    //Copy Arrayists manually
+                    if (!CollectionUtils.isEmpty(newObject.getTags())) {
+                        existing.getTags().clear();
+                        existing.getTags().addAll(newObject.getTags());
+                    }
+                    if (!CollectionUtils.isEmpty(newObject.getSecurityGroups())) {
+                        existing.getSecurityGroups().clear();
+                        existing.getSecurityGroups().addAll(newObject.getSecurityGroups());
+                    }
+
                     cloudInstanceRepository.save(existing);
                     objectIds.add(existing.getId().toString());
                 } catch (IllegalAccessException | InvocationTargetException e) {

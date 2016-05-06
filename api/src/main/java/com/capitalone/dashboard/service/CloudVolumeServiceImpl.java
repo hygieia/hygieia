@@ -140,6 +140,15 @@ public class CloudVolumeServiceImpl implements CloudVolumeService {
                 } else {
                     try {
                         HygieiaUtils.mergeObjects(existing, newObject);
+                        //Copy ArrayLists manually
+                        if (!CollectionUtils.isEmpty(newObject.getTags())) {
+                            existing.getTags().clear();
+                            existing.getTags().addAll(newObject.getTags());
+                        }
+                        if (!CollectionUtils.isEmpty(newObject.getAttchInstances())) {
+                            existing.getAttchInstances().clear();
+                            existing.getAttchInstances().addAll(newObject.getAttchInstances());
+                        }
                         cloudVolumeRepository.save(existing);
                         objectIds.add(existing.getId().toString());
                     } catch (IllegalAccessException | InvocationTargetException e) {
