@@ -28,7 +28,6 @@ public interface CloudSubNetworkRepository extends
     @Query(value = "{ 'tags.name' : ?0, 'tags.value' : ?1 }")
     Collection<CloudSubNetwork> findByTagNameAndValue(String name, String value);
 
-    @Query(value = "{subnetId : ?0}")
     Collection<CloudSubNetwork> findBySubnetIdIn(List<String> subnetId);
 
     @Query(value = "{accountNumber : ?0}")
