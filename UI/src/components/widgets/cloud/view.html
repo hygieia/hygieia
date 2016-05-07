@@ -12,6 +12,7 @@
         <h3>Account Overview</h3>
         <hr>
 
+
         <div class="row">
 
             <div class="col-md-3">
@@ -23,32 +24,26 @@
 
             <div class="col-md-3">
                 <div class="progress progress-headers">
-                    <div class="progress-bar progress-bar-success" style="width: 20%;"><span class="fa fa-arrow-up header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspInstances Running N/A</h3>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-            <div class="col-md-3">
-                <div class="progress progress-headers">
-                    <div class="progress-bar progress-bar-warning" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspUsage Growth N/A</h3>
+                    <div class="progress-bar progress-bar-success" style="width: 20%;"><span class="fa fa-database header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspStorage N/A</h3>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="progress progress-headers">
-                    <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-usd header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspAvg Monthly Cost N/A</h3>
+                    <div class="progress-bar progress-bar-warning" style="width: 20%;"><span class="fa fa-usd header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspCost/Day N/A</h3>
                 </div>
             </div>
 
-        </div>
-        <div>
-            Put your subnet code here....
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspUtilization {{cloudView.calculateUtilization(cloudView.instancesByAccount) | number:1}}%</h3>
+                </div>
+            </div>
         </div>
     </div>
-
 
     <div class="container-fluid" ng-if="cloudView.toggledView == 'Detail'">
         <h3>Account Detail</h3>
@@ -141,13 +136,14 @@
                 </div>
             </div>
         </div>
+
         <div class="row">
             <div class="container-fluid pipeline-toggle btn-group pull-right" ng-show="cloudView.instancesByAccount.length">
                 <table><tr><td><button class="btn btn-default" ng-disabled="cloudView.curPage == 0" ng-click="cloudView.curPage=cloudView.curPage-1">
                     <span class="fa fa-chevron-left"></span>
                     Prev
                 </button></td>
-                    <td><input class="form-control input-sm" readonly value="Page {{cloudView.curPage + 1}} of {{ cloudView.numberOfPages }}"/></td>
+                    <td><input class="form-control input-sm" readonly value="Page {{cloudView.curPage + 1}} of {{ cloudView.numberOfPages(cloudView.instancesByAccount.length) }}"/></td>
                     <td><button class="btn btn-default" ng-disabled="curPage >= cloudView.instancesByAccount.length/pageSize-1" ng-click="cloudView.curPage = cloudView.curPage+1">
                         <span class="fa fa-chevron-right"></span>
                         Next
@@ -157,5 +153,6 @@
             </div>
         </div>
     </div>
+
 </div>
 
