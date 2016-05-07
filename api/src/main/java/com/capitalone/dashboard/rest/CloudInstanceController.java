@@ -55,12 +55,6 @@ public class CloudInstanceController {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByComponentId(componentId));
     }
 
-    @RequestMapping(value = "/cloud/instance/details/instance/{instanceId}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<CloudInstance> getInstanceDetailsByInstanceId(
-            @PathVariable String instanceId) {
-        return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByInstanceId(instanceId));
-    }
-
     @RequestMapping(value = "/cloud/instance/details/account/{accountNumber}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<CloudInstance>> getInstanceDetailsByAccount(
             @PathVariable String accountNumber) {
@@ -68,10 +62,10 @@ public class CloudInstanceController {
     }
 
 
-    @RequestMapping(value = "/cloud/instance/details/ids", method = POST, consumes = APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/cloud/instance/details/instances/{instanceIds}", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<CloudInstance>> getInstanceDetailsByInstanceIds(
-            @Valid @RequestBody List<String> instanceIds) {
+             @PathVariable List<String> instanceIds) {
         return ResponseEntity.ok().body(cloudInstanceService.getInstanceDetailsByInstanceIds(instanceIds));
     }
 

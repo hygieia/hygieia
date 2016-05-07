@@ -62,11 +62,6 @@ public class CloudVolumeServiceImpl implements CloudVolumeService {
     }
 
     @Override
-    public CloudVolumeStorage getVolumeDetailsByVolumeId(String volumeId) {
-        return cloudVolumeRepository.findByVolumeId(volumeId);
-    }
-
-    @Override
     public Collection<CloudVolumeStorage> getVolumeDetailsByVolumeIds(List<String> volumeIds) {
         return cloudVolumeRepository.findByVolumeIdIn(volumeIds);
     }
