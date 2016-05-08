@@ -26,7 +26,6 @@ public interface CloudVolumeService {
      *          (e) Account Number
      */
     Collection<CloudVolumeStorage> getVolumeDetailsByComponentId(String componentId);
-    CloudVolumeStorage getVolumeDetailsByVolumeId(String volumeId);
     Collection<CloudVolumeStorage> getVolumeDetailsByVolumeIds(List<String> volumeId);
     Collection<CloudVolumeStorage> getVolumeDetailsByTags(List<NameValue> tags);
     Collection<CloudVolumeStorage> getVolumeDetailsByAccount(String accountNumber);

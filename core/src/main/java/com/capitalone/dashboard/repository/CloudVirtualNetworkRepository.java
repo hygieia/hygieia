@@ -28,8 +28,8 @@ public interface CloudVirtualNetworkRepository extends
     @Query(value = "{ 'tags.name' : ?0, 'tags.value' : ?1 }")
     Collection<CloudVirtualNetwork> findByTagNameAndValue(String name, String value);
 
-    @Query(value = "{virtualNetworkId : ?0}")
-    Collection<CloudVirtualNetwork> findBySubnetIdIn(List<String> virtualNetworkId);
+    Collection<CloudVirtualNetwork> findByvirtualNetworkIdIn(List<String> virtualNetworkId);
+
     @Query(value = "{accountNumber : ?0}")
     Collection<CloudVirtualNetwork> findByAccountNumber(String accountNumber);
 

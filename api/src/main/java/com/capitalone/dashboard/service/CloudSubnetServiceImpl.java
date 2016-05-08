@@ -100,6 +100,11 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
             } else {
                 try {
                     HygieiaUtils.mergeObjects(existing, newObject);
+                    //copy ArrayLists manually -
+                    if (!CollectionUtils.isEmpty(newObject.getTags())) {
+                        existing.getTags().clear();
+                        existing.getTags().addAll(newObject.getTags());
+                    }
                     cloudSubNetworkRepository.save(existing);
                     objectIds.add(existing.getId().toString());
                 } catch (IllegalAccessException | InvocationTargetException e) {

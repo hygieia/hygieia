@@ -126,9 +126,9 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     /**
      * Fill out the CloudInstance object
      *
-     * @param account
-     * @param currInstance
-     * @param repository
+     * @param account Cloud Account
+     * @param currInstance Cloud Instance
+     * @param repository CloundInstnceRepository
      * @return A single CloundInstance
      */
     private CloudInstance getCloudInstanceDetails(String account,
@@ -162,6 +162,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         object.setVirtualNetworkId(currInstance.getVpcId());
         object.setRootDeviceName(currInstance.getRootDeviceName());
         object.setSubnetId(currInstance.getSubnetId());
+        object.setLastAction("ADD");
         List<Tag> tags = currInstance.getTags();
 
         if (!CollectionUtils.isEmpty(tags)) {
@@ -181,7 +182,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     /**
      * Returns a map of account number of list of volumes associated with the account
      *
-     * @return
+     * @return Map of account number and a list of Volumes
      */
 
     public Map<String, List<CloudVolumeStorage>> getCloudVolumes() {
@@ -409,7 +410,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
      * Returns true if instance is stopped. Other possible states include
      * pending, running, shutting-down, terminated, stopping
      */
-    public boolean isInstanceStopped(Instance myInstance) {
+    private boolean isInstanceStopped(Instance myInstance) {
         InstanceState instanceState = myInstance.getState();
         return (instanceState.getName().equals("stopped"));
     }
