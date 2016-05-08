@@ -26,41 +26,21 @@
     function CloudWidgetViewController($scope, cloudData) {
 
 
-        //private variables
+        //private variables/methods
         var ctrl = this;
         var sortDictionary = {};
 
 
-        //public variables
-        ctrl.instancesByAccount;
-        ctrl.volumesByAccount;
-        ctrl.runningStoppedInstances;
-        ctrl.sortType = [];
-        ctrl.searchFilter = '';
-
-        ctrl.isDetail = false;
-        ctrl.accountNumber = $scope.widgetConfig.options.accountNumber || "";
-        ctrl.tagName = $scope.widgetConfig.options.tagName || "";
-        ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
-
-
-        // pagination
-        ctrl.curPage = 0;
-        ctrl.pageSize = 8;
-
-
-
-        ctrl.getDaysToExpiration = function(epochTime) {
-
-            if (epochTime == 0) {
-                return 'N/A';
-            }
-
+        var convertEpochTimeToDate = function(epochTime) {
             var epochDate = new Date(epochTime);
             var epochDD = ('0' + epochDate.getDate()).slice(-2);
             var epochMM = ('0' + (epochDate.getMonth() + 1)).slice(-2);
             var epochYYYY = epochDate.getFullYear();
-            var imageDate = epochMM + '/'+ epochDD + '/' + epochYYYY;
+            return epochMM + '/'+ epochDD + '/' + epochYYYY;
+        }
+
+
+        var getTodayDate =  function() {
 
             //get todays date
             var today = new Date();
@@ -72,8 +52,32 @@
             if(mm<10) { mm='0'+mm }
             today = mm+'/'+dd+'/'+yyyy;
 
-            return Math.floor(( Date.parse(imageDate) - Date.parse(today) ) / 86400000);
-        };
+            return today;
+        }
+
+       
+        //public variables/methods
+        ctrl.instancesByAccount;
+        ctrl.volumesByAccount;
+        ctrl.runningStoppedInstances;
+        ctrl.instancesByAge;
+
+        ctrl.accountNumber = $scope.widgetConfig.options.accountNumber || "";
+        ctrl.tagName = $scope.widgetConfig.options.tagName || "";
+        ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
+
+        ctrl.tabs = [
+            { name: "Overview"},
+            { name: "Detail"}
+        ];
+
+        ctrl.curPage = 0;
+        ctrl.isDetail = false;
+        ctrl.pageSize = 8;
+        ctrl.sortType = [];
+        ctrl.searchFilter = '';
+        ctrl.toggledView = ctrl.tabs[0].name;
+
 
         ctrl.formatVolume = function bytesToSize(bytes) {
             var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -81,6 +85,19 @@
             var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
             return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
         };
+
+        ctrl.getDaysToExpiration = function(epochTime) {
+
+            if (epochTime == 0) {
+                return 'N/A';
+            }
+
+            var imageDate = convertEpochTimeToDate(epochTime);
+            var today = getTodayDate();
+
+            return Math.floor(( Date.parse(imageDate) - Date.parse(today) ) / 86400000);
+        };
+
 
         ctrl.getSortDirection = function(key) {
 
@@ -250,6 +267,10 @@
                     var running = ctrl.calculateRunningInstances(instances);
                     var stopped = ctrl.calculateStoppedInstances(instances);
                     ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
+
+
+
+
                 });
 
             cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
@@ -259,12 +280,7 @@
         };
 
 
-        ctrl.tabs = [
-            { name: "Overview"},
-            { name: "Detail"}
-        ];
 
-        ctrl.toggledView = ctrl.tabs[0].name;
         ctrl.toggleView = function (index) {
             ctrl.toggledView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
         };
