@@ -12,6 +12,7 @@ import java.util.Objects;
 public class CloudSubnetCreateRequest {
     @NotNull
     private String subnetId;
+    private String accountNumber;
     private String virtualNetworkId;
     private String cidrBlock;
     private int cidrCount;
@@ -34,6 +35,14 @@ public class CloudSubnetCreateRequest {
 
     public void setSubnetId(String subnetId) {
         this.subnetId = subnetId;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public String getVirtualNetworkId() {
