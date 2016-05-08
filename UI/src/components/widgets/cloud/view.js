@@ -26,39 +26,21 @@
     function CloudWidgetViewController($scope, cloudData) {
 
 
-        //private variables
+        //private variables/methods
         var ctrl = this;
         var sortDictionary = {};
 
 
-        //public variables
-        ctrl.instancesByAccount;
-        ctrl.sortType = [];
-        ctrl.searchFilter = '';
-
-        ctrl.isDetail = false;
-        ctrl.accountNumber = $scope.widgetConfig.options.accountNumber || "";
-        ctrl.tagName = $scope.widgetConfig.options.tagName || "";
-        ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
-
-        // pagination
-        ctrl.curPage = 0;
-        ctrl.pageSize = 8;
-
-
-
-
-        ctrl.getDaysToExpiration = function(epochTime) {
-
-            if (epochTime == 0) {
-                return 'N/A';
-            }
-
+        var convertEpochTimeToDate = function(epochTime) {
             var epochDate = new Date(epochTime);
             var epochDD = ('0' + epochDate.getDate()).slice(-2);
             var epochMM = ('0' + (epochDate.getMonth() + 1)).slice(-2);
             var epochYYYY = epochDate.getFullYear();
-            var imageDate = epochMM + '/'+ epochDD + '/' + epochYYYY;
+            return epochMM + '/'+ epochDD + '/' + epochYYYY;
+        }
+
+
+        var getTodayDate =  function() {
 
             //get todays date
             var today = new Date();
@@ -70,7 +52,66 @@
             if(mm<10) { mm='0'+mm }
             today = mm+'/'+dd+'/'+yyyy;
 
+            return today;
+        }
+
+       
+        //public variables/methods
+        ctrl.instancesByAccount;
+        ctrl.volumesByAccount;
+        ctrl.runningStoppedInstances;
+        ctrl.instancesByAge;
+
+        ctrl.accountNumber = $scope.widgetConfig.options.accountNumber || "";
+        ctrl.tagName = $scope.widgetConfig.options.tagName || "";
+        ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
+
+        ctrl.tabs = [
+            { name: "Overview"},
+            { name: "Detail"}
+        ];
+
+        ctrl.curPage = 0;
+        ctrl.isDetail = false;
+        ctrl.pageSize = 8;
+        ctrl.sortType = [];
+        ctrl.searchFilter = '';
+        ctrl.toggledView = ctrl.tabs[0].name;
+
+
+        ctrl.formatVolume = function bytesToSize(bytes) {
+            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            if (bytes == 0) return '0 Byte';
+            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+        };
+
+        ctrl.getDaysToExpiration = function(epochTime) {
+
+            if (epochTime == 0) {
+                return 'N/A';
+            }
+
+            var imageDate = convertEpochTimeToDate(epochTime);
+            var today = getTodayDate();
+
             return Math.floor(( Date.parse(imageDate) - Date.parse(today) ) / 86400000);
+        };
+
+
+        ctrl.getSortDirection = function(key) {
+
+            var item = sortDictionary[key];
+
+            if (item == undefined) {
+                return "unsorted";
+            }
+
+            if (item == "+") {
+                return "sort-amount-asc";
+            }
+
+            return "sort-amount-desc";
         };
 
 
@@ -91,6 +132,58 @@
 
              return (total / cnt);
         };
+
+
+
+        ctrl.calculateVolumeInBytes = function(volumes) {
+            if (volumes == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = volumes.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            var total = volumes.reduce(function(sum, currentValue) {
+                return sum + currentValue.size;
+            }, 0);
+
+            return total * 1073741824;
+        };
+
+        ctrl.calculateRunningInstances = function(instances) {
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            return instances.filter(function(value) { return (!value.stopped) }).length;
+
+        }
+
+        ctrl.calculateStoppedInstances = function(instances) {
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            return instances.filter(function(value) { return (value.stopped) }).length;
+
+        }
+
+
 
         ctrl.calculateCostAverage = function(instances) {
             if (instances == undefined) {
@@ -135,21 +228,6 @@
             ctrl.sortType = changedSortType;
         };
 
-        ctrl.getSortDirection = function(key) {
-
-            var item = sortDictionary[key];
-
-            if (item == undefined) {
-                return "unsorted";
-            }
-
-            if (item == "+") {
-                return "sort-amount-asc";
-            }
-
-            return "sort-amount-desc";
-        };
-
 
         ctrl.checkImageAgeStatus = function(expirationDate) {
             var difference = ctrl.getDaysToExpiration(expirationDate);
@@ -183,18 +261,26 @@
 
         ctrl.load = function () {
             cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
-                .then(function(data) {
-                    ctrl.instancesByAccount = data;
+                .then(function(instances) {
+                    ctrl.instancesByAccount = instances;
+
+                    var running = ctrl.calculateRunningInstances(instances);
+                    var stopped = ctrl.calculateStoppedInstances(instances);
+                    ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
+
+
+
+
+                });
+
+            cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
+                .then(function(volumes) {
+                   ctrl.volumesByAccount = volumes;
                 });
         };
 
 
-        ctrl.tabs = [
-            { name: "Overview"},
-            { name: "Detail"}
-        ];
 
-        ctrl.toggledView = ctrl.tabs[0].name;
         ctrl.toggleView = function (index) {
             ctrl.toggledView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
         };
