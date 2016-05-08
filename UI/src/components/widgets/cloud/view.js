@@ -53,9 +53,36 @@
             today = mm+'/'+dd+'/'+yyyy;
 
             return today;
-        }
+        };
 
-       
+        var getDaysToExpiration = function(epochTime) {
+
+            if (epochTime == 0) {
+                return 'N/A';
+            }
+
+            var imageDate = convertEpochTimeToDate(epochTime);
+            var today = getTodayDate();
+
+            return Math.floor(( Date.parse(imageDate) - Date.parse(today) ) / 86400000);
+        };
+
+        var getNOTTStatus = function(tags) {
+
+            if (tags == undefined) {
+                return "enabled";
+            }
+
+            for(var i = 0; i < tags.length; i++) {
+                var item = tags[i];
+                if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDE") {
+                    return "disabled" ;
+                }
+            }
+            return "enabled";
+        };
+
+
         //public variables/methods
         ctrl.instancesByAccount;
         ctrl.volumesByAccount;
@@ -86,17 +113,7 @@
             return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
         };
 
-        ctrl.getDaysToExpiration = function(epochTime) {
 
-            if (epochTime == 0) {
-                return 'N/A';
-            }
-
-            var imageDate = convertEpochTimeToDate(epochTime);
-            var today = getTodayDate();
-
-            return Math.floor(( Date.parse(imageDate) - Date.parse(today) ) / 86400000);
-        };
 
 
         ctrl.getSortDirection = function(key) {
@@ -199,7 +216,7 @@
             var total = instances.reduce(function(sum, currentValue) {
                 return sum +
                     (currentValue.stopped ? 0 :
-                        ctrl.checkNOTTDisabledStatus(currentValue.tags) == true ?
+                        currentValue.alarmClockStatus == "disabled" ?
                             24 * currentValue.hourlyCost :
                             12 * currentValue.hourlyCost);
             }, 0);
@@ -229,26 +246,12 @@
         };
 
 
-        ctrl.checkImageAgeStatus = function(expirationDate) {
-            var difference = ctrl.getDaysToExpiration(expirationDate);
-            return difference < 0 ? "fail" : difference >= 0 && difference <= 15 ? "warn" : "pass";
+        ctrl.checkImageAgeStatus = function(daysToExpiration) {
+            return daysToExpiration < 0 ? "fail" : daysToExpiration >= 0 && daysToExpiration <= 15 ? "warn" : "pass";
         };
 
 
-        ctrl.checkNOTTDisabledStatus = function(tags) {
 
-            if (tags == undefined) {
-                return false;
-            }
-
-            for(var i = 0; i < tags.length; i++) {
-                var item = tags[i];
-                if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDE") {
-                    return true;
-                }
-            }
-            return false;
-        };
 
         ctrl.checkMonitoredStatus = function(status) {
             return status ? "pass" : "fail";
@@ -262,7 +265,20 @@
         ctrl.load = function () {
             cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
                 .then(function(instances) {
+
+                    instances.forEach(function(element, index, array) {
+                        var daysToExpiration = getDaysToExpiration(element.imageExpirationDate);
+                        array[index].daysToExpiration = daysToExpiration;
+                    });
+
+                    instances.forEach(function(element, index, array) {
+                        var alarmClockStatus = getNOTTStatus(element.tags);
+                        array[index].alarmClockStatus = alarmClockStatus;
+                    });
+
                     ctrl.instancesByAccount = instances;
+
+
 
                     var running = ctrl.calculateRunningInstances(instances);
                     var stopped = ctrl.calculateStoppedInstances(instances);
