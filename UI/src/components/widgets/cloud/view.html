@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="well override-panel-background-color">
-                    <h3>Compute</h3>
+                    <h3>Running/Stopped</h3>
                     <div class="row">
                         <div class="col-lg-6">
                             <div id="canvas-holder">
@@ -44,23 +44,52 @@
                                         class="ct-chart ct-square db-chart-primary ct-chart-Ok"
                                         chartist-data="cloudView.runningStoppedInstances"
                                         chartist-chart-options="{
+                                                showLabel: false,
+                                                donut: true
+                                            }"
+                                        chartist-chart-type="Pie"></chartist>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <blockquote style="border-left:5px solid #4C9900;"><p>Running - {{
+                                cloudView.calculateRunningInstances(cloudView.instancesByAccount)
+                                }}</p></blockquote>
+                            <blockquote style="border-left:5px solid #FF5A5E;"><p>Stopped - {{
+                                cloudView.calculateStoppedInstances(cloudView.instancesByAccount)
+                                }}</p></blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="well override-panel-background-color">
+                    <h3>Instances By Age</h3>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="canvas-holder">
+                                <chartist
+                                        class="ct-chart ct-square db-chart-primary ct-chart-Ok"
+                                        chartist-data="cloudView.instancesByAge"
+                                        chartist-chart-options="{
                                                 showLabel: false
                                             }"
                                         chartist-chart-type="Pie"></chartist>
                             </div>
                         </div>
                         <div class="col-lg-6">
-                            <blockquote style="border-left:5px solid #46BFBD;"><p>Running - {{
+                            <blockquote style="border-left:5px solid #4C9900;"><p>Running - {{
                                 cloudView.calculateRunningInstances(cloudView.instancesByAccount)
                                 }}</p></blockquote>
                             <blockquote style="border-left:5px solid #FF5A5E;"><p>Stopped - {{
                                 cloudView.calculateStoppedInstances(cloudView.instancesByAccount)
                                 }}</p></blockquote>
-
                         </div>
                     </div>
                 </div>
             </div>
+
+
         </div>
 
     </div>
