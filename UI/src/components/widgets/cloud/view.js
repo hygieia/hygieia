@@ -33,6 +33,8 @@
 
         //public variables
         ctrl.instancesByAccount;
+        ctrl.volumesByAccount;
+        ctrl.runningStoppedInstances;
         ctrl.sortType = [];
         ctrl.searchFilter = '';
 
@@ -41,10 +43,10 @@
         ctrl.tagName = $scope.widgetConfig.options.tagName || "";
         ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
 
+
         // pagination
         ctrl.curPage = 0;
         ctrl.pageSize = 8;
-
 
 
 
@@ -73,6 +75,28 @@
             return Math.floor(( Date.parse(imageDate) - Date.parse(today) ) / 86400000);
         };
 
+        ctrl.formatVolume = function bytesToSize(bytes) {
+            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            if (bytes == 0) return '0 Byte';
+            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+        };
+
+        ctrl.getSortDirection = function(key) {
+
+            var item = sortDictionary[key];
+
+            if (item == undefined) {
+                return "unsorted";
+            }
+
+            if (item == "+") {
+                return "sort-amount-asc";
+            }
+
+            return "sort-amount-desc";
+        };
+
 
         ctrl.calculateUtilization = function(instances) {
              if (instances == undefined) {
@@ -91,6 +115,58 @@
 
              return (total / cnt);
         };
+
+
+
+        ctrl.calculateVolumeInBytes = function(volumes) {
+            if (volumes == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = volumes.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            var total = volumes.reduce(function(sum, currentValue) {
+                return sum + currentValue.size;
+            }, 0);
+
+            return total * 1073741824;
+        };
+
+        ctrl.calculateRunningInstances = function(instances) {
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            return instances.filter(function(value) { return (!value.stopped) }).length;
+
+        }
+
+        ctrl.calculateStoppedInstances = function(instances) {
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            return instances.filter(function(value) { return (value.stopped) }).length;
+
+        }
+
+
 
         ctrl.calculateCostAverage = function(instances) {
             if (instances == undefined) {
@@ -135,21 +211,6 @@
             ctrl.sortType = changedSortType;
         };
 
-        ctrl.getSortDirection = function(key) {
-
-            var item = sortDictionary[key];
-
-            if (item == undefined) {
-                return "unsorted";
-            }
-
-            if (item == "+") {
-                return "sort-amount-asc";
-            }
-
-            return "sort-amount-desc";
-        };
-
 
         ctrl.checkImageAgeStatus = function(expirationDate) {
             var difference = ctrl.getDaysToExpiration(expirationDate);
@@ -183,8 +244,17 @@
 
         ctrl.load = function () {
             cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
-                .then(function(data) {
-                    ctrl.instancesByAccount = data;
+                .then(function(instances) {
+                    ctrl.instancesByAccount = instances;
+
+                    var running = ctrl.calculateRunningInstances(instances);
+                    var stopped = ctrl.calculateStoppedInstances(instances);
+                    ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
+                });
+
+            cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
+                .then(function(volumes) {
+                   ctrl.volumesByAccount = volumes;
                 });
         };
 
