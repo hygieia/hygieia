@@ -13,38 +13,14 @@
     function cloudData($http, $q) {
 
         var testDataRoute = 'asv_data.json';
-        var cloudInstanceDataRoute = '/api/cloud/instance/details/account';
 
-        return {
-            getAWSGlobalData: getAWSGlobalData,
-            getAWSInstancesByAccount: getAWSInstancesByAccount
-        };
-
-
-        function getAWSGlobalData() {
-
-
-            /* return {
-             "compute": {
-             "ec2Instances": 3015,
-             "running": 1900,
-             "stopped": 300,
-             "excluded": 910
-             },
-             "s3": {
-             "s3Buckets": 9000,
-             "encrypted": 35,
-             "tagged": 45,
-             "compliant": 54
-             }
-             }; */
-        }
-
-        function getAWSInstancesByAccount(value) {
+        function getDataByAccount(type, accountNumber) {
 
             var deferred = $q.defer();
 
-            var route = (HygieiaConfig.local ? testDataRoute : cloudInstanceDataRoute) + "/" + value;
+            var cloudDataRoute = '/api/cloud/' + type + '/details/account/';
+
+            var route = (HygieiaConfig.local ? testDataRoute : cloudDataRoute) + accountNumber;
             $http.get(route)
                 .success(function (data) {
                     deferred.resolve(data);
@@ -54,6 +30,21 @@
                 });
 
             return deferred.promise;
+        }
+
+        return {
+            getAWSInstancesByAccount: getAWSInstancesByAccount,
+            getAWSVolumeByAccount: getAWSVolumeByAccount
+        };
+
+
+        function getAWSInstancesByAccount(accountNumber) {
+            return getDataByAccount('instance', accountNumber);
+
+        }
+
+        function getAWSVolumeByAccount(accountNumber) {
+            return getDataByAccount('volume', accountNumber);
         }
   }
 })();
