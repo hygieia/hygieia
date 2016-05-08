@@ -28,6 +28,7 @@ public interface CloudSubnetService {
      *          (d) List of Tags
      */
     Collection<CloudSubNetwork> getSubNetworkDetailsByComponentId (String componentIdString);
+    Collection<CloudSubNetwork> getSubNetworkDetailsByAccount(String accountNumber);
     CloudSubNetwork getSubNetworkDetailsBySubnetId(String subnetId);
     Collection<CloudSubNetwork> getSubNetworkDetailsBySubnetIds (List<String> subnetId);
     Collection<CloudSubNetwork> getSubNetworkDetailsByTags (List<NameValue> tags);
@@ -41,7 +42,4 @@ public interface CloudSubnetService {
      */
     CloudSubNetworkAggregatedResponse getSubNetworkAggregatedData (String componentIdString);
     CloudSubNetworkAggregatedResponse getSubNetworkAggregatedDataByTags (List<NameValue> tags);
-
-
-
 }

@@ -72,6 +72,7 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
 
     private CloudSubNetwork createSubnetworkObject (CloudSubnetCreateRequest request) {
         CloudSubNetwork subnet = new CloudSubNetwork();
+        subnet.setAccountNumber(request.getAccountNumber());
         subnet.setAvailableIPCount(request.getAvailableIPCount());
         subnet.setDefaultForZone(request.isDefaultForZone());
         subnet.setState(request.getState());
@@ -118,6 +119,11 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
     @Override
     public Collection<CloudSubNetwork> getSubNetworkDetailsByComponentId(String componentIdString) {
         return getSubNetworkDetails(getCollectorItem(new ObjectId(componentIdString)));
+    }
+
+    @Override
+    public Collection<CloudSubNetwork> getSubNetworkDetailsByAccount(String accountNumber) {
+        return cloudSubNetworkRepository.findByAccountNumber(accountNumber);
     }
 
     @Override
