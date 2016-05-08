@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -54,15 +55,9 @@ public class CloudSubnetController {
         return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetailsByComponentId(componentId));
     }
 
-    @RequestMapping(value = "/cloud/subnet/details/subnet/{subnetId}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<CloudSubNetwork> getSubNetworkDetailsBySubnetId(
-            @PathVariable String subnetId) {
-        return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetailsBySubnetId(subnetId));
-    }
-
-    @RequestMapping(value = "/cloud/subnet/details/subnet", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/cloud/subnet/details/subnets/{subnetIds}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<CloudSubNetwork>> getSubNetworkDetailsBySubnetIds(
-            @Valid @RequestBody List<String> subnetIds) {
+            @PathVariable ArrayList<String> subnetIds) {
         return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetailsBySubnetIds(subnetIds));
     }
 

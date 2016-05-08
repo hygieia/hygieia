@@ -55,10 +55,10 @@ public class CloudVolumeController {
         return ResponseEntity.ok().body(cloudVolumeService.getVolumeDetailsByComponentId(componentId));
     }
 
-    @RequestMapping(value = "/cloud/volume/details/volume/{volumeId}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<CloudVolumeStorage> getVolumeDetailsByVolumeId(
-            @PathVariable String volumeId) {
-        return ResponseEntity.ok().body(cloudVolumeService.getVolumeDetailsByVolumeId(volumeId));
+    @RequestMapping(value = "/cloud/volume/details/volumes/{volumeIds}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CloudVolumeStorage>> getVolumeDetailsByVolumeIds(
+            @PathVariable List<String> volumeIds) {
+        return ResponseEntity.ok().body(cloudVolumeService.getVolumeDetailsByVolumeIds(volumeIds));
     }
 
     @RequestMapping(value = "/cloud/volume/details/account/{accountNumber}", method = GET, produces = APPLICATION_JSON_VALUE)
@@ -66,15 +66,6 @@ public class CloudVolumeController {
             @PathVariable String accountNumber) {
         return ResponseEntity.ok().body(cloudVolumeService.getVolumeDetailsByAccount(accountNumber));
     }
-
-
-    @RequestMapping(value = "/cloud/volume/details/ids", method = POST, consumes = APPLICATION_JSON_VALUE,
-            produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<CloudVolumeStorage>> getVolumeDetailsByVolumeIds(
-            @Valid @RequestBody List<String> volumeIds) {
-        return ResponseEntity.ok().body(cloudVolumeService.getVolumeDetailsByVolumeIds(volumeIds));
-    }
-
 
     @RequestMapping(value = "/cloud/volume/details/tags", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)

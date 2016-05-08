@@ -2,12 +2,11 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.config.collector.CloudConfig;
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.repository.CloudInstanceHistoryRepository;
 import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.request.CloudInstanceAggregateRequest;
 import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
-import com.capitalone.dashboard.response.CloudInstanceAggregatedResponse;
 import com.capitalone.dashboard.util.HygieiaUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,12 +24,15 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
             .getLog(CloudInstanceServiceImpl.class);
 
     private final CloudInstanceRepository cloudInstanceRepository;
+    private final CloudInstanceHistoryRepository cloudInstanceHistoryRepository;
     private final ComponentRepository componentRepository;
 
     @Autowired
     public CloudInstanceServiceImpl(CloudInstanceRepository cloudInstanceRepository,
+                                    CloudInstanceHistoryRepository cloudInstanceHistoryRepository,
                                     ComponentRepository cloudConfigRepository) {
         this.cloudInstanceRepository = cloudInstanceRepository;
+        this.cloudInstanceHistoryRepository = cloudInstanceHistoryRepository;
         this.componentRepository = cloudConfigRepository;
     }
 
@@ -78,34 +80,10 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         return cloudInstanceRepository.findByAccountNumber(accountNumber);
     }
 
-    @Override
-    public CloudInstanceAggregatedResponse getInstanceAggregatedData(String componentIdString) {
-        CollectorItem item = getCollectorItem(new ObjectId(componentIdString));
-        CloudInstanceAggregatedResponse response = new CloudInstanceAggregatedResponse();
-        Collection<CloudInstance> instances = getInstanceDetails(item);
-        if ((item != null) && !(item instanceof CloudConfig)) return response;
-        CloudConfig config = (CloudConfig) item;
-        if (CollectionUtils.isEmpty(instances)) return response;
-        return aggregate(instances, config);
-    }
 
     @Override
-    public CloudInstanceAggregatedResponse getInstanceAggregatedData(CloudInstanceAggregateRequest request) {
-        Set<CloudInstance> instances = new HashSet<>();
-        if (!CollectionUtils.isEmpty(request.getInstanceIds())) {
-            Collection<CloudInstance> ins = getInstanceDetailsByInstanceIds(request.getInstanceIds());
-            if (!CollectionUtils.isEmpty(ins)) {
-                instances.addAll(ins);
-            }
-        }
-
-        if (!CollectionUtils.isEmpty(request.getTags())) {
-            Collection<CloudInstance> ins = getInstanceDetailsByTags(request.getTags());
-            if (!CollectionUtils.isEmpty(ins)) {
-                instances.addAll(ins);
-            }
-        }
-        return aggregate(instances, request.getConfig());
+    public Collection<CloudInstanceHistory> getInstanceHistoryByAccount(String account) {
+        return cloudInstanceHistoryRepository.findByAccountNumber(account);
     }
 
     @Override
@@ -163,7 +141,6 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         List<String> objectIds = new ArrayList<>();
         if (!CollectionUtils.isEmpty(instances))
         for (CloudInstanceCreateRequest ci : instances) {
-            logger.debug("in API IS:" + ci.getImageId());
             CloudInstance newObject = createCloudInstanceObject(ci);
             CloudInstance existing = cloudInstanceRepository.findByInstanceId(ci.getInstanceId());
             if (existing == null) {
@@ -172,6 +149,16 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
             } else {
                 try {
                     HygieiaUtils.mergeObjects(existing, newObject);
+                    //Copy Arrayists manually
+                    if (!CollectionUtils.isEmpty(newObject.getTags())) {
+                        existing.getTags().clear();
+                        existing.getTags().addAll(newObject.getTags());
+                    }
+                    if (!CollectionUtils.isEmpty(newObject.getSecurityGroups())) {
+                        existing.getSecurityGroups().clear();
+                        existing.getSecurityGroups().addAll(newObject.getSecurityGroups());
+                    }
+
                     cloudInstanceRepository.save(existing);
                     objectIds.add(existing.getId().toString());
                 } catch (IllegalAccessException | InvocationTargetException e) {
@@ -181,68 +168,4 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         }
         return objectIds;
     }
-
-    private CloudInstanceAggregatedResponse aggregate(Collection<CloudInstance> instances, CloudConfig config) {
-        if (config == null) {
-            config = new CloudConfig();
-        }
-        int ageAlertCount = 0;
-        int ageErrorCount = 0;
-        int ageGoodCount = 0;
-        int cpuHighCount = 0;
-        int cpuAlertCount = 0;
-        int cpuLowCount = 0;
-        int unTaggedCount = 0;
-        int stoppedCount = 0;
-        int totalCount = 0;
-        /** For future enhancements
-         double estimatedCharge = 0.0;
-         int memoryHighCount = 0;
-         int memoryAlertCount = 0;
-         int memoryLowCount = 0;
-         int diskHighCount = 0;
-         int diskAlertCount = 0;
-         int diskLowCount = 0;
-         int networkHighCount = 0;
-         int networkAlertCount = 0;
-         int networkLowCount = 0;
-         **/
-        CloudInstanceAggregatedResponse response = new CloudInstanceAggregatedResponse();
-        for (CloudInstance rd : instances) {
-            totalCount = totalCount + 1;
-
-            if (rd.isStopped()) {
-                stoppedCount = stoppedCount + 1;
-            }
-            if (!rd.isTagged()) {
-                unTaggedCount = unTaggedCount + 1;
-            }
-            if (rd.getAge() >= config.getAgeError()) {
-                ageErrorCount = ageErrorCount + 1;
-            }
-            if ((rd.getAge() < config.getAgeError()) && (rd.getAge() >= config.getAgeAlert())) {
-                ageAlertCount = ageAlertCount + 1;
-            }
-            if (rd.getAge() < config.getAgeAlert()) {
-                ageGoodCount = ageGoodCount + 1;
-            }
-            if (rd.getCpuUtilization() >= config.getCpuError()) {
-                cpuHighCount = cpuHighCount + 1;
-            }
-            if ((rd.getCpuUtilization() < config.getCpuError()) && (rd.getCpuUtilization() >= config.getCpuAlert())) {
-                cpuAlertCount = cpuAlertCount + 1;
-            }
-            if (rd.getCpuUtilization() < config.getCpuAlert()) {
-                cpuLowCount = cpuLowCount + 1;
-            }
-        }
-        response.setAgeAlert(ageAlertCount);
-        response.setAgeError(ageErrorCount);
-        response.setAgeGood(ageGoodCount);
-        response.setCpuAlert(cpuAlertCount);
-        response.setCpuHigh(cpuHighCount);
-        response.setCpuLow(cpuLowCount);
-        return response;
-    }
-
 }
