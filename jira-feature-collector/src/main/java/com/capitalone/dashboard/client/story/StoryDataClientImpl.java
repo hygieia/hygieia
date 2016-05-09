@@ -59,6 +59,9 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	private final FeatureWidgetQueries featureWidgetQueries;
 	private final FeatureRepository featureRepo;
 	private final static ClientUtil TOOLS = new ClientUtil();
+	private static final String KANBAN_START_DATE = "1900-01-01T00:00:00.0000000";
+	private static final String KANBAN_END_DATE = "9999-12-31T59:59:59.9999999";
+	private static final String KANBAN_SPRINT_ID = "KANBAN";
 
 	/**
 	 * Extends the constructor from the super class.
@@ -109,21 +112,21 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 					BasicProject project = issue.getProject();
 					User assignee = issue.getAssignee();
 					String status = this.toCanonicalFeatureStatus(issue.getStatus().getName());
-					String estimate = String.valueOf(issue.getTimeTracking()
-							.getRemainingEstimateMinutes());
+					String estimate = String
+							.valueOf(issue.getTimeTracking().getRemainingEstimateMinutes());
 					IssueField epic = fields.get(super.featureSettings.getJiraEpicIdFieldName());
 					String changeDate = issue.getUpdateDate().toString();
-					IssueField sprint = fields.get(super.featureSettings
-							.getJiraSprintDataFieldName());
+					IssueField sprint = fields
+							.get(super.featureSettings.getJiraSprintDataFieldName());
 					/*
 					 * Removing any existing entities where they exist in the
 					 * local DB store...
 					 */
 					@SuppressWarnings("unused")
-					boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(issue
-							.getId()));
-					if (TOOLS.sanitizeResponse(issueType.getName()).equalsIgnoreCase(
-							super.featureSettings.getJiraIssueTypeId())) {
+					boolean deleted = this
+							.removeExistingEntity(TOOLS.sanitizeResponse(issue.getId()));
+					if (TOOLS.sanitizeResponse(issueType.getName())
+							.equalsIgnoreCase(super.featureSettings.getJiraIssueTypeId())) {
 						// collectorId
 						feature.setCollectorId(featureCollectorRepository
 								.findByName(FeatureCollectorConstants.JIRA).getId());
@@ -147,8 +150,8 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 						feature.setsEstimate(TOOLS.toHours(estimate));
 
 						// sChangeDate
-						feature.setChangeDate(TOOLS.toCanonicalDate(TOOLS
-								.sanitizeResponse(changeDate)));
+						feature.setChangeDate(
+								TOOLS.toCanonicalDate(TOOLS.sanitizeResponse(changeDate)));
 
 						// IsDeleted - does not exist for Jira
 						feature.setIsDeleted("False");
@@ -183,11 +186,11 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 						 * associated
 						 */
 						String blankLiteral = "";
-						if ((epic.getValue() != null)
-								&& !(epic.getValue().toString().isEmpty() && !blankLiteral
-										.equalsIgnoreCase(TOOLS.sanitizeResponse(epic.getValue())))) {
-							List<Issue> epicData = this.getEpicData(TOOLS.sanitizeResponse(epic
-									.getValue()));
+						if ((epic.getValue() != null) && !(epic.getValue().toString().isEmpty()
+								&& !blankLiteral.equalsIgnoreCase(
+										TOOLS.sanitizeResponse(epic.getValue())))) {
+							List<Issue> epicData = this
+									.getEpicData(TOOLS.sanitizeResponse(epic.getValue()));
 							if (!epicData.isEmpty()) {
 								Iterable<IssueField> rawEpicFields = epicData.get(0).getFields();
 								HashMap<String, IssueField> epicFields = new LinkedHashMap<String, IssueField>();
@@ -216,16 +219,16 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 
 								// sEpicBeginDate - mapped to create date
 								if ((epicBeginDate != null) && !(epicBeginDate.isEmpty())) {
-									feature.setsEpicBeginDate(TOOLS.toCanonicalDate(TOOLS
-											.sanitizeResponse(epicBeginDate)));
+									feature.setsEpicBeginDate(TOOLS.toCanonicalDate(
+											TOOLS.sanitizeResponse(epicBeginDate)));
 								} else {
 									feature.setsEpicBeginDate("");
 								}
 
 								// sEpicEndDate
 								if (epicEndDate != null) {
-									feature.setsEpicEndDate(TOOLS.toCanonicalDate(TOOLS
-											.sanitizeResponse(epicEndDate.getValue())));
+									feature.setsEpicEndDate(TOOLS.toCanonicalDate(
+											TOOLS.sanitizeResponse(epicEndDate.getValue())));
 								} else {
 									feature.setsEpicEndDate("");
 								}
@@ -288,33 +291,37 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 
 							// sSprintBeginDate
 							if (canonicalSprint.get("startDate") != null) {
-								feature.setsSprintBeginDate(TOOLS.toCanonicalDate(canonicalSprint
-										.get("startDate").toString()));
+								feature.setsSprintBeginDate(TOOLS.toCanonicalDate(
+										canonicalSprint.get("startDate").toString()));
 							} else {
 								feature.setsSprintBeginDate("");
 							}
 
 							// sSprintEndDate
 							if (canonicalSprint.get("endDate") != null) {
-								feature.setsSprintEndDate(TOOLS.toCanonicalDate(canonicalSprint
-										.get("endDate").toString()));
+								feature.setsSprintEndDate(TOOLS.toCanonicalDate(
+										canonicalSprint.get("endDate").toString()));
 							} else {
 								feature.setsSprintEndDate("");
 							}
 
 							// sSprintAssetState
 							if (canonicalSprint.get("state") != null) {
-								feature.setsSprintAssetState(canonicalSprint.get("state")
-										.toString());
+								feature.setsSprintAssetState(
+										canonicalSprint.get("state").toString());
 							} else {
 								feature.setsSprintAssetState("");
 							}
 						} else {
-							feature.setsSprintID("");
-							feature.setsSprintName("");
-							feature.setsSprintBeginDate("");
-							feature.setsSprintEndDate("");
-							feature.setsSprintAssetState("");
+							/*
+							 * For Kanban, associate a generic, never-ending
+							 * kanban 'sprint'
+							 */
+							feature.setsSprintID(KANBAN_SPRINT_ID);
+							feature.setsSprintName(KANBAN_SPRINT_ID);
+							feature.setsSprintBeginDate(KANBAN_START_DATE);
+							feature.setsSprintEndDate(KANBAN_END_DATE);
+							feature.setsSprintAssetState("Active");
 						}
 
 						// sSprintChangeDate - does not exist in Jira
@@ -362,8 +369,8 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 							List<String> assigneeDisplayName = new ArrayList<String>();
 							if (!assignee.getDisplayName().isEmpty()
 									&& (assignee.getDisplayName() != null)) {
-								assigneeDisplayName.add(TOOLS.sanitizeResponse(assignee
-										.getDisplayName()));
+								assigneeDisplayName
+										.add(TOOLS.sanitizeResponse(assignee.getDisplayName()));
 							} else {
 								assigneeDisplayName.add("");
 							}
@@ -381,7 +388,8 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 						feature.setsOwnersState(assigneeActive);
 
 						// sOwnersChangeDate - does not exist in Jira
-						feature.setsOwnersChangeDate(TOOLS.toCanonicalList(new ArrayList<String>()));
+						feature.setsOwnersChangeDate(
+								TOOLS.toCanonicalList(new ArrayList<String>()));
 
 						// sOwnersIsDeleted - does not exist in Jira
 						feature.setsOwnersIsDeleted(TOOLS.toCanonicalList(new ArrayList<String>()));
@@ -393,7 +401,8 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 				} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
 					LOGGER.error(
 							"Unexpected error caused while mapping data from source system to local data store:\n"
-									+ e.getMessage() + " : " + e.getCause(), e);
+									+ e.getMessage() + " : " + e.getCause(),
+							e);
 				}
 			}
 		}
@@ -476,13 +485,15 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 				proxyUri = this.featureSettings.getJiraProxyUrl();
 				proxyPort = this.featureSettings.getJiraProxyPort();
 			}
-			jiraConnect = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUrl, proxyUri, proxyPort);
+			jiraConnect = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUrl, proxyUri,
+					proxyPort);
 			jiraConnect.setQuery(query);
 			epicRs = jiraConnect.getJiraIssues();
 		} catch (Exception e) {
 			LOGGER.error(
 					"There was a problem connecting to Jira while getting sub-relationships to epics:"
-							+ e.getMessage() + " : " + e.getCause(), e);
+							+ e.getMessage() + " : " + e.getCause(),
+					e);
 			epicRs = new ArrayList<Issue>();
 		} finally {
 			jiraConnect.destroy();
@@ -515,7 +526,8 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	 * Validates current entry and removes new entry if an older item exists in
 	 * the repo
 	 * 
-	 * @param localId repository item ID (not the precise mongoID)
+	 * @param localId
+	 *            repository item ID (not the precise mongoID)
 	 */
 	protected Boolean removeExistingEntity(String localId) {
 		boolean deleted = false;
