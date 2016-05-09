@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import javax.xml.bind.DatatypeConverter;
@@ -379,7 +380,7 @@ public class FeatureServiceImplTest {
 				(String) notNull())).thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
 
 		DataResponse<List<Feature>> result = featureService.getFeatureEstimates(mockComponentId,
-				mockJiraFeature.getsTeamID());
+				mockJiraFeature.getsTeamID(), Optional.empty());
 		assertThat(
 				"There should only be one result even with multiple same super features over several sub features",
 				result.getResult(), hasSize(1));
@@ -396,7 +397,7 @@ public class FeatureServiceImplTest {
 				.thenReturn(Arrays.asList(mockJiraFeature3));
 
 		DataResponse<List<Feature>> result = featureService.getCurrentSprintDetail(mockComponentId,
-				mockJiraFeature3.getsTeamID());
+				mockJiraFeature3.getsTeamID(), Optional.empty());
 		assertThat(
 				"There should only be one result even with multiple same super features over several sub features",
 				result.getResult(), hasSize(1));
