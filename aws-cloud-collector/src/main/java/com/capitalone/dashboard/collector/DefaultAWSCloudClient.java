@@ -3,6 +3,10 @@ package com.capitalone.dashboard.collector;
 import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.services.autoscaling.AmazonAutoScaling;
+import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
+import com.amazonaws.services.autoscaling.model.AutoScalingInstanceDetails;
+import com.amazonaws.services.autoscaling.model.DescribeAutoScalingInstancesResult;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.Dimension;
@@ -55,6 +59,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     private final AWSCloudSettings settings;
     private static AmazonEC2Client ec2Client;
     private static AmazonCloudWatchClient cloudWatchClient;
+    private static AmazonAutoScaling autoScalingClient;
     private static final String NO_ACCOUNT = "NOACCOUNT";
 
 
@@ -77,6 +82,8 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
         cloudWatchClient = new AmazonCloudWatchClient(new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(),
                 new ProfileCredentialsProvider(settings.getProfile())));
+        autoScalingClient = new AmazonAutoScalingClient(new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(),
+                new ProfileCredentialsProvider(settings.getProfile())));
     }
 
     /**
@@ -87,9 +94,16 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
      */
     @Override
     public Map<String, List<CloudInstance>> getCloundInstances(CloudInstanceRepository repository) {
-
         DescribeInstancesResult instanceResult = ec2Client.describeInstances();
+        DescribeAutoScalingInstancesResult autoScaleResult = autoScalingClient.describeAutoScalingInstances();
+        List<AutoScalingInstanceDetails> autoScalingInstanceDetails = autoScaleResult.getAutoScalingInstances();
+        Map<String, String> autoScaleMap = new HashMap<>();
+        for (AutoScalingInstanceDetails ai : autoScalingInstanceDetails) {
+            autoScaleMap.put(ai.getInstanceId(), ai.getAutoScalingGroupName());
+        }
+
         Map<String, List<Instance>> ownerInstanceMap = new HashMap<>();
+
         List<Instance> instanceList = new ArrayList<>();
         List<Reservation> reservations = instanceResult.getReservations();
         for (Reservation currRes : reservations) {
@@ -111,7 +125,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 LOGGER.info("Collecting instance details for " + i + " of "
                         + instanceList.size() + ". Instance ID=" + currInstance.getInstanceId());
                 CloudInstance object = getCloudInstanceDetails(acct,
-                        currInstance, repository);
+                        currInstance, autoScaleMap, repository);
                 rawDataList.add(object);
             }
             if (CollectionUtils.isEmpty(returnList.get(acct))) {
@@ -132,7 +146,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
      * @return A single CloundInstance
      */
     private CloudInstance getCloudInstanceDetails(String account,
-                                                  Instance currInstance, CloudInstanceRepository repository) {
+                                                  Instance currInstance, Map<String, String> autoScaleMap, CloudInstanceRepository repository) {
 
         long lastUpdated = System.currentTimeMillis();
         CloudInstance instance = repository.findByInstanceId(currInstance.getInstanceId());
@@ -162,6 +176,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         object.setVirtualNetworkId(currInstance.getVpcId());
         object.setRootDeviceName(currInstance.getRootDeviceName());
         object.setSubnetId(currInstance.getSubnetId());
+        object.setAutoScaleName(autoScaleMap.getOrDefault(currInstance.getInstanceId(), "NONE"));
         object.setLastAction("ADD");
         List<Tag> tags = currInstance.getTags();
 
