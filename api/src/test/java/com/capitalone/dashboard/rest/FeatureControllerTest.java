@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
@@ -314,7 +315,7 @@ public class FeatureControllerTest {
 		DataResponse<List<Feature>> response = new DataResponse<>(features,
 				mockV1Collector.getLastExecuted());
 
-		when(featureService.getFeatureEstimates(mockComponentId, testTeamId)).thenReturn(response);
+		when(featureService.getFeatureEstimates(mockComponentId, testTeamId, Optional.empty())).thenReturn(response);
 		mockMvc.perform(get("/feature/" + testTeamId + "?component=" + mockComponentId.toString()))
 				.andExpect(status().isOk());
 	}
@@ -329,7 +330,7 @@ public class FeatureControllerTest {
 		DataResponse<List<Feature>> response = new DataResponse<>(features,
 				mockV1Collector.getLastExecuted());
 
-		when(featureService.getFeatureEstimates(mockComponentId, testTeamId)).thenReturn(response);
+		when(featureService.getFeatureEstimates(mockComponentId, testTeamId, Optional.empty())).thenReturn(response);
 		mockMvc.perform(
 				get("/feature/estimates/super/" + testTeamId + "?component="
 						+ mockComponentId.toString())).andExpect(status().isOk());
@@ -345,7 +346,7 @@ public class FeatureControllerTest {
 		DataResponse<List<Feature>> response = new DataResponse<>(features,
 				mockV1Collector.getLastExecuted());
 
-		when(featureService.getFeatureEstimates(mockComponentId, testTeamId)).thenReturn(response);
+		when(featureService.getFeatureEstimates(mockComponentId, testTeamId, Optional.empty())).thenReturn(response);
 		mockMvc.perform(
 				get("/feature/estimates/super/" + testTeamId + "?component="
 						+ mockComponentId.toString()))

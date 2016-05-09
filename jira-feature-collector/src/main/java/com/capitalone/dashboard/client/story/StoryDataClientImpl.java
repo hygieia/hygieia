@@ -59,9 +59,6 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	private final FeatureWidgetQueries featureWidgetQueries;
 	private final FeatureRepository featureRepo;
 	private final static ClientUtil TOOLS = new ClientUtil();
-	private static final String KANBAN_START_DATE = "1900-01-01T00:00:00.0000000";
-	private static final String KANBAN_END_DATE = "9999-12-31T59:59:59.9999999";
-	private static final String KANBAN_SPRINT_ID = "KANBAN";
 
 	/**
 	 * Extends the constructor from the super class.
@@ -317,10 +314,11 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 							 * For Kanban, associate a generic, never-ending
 							 * kanban 'sprint'
 							 */
-							feature.setsSprintID(KANBAN_SPRINT_ID);
-							feature.setsSprintName(KANBAN_SPRINT_ID);
-							feature.setsSprintBeginDate(KANBAN_START_DATE);
-							feature.setsSprintEndDate(KANBAN_END_DATE);
+							feature.setsSprintID(FeatureCollectorConstants.KANBAN_SPRINT_ID);
+							feature.setsSprintName(FeatureCollectorConstants.KANBAN_SPRINT_ID);
+							feature.setsSprintBeginDate(
+									FeatureCollectorConstants.KANBAN_START_DATE);
+							feature.setsSprintEndDate(FeatureCollectorConstants.KANBAN_END_DATE);
 							feature.setsSprintAssetState("Active");
 						}
 
