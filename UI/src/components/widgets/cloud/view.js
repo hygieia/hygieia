@@ -39,7 +39,6 @@
             return epochMM + '/'+ epochDD + '/' + epochYYYY;
         }
 
-
         var getTodayDate =  function() {
 
             //get todays date
@@ -82,10 +81,22 @@
             return "enabled";
         };
 
+        var getSubnetStatus = function(usedIPs, availableIPs) {
+
+            if (usedIPs == undefined || availableIPs == undefined) {
+                return 'N/A';
+            }
+
+
+            var percentageUsed = usedIPs/(availableIPs + usedIPs);
+            return percentageUsed >= .50 ? 'fail' : percentageUsed >= .30 && percentageUsed < .50 ? 'warn' : 'pass';
+        }
+
 
         //public variables/methods
         ctrl.instancesByAccount;
         ctrl.volumesByAccount;
+        ctrl.subnetsByAccount;
         ctrl.runningStoppedInstances;
         ctrl.instancesByAge;
 
@@ -106,51 +117,25 @@
         ctrl.toggledView = ctrl.tabs[0].name;
 
 
-        ctrl.formatVolume = function bytesToSize(bytes) {
-            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            if (bytes == 0) return '0 Byte';
-            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-        };
-
-
-
-
-        ctrl.getSortDirection = function(key) {
-
-            var item = sortDictionary[key];
-
-            if (item == undefined) {
-                return "unsorted";
-            }
-
-            if (item == "+") {
-                return "sort-amount-asc";
-            }
-
-            return "sort-amount-desc";
-        };
 
 
         ctrl.calculateUtilization = function(instances) {
-             if (instances == undefined) {
+            if (instances == undefined) {
                 return 'N/A';
-             }
+            }
 
-             var cnt = instances.length;
+            var cnt = instances.length;
 
-             if (cnt == 0) {
-             return 'N/A';
-             }
+            if (cnt == 0) {
+                return 'N/A';
+            }
 
-             var total = instances.reduce(function(sum, currentValue) {
+            var total = instances.reduce(function(sum, currentValue) {
                 return sum + currentValue.cpuUtilization;
-             }, 0);
+            }, 0);
 
-             return (total / cnt);
+            return (total / cnt);
         };
-
-
 
         ctrl.calculateVolumeInBytes = function(volumes) {
             if (volumes == undefined) {
@@ -200,8 +185,6 @@
 
         }
 
-
-
         ctrl.calculateCostAverage = function(instances) {
             if (instances == undefined) {
                 return 'N/A';
@@ -217,8 +200,8 @@
                 return sum +
                     (currentValue.stopped ? 0 :
                         currentValue.alarmClockStatus == "disabled" ?
-                            24 * currentValue.hourlyCost :
-                            12 * currentValue.hourlyCost);
+                        24 * currentValue.hourlyCost :
+                        12 * currentValue.hourlyCost);
             }, 0);
             return (total / cnt);
         }
@@ -245,13 +228,9 @@
             ctrl.sortType = changedSortType;
         };
 
-
         ctrl.checkImageAgeStatus = function(daysToExpiration) {
             return daysToExpiration < 0 ? "fail" : daysToExpiration >= 0 && daysToExpiration <= 15 ? "warn" : "pass";
         };
-
-
-
 
         ctrl.checkMonitoredStatus = function(status) {
             return status ? "pass" : "fail";
@@ -261,49 +240,84 @@
             return status > 30 ? "pass" : "fail";
         };
 
+        ctrl.formatVolume = function bytesToSize(bytes) {
+            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            if (bytes == 0) return '0 Byte';
+            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+        };
+
+        ctrl.getSortDirection = function(key) {
+
+            var item = sortDictionary[key];
+
+            if (item == undefined) {
+                return "unsorted";
+            }
+
+            if (item == "+") {
+                return "sort-amount-asc";
+            }
+
+            return "sort-amount-desc";
+        };
 
         ctrl.load = function () {
-            cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
-                .then(function(instances) {
 
-                    instances.forEach(function(element, index, array) {
-                        var daysToExpiration = getDaysToExpiration(element.imageExpirationDate);
-                        array[index].daysToExpiration = daysToExpiration;
+            cloudData.getAWSSubnetsByAccount(ctrl.accountNumber)
+                .then(function(subnets){
+                    ctrl.subnetsByAccount = subnets;
+                }).then(function() {
+
+                cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
+                    .then(function(instances) {
+
+                        instances.forEach(function(element, index, array) {
+                            var daysToExpiration = getDaysToExpiration(element.imageExpirationDate);
+                            array[index].daysToExpiration = daysToExpiration;
+                        });
+
+                        instances.forEach(function(element, index, array) {
+                            var alarmClockStatus = getNOTTStatus(element.tags);
+                            array[index].alarmClockStatus = alarmClockStatus;
+                        });
+
+                        instances.forEach(function(element, index, array) {
+                            var subnet = ctrl.subnetsByAccount.find(function(value) {
+                                return value.subnetId == element.subnetId
+                            });
+
+
+                            if (subnet != undefined) {
+                                var subnetUsageStatus = getSubnetStatus(subnet.usedIPCount, subnet.availableIPCount);
+                                array[index].subnetUsageStatus = subnetUsageStatus;
+                            }
+                        });
+
+                        ctrl.instancesByAccount = instances;
+                        var running = ctrl.calculateRunningInstances(instances);
+                        var stopped = ctrl.calculateStoppedInstances(instances);
+                        ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
+
                     });
 
-                    instances.forEach(function(element, index, array) {
-                        var alarmClockStatus = getNOTTStatus(element.tags);
-                        array[index].alarmClockStatus = alarmClockStatus;
-                    });
-
-                    ctrl.instancesByAccount = instances;
+            });
 
 
 
-                    var running = ctrl.calculateRunningInstances(instances);
-                    var stopped = ctrl.calculateStoppedInstances(instances);
-                    ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
-
-
-
-
-                });
 
             cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
                 .then(function(volumes) {
-                   ctrl.volumesByAccount = volumes;
+                    ctrl.volumesByAccount = volumes;
                 });
         };
 
-
+        ctrl.numberOfPages = function(length)  {
+            return Math.ceil(length/ ctrl.pageSize);
+        };
 
         ctrl.toggleView = function (index) {
             ctrl.toggledView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
-        };
-
-
-        ctrl.numberOfPages = function(length)  {
-            return Math.ceil(length/ ctrl.pageSize);
         };
 
         ctrl.load();
