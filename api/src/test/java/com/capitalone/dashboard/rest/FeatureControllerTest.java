@@ -58,6 +58,9 @@ public class FeatureControllerTest {
 	private static final ObjectId jiraCollectorId2 = new ObjectId();
 	private static final ObjectId v1CollectorId = new ObjectId();
 	private static final ObjectId mockComponentId = new ObjectId();
+	private static final String KANBAN_START_DATE = "1900-01-01T00:00:00.00Z";
+	private static final String KANBAN_END_DATE = "9999-12-31T59:59:59.99Z";
+	private static final String KANBAN_SPRINT_ID = "KANBAN";
 
 	private MockMvc mockMvc;
 
@@ -183,12 +186,12 @@ public class FeatureControllerTest {
 		mockJiraFeature.setsProjectPath("");
 		mockJiraFeature.setsProjectState("Active");
 		mockJiraFeature.setsSprintAssetState("Active");
-		mockJiraFeature.setsSprintBeginDate(maxDateLoser);
-		mockJiraFeature.setsSprintChangeDate(maxDateWinner);
-		mockJiraFeature.setsSprintEndDate(currentSprintEndDate);
-		mockJiraFeature.setsSprintID("1232512");
+		mockJiraFeature.setsSprintBeginDate(KANBAN_START_DATE);
+		mockJiraFeature.setsSprintChangeDate("");
+		mockJiraFeature.setsSprintEndDate(KANBAN_END_DATE);
+		mockJiraFeature.setsSprintID(KANBAN_SPRINT_ID);
 		mockJiraFeature.setsSprintIsDeleted("False");
-		mockJiraFeature.setsSprintName("Test Sprint 2");
+		mockJiraFeature.setsSprintName(KANBAN_SPRINT_ID);
 		mockJiraFeature.setsState("Active");
 		mockJiraFeature.setsStatus("In Progress");
 		mockJiraFeature.setsTeamAssetState("Active");

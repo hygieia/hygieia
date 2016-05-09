@@ -314,12 +314,7 @@ public class FeatureServiceImpl implements FeatureService {
                 getCurrentISODateTime());
 
         List<Feature> sprintDetail = new ArrayList<>();
-        Feature f = new Feature();
-        for (Feature tempRs : sprintResponse) {
-            f.setsSprintID(tempRs.getsSprintID());
-            f.setsSprintName(tempRs.getsSprintName());
-            f.setsSprintBeginDate(tempRs.getsSprintBeginDate());
-            f.setsSprintEndDate(tempRs.getsSprintEndDate());
+        for (Feature f : sprintResponse) {
             sprintDetail.add(f);
         }
         Collector collector = collectorRepository.findOne(item.getCollectorId());

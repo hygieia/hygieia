@@ -6,12 +6,16 @@
 					Scope: <em>{{ctrl.teamName}}</em>
 				</div>
 			</div>
-			
+
 			<div class="widget-heading">
-				<div class="col-xs-2.5 text-lg pull-right">
-					{{ctrl.daysTilEnd}}</div>
-				<div class="col-xs-9.5 text-lg dash-overflow">
-					Sprint: <em>{{ctrl.sprintName}}</em>
+				<div class="text-standard-sm">Iteration:</div>
+				<div ng-repeat="iteration in ctrl.iterations">
+					<div class="col-xs-2.5 text-lg pull-right">
+						{{iteration.tilEnd}}
+					</div>
+					<div class="col-xs-9.5 text-lg dash-overflow">
+						<em>{{iteration.name}}</em>
+					</div>
 				</div>
 			</div>
 
