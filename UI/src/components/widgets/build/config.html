@@ -1,6 +1,14 @@
 <widget-modal widget-modal-title="Configure Build Widget" class="build-config">
-    <form name="buildConfigForm" role="form"
-          ng-submit="buildConfig.submit(buildConfigForm.$valid,buildConfig.collectorItemId)" novalidate="novalidate">
+   <!-- {{buildConfig}} -->
+   <!-- Form selector -->
+   <form action="" class="text-center">
+      <label><input type="radio" name="build-opt" value="list" ng-model="formType" id="build-select">Select build from list</label>
+      <label><input type="radio" name="build-opt" value="add" ng-model="formType" id="build-add"> Add new build location</label>
+   </form>
+
+   <!-- Drop down form -->
+
+    <form name="buildConfigForm" id="buildConfigForm" role="form" class="build-config-form" ng-submit="buildConfig.submit(buildConfigForm.$valid)" novalidate="novalidate" ng-show="formType == 'list'">
         <form-group class="text-center" input="collectorItemId" errors="{required: 'Please select a collector'}">
             <!--<select name="collectorItemId"
                     class="form-control"
@@ -72,4 +80,20 @@
             <button type="submit" class="btn btn-primary btn-wide">Save</button>
         </div>
     </form>
+    <!-- End Drop Down Form -->
+
+    <!-- URL Form -->
+    <form name="buildConfigFormURL" id="buildConfigFormURL" role="form" class="build-URL-config-form" ng-submit="buildConfig.submitUrl(buildConfigFormURL.$valid)" novalidate="novalidate" ng-show="formType == 'add'">
+        <form-group class="text-center" input="buildServerUrl" errors="{required: 'Please add a collector url'}">
+           <hr/>
+           <label class="modal-label">Location of Build</label>
+           <input type="text" name="buildServerUrl" ng-model="buildConfig.serverUrl" placeholder="https://jenkinsnode.com/job/jobfolder/job/jobname/" id="job-url-input">
+
+        </form-group>
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+    <!-- End URL Form -->
+
 </widget-modal>

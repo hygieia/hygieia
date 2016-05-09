@@ -3,15 +3,13 @@
  */
 (function () {
     'use strict';
-
     angular
         .module(HygieiaConfig.module)
         .controller('BuildWidgetConfigController', BuildWidgetConfigController);
-
-    BuildWidgetConfigController.$inject = ['modalData', '$scope', 'collectorData', '$modalInstance'];
-    function BuildWidgetConfigController(modalData, $scope, collectorData, $modalInstance) {
-        var ctrl = this;
-        var widgetConfig = modalData.widgetConfig;
+    BuildWidgetConfigController.$inject = ['modalData', '$scope', 'collectorData', '$modalInstance', '$http'];
+    function BuildWidgetConfigController(modalData, $scope, collectorData, $modalInstance, $http) {
+      var ctrl = this;
+      var widgetConfig = modalData.widgetConfig;
 
         // public variables
         ctrl.toolsDropdownPlaceholder = 'Loading Build Jobs...';
@@ -19,6 +17,7 @@
 
         ctrl.buildDurationThreshold = 3;
         ctrl.buildConsecutiveFailureThreshold = 5;
+        ctrl.formType = "";
 
         ctrl.oridata = null;
         ctrl.loading = true;
@@ -32,7 +31,6 @@
             if (widgetConfig.options.buildDurationThreshold) {
                 ctrl.buildDurationThreshold = widgetConfig.options.buildDurationThreshold;
             }
-
             if (widgetConfig.options.consecutiveFailureThreshold) {
                 ctrl.buildConsecutiveFailureThreshold = widgetConfig.options.consecutiveFailureThreshold;
             }
@@ -40,12 +38,14 @@
 
         // public methods
         ctrl.submit = submitForm;
-        ctrl.fetch = paginationFetch;
+
+        ctrl.submitUrl = submitUrlJob;
 
         // request all the build collector items
         collectorData.itemsByType('build').then(processResponse);
 
         // method implementations
+
         function processResponse(data) {
             var worker = {
                 getBuildJobs: getBuildJobs
@@ -143,6 +143,7 @@
             console.log("Collector" + JSON.stringify(collector));
             if (valid) {
                 var form = document.buildConfigForm;
+                console.log(form);
                 var postObj = {
                     name: 'build',
                     options: {
@@ -161,5 +162,26 @@
                 $modalInstance.close(postObj);
             }
         }
+
+        function submitUrlJob(valid) {
+         if (valid) {
+            var form = document.buildConfigFormURL;
+            var postObj = {
+               name: 'Hudson',
+               buildServerUrl: form.buildServerUrl.value
+            };
+         // pass this new config to the modal closing so it's saved
+            console.log(postObj);
+            $modalInstance.dismiss(
+               $http({
+                  method: 'POST',
+                  url: '/build/server',
+                  data: postObj
+               }).then(console.log("Added URL"))
+            );
+         }
+        }
+
+
     }
 })();
