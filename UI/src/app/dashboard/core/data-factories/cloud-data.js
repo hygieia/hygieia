@@ -34,7 +34,8 @@
 
         return {
             getAWSInstancesByAccount: getAWSInstancesByAccount,
-            getAWSVolumeByAccount: getAWSVolumeByAccount
+            getAWSVolumeByAccount: getAWSVolumeByAccount,
+            getAWSSubnetsByAccount: getAWSSubnetsByAccount
         };
 
 
@@ -45,6 +46,10 @@
 
         function getAWSVolumeByAccount(accountNumber) {
             return getDataByAccount('volume', accountNumber);
+        }
+
+        function getAWSSubnetsByAccount(accountNumber) {
+            return getDataByAccount('subnet', accountNumber);
         }
   }
 })();
