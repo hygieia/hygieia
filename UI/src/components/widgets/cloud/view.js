@@ -39,7 +39,6 @@
             return epochMM + '/'+ epochDD + '/' + epochYYYY;
         }
 
-
         var getTodayDate =  function() {
 
             //get todays date
@@ -53,12 +52,51 @@
             today = mm+'/'+dd+'/'+yyyy;
 
             return today;
+        };
+
+        var getDaysToExpiration = function(epochTime) {
+
+            if (epochTime == 0) {
+                return 'N/A';
+            }
+
+            var imageDate = convertEpochTimeToDate(epochTime);
+            var today = getTodayDate();
+
+            return Math.floor(( Date.parse(imageDate) - Date.parse(today) ) / 86400000);
+        };
+
+        var getNOTTStatus = function(tags) {
+
+            if (tags == undefined) {
+                return "enabled";
+            }
+
+            for(var i = 0; i < tags.length; i++) {
+                var item = tags[i];
+                if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDE") {
+                    return "disabled" ;
+                }
+            }
+            return "enabled";
+        };
+
+        var getSubnetStatus = function(usedIPs, availableIPs) {
+
+            if (usedIPs == undefined || availableIPs == undefined) {
+                return 'N/A';
+            }
+
+
+            var percentageUsed = usedIPs/(availableIPs + usedIPs);
+            return percentageUsed >= .50 ? 'fail' : percentageUsed >= .30 && percentageUsed < .50 ? 'warn' : 'pass';
         }
 
-       
+
         //public variables/methods
         ctrl.instancesByAccount;
         ctrl.volumesByAccount;
+        ctrl.subnetsByAccount;
         ctrl.runningStoppedInstances;
         ctrl.instancesByAge;
 
@@ -79,61 +117,25 @@
         ctrl.toggledView = ctrl.tabs[0].name;
 
 
-        ctrl.formatVolume = function bytesToSize(bytes) {
-            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            if (bytes == 0) return '0 Byte';
-            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-        };
-
-        ctrl.getDaysToExpiration = function(epochTime) {
-
-            if (epochTime == 0) {
-                return 'N/A';
-            }
-
-            var imageDate = convertEpochTimeToDate(epochTime);
-            var today = getTodayDate();
-
-            return Math.floor(( Date.parse(imageDate) - Date.parse(today) ) / 86400000);
-        };
-
-
-        ctrl.getSortDirection = function(key) {
-
-            var item = sortDictionary[key];
-
-            if (item == undefined) {
-                return "unsorted";
-            }
-
-            if (item == "+") {
-                return "sort-amount-asc";
-            }
-
-            return "sort-amount-desc";
-        };
 
 
         ctrl.calculateUtilization = function(instances) {
-             if (instances == undefined) {
+            if (instances == undefined) {
                 return 'N/A';
-             }
+            }
 
-             var cnt = instances.length;
+            var cnt = instances.length;
 
-             if (cnt == 0) {
-             return 'N/A';
-             }
+            if (cnt == 0) {
+                return 'N/A';
+            }
 
-             var total = instances.reduce(function(sum, currentValue) {
+            var total = instances.reduce(function(sum, currentValue) {
                 return sum + currentValue.cpuUtilization;
-             }, 0);
+            }, 0);
 
-             return (total / cnt);
+            return (total / cnt);
         };
-
-
 
         ctrl.calculateVolumeInBytes = function(volumes) {
             if (volumes == undefined) {
@@ -183,8 +185,6 @@
 
         }
 
-
-
         ctrl.calculateCostAverage = function(instances) {
             if (instances == undefined) {
                 return 'N/A';
@@ -199,9 +199,9 @@
             var total = instances.reduce(function(sum, currentValue) {
                 return sum +
                     (currentValue.stopped ? 0 :
-                        ctrl.checkNOTTDisabledStatus(currentValue.tags) == true ?
-                            24 * currentValue.hourlyCost :
-                            12 * currentValue.hourlyCost);
+                        currentValue.alarmClockStatus == "disabled" ?
+                        24 * currentValue.hourlyCost :
+                        12 * currentValue.hourlyCost);
             }, 0);
             return (total / cnt);
         }
@@ -228,26 +228,8 @@
             ctrl.sortType = changedSortType;
         };
 
-
-        ctrl.checkImageAgeStatus = function(expirationDate) {
-            var difference = ctrl.getDaysToExpiration(expirationDate);
-            return difference < 0 ? "fail" : difference >= 0 && difference <= 15 ? "warn" : "pass";
-        };
-
-
-        ctrl.checkNOTTDisabledStatus = function(tags) {
-
-            if (tags == undefined) {
-                return false;
-            }
-
-            for(var i = 0; i < tags.length; i++) {
-                var item = tags[i];
-                if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDE") {
-                    return true;
-                }
-            }
-            return false;
+        ctrl.checkImageAgeStatus = function(daysToExpiration) {
+            return daysToExpiration < 0 ? "fail" : daysToExpiration >= 0 && daysToExpiration <= 15 ? "warn" : "pass";
         };
 
         ctrl.checkMonitoredStatus = function(status) {
@@ -258,36 +240,84 @@
             return status > 30 ? "pass" : "fail";
         };
 
+        ctrl.formatVolume = function bytesToSize(bytes) {
+            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            if (bytes == 0) return '0 Byte';
+            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+        };
+
+        ctrl.getSortDirection = function(key) {
+
+            var item = sortDictionary[key];
+
+            if (item == undefined) {
+                return "unsorted";
+            }
+
+            if (item == "+") {
+                return "sort-amount-asc";
+            }
+
+            return "sort-amount-desc";
+        };
 
         ctrl.load = function () {
-            cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
-                .then(function(instances) {
-                    ctrl.instancesByAccount = instances;
 
-                    var running = ctrl.calculateRunningInstances(instances);
-                    var stopped = ctrl.calculateStoppedInstances(instances);
-                    ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
+            cloudData.getAWSSubnetsByAccount(ctrl.accountNumber)
+                .then(function(subnets){
+                    ctrl.subnetsByAccount = subnets;
+                }).then(function() {
+
+                cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
+                    .then(function(instances) {
+
+                        instances.forEach(function(element, index, array) {
+                            var daysToExpiration = getDaysToExpiration(element.imageExpirationDate);
+                            array[index].daysToExpiration = daysToExpiration;
+                        });
+
+                        instances.forEach(function(element, index, array) {
+                            var alarmClockStatus = getNOTTStatus(element.tags);
+                            array[index].alarmClockStatus = alarmClockStatus;
+                        });
+
+                        instances.forEach(function(element, index, array) {
+                            var subnet = ctrl.subnetsByAccount.find(function(value) {
+                                return value.subnetId == element.subnetId
+                            });
+
+
+                            if (subnet != undefined) {
+                                var subnetUsageStatus = getSubnetStatus(subnet.usedIPCount, subnet.availableIPCount);
+                                array[index].subnetUsageStatus = subnetUsageStatus;
+                            }
+                        });
+
+                        ctrl.instancesByAccount = instances;
+                        var running = ctrl.calculateRunningInstances(instances);
+                        var stopped = ctrl.calculateStoppedInstances(instances);
+                        ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
+
+                    });
+
+            });
 
 
 
-
-                });
 
             cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
                 .then(function(volumes) {
-                   ctrl.volumesByAccount = volumes;
+                    ctrl.volumesByAccount = volumes;
                 });
         };
 
-
+        ctrl.numberOfPages = function(length)  {
+            return Math.ceil(length/ ctrl.pageSize);
+        };
 
         ctrl.toggleView = function (index) {
             ctrl.toggledView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
-        };
-
-
-        ctrl.numberOfPages = function(length)  {
-            return Math.ceil(length/ ctrl.pageSize);
         };
 
         ctrl.load();
