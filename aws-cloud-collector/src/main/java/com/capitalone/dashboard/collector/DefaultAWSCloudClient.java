@@ -168,7 +168,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         object.setImageId(currInstance.getImageId());
         object.setInstanceId(currInstance.getInstanceId());
         object.setInstanceType(currInstance.getInstanceType());
-        object.setMonitored(false);
+        object.setMonitored("enabled".equalsIgnoreCase(currInstance.getMonitoring().getState()));
         object.setPrivateDns(currInstance.getPrivateDnsName());
         object.setPrivateIp(currInstance.getPrivateIpAddress());
         object.setPublicDns(currInstance.getPublicDnsName());
