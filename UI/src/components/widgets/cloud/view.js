@@ -272,31 +272,53 @@
                 cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
                     .then(function(instances) {
 
-                        instances.forEach(function(element, index, array) {
+                        var filteredInstance;
+
+                        if (ctrl.tagName != "" && ctrl.tagValue != "") {
+
+                            filteredInstance = instances.filter(function(item) {
+
+                                if (item.tags == undefined) {
+                                    return false;
+                                }
+
+                                return (
+                                item.tags.filter(function(value){
+                                    return (value.name == ctrl.tagName && value.value == ctrl.tagValue);
+                                })
+                                    .length > 0);
+                            });
+                        } else {
+
+                            filteredInstance = instances;
+
+                        }
+
+                        filteredInstance.forEach(function(element, index, array) {
+
                             var daysToExpiration = getDaysToExpiration(element.imageExpirationDate);
                             array[index].daysToExpiration = daysToExpiration;
-                        });
 
-                        instances.forEach(function(element, index, array) {
                             var alarmClockStatus = getNOTTStatus(element.tags);
                             array[index].alarmClockStatus = alarmClockStatus;
-                        });
 
-                        instances.forEach(function(element, index, array) {
+                            var formattedTags = JSON.stringify(element.tags).split(",").join("<br />");
+                            array[index].formattedTags = formattedTags;
+
                             var subnet = ctrl.subnetsByAccount.find(function(value) {
                                 return value.subnetId == element.subnetId
                             });
-
 
                             if (subnet != undefined) {
                                 var subnetUsageStatus = getSubnetStatus(subnet.usedIPCount, subnet.availableIPCount);
                                 array[index].subnetUsageStatus = subnetUsageStatus;
                             }
+
                         });
 
-                        ctrl.instancesByAccount = instances;
-                        var running = ctrl.calculateRunningInstances(instances);
-                        var stopped = ctrl.calculateStoppedInstances(instances);
+                        ctrl.instancesByAccount = filteredInstance;
+                        var running = ctrl.calculateRunningInstances(filteredInstance);
+                        var stopped = ctrl.calculateStoppedInstances(filteredInstance);
                         ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
 
                     });
