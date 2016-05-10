@@ -283,6 +283,11 @@
                         });
 
                         instances.forEach(function(element, index, array) {
+                            var formattedTags = JSON.stringify(element.tags).split(",").join("<br />");
+                            array[index].formattedTags = formattedTags;
+                        });
+
+                        instances.forEach(function(element, index, array) {
                             var subnet = ctrl.subnetsByAccount.find(function(value) {
                                 return value.subnetId == element.subnetId
                             });
@@ -293,6 +298,9 @@
                                 array[index].subnetUsageStatus = subnetUsageStatus;
                             }
                         });
+
+
+                        
 
                         ctrl.instancesByAccount = instances;
                         var running = ctrl.calculateRunningInstances(instances);
