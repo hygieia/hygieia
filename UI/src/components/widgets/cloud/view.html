@@ -156,7 +156,7 @@
                                             <span ng-class="'fa fa-' + cloudView.getSortDirection('daysToExpiration')"></span></th>
                                         <th ng-click="cloudView.changeSortDirection('privateIp')">IP Address&nbsp;
                                             <span ng-class="'fa fa-' + cloudView.getSortDirection('privateIp')"></span></th>
-                                        <th ng-click="cloudView.changeSortDirection('subnetId')">VPC ID&nbsp;
+                                        <th ng-click="cloudView.changeSortDirection('subnetId')">Subnet ID&nbsp;
                                             <span ng-class="'fa fa-' + cloudView.getSortDirection('subnetId')"></span></th>
                                         <th ng-click="cloudView.changeSortDirection('stopped')">Stopped&nbsp;
                                             <span ng-class="'fa fa-' + cloudView.getSortDirection('stopped')"></span></th>
@@ -164,9 +164,9 @@
                                             <span ng-class="'fa fa-' + cloudView.getSortDirection('alarmClockStatus')"></span></th>
                                         <th ng-click="cloudView.changeSortDirection('monitored')">Monitored&nbsp;
                                             <span ng-class="'fa fa-' + cloudView.getSortDirection('monitored')"></span></th>
-                                        <th ng-click="cloudView.changeSortDirection('cpuUtilization')">Utilization&nbsp;
+                                        <th ng-click="cloudView.changeSortDirection('cpuUtilization')">CPU&nbsp;
                                             <span ng-class="'fa fa-' + cloudView.getSortDirection('cpuUtilization')"></span></th>
-                                        <th>Tags</th>
+                                        <th>Misc</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -198,7 +198,7 @@
                                         <td ng-class="'widget-font-' + cloudView.checkUtilizationStatus(instance.cpuUtilization)">
                                             {{instance.cpuUtilization | number:1}}%
                                         </td>
-                                        <td>TBD</td>
+                                        <td tooltip-html-unsafe="{{instance.formattedTags}}" tooltip-placement="left">Tags</td>
                                      </tr>
                                     </tbody>
                                 </table>
