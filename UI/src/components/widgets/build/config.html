@@ -2,13 +2,13 @@
    <!-- {{buildConfig}} -->
    <!-- Form selector -->
    <form action="" class="text-center">
-      <label><input type="radio" name="build-opt" value="list" ng-model="formType" id="build-select">Select build from list</label>
-      <label><input type="radio" name="build-opt" value="add" ng-model="formType" id="build-add"> Add new build location</label>
+      <label><input type="radio" name="build-opt" value="list" ng-model="formType" id="build-select" ng-checked="true">Select build from list</label>
+      <label><input type="radio" name="build-opt" value="add" ng-model="formType" id="build-add"> Add new build folder location</label>
    </form>
 
    <!-- Drop down form -->
 
-    <form name="buildConfigForm" id="buildConfigForm" role="form" class="build-config-form" ng-submit="buildConfig.submit(buildConfigForm.$valid)" novalidate="novalidate" ng-show="formType == 'list'">
+    <form name="buildConfigForm" id="buildConfigForm" role="form" class="build-config-form" ng-submit="buildConfig.submit(buildConfigForm.$valid)" novalidate="novalidate" ng-hide="formType == 'add'">
         <form-group class="text-center" input="collectorItemId" errors="{required: 'Please select a collector'}">
             <!--<select name="collectorItemId"
                     class="form-control"
@@ -87,7 +87,14 @@
         <form-group class="text-center" input="buildServerUrl" errors="{required: 'Please add a collector url'}">
            <hr/>
            <label class="modal-label">Location of Build</label>
-           <input type="text" name="buildServerUrl" ng-model="buildConfig.serverUrl" placeholder="https://jenkinsnode.com/job/jobfolder/job/jobname/" id="job-url-input">
+           <input
+            type="text"
+            name="buildServerUrl" ng-model="buildConfig.serverUrl" placeholder="https://jenkinsnode.com/job/jobfolder/job/jobfolder"
+            id="job-url-input"
+            ng-minlength="6"
+            ng-pattern="/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(:[0-9]+)?|(?:ww‌​w.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?‌​(?:[\w]*))?)/"
+            ng-required="true"
+            >
 
         </form-group>
         <div class="button-row row text-center">

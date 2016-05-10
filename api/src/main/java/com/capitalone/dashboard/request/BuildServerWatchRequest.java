@@ -6,6 +6,7 @@ public class BuildServerWatchRequest {
 
     @NotEmpty
     private String buildServerUrl;
+    @NotEmpty
     private String collectorName;
 
     public String getBuildServerUrl() {

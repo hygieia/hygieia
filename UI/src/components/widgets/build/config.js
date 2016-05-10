@@ -17,7 +17,7 @@
 
         ctrl.buildDurationThreshold = 3;
         ctrl.buildConsecutiveFailureThreshold = 5;
-        ctrl.formType = "";
+        ctrl.formType = "list";
 
         ctrl.oridata = null;
         ctrl.loading = true;
@@ -38,8 +38,7 @@
 
         // public methods
         ctrl.submit = submitForm;
-
-        ctrl.submitUrl = submitUrlJob;
+        ctrl.submitUrl = submitJobUrl;
 
         // request all the build collector items
         collectorData.itemsByType('build').then(processResponse);
@@ -59,8 +58,7 @@
                     var obj = data[x];
                     var item = {
                         value: obj.id,
-                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description : obj.collector.name + '-' + obj.description),
-                        group: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName : obj.collector.name)
+                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description :  obj.description  + ' - ' + obj.collector.name)
                     };
                     builds.push(item);
 
@@ -163,21 +161,21 @@
             }
         }
 
-        function submitUrlJob(valid) {
+        function submitJobUrl(valid) {
          if (valid) {
             var form = document.buildConfigFormURL;
             var postObj = {
-               name: 'Hudson',
+               collectorName: 'Hudson',
                buildServerUrl: form.buildServerUrl.value
             };
-         // pass this new config to the modal closing so it's saved
+         // post object to server list
             console.log(postObj);
             $modalInstance.dismiss(
                $http({
                   method: 'POST',
-                  url: '/build/server',
+                  url: '/api/build/server',
                   data: postObj
-               }).then(console.log("Added URL"))
+               }).then(alert("Your job folder was added to the collection list. It can take up to five minutes for the list to update. Please check the build list drop down in a few minutes, and then select the build you wish to monitor."))
             );
          }
         }
