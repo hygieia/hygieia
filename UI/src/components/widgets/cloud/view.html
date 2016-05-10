@@ -152,37 +152,54 @@
                                             <span ng-class="'fa fa-' + cloudView.getSortDirection('instanceType')"></span></th>
                                         <th ng-click="cloudView.changeSortDirection('imageId')">AMI&nbsp;
                                             <span ng-class="'fa fa-' + cloudView.getSortDirection('imageId')"></span></th>
-                                        <th ng-click="">Days Left</th>
-                                        <th ng-click="">IP Address</th>
-                                        <th ng-click="">VPC ID</th>
-                                        <th ng-click="">Status</th>
-                                        <th ng-click="">NOTT</th>
-                                        <th ng-click="">Monitored</th>
-                                        <th ng-click="">Utilization</th>
+                                        <th ng-click="cloudView.changeSortDirection('daysToExpiration')">Days Left&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('daysToExpiration')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('privateIp')">IP Address&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('privateIp')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('subnetId')">Subnet ID&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('subnetId')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('stopped')">Stopped&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('stopped')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('alarmClockStatus')">Alarm Clock&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('alarmClockStatus')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('monitored')">Monitored&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('monitored')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('cpuUtilization')">CPU&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('cpuUtilization')"></span></th>
+                                        <th>Misc</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="instance in cloudView.instancesByAccount | orderBy:cloudView.sortType | filter:cloudView.searchFilter | pagination: cloudView.curPage * cloudView.pageSize | limitTo: cloudView.pageSize">
+                                    <tr ng-repeat="instance in cloudView.instancesByAccount |
+                                            orderBy:cloudView.sortType |
+                                            filter:cloudView.searchFilter |
+                                            pagination: cloudView.curPage * cloudView.pageSize |
+                                            limitTo: cloudView.pageSize">
                                         <td>{{instance.instanceId}}</td>
                                         <td>{{instance.instanceType}}</td>
-                                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
+                                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.daysToExpiration)">
                                             {{instance.imageId}}
                                         </td>
-                                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.imageExpirationDate)">
-                                            {{cloudView.getDaysToExpiration(instance.imageExpirationDate)}}
+                                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.daysToExpiration)">
+                                            {{instance.daysToExpiration}}
                                         </td>
                                         <td>{{instance.privateIp}}</td>
-                                        <td>{{instance.subnetId}}</td>
-                                        <td ng-bind="instance.stopped == false ? 'running' : 'stopped'"></td>
-                                        <td ng-class="'widget-font-' + (cloudView.checkNOTTDisabledStatus(instance.tags) == true ? 'fail': 'pass')"
-                                            ng-bind="cloudView.checkNOTTDisabledStatus(instance.tags) ? 'disabled' : 'enabled'"></td>
+                                        <td ng-class="{'widget-font-fail': instance.subnetUsageStatus == 'fail',
+                                            'widget-font-warn': instance.subnetUsageStatus == 'warn',
+                                            'widget-font-pass': instance.subnetUsageStatus == 'pass'
+                                            }">{{instance.subnetId}}</td>
+                                        <td>{{instance.stopped}}</td>
+                                        <td ng-class="{'widget-font-fail': instance.alarmClockStatus == 'disabled', 'widget-font-pass': instance.alarmClockStatus == 'enabled'}">
+                                            {{instance.alarmClockStatus}}
+                                        </td>
                                         <td ng-class="'widget-font-' + cloudView.checkMonitoredStatus(instance.monitored)">
                                             {{instance.monitored}}
                                         </td>
                                         <td ng-class="'widget-font-' + cloudView.checkUtilizationStatus(instance.cpuUtilization)">
                                             {{instance.cpuUtilization | number:1}}%
                                         </td>
-                                    </tr>
+                                        <td tooltip-html-unsafe="{{instance.formattedTags}}" tooltip-placement="left">Tags</td>
+                                     </tr>
                                     </tbody>
                                 </table>
                             </div>
