@@ -90,8 +90,31 @@
                 </div>
             </div>
 
-
         </div>
+
+        <div class="row">
+             <div class="col-md-4">
+                 <div class="well override-panel-background-color">
+                     <div ng-controller="subnetController" ng-init="getSubnets()">
+                         <h3>IP Utilization</h3>
+                         <div class="row">
+                             <div class="col-md-4">VPC ID</div>        
+                             <div class="col-md-2"># Subnets</div>
+                             <div class="col-md-2"># high IP usage</div>
+                             <div class="col-md-2"># med IP usage</div>
+                             <div class="col-md-2"># low IP usage</div>              
+                         </div>
+                            <div class="row clickable" ng-repeat="vpc in vpcs | orderBy: 'id' " ng-click="viewSubnetUtilization(vpc)">
+                                <div class="col-md-4">{{vpc.id}}</div>
+                                <div class="col-md-2">{{vpc.subnets.length}}</div>
+                                <div class="col-md-2 high">{{vpc.countOfSubnetsByUtilization.high}}</div>
+                                <div class="col-md-2 med">{{vpc.countOfSubnetsByUtilization.med}}</div>
+                                <div class="col-md-2 low">{{vpc.countOfSubnetsByUtilization.low}}</div>             
+                            </div>                         
+                     </div>
+                 </div>
+             </div>    
+        </div>    
 
     </div>
 
