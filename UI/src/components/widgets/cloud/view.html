@@ -9,7 +9,7 @@
     </div>
 
     <div class="container-fluid" ng-if="cloudView.toggledView == 'Overview'">
-        <h3>Account Overview<p class="small">&nbsp</p></h3>
+        <h3>Account Overview<p class="small">Account Number: {{ cloudView.accountNumber }}</p></h3>
         <hr>
 
 
@@ -96,7 +96,7 @@
     </div>
 
     <div class="container-fluid" ng-if="cloudView.toggledView == 'Detail'">
-        <h3>Account Detail<p class="small">Tag Name: {{cloudView.tagName}}, Tag Value: {{cloudView.tagValue}}</p></h3>
+        <h3>Account Detail<p class="small">Account Number: {{ cloudView.accountNumber }}, Tag Name: {{cloudView.tagName}}, Tag Value: {{cloudView.tagValue}}</p></h3>
         <hr>
 
         <div class="row">
