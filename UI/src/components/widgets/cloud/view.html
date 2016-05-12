@@ -75,7 +75,7 @@
                                         chartist-chart-type="Pie"></chartist>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-4 ">
                             <blockquote style="border-left:5px solid #4C9900;"><p>&lt; 15 Days {{
                                 cloudView.calculateInstancesByAge(cloudView.instancesByAccount,0, 15)
                                 }}</p></blockquote>
@@ -99,16 +99,18 @@
                             <div id="canvas-holder-3">
                                 <chartist
                                         class="ct-chart"
-                                        chartist-data="cloudView.instanceTotals"
+                                        chartist-data="cloudView.instanceHistorySeries"
                                         chartist-chart-options="cloudView.lineOptions"
-                                        chartist-events="cloudView.myDraw"
                                         chartist-chart-type="Line">
 
 
                                 </chartist>
                             </div>
                         </div>
-
+                        <div class="col-lg-3 col-lg-offset-2">
+                            <blockquote style="border-left:5px solid #4C9900;"><p>Instance Usage</p></blockquote>
+                            <blockquote style="border-left:5px solid #FFBD35;"><p>Daily Usage</p></blockquote>
+                        </div>
 
 
                     </div>
@@ -116,7 +118,7 @@
             </div>
 
         </div>
-
+<!--
         <div class="row">
              <div class="col-md-4">
                  <div class="well override-panel-background-color">
@@ -139,7 +141,8 @@
                      </div>
                  </div>
              </div>    
-        </div>    
+        </div>
+        -->
 
     </div>
 
