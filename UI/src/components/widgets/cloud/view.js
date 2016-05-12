@@ -260,6 +260,11 @@
         };
 
         ctrl.formatVolume = function bytesToSize(bytes) {
+
+            if(bytes=='N/A')
+            {
+                return "N/A";
+            }
             var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
             if (bytes == 0) return '0 Byte';
             var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
@@ -395,7 +400,6 @@
                             }
 
                             ctrl.filteredVolumesByAccount = volumeList.filter(function(item, index, array){ return array.indexOf(item) === index; });
-                            console.log(ctrl.filteredVolumesByAccount);
                         });
                 });
             });
