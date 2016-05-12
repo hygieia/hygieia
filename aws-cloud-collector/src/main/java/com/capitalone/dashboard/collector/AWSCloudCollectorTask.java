@@ -39,8 +39,10 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Collects {@link AWSCloudCollector} data from feature content source system.
@@ -62,15 +64,15 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
 
 
     /**
-     * @param taskScheduler Task Scheduler
-     * @param collectorRepository Collector Repository
-     * @param cloudSettings Cloud Settings
-     * @param cloudClient Cloud Client
-     * @param awsConfigRepository Config Repository
-     * @param cloudInstanceRepository Cloud Instance Repository
-     * @param cloudVirtualNetworkRepository Cloud Virtual Network Repository
-     * @param cloudSubNetworkRepository Cloud Subnet Repository
-     * @param cloudVolumeRepository Cloud Volume Repository
+     * @param taskScheduler                  Task Scheduler
+     * @param collectorRepository            Collector Repository
+     * @param cloudSettings                  Cloud Settings
+     * @param cloudClient                    Cloud Client
+     * @param awsConfigRepository            Config Repository
+     * @param cloudInstanceRepository        Cloud Instance Repository
+     * @param cloudVirtualNetworkRepository  Cloud Virtual Network Repository
+     * @param cloudSubNetworkRepository      Cloud Subnet Repository
+     * @param cloudVolumeRepository          Cloud Volume Repository
      * @param cloudInstanceHistoryRepository Cloud Instance History Repository
      */
     @Autowired
@@ -125,22 +127,45 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
     private void collectInstances() {
         Map<String, List<CloudInstance>> cloudInstanceMap = awsClient.getCloundInstances(cloudInstanceRepository);
         for (String account : cloudInstanceMap.keySet()) {
-            Collection<CloudInstance> existing = cloudInstanceRepository.findByAccountNumber(account);
-            if (!CollectionUtils.isEmpty(existing)) {
-                cloudInstanceRepository.delete(existing);
+            Collection<CloudInstance> collectedInstances = cloudInstanceMap.get(account);
+            Set<CloudInstance> saveList = new HashSet<>();
+            Collection<CloudInstance> deleteList = cloudInstanceRepository.findByAccountNumber(account); //Potential Delete List
+            for (CloudInstance current : collectedInstances) {
+                CloudInstance existing = cloudInstanceRepository.findByInstanceId(current.getInstanceId());
+                if (existing != null) {  // if it is a still in-use instance, do not delete it
+                    if (!CollectionUtils.isEmpty(deleteList)) {
+                        deleteList.remove(existing);
+                    }
+                    saveList.add(updateWithExisting(existing, current));
+                }
+                saveList.add(current);
             }
-            cloudInstanceRepository.save(cloudInstanceMap.get(account));
+
+            if (!CollectionUtils.isEmpty(saveList)) {
+                cloudInstanceRepository.save(saveList);
+            }
+            if (!CollectionUtils.isEmpty(deleteList)) {
+                cloudInstanceRepository.delete(deleteList);
+            }
             saveAggregatedHistory(account, cloudInstanceMap.get(account));
         }
 
     }
+
+
+    private CloudInstance updateWithExisting(CloudInstance existing, CloudInstance current) {
+        current.setId(existing.getId());
+        current.setImageExpirationDate(existing.getImageExpirationDate());
+        current.setImageApproved(existing.isImageApproved());
+        return current;
+    }
+
 
     private void saveAggregatedHistory(String account, List<CloudInstance> instances) {
         int unTaggedCount = 0;
         int stoppedCount = 0;
         int totalCount = 0;
         int expiredImageCount = 0;
-//        double estimatedCharge = 0.0;
         double totalCpu = 0.0;
         double totalDiskRead = 0.0;
         double totalDiskWrite = 0.0;
@@ -177,12 +202,13 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
             history.setCpu(totalCpu / totalCount);
             history.setDiskRead(totalDiskRead / totalCount);
             history.setDiskWrite(totalDiskWrite / totalCount);
-            history.setNetworkOut(totalNetworkOut/totalCount);
-            history.setNetworkIn(totalNetworkIn/totalCount);
+            history.setNetworkOut(totalNetworkOut / totalCount);
+            history.setNetworkIn(totalNetworkIn / totalCount);
             history.setNonTagged(unTaggedCount);
+            //assumption: the estimated charge gets the full account's charge
+            history.setEstimatedCharge(awsClient.get24HourInstanceEstimatedCharge());
             cloudInstanceHistoryRepository.save(history);
         }
-
     }
 
 
