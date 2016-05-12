@@ -13,18 +13,14 @@
     function cloudData($http, $q) {
 
         var testDataRoute = 'asv_data.json';
-        var cloudInstanceDataRoute = '/api/cloud/instance/details/account';
 
-        return {
-            getAWSInstancesByAccount: getAWSInstancesByAccount
-        };
-
-
-        function getAWSInstancesByAccount(value) {
+        function getDataByAccount(type, accountNumber) {
 
             var deferred = $q.defer();
 
-            var route = (HygieiaConfig.local ? testDataRoute : cloudInstanceDataRoute) + "/" + value;
+            var cloudDataRoute = '/api/cloud/' + type + '/details/account/';
+
+            var route = (HygieiaConfig.local ? testDataRoute : cloudDataRoute) + accountNumber;
             $http.get(route)
                 .success(function (data) {
                     deferred.resolve(data);
@@ -34,6 +30,26 @@
                 });
 
             return deferred.promise;
+        }
+
+        return {
+            getAWSInstancesByAccount: getAWSInstancesByAccount,
+            getAWSVolumeByAccount: getAWSVolumeByAccount,
+            getAWSSubnetsByAccount: getAWSSubnetsByAccount
+        };
+
+
+        function getAWSInstancesByAccount(accountNumber) {
+            return getDataByAccount('instance', accountNumber);
+
+        }
+
+        function getAWSVolumeByAccount(accountNumber) {
+            return getDataByAccount('volume', accountNumber);
+        }
+
+        function getAWSSubnetsByAccount(accountNumber) {
+            return getDataByAccount('subnet', accountNumber);
         }
   }
 })();

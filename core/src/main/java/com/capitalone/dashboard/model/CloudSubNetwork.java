@@ -12,6 +12,7 @@ import java.util.Objects;
 public class CloudSubNetwork extends BaseModel{
     @Indexed
     private String subnetId;
+    private String accountNumber;
     private String virtualNetworkId;
     private String cidrBlock;
     private int cidrCount;
@@ -48,6 +49,14 @@ public class CloudSubNetwork extends BaseModel{
 
     public void setVirtualNetworkId(String virtualNetworkId) {
         this.virtualNetworkId = virtualNetworkId;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public String getCidrBlock() {
