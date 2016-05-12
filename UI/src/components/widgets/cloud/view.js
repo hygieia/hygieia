@@ -21,9 +21,9 @@
             };
         });
 
-    CloudWidgetViewController.$inject = ['$scope', 'cloudData'];
+    CloudWidgetViewController.$inject = ['$scope', 'cloudData','cloudHistoryData'];
 
-    function CloudWidgetViewController($scope, cloudData) {
+    function CloudWidgetViewController($scope, cloudData, cloudHistoryData) {
 
 
         //private variables/methods
@@ -283,6 +283,41 @@
 
         ctrl.load = function () {
 
+            cloudHistoryData.getInstanceHistoryDataByAccount(ctrl.accountNumber)
+                .then(function (instanceDataHistory) {
+                    ctrl.instanceDataHistory = instanceDataHistory;
+                    console.log("Amit Mawkin:" + JSON.stringify(instanceDataHistory));
+                    var obj = JSON.parse(JSON.stringify(instanceDataHistory));
+                    var timeSeries = [];
+                    var totals = [];
+                    for (var k = 0; k < obj.length; k++) {
+                        console.log("Wonderful:" + convertEpochTimeToDate(obj[k].time));
+                        timeSeries.push(convertEpochTimeToDate(obj[k].time));
+                        totals.push(obj[k].total);
+                    }
+                    console.log("TimeSeries:" + timeSeries);
+                    console.log("Totals:" + totals);
+                    ctrl.instanceHistorySeries = {labels: [timeSeries]};
+                    ctrl.instanceTotals = {series: [totals]};
+
+                    ctrl.lineOptions = {
+                        plugins: [
+                            Chartist.plugins.gridBoundaries(),
+                            Chartist.plugins.lineAboveArea(),
+                            Chartist.plugins.tooltip(),
+                            Chartist.plugins.pointHalo()
+                        ],
+                        showArea: true,
+                        lineSmooth: true,
+                        fullWidth: true,
+                        width: 400,
+                        height: 300,
+                        chartPadding: 7,
+
+                    };
+
+                });
+
             cloudData.getAWSSubnetsByAccount(ctrl.accountNumber)
                 .then(function(subnets){
                     ctrl.subnetsByAccount = subnets;
@@ -364,6 +399,10 @@
                         });
                 });
             });
+
+
+
+
         };
 
         ctrl.numberOfPages = function(length)  {
