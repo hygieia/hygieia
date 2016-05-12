@@ -21,9 +21,9 @@
             };
         });
 
-    CloudWidgetViewController.$inject = ['$scope', 'cloudData'];
+    CloudWidgetViewController.$inject = ['$scope', 'cloudData','cloudHistoryData'];
 
-    function CloudWidgetViewController($scope, cloudData) {
+    function CloudWidgetViewController($scope, cloudData, cloudHistoryData) {
 
 
         //private variables/methods
@@ -37,7 +37,7 @@
             var epochMM = ('0' + (epochDate.getMonth() + 1)).slice(-2);
             var epochYYYY = epochDate.getFullYear();
             return epochMM + '/'+ epochDD + '/' + epochYYYY;
-        }
+        };
 
         var getTodayDate =  function() {
 
@@ -90,15 +90,19 @@
 
             var percentageUsed = usedIPs/(availableIPs + usedIPs);
             return percentageUsed >= .50 ? 'fail' : percentageUsed >= .30 && percentageUsed < .50 ? 'warn' : 'pass';
-        }
+        };
 
 
         //public variables/methods
         ctrl.instancesByAccount;
         ctrl.volumesByAccount;
         ctrl.subnetsByAccount;
+
+        ctrl.filteredInstancesByAccount;
+        ctrl.filteredVolumesByAccount;
+
         ctrl.runningStoppedInstances;
-        ctrl.instancesByAge;
+        ctrl.ageOfInstances;
 
         ctrl.accountNumber = $scope.widgetConfig.options.accountNumber || "";
         ctrl.tagName = $scope.widgetConfig.options.tagName || "";
@@ -115,9 +119,6 @@
         ctrl.sortType = [];
         ctrl.searchFilter = '';
         ctrl.toggledView = ctrl.tabs[0].name;
-
-
-
 
         ctrl.calculateUtilization = function(instances) {
             if (instances == undefined) {
@@ -168,7 +169,7 @@
 
             return instances.filter(function(value) { return (!value.stopped) }).length;
 
-        }
+        };
 
         ctrl.calculateStoppedInstances = function(instances) {
             if (instances == undefined) {
@@ -183,7 +184,7 @@
 
             return instances.filter(function(value) { return (value.stopped) }).length;
 
-        }
+        };
 
         ctrl.calculateCostAverage = function(instances) {
             if (instances == undefined) {
@@ -204,7 +205,25 @@
                         12 * currentValue.hourlyCost);
             }, 0);
             return (total / cnt);
-        }
+        };
+
+        ctrl.calculateInstancesByAge = function(instances, start, end) {
+
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            if (end == undefined) {
+                end = Number.POSITIVE_INFINITY;
+            }
+
+            return instances.filter(function(value) { return (value.age >= start && value.age < end) }).length;
+        };
 
         ctrl.changeSortDirection = function(key) {
             var value = sortDictionary[key];
@@ -241,6 +260,11 @@
         };
 
         ctrl.formatVolume = function bytesToSize(bytes) {
+
+            if(bytes=='N/A')
+            {
+                return "N/A";
+            }
             var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
             if (bytes == 0) return '0 Byte';
             var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
@@ -262,7 +286,113 @@
             return "sort-amount-desc";
         };
 
+        ctrl.getAverageInstanceCountPerDay = function(instances)
+        {
+
+            var masterArray=[];
+            var obj = JSON.parse(JSON.stringify(instances));
+
+
+            //Get Unique Dates as Keys
+
+            var uniqueDates=[];
+            for(var l=0;l<obj.length;l++) {
+
+                var myDay = convertEpochTimeToDate(obj[l].time);
+                if (uniqueDates.indexOf(myDay) == -1) {
+                    uniqueDates.push(myDay)
+                }
+            }
+
+
+            // I have array of Unique Dates
+           for(var i=0;i<uniqueDates.length;i++)
+            {
+
+                var date = uniqueDates[i];
+                var oneDay = instances.filter(function(value) {
+                        return convertEpochTimeToDate(value.time) == date;
+                });
+
+
+                var total = oneDay.reduce(function(sum, currentValue) {
+                    return sum + currentValue.total;
+                }, 0);
+
+                var cnt = oneDay.length;
+
+                masterArray.push({
+                    date:date,
+                    avg: (total/cnt)
+                })
+
+            }
+
+           return masterArray;
+
+        }
+
         ctrl.load = function () {
+
+
+
+            cloudHistoryData.getInstanceHistoryDataByAccount(ctrl.accountNumber)
+                .then(function (instanceDataHistory) {
+
+                    var masterArray=ctrl.getAverageInstanceCountPerDay(instanceDataHistory);
+
+
+
+
+                    console.log("MasterArray:"+JSON.stringify(masterArray));
+
+
+                    ctrl.instanceDataHistory = instanceDataHistory;
+
+                    var obj = JSON.parse(JSON.stringify(instanceDataHistory));
+                    var timeSeries = [];
+                    var totals = [];
+                    for (var k = 0; k < obj.length; k++) {
+                        var m = {
+                            meta: convertEpochTimeToDate(obj[k].time) + "  " + obj[k].total,
+                            value: obj[k].total
+                        };
+
+                        timeSeries.push(m);
+
+                    }
+
+                    ctrl.instanceHistorySeries = {series : [timeSeries]};
+
+                    ctrl.lineOptions = {
+                        plugins: [
+                            Chartist.plugins.gridBoundaries(),
+                            Chartist.plugins.lineAboveArea(),
+                            Chartist.plugins.tooltip(),
+                            Chartist.plugins.pointHalo(),
+                            Chartist.plugins.axisLabels({
+                                axisX: {
+                                    type: Chartist.AutoScaleAxis
+                                }
+                            })
+
+                        ],
+                        showArea: false,
+                        lineSmooth: true,
+                        fullWidth: true,
+                        width: 400,
+                        height: 300,
+                        chartPadding: 7,
+                        axisY: {
+                            offset: 30,
+                            showGrid: true,
+                            showLabel: true,
+                            labelInterpolationFnc: function(value) { return Math.round(value * 100) / 100; }
+                        }
+
+                    };
+
+                });
 
             cloudData.getAWSSubnetsByAccount(ctrl.accountNumber)
                 .then(function(subnets){
@@ -272,66 +402,82 @@
                 cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
                     .then(function(instances) {
 
-                        var filteredInstance;
+                        instances.forEach(function(element, index, array) {
 
-                        if (ctrl.tagName != "" && ctrl.tagValue != "") {
+                            array[index].daysToExpiration = getDaysToExpiration(element.imageExpirationDate);
 
-                            filteredInstance = instances.filter(function(item) {
+                            array[index].alarmClockStatus = getNOTTStatus(element.tags);
 
-                                if (item.tags == undefined) {
-                                    return false;
-                                }
-
-                                return (
-                                item.tags.filter(function(value){
-                                    return (value.name == ctrl.tagName && value.value == ctrl.tagValue);
-                                })
-                                    .length > 0);
-                            });
-                        } else {
-
-                            filteredInstance = instances;
-
-                        }
-
-                        filteredInstance.forEach(function(element, index, array) {
-
-                            var daysToExpiration = getDaysToExpiration(element.imageExpirationDate);
-                            array[index].daysToExpiration = daysToExpiration;
-
-                            var alarmClockStatus = getNOTTStatus(element.tags);
-                            array[index].alarmClockStatus = alarmClockStatus;
-
-                            var formattedTags = JSON.stringify(element.tags).split(",").join("<br />");
-                            array[index].formattedTags = formattedTags;
+                            array[index].formattedTags = JSON.stringify(element.tags).split(",").join("<br />");
 
                             var subnet = ctrl.subnetsByAccount.find(function(value) {
                                 return value.subnetId == element.subnetId
                             });
 
                             if (subnet != undefined) {
-                                var subnetUsageStatus = getSubnetStatus(subnet.usedIPCount, subnet.availableIPCount);
-                                array[index].subnetUsageStatus = subnetUsageStatus;
+                                array[index].subnetUsageStatus = getSubnetStatus(subnet.usedIPCount, subnet.availableIPCount);
                             }
-
                         });
 
-                        ctrl.instancesByAccount = filteredInstance;
-                        var running = ctrl.calculateRunningInstances(filteredInstance);
-                        var stopped = ctrl.calculateStoppedInstances(filteredInstance);
+                        ctrl.instancesByAccount = instances;
+
+
+                        if (ctrl.tagName != "" && ctrl.tagValue != "") {
+
+                            ctrl.filteredInstancesByAccount = instances.filter(function(item) {
+
+                                if (item.tags == undefined) {
+                                    return false;
+                                }
+
+                                return (
+                                item.tags.filter(function(value) {
+                                    return (value.name == ctrl.tagName && value.value == ctrl.tagValue);
+                                }).length > 0);
+                            });
+                        } else {
+                            ctrl.filteredInstancesByAccount = ctrl.instancesByAccount;
+                        }
+
+                        var running = ctrl.calculateRunningInstances(ctrl.instancesByAccount);
+                        var stopped = ctrl.calculateStoppedInstances(ctrl.instancesByAccount);
                         ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
 
-                    });
+                        var lessThan15Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,0, 15);
+                        var lessThan45Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,15, 45);
+                        var greaterThan45Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,45, undefined);
 
+                        ctrl.ageOfInstances = { series: [ lessThan15Days, lessThan45Days, greaterThan45Days] };
+                    }).then(function() {
+                    cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
+                        .then(function(volumes) {
+
+                            ctrl.volumesByAccount = volumes;
+                            var volumeList = [];
+
+                            for (var i = 0; i < ctrl.filteredInstancesByAccount.length; i++) {
+
+                                var instanceId = ctrl.filteredInstancesByAccount[i].instanceId;
+                                ctrl.volumesByAccount.filter(function(value) {
+                                    if (value.attchInstances == undefined) {
+                                        return false;
+                                    }
+
+                                    return value.attchInstances.indexOf(instanceId) != -1;
+
+                                }).forEach(function(volume) {
+                                    volumeList.push(volume);
+                                });
+                            }
+
+                            ctrl.filteredVolumesByAccount = volumeList.filter(function(item, index, array){ return array.indexOf(item) === index; });
+                        });
+                });
             });
 
 
 
 
-            cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
-                .then(function(volumes) {
-                    ctrl.volumesByAccount = volumes;
-                });
         };
 
         ctrl.numberOfPages = function(length)  {
