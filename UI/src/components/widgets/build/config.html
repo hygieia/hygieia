@@ -6,45 +6,67 @@
       <label><input type="radio" name="build-opt" value="add" ng-model="formType" id="build-add"> Add new build folder location</label>
    </form>
 
+    <br>
    <!-- Drop down form -->
-
     <form name="buildConfigForm" id="buildConfigForm" role="form" class="build-config-form" ng-submit="buildConfig.submit(buildConfigForm.$valid)" novalidate="novalidate" ng-hide="formType == 'add'">
-        <form-group class="text-center" input="collectorItemId" errors="{required: 'Please select a collector'}">
-            <!--<select name="collectorItemId"
+
+        <form-group input="collectorItemId" errors="{required: 'Please select a collector'}">
+
+          <table>
+              <th class="search-filter">Search: <input type="text" ng-model="search" class="weak"></th>
+              <th class="dropdown-filter">Filter by:
+                <select ng-model="sortBy">
+                  <option value="name">
+                    Job
+                  </option>
+                  <option value="location">
+                    Folder
+                  </option>
+                  <option value="collector">
+                    Collector
+                  </option>
+                </select>
+              </th>
+          </table>
+
+          <br>
+
+          <table>
+            <th class="job-header">Job</th>
+            <th class="location-header">Folder</th>
+            <th class="collector-header">Collector</th>
+          </table>
+          <table id="build-table" class="table-striped table-hover table-responsive">
+            <tbody>
+              <tr ng-repeat="item in buildConfig.buildJobs | filter: search | orderBy: [sortBy, 'name']" ng-click="setItem(item)" ng-style="setSelectedItem(item)">
+                <td class="job-column">
+                  {{item.name}}
+                </td>
+                <td class="location-column">
+                  {{item.location}}
+                </td>
+                <td class="collector-column">
+                  {{item.collector}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+            <!-- <select name="collectorItemId"
                     class="form-control"
                     ng-model="buildConfig.collectorItemId"
                     ng-options="item.name for item in buildConfig.buildJobs | orderBy: 'name' track by item.value"
                     ng-disabled="buildConfig.toolsDropdownDisabled"
                     required>
                 <option value="">{{buildConfig.toolsDropdownPlaceholder}}</option>
-            </select>-->
 
-            <ui-select id="collectorItemId" ng-model="buildConfig.collectorItemId" theme="bootstrap"
-                       ng-disabled="buildConfig.toolsDropdownDisabled" required>
-                <ui-select-match placeholder={{buildConfig.toolsDropdownPlaceholder}}>{{$select.selected.name}}
-                </ui-select-match>
-                <ui-select-choices group-by="'group'" allow-clear="true"
-                                   repeat="item in (buildConfig.buildJobs | orderBy: 'name' | filter: $select.search) track by item.value">
-                    <div ng-bind-html="item.name | highlight: $select.search"></div>
-
-                    <!--  <ui-select-choices  repeat="item in (buildConfig.buildJobs | orderBy: 'name' | limitTo :buildConfig.paginationRange |  filter: $select.search) track by item.value">
-                          <div ng-bind-html="item.name | highlight: $select.search"></div>
-
-
-                          <div ng-if="$index == $select.items.length-1">
-                              <button
-                                      class="btn btn-success"
-                                      style="width: 100%; margin-top: 10px;"
-                                      ng-click="buildConfig.fetch($select, $event, $select.items.length);"
-                                      ng-disabled="!buildConfig.loading">Load more...</button>
-                              </div>-->
-                </ui-select-choices>
-                <ui-select-no-choice>
-                    No Jobs were found
-                </ui-select-no-choice>
-            </ui-select>
-
+            </select> -->
         </form-group>
+        <b>Selected Job:</b> <p class="selected-job">{{buildConfig.itemName}}</p>
+
+        <input name="collectorItemId" type="text" ng-value="buildConfig.collectorItemId" ng-model="buildConfig.collectorItemId" style="display:none">
+
+        <hr/>
 
         <form-group class="text-center" input="buildDurationThreshold" errors="{required:'Build threshold is required', pattern: 'Please enter a number'}">
             <label class="modal-label">Build duration threshold</label>

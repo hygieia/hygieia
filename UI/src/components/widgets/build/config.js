@@ -18,6 +18,8 @@
         ctrl.buildDurationThreshold = 3;
         ctrl.buildConsecutiveFailureThreshold = 5;
         ctrl.formType = "list";
+        $scope.jobs = ctrl.buildJobs;
+        $scope.sortBy = "name";
 
         ctrl.oridata = null;
         ctrl.loading = true;
@@ -56,9 +58,14 @@
 
                 for (var x = 0; x < data.length; x++) {
                     var obj = data[x];
+                    var url = obj.options.instanceUrl;
+                    var index = url.search("job");
+
                     var item = {
                         value: obj.id,
-                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description :  obj.description  + ' - ' + obj.collector.name)
+                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description :  obj.description),
+                        collector: obj.collector.name,
+                        location: url.substring(index + 4, url.length)
                     };
                     builds.push(item);
 
@@ -141,7 +148,7 @@
             console.log("Collector" + JSON.stringify(collector));
             if (valid) {
                 var form = document.buildConfigForm;
-                console.log(form);
+                // console.log(form);
                 var postObj = {
                     name: 'build',
                     options: {
@@ -180,6 +187,14 @@
          }
         }
 
-
+        $scope.setItem = function(item){
+          ctrl.selectedItem = item;
+          ctrl.collectorItemId = item.value;
+          ctrl.itemName = item.name;
+        }
+        $scope.setSelectedItem = function(item){
+          if(item == ctrl.selectedItem)
+            return {"background-color": "rgba(51,185,28,.5)"};
+        }
     }
 })();
