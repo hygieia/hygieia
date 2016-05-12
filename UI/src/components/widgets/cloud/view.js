@@ -286,38 +286,109 @@
             return "sort-amount-desc";
         };
 
+        ctrl.getAverageInstanceCountPerDay = function(instances)
+        {
+
+            var masterArray=[];
+            var obj = JSON.parse(JSON.stringify(instances));
+
+
+            //Get Unique Dates as Keys
+
+            var uniqueDates=[];
+            for(var l=0;l<obj.length;l++) {
+
+                var myDay = convertEpochTimeToDate(obj[l].time);
+                if (uniqueDates.indexOf(myDay) == -1) {
+                    uniqueDates.push(myDay)
+                }
+            }
+
+
+            // I have array of Unique Dates
+           for(var i=0;i<uniqueDates.length;i++)
+            {
+
+                var date = uniqueDates[i];
+                var oneDay = instances.filter(function(value) {
+                        return convertEpochTimeToDate(value.time) == date;
+                });
+
+
+                var total = oneDay.reduce(function(sum, currentValue) {
+                    return sum + currentValue.total;
+                }, 0);
+
+                var cnt = oneDay.length;
+
+                masterArray.push({
+                    date:date,
+                    avg: (total/cnt)
+                })
+
+            }
+
+           return masterArray;
+
+        }
+
         ctrl.load = function () {
+
+
 
             cloudHistoryData.getInstanceHistoryDataByAccount(ctrl.accountNumber)
                 .then(function (instanceDataHistory) {
+
+                    var masterArray=ctrl.getAverageInstanceCountPerDay(instanceDataHistory);
+
+
+
+
+                    console.log("MasterArray:"+JSON.stringify(masterArray));
+
+
                     ctrl.instanceDataHistory = instanceDataHistory;
-                    console.log("Amit Mawkin:" + JSON.stringify(instanceDataHistory));
+
                     var obj = JSON.parse(JSON.stringify(instanceDataHistory));
                     var timeSeries = [];
                     var totals = [];
                     for (var k = 0; k < obj.length; k++) {
-                        console.log("Wonderful:" + convertEpochTimeToDate(obj[k].time));
-                        timeSeries.push(convertEpochTimeToDate(obj[k].time));
-                        totals.push(obj[k].total);
+                        var m = {
+                            meta: convertEpochTimeToDate(obj[k].time) + "  " + obj[k].total,
+                            value: obj[k].total
+                        };
+
+                        timeSeries.push(m);
+
                     }
-                    console.log("TimeSeries:" + timeSeries);
-                    console.log("Totals:" + totals);
-                    ctrl.instanceHistorySeries = {labels: [timeSeries]};
-                    ctrl.instanceTotals = {series: [totals]};
+
+                    ctrl.instanceHistorySeries = {series : [timeSeries]};
 
                     ctrl.lineOptions = {
                         plugins: [
                             Chartist.plugins.gridBoundaries(),
                             Chartist.plugins.lineAboveArea(),
                             Chartist.plugins.tooltip(),
-                            Chartist.plugins.pointHalo()
+                            Chartist.plugins.pointHalo(),
+                            Chartist.plugins.axisLabels({
+                                axisX: {
+                                    type: Chartist.AutoScaleAxis
+                                }
+                            })
+
                         ],
-                        showArea: true,
+                        showArea: false,
                         lineSmooth: true,
                         fullWidth: true,
                         width: 400,
                         height: 300,
                         chartPadding: 7,
+                        axisY: {
+                            offset: 30,
+                            showGrid: true,
+                            showLabel: true,
+                            labelInterpolationFnc: function(value) { return Math.round(value * 100) / 100; }
+                        }
 
                     };
 
@@ -378,18 +449,18 @@
 
                         ctrl.ageOfInstances = { series: [ lessThan15Days, lessThan45Days, greaterThan45Days] };
                     }).then(function() {
-                         cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
-                            .then(function(volumes) {
+                    cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
+                        .then(function(volumes) {
 
-                                ctrl.volumesByAccount = volumes;
-                                var volumeList = [];
+                            ctrl.volumesByAccount = volumes;
+                            var volumeList = [];
 
-                                for (var i = 0; i < ctrl.filteredInstancesByAccount.length; i++) {
+                            for (var i = 0; i < ctrl.filteredInstancesByAccount.length; i++) {
 
-                                    var instanceId = ctrl.filteredInstancesByAccount[i].instanceId;
-                                    ctrl.volumesByAccount.filter(function(value) {
-                                        if (value.attchInstances == undefined) {
-                                           return false;
+                                var instanceId = ctrl.filteredInstancesByAccount[i].instanceId;
+                                ctrl.volumesByAccount.filter(function(value) {
+                                    if (value.attchInstances == undefined) {
+                                        return false;
                                     }
 
                                     return value.attchInstances.indexOf(instanceId) != -1;
