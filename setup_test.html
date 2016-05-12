@@ -1,0 +1,73 @@
+---
+layout: default
+title: Setup Test Data
+lead: Know the steps to set-up test data
+slug: setup_test
+---
+
+<!-- Setup Git -->
+
+<div class="bs-docs-section">
+<h2 id="setup_git" class="page-header">
+  <a class="anchorjs-link " href="#setup_git" aria-label="Anchor link for: setup_git data-anchorjs-icon=""
+  style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+  position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Setup Git
+</h2>
+<p>Configure it to point to the github master branch for Hygieia</p>
+
+<pre code>
+a. In the SCM panel, select 'git'
+b. Enter the URL: 'https://github.com/capitalone/Hygieia.git' (without the quotes)
+c. Set the branch to 'master' (without the quotes)
+Note: For this to work you will need to have set your credentials on the ID that the collectors is running under, the best way to do this is first clone the repo to set your credentials.
+</pre code>
+
+
+<!-- Setup Sonar -->
+
+<h2 id="setup_sonar" class="page-header">
+  <a class="anchorjs-link " href="#setup_sonar" aria-label="Anchor link for: setup_sonar data-anchorjs-icon=""
+  style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+  position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Setup SONAR
+</h2>
+<p>Run a test instance of SONAR</p>
+
+<pre code>
+  a. docker-compose -f test-servers/sonar/sonar.yml up -d
+  b. Fill it with data from the Hygieia project
+  mvn sonar:sonar -Dsonar.host.url=http://$(docker-machine ip default):9000 -Dsonar.jdbc.url="jdbc:h2:tcp://$(docker-machine ip default)/sonar"
+  c. You can now go in and configure the quality panel in the UI.</pre code>
+
+
+<!-- Setup Jenkins -->
+
+<h2 id="setup_jenkins" class="page-header">
+  <a class="anchorjs-link " href="#setup_jenkins" aria-label="Anchor link for: setup_jenkins data-anchorjs-icon=""
+  style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+  position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Setup Jenkins</h2>
+<p>Start a test Jenkins Master<br>
+Output will be in cucumber.</p>
+
+<pre code>
+  a. docker-compose -f test-servers/jenkins/jenkins.yml up -d
+  b. Run the job: http://192.168.99.100:9100/job/Hygieia_Example_Job/build
+  c. Configure the Jenkins Build and Jenkins Cucumber panels using this jobs output.</pre code>
+
+
+
+<!-- Start Collectors -->
+
+<h2 id="start_collectors" class="page-header">
+  <a class="anchorjs-link " href="#start_collectors" aria-label="Anchor link for: start_collectors data-anchorjs-icon=""
+  style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+  position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Start Collectors
+</h2>
+<p>Start the collectors in background<br>
+Starting in background is optional as they are all running in containersby default.<br>
+On Linux Platform, to start individual collector as a background process please run the command:
+</p>
+
+<pre code>
+  nohup java -jar <collector-name>.jar --spring.config.name=<property file name> & >/dev/null</pre code>
+
+</div>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Santhi Sridharan">
+
+    <title>StashSourceCode Collector</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+     <link href="css/docs.min.css" rel="stylesheet">
+
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/docs.min.js"></script>
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico">
+
+</head>
+<style>
+.bs-docs-header {
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 5px;
+    }
+.bs-docs-header h1,p {
+  margin-right: 100px !important;
+  margin-top: 0px !important;
+  margin-bottom: 10px !important;
+font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.titlelead{
+font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-style: italic !important;
+color: #fff !important;
+}
+
+.lead {
+  font-size: 15px !important;
+}
+
+.bs-docs-header p{
+  align: justify !important;
+};
+
+
+</style>
+
+<body>
+    <!-- Docs master nav -->
+    <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+     <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Hygieia</a>
+        </div>
+        <nav id="bs-navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+
+                <li><a href="getting_started.html">Getting Started</a></li>
+                <li><a href="ui.html">UI</a></li>
+                <li><a href="api.html">API </a></li>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">Collectors
+                    <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="chatops_collector.html">ChatOps</a></li>
+                      <li><a href="githubsourcecode_collector.html">GithubSourceCode</a></li>
+                      <li><a href="jenkinsbuild_collector.html">Jenkins Build</a></li>
+                      <li><a href="jenkinscucumbertest_collector.html">Jenkins Cucumber Test</a></li>
+                      <li><a href="jirafeature_collector.html">Jira Feature</a></li>
+                      <li><a href="sonarcodequality_collector.html">SONAR CodeQuality</a></li>
+                      <li><a href="stashsourcecode_collector.html">StashSourceCode</a></li>
+                      <li><a href="subversionsourcecode_collector.html">SubversionSourceCode</a></li>
+                      <li><a href="udeploy_collector.html">UDeploy</a></li>
+                      <li><a href="versionone_collector.html">VersionOne</a></li>
+                    </ul>
+                  </li>
+
+                <li><a href="plugin_webhook.html">Plugin WebHook</a></li>
+                <li><a href="contact.html">Contact us</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+    <!-- Docs page layout -->
+    <div class="bs-docs-header" id="content" tabindex="-1">
+      <div class="container">
+        <h1>StashSourceCode Collector</h1>
+        <p class="titlelead">Know the basics of configuring StashSourceCode Collector</p>
+      </div>
+    </div>
+
+   <div class="container bs-docs-container">
+      <div class="row">
+	<div class="col-md-9" role="main">
+          <div class="bs-docs-section">
+  <p class="lead">
+  Collect source code details from stash based on URL and branch.
+
+  This project uses Spring Boot to package the collector as an executable JAR with dependencies.
+
+</p>
+
+  <h2 id="building_and_deploying" class="page-header">
+    <a class="anchorjs-link " href="#building_and_deploying" aria-label="Anchor link for: building_and_deploying" data-anchorjs-icon=""
+    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>  Building and Deploying
+  </h2>
+
+  <p>Execute the following command to package the collector into an executable JAR file.
+  <pre code>
+    mvn install</pre code>
+
+ <p>Copy this file to your server and launch it using:<p>
+<pre code>
+  java -jar stash-collector.jar</pre code>
+
+  <p>You will need to provide an <code>application.properties</code> file that contains information about how
+to connect to the Dashboard MongoDB database instance, as well as properties the Hudson collector requires. See
+the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files)
+for information about sourcing this properties file.</p>
+
+<h3 id="sample_application_properties_file">Sample application.properties file</ah3>
+<pre code>
+  #Database Name
+  spring.data.mongodb.database=dashboarddb
+
+  #Database HostName - default is localhost
+  spring.data.mongodb.host=
+
+  #Database Port - default is 27017
+  spring.data.mongodb.port=
+
+  #Database Username - default is blank
+  spring.data.mongodb.username=
+
+  #Database Password - default is blank
+  spring.data.mongodb.password=
+
+  #Collector schedule (required)
+  git.cron=0 0/5 * * * *
+
+  #mandatory
+  git.host=mystashrepo.com/
+
+  #mandatory
+  git.api=/rest/api/1.0/
+
+  #Maximum number of days to go back in time when fetching commits
+  git.commitThresholdDays=15</pre code>
+  </div>
+
+        </div>
+	
+        <div class="col-md-3" role="complementary">
+          <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm">
+            <ul class="nav bs-docs-sidenav">
+    <!-- make sure that there is a html page for sidebar nav for each onne of the HTML files using this template
+    and ensure that the sidebar nav file name is [page name_nav.html] -->
+    		<li>
+  <a href="#building_and_deploying">Building and Deploying</a>
+  <ul class="nav">
+    <li><a href="#sample_application_properties_file">Sample application.properties file </li>
+  </ul>
+
+</li>
+
+            <a class="back-to-top" href="#top">
+              Back to top
+            </a>
+	    </ul>
+	    </nav>
+</div>
+	
+
+</div>
+</div>
+<footer class="bs-docs-footer">
+  <div class"container-fluid">
+    <ul class="bs-docs-footer-links">
+      <li><a href="https://github.com/capitalone/hygieia">GitHub</a>&nbsp;&nbsp;&nbsp;</li>
+      <li><a href="https://gitter.im/capitalone/Hygieia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">Gitter Chat &nbsp;&nbsp;&nbsp;&nbsp;
+   </li>
+      <li><a href="https://www.codacy.com/app/amit-mawkin/Hygieia/dashboard">Codacy&nbsp;&nbsp;&nbsp;</a>
+      <li><a href="../contact.html">Contact Us &nbsp;&nbsp;&nbsp</a></li>
+</ul>
+
+    <p> Maintained by Capital One Hygieia Team</a> with the help of <a href="https://github.com/capitalone/hygieia/contributors">our contributors</a>.</p>
+  </div>
+</footer>
+
+
+</body>
+
+</html>

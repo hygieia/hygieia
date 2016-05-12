@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Santhi Sridharan">
+
+    <title>Getting Started</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+     <link href="css/docs.min.css" rel="stylesheet">
+
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/docs.min.js"></script>
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico">
+
+</head>
+<style>
+.bs-docs-header {
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 5px;
+    }
+.bs-docs-header h1,p {
+  margin-right: 100px !important;
+  margin-top: 0px !important;
+  margin-bottom: 10px !important;
+font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.titlelead{
+font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-style: italic !important;
+color: #fff !important;
+}
+
+.lead {
+  font-size: 15px !important;
+}
+
+.bs-docs-header p{
+  align: justify !important;
+};
+
+
+</style>
+
+<body>
+    <!-- Docs master nav -->
+    <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+     <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Hygieia</a>
+        </div>
+        <nav id="bs-navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+
+                <li><a href="getting_started.html">Getting Started</a></li>
+                <li><a href="ui.html">UI</a></li>
+                <li><a href="api.html">API </a></li>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">Collectors
+                    <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="chatops_collector.html">ChatOps</a></li>
+                      <li><a href="githubsourcecode_collector.html">GithubSourceCode</a></li>
+                      <li><a href="jenkinsbuild_collector.html">Jenkins Build</a></li>
+                      <li><a href="jenkinscucumbertest_collector.html">Jenkins Cucumber Test</a></li>
+                      <li><a href="jirafeature_collector.html">Jira Feature</a></li>
+                      <li><a href="sonarcodequality_collector.html">SONAR CodeQuality</a></li>
+                      <li><a href="stashsourcecode_collector.html">StashSourceCode</a></li>
+                      <li><a href="subversionsourcecode_collector.html">SubversionSourceCode</a></li>
+                      <li><a href="udeploy_collector.html">UDeploy</a></li>
+                      <li><a href="versionone_collector.html">VersionOne</a></li>
+                    </ul>
+                  </li>
+
+                <li><a href="plugin_webhook.html">Plugin WebHook</a></li>
+                <li><a href="contact.html">Contact us</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+    <!-- Docs page layout -->
+    <div class="bs-docs-header" id="content" tabindex="-1">
+      <div class="container">
+        <h1>Getting Started</h1>
+        <p class="titlelead">Know the basics of installing and configuring Hygieia</p>
+      </div>
+    </div>
+
+   <div class="container bs-docs-container">
+      <div class="row">
+	<div class="col-md-9" role="main">
+          <div class="bs-docs-section">
+  <h2 id="build_hygieia" class="page-header">
+    <a class="anchorjs-link " href="#build_hygieia" aria-label="Anchor link for: build_hygieia" data-anchorjs-icon=""
+    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Build Hygiea
+  </h2>
+
+  <p >Run the following command to build all components for Hygieia.</p>
+  <pre code>mvn clean install package</pre code>
+
+
+
+<!-- Hygieia Set up -->
+  <h2 id="setup_instructions" class="page-header">
+      <a class="anchorjs-link " href="#setup_instructions" aria-label="Anchor link for: setup_instructions" data-anchorjs-icon=""
+      style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+      position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Setup Instructions
+  </h2>
+
+  <p style="text-align:justify;">The following components are required to run Hygieia℠</p>
+  <ul>
+    <li><a href="#database">Database</a></li>
+    <li><a href="#ui_layer">UI Layer</a></li>
+    <li><a href="#api_layer">API Layer</a></li>
+  <li><a href="#tool_collectors">Tool Collectors</a></li>
+
+    <li><a href="#plugin_webhook">Plugin WebHook</a></li>
+  </ul>
+
+  <h3 id="database" class="page-header">Database</h3>
+  <p >Hygieia uses MongoDB 3.0 + version. We recommend that you download MongoDB clients(RoboMongo etc) to connect to your local running Database and
+      make sure that database: dashboard is created and you are successfully able to connect to it.</p>
+  <ul>
+    <li><a href="https://www.mongodb.org/downloads#previous">MongoDB Download and  Install instructions </a></li>
+    <li>Configure MongoDB</li>
+    <ul>
+      <li>Go to the bin directory of your mongodb installation and run the following command to start the mongodb do make sure that data directory should pre-exist at the target location </li>
+<pre code>
+  mongod --dbpath [ path to the data directory] </pre code><br>
+      <p >for e.g
+<pre code>
+  /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongod --dbpath /dev/data/db </pre code></p>
+      <li>Run the following commands as shown below at mongodb command prompt  <code>/usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongo </code></li>
+<pre code>
+    $ mongo
+    MongoDB shell version: 3.0.4
+    connecting to: test
+
+    > use dashboard
+    switched to db dashboard
+    > db.createUser(
+    {
+      user: "db",
+      pwd: "dbpass",
+      roles: [
+      {role: "readWrite", db: "dashboard"}
+      ]
+    })
+    Successfully added user: {
+      "user" : "dbuser",
+      "roles" : [
+      {
+        "role" : "readWrite",
+        "db" : "dashboard"
+      }
+      ]
+      }</pre code>
+        </ul>
+      </ul>
+
+      <h3 id="ui_layer" class="page-header">
+          UI Layer
+      </h3>
+
+      <p>Please click on this <a href="ui.html">link</a> to learn about how to build and run the UI layer.</p>
+
+
+          <h3 id="api_layer" class="page-header">API Layer</h3>
+          <p>Please click on this <a href="api.html">link</a> to learn about the API Layer set-up.</p>
+
+          <h3 id="tool_collectors" class="page-header">Tool Collectors</h3>
+          <p>In general all the collectors can be run using the following command:</p>
+  <pre code>
+    java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location></pre code>
+
+              <p>For each individual collector setup click on the links below:</p>
+              <ul>
+                <li>Agile Story Management
+                  <ul>
+                    <li><a href="versionone_collector.html">VersionOne</a></li>
+                    <li><a href="jirafeature_collector.html">Jira</a></li>
+
+                  </ul>
+                </li>
+                <li>Source
+                  <ul>
+                    <li><a href="githubsourcecode_collector.html">GitHub</a></li>
+                    <li><a href="subversionsourcecode_collector.html">Subversion</a></li>
+                    <li><a href="stashsourcecode_collector.html">Stash</a></li>
+                  </ul>
+                </li>
+                <li>Build tools
+                  <ul>
+                    <li><a href="jenkisbuild_collector.html">Jenkins/Hudson</a></li>
+                  </ul>
+                </li>
+                <li>Testing
+                  <ul>
+                    <li><a href="jenkinscucumbertest_collector.html">Jenkins Cucumber Test</a></li>
+                  </ul>
+                </li>
+                <li>Code Quality
+                  <ul>
+                    <li><a href="sonarcodequality_collector.html">Sonar</a></li>
+                  </ul>
+                </li>
+                <li>Deployment
+                  <ul>
+                    <li><a href="udeploy_collector.html">uDeploy 6.x from IBM</a></li>
+                  </ul>
+                </li>
+                <li>Communication
+                  <ul>
+                    <li><a href="chatops_collector.html">ChatOps</a></li>
+                  </ul>
+                </li>
+
+              </ul>
+              <p>You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.</p>
+
+
+    <h3 id="plugin_webhook" class="page-header">
+Plugin / Webhook
+    </h3>
+    <p>You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia.
+      Currently, you can publish build, artifact info, sonar results, deployment results and
+      cucumber test results. You may not need to run corresponding collectors if you use Jenkins for
+      build, deploy, sonar analysis and running cucumber tests.</p>
+
+    <ul>
+      <li><a href="hygieiajenkinsplugin.html">Hygieia Jenkins Plugin</a></li>
+    </ul>
+
+    You can use GitHub webhook to publish commit information to Hygieia. If you use webhook, you will not need to run github collector.
+
+    Your Github webhook's payload url should be set to: http://hygieia-base-url/api/commit/github/v3
+    <ul>
+      <li>Select to publish just the "push" events</li>
+      <li>Configure Proxy</li>
+    </ul>
+
+    <h3 id="configure_proxy" class="page-header">
+    Configure Proxy
+  </h3>
+    <p>Hygieia supports proxy authentication for working behind corporate firewalls.
+      For development, please refer to the following configuration differences; for
+      deployment/operations, please refer to the subsequent sub-section:</p>
+
+    <ol><li><h4 id="proxyconfig_developer">Proxy Config: Developer / Operations</h4></li>
+
+
+    <p>Update your Maven settings.xml file:</p>
+
+    <pre code>
+      ...
+      <proxies>
+             ...
+             <proxy>
+                     <id>your-proxy-id</id>
+                     <active>true</active>
+                     <protocol>http</protocol>
+                     <host>your.proxy.domain.name</host>
+                     <port>8080</port>
+                     <!-- For authenticated proxy, please set the following, as well -->
+                     <username>companyId999</username>
+                     <password>yourPassword</password>
+                     <nonProxyHosts>*.local</nonProxyHosts>
+             </proxy>
+             ...
+       </proxies>
+      ...</pre code>
+
+    <p>Additionally, set the following export variables:</p>
+
+
+  <pre code>
+    export HTTP_PROXY=http://companyId999:yourPassword@your.proxy.domain.name:8080
+    export HTTPS_PROXY=http://companyId999:yourPassword@your.proxy.domain.name:8080
+    export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=companyId999 -Dhttp.proxyPassword=yourPassword"
+
+    # This option may be duplicative if you have already updated your
+    # Maven settings.xml file, but will only help:
+    export MAVEN_OPTS="$MAVEN_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=companyId999 -Dhttp.proxyPassword=yourPassword"
+    Tests should now run/pass when built from behind a corporate proxy, even if it is an authenticated proxy</pre code>
+
+
+<li><h4 id="proxyconfig_deployment">Proxy Config: Deployment / Operations</h4></li>
+
+    <p>Only the above proxy settings (non authentication) may required to be set on your deployment instance. Additionally,
+      please updated all property files for each collector/API configuration with their specific proxy setting property.
+    </p></ol>
+
+    <h3 id="build_docker_images" class="page-header">
+        Build Docker images and setup id for mongodb
+    </h3>
+
+    <ul><li>Execute the following command to build the containers.</li></ul>
+  <pre code>
+    mvn docker:build</pre code>
+
+    <ul><li>Execute the following command to bring up the container images.</li></ul>
+  <pre code>
+    docker-compose up -d</pre code>
+
+    <ul><li>Create user in mongo (if you log into the container then you dont have to install mongo locally)</li></ul>
+  <pre code>
+    docker exec -t -i mongodb2 bash
+    mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
+  </pre code>
+
+    <ul><li>Create a docker-compose.override.yml to configure your environment</li></ul>
+  <p>
+
+    These are the most common entries, the uncommented ones are mandatory if you want the collector to work. For dev/testing you will find it useful to change the CRON entries to "0 * * * * *"
+
+    hygieia-github-scm-collector:</p>
+  <pre code>
+      environment:
+      - GITHUB_HOST=github.com
+      - GITHUB_CRON=0 * * * * *
+      - GITHUB_COMMIT_THRESHOLD_DAYS=300
+    hygieia-jira-feature-collector:
+      environment:
+      - JIRA_BASE_URL=https://mycompany.atlassian.net/
+      - JIRA_CREDENTIALS=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      - JIRA_ISSUE_TYPE_ID=10200
+      - JIRA_SPRINT_DATA_FIELD_NAME=customfield_10007
+      - JIRA_EPIC_FIELD_NAME=customfield_10008
+    hygieia-jenkins-build-collector:
+      environment:
+      - JENKINS_CRON=0 * * * * *
+      - JENKINS_MASTER=http://192.168.99.100:9100
+      - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
+      - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXX
+    hygieia-jenkins-cucumber-test-collector:
+      environment:
+      - JENKINS_CRON=0 * * * * *
+      - JENKINS_MASTER=http://192.168.99.100:9100
+      - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
+      - JENKINS_API_KEY=XXXXXXXXXXXXXXXXX
+      - JENKINS_CUCUMBER_JSON_FILENAME=cucumber-report.json
+    hygieia-sonar-codequality-collector:
+      environment:
+      - SONAR_URL=http://192.168.99.100:9000
+      - SONAR_CRON=0 * * * * *
+    Make sure everything is restarted it may fail if the user doesn't exist at start up time
+    docker-compose restart
+    Get the port for the UI
+    docker port hygieia-ui
+  </pre code>
+
+
+  <h3 id="how_to_setup_test_data" class="page-header">
+    How to setup test data
+  </h3>
+
+  <!-- Setup Git -->
+  <ol><li><h4 id="setup_git" >Setup Git</h4></li>
+
+  <p>Configure it to point to the github master branch for Hygieia</p>
+
+  <pre code>
+  a. In the SCM panel, select 'git'
+  b. Enter the URL: 'https://github.com/capitalone/Hygieia.git' (without the quotes)
+  c. Set the branch to 'master' (without the quotes)
+  Note: For this to work you will need to have set your credentials on the ID that the collectors is running under, the best way to do this is first clone the repo to set your credentials.
+  </pre code>
+
+
+  <!-- Setup Sonar -->
+
+  <li><h4 id="setup_sonar">Setup SONAR</h4></li>
+
+  <p>Run a test instance of SONAR</p>
+
+  <pre code>
+    a. docker-compose -f test-servers/sonar/sonar.yml up -d
+    b. Fill it with data from the Hygieia project
+    mvn sonar:sonar -Dsonar.host.url=http://$(docker-machine ip default):9000 -Dsonar.jdbc.url="jdbc:h2:tcp://$(docker-machine ip default)/sonar"
+    c. You can now go in and configure the quality panel in the UI.</pre code>
+
+
+  <!-- Setup Jenkins -->
+
+<li><h4 id="setup_jenkins">Setup Jenkins</h4></li>
+  <p>Start a test Jenkins Master<br>
+  Output will be in cucumber.</p>
+
+  <pre code>
+    a. docker-compose -f test-servers/jenkins/jenkins.yml up -d
+    b. Run the job: http://192.168.99.100:9100/job/Hygieia_Example_Job/build
+    c. Configure the Jenkins Build and Jenkins Cucumber panels using this jobs output.</pre code></ol>
+
+</div>
+
+        </div>
+	
+        <div class="col-md-3" role="complementary">
+          <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm">
+            <ul class="nav bs-docs-sidenav">
+    <!-- make sure that there is a html page for sidebar nav for each onne of the HTML files using this template
+    and ensure that the sidebar nav file name is [page name_nav.html] -->
+    		<li>
+  <a href="#build_hygieia">Build Hygieia</a>
+
+</li>
+<li>
+  <a href="#setup_instructions">Setup Instructions</a>
+	<ul class="nav">
+	    <li><a href="#database">Database</a></li>
+	    <li><a href="#ui_layer">UI Layer</a></li>
+	    <li><a href="#api_layer">API</a></li>
+	    <li><a href="#tool_collectors">Tool Collectors</a></li>
+	    <li><a href="#plugin_webhook">Plugin / Webhook</a></li>
+      <li><a href="#configure_proxy">Configure Proxy</a></li>
+      <li><a href="#build_docker_images">Build Docker images and setup id for mongodb</a></li>
+      <li><a href="#how_to_setup_test_data">How to setup test data</a></li>
+	  </ul>
+</li>
+
+            <a class="back-to-top" href="#top">
+              Back to top
+            </a>
+	    </ul>
+	    </nav>
+</div>
+	
+
+</div>
+</div>
+<footer class="bs-docs-footer">
+  <div class"container-fluid">
+    <ul class="bs-docs-footer-links">
+      <li><a href="https://github.com/capitalone/hygieia">GitHub</a>&nbsp;&nbsp;&nbsp;</li>
+      <li><a href="https://gitter.im/capitalone/Hygieia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">Gitter Chat &nbsp;&nbsp;&nbsp;&nbsp;
+   </li>
+      <li><a href="https://www.codacy.com/app/amit-mawkin/Hygieia/dashboard">Codacy&nbsp;&nbsp;&nbsp;</a>
+      <li><a href="../contact.html">Contact Us &nbsp;&nbsp;&nbsp</a></li>
+</ul>
+
+    <p> Maintained by Capital One Hygieia Team</a> with the help of <a href="https://github.com/capitalone/hygieia/contributors">our contributors</a>.</p>
+  </div>
+</footer>
+
+
+</body>
+
+</html>

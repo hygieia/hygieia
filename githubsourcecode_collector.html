@@ -1,0 +1,58 @@
+---
+layout: default
+title: GithubSourceCode Collector
+lead: Know the basics of configuring githubsourcecode Collector
+slug: githubsourcecode_collector
+---
+
+<div class="bs-docs-section">
+  <p class="lead">
+    Collect source code details from GitHub based on URL and branch. This project uses Spring Boot to package the collector as an executable JAR with dependencies.
+  </p>
+
+  <h2 id="building_and_deploying" class="page-header">
+    <a class="anchorjs-link " href="#building_and_deploying" aria-label="Anchor link for: building_and_deploying" data-anchorjs-icon=""
+    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Building and Deploying
+  </h2>
+
+  Run the following command to package the collector into an executable JAR file.
+  <pre code>
+    mvn install</pre code>
+
+  Copy this file to your server and launch it using :
+
+  <pre code>
+    java -JAR github-collector.jar</pre code>
+
+  <p>You will need to provide an <code>application.properties</code> file that contains information about how
+    to connect to the Dashboard MongoDB database instance, as well as properties the Github collector requires. See
+    the Spring Boot <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files">documentation</a>"
+    for information about sourcing this properties file.
+  </p>
+
+  <h3 id="sample_application">Sample application.properties file</h3>
+  <pre code>
+    #Database Name
+    database=dashboard
+
+    #Database HostName - default is localhost
+    dbhost=10.0.1.1
+
+    #Database Port - default is 27017
+    dbport=9999
+
+    #Database Username - default is blank
+    dbusername=db
+
+    #Database Password - default is blank
+    dbpassword=dbpass
+
+    #Collector schedule (required)
+    github.cron=0 0/5 * * * *
+
+    github.host=github.com
+
+    #Maximum number of days to go back in time when fetching commits
+    github.commitThresholdDays=15</pre code>
+</div>
