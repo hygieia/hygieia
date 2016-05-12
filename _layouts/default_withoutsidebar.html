@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Santhi Sridharan">
+
+    <title>{{page.title}}</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+     <link href="css/docs.min.css" rel="stylesheet">
+
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/docs.min.js"></script>
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico">
+
+</head>
+<style>
+.bs-docs-header {
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 5px;
+    }
+.bs-docs-header h1,p {
+  margin-right: 100px !important;
+  margin-top: 0px !important;
+  margin-bottom: 10px !important;
+font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.titlelead{
+font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-style: italic !important;
+color: #fff !important;
+}
+
+.lead {
+  font-size: 15px !important;
+}
+
+.bs-docs-header p{
+  align: justify !important;
+};
+
+
+</style>
+
+<body>
+    <!-- Docs master nav -->
+    {% include main_nav.html %}
+
+    <!-- Docs page layout -->
+    <div class="bs-docs-header" id="content" tabindex="-1">
+      <div class="container">
+        <h1>{{ page.title }}</h1>
+        <p class="titlelead">{{ page.lead }}</p>
+      </div>
+    </div>
+
+   <div class="container bs-docs-container">
+      <div class="row">
+	<div class="col-md-{% if page.fullwidth == true %}12{% else %}9{% endif %}" role="main">
+          {{ content }}
+        </div>
+	{% unless page.fullwidth == true %}
+        <div class="col-md-3" role="complementary">
+          <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm">
+            <ul class="nav bs-docs-sidenav">
+    <!-- make sure that there is a html page for sidebar nav for each onne of the HTML files using this template
+    and ensure that the sidebar nav file name is [page name_nav.html] -->
+    		{% include {{ page.slug }}_nav.html %}
+            <a class="back-to-top" href="#top">
+              Back to top
+            </a>
+	    </ul>
+	    </nav>
+</div>
+	{% endunless %}
+
+</div>
+</div>
+{% include footer.html %}
+
+</body>
+
+</html>

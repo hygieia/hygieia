@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Santhi Sridharan">
+
+    <title>ChatOps Collector</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+     <link href="css/docs.min.css" rel="stylesheet">
+
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/docs.min.js"></script>
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico">
+
+</head>
+<style>
+.bs-docs-header {
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 5px;
+    }
+.bs-docs-header h1,p {
+  margin-right: 100px !important;
+  margin-top: 0px !important;
+  margin-bottom: 10px !important;
+font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.titlelead{
+font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-style: italic !important;
+color: #fff !important;
+}
+
+.lead {
+  font-size: 15px !important;
+}
+
+.bs-docs-header p{
+  align: justify !important;
+};
+
+
+</style>
+
+<body>
+    <!-- Docs master nav -->
+    <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+     <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Hygieia</a>
+        </div>
+        <nav id="bs-navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+
+                <li><a href="getting_started.html">Getting Started</a></li>
+                <li><a href="ui.html">UI</a></li>
+                <li><a href="api.html">API </a></li>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">Collectors
+                    <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="chatops_collector.html">ChatOps</a></li>
+                      <li><a href="githubsourcecode_collector.html">GithubSourceCode</a></li>
+                      <li><a href="jenkinsbuild_collector.html">Jenkins Build</a></li>
+                      <li><a href="jenkinscucumbertest_collector.html">Jenkins Cucumber Test</a></li>
+                      <li><a href="jirafeature_collector.html">Jira Feature</a></li>
+                      <li><a href="sonarcodequality_collector.html">SONAR CodeQuality</a></li>
+                      <li><a href="stashsourcecode_collector.html">StashSourceCode</a></li>
+                      <li><a href="subversionsourcecode_collector.html">SubversionSourceCode</a></li>
+                      <li><a href="udeploy_collector.html">UDeploy</a></li>
+                      <li><a href="versionone_collector.html">VersionOne</a></li>
+                    </ul>
+                  </li>
+
+                <li><a href="plugin_webhook.html">Plugin WebHook</a></li>
+                <li><a href="contact.html">Contact us</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+    <!-- Docs page layout -->
+    <div class="bs-docs-header" id="content" tabindex="-1">
+      <div class="container">
+        <h1>ChatOps Collector</h1>
+        <p class="titlelead">Know the basics of configuring ChatOps Collector</p>
+      </div>
+    </div>
+
+   <div class="container bs-docs-container">
+      <div class="row">
+	<div class="col-md-9" role="main">
+          <div class="bs-docs-section" >
+
+  <p class="lead">The ChatOpsCollector works a little differently than other collectors as you only have to run it once for widget to register.
+    We are working to make a robust admin module which will provide the same functionality to register as well as enable/disable a widget
+    without having to write and run collector like this one. Stay tuned.
+  </br></br>
+  This is tested with Enterprise Hipchat version, but tested against public hipchat.
+</p>
+</div>
+
+<div class="bs-docs-section">
+  <h2 id="supported_chat_application" class="page-header">
+    <a class="anchorjs-link " href="#supported_chat_application" aria-label="Anchor link for: supported_chat_application" data-anchorjs-icon=""
+    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Supported Chat Application
+  </h2>
+
+  <ul>
+    <li>HipChat</li>
+    <li>Slack.com ( Not implemented yet, looking for community to contribute)</li>
+    <li>Gitter.im (Not implemented yet, looking for community to contribute)</li>
+  </ul>
+
+</div>
+
+<div class="bs-docs-section">
+  <h2 id="screenshot_of_widget" class="page-header">
+    <a class="anchorjs-link " href="#screenshot_of_widget" aria-label="Anchor link for: screenshot_of_widget" data-anchorjs-icon=""
+    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Screenshot of the widget
+  </h2>
+
+  This is how it looks like
+
+  <h3 id="widget">Widget</h3>
+
+  <img class="img-responsive" style="height:50%;" src="/images/chatops.png">
+
+  <h3 id="chat_ops_configure_screen">ChatOps Configure Screen</h3>
+
+  <img src="/images/chatopsconfig.png" class="img-responsive" style="height:50%;width:50%">
+
+</div>
+
+<div class="bs-docs-section">
+  <h2 id="chatops_widget_configuration_parameter" class="page-header">
+    <a class="anchorjs-link " href="#chatops_widget_configuration_parameter" aria-label="Anchor link for: chatops_widget_configuration_parameter" data-anchorjs-icon=""
+    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>ChatOps widget configuration parameter
+  </h2>
+  <ul>
+    <li>Need to provide hipchat server name.</li>
+    <li>Chat Room Name.</li>
+    <li>API token (Only v2 style tokens are supported at this time  for more info click the <a href="https://www.hipchat.com/docs/apiv2/auth">Link.</a></li>
+  </ul>
+
+</div>
+
+<div class="bs-docs-section">
+  <h2 id="chatops_collector_properties_file" class="page-header">
+    <a class="anchorjs-link " href="#chatops_collector_properties_file" aria-label="Anchor link for: chatops_collector_properties_file" data-anchorjs-icon=""
+    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>ChatOps Collector properties file
+  </h2>
+  <pre code>
+    dbname=Your Mongodb Name
+    dbusername=your mongodb username
+    dbpassword=your mongodb password
+    dbhost=your mongodb host
+    dbport=your mongodb port
+    logging.file=./logs/chatops.log
+    chatops.cron=5 * * * * *</pre code>
+
+  Make sure that the configuration file chatops.properties is in the same folder where the collector jar is before starting.
+</div>
+
+<div class="bs-docs-section">
+  <h2 id="how_to_start_the_collector" class="page-header">
+    <a class="anchorjs-link " href="#how_to_start_the_collector" aria-label="Anchor link for: how_to_start_the_collector" data-anchorjs-icon=""
+    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>How to start the collector
+  </h2>
+  <pre code>
+    java -jar  <chatopscollector.jar> --spring.config.name=chatops</pre code>
+
+  If your properties file is in different location than your start command would look like
+
+  <pre code>
+    java -jar <chatopscollector.jar> --spring.config.name=chatops --spring.config.location=path to external properties file</pre code>
+    </div>
+
+        </div>
+	
+        <div class="col-md-3" role="complementary">
+          <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm">
+            <ul class="nav bs-docs-sidenav">
+    <!-- make sure that there is a html page for sidebar nav for each onne of the HTML files using this template
+    and ensure that the sidebar nav file name is [page name_nav.html] -->
+    		<li><a href="#supported_chat_application">Supported Chat Application</a>
+<li><a href="#screenshot_of_widget" >Screenshot of the widget</a>
+<li><a href="#chatops_widget_configuration_parameter" >ChatOps widget configuration parameter</a>
+<li><a href="#chatops_collector_properties_file" >ChatOps Collector properties file</a>
+<li><a href="#how_to_start_the_collector" >How to start the collector</a>
+
+            <a class="back-to-top" href="#top">
+              Back to top
+            </a>
+	    </ul>
+	    </nav>
+</div>
+	
+
+</div>
+</div>
+<footer class="bs-docs-footer">
+  <div class"container-fluid">
+    <ul class="bs-docs-footer-links">
+      <li><a href="https://github.com/capitalone/hygieia">GitHub</a>&nbsp;&nbsp;&nbsp;</li>
+      <li><a href="https://gitter.im/capitalone/Hygieia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">Gitter Chat &nbsp;&nbsp;&nbsp;&nbsp;
+   </li>
+      <li><a href="https://www.codacy.com/app/amit-mawkin/Hygieia/dashboard">Codacy&nbsp;&nbsp;&nbsp;</a>
+      <li><a href="../contact.html">Contact Us &nbsp;&nbsp;&nbsp</a></li>
+</ul>
+
+    <p> Maintained by Capital One Hygieia Team</a> with the help of <a href="https://github.com/capitalone/hygieia/contributors">our contributors</a>.</p>
+  </div>
+</footer>
+
+
+</body>
+
+</html>

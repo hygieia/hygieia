@@ -1,0 +1,121 @@
+---
+layout: default
+title: API
+lead: REST API Services that work with source system data
+slug: api
+---
+
+<div class="bs-docs-section">
+
+
+<p class="lead">This contains all common REST api services that work with source data system data, which has already
+been collected by other service tasks.  This is an abstraction from the local data layer, and the source
+system data layer. All REST controllers should be generic to their purpose, and should not be specific
+to any given source system.<br>This project uses Spring Boot to package the api as an executable JAR with dependencies.</p>
+
+
+<h3 id="build_api">Build API</h3>
+<pre code>mvn install</pre code>
+<p>Run the above command to package the collector into an executable JAR file. </p>
+
+<h3 id="api_properties_file">API Properties File</h3>
+<p>The API layer needs a property file in following format:</p>
+<pre code>
+# dashboard.properties
+dbname=dashboard
+dbusername=[MogoDb Database Username, defaults to empty]
+dbpassword=[MongoDb Database Password, defaults to empty]
+dbhost=[Host on which MongoDb is running, defaults to localhost]
+dbport=[Port on which MongoDb is listening, defaults to 27017]
+</pre code>
+
+<p>All the above values are optional. Even without the property file you must be able to run the api
+(assuming you have mongodb installed with no authorization). Note: When <code>dbusername</code> is not present
+or the value is empty then it skips the mongodb authorization part.</p>
+
+<h3 id="run_the_api">Run the API</h3>
+
+<p>After you have build your project, from the target folder run the below command</p>
+
+<pre code>java -jar api.jar --spring.config.location=dashboard.properties</pre code>
+
+<p>By default the server starts at port <code>8080</code> and uses the context path <code>/api</code>.
+  These values are configurable by using the below 2 properties in <code>dashboard.properties</code>.
+
+  <pre code>
+  server.contextPath=/api
+  server.port=8080
+</pre code>
+
+<p>For more information about the server configuration, see the Spring Boot
+  <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files">
+    documentation</a></p>
+
+</div>
+
+<div class="bs-docs-section">
+<h2 id="docker_image" class="page-header">
+  <a class="anchorjs-link " href="#docker_image" aria-label="Anchor link for: docker_image" data-anchorjs-icon=""
+  style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+  position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Docker Image
+</h2>
+<h3 id="create">Create</h3>
+<pre code>
+# from top-level project
+mvn clean package -pl api docker:build
+</pre code>
+
+<h3 id="run">Run</h3>
+<ol>
+  <li>First start Mongodb<br>
+    For example:
+<pre code>
+docker run -d -p 27017:27017 --name mongodb -v ./mongo:/data/db mongo:latest  mongod --smallfiles
+</pre code>
+</li>
+
+<li>Create User<br>
+<ul><li>  <pre code>
+use db
+db.createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})
+</pre code></li>
+
+<li>or from CLI:<br>
+  <pre code>
+mongo 192.168.64.2/admin --eval 'db.getSiblingDB("db").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
+</pre code></li>
+
+Refer to the <a href="https://hub.docker.com/r/library/mongo/">link</a> for more details.
+</li>
+<li>Then running the API from docker is easy:
+<pre code>
+docker run -t -p 8080:8080 --link mongodb:mongo -v ./logs:/hygieia/logs -i hygieia-api:latest
+</pre code>
+</li></ol>
+
+
+<h3 id="environment_variables">Environment variables</h3>
+<p>
+Environment variables for dashboard properties can be specified like:
+<pre code>
+docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -i hygieia-api:latest
+</pre code>
+
+For more properties see the <a href="https://github.com/capitalone/Hygieia/blob/master/api/Dockerfile">Dockerfile</a></p>
+
+<h3 id="list_containers">List containers</h3>
+<p>
+View port by running
+<pre code>
+docker ps
+</pre code>
+</p>
+
+<h3 id="api_access">API Access</h3>
+<p>
+Check with the following command: <env>IP is the IP of docker machine and port is the Port for Hygieia API
+<pre code>
+   http://&lt;docker-machine ip&gt;:&lt;docker port for hygieia_api&gt;/api/dashboard
+</pre code>
+</p>
+</div>

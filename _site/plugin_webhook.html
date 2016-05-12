@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Santhi Sridharan">
+
+    <title>Hygieia plugin for Jenkins</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+     <link href="css/docs.min.css" rel="stylesheet">
+
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/docs.min.js"></script>
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico">
+
+</head>
+<style>
+.bs-docs-header {
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 5px;
+    }
+.bs-docs-header h1,p {
+  margin-right: 100px !important;
+  margin-top: 0px !important;
+  margin-bottom: 10px !important;
+font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.titlelead{
+font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-style: italic !important;
+color: #fff !important;
+}
+
+.lead {
+  font-size: 15px !important;
+}
+
+.bs-docs-header p{
+  align: justify !important;
+};
+
+
+</style>
+
+<body>
+    <!-- Docs master nav -->
+    <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+     <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Hygieia</a>
+        </div>
+        <nav id="bs-navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+
+                <li><a href="getting_started.html">Getting Started</a></li>
+                <li><a href="ui.html">UI</a></li>
+                <li><a href="api.html">API </a></li>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">Collectors
+                    <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="chatops_collector.html">ChatOps</a></li>
+                      <li><a href="githubsourcecode_collector.html">GithubSourceCode</a></li>
+                      <li><a href="jenkinsbuild_collector.html">Jenkins Build</a></li>
+                      <li><a href="jenkinscucumbertest_collector.html">Jenkins Cucumber Test</a></li>
+                      <li><a href="jirafeature_collector.html">Jira Feature</a></li>
+                      <li><a href="sonarcodequality_collector.html">SONAR CodeQuality</a></li>
+                      <li><a href="stashsourcecode_collector.html">StashSourceCode</a></li>
+                      <li><a href="subversionsourcecode_collector.html">SubversionSourceCode</a></li>
+                      <li><a href="udeploy_collector.html">UDeploy</a></li>
+                      <li><a href="versionone_collector.html">VersionOne</a></li>
+                    </ul>
+                  </li>
+
+                <li><a href="plugin_webhook.html">Plugin WebHook</a></li>
+                <li><a href="contact.html">Contact us</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+    <!-- Docs page layout -->
+    <div class="bs-docs-header" id="content" tabindex="-1">
+      <div class="container">
+        <h1>Hygieia plugin for Jenkins</h1>
+        <p class="titlelead">Know the basics of configuring Hygieia Plugin for Jenkins</p>
+      </div>
+    </div>
+
+   <div class="container bs-docs-container">
+      <div class="row">
+	<div class="col-md-9" role="main">
+          <div class="bs-docs-section">
+  <p class="lead">This plugin uses the Hygieia core package. The main project is JDK 1.8 compiled,
+    if you have Jenkins running on previous Java versions,
+    make sure to recompile core package with that previous version and then build this Jenkins plugin.
+  </p>
+  <h2 id="developer_instructions" class="page-header">
+    <a class="anchorjs-link " href="#developer_instructions" aria-label="Anchor link for: developer_instructions" data-anchorjs-icon=""
+    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>  Developer Instructions
+  </h2>
+
+<p>
+  Install Maven and JDK. This was last built with Maven 3.2.5 and OpenJDK 1.7.0_75
+<br>
+Run unit tests
+</br>
+<pre code>
+  mvn test</pre code>
+<p>
+  Create an HPI file to install in Jenkins (HPI file will be in target/hygieia-publisher.hpi).</p>
+<pre code>
+  mvn clean package </pre code>
+
+  <h2 id="jenkins_instructions" class="page-header">
+    <a class="anchorjs-link " href="#jenkins_instructions" aria-label="Anchor link for: jenkins_instructions" data-anchorjs-icon=""
+    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
+    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>  Jenkins Instructions
+  </h2>
+  <ul>
+    <li>Install the plugin by using "Advanced" option in Jenkins Plugin Management option to
+      manually upload the file from local disk.</li>
+<li>Restart jenkins.</li>
+<li>Configure Global Hygieia Publisher in Jenkins Manage Jenkins/Configure System. Enter Hygieia API url such as http://localhost:8090/api. There is no API token implented at this time and it is work in progress.</li>
+</ul>
+
+<img src="/images/jenkins-global.png" class="img-responsive">
+<ul>
+  <li>For a build job, add a Post build action "Hygieia Publisher".</li>
+<li>Select what to send to Hygieia. Currently, "Build", "Artifact Info", "Sonar Anslysis", "Deployment" and "Cucumber Test Results" can be published.</li>
+</ul>
+<img src="/images/jenkins-job-config.png" class="img-responsive">
+</div>
+
+        </div>
+	
+        <div class="col-md-3" role="complementary">
+          <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm">
+            <ul class="nav bs-docs-sidenav">
+    <!-- make sure that there is a html page for sidebar nav for each onne of the HTML files using this template
+    and ensure that the sidebar nav file name is [page name_nav.html] -->
+    		<li><a href="#developer_instructions">Developer instructions</a></li>
+<li><a href="#jenkins_instructions">Jenkin instructions</a></li>
+
+            <a class="back-to-top" href="#top">
+              Back to top
+            </a>
+	    </ul>
+	    </nav>
+</div>
+	
+
+</div>
+</div>
+<footer class="bs-docs-footer">
+  <div class"container-fluid">
+    <ul class="bs-docs-footer-links">
+      <li><a href="https://github.com/capitalone/hygieia">GitHub</a>&nbsp;&nbsp;&nbsp;</li>
+      <li><a href="https://gitter.im/capitalone/Hygieia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">Gitter Chat &nbsp;&nbsp;&nbsp;&nbsp;
+   </li>
+      <li><a href="https://www.codacy.com/app/amit-mawkin/Hygieia/dashboard">Codacy&nbsp;&nbsp;&nbsp;</a>
+      <li><a href="../contact.html">Contact Us &nbsp;&nbsp;&nbsp</a></li>
+</ul>
+
+    <p> Maintained by Capital One Hygieia Team</a> with the help of <a href="https://github.com/capitalone/hygieia/contributors">our contributors</a>.</p>
+  </div>
+</footer>
+
+
+</body>
+
+</html>
