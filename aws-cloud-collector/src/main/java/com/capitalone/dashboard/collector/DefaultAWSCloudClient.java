@@ -421,6 +421,36 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         return false;
     }
 
+
+    public Double get24HourInstanceEstimatedCharge() {
+        Dimension instanceDimension = new Dimension().withName("Currency")
+                .withValue("USD");
+        Dimension typeDimension = new Dimension().withName("ServiceName").withValue("AmazonEC2");
+
+        GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
+                .withMetricName("EstimatedCharges")
+                .withNamespace("AWS/Billing")
+                .withPeriod(60 * 60 * 24)
+                //
+                // one hour
+                .withDimensions(instanceDimension, typeDimension)
+                // to get metrics a specific
+                // instance
+                .withStatistics("Average")
+                .withStartTime(DateTime.now().minusDays(1).toDate())
+                .withEndTime(new Date());
+        GetMetricStatisticsResult result = cloudWatchClient
+                .getMetricStatistics(request);
+        // to read data
+        List<Datapoint> datapoints = result.getDatapoints();
+        if (datapoints.size() == 0) {
+            // This instance has no CPU Util
+            return 0.0;
+        }
+        Datapoint datapoint = datapoints.get(0);
+        return datapoint.getAverage();
+    }
+
     /*
      * Returns true if instance is stopped. Other possible states include
      * pending, running, shutting-down, terminated, stopping

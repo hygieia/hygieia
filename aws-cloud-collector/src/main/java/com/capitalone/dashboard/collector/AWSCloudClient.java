@@ -21,6 +21,6 @@ public interface AWSCloudClient {
     CloudVirtualNetwork getCloudVPC(CloudVirtualNetworkRepository repository);
     CloudSubNetwork getCloudSubnet(CloudSubNetworkRepository repository);
     Map<String, List<CloudVolumeStorage>> getCloudVolumes();
-
+    Double get24HourInstanceEstimatedCharge();
 
 }
