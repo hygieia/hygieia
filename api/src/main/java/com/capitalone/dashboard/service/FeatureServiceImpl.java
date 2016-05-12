@@ -34,6 +34,8 @@ public class FeatureServiceImpl implements FeatureService {
 	private final ComponentRepository componentRepository;
 	private final FeatureRepository featureRepository;
 	private final CollectorRepository collectorRepository;
+	private final static String NOT_EQUAL = "$ne";
+	private final static String EQUAL = "$eq";
 
 	private enum Status {
 		TOTAL, DONE, InProgress
@@ -132,12 +134,12 @@ public class FeatureServiceImpl implements FeatureService {
 				&& FeatureCollectorConstants.KANBAN_SPRINT_ID.equalsIgnoreCase(agileType.get())) {
 			// Kanban
 			relevantStories = featureRepository.queryByOrderBySStatusDesc(teamId,
-					getCurrentISODateTime(), Optional.empty().toString());
+					getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 		} else if (agileType.isPresent()
 				&& FeatureCollectorConstants.SCRUM_SPRINT_ID.equalsIgnoreCase(agileType.get())) {
 			// Scrum
 			relevantStories = featureRepository.queryByOrderBySStatusDesc(teamId,
-					getCurrentISODateTime(), FeatureCollectorConstants.KANBAN_SPRINT_ID);
+					getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 		} else {
 			// Legacy
 			relevantStories = featureRepository.queryByOrderBySStatusDesc(teamId,
@@ -185,12 +187,12 @@ public class FeatureServiceImpl implements FeatureService {
 				&& FeatureCollectorConstants.KANBAN_SPRINT_ID.equalsIgnoreCase(agileType.get())) {
 			// Kanban
 			relevantFeatureEstimates = featureRepository.getInProgressFeaturesEstimatesByTeamId(
-					teamId, getCurrentISODateTime(), FeatureCollectorConstants.KANBAN_SPRINT_ID);
+					teamId, getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 		} else if (agileType.isPresent()
 				&& FeatureCollectorConstants.SCRUM_SPRINT_ID.equalsIgnoreCase(agileType.get())) {
 			// Scrum
 			relevantFeatureEstimates = featureRepository.getInProgressFeaturesEstimatesByTeamId(
-					teamId, getCurrentISODateTime(), Optional.empty().toString());
+					teamId, getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 		} else {
 			// Legacy
 			relevantFeatureEstimates = featureRepository
@@ -256,12 +258,12 @@ public class FeatureServiceImpl implements FeatureService {
 					.equalsIgnoreCase(agileType.get())) {
 				// Kanban
 				storyEstimates = featureRepository.getSprintBacklogTotal(teamId,
-						getCurrentISODateTime(), FeatureCollectorConstants.KANBAN_SPRINT_ID);
+						getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 			} else if (agileType.isPresent() && FeatureCollectorConstants.SCRUM_SPRINT_ID
 					.equalsIgnoreCase(agileType.get())) {
 				// Scrum
 				storyEstimates = featureRepository.getSprintBacklogTotal(teamId,
-						getCurrentISODateTime(), Optional.empty().toString());
+						getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 			} else {
 				// Legacy
 				storyEstimates = featureRepository.getSprintBacklogTotal(teamId,
@@ -275,12 +277,12 @@ public class FeatureServiceImpl implements FeatureService {
 					.equalsIgnoreCase(agileType.get())) {
 				// Kanban
 				storyEstimates = featureRepository.getSprintBacklogDone(teamId,
-						getCurrentISODateTime(), FeatureCollectorConstants.KANBAN_SPRINT_ID);
+						getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 			} else if (agileType.isPresent() && FeatureCollectorConstants.SCRUM_SPRINT_ID
 					.equalsIgnoreCase(agileType.get())) {
 				// Scrum
 				storyEstimates = featureRepository.getSprintBacklogDone(teamId,
-						getCurrentISODateTime(), Optional.empty().toString());
+						getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 			} else {
 				// Legacy
 				storyEstimates = featureRepository.getSprintBacklogDone(teamId,
@@ -294,12 +296,12 @@ public class FeatureServiceImpl implements FeatureService {
 					.equalsIgnoreCase(agileType.get())) {
 				// Kanban
 				storyEstimates = featureRepository.getSprintBacklogInProgress(teamId,
-						getCurrentISODateTime(), FeatureCollectorConstants.KANBAN_SPRINT_ID);
+						getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 			} else if (agileType.isPresent() && FeatureCollectorConstants.SCRUM_SPRINT_ID
 					.equalsIgnoreCase(agileType.get())) {
 				// Scrum
 				storyEstimates = featureRepository.getSprintBacklogInProgress(teamId,
-						getCurrentISODateTime(), Optional.empty().toString());
+						getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 			} else {
 				// Legacy
 				storyEstimates = featureRepository.getSprintBacklogInProgress(teamId,
@@ -414,12 +416,12 @@ public class FeatureServiceImpl implements FeatureService {
 				&& FeatureCollectorConstants.KANBAN_SPRINT_ID.equalsIgnoreCase(agileType.get())) {
 			// Kanban
 			sprintResponse = featureRepository.getCurrentSprintDetail(teamId,
-					getCurrentISODateTime(), FeatureCollectorConstants.KANBAN_SPRINT_ID);
+					getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 		} else if (agileType.isPresent()
 				&& FeatureCollectorConstants.SCRUM_SPRINT_ID.equalsIgnoreCase(agileType.get())) {
 			// Scrum
 			sprintResponse = featureRepository.getCurrentSprintDetail(teamId,
-					getCurrentISODateTime(), Optional.empty().toString());
+					getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
 		} else {
 			// Legacy
 			sprintResponse = featureRepository.getCurrentSprintDetail(teamId,
