@@ -133,6 +133,7 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         instance.setTagged(request.isTagged());
         instance.getTags().addAll(request.getTags());
         instance.getSecurityGroups().addAll(request.getSecurityGroups());
+        instance.setAutoScaleName(request.getAutoScaleName());
         return instance;
     }
 

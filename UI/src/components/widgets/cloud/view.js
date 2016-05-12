@@ -26,39 +26,20 @@
     function CloudWidgetViewController($scope, cloudData) {
 
 
-        //private variables
+        //private variables/methods
         var ctrl = this;
         var sortDictionary = {};
 
 
-        //public variables
-        ctrl.instancesByAccount;
-        ctrl.sortType = [];
-        ctrl.searchFilter = '';
-
-        ctrl.isDetail = false;
-        ctrl.accountNumber = $scope.widgetConfig.options.accountNumber || "";
-        ctrl.tagName = $scope.widgetConfig.options.tagName || "";
-        ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
-
-        // pagination
-        ctrl.curPage = 0;
-        ctrl.pageSize = 8;
-
-
-
-
-        ctrl.getDaysToExpiration = function(epochTime) {
-
-            if (epochTime == 0) {
-                return 'N/A';
-            }
-
+        var convertEpochTimeToDate = function(epochTime) {
             var epochDate = new Date(epochTime);
             var epochDD = ('0' + epochDate.getDate()).slice(-2);
             var epochMM = ('0' + (epochDate.getMonth() + 1)).slice(-2);
             var epochYYYY = epochDate.getFullYear();
-            var imageDate = epochMM + '/'+ epochDD + '/' + epochYYYY;
+            return epochMM + '/'+ epochDD + '/' + epochYYYY;
+        };
+
+        var getTodayDate =  function() {
 
             //get todays date
             var today = new Date();
@@ -70,26 +51,139 @@
             if(mm<10) { mm='0'+mm }
             today = mm+'/'+dd+'/'+yyyy;
 
+            return today;
+        };
+
+        var getDaysToExpiration = function(epochTime) {
+
+            if (epochTime == 0) {
+                return 'N/A';
+            }
+
+            var imageDate = convertEpochTimeToDate(epochTime);
+            var today = getTodayDate();
+
             return Math.floor(( Date.parse(imageDate) - Date.parse(today) ) / 86400000);
         };
 
+        var getNOTTStatus = function(tags) {
+
+            if (tags == undefined) {
+                return "enabled";
+            }
+
+            for(var i = 0; i < tags.length; i++) {
+                var item = tags[i];
+                if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDE") {
+                    return "disabled" ;
+                }
+            }
+            return "enabled";
+        };
+
+        var getSubnetStatus = function(usedIPs, availableIPs) {
+
+            if (usedIPs == undefined || availableIPs == undefined) {
+                return 'N/A';
+            }
+
+
+            var percentageUsed = usedIPs/(availableIPs + usedIPs);
+            return percentageUsed >= .50 ? 'fail' : percentageUsed >= .30 && percentageUsed < .50 ? 'warn' : 'pass';
+        };
+
+
+        //public variables/methods
+        ctrl.instancesByAccount;
+        ctrl.volumesByAccount;
+        ctrl.subnetsByAccount;
+
+        ctrl.filteredInstancesByAccount;
+        ctrl.filteredVolumesByAccount;
+
+        ctrl.runningStoppedInstances;
+        ctrl.ageOfInstances;
+
+        ctrl.accountNumber = $scope.widgetConfig.options.accountNumber || "";
+        ctrl.tagName = $scope.widgetConfig.options.tagName || "";
+        ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
+
+        ctrl.tabs = [
+            { name: "Overview"},
+            { name: "Detail"}
+        ];
+
+        ctrl.curPage = 0;
+        ctrl.isDetail = false;
+        ctrl.pageSize = 8;
+        ctrl.sortType = [];
+        ctrl.searchFilter = '';
+        ctrl.toggledView = ctrl.tabs[0].name;
 
         ctrl.calculateUtilization = function(instances) {
-             if (instances == undefined) {
+            if (instances == undefined) {
                 return 'N/A';
-             }
+            }
 
-             var cnt = instances.length;
+            var cnt = instances.length;
 
-             if (cnt == 0) {
-             return 'N/A';
-             }
+            if (cnt == 0) {
+                return 'N/A';
+            }
 
-             var total = instances.reduce(function(sum, currentValue) {
+            var total = instances.reduce(function(sum, currentValue) {
                 return sum + currentValue.cpuUtilization;
-             }, 0);
+            }, 0);
 
-             return (total / cnt);
+            return (total / cnt);
+        };
+
+        ctrl.calculateVolumeInBytes = function(volumes) {
+            if (volumes == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = volumes.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            var total = volumes.reduce(function(sum, currentValue) {
+                return sum + currentValue.size;
+            }, 0);
+
+            return total * 1073741824;
+        };
+
+        ctrl.calculateRunningInstances = function(instances) {
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            return instances.filter(function(value) { return (!value.stopped) }).length;
+
+        };
+
+        ctrl.calculateStoppedInstances = function(instances) {
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            return instances.filter(function(value) { return (value.stopped) }).length;
+
         };
 
         ctrl.calculateCostAverage = function(instances) {
@@ -106,12 +200,30 @@
             var total = instances.reduce(function(sum, currentValue) {
                 return sum +
                     (currentValue.stopped ? 0 :
-                        ctrl.checkNOTTDisabledStatus(currentValue.tags) == true ?
-                            24 * currentValue.hourlyCost :
-                            12 * currentValue.hourlyCost);
+                        currentValue.alarmClockStatus == "disabled" ?
+                        24 * currentValue.hourlyCost :
+                        12 * currentValue.hourlyCost);
             }, 0);
             return (total / cnt);
-        }
+        };
+
+        ctrl.calculateInstancesByAge = function(instances, start, end) {
+
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            if (end == undefined) {
+                end = Number.POSITIVE_INFINITY;
+            }
+
+            return instances.filter(function(value) { return (value.age >= start && value.age < end) }).length;
+        };
 
         ctrl.changeSortDirection = function(key) {
             var value = sortDictionary[key];
@@ -135,6 +247,25 @@
             ctrl.sortType = changedSortType;
         };
 
+        ctrl.checkImageAgeStatus = function(daysToExpiration) {
+            return daysToExpiration < 0 ? "fail" : daysToExpiration >= 0 && daysToExpiration <= 15 ? "warn" : "pass";
+        };
+
+        ctrl.checkMonitoredStatus = function(status) {
+            return status ? "pass" : "fail";
+        };
+
+        ctrl.checkUtilizationStatus = function(status) {
+            return status > 30 ? "pass" : "fail";
+        };
+
+        ctrl.formatVolume = function bytesToSize(bytes) {
+            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            if (bytes == 0) return '0 Byte';
+            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+        };
+
         ctrl.getSortDirection = function(key) {
 
             var item = sortDictionary[key];
@@ -150,58 +281,97 @@
             return "sort-amount-desc";
         };
 
-
-        ctrl.checkImageAgeStatus = function(expirationDate) {
-            var difference = ctrl.getDaysToExpiration(expirationDate);
-            return difference < 0 ? "fail" : difference >= 0 && difference <= 15 ? "warn" : "pass";
-        };
-
-
-        ctrl.checkNOTTDisabledStatus = function(tags) {
-
-            if (tags == undefined) {
-                return false;
-            }
-
-            for(var i = 0; i < tags.length; i++) {
-                var item = tags[i];
-                if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDE") {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        ctrl.checkMonitoredStatus = function(status) {
-            return status ? "pass" : "fail";
-        };
-
-        ctrl.checkUtilizationStatus = function(status) {
-            return status > 30 ? "pass" : "fail";
-        };
-
-
         ctrl.load = function () {
-            cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
-                .then(function(data) {
-                    ctrl.instancesByAccount = data;
+
+            cloudData.getAWSSubnetsByAccount(ctrl.accountNumber)
+                .then(function(subnets){
+                    ctrl.subnetsByAccount = subnets;
+                }).then(function() {
+
+                cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
+                    .then(function(instances) {
+
+                        instances.forEach(function(element, index, array) {
+
+                            array[index].daysToExpiration = getDaysToExpiration(element.imageExpirationDate);
+
+                            array[index].alarmClockStatus = getNOTTStatus(element.tags);
+
+                            array[index].formattedTags = JSON.stringify(element.tags).split(",").join("<br />");
+
+                            var subnet = ctrl.subnetsByAccount.find(function(value) {
+                                return value.subnetId == element.subnetId
+                            });
+
+                            if (subnet != undefined) {
+                                array[index].subnetUsageStatus = getSubnetStatus(subnet.usedIPCount, subnet.availableIPCount);
+                            }
+                        });
+
+                        ctrl.instancesByAccount = instances;
+
+
+                        if (ctrl.tagName != "" && ctrl.tagValue != "") {
+
+                            ctrl.filteredInstancesByAccount = instances.filter(function(item) {
+
+                                if (item.tags == undefined) {
+                                    return false;
+                                }
+
+                                return (
+                                item.tags.filter(function(value) {
+                                    return (value.name == ctrl.tagName && value.value == ctrl.tagValue);
+                                }).length > 0);
+                            });
+                        } else {
+                            ctrl.filteredInstancesByAccount = ctrl.instancesByAccount;
+                        }
+
+                        var running = ctrl.calculateRunningInstances(ctrl.instancesByAccount);
+                        var stopped = ctrl.calculateStoppedInstances(ctrl.instancesByAccount);
+                        ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
+
+                        var lessThan15Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,0, 15);
+                        var lessThan45Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,15, 45);
+                        var greaterThan45Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,45, undefined);
+
+                        ctrl.ageOfInstances = { series: [ lessThan15Days, lessThan45Days, greaterThan45Days] };
+                    }).then(function() {
+                         cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
+                            .then(function(volumes) {
+
+                                ctrl.volumesByAccount = volumes;
+                                var volumeList = [];
+
+                                for (var i = 0; i < ctrl.filteredInstancesByAccount.length; i++) {
+
+                                    var instanceId = ctrl.filteredInstancesByAccount[i].instanceId;
+                                    ctrl.volumesByAccount.filter(function(value) {
+                                        if (value.attchInstances == undefined) {
+                                           return false;
+                                    }
+
+                                    return value.attchInstances.indexOf(instanceId) != -1;
+
+                                }).forEach(function(volume) {
+                                    volumeList.push(volume);
+                                });
+                            }
+
+                            ctrl.filteredVolumesByAccount = volumeList.filter(function(item, index, array){ return array.indexOf(item) === index; });
+                            console.log(ctrl.filteredVolumesByAccount);
+                        });
                 });
+            });
         };
-
-
-        ctrl.tabs = [
-            { name: "Overview"},
-            { name: "Detail"}
-        ];
-
-        ctrl.toggledView = ctrl.tabs[0].name;
-        ctrl.toggleView = function (index) {
-            ctrl.toggledView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
-        };
-
 
         ctrl.numberOfPages = function(length)  {
             return Math.ceil(length/ ctrl.pageSize);
+        };
+
+        ctrl.toggleView = function (index) {
+            ctrl.toggledView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
         };
 
         ctrl.load();

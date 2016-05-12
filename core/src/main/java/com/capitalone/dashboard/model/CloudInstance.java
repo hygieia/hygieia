@@ -42,6 +42,7 @@ public class CloudInstance extends BaseModel{
     private double diskRead;
     private double diskWrite;
     private String rootDeviceName;
+    private String autoScaleName;
     private String lastAction;
 
 
@@ -263,6 +264,14 @@ public class CloudInstance extends BaseModel{
 
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    public String getAutoScaleName() {
+        return autoScaleName;
+    }
+
+    public void setAutoScaleName(String autoScaleName) {
+        this.autoScaleName = autoScaleName;
     }
 
     @Override

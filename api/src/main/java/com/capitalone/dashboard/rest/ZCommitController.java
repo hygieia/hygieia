@@ -21,14 +21,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-public class CommitController {
+public class ZCommitController {
 
 
 
     private final CommitService commitService;
 
     @Autowired
-    public CommitController(CommitService commitService) {
+    public ZCommitController(CommitService commitService) {
         this.commitService = commitService;
     }
 

@@ -55,6 +55,12 @@ public class CloudSubnetController {
         return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetailsByComponentId(componentId));
     }
 
+    @RequestMapping(value = "/cloud/subnet/details/account/{accountNumber}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CloudSubNetwork>> getSubNetworkDetailsByAccount(
+            @PathVariable String accountNumber) {
+        return ResponseEntity.ok().body(cloudSubnetService.getSubNetworkDetailsByAccount(accountNumber));
+    }
+
     @RequestMapping(value = "/cloud/subnet/details/subnets/{subnetIds}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<CloudSubNetwork>> getSubNetworkDetailsBySubnetIds(
             @PathVariable ArrayList<String> subnetIds) {

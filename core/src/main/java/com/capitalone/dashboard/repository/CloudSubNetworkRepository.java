@@ -30,7 +30,6 @@ public interface CloudSubNetworkRepository extends
 
     Collection<CloudSubNetwork> findBySubnetIdIn(List<String> subnetId);
 
-    @Query(value = "{accountNumber : ?0}")
     Collection<CloudSubNetwork> findByAccountNumber(String accountNumber);
 
 }

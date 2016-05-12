@@ -41,6 +41,7 @@ public class CloudInstanceCreateRequest {
     private double diskWrite;
     private String rootDeviceName;
     private String lastAction;
+    private String autoScaleName;
 
 
     public String getInstanceId() {
@@ -269,6 +270,14 @@ public class CloudInstanceCreateRequest {
 
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    public String getAutoScaleName() {
+        return autoScaleName;
+    }
+
+    public void setAutoScaleName(String autoScaleName) {
+        this.autoScaleName = autoScaleName;
     }
 
     @Override
