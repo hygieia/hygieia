@@ -91,6 +91,11 @@ public class CloudVolumeServiceImpl implements CloudVolumeService {
         return aggregate(volumes, config);
     }
 
+    @Override
+    public Collection<CloudVolumeStorage> getVolumeDetailsByInstanceIds(List<String> attachInstances) {
+        return cloudVolumeRepository.findByAttachInstancesIn(attachInstances);
+    }
+
 
     @Override
     public Collection<String> refreshVolumes(CloudVolumeListRefreshRequest request) {
@@ -140,9 +145,9 @@ public class CloudVolumeServiceImpl implements CloudVolumeService {
                             existing.getTags().clear();
                             existing.getTags().addAll(newObject.getTags());
                         }
-                        if (!CollectionUtils.isEmpty(newObject.getAttchInstances())) {
-                            existing.getAttchInstances().clear();
-                            existing.getAttchInstances().addAll(newObject.getAttchInstances());
+                        if (!CollectionUtils.isEmpty(newObject.getAttachInstances())) {
+                            existing.getAttachInstances().clear();
+                            existing.getAttachInstances().addAll(newObject.getAttachInstances());
                         }
                         cloudVolumeRepository.save(existing);
                         objectIds.add(existing.getId().toString());
