@@ -41,6 +41,13 @@
                     </h3>
                 </div>
             </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspUtilization {{ cloudView.calculateUtilization(cloudView.instancesByAccount) | number:1}}%</h3>
+                </div>
+            </div>
         </div>
 
         <div class="row">
