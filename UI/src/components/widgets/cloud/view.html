@@ -110,31 +110,49 @@
             </div>
 
         </div>
-<!--
-        <div class="row">
-             <div class="col-md-4">
-                 <div class="well override-panel-background-color">
-                     <div ng-controller="subnetController" ng-init="getSubnets()">
-                         <h3>IP Utilization</h3>
-                         <div class="row">
-                             <div class="col-md-4">VPC ID</div>        
-                             <div class="col-md-2"># Subnets</div>
-                             <div class="col-md-2"># high IP usage</div>
-                             <div class="col-md-2"># med IP usage</div>
-                             <div class="col-md-2"># low IP usage</div>              
-                         </div>
-                            <div class="row clickable" ng-repeat="vpc in vpcs | orderBy: 'id' " ng-click="viewSubnetUtilization(vpc)">
-                                <div class="col-md-4">{{vpc.id}}</div>
-                                <div class="col-md-2">{{vpc.subnets.length}}</div>
-                                <div class="col-md-2 high">{{vpc.countOfSubnetsByUtilization.high}}</div>
-                                <div class="col-md-2 med">{{vpc.countOfSubnetsByUtilization.med}}</div>
-                                <div class="col-md-2 low">{{vpc.countOfSubnetsByUtilization.low}}</div>             
-                            </div>                         
-                     </div>
-                 </div>
-             </div>    
-        </div>
-        -->
+        <div class="col-md-4">
+            <div id="iptutildiv" class="well override-panel-background-color" ng-controller="subnetController" ng-init="getSubnets()">
+                <div class="row" ng-init="getIpUtilizations()" >
+                    <div class="col-lg-5" onclick="angular.element(document.getElementById('iptutildiv')).scope().viewSubnetUtilization2();"><h3>IP Utilization</h3>
+                    </div>
+                    <div class="col-lg-7">  
+                        <div class="row">                     
+                            <div class="col-xs-6">
+                                <blockquote style="border-left:5px solid #949FB1;">Total IP's: {{totalIPs}}</blockquote> 
+                            </div>
+                            <div class="col-xs-6">
+                                <blockquote style="border-left:5px solid #949FB1;">Avg utilization: {{avgUtilization}}%</blockquote>
+                            </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12" style="height: {{ getHeight() }}px">
+
+                            <chartist 
+                                    class="ct-chart"
+                                    chartist-chart-type="Bar"
+                                    chartist-data="ipUtilizations"
+                                    chartist-chart-options="ipUtilizationsOptions"
+                                    chartist-events="ipUtilizationsEvents"
+                                    ></chartist>                               
+                    </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                            <blockquote style="border-left:5px solid #4C9900;">&lt; 50%</blockquote>
+                            </div>
+                            <div class="col-lg-4">
+
+                            <blockquote style="border-left:5px solid #FFBD35;">&lt; 70% </blockquote>
+                                </div>
+                                                            <div class="col-lg-4">
+
+                            <blockquote style="border-left:5px solid #FF5A5E;">&gt; 70%</blockquote>
+                                </div>
+                        </div>     
+                </div>
+            </div>
+        </div>  
 
     </div>
 
