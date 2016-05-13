@@ -46,7 +46,7 @@
 			var featureCollector = modalData.dashboard.application.components[0].collectorItems.ScopeOwner;
 			var featureCollectorId = featureCollector ? featureCollector[0].id
 					: null;
-			
+
 			if (ctrl.collectorId !== "") {
 				scopeOwners = getScopeOwners(data, featureCollectorId);
 				evaluateTypeSelection();
@@ -54,10 +54,10 @@
 				getPermanentScopeOwners(data, featureCollectorId);
 				evaluateTypeSelection();
 			}
-			
+
 			ctrl.toolsDropdownPlaceholder = 'Select a scope owner';
 			ctrl.toolsDropdownDisabled = false;
-			
+
 			function getPermanentScopeOwners(data, currentCollectorItemId) {
 				for ( var x = 0; x < data.length; x++) {
 					var obj = data[x];
@@ -74,7 +74,7 @@
 					}
 				}
 			}
-			
+
 			function getScopeOwners(data, currentCollectorItemId) {
 				for ( var x = 0; x < data.length; x++) {
 					var obj = data[x];
@@ -93,7 +93,7 @@
 
 				ctrl.scopeOwners = scopeOwners;
 				ctrl.permanentScopeOwners = scopeOwners;
-				
+
 				if ((ctrl.selectedIndex === undefined) || (ctrl.selectedIndex === null)) {
 					ctrl.collectorItemId = '';
 				} else {
@@ -173,7 +173,12 @@
 				options : {
 					id : widgetConfig.options.id,
 					teamName : ctrl.collectorItemId.teamName,
-					teamId : ctrl.collectorItemId.teamId
+					teamId : ctrl.collectorItemId.teamId,
+					showStatus : {
+			      kanban: false,
+			      scrum: true
+			    },
+					intervalOff : false
 				},
 				componentId : modalData.dashboard.application.components[0].id,
 				collectorItemId : ctrl.collectorItemId.value
