@@ -39,6 +39,11 @@
             return epochMM + '/'+ epochDD + '/' + epochYYYY;
         };
 
+        var convertEpochTimeToHour = function(epochTime) {
+            var epochDate = new Date(epochTime);
+            return epochDate.getHours();
+        }
+
         var getTodayDate =  function() {
 
             //get todays date
@@ -108,6 +113,7 @@
         ctrl.tagName = $scope.widgetConfig.options.tagName || "";
         ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
 
+        //UI element management
         ctrl.tabs = [
             { name: "Overview"},
             { name: "Detail"}
@@ -119,6 +125,14 @@
         ctrl.sortType = [];
         ctrl.searchFilter = '';
         ctrl.toggledView = ctrl.tabs[0].name;
+
+        ctrl.instanceUsageMonthly;
+        ctrl.instanceUsageMonthlyLineOptions;
+        ctrl.instanceUsageHourly;
+        ctrl.instanceUsageHourlyLineOptions;
+
+        ctrl.estimatedMonthlyCharge;
+        ctrl.showData = false;
 
         ctrl.calculateUtilization = function(instances) {
             if (instances == undefined) {
@@ -286,8 +300,7 @@
             return "sort-amount-desc";
         };
 
-        ctrl.getAverageInstanceCountPerDay = function(instances)
-        {
+        ctrl.getAverageInstanceCountPerDay = function(instances) {
 
             var averageSummary =[];
             var uniqueDates=[];
@@ -324,63 +337,132 @@
                 return  firstDate < secondDate ? -1 :  firstDate > secondDate ? 1 : 0;
             });
 
-        }
+        };
+
+        ctrl.getAverageInstanceHourly = function(instances) {
+
+            var averageSummary =[];
+            var uniqueHours=[];
+
+            instances.forEach(function(value) {
+                var hour = convertEpochTimeToHour(value.time);
+                if (uniqueHours.indexOf(hour) == -1) {
+                    uniqueHours.push(hour);
+                }
+            });
+
+            uniqueHours.forEach(function(hour) {
+
+                var oneHour = instances.filter(function(value) {
+                    return convertEpochTimeToHour(value.time) == hour;
+                });
+
+
+                var total = oneHour.reduce(function(sum, currentValue) {
+                    return sum + currentValue.total;
+                }, 0);
+
+                var cnt = oneHour.length;
+
+                averageSummary.push({
+                    hour: hour,
+                    avg: (total/cnt)
+                })
+            });
+
+            return averageSummary.sort(function(first, second) {
+                return  first < second ? -1 :  first > second ? 1 : 0;
+            });
+
+        };
 
         ctrl.load = function () {
-
-
 
             cloudHistoryData.getInstanceHistoryDataByAccount(ctrl.accountNumber)
                 .then(function (instanceDataHistory) {
 
+                    //retrieve cost
+                    var latestHistoryEpochTime = Math.max.apply(Math,instanceDataHistory.map(function(value){return value.time;}));
+                    var latestCharge = instanceDataHistory.filter(function(data) {
+                        return data.time == latestHistoryEpochTime;
+                    });
+                    ctrl.estimatedMonthlyCharge = latestCharge[0].estimatedCharge;
+
+                    //retrieve instance average
                     var dailyAvg = ctrl.getAverageInstanceCountPerDay(instanceDataHistory);
-                    var series = [];
-                    var labels = [];
+                    var dailySeries = [];
+                    var dailyLabels = [];
+
                     dailyAvg.forEach(function(value) {
-                        series.push({
+                        dailySeries.push({
                             meta: value.date + " " + Math.round(value.avg),
                             value: Math.round(value.avg)
                         });
 
-                        labels.push(value.date.slice(0,5));
+                        dailyLabels.push(value.date.slice(0,5));
                     });
 
-
-                    ctrl.instanceHistorySeries = {
-                        series : [ series ] ,
-                        labels : labels
+                    ctrl.instanceUsageMonthly = {
+                        series : [ dailySeries ] ,
+                        labels : dailyLabels
                     };
 
-                     ctrl.lineOptions = {
-                         plugins: [
-                             Chartist.plugins.tooltip()
-                         ],
-                         showArea: false,
-                         lineSmooth: true,
-                         width: 400,
-                         height: 190,
-                         chartPadding: 7,
-                         axisX: {
-                             showLabels: true
-                         }
-                     };
+                    ctrl.instanceUsageMonthlyLineOptions = {
+                        plugins: [
+                            Chartist.plugins.tooltip()
+                        ],
+                        showArea: false,
+                        lineSmooth: true,
+                        width: 400,
+                        height: 190,
+                        chartPadding: 7,
+                        axisX: {
+                            showLabels: true
+                        }
+                    };
+
+                    //retrieve hourly average
+                    var todayEpochTime = new Date(getTodayDate());
+                    var todayData = instanceDataHistory.filter(function(value) {
+                        return value.time >= todayEpochTime;
+                    });
+
+                    var hourlyAvg = ctrl.getAverageInstanceHourly(todayData);
+
+                    var hourlyTimeSeries = [];
+                    var hourlyTotals = [];
 
 
 
-                       /* ctrl.lineOptions = {
-                            plugins: [
-                                Chartist.plugins.tooltip()                        ],
-                            showArea: false,
-                            lineSmooth: true,
-                            fullWidth: true,
-                            width: 400,
-                            height: 300,
-                            chartPadding: 7
-                        };
-*/
+                    hourlyAvg.forEach(function(value){
+                        hourlyTimeSeries.push(value.hour);
+                        hourlyTotals.push(value.avg);
+                    })
+
+                    ctrl.instanceUsageHourly = {
+                        series: [hourlyTotals],
+                        labels : hourlyTimeSeries
+                    };
+
+                    ctrl.instanceUsageHourlyLineOptions = {
+                        plugins: [
+                            Chartist.plugins.gridBoundaries(),
+                            Chartist.plugins.lineAboveArea(),
+                            Chartist.plugins.tooltip(),
+                            Chartist.plugins.pointHalo()
+                        ],
+                        showArea: true,
+                        lineSmooth: true,
+                        fullWidth: true,
+                        width: 500,
+                        height: 300,
+                        chartPadding: 7
+
+                    };
 
                 });
 
+            //retrieve data for the rest of the screen
             cloudData.getAWSSubnetsByAccount(ctrl.accountNumber)
                 .then(function(subnets){
                     ctrl.subnetsByAccount = subnets;
@@ -458,6 +540,9 @@
                             }
 
                             ctrl.filteredVolumesByAccount = volumeList.filter(function(item, index, array){ return array.indexOf(item) === index; });
+
+                            ctrl.showData = true;
+
                         });
                 });
             });
