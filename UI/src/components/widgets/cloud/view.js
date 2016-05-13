@@ -21,9 +21,9 @@
             };
         });
 
-    CloudWidgetViewController.$inject = ['$scope', 'cloudData'];
+    CloudWidgetViewController.$inject = ['$scope', 'cloudData','cloudHistoryData'];
 
-    function CloudWidgetViewController($scope, cloudData) {
+    function CloudWidgetViewController($scope, cloudData, cloudHistoryData) {
 
 
         //private variables/methods
@@ -260,6 +260,11 @@
         };
 
         ctrl.formatVolume = function bytesToSize(bytes) {
+
+            if(bytes=='N/A')
+            {
+                return "N/A";
+            }
             var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
             if (bytes == 0) return '0 Byte';
             var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
@@ -281,7 +286,100 @@
             return "sort-amount-desc";
         };
 
+        ctrl.getAverageInstanceCountPerDay = function(instances)
+        {
+
+            var averageSummary =[];
+            var uniqueDates=[];
+
+            instances.forEach(function(value) {
+                var day = convertEpochTimeToDate(value.time);
+                if (uniqueDates.indexOf(day) == -1) {
+                    uniqueDates.push(day);
+                }
+            });
+
+            uniqueDates.forEach(function(date) {
+
+                var oneDay = instances.filter(function(value) {
+                    return convertEpochTimeToDate(value.time) == date;
+                });
+
+
+                var total = oneDay.reduce(function(sum, currentValue) {
+                    return sum + currentValue.total;
+                }, 0);
+
+                var cnt = oneDay.length;
+
+                averageSummary.push({
+                    date: date,
+                    avg: (total/cnt)
+                })
+            });
+
+            return averageSummary.sort(function(first, second) {
+                var firstDate = new Date(first.date);
+                var secondDate = new Date(second.date);
+                return  firstDate < secondDate ? -1 :  firstDate > secondDate ? 1 : 0;
+            });
+
+        }
+
         ctrl.load = function () {
+
+
+
+            cloudHistoryData.getInstanceHistoryDataByAccount(ctrl.accountNumber)
+                .then(function (instanceDataHistory) {
+
+                    var dailyAvg = ctrl.getAverageInstanceCountPerDay(instanceDataHistory);
+                    var series = [];
+                    var labels = [];
+                    dailyAvg.forEach(function(value) {
+                        series.push({
+                            meta: value.date + " " + Math.round(value.avg),
+                            value: Math.round(value.avg)
+                        });
+
+                        labels.push(value.date.slice(0,5));
+                    });
+
+
+                    ctrl.instanceHistorySeries = {
+                        series : [ series ] ,
+                        labels : labels
+                    };
+
+                     ctrl.lineOptions = {
+                         plugins: [
+                             Chartist.plugins.tooltip()
+                         ],
+                         showArea: false,
+                         lineSmooth: true,
+                         width: 400,
+                         height: 190,
+                         chartPadding: 7,
+                         axisX: {
+                             showLabels: true
+                         }
+                     };
+
+
+
+                       /* ctrl.lineOptions = {
+                            plugins: [
+                                Chartist.plugins.tooltip()                        ],
+                            showArea: false,
+                            lineSmooth: true,
+                            fullWidth: true,
+                            width: 400,
+                            height: 300,
+                            chartPadding: 7
+                        };
+*/
+
+                });
 
             cloudData.getAWSSubnetsByAccount(ctrl.accountNumber)
                 .then(function(subnets){
@@ -338,18 +436,18 @@
 
                         ctrl.ageOfInstances = { series: [ lessThan15Days, lessThan45Days, greaterThan45Days] };
                     }).then(function() {
-                         cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
-                            .then(function(volumes) {
+                    cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
+                        .then(function(volumes) {
 
-                                ctrl.volumesByAccount = volumes;
-                                var volumeList = [];
+                            ctrl.volumesByAccount = volumes;
+                            var volumeList = [];
 
-                                for (var i = 0; i < ctrl.filteredInstancesByAccount.length; i++) {
+                            for (var i = 0; i < ctrl.filteredInstancesByAccount.length; i++) {
 
-                                    var instanceId = ctrl.filteredInstancesByAccount[i].instanceId;
-                                    ctrl.volumesByAccount.filter(function(value) {
-                                        if (value.attchInstances == undefined) {
-                                           return false;
+                                var instanceId = ctrl.filteredInstancesByAccount[i].instanceId;
+                                ctrl.volumesByAccount.filter(function(value) {
+                                    if (value.attchInstances == undefined) {
+                                        return false;
                                     }
 
                                     return value.attchInstances.indexOf(instanceId) != -1;
@@ -360,10 +458,13 @@
                             }
 
                             ctrl.filteredVolumesByAccount = volumeList.filter(function(item, index, array){ return array.indexOf(item) === index; });
-                            console.log(ctrl.filteredVolumesByAccount);
                         });
                 });
             });
+
+
+
+
         };
 
         ctrl.numberOfPages = function(length)  {

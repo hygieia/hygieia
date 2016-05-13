@@ -28,6 +28,8 @@ public interface CloudVolumeRepository extends
 
     Collection<CloudVolumeStorage> findByVolumeIdIn(List<String> volumeId);
 
+    Collection<CloudVolumeStorage> findByAttachInstancesIn(List<String> attachInstances);
+
     @Query(value = "{accountNumber : ?0}")
     Collection<CloudVolumeStorage> findByAccountNumber(String accountNumber);
 
