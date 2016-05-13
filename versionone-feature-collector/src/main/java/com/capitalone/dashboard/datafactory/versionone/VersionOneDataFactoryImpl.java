@@ -215,32 +215,6 @@ public class VersionOneDataFactoryImpl implements VersionOneDataFactory {
     }
 
     /**
-     * Accessor method for JSON response output array.
-     *
-     * @return JSON response array from VersionOne
-     */
-    private JSONArray getJsonOutputArray() {
-        return jsonOutputArray;
-    }
-
-    /**
-     * Mutator method for JSON response output array.
-     */
-    private void setJsonOutputArray(String stringResult) {
-        JSONParser parser = new JSONParser();
-
-        try {
-            this.jsonOutputArray = (JSONArray) parser.parse(stringResult);
-        } catch (ParseException | ClassCastException e) {
-            LOGGER.error(
-                    "There was a problem parsing the JSONArray response value from the source system:\n"
-                            + e.getMessage() + " | " + e.getCause());
-            this.jsonOutputArray = new JSONArray();
-        }
-
-    }
-
-    /**
      * Mutator method for JSON response output array.
      */
     private JSONArray makeJsonOutputArray(String stringResult) {
