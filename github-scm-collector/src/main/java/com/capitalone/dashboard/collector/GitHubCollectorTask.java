@@ -130,23 +130,6 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
             }
         }
         gitHubRepoRepository.save(repoList);
-
-        /**
-         * Logic: Get all the collector items from the collector_item collection for this collector.
-         * If their id is in the unique set (above), keep them enabled; else, disable them.
-
-         List<GitHubOrg> reposList = new ArrayList<>();
-         Set<ObjectId> gitID1 = new HashSet<>();
-         gitID1.add(collector.getId());
-         for (GitHubOrg repo : gitRepoRepository.findByCollectorIdIn(gitID)) {
-         if (repo != null) {
-         repo.setEnabled(uniqueIDs.contains(repo.getId()));
-         reposList.add(repo);
-         }
-         }
-         gitRepoRepository.save(reposList);
-
-         */
     }
 
 
@@ -166,8 +149,10 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
             repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
             gitHubRepoRepository.save(repo);
             LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
+
             for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
                 LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
+
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
                     commitRepository.save(commit);
@@ -175,16 +160,16 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 }
             }
             for (Pull commit : gitHubClient.getPulls(repo, firstRun)) {
-                //LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
-                if (isNewPull(repo, commit)) {
+                LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
+                if (isNewPull(commit)) {
                     commit.setCollectorItemId(repo.getId());
                     pullRepository.save(commit);
                     commitCount++;
                 }
             }
             for (Issue commit : gitHubClient.getIssues(repo, firstRun)) {
-                //LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
-                if (isNewIssue(repo, commit)) {
+                LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
+                if (isNewIssue(commit)) {
                     commit.setCollectorItemId(repo.getId());
                     issueRepository.save(commit);
                     commitCount++;
@@ -209,13 +194,13 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 repo.getId(), commit.getScmRevisionNumber()) == null;
     }
 
-    private boolean isNewPull(GitHubRepo repo, Pull commit) {
-        return pullRepository.findByCollectorItemIdAndNumber(
-                repo.getId(), commit.getScmRevisionNumber()) == null;
+    private boolean isNewPull(Pull commit) {
+        return pullRepository.findByRepoNameAndNumber(
+                commit.getRepoName(), commit.getNumber()) == null;
     }
 
-    private boolean isNewIssue(GitHubRepo repo, Issue commit) {
-        return issueRepository.findByCollectorItemIdAndNumber(
-                repo.getId(), commit.getScmRevisionNumber()) == null;
+    private boolean isNewIssue(Issue commit) {
+        return issueRepository.findByRepoNameAndNumber(
+                commit.getRepoName(), commit.getNumber()) == null;
     }
 }

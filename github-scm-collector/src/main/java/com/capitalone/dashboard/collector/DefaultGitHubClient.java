@@ -2,12 +2,14 @@ package com.capitalone.dashboard.collector;
 
 
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.Developer;
 import com.capitalone.dashboard.model.GitHubRepo;
 import com.capitalone.dashboard.model.Issue;
 import com.capitalone.dashboard.model.Pull;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
+import com.capitalone.dashboard.utils.DeveloperDataClientImpl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +32,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import static com.capitalone.dashboard.model.QPull.pull;
+import static org.eclipse.jdt.internal.compiler.parser.Parser.name;
+
 /**
  * GitHubClient implementation that uses SVNKit to fetch information about
  * Subversion repositories.
@@ -39,7 +44,10 @@ import java.util.*;
 public class DefaultGitHubClient implements GitHubClient {
 	private static final Log LOG = LogFactory.getLog(DefaultGitHubClient.class);
 
+	public static Map  <String, Developer> devs = new HashMap();
 	private final GitHubSettings settings;
+	private final DeveloperDataSettings devDataSettings;
+	private final DeveloperDataClient devDataClient = new DeveloperDataClientImpl();
 
 	private final RestOperations restOperations;
 
@@ -50,13 +58,26 @@ public class DefaultGitHubClient implements GitHubClient {
 	private static final String PUBLIC_GITHUB_ORG_HOST = "api.github.com/orgs/";
 
 	private static final String PUBLIC_GITHUB_HOST_NAME = "github.com";
-	private static final int FIRST_RUN_HISTORY_DEFAULT = 90;
+	private static final int FIRST_RUN_HISTORY_DEFAULT = 150;
 
-	@Autowired
+	/*@Autowired
 	public DefaultGitHubClient(GitHubSettings settings,
 							   Supplier<RestOperations> restOperationsSupplier) {
 		this.settings = settings;
 		this.restOperations = restOperationsSupplier.get();
+		//this.devDataSettings = null;
+	}
+	*/
+
+
+
+	@Autowired
+
+	public DefaultGitHubClient(GitHubSettings settings, DeveloperDataSettings developerDataSettings,
+							   Supplier<RestOperations> restOperationsSupplier) {
+		this.settings = settings;
+		this.restOperations = restOperationsSupplier.get();
+		this.devDataSettings = developerDataSettings;
 	}
 
 
@@ -76,7 +97,7 @@ public class DefaultGitHubClient implements GitHubClient {
 				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
 			}
 		} else {
-			dt = getDate(new Date(repo.getLastUpdated()), -90, -10);
+			dt = getDate(new Date(repo.getLastUpdated()), -150, -10);
 		}
 		Calendar calendar = new GregorianCalendar();
 		TimeZone timeZone = calendar.getTimeZone();
@@ -159,7 +180,6 @@ public class DefaultGitHubClient implements GitHubClient {
 			}
 		}
 		return commits;
-
 	}
 	@Override
 	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
@@ -177,13 +197,12 @@ public class DefaultGitHubClient implements GitHubClient {
 				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
 			}
 		} else {
-			dt = getDate(new Date(repo.getLastUpdated()), -90, -10);
+			dt = getDate(new Date(repo.getLastUpdated()), -150, -10);
 		}
 		Calendar calendar = new GregorianCalendar();
 		TimeZone timeZone = calendar.getTimeZone();
 		Calendar cal = Calendar.getInstance(timeZone);
 		cal.setTime(dt);
-		String thisMoment = String.format("%tFT%<tRZ", cal);
 		String decryptedPassword = "";
 		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
 			try {
@@ -193,7 +212,6 @@ public class DefaultGitHubClient implements GitHubClient {
 				LOG.error(e.getMessage());
 			}
 		}
-		//Find All Repo's of this org
 		String repoUrl = getOrgUrl(repo).concat("repos");
 		List <String> repos = new ArrayList<>();
 
@@ -210,20 +228,34 @@ public class DefaultGitHubClient implements GitHubClient {
 			LOG.error(re.getMessage());
 		}
 
-
 		Iterator iter = repos.iterator();
 		while (iter.hasNext()) {
 			String repoName = (String )iter.next();
-			String queryUrl = apiUrl.concat(repoName + "/pulls?sha=" + repo.getBranch()
-					+ "&since=" + thisMoment);
+			String pageUrl = apiUrl.concat(repoName + "/pulls?state=all");
+			ResponseEntity<String> response = makeRestCall(pageUrl, repo.getUserId(), decryptedPassword);
 
-			// decrypt password
-			boolean lastPage = false;
+			HttpHeaders headers = response.getHeaders();
+			List<String> pagevalues = headers.get("Link");
+			int pageCount=0;
+
+			if (pagevalues == null) {
+				pageCount = 1;
+			}
+			else {
+				LOG.error("list is " + pagevalues.get(0));
+				String[] splited1 = pagevalues.get(0).split(";");
+				String[] splited2 = splited1[1].split("=");
+				String[] splitted3 = splited2[3].split(">");
+				String lastPageCount = splitted3[0];
+				LOG.error(lastPageCount);
+				pageCount = Integer.parseInt(lastPageCount);
+			}
+
 			int pageNumber = 1;
-			String queryUrlPage = queryUrl;
-			while (!lastPage) {
+			while (pageNumber <= pageCount ) {
 				try {
-					ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+					String queryUrl = pageUrl + "&page=" + pageNumber;
+					response = makeRestCall(queryUrl, repo.getUserId(), decryptedPassword);
 					JSONArray jsonArray = paresAsArray(response);
 					for (Object item : jsonArray) {
 						JSONObject jsonObject = (JSONObject) item;
@@ -231,35 +263,34 @@ public class DefaultGitHubClient implements GitHubClient {
 						String number = str(jsonObject, "number");
 						JSONObject userObject = (JSONObject) jsonObject.get("user");
 						String name = str(userObject, "login");
-						long timestamp = new DateTime(str(jsonObject, "created_at"))
-								.getMillis();
-
+						long timestamp = new DateTime(str(jsonObject, "created_at")).getMillis();
+						String created=str(jsonObject, "created_at");
+						String merged=str(jsonObject, "merged_at");
+						String closed=str(jsonObject, "closed_at");
 						Pull pull = new Pull();
-						pull.setTimestamp(System.currentTimeMillis());
 						pull.setScmUrl(repo.getRepoUrl());
 						pull.setScmCommitTimestamp(timestamp);
 						pull.setScmRevisionNumber(number);
 						pull.setScmCommitLog(message);
+						pull.setCreatedAt(created);
+						pull.setClosedAt(closed);
 						pull.setTimestamp(timestamp);
+						pull.setMergedAt(merged);
 						pull.setName(name);
 						pull.setNumber(number);
 						pull.setRepoName(repoName);
 						pull.setNumberOfChanges(1);
+						buildPullDeveloper(pull, name);
 						pulls.add(pull);
 					}
 					if (jsonArray == null || jsonArray.isEmpty()) {
-						lastPage = true;
-					} else {
-						lastPage = isThisLastPage(response);
-						pageNumber++;
-						queryUrlPage = queryUrl + "&page=" + pageNumber;
+						pageNumber = pageCount;
 					}
-
 				} catch (RestClientException re) {
-					LOG.error(re.getMessage() + ":" + queryUrl);
-					lastPage = true;
-
+					LOG.error(re.getMessage());
+					pageNumber = pageCount;
 				}
+				pageNumber++;
 			}
 		}
 		return pulls;
@@ -282,13 +313,13 @@ public class DefaultGitHubClient implements GitHubClient {
 				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
 			}
 		} else {
-			dt = getDate(new Date(repo.getLastUpdated()), -90, -10);
+			dt = getDate(new Date(repo.getLastUpdated()), -150, -10);
 		}
 		Calendar calendar = new GregorianCalendar();
 		TimeZone timeZone = calendar.getTimeZone();
 		Calendar cal = Calendar.getInstance(timeZone);
 		cal.setTime(dt);
-		String thisMoment = String.format("%tFT%<tRZ", cal);
+		//String thisMoment = String.format("%tFT%<tRZ", cal);
 
 		String decryptedPassword = "";
 		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
@@ -321,17 +352,32 @@ public class DefaultGitHubClient implements GitHubClient {
 		while (iter.hasNext()) {
 
 			String repoName = (String )iter.next();
-			String queryUrl = apiUrl.concat(repoName + "/issues?sha=" + repo.getBranch()
-					+ "&since=" + thisMoment);
+			String pageUrl = apiUrl.concat(repoName + "/issues?state=all");
+			ResponseEntity<String> response = makeRestCall(pageUrl, repo.getUserId(), decryptedPassword);
 
-			// decrypt password
+			HttpHeaders headers = response.getHeaders();
+			List<String> pagevalues = headers.get("Link");
+			int pageCount=0;
 
-			boolean lastPage = false;
+			if (pagevalues == null) {
+				pageCount = 1;
+			}
+			else {
+				LOG.error("list is " + pagevalues.get(0));
+				String[] splited1 = pagevalues.get(0).split(";");
+				String[] splited2 = splited1[1].split("=");
+				String[] splitted3 = splited2[3].split(">");
+				String lastPageCount = splitted3[0];
+				LOG.error(lastPageCount);
+				pageCount = Integer.parseInt(lastPageCount);
+			}
+
 			int pageNumber = 1;
-			String queryUrlPage = queryUrl;
-			while (!lastPage) {
+			while (pageNumber <= pageCount ) {
 				try {
-					ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+					String queryUrl = pageUrl + "&page=" + pageNumber;
+					response = makeRestCall(queryUrl, repo.getUserId(), decryptedPassword);
+
 					JSONArray jsonArray = paresAsArray(response);
 					for (Object item : jsonArray) {
 						JSONObject jsonObject = (JSONObject) item;
@@ -339,35 +385,33 @@ public class DefaultGitHubClient implements GitHubClient {
 						String number = str(jsonObject, "number");
 						JSONObject userObject = (JSONObject) jsonObject.get("user");
 						String name = str(userObject, "login");
-						long timestamp = new DateTime(str(jsonObject, "created_at"))
-								.getMillis();
+						String created = str(jsonObject, "created_at");
+						String closed = str(jsonObject, "closed_at");
+						long timestamp = new DateTime(str(jsonObject, "created_at")).getMillis();
 
 						Issue issue = new Issue();
-						issue.setTimestamp(System.currentTimeMillis());
 						issue.setScmUrl(repo.getRepoUrl());
 						issue.setScmCommitTimestamp(timestamp);
 						issue.setScmRevisionNumber(number);
 						issue.setScmCommitLog(message);
 						issue.setTimestamp(timestamp);
+						issue.setCreatedAt(created);
+						issue.setClosedAt(closed);
 						issue.setName(name);
 						issue.setNumber(number);
 						issue.setRepoName(repoName);
 						issue.setNumberOfChanges(1);
+						buildIssueDeveloper(issue, name);
 						issues.add(issue);
 					}
 					if (jsonArray == null || jsonArray.isEmpty()) {
-						lastPage = true;
-					} else {
-						lastPage = isThisLastPage(response);
-						pageNumber++;
-						queryUrlPage = queryUrl + "&page=" + pageNumber;
+						pageNumber = pageCount;
 					}
-
 				} catch (RestClientException re) {
-					LOG.error(re.getMessage() + ":" + queryUrl);
-					lastPage = true;
-
+					LOG.error(re.getMessage());
+					pageNumber = pageCount;
 				}
+				pageNumber++;
 			}
 		}
 		return issues;
@@ -497,4 +541,49 @@ public class DefaultGitHubClient implements GitHubClient {
 		}
 		return apiUrl;
 	}
+	private void buildPullDeveloper (Pull scm, String name) {
+
+		Developer dev = (Developer) devs.get(name);
+		if (dev == null) {
+			try {
+				dev = devDataClient.getDeveloper(name, devDataSettings);
+			} catch (Exception e) {
+				LOG.error(e.getMessage());
+			}
+		}
+		if (dev != null) {
+			scm.setDepartmentId(dev.getDepartmentId());
+			scm.setLevelOneMgr(dev.getLevelOneMgr());
+			scm.setLevelTwoMgr(dev.getLevelTwoMgr());
+			scm.setJobLevel(dev.getJobLevel());
+			scm.setManager(dev.getManager());
+			scm.setUserId(name);
+			scm.setDeveloperName(dev.getName());
+			scm.setDepartmentName(dev.getDepartmentname());
+		}
+		devs.put(name, dev);
+	}
+	private void buildIssueDeveloper (Issue scm, String name) {
+
+		Developer dev = (Developer) devs.get(name);
+		if (dev == null) {
+			try {
+				dev = devDataClient.getDeveloper(name, devDataSettings);
+			} catch (Exception e) {
+				LOG.error(e.getMessage());
+			}
+		}
+		if (dev != null) {
+			scm.setDepartmentId(dev.getDepartmentId());
+			scm.setLevelOneMgr(dev.getLevelOneMgr());
+			scm.setLevelTwoMgr(dev.getLevelTwoMgr());
+			scm.setJobLevel(dev.getJobLevel());
+			scm.setManager(dev.getManager());
+			scm.setUserId(name);
+			scm.setDeveloperName(dev.getName());
+			scm.setDepartmentName(dev.getDepartmentname());
+		}
+		devs.put(name, dev);
+	}
+
 }

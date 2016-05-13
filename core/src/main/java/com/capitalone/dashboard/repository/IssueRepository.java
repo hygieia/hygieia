@@ -27,5 +27,7 @@ public interface IssueRepository extends CrudRepository<Issue, ObjectId>, QueryD
     List<Issue> findByCollectorItemIdAndScmCommitTimestamp(ObjectId collectorItemid, Long scmCommitTimestampThreshold);
 
     Issue findByCollectorItemIdAndNumber(ObjectId collectorItemId, String number);
+    Issue findByRepoNameAndNumber(String repoName, String number);
+
 
 }
