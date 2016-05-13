@@ -143,7 +143,7 @@ public class BuildServiceImpl implements BuildService {
         return collectorService.createCollectorItemByNiceNameAndJobName(tempCi, request.getJobName());
     }
 
-    private Build createBuild(CollectorItem collectorItem, BuildDataCreateRequest request) {
+        private Build createBuild(CollectorItem collectorItem, BuildDataCreateRequest request) {
         Build build = buildRepository.findByCollectorItemIdAndNumber(collectorItem.getId(),
                 request.getNumber());
         if (build == null) {

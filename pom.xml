@@ -7,7 +7,7 @@
   <artifactId>Hygieia</artifactId>
   <packaging>pom</packaging>
   <version>2.0.0-SNAPSHOT</version>
-  <name>${project.groupId}:${project.artifactId}</name>
+    <name>${project.groupId}:${project.artifactId}</name>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -178,6 +178,7 @@
 				<module>jira-feature-collector</module>
 				<module>jenkins-cucumber-test-collector</module>
 				<module>chat-ops-collector</module>
+				<module>aws-cloud-collector</module>
 				<module>UI</module>
 			</modules>
 			<build>
