@@ -14,13 +14,11 @@ import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.DescribeSnapshotsResult;
 import com.amazonaws.services.ec2.model.DescribeVolumesResult;
 import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceState;
 import com.amazonaws.services.ec2.model.Reservation;
-import com.amazonaws.services.ec2.model.Snapshot;
 import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.VolumeAttachment;
@@ -140,9 +138,9 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     /**
      * Fill out the CloudInstance object
      *
-     * @param account Cloud Account
+     * @param account      Cloud Account
      * @param currInstance Cloud Instance
-     * @param repository CloundInstnceRepository
+     * @param repository   CloundInstnceRepository
      * @return A single CloundInstance
      */
     private CloudInstance getCloudInstanceDetails(String account,
@@ -197,27 +195,25 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     /**
      * Returns a map of account number of list of volumes associated with the account
      *
+     * @param instanceToAccountMap
      * @return Map of account number and a list of Volumes
      */
 
-    public Map<String, List<CloudVolumeStorage>> getCloudVolumes() {
-        Map<String, String> volIdAccountMap = new HashMap<>();
+    public Map<String, List<CloudVolumeStorage>> getCloudVolumes(Map<String, String> instanceToAccountMap) {
         Map<String, List<CloudVolumeStorage>> returnMap = new HashMap<>();
-
-        DescribeSnapshotsResult snapShots = ec2Client.describeSnapshots();
-        for (Snapshot s : snapShots.getSnapshots()) {
-            String volId = s.getVolumeId();
-            if (StringUtils.isEmpty(volIdAccountMap.get(volId))) {
-                volIdAccountMap.put(volId, s.getOwnerId());
-            }
-        }
         DescribeVolumesResult volumeResult = ec2Client.describeVolumes();
         for (Volume v : volumeResult.getVolumes()) {
-            String account = volIdAccountMap.get(v.getVolumeId());
-            if (StringUtils.isEmpty(account)) {
-                account = NO_ACCOUNT;
-            }
             CloudVolumeStorage object = new CloudVolumeStorage();
+            for (VolumeAttachment va : v.getAttachments()) {
+                object.getAttchInstances().add(va.getInstanceId());
+            }
+            String account = NO_ACCOUNT;
+            //Get any instance id if any and get corresponding account number
+            if (!CollectionUtils.isEmpty(object.getAttchInstances()) &&
+                    !StringUtils.isEmpty(instanceToAccountMap.get(object.getAttchInstances().get(0)))) {
+                account = instanceToAccountMap.get(object.getAttchInstances().get(0));
+            }
+            object.setAccountNumber(account);
             object.setZone(v.getAvailabilityZone());
             object.setAccountNumber(account);
             object.setCreationDate(v.getCreateTime().getTime());
@@ -226,11 +222,6 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
             object.setStatus(v.getState());
             object.setType(v.getVolumeType());
             object.setVolumeId(v.getVolumeId());
-
-            for (VolumeAttachment va : v.getAttachments()) {
-                object.getAttchInstances().add(va.getInstanceId());
-            }
-
             List<Tag> tags = v.getTags();
             if (!CollectionUtils.isEmpty(tags)) {
                 for (Tag tag : tags) {
@@ -238,7 +229,6 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                     object.getTags().add(nv);
                 }
             }
-
             if (CollectionUtils.isEmpty(returnMap.get(object.getAccountNumber()))) {
                 List<CloudVolumeStorage> temp = new ArrayList<>();
                 temp.add(object);

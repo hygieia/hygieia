@@ -39,6 +39,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -118,14 +119,21 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
         log("Starting AWS collection...");
         log("Collecting AWS Cloud Data...");
 
-        collectInstances();
+        Map<String, List<CloudInstance>> accountToInstnaceMap = collectInstances();
 
-        collectVolume();
+        Map<String, String> instanceToAccountMap = new HashMap<>();
+        for (String account : accountToInstnaceMap.keySet()) {
+            Collection<CloudInstance> instanceList = accountToInstnaceMap.get(account);
+            for (CloudInstance ci : instanceList) {
+                instanceToAccountMap.put(ci.getInstanceId(), account);
+            }
+        }
+        collectVolume(instanceToAccountMap);
 
         log("Finished Cloud collection.");
     }
 
-    private void collectInstances() {
+    private Map<String, List<CloudInstance>> collectInstances() {
         Map<String, List<CloudInstance>> cloudInstanceMap = awsClient.getCloundInstances(cloudInstanceRepository);
         for (String account : cloudInstanceMap.keySet()) {
             Collection<CloudInstance> collectedInstances = cloudInstanceMap.get(account);
@@ -150,7 +158,7 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
             }
             saveAggregatedHistory(account, cloudInstanceMap.get(account));
         }
-
+        return cloudInstanceMap;
     }
 
 
@@ -225,8 +233,8 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
         cloudSubNetworkRepository.save(cloudSubNetwork);
     }
 
-    private void collectVolume() {
-        Map<String, List<CloudVolumeStorage>> accountVolume = awsClient.getCloudVolumes();
+    private void collectVolume(Map<String, String> instanceToAccountMap) {
+        Map<String, List<CloudVolumeStorage>> accountVolume = awsClient.getCloudVolumes(instanceToAccountMap);
         for (String account : accountVolume.keySet()) {
             Collection<CloudVolumeStorage> existing = cloudVolumeRepository.findByAccountNumber(account);
             if (!CollectionUtils.isEmpty(existing)) {

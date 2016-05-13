@@ -20,7 +20,7 @@ public interface AWSCloudClient {
 	Map<String, List<CloudInstance>> getCloundInstances(CloudInstanceRepository repository);
     CloudVirtualNetwork getCloudVPC(CloudVirtualNetworkRepository repository);
     CloudSubNetwork getCloudSubnet(CloudSubNetworkRepository repository);
-    Map<String, List<CloudVolumeStorage>> getCloudVolumes();
+    Map<String, List<CloudVolumeStorage>> getCloudVolumes(Map<String, String> instanceToAccountMap);
     Double get24HourInstanceEstimatedCharge();
 
 }
