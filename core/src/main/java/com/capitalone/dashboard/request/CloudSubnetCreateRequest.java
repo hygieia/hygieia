@@ -1,13 +1,11 @@
 package com.capitalone.dashboard.request;
 
-import com.capitalone.dashboard.model.CloudSubNetwork;
 import com.capitalone.dashboard.model.NameValue;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class CloudSubnetCreateRequest {
     @NotNull
@@ -15,18 +13,16 @@ public class CloudSubnetCreateRequest {
     private String accountNumber;
     private String virtualNetworkId;
     private String cidrBlock;
-    private int cidrCount;
+    private String cidrCount;
     private String zone;
-    private int availableIPCount;
-    private int usedIPCount;
-    private boolean defaultForZone;
+    private String availableIPCount;
+    private String usedIPCount;
+    private String defaultForZone;
     private String state;
-    private long creationDate;
-    private long lastUpdateDate;
+    private String creationDate;
+    private String lastUpdateDate;
     private List<NameValue> tags = new ArrayList<>();
     private Map<String, Integer> ipUsage;
-
-
 
 
     public String getSubnetId() {
@@ -61,6 +57,14 @@ public class CloudSubnetCreateRequest {
         this.cidrBlock = cidrBlock;
     }
 
+    public String getCidrCount() {
+        return cidrCount;
+    }
+
+    public void setCidrCount(String cidrCount) {
+        this.cidrCount = cidrCount;
+    }
+
     public String getZone() {
         return zone;
     }
@@ -69,27 +73,27 @@ public class CloudSubnetCreateRequest {
         this.zone = zone;
     }
 
-    public int getAvailableIPCount() {
+    public String getAvailableIPCount() {
         return availableIPCount;
     }
 
-    public void setAvailableIPCount(int availableIPCount) {
+    public void setAvailableIPCount(String availableIPCount) {
         this.availableIPCount = availableIPCount;
     }
 
-    public int getUsedIPCount() {
+    public String getUsedIPCount() {
         return usedIPCount;
     }
 
-    public void setUsedIPCount(int usedIPCount) {
+    public void setUsedIPCount(String usedIPCount) {
         this.usedIPCount = usedIPCount;
     }
 
-    public boolean isDefaultForZone() {
+    public String getDefaultForZone() {
         return defaultForZone;
     }
 
-    public void setDefaultForZone(boolean defaultForZone) {
+    public void setDefaultForZone(String defaultForZone) {
         this.defaultForZone = defaultForZone;
     }
 
@@ -101,19 +105,19 @@ public class CloudSubnetCreateRequest {
         this.state = state;
     }
 
-    public long getCreationDate() {
+    public String getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(long creationDate) {
+    public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
     }
 
-    public long getLastUpdateDate() {
+    public String getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(long lastUpdateDate) {
+    public void setLastUpdateDate(String lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 
@@ -121,12 +125,8 @@ public class CloudSubnetCreateRequest {
         return tags;
     }
 
-    public int getCidrCount() {
-        return cidrCount;
-    }
-
-    public void setCidrCount(int cidrCount) {
-        this.cidrCount = cidrCount;
+    public void setTags(List<NameValue> tags) {
+        this.tags = tags;
     }
 
     public Map<String, Integer> getIpUsage() {
@@ -138,15 +138,21 @@ public class CloudSubnetCreateRequest {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(subnetId);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CloudSubnetCreateRequest that = (CloudSubnetCreateRequest) o;
+
+        if (!subnetId.equals(that.subnetId)) return false;
+        return accountNumber.equals(that.accountNumber);
+
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if(this==obj) return true;
-        if(!(obj instanceof CloudSubNetwork)) return false;
-        CloudSubNetwork c =(CloudSubNetwork) obj;
-        return Objects.equals(getSubnetId(), c.getSubnetId());
+    public int hashCode() {
+        int result = subnetId.hashCode();
+        result = 31 * result + accountNumber.hashCode();
+        return result;
     }
 }

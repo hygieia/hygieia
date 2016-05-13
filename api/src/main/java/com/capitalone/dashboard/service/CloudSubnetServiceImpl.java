@@ -1,13 +1,16 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.config.collector.CloudConfig;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.CloudSubNetwork;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.NameValue;
 import com.capitalone.dashboard.repository.CloudSubNetworkRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.request.CloudSubnetCreateRequest;
 import com.capitalone.dashboard.response.CloudSubNetworkAggregatedResponse;
-import com.capitalone.dashboard.util.HygieiaUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -15,8 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class CloudSubnetServiceImpl implements CloudSubnetService {
@@ -70,47 +76,62 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
         return deletedIds;
     }
 
-    private CloudSubNetwork createSubnetworkObject (CloudSubnetCreateRequest request) {
+    private CloudSubNetwork createSubnetworkObject(CloudSubnetCreateRequest request) {
         CloudSubNetwork subnet = new CloudSubNetwork();
         subnet.setAccountNumber(request.getAccountNumber());
-        subnet.setAvailableIPCount(request.getAvailableIPCount());
-        subnet.setDefaultForZone(request.isDefaultForZone());
+        subnet.setAvailableIPCount(Integer.parseInt(request.getAvailableIPCount()));
+        subnet.setDefaultForZone(Boolean.parseBoolean(request.getDefaultForZone()));
         subnet.setState(request.getState());
         subnet.setVirtualNetworkId(request.getVirtualNetworkId());
         subnet.setZone(request.getZone());
         subnet.setCidrBlock(request.getCidrBlock());
-        subnet.setCidrCount(request.getCidrCount());
-        subnet.setCreationDate(request.getCreationDate());
-        subnet.setLastUpdateDate(request.getLastUpdateDate());
+        subnet.setCidrCount(Integer.parseInt(request.getCidrCount()));
+        subnet.setCreationDate(Long.parseLong(request.getCreationDate()));
+        subnet.setLastUpdateDate(Long.parseLong(request.getLastUpdateDate()));
         subnet.setSubnetId(request.getSubnetId());
-        subnet.setUsedIPCount(request.getUsedIPCount());
+        subnet.setUsedIPCount(Integer.parseInt(request.getUsedIPCount()));
         subnet.getTags().addAll(request.getTags());
         subnet.setIpUsage(request.getIpUsage());
         return subnet;
+    }
+
+    private CloudSubNetwork updateSubnetworkObject(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getAccountNumber() != null) existing.setAccountNumber(request.getAccountNumber());
+        if (request.getAvailableIPCount() != null)
+            existing.setAvailableIPCount(Integer.parseInt(request.getAvailableIPCount()));
+        if (request.getDefaultForZone() != null)
+            existing.setDefaultForZone(Boolean.parseBoolean(request.getDefaultForZone()));
+        if (request.getState() != null) existing.setState(request.getState());
+        if (request.getVirtualNetworkId() != null) existing.setVirtualNetworkId(request.getVirtualNetworkId());
+        if (request.getZone() != null) existing.setZone(request.getZone());
+        if (request.getCidrBlock() != null) existing.setCidrBlock(request.getCidrBlock());
+        if (request.getCidrCount() != null) existing.setCidrCount(Integer.parseInt(request.getCidrCount()));
+        if (request.getCreationDate() != null) existing.setCreationDate(Long.parseLong(request.getCreationDate()));
+        if (request.getLastUpdateDate() != null)
+            existing.setLastUpdateDate(Long.parseLong(request.getLastUpdateDate()));
+        if (request.getSubnetId() != null) existing.setSubnetId(request.getSubnetId());
+        if (request.getUsedIPCount() != null) existing.setUsedIPCount(Integer.parseInt(request.getUsedIPCount()));
+        if (request.getIpUsage() != null) existing.setIpUsage(request.getIpUsage());
+        if (!CollectionUtils.isEmpty(request.getTags())) {
+            existing.getTags().clear();
+            existing.getTags().addAll(request.getTags());
+        }
+        existing.getTags().addAll(request.getTags());
+
+        return existing;
     }
 
     @Override
     public List<String> upsertSubNetwork(List<CloudSubnetCreateRequest> subnets) {
         List<String> objectIds = new ArrayList<>();
         for (CloudSubnetCreateRequest csn : subnets) {
-            CloudSubNetwork newObject = createSubnetworkObject(csn);
             CloudSubNetwork existing = getSubNetworkDetailsBySubnetId(csn.getSubnetId());
             if (existing == null) {
-                CloudSubNetwork sn = cloudSubNetworkRepository.save(newObject);
+                CloudSubNetwork sn = cloudSubNetworkRepository.save(createSubnetworkObject(csn));
                 objectIds.add(sn.getId().toString());
             } else {
-                try {
-                    HygieiaUtils.mergeObjects(existing, newObject);
-                    //copy ArrayLists manually -
-                    if (!CollectionUtils.isEmpty(newObject.getTags())) {
-                        existing.getTags().clear();
-                        existing.getTags().addAll(newObject.getTags());
-                    }
-                    cloudSubNetworkRepository.save(existing);
-                    objectIds.add(existing.getId().toString());
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    logger.error("Error saving cloud subnet information info for subnetId: " + csn.getSubnetId(), e);
-                }
+                cloudSubNetworkRepository.save(updateSubnetworkObject(csn, existing));
+                objectIds.add(existing.getId().toString());
             }
         }
         return objectIds;
