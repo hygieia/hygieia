@@ -133,3 +133,57 @@ h3{
   .text-standard;
   text-align: center;
 }
+
+#subnetUtilization, #subnetDetail {
+    background: @dash-dashboard-bg;
+    color: @dash-dashboard-text;
+
+    // styles for chartist charts
+    .ct-label {
+        .text-standard;
+    }
+
+    width: 900px;
+
+    .ct-wrapper {
+        position: relative;
+
+        // better style donut charts
+        &.dash-donut-wrapper {
+            .ct-chart {
+                margin-bottom: -50%;
+            }
+
+            .donut-number {
+                width: 30%;
+                height: 30%;
+                left: 30%;
+                top: 45%;
+            }
+
+            .donut-number-percent {
+                left: 65%;
+                top: 50%;
+            }
+        }
+
+        // to show a number and percent inside a pie chart
+        .donut-number {
+            display: inline-block;
+            width: 40%;
+            height: 40%;
+            top: 30%;
+            left: 30%;
+            text-align: center;
+            position: absolute;
+        }
+        .guage-number {
+            display: inline-block;
+            width: 40%;
+            bottom: 48%;
+            left: 30%;
+            text-align: center;
+            position: absolute;
+        }
+    }
+}
