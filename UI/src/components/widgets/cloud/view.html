@@ -31,6 +31,23 @@
                     </h3>
                 </div>
             </div>
+
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-warning" style="width: 20%;"><span class="fa fa-usd header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspEC2 Cost/Month</br>
+                        &nbsp&nbsp&nbsp${{ cloudView.estimatedMonthlyCharge | number:0 }}
+                    </h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspUtilization {{ cloudView.calculateUtilization(cloudView.instancesByAccount) | number:1}}%</h3>
+                </div>
+            </div>
         </div>
 
         <div class="row">
@@ -93,14 +110,14 @@
 
             <div class="col-md-4">
                 <div class="well override-panel-background-color">
-                    <h3>Instance Usage</h3>
+                    <h3>Instance Usage - Monthly</h3>
                     <div class="row">
                         <div class="col-lg-6">
                             <div id="canvas-holder-3">
                                 <chartist
                                         class="ct-chart"
-                                        chartist-data="cloudView.instanceHistorySeries"
-                                        chartist-chart-options="cloudView.lineOptions"
+                                        chartist-data="cloudView.instanceUsageMonthly"
+                                        chartist-chart-options="cloudView.instanceUsageMonthlyLineOptions"
                                         chartist-chart-type="Line">
                                 </chartist>
                             </div>
@@ -109,50 +126,73 @@
                 </div>
             </div>
 
-        </div>
-        <div class="col-md-4">
-            <div id="iptutildiv" class="well override-panel-background-color" ng-controller="subnetController" ng-init="getSubnets()">
-                <div class="row" ng-init="getIpUtilizations()" >
-                    <div class="col-lg-5" onclick="angular.element(document.getElementById('iptutildiv')).scope().viewSubnetUtilization2();"><h3>IP Utilization</h3>
-                    </div>
-                    <div class="col-lg-7">  
-                        <div class="row">                     
-                            <div class="col-xs-6">
-                                <blockquote style="border-left:5px solid #949FB1;">Total IP's: {{totalIPs}}</blockquote> 
-                            </div>
-                            <div class="col-xs-6">
-                                <blockquote style="border-left:5px solid #949FB1;">Avg utilization: {{avgUtilization}}%</blockquote>
-                            </div>
+
+            <div class="col-md-6">
+                <div id="iptutildiv" class="well override-panel-background-color" ng-controller="subnetController" ng-init="getSubnets()">
+                    <div class="row" ng-init="getIpUtilizations()" >
+                        <div class="col-lg-5" onclick="angular.element(document.getElementById('iptutildiv')).scope().viewSubnetUtilization2();"><h3>IP Utilization</h3>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <blockquote style="border-left:5px solid #949FB1;">Total IP's: {{totalIPs}}</blockquote>
+                                </div>
+                                <div class="col-xs-6">
+                                    <blockquote style="border-left:5px solid #949FB1;">Avg utilization: {{avgUtilization}}%</blockquote>
+                                </div>
                             </div>
                         </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12" style="height: {{ getHeight() }}px">
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12" style="width:600px;height: {{ getHeight() }}px">
 
-                            <chartist 
+                            <chartist
                                     class="ct-chart"
                                     chartist-chart-type="Bar"
                                     chartist-data="ipUtilizations"
                                     chartist-chart-options="ipUtilizationsOptions"
                                     chartist-events="ipUtilizationsEvents"
-                                    ></chartist>                               
-                    </div>
+                            ></chartist>
+                        </div>
                         <div class="col-lg-12">
                             <div class="col-lg-4">
-                            <blockquote style="border-left:5px solid #4C9900;">&lt; 50%</blockquote>
+                                <blockquote style="border-left:5px solid #4C9900;">&lt; 50%</blockquote>
                             </div>
                             <div class="col-lg-4">
 
-                            <blockquote style="border-left:5px solid #FFBD35;">&lt; 70% </blockquote>
-                                </div>
-                                                            <div class="col-lg-4">
+                                <blockquote style="border-left:5px solid #FFBD35;">&lt; 70% </blockquote>
+                            </div>
+                            <div class="col-lg-4">
 
-                            <blockquote style="border-left:5px solid #FF5A5E;">&gt; 70%</blockquote>
-                                </div>
-                        </div>     
+                                <blockquote style="border-left:5px solid #FF5A5E;">&gt; 70%</blockquote>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>  
+
+            <div class="col-lg-6">
+                <div class="well override-panel-background-color">
+                    <h3>Instance Usage - Hourly</h3>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="canvas-holder-4">
+                                <chartist
+                                        class="ct-chart"
+                                        chartist-data="cloudView.instanceUsageHourly"
+                                        chartist-chart-options="cloudView.instanceUsageHourlyLineOptions"
+                                        chartist-chart-type="Line">
+
+
+                                </chartist>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
 
     </div>
 
@@ -179,13 +219,6 @@
                         )
 
                         }}</h3>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="progress progress-headers">
-                    <div class="progress-bar progress-bar-warning" style="width: 20%;"><span class="fa fa-usd header-icon"></span></div>
-                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspCost/Day N/A</h3>
                 </div>
             </div>
 
@@ -261,7 +294,7 @@
                                             {{instance.cpuUtilization | number:1}}%
                                         </td>
                                         <td tooltip-html-unsafe="{{instance.formattedTags}}" tooltip-placement="left">Tags</td>
-                                     </tr>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -289,4 +322,6 @@
     </div>
 
 </div>
+
+
 
