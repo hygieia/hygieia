@@ -21,7 +21,7 @@ public class CloudVolumeStorage extends BaseModel{
     private boolean encrypted;
     private String type;
     private String zone;
-    private List<String> attchInstances = new ArrayList<>();
+    private List<String> attachInstances = new ArrayList<>();
 
 
     public String getVolumeId() {
@@ -93,8 +93,8 @@ public class CloudVolumeStorage extends BaseModel{
         this.zone = zone;
     }
 
-    public List<String> getAttchInstances() {
-        return attchInstances;
+    public List<String> getAttachInstances() {
+        return attachInstances;
     }
 
     @Override

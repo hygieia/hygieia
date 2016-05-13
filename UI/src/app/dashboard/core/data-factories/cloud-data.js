@@ -8,7 +8,35 @@
 
     angular
         .module(HygieiaConfig.module + '.core')
-        .factory('cloudData', cloudData);
+        .factory('cloudData', cloudData)
+        .factory('cloudHistoryData',cloudHistoryData);
+
+    function cloudHistoryData($http, $q) {
+        var testDataRoute='instance_history.json';
+
+        function getInstanceHistoryDataByAccount(accountNumber){
+
+            var historyDeffered = $q.defer();
+
+            var cloudHistoryDataRoute = '/api/cloud/instance/history/account/';
+
+            var historyRoute = (HygieiaConfig.local ? testDataRoute : cloudHistoryDataRoute) + accountNumber;
+            $http.get(historyRoute)
+                .success(function (data) {
+                    historyDeffered.resolve(data);
+                })
+                .error(function(error) {
+                    historyDeffered.reject(error);
+                });
+            return historyDeffered.promise;
+
+        }
+        return {
+            getInstanceHistoryDataByAccount: getInstanceHistoryDataByAccount
+        };
+
+    }
+
 
     function cloudData($http, $q) {
 

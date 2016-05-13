@@ -18,6 +18,7 @@ public class AWSCloudSettings {
 	private String cron;
 
 	private List<String> validTagKey;
+    private List<String> protectedFields;
 
     private String profile;
 
@@ -77,5 +78,9 @@ public class AWSCloudSettings {
 
     public void setNonProxy(String nonProxy) {
         this.nonProxy = nonProxy;
+    }
+
+    public List<String> getProtectedFields() {
+        return protectedFields;
     }
 }
