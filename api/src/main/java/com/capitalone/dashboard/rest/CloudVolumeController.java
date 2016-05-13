@@ -61,6 +61,12 @@ public class CloudVolumeController {
         return ResponseEntity.ok().body(cloudVolumeService.getVolumeDetailsByVolumeIds(volumeIds));
     }
 
+    @RequestMapping(value = "/cloud/volume/details/instanceIds", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CloudVolumeStorage>> getVolumeDetailsByInstanceIds(@Valid @RequestBody List<String> instanceIds) {
+        return ResponseEntity.ok().body(cloudVolumeService.getVolumeDetailsByInstanceIds(instanceIds));
+    }
+
+
     @RequestMapping(value = "/cloud/volume/details/account/{accountNumber}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<CloudVolumeStorage>> getVolumeDetailsByAccount(
             @PathVariable String accountNumber) {

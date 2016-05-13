@@ -38,4 +38,6 @@ public interface CloudVolumeService {
      *          (d) List of Tags
      */
     CloudVolumeAggregatedResponse getVolumeAggregatedData(String componentId);
+
+    Collection<CloudVolumeStorage> getVolumeDetailsByInstanceIds(List<String> instanceIds);
 }

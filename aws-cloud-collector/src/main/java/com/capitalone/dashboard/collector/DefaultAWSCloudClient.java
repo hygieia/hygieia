@@ -205,13 +205,13 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         for (Volume v : volumeResult.getVolumes()) {
             CloudVolumeStorage object = new CloudVolumeStorage();
             for (VolumeAttachment va : v.getAttachments()) {
-                object.getAttchInstances().add(va.getInstanceId());
+                object.getAttachInstances().add(va.getInstanceId());
             }
             String account = NO_ACCOUNT;
             //Get any instance id if any and get corresponding account number
-            if (!CollectionUtils.isEmpty(object.getAttchInstances()) &&
-                    !StringUtils.isEmpty(instanceToAccountMap.get(object.getAttchInstances().get(0)))) {
-                account = instanceToAccountMap.get(object.getAttchInstances().get(0));
+            if (!CollectionUtils.isEmpty(object.getAttachInstances()) &&
+                    !StringUtils.isEmpty(instanceToAccountMap.get(object.getAttachInstances().get(0)))) {
+                account = instanceToAccountMap.get(object.getAttachInstances().get(0));
             }
             object.setAccountNumber(account);
             object.setZone(v.getAvailabilityZone());
