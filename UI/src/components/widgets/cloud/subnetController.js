@@ -133,7 +133,8 @@ $scope.getHeight = function() {
                   vpc: function() {
                     return vpc;
                   }
-                }
+                },
+                windowTopClass: 'windowTopClass'
 
             });
         };
