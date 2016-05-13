@@ -18,50 +18,50 @@
         $scope.ipUtilizations;
 
 
-       $scope.ipUtilizationsOptions = {
+        $scope.ipUtilizationsOptions = {
             horizontalBars: true,
             stackBars: true,
-            
             axisY: {
-    offset: 100
-  },
-  axisX: {
-    offset:20,
-     labelInterpolationFnc: function(value, index) {
-      return index % 2 === 0 ? value : null;
-    }
-  }
-
-
+              offset: 100
+            },
+            axisX: {
+              offset:20,
+              labelInterpolationFnc: function(value, index) {
+                return index % 2 === 0 ? value : null;
+              }
+            }
         };
 
-        $scope.ipUtilizationsEvents = { 
+        $scope.ipUtilizationsEvents = {
 
-  draw: function (data) {
+          draw: function (data) {
 
-if (data.type === 'bar') {
-  var strokeColor = '##05ac45';
+            if (data.type === 'bar') {
+              var strokeColor = '#05ac45';
 
-  if (data.meta == 'high') {
-        strokeColor = '#d8514d'
-  } else if (data.meta == 'med') {
-      strokeColor = '#ffbd35'
-  }
-    data.element.attr({
-      style: 'stroke-width: 20px; stroke: ' + strokeColor + ';'
-    });
-  }
+              if (data.meta == 'high') {
+                strokeColor = '#d8514d'
+              } else if (data.meta == 'med') {
+                strokeColor = '#ffbd35'
+              }
+              
+              data.element.attr(
+              {
+                style: 'stroke-width: 20px; stroke: ' + strokeColor + ';'
+              });
+            }
 
-  if (data.type === 'label') {
-    data.valueOf;
-    data.element.attr({
-     // onclick: "angular.element(document.getElementById('iptutildiv')).scope().viewSubnetUtilization2(this.innerHTML)",
-      class: 'clickable'
-    });  }
-
-  }
-
-      }
+              if (data.type === 'label') {
+                data.valueOf;
+                data.element.attr(
+                {
+                  // onclick: "angular.element(document.getElementById('iptutildiv')).scope().viewSubnetUtilization2(this.innerHTML)",
+                  class: 'clickable'
+                }
+              );  
+            }
+          }
+        }
 
         ctrl.calculatePercentage = function(count, total) {
           var percentage = count / total * 100;
@@ -77,7 +77,6 @@ if (data.type === 'bar') {
             angular.forEach($scope.vpcs, function(vpc) {
               
               var angularModalPopUpCall = "angular.element(document.getElementById('iptutildiv')).scope().viewSubnetUtilization('" + vpc.id + "')";
-
               var clickableLabel = '<div class="clickable" onclick="' + angularModalPopUpCall +'">' + vpc.id + '</div>';
 
               vpcData.labels.push(clickableLabel);
@@ -109,13 +108,11 @@ if (data.type === 'bar') {
             });
         };
 
-$scope.getHeight = function() {
+        $scope.getHeight = function() {
+          return $scope.vpcs.length * 30; 
+        }
 
-    return $scope.vpcs.length * 30;
-}
-        $scope.viewSubnetUtilization = function(vpcId) {
-            
-            
+        $scope.viewSubnetUtilization = function(vpcId) {    
             var vpc = {};
 
             angular.forEach($scope.vpcs, function(item) {
