@@ -39,6 +39,11 @@
             return epochMM + '/'+ epochDD + '/' + epochYYYY;
         };
 
+        var convertEpochTimeToHour = function(epochTime) {
+            var epochDate = new Date(epochTime);
+            return epochDate.getHours();
+        }
+
         var getTodayDate =  function() {
 
             //get todays date
@@ -108,6 +113,7 @@
         ctrl.tagName = $scope.widgetConfig.options.tagName || "";
         ctrl.tagValue = $scope.widgetConfig.options.tagValue || "";
 
+        //UI element management
         ctrl.tabs = [
             { name: "Overview"},
             { name: "Detail"}
@@ -120,71 +126,46 @@
         ctrl.searchFilter = '';
         ctrl.toggledView = ctrl.tabs[0].name;
 
-        ctrl.calculateUtilization = function(instances) {
-            if (instances == undefined) {
-                return 'N/A';
-            }
+        ctrl.instanceUsageMonthly;
+        ctrl.instanceUsageMonthlyLineOptions;
+        ctrl.instanceUsageHourly;
+        ctrl.instanceUsageHourlyLineOptions;
+        ctrl.estimatedMonthlyCharge;
+        ctrl.showData = false;
 
-            var cnt = instances.length;
+        ctrl.calculateAverageForInterval = function(instances, conversion) {
 
-            if (cnt == 0) {
-                return 'N/A';
-            }
+            var summary  = [];
+            var elements = [];
 
-            var total = instances.reduce(function(sum, currentValue) {
-                return sum + currentValue.cpuUtilization;
-            }, 0);
+            instances.forEach(function(value) {
+                var interval = conversion(value.time);
+                if (elements.indexOf(interval) == -1) {
+                    elements.push(interval);
+                }
+            });
 
-            return (total / cnt);
-        };
+            elements.forEach(function(element) {
 
-        ctrl.calculateVolumeInBytes = function(volumes) {
-            if (volumes == undefined) {
-                return 'N/A';
-            }
+                var oneInterval = instances.filter(function(value) {
+                    return conversion(value.time) == element;
+                });
 
-            var cnt = volumes.length;
 
-            if (cnt == 0) {
-                return 'N/A';
-            }
+                var total = oneInterval.reduce(function(sum, currentValue) {
+                    return sum + currentValue.total;
+                }, 0);
 
-            var total = volumes.reduce(function(sum, currentValue) {
-                return sum + currentValue.size;
-            }, 0);
+                var cnt = oneInterval.length;
 
-            return total * 1073741824;
-        };
+                summary.push({
+                    interval: element,
+                    avg: (total/cnt)
+                })
+            });
 
-        ctrl.calculateRunningInstances = function(instances) {
-            if (instances == undefined) {
-                return 'N/A';
-            }
-
-            var cnt = instances.length;
-
-            if (cnt == 0) {
-                return 'N/A';
-            }
-
-            return instances.filter(function(value) { return (!value.stopped) }).length;
-
-        };
-
-        ctrl.calculateStoppedInstances = function(instances) {
-            if (instances == undefined) {
-                return 'N/A';
-            }
-
-            var cnt = instances.length;
-
-            if (cnt == 0) {
-                return 'N/A';
-            }
-
-            return instances.filter(function(value) { return (value.stopped) }).length;
-
-        };
+            return summary;
+        }
 
         ctrl.calculateCostAverage = function(instances) {
             if (instances == undefined) {
@@ -223,6 +204,72 @@
             }
 
             return instances.filter(function(value) { return (value.age >= start && value.age < end) }).length;
+        };
+
+        ctrl.calculateRunningInstances = function(instances) {
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            return instances.filter(function(value) { return (!value.stopped) }).length;
+
+        };
+
+        ctrl.calculateStoppedInstances = function(instances) {
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            return instances.filter(function(value) { return (value.stopped) }).length;
+
+        };
+
+        ctrl.calculateUtilization = function(instances) {
+            if (instances == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = instances.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            var total = instances.reduce(function(sum, currentValue) {
+                return sum + currentValue.cpuUtilization;
+            }, 0);
+
+            return (total / cnt);
+        };
+
+        ctrl.calculateVolumeInBytes = function(volumes) {
+            if (volumes == undefined) {
+                return 'N/A';
+            }
+
+            var cnt = volumes.length;
+
+            if (cnt == 0) {
+                return 'N/A';
+            }
+
+            var total = volumes.reduce(function(sum, currentValue) {
+                return sum + currentValue.size;
+            }, 0);
+
+            return total * 1073741824;
         };
 
         ctrl.changeSortDirection = function(key) {
@@ -286,101 +333,94 @@
             return "sort-amount-desc";
         };
 
-        ctrl.getAverageInstanceCountPerDay = function(instances)
-        {
-
-            var averageSummary =[];
-            var uniqueDates=[];
-
-            instances.forEach(function(value) {
-                var day = convertEpochTimeToDate(value.time);
-                if (uniqueDates.indexOf(day) == -1) {
-                    uniqueDates.push(day);
-                }
-            });
-
-            uniqueDates.forEach(function(date) {
-
-                var oneDay = instances.filter(function(value) {
-                    return convertEpochTimeToDate(value.time) == date;
-                });
-
-
-                var total = oneDay.reduce(function(sum, currentValue) {
-                    return sum + currentValue.total;
-                }, 0);
-
-                var cnt = oneDay.length;
-
-                averageSummary.push({
-                    date: date,
-                    avg: (total/cnt)
-                })
-            });
-
-            return averageSummary.sort(function(first, second) {
-                var firstDate = new Date(first.date);
-                var secondDate = new Date(second.date);
-                return  firstDate < secondDate ? -1 :  firstDate > secondDate ? 1 : 0;
-            });
-
-        }
-
         ctrl.load = function () {
-
-
 
             cloudHistoryData.getInstanceHistoryDataByAccount(ctrl.accountNumber)
                 .then(function (instanceDataHistory) {
 
-                    var dailyAvg = ctrl.getAverageInstanceCountPerDay(instanceDataHistory);
-                    var series = [];
-                    var labels = [];
+                    //retrieve cost
+                    var latestHistoryEpochTime = Math.max.apply(Math,instanceDataHistory.map(function(value){return value.time;}));
+                    var latestCharge = instanceDataHistory.filter(function(data) {
+                        return data.time == latestHistoryEpochTime;
+                    });
+                    ctrl.estimatedMonthlyCharge = latestCharge[0].estimatedCharge;
+
+                    //retrieve instance average
+                    var dailyAvg = ctrl.calculateAverageForInterval(instanceDataHistory,convertEpochTimeToDate)
+                        .sort(function(first, second) {
+                        var firstDate = new Date(first.interval);
+                        var secondDate = new Date(second.interval);
+                        return  firstDate < secondDate ? -1 :  firstDate > secondDate ? 1 : 0;
+                    });
+
+                    var dailySeries = [];
+                    var dailyLabels = [];
+
                     dailyAvg.forEach(function(value) {
-                        series.push({
-                            meta: value.date + " " + Math.round(value.avg),
+                        dailySeries.push({
+                            meta: value.interval + " " + Math.round(value.avg),
                             value: Math.round(value.avg)
                         });
 
-                        labels.push(value.date.slice(0,5));
+                        dailyLabels.push(value.interval.slice(0,5));
                     });
 
-
-                    ctrl.instanceHistorySeries = {
-                        series : [ series ] ,
-                        labels : labels
+                    ctrl.instanceUsageMonthly = {
+                        series : [ dailySeries ] ,
+                        labels : dailyLabels
                     };
 
-                     ctrl.lineOptions = {
-                         plugins: [
-                             Chartist.plugins.tooltip()
-                         ],
-                         showArea: false,
-                         lineSmooth: true,
-                         width: 400,
-                         height: 190,
-                         chartPadding: 7,
-                         axisX: {
-                             showLabels: true
-                         }
-                     };
+                    ctrl.instanceUsageMonthlyLineOptions = {
+                        plugins: [
+                            Chartist.plugins.tooltip()
+                        ],
+                        showArea: false,
+                        lineSmooth: true,
+                        width: 400,
+                        height: 190,
+                        chartPadding: 7,
+                        axisX: {
+                            showLabels: true
+                        }
+                    };
 
+                    //retrieve hourly average
+                    var todayEpochTime = new Date(getTodayDate());
+                    var todayData = instanceDataHistory.filter(function(value) {
+                        return value.time >= todayEpochTime;
+                    });
 
+                    var hourlyAvg = ctrl.calculateAverageForInterval(todayData,convertEpochTimeToHour);
+                    var hourlyTimeSeries = [];
+                    var hourlyTotals = [];
 
-                       /* ctrl.lineOptions = {
-                            plugins: [
-                                Chartist.plugins.tooltip()                        ],
-                            showArea: false,
-                            lineSmooth: true,
-                            fullWidth: true,
-                            width: 400,
-                            height: 300,
-                            chartPadding: 7
-                        };
-*/
+                    hourlyAvg.forEach(function(value){
+                        hourlyTimeSeries.push(value.interval);
+                        hourlyTotals.push(value.avg);
+                    })
 
+                    ctrl.instanceUsageHourly = {
+                        series: [hourlyTotals],
+                        labels : hourlyTimeSeries
+                    };
+
+                    ctrl.instanceUsageHourlyLineOptions = {
+                        plugins: [
+                            Chartist.plugins.gridBoundaries(),
+                            Chartist.plugins.lineAboveArea(),
+                            Chartist.plugins.tooltip(),
+                            Chartist.plugins.pointHalo()
+                        ],
+                        showArea: true,
+                        lineSmooth: true,
+                        fullWidth: true,
+                        width: 500,
+                        height: 300,
+                        chartPadding: 7
+                    };
                 });
 
+            //retrieve data for the rest of the screen
             cloudData.getAWSSubnetsByAccount(ctrl.accountNumber)
                 .then(function(subnets){
                     ctrl.subnetsByAccount = subnets;
@@ -389,75 +429,78 @@
                 cloudData.getAWSInstancesByAccount(ctrl.accountNumber)
                     .then(function(instances) {
 
-                        instances.forEach(function(element, index, array) {
+                                instances.forEach(function(element, index, array) {
 
-                            array[index].daysToExpiration = getDaysToExpiration(element.imageExpirationDate);
+                                    array[index].daysToExpiration = getDaysToExpiration(element.imageExpirationDate);
 
-                            array[index].alarmClockStatus = getNOTTStatus(element.tags);
+                                    array[index].alarmClockStatus = getNOTTStatus(element.tags);
 
-                            array[index].formattedTags = JSON.stringify(element.tags).split(",").join("<br />");
+                                    array[index].formattedTags = JSON.stringify(element.tags).split(",").join("<br />");
 
-                            var subnet = ctrl.subnetsByAccount.find(function(value) {
-                                return value.subnetId == element.subnetId
-                            });
+                                    var subnet = ctrl.subnetsByAccount.find(function(value) {
+                                        return value.subnetId == element.subnetId
+                                    });
 
-                            if (subnet != undefined) {
-                                array[index].subnetUsageStatus = getSubnetStatus(subnet.usedIPCount, subnet.availableIPCount);
-                            }
-                        });
+                                    if (subnet != undefined) {
+                                        array[index].subnetUsageStatus = getSubnetStatus(subnet.usedIPCount, subnet.availableIPCount);
+                                    }
+                                });
 
-                        ctrl.instancesByAccount = instances;
+                                ctrl.instancesByAccount = instances;
 
 
-                        if (ctrl.tagName != "" && ctrl.tagValue != "") {
+                                if (ctrl.tagName != "" && ctrl.tagValue != "") {
 
-                            ctrl.filteredInstancesByAccount = instances.filter(function(item) {
+                                    ctrl.filteredInstancesByAccount = instances.filter(function(item) {
 
-                                if (item.tags == undefined) {
-                                    return false;
+                                        if (item.tags == undefined) {
+                                            return false;
+                                        }
+
+                                        return (
+                                        item.tags.filter(function(value) {
+                                            return (value.name == ctrl.tagName && value.value == ctrl.tagValue);
+                                        }).length > 0);
+                                    });
+                                } else {
+                                    ctrl.filteredInstancesByAccount = ctrl.instancesByAccount;
                                 }
 
-                                return (
-                                item.tags.filter(function(value) {
-                                    return (value.name == ctrl.tagName && value.value == ctrl.tagValue);
-                                }).length > 0);
-                            });
-                        } else {
-                            ctrl.filteredInstancesByAccount = ctrl.instancesByAccount;
-                        }
+                                var running = ctrl.calculateRunningInstances(ctrl.instancesByAccount);
+                                var stopped = ctrl.calculateStoppedInstances(ctrl.instancesByAccount);
+                                ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
 
-                        var running = ctrl.calculateRunningInstances(ctrl.instancesByAccount);
-                        var stopped = ctrl.calculateStoppedInstances(ctrl.instancesByAccount);
-                        ctrl.runningStoppedInstances =  {series: [ running, stopped ]};
+                                var lessThan15Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,0, 15);
+                                var lessThan45Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,15, 45);
+                                var greaterThan45Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,45, undefined);
 
-                        var lessThan15Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,0, 15);
-                        var lessThan45Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,15, 45);
-                        var greaterThan45Days = ctrl.calculateInstancesByAge(ctrl.instancesByAccount,45, undefined);
+                                ctrl.ageOfInstances = { series: [ lessThan15Days, lessThan45Days, greaterThan45Days] };
+                            }).then(function() {
+                            cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
+                                .then(function(volumes) {
 
-                        ctrl.ageOfInstances = { series: [ lessThan15Days, lessThan45Days, greaterThan45Days] };
-                    }).then(function() {
-                    cloudData.getAWSVolumeByAccount(ctrl.accountNumber)
-                        .then(function(volumes) {
+                                    ctrl.volumesByAccount = volumes;
+                                    var volumeList = [];
 
-                            ctrl.volumesByAccount = volumes;
-                            var volumeList = [];
+                                    for (var i = 0; i < ctrl.filteredInstancesByAccount.length; i++) {
 
-                            for (var i = 0; i < ctrl.filteredInstancesByAccount.length; i++) {
+                                        var instanceId = ctrl.filteredInstancesByAccount[i].instanceId;
+                                        ctrl.volumesByAccount.filter(function(value) {
+                                            if (value.attchInstances == undefined) {
+                                                return false;
+                                            }
 
-                                var instanceId = ctrl.filteredInstancesByAccount[i].instanceId;
-                                ctrl.volumesByAccount.filter(function(value) {
-                                    if (value.attchInstances == undefined) {
-                                        return false;
+                                            return value.attchInstances.indexOf(instanceId) != -1;
+
+                                        }).forEach(function(volume) {
+                                            volumeList.push(volume);
+                                        });
                                     }
 
-                                    return value.attchInstances.indexOf(instanceId) != -1;
+                                    ctrl.filteredVolumesByAccount = volumeList.filter(function(item, index, array){ return array.indexOf(item) === index; });
 
-                                }).forEach(function(volume) {
-                                    volumeList.push(volume);
-                                });
-                            }
+                                    ctrl.showData = true;
 
-                            ctrl.filteredVolumesByAccount = volumeList.filter(function(item, index, array){ return array.indexOf(item) === index; });
                         });
                 });
             });
