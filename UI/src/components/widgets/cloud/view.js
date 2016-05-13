@@ -289,29 +289,20 @@
         ctrl.getAverageInstanceCountPerDay = function(instances)
         {
 
-            var masterArray=[];
-            var obj = JSON.parse(JSON.stringify(instances));
-
-
-            //Get Unique Dates as Keys
-
+            var averageSummary =[];
             var uniqueDates=[];
-            for(var l=0;l<obj.length;l++) {
 
-                var myDay = convertEpochTimeToDate(obj[l].time);
-                if (uniqueDates.indexOf(myDay) == -1) {
-                    uniqueDates.push(myDay)
+            instances.forEach(function(value) {
+                var day = convertEpochTimeToDate(value.time);
+                if (uniqueDates.indexOf(day) == -1) {
+                    uniqueDates.push(day);
                 }
-            }
+            });
 
+            uniqueDates.forEach(function(date) {
 
-            // I have array of Unique Dates
-           for(var i=0;i<uniqueDates.length;i++)
-            {
-
-                var date = uniqueDates[i];
                 var oneDay = instances.filter(function(value) {
-                        return convertEpochTimeToDate(value.time) == date;
+                    return convertEpochTimeToDate(value.time) == date;
                 });
 
 
@@ -321,14 +312,17 @@
 
                 var cnt = oneDay.length;
 
-                masterArray.push({
-                    date:date,
+                averageSummary.push({
+                    date: date,
                     avg: (total/cnt)
                 })
+            });
 
-            }
-
-           return masterArray;
+            return averageSummary.sort(function(first, second) {
+                var firstDate = new Date(first.date);
+                var secondDate = new Date(second.date);
+                return  firstDate < secondDate ? -1 :  firstDate > secondDate ? 1 : 0;
+            });
 
         }
 
@@ -339,58 +333,51 @@
             cloudHistoryData.getInstanceHistoryDataByAccount(ctrl.accountNumber)
                 .then(function (instanceDataHistory) {
 
-                    var masterArray=ctrl.getAverageInstanceCountPerDay(instanceDataHistory);
+                    var dailyAvg = ctrl.getAverageInstanceCountPerDay(instanceDataHistory);
+                    var series = [];
+                    var labels = [];
+                    dailyAvg.forEach(function(value) {
+                        series.push({
+                            meta: value.date + " " + Math.round(value.avg),
+                            value: Math.round(value.avg)
+                        });
+
+                        labels.push(value.date.slice(0,5));
+                    });
 
 
-
-
-                    console.log("MasterArray:"+JSON.stringify(masterArray));
-
-
-                    ctrl.instanceDataHistory = instanceDataHistory;
-
-                    var obj = JSON.parse(JSON.stringify(instanceDataHistory));
-                    var timeSeries = [];
-                    var totals = [];
-                    for (var k = 0; k < obj.length; k++) {
-                        var m = {
-                            meta: convertEpochTimeToDate(obj[k].time) + "  " + obj[k].total,
-                            value: obj[k].total
-                        };
-
-                        timeSeries.push(m);
-
-                    }
-
-                    ctrl.instanceHistorySeries = {series : [timeSeries]};
-
-                    ctrl.lineOptions = {
-                        plugins: [
-                            Chartist.plugins.gridBoundaries(),
-                            Chartist.plugins.lineAboveArea(),
-                            Chartist.plugins.tooltip(),
-                            Chartist.plugins.pointHalo(),
-                            Chartist.plugins.axisLabels({
-                                axisX: {
-                                    type: Chartist.AutoScaleAxis
-                                }
-                            })
-
-                        ],
-                        showArea: false,
-                        lineSmooth: true,
-                        fullWidth: true,
-                        width: 400,
-                        height: 300,
-                        chartPadding: 7,
-                        axisY: {
-                            offset: 30,
-                            showGrid: true,
-                            showLabel: true,
-                            labelInterpolationFnc: function(value) { return Math.round(value * 100) / 100; }
-                        }
-
+                    ctrl.instanceHistorySeries = {
+                        series : [ series ] ,
+                        labels : labels
                     };
+
+                     ctrl.lineOptions = {
+                         plugins: [
+                             Chartist.plugins.tooltip()
+                         ],
+                         showArea: false,
+                         lineSmooth: true,
+                         width: 400,
+                         height: 190,
+                         chartPadding: 7,
+                         axisX: {
+                             showLabels: true
+                         }
+                     };
+
+
+
+                       /* ctrl.lineOptions = {
+                            plugins: [
+                                Chartist.plugins.tooltip()                        ],
+                            showArea: false,
+                            lineSmooth: true,
+                            fullWidth: true,
+                            width: 400,
+                            height: 300,
+                            chartPadding: 7
+                        };
+*/
 
                 });
 
