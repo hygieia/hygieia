@@ -4,25 +4,37 @@
   angular.module(HygieiaConfig.module).controller('featureViewController',
     featureViewController);
 
-  featureViewController.$inject = ['$scope', 'featureData'];
+  featureViewController.$inject = ['$scope', '$interval', 'featureData'];
 
-  function featureViewController($scope, featureData) {
+  function featureViewController($scope, $interval, featureData) {
     /* jshint validthis:true */
     var ctrl = this;
     var today = new Date(_.now());
     var filterTeamId = $scope.widgetConfig.options.teamId;
     ctrl.teamName = $scope.widgetConfig.options.teamName;
+    // Scrum
     ctrl.iterations = [];
     ctrl.totalStoryPoints = null;
     ctrl.wipStoryPoints = null;
     ctrl.doneStoryPoints = null;
     ctrl.epicStoryPoints = null;
+    // Kanban
+    ctrl.iterationsKanban = [];
+    ctrl.totalStoryPointsKanban = null;
+    ctrl.wipStoryPointsKanban = null;
+    ctrl.doneStoryPointsKanban = null;
+    ctrl.epicStoryPointsKanban = null;
 
     // Public Evaluators
-    ctrl.totalStoryPointEvaluator = totalStoryPointEvaluator;
-    ctrl.wipStoryPointEvaluator = wipStoryPointEvaluator;
-    ctrl.doneStoryPointEvaluator = doneStoryPointEvaluator;
     ctrl.setFeatureLimit = setFeatureLimit;
+    ctrl.showStatus = $scope.widgetConfig.options.showStatus;
+    ctrl.animateAgileView = animateAgileView;
+    var intervalOff = $scope.widgetConfig.options.intervalOff;
+    ctrl.timeout = $interval(function() {
+      if (intervalOff === false) {
+        animateAgileView();
+      }
+    }, 7000);
 
     /**
      * Every controller must have a load method. It will be called every 60
@@ -32,6 +44,7 @@
      * timestamp.
      */
     ctrl.load = function() {
+      // Scrum
       featureData.total($scope.widgetConfig.componentId, filterTeamId)
         .then(processTotalResponse);
       featureData.wip($scope.widgetConfig.componentId, filterTeamId)
@@ -42,6 +55,16 @@
         filterTeamId).then(processFeatureWipResponse);
       featureData.sprint($scope.widgetConfig.componentId, filterTeamId)
         .then(processSprintResponse);
+
+      // Kanban
+      featureData.totalKanban($scope.widgetConfig.componentId, filterTeamId)
+        .then(processTotalKanbanResponse);
+      featureData.wipKanban($scope.widgetConfig.componentId, filterTeamId)
+        .then(processWipKanbanResponse);
+      featureData.featureWipKanban($scope.widgetConfig.componentId,
+        filterTeamId).then(processFeatureWipKanbanResponse);
+      featureData.sprintKanban($scope.widgetConfig.componentId, filterTeamId)
+        .then(processSprintKanbanResponse);
     };
 
     /**
@@ -54,12 +77,30 @@
     }
 
     /**
+     * Processor for total feature estimate totals for kanban only
+     *
+     * @param data
+     */
+    function processTotalKanbanResponse(data) {
+      ctrl.totalStoryPointsKanban = data.result[0].sEstimate;
+    }
+
+    /**
      * Processor for in progress feature estimate in-progress
      *
      * @param data
      */
     function processWipResponse(data) {
       ctrl.wipStoryPoints = data.result[0].sEstimate;
+    }
+
+    /**
+     * Processor for in progress feature estimate in-progress for kanban only
+     *
+     * @param data
+     */
+    function processWipKanbanResponse(data) {
+      ctrl.wipStoryPointsKanban = data.result[0].sEstimate;
     }
 
     /**
@@ -94,21 +135,26 @@
     }
 
     /**
-     * Custom object comparison used exclusively by the
-     * processFeatureWipResponse method; returns the comparison results for
-     * an array sort function based on integer values of estimates.
+     * Processor for super feature estimates in-progress. Also sets the
+     * feature expander value based on the size of the data result set
+     * for kanban only.
      *
-     * @param a
-     *            Object containing sEstimate string value
-     * @param b
-     *            Object containing sEstimate string value
+     * @param data
      */
-    function compare(a, b) {
-      if (parseInt(a.sEstimate) < parseInt(b.sEstimate))
-        return -1;
-      if (parseInt(a.sEstimate) > parseInt(b.sEstimate))
-        return 1;
-      return 0;
+    function processFeatureWipKanbanResponse(data) {
+      var epicCollection = [];
+
+      for (var i = 0; i < data.result.length; i++) {
+        epicCollection.push(data.result[i]);
+      }
+
+      if (data.result.length <= 4) {
+        ctrl.showFeatureLimitButton = false;
+      } else {
+        ctrl.showFeatureLimitButton = true;
+      }
+
+      ctrl.epicStoryPointsKanban = epicCollection.sort(compare).reverse();
     }
 
     /**
@@ -161,7 +207,7 @@
             id: sprintID,
             name: sprintName,
             tilEnd: daysTilEnd
-          }
+          };
           ctrl.iterations.push(iteration);
         }
 
@@ -171,7 +217,7 @@
             id: sprintID,
             name: sprintName,
             tilEnd: daysTilEnd
-          }
+          };
           ctrl.iterations.push(iteration);
         }
 
@@ -196,150 +242,127 @@
           return dupe;
         }
       }
+
+      // Check if iteration switching is needed
+      if (ctrl.iterations.length >= 1) {
+        intervalOff = false;
+      } else {
+        ctrl.showStatus.scrum = false;
+        intervalOff = true;
+      }
     }
 
     /**
-     * Evaluates the total story points based on the current sprint and team
-     * configuration for wholesomeness
+     * Processor for sprint-based data for kanban
+     *
+     * @param data
      */
-    function totalStoryPointEvaluator() {
-      var totalSum = ctrl.totalStoryPoints;
-      var wipSum = ctrl.wipStoryPoints;
-      var completeSum = ctrl.doneStoryPoints;
-      var diffDays = ctrl.daysTilEnd;
-      var readyRatio = 0;
-
+    function processSprintKanbanResponse(data) {
       /*
-       * Analytical Calculations for Validation
+       * Sprint Name
        */
-      readyRatio = ((totalSum - wipSum - completeSum) / (completeSum + 0.01)) * 100;
+      var sprintID = null;
+      var sprintName = null;
+      var daysTilEnd = null;
+      var iteration = null;
+      var dupes = true;
 
-      /*
-       * Validation of Current Sprint Status
-       */
-      if (readyRatio <= 33.3) {
-        // Good
-        if (diffDays > 5) {
-          return "pass";
-        } else if ((diffDays <= 5) && (diffDays > 3)) {
-          return "pass";
+      for (var i = 0; i < data.result.length; i++) {
+        if (data.result[i].sSprintID === undefined) {
+          sprintID = "[No Sprint Available]"
+          sprintName = "[No Sprint Available]";
         } else {
-          return "warn";
+          sprintID = data.result[i].sSprintID;
+          sprintName = data.result[i].sSprintName;
         }
-      } else if ((readyRatio > 33.3) && (readyRatio <= 66.6)) {
-        // Warn
-        if (diffDays > 5) {
-          return "warn";
-        } else if ((diffDays <= 5) && (diffDays > 3)) {
-          return "warn";
+
+        /*
+         * Days Until Sprint Expires
+         */
+        if (data.result[i].sSprintID === undefined) {
+          daysTilEnd = moment(today).dash();
+          daysTilEnd = "[N/A]";
+        } else if (data.result[i].sSprintID === "KANBAN") {
+          daysTilEnd = "[Unlimited]";
         } else {
-          return "fail";
+          var nativeSprintEndDate = new Date(
+            data.result[i].sSprintEndDate);
+          if (nativeSprintEndDate < today) {
+            daysTilEnd = "[Ended]";
+          } else {
+            var nativeDaysTilEnd = moment(nativeSprintEndDate)
+              .fromNow();
+            daysTilEnd = nativeDaysTilEnd.substr(3);
+          }
         }
-      } else {
-        // Danger
-        if (diffDays > 5) {
-          return "warn";
-        } else if ((diffDays <= 5) && (diffDays > 3)) {
-          return "fail";
-        } else {
-          return "fail";
+
+        // Fill one iteration object at a time, starting with the first
+        if (ctrl.iterationsKanban.length <= 0) {
+          iteration = {
+            id: sprintID,
+            name: sprintName,
+            tilEnd: daysTilEnd
+          };
+          ctrl.iterationsKanban.push(iteration);
+        }
+
+        // Add iterations only if there are no duplicates
+        if (isInArray(sprintID, ctrl.iterationsKanban) === false) {
+          iteration = {
+            id: sprintID,
+            name: sprintName,
+            tilEnd: daysTilEnd
+          };
+          ctrl.iterationsKanban.push(iteration);
+        }
+
+        // Clean-up
+        sprintID = null;
+        sprintName = null;
+        daysTilEnd = null;
+        iteration = null;
+
+        /*
+         * Checks iterations array for existing elements
+         */
+        function isInArray(timebox, iterations) {
+          var dupe = false;
+
+          iterations.forEach(function(timebox) {
+            if (timebox.id === sprintID) {
+              dupe = true;
+            }
+          });
+
+          return dupe;
         }
       }
 
-      return "pass";
+      // Check if iteration switching is needed
+      if (ctrl.iterationsKanban.length >= 1) {
+        intervalOff = false;
+      } else {
+        ctrl.showStatus.kanban = false;
+        intervalOff = true;
+      }
     }
 
     /**
-     * Evaluates the in progress story points based on the current sprint
-     * and team configuration for wholesomeness
+     * Custom object comparison used exclusively by the
+     * processFeatureWipResponse method; returns the comparison results for
+     * an array sort function based on integer values of estimates.
+     *
+     * @param a
+     *            Object containing sEstimate string value
+     * @param b
+     *            Object containing sEstimate string value
      */
-    function wipStoryPointEvaluator() {
-      var totalSum = ctrl.totalStoryPoints;
-      var wipSum = ctrl.wipStoryPoints;
-      var completeSum = ctrl.doneStoryPoints;
-      var diffDays = ctrl.daysTilEnd;
-      var wipRatio = 0;
-
-      /*
-       * Analytical Calculations for Validation
-       */
-      wipRatio = (wipSum / ((totalSum - completeSum - wipSum) + 0.01)) * 100;
-
-      /*
-       * Validation of Current Sprint Status
-       */
-      if (wipRatio >= 100.0) {
-        // Good
-        if (diffDays > 5) {
-          return "pass";
-        } else if ((diffDays <= 5) && (diffDays > 3)) {
-          return "pass";
-        } else {
-          return "warn";
-        }
-      } else {
-        // Danger
-        if (diffDays > 5) {
-          return "warn";
-        } else if ((diffDays <= 5) && (diffDays > 3)) {
-          return "fail";
-        } else {
-          return "fail";
-        }
-      }
-
-      return "pass";
-    }
-
-    /**
-     * Evaluates the done story points based on the current sprint and team
-     * configuration for wholesomeness
-     */
-    function doneStoryPointEvaluator() {
-      var totalSum = ctrl.totalStoryPoints;
-      var wipSum = ctrl.wipStoryPoints;
-      var completeSum = ctrl.doneStoryPoints;
-      var diffDays = ctrl.daysTilEnd;
-      var completeRatio = 0;
-
-      /*
-       * Analytical Calculations for Validation
-       */
-      completeRatio = (completeSum / (totalSum + 0.01)) * 100;
-
-      /*
-       * Validation of Current Sprint Status
-       */
-      if (completeRatio <= 33.3) {
-        // Danger
-        if (diffDays > 5) {
-          return "warn";
-        } else if ((diffDays <= 5) && (diffDays > 3)) {
-          return "fail";
-        } else {
-          return "fail";
-        }
-      } else if ((completeRatio > 33.3) && (completeRatio <= 66.6)) {
-        // Warn
-        if (diffDays > 5) {
-          return "warn";
-        } else if ((diffDays <= 5) && (diffDays > 3)) {
-          return "warn";
-        } else {
-          return "fail";
-        }
-      } else {
-        // Good
-        if (diffDays > 5) {
-          return "pass";
-        } else if ((diffDays <= 5) && (diffDays > 3)) {
-          return "pass";
-        } else {
-          return "warn";
-        }
-      }
-
-      return "pass";
+    function compare(a, b) {
+      if (parseInt(a.sEstimate) < parseInt(b.sEstimate))
+        return -1;
+      if (parseInt(a.sEstimate) > parseInt(b.sEstimate))
+        return 1;
+      return 0;
     }
 
     /**
@@ -355,6 +378,28 @@
       } else {
         ctrl.featureLimit = featureMaxLimit;
       }
+    }
+
+    function animateAgileView() {
+      var show = false;
+
+      if (ctrl.showStatus.kanban === false) {
+        show = true
+        ctrl.showStatus.kanban = show;
+      } else if (ctrl.showStatus.kanban === true) {
+        show = false
+        ctrl.showStatus.kanban = show;
+      }
+
+      if (ctrl.showStatus.scrum === false) {
+        show = true
+        ctrl.showStatus.scrum = show;
+      } else if (ctrl.showStatus.scrum === true) {
+        show = false
+        ctrl.showStatus.scrum = show;
+      }
+
+      return show;
     }
   }
 })();
