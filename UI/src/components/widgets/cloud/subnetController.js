@@ -135,7 +135,7 @@ $scope.getHeight = function() {
                   vpc: function() {
                     return vpc;
                   }
-                },
+                }
 
             });
         };
