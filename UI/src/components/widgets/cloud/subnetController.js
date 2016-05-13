@@ -4,9 +4,9 @@
         .module(HygieiaConfig.module)
         .controller('subnetController', SubnetController);
 
-    SubnetController.$inject = ['$scope', 'cloudData', '$http', '$modal'];
+    SubnetController.$inject = ['$scope', 'cloudData', '$http', '$modal', '$compile'];
     
-    function SubnetController($scope, cloudData, $http, $modal) {
+    function SubnetController($scope, cloudData, $http, $modal, $compile) {
 
         var ctrl = this;
         $scope.vpcs = [];
@@ -53,6 +53,8 @@ if (data.type === 'bar') {
   }
 
   if (data.type === 'label') {
+    //var compiledHtml = $compile(strElm);
+    //element.append(compiledHtml);
     data.valueOf;
     data.element.attr({
      // onclick: "angular.element(document.getElementById('iptutildiv')).scope().viewSubnetUtilization2(this.innerHTML)",
@@ -134,7 +136,6 @@ $scope.getHeight = function() {
                     return vpc;
                   }
                 },
-                windowTopClass: 'windowTopClass'
 
             });
         };
