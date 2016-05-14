@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.rest;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudInstanceHistory;
 import com.capitalone.dashboard.model.NameValue;
@@ -44,7 +45,7 @@ public class CloudInstanceController {
     @RequestMapping(value = "/cloud/instance/create", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> upsertInstance(
-            @Valid @RequestBody List<CloudInstanceCreateRequest> request) {
+            @Valid @RequestBody List<CloudInstanceCreateRequest> request) throws HygieiaException {
         return ResponseEntity.ok().body(cloudInstanceService.upsertInstance(request));
     }
 
