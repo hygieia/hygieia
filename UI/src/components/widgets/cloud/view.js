@@ -372,7 +372,8 @@
 
                     ctrl.instanceUsageMonthlyLineOptions = {
                         plugins: [
-                            Chartist.plugins.tooltip()
+                            Chartist.plugins.tooltip(),
+                            Chartist.plugins.pointHalo()
                         ],
                         showArea: false,
                         lineSmooth: true,
@@ -409,14 +410,16 @@
                             Chartist.plugins.gridBoundaries(),
                             Chartist.plugins.lineAboveArea(),
                             Chartist.plugins.tooltip(),
-                            Chartist.plugins.pointHalo()
+                            Chartist.plugins.pointHalo(),
+
                         ],
                         showArea: true,
                         lineSmooth: true,
                         fullWidth: true,
                         width: 500,
-                        height: 300,
-                        chartPadding: 7
+                        height: 380,
+                        chartPadding:7
+
                     };
                 });
 
