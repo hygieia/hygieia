@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.config.collector.CloudConfig;
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudInstanceHistory;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -18,6 +19,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -113,98 +115,67 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         return deletedIds;
     }
 
-    private CloudInstance createCloudInstanceObject(CloudInstanceCreateRequest request) {
-        //Anything null or resulting in parsing error will be thrown back to caller.
-        CloudInstance instance = new CloudInstance();
+
+
+    private CloudInstance upsertCloudInstanceObject(CloudInstanceCreateRequest request, CloudInstance existing) throws HygieiaException {
+
+        CloudInstance instance = (existing == null) ? new CloudInstance() : existing;
+        if (StringUtils.isEmpty(request.getAccountNumber()) || (StringUtils.isEmpty(request.getInstanceId()))) {
+            throw new HygieiaException("Missing required fields (account number, instance id). ", HygieiaException.ERROR_INSERTING_DATA);
+        }
+
         instance.setAccountNumber(request.getAccountNumber());
-        instance.setRootDeviceName(request.getRootDeviceName());
-        instance.setCpuUtilization(Double.parseDouble(request.getCpuUtilization()));
-        instance.setVirtualNetworkId(request.getVirtualNetworkId());
-        instance.setSubnetId(request.getSubnetId());
-        instance.setStatus(request.getStatus());
-        instance.setAge(Integer.parseInt(request.getAge()));
-        instance.setDiskRead(Double.parseDouble(request.getDiskRead()));
-        instance.setDiskWrite(Double.parseDouble(request.getDiskWrite()));
-        instance.setImageApproved(Boolean.parseBoolean(request.getImageApproved()));
-        instance.setImageId(request.getImageId());
-        instance.setImageExpirationDate(Long.parseLong(request.getImageExpirationDate()));
         instance.setInstanceId(request.getInstanceId());
-        instance.setInstanceOwner(request.getInstanceOwner());
-        instance.setInstanceType(request.getInstanceType());
-        instance.setLastAction(request.getLastAction());
-        instance.setMonitored(Boolean.parseBoolean(request.getIsMonitored()));
-        instance.setNetworkIn(Double.parseDouble(request.getNetworkIn()));
-        instance.setNetworkOut(Double.parseDouble(request.getNetworkOut()));
-        instance.setLastUpdatedDate(Long.parseLong(request.getLastUpdatedDate()));
-        instance.setPrivateDns(request.getPrivateDns());
-        instance.setPublicIp(request.getPublicIp());
-        instance.setStopped(Boolean.parseBoolean(request.getIsStopped()));
-        instance.setTagged(Boolean.parseBoolean(request.getIsTagged()));
-        instance.getTags().addAll(request.getTags());
-        instance.getSecurityGroups().addAll(request.getSecurityGroups());
-        instance.setAutoScaleName(request.getAutoScaleName());
+
+        //Anything null or resulting in parsing error will be thrown back to caller.
+        if (request.getRootDeviceName() != null) instance.setRootDeviceName(request.getRootDeviceName());
+        if (request.getCpuUtilization() != null)
+            instance.setCpuUtilization(Double.parseDouble(request.getCpuUtilization()));
+        if (request.getVirtualNetworkId() != null) instance.setVirtualNetworkId(request.getVirtualNetworkId());
+        if (request.getSubnetId() != null) instance.setSubnetId(request.getSubnetId());
+        if (request.getStatus() != null) instance.setStatus(request.getStatus());
+        if (request.getAge() != null) instance.setAge(Integer.parseInt(request.getAge()));
+        if (request.getDiskRead() != null) instance.setDiskRead(Double.parseDouble(request.getDiskRead()));
+        if (request.getDiskWrite() != null) instance.setDiskWrite(Double.parseDouble(request.getDiskWrite()));
+        if (request.getImageApproved() != null)
+            instance.setImageApproved(Boolean.parseBoolean(request.getImageApproved()));
+        if (request.getImageId() != null) instance.setImageId(request.getImageId());
+        if (request.getImageExpirationDate() != null)
+            instance.setImageExpirationDate(Long.parseLong(request.getImageExpirationDate()));
+
+        if (request.getInstanceOwner() != null) instance.setInstanceOwner(request.getInstanceOwner());
+        if (request.getInstanceType() != null) instance.setInstanceType(request.getInstanceType());
+        if (request.getLastAction() != null) instance.setLastAction(request.getLastAction());
+        if (request.getIsMonitored() != null) instance.setMonitored(Boolean.parseBoolean(request.getIsMonitored()));
+        if (request.getNetworkIn() != null) instance.setNetworkIn(Double.parseDouble(request.getNetworkIn()));
+        if (request.getNetworkOut() != null) instance.setNetworkOut(Double.parseDouble(request.getNetworkOut()));
+        if (request.getLastUpdatedDate() != null)
+            instance.setLastUpdatedDate(Long.parseLong(request.getLastUpdatedDate()));
+        if (request.getPrivateDns() != null) instance.setPrivateDns(request.getPrivateDns());
+        if (request.getPublicIp() != null) instance.setPublicIp(request.getPublicIp());
+        if (request.getIsStopped() != null) instance.setStopped(Boolean.parseBoolean(request.getIsStopped()));
+        if (request.getIsTagged() != null) instance.setTagged(Boolean.parseBoolean(request.getIsTagged()));
+        if (request.getAutoScaleName() != null) instance.setAutoScaleName(request.getAutoScaleName());
+        if (!CollectionUtils.isEmpty(request.getTags())) {
+            instance.getTags().clear();
+            instance.getTags().addAll(request.getTags());
+        }
+        if (!CollectionUtils.isEmpty(request.getSecurityGroups())) {
+            instance.getSecurityGroups().clear();
+            instance.getSecurityGroups().addAll(request.getSecurityGroups());
+        }
         return instance;
     }
 
 
-    private CloudInstance updateCloudInstanceObject(CloudInstanceCreateRequest request, CloudInstance existing) {
-        //Anything null or resulting in parsing error will be thrown back to caller.
-        if (request.getAccountNumber() != null) existing.setAccountNumber(request.getAccountNumber());
-        if (request.getRootDeviceName() != null) existing.setRootDeviceName(request.getRootDeviceName());
-        if (request.getCpuUtilization() != null)
-            existing.setCpuUtilization(Double.parseDouble(request.getCpuUtilization()));
-        if (request.getVirtualNetworkId() != null) existing.setVirtualNetworkId(request.getVirtualNetworkId());
-        if (request.getSubnetId() != null) existing.setSubnetId(request.getSubnetId());
-        if (request.getStatus() != null) existing.setStatus(request.getStatus());
-        if (request.getAge() != null) existing.setAge(Integer.parseInt(request.getAge()));
-        if (request.getDiskRead() != null) existing.setDiskRead(Double.parseDouble(request.getDiskRead()));
-        if (request.getDiskWrite() != null) existing.setDiskWrite(Double.parseDouble(request.getDiskWrite()));
-        if (request.getImageApproved() != null)
-            existing.setImageApproved(Boolean.parseBoolean(request.getImageApproved()));
-        if (request.getImageId() != null) existing.setImageId(request.getImageId());
-        if (request.getImageExpirationDate() != null)
-            existing.setImageExpirationDate(Long.parseLong(request.getImageExpirationDate()));
-        if (request.getInstanceId() != null) existing.setInstanceId(request.getInstanceId());
-        if (request.getInstanceOwner() != null) existing.setInstanceOwner(request.getInstanceOwner());
-        if (request.getInstanceType() != null) existing.setInstanceType(request.getInstanceType());
-        if (request.getLastAction() != null) existing.setLastAction(request.getLastAction());
-        if (request.getIsMonitored() != null) existing.setMonitored(Boolean.parseBoolean(request.getIsMonitored()));
-        if (request.getNetworkIn() != null) existing.setNetworkIn(Double.parseDouble(request.getNetworkIn()));
-        if (request.getNetworkOut() != null) existing.setNetworkOut(Double.parseDouble(request.getNetworkOut()));
-        if (request.getLastUpdatedDate() != null)
-            existing.setLastUpdatedDate(Long.parseLong(request.getLastUpdatedDate()));
-        if (request.getPrivateDns() != null) existing.setPrivateDns(request.getPrivateDns());
-        if (request.getPublicIp() != null) existing.setPublicIp(request.getPublicIp());
-        if (request.getIsStopped() != null) existing.setStopped(Boolean.parseBoolean(request.getIsStopped()));
-        if (request.getIsTagged() != null) existing.setTagged(Boolean.parseBoolean(request.getIsTagged()));
-        if (request.getAutoScaleName() != null) existing.setAutoScaleName(request.getAutoScaleName());
-        if (!CollectionUtils.isEmpty(request.getTags())) {
-            existing.getTags().clear();
-            existing.getTags().addAll(request.getTags());
-        }
-        if (!CollectionUtils.isEmpty(request.getSecurityGroups())) {
-            existing.getSecurityGroups().clear();
-            existing.getSecurityGroups().addAll(request.getSecurityGroups());
-        }
-        return existing;
-    }
-
-
     @Override
-    public List<String> upsertInstance(List<CloudInstanceCreateRequest> instances) {
+    public List<String> upsertInstance(List<CloudInstanceCreateRequest> instances) throws HygieiaException {
         List<String> objectIds = new ArrayList<>();
         if (CollectionUtils.isEmpty(instances)) return objectIds;
         for (CloudInstanceCreateRequest cir : instances) {
             CloudInstance existing = cloudInstanceRepository.findByInstanceId(cir.getInstanceId());
-            if (existing == null) {
-                CloudInstance newObject = createCloudInstanceObject(cir);
-                CloudInstance in = cloudInstanceRepository.save(newObject);
-                objectIds.add(in.getId().toString());
-            } else {
-                CloudInstance updated = updateCloudInstanceObject(cir, existing);
-                cloudInstanceRepository.save(updated);
-                objectIds.add(existing.getId().toString());
-            }
+            CloudInstance upsertObject = cloudInstanceRepository.save(upsertCloudInstanceObject(cir, existing));
+            objectIds.add(upsertObject.getId().toString());
         }
         return objectIds;
     }

@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.CloudInstance;
 import com.capitalone.dashboard.model.CloudInstanceHistory;
 import com.capitalone.dashboard.model.NameValue;
@@ -15,7 +16,7 @@ public interface CloudInstanceService {
     Collection<String> refreshInstances(CloudInstanceListRefreshRequest request);
 
     //Instance Upsert
-    List<String> upsertInstance(List<CloudInstanceCreateRequest> instance);
+    List<String> upsertInstance(List<CloudInstanceCreateRequest> instance) throws HygieiaException;
 
     /**
      *     Instance Details by
