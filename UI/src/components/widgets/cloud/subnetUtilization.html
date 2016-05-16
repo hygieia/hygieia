@@ -20,7 +20,8 @@
                                     class="ct-chart ct-square db-chart-primary ct-chart-Ok"
                                     chartist-data="utilization"
                                     chartist-chart-options="subnetUtilization.pieOptions"
-                                    chartist-chart-type="Pie"></chartist>
+                                    chartist-chart-type="Pie"
+                                    chartist-events="utillizationEvents"/>
                             <div class="guage-number">
                                 <span fit-text>{{subnetUtilization.percentUsed(item) | number:0 }}<small class="percent">%</small></span>
                             </div>
