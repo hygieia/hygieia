@@ -148,7 +148,8 @@
             elements.forEach(function(element) {
 
                 var oneInterval = instances.filter(function(value) {
-                    return conversion(value.time) == element;
+                    return conversion(value.time) ==element;
+                    console.log("Element:"+element);
                 });
 
 
@@ -343,7 +344,7 @@
                     var latestCharge = instanceDataHistory.filter(function(data) {
                         return data.time == latestHistoryEpochTime;
                     });
-                    ctrl.estimatedMonthlyCharge = latestCharge[0].estimatedCharge;
+                   ctrl.estimatedMonthlyCharge = latestCharge[0].estimatedCharge;
 
                     //retrieve instance average
                     var dailyAvg = ctrl.calculateAverageForInterval(instanceDataHistory,convertEpochTimeToDate)
@@ -357,11 +358,11 @@
                     var dailyLabels = [];
 
                     dailyAvg.forEach(function(value) {
+
                         dailySeries.push({
                             meta: value.interval + " " + Math.round(value.avg),
                             value: Math.round(value.avg)
                         });
-
                         dailyLabels.push(value.interval.slice(0,5));
                     });
 
@@ -372,7 +373,8 @@
 
                     ctrl.instanceUsageMonthlyLineOptions = {
                         plugins: [
-                            Chartist.plugins.tooltip()
+                            Chartist.plugins.tooltip(),
+                            Chartist.plugins.pointHalo()
                         ],
                         showArea: false,
                         lineSmooth: true,
@@ -395,8 +397,9 @@
                     var hourlyTotals = [];
 
                     hourlyAvg.forEach(function(value){
+                        console.log("Totals:"+Math.round(value.avg));
                         hourlyTimeSeries.push(value.interval);
-                        hourlyTotals.push(value.avg);
+                        hourlyTotals.push(Math.round(value.avg));
                     })
 
                     ctrl.instanceUsageHourly = {
@@ -409,14 +412,22 @@
                             Chartist.plugins.gridBoundaries(),
                             Chartist.plugins.lineAboveArea(),
                             Chartist.plugins.tooltip(),
-                            Chartist.plugins.pointHalo()
+                            Chartist.plugins.pointHalo(),
+                            Chartist.plugins.threshold({
+                                threshold: 3380
+                            })
+
                         ],
                         showArea: true,
                         lineSmooth: true,
                         fullWidth: true,
                         width: 500,
-                        height: 300,
-                        chartPadding: 7
+                        height: 380,
+                        chartPadding:10,
+                        axisY: {
+                            onlyInteger: true,
+                        }
+
                     };
                 });
 
