@@ -3,6 +3,7 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.config.WebMVCConfig;
 import com.capitalone.dashboard.model.CloudInstance;
+import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.service.CloudInstanceService;
 import com.capitalone.dashboard.util.TestUtil;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -117,8 +119,8 @@ public class CloudInstanceControllerTest {
 
     @Test
     public void upsertInstanceOneItemRequest() throws Exception {
-        List<CloudInstance> req = new ArrayList<>();
-        req.add(new CloudInstance());
+        List<CloudInstanceCreateRequest> req = new ArrayList<>();
+        req.add(new CloudInstanceCreateRequest());
         mockMvc.perform(post("/cloud/instance/create")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(req)))
@@ -128,37 +130,68 @@ public class CloudInstanceControllerTest {
 
     @Test
     public void getInstanceDetails() throws Exception {
-
+        mockMvc.perform(get("/cloud/instance/details/instances/i-123456")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void getInstanceDetails1() throws Exception {
-
+    public void getInstanceDetailsNoInput() throws Exception {
+        mockMvc.perform(get("/cloud/instance/details/instances")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    public void getInstanceDetails2() throws Exception {
+    public void getInstanceDetailsMultipleInput() throws Exception {
+        mockMvc.perform(get("/cloud/instance/details/instances/i-123456,i234567")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
+    }
 
+
+    @Test
+    public void getInstanceDetailsAccount() throws Exception {
+        mockMvc.perform(get("/cloud/instance/details/account/12345678")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void getInstanceDetailsByTags() throws Exception {
-
+    public void getInstanceDetailsAccountNoInput() throws Exception {
+        mockMvc.perform(get("/cloud/instance/details/account")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    public void getInstanceAggregatedData() throws Exception {
-
+    public void getInstanceDetailsAccountHistory() throws Exception {
+        mockMvc.perform(get("/cloud/instance/history/account/1234567")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void getInstanceAggregatedDataByInstanceIds() throws Exception {
-
+    public void getInstanceDetailsAccountHistoryNoInput() throws Exception {
+        mockMvc.perform(get("/cloud/instance/history/account")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    public void getInstanceAggregatedDataByTags() throws Exception {
+    public void getInstanceByTags() throws Exception {
+        CloudInstanceListRefreshRequest req = new CloudInstanceListRefreshRequest();
+        req.setAccountNumber("1234");
+        long now = System.currentTimeMillis();
+        req.setRefreshDate(new Date(now));
+        req.setInstanceIds(Arrays.asList("i-1234", "i-2345"));
+        List<String> curList = Arrays.asList("i-1234", "i-2345", "i-3456");
 
+        when(cloudInstanceService.refreshInstances(Matchers.any(CloudInstanceListRefreshRequest.class))).thenReturn(curList);
+        mockMvc.perform(post("/cloud/instance/refresh")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(req)))
+                .andExpect(status().isOk());
     }
 
 }
