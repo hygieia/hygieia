@@ -6,11 +6,11 @@
 
     angular
         .module(HygieiaConfig.module + '.core')
-        .factory('orgsRepoData', orgsRepoData);
+        .factory('organizationRepoData', organizationRepoData);
 
-    function orgsRepoData($http) {
+    function organizationRepoData($http) {
         var testDetailRoute = 'test-data/commit_detail.json';
-        var orgRepoDetailRoute = '/api/repos';
+        var orgRepoDetailRoute = '/api/pulls';
 
         return {
             details: details

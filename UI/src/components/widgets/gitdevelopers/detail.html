@@ -1,0 +1,25 @@
+<widget-modal widget-modal-close="true">
+    <div class="widget-detail gitdeveloper-detail">
+        <div class="widget-detail-body">
+            <span class="no-changesets" ng-hide="detail.gitdevelopers.length">No Changes</span>
+            <table class="table" ng-show="detail.gitdevelopers.length">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Developer</th>
+                    <th>Title</th>
+                    <th>Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="gitdeveloper in detail.gitdevelopers">
+                    <td>{{::gitdeveloper.Id | limitTo:8}}</td>
+                    <td>{{::gitdeveloper.Developer}}</td>
+                    <td>{{::gitdeveloper.Title}}</td>
+                    <td>{{::gitdeveloper.Timestamp | date:'MMM d, HH:mm:ss'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</widget-modal>

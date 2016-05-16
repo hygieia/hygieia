@@ -21,7 +21,7 @@ public class Pull extends SCM {
     @Id
     private ObjectId id;
     //Thus could be user id in GIT
-    private String name;
+    private String orgName;
     private String repoName;
     private String number;
     //Could be Different from name in GIT
@@ -41,6 +41,17 @@ public class Pull extends SCM {
     private String closedAt;
     private String mergedAt;
     private long timestamp;
+
+    public long getResolutiontime() {
+        return resolutiontime;
+    }
+
+    public void setResolutiontime(long resolutiontime) {
+        this.resolutiontime = resolutiontime;
+    }
+
+    private long resolutiontime;
+
 
     public String getCreatedAt() {
         return createdAt;
@@ -82,12 +93,12 @@ public class Pull extends SCM {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getOrgName() {
+        return orgName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
     }
 
     public String getRepoName() {

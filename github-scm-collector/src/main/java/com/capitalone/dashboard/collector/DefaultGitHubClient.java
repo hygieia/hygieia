@@ -6,6 +6,8 @@ import com.capitalone.dashboard.model.Developer;
 import com.capitalone.dashboard.model.GitHubRepo;
 import com.capitalone.dashboard.model.Issue;
 import com.capitalone.dashboard.model.Pull;
+import com.capitalone.dashboard.repository.IssueRepository;
+import com.capitalone.dashboard.repository.PullRepository;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
@@ -32,6 +34,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import static com.capitalone.dashboard.model.QIssue.issue;
 import static com.capitalone.dashboard.model.QPull.pull;
 import static org.eclipse.jdt.internal.compiler.parser.Parser.name;
 
@@ -183,7 +186,7 @@ public class DefaultGitHubClient implements GitHubClient {
 	}
 	@Override
 	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
-	public List<Pull> getPulls(GitHubRepo repo, boolean firstRun) {
+	public List<Pull> getPulls(GitHubRepo repo, boolean firstRun, PullRepository pullRepository) {
 		List<Pull> pulls = new ArrayList<>();
 
 		String apiUrl = getUrl(repo, REPO_SEGMENT_API);
@@ -261,30 +264,46 @@ public class DefaultGitHubClient implements GitHubClient {
 						JSONObject jsonObject = (JSONObject) item;
 						String message = str(jsonObject, "title");
 						String number = str(jsonObject, "number");
+
+						if (pullRepository.findByOrgNameAndRepoNameAndNumber(repo.getOrgName(),repoName, number) != null)
+						{
+							LOG.error("Pull " + number + " already exists for " + repoName + ".. move to next repo");
+							pageNumber = pageCount;
+							break;
+						}
 						JSONObject userObject = (JSONObject) jsonObject.get("user");
 						String name = str(userObject, "login");
-						long timestamp = new DateTime(str(jsonObject, "created_at")).getMillis();
 						String created=str(jsonObject, "created_at");
 						String merged=str(jsonObject, "merged_at");
 						String closed=str(jsonObject, "closed_at");
+						long createdTimestamp = new DateTime(created).getMillis();
+
 						Pull pull = new Pull();
+
+						if (merged != null && merged.length() >= 10) {
+							long mergedTimestamp = new DateTime(merged).getMillis();
+							pull.setScmCommitTimestamp(mergedTimestamp);
+							pull.setResolutiontime(mergedTimestamp - createdTimestamp);
+						}
 						pull.setScmUrl(repo.getRepoUrl());
-						pull.setScmCommitTimestamp(timestamp);
+						pull.setTimestamp(createdTimestamp);
 						pull.setScmRevisionNumber(number);
 						pull.setScmCommitLog(message);
 						pull.setCreatedAt(created);
 						pull.setClosedAt(closed);
-						pull.setTimestamp(timestamp);
 						pull.setMergedAt(merged);
-						pull.setName(name);
+						pull.setOrgName(repo.getOrgName());
 						pull.setNumber(number);
 						pull.setRepoName(repoName);
 						pull.setNumberOfChanges(1);
 						buildPullDeveloper(pull, name);
 						pulls.add(pull);
 					}
+					if (pageNumber == pageCount)
+						break;
 					if (jsonArray == null || jsonArray.isEmpty()) {
 						pageNumber = pageCount;
+						break;
 					}
 				} catch (RestClientException re) {
 					LOG.error(re.getMessage());
@@ -298,12 +317,11 @@ public class DefaultGitHubClient implements GitHubClient {
 
 	@Override
 	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
-	public List<Issue> getIssues(GitHubRepo repo, boolean firstRun) {
+	public List<Issue> getIssues(GitHubRepo repo, boolean firstRun, IssueRepository issueRepository) {
 
 		List<Issue> issues = new ArrayList<>();
 
 		String apiUrl = getUrl(repo, REPO_SEGMENT_API);
-
 		Date dt;
 		if (firstRun) {
 			int firstRunDaysHistory = settings.getFirstRunHistoryDays();
@@ -383,29 +401,41 @@ public class DefaultGitHubClient implements GitHubClient {
 						JSONObject jsonObject = (JSONObject) item;
 						String message = str(jsonObject, "title");
 						String number = str(jsonObject, "number");
+						if (issueRepository.findByOrgNameAndRepoNameAndNumber(repo.getOrgName(),repoName, number) != null)
+						{
+							LOG.error("Issue " + number + " already exists for " + repoName + ".. move to next repo");
+							pageNumber = pageCount;
+							break;
+						}
 						JSONObject userObject = (JSONObject) jsonObject.get("user");
 						String name = str(userObject, "login");
 						String created = str(jsonObject, "created_at");
 						String closed = str(jsonObject, "closed_at");
-						long timestamp = new DateTime(str(jsonObject, "created_at")).getMillis();
-
+						long createdTimestamp = new DateTime(created).getMillis();
 						Issue issue = new Issue();
+						if (closed != null && closed.length() >= 10) {
+							long closedTimestamp = new DateTime(closed).getMillis();
+							issue.setScmCommitTimestamp(closedTimestamp);
+							issue.setResolutiontime(closedTimestamp - createdTimestamp);
+						}
 						issue.setScmUrl(repo.getRepoUrl());
-						issue.setScmCommitTimestamp(timestamp);
 						issue.setScmRevisionNumber(number);
 						issue.setScmCommitLog(message);
-						issue.setTimestamp(timestamp);
+						issue.setTimestamp(createdTimestamp);
 						issue.setCreatedAt(created);
 						issue.setClosedAt(closed);
-						issue.setName(name);
+						issue.setOrgName(repo.getOrgName());
 						issue.setNumber(number);
 						issue.setRepoName(repoName);
 						issue.setNumberOfChanges(1);
 						buildIssueDeveloper(issue, name);
 						issues.add(issue);
 					}
+					if (pageNumber == pageCount)
+						break;
 					if (jsonArray == null || jsonArray.isEmpty()) {
 						pageNumber = pageCount;
+						break;
 					}
 				} catch (RestClientException re) {
 					LOG.error(re.getMessage());
@@ -560,6 +590,8 @@ public class DefaultGitHubClient implements GitHubClient {
 			scm.setUserId(name);
 			scm.setDeveloperName(dev.getName());
 			scm.setDepartmentName(dev.getDepartmentname());
+		} else {
+			scm.setDeveloperName(name);
 		}
 		devs.put(name, dev);
 	}
@@ -582,6 +614,8 @@ public class DefaultGitHubClient implements GitHubClient {
 			scm.setUserId(name);
 			scm.setDeveloperName(dev.getName());
 			scm.setDepartmentName(dev.getDepartmentname());
+		}else {
+			scm.setDeveloperName(name);
 		}
 		devs.put(name, dev);
 	}

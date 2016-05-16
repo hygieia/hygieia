@@ -80,7 +80,7 @@
             var pulls = [];
             var groups = _(data).sortBy('timestamp')
                 .groupBy(function(item) {
-                    return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
+                    return -1 * Math.floor(moment.duration(moment().diff(moment(item.timestamp))).asDays());
                 }).value();
 
             for(var x=-1*numberOfDays+1; x <= 0; x++) {
@@ -128,25 +128,25 @@
             // loop through and add to counts
             _(data).forEach(function (pull) {
 
-                if(pull.scmCommitTimestamp >= today.getTime()) {
+                if(pull.timestamp >= today.getTime()) {
                     lastDayCount++;
 
-                    if(lastDayContributors.indexOf(pull.name) == -1) {
-                        lastDayContributors.push(pull.name);
+                    if(lastDayContributors.indexOf(pull.developerName) == -1) {
+                        lastDayContributors.push(pull.developerName);
                     }
                 }
-                else if(pull.scmCommitTimestamp >= fortyfiveDays.getTime()) {
+                else if(pull.timestamp >= fortyfiveDays.getTime()) {
                     lastfortyfiveDayCount++;
 
-                    if(lastfortyfiveDaysContributors.indexOf(pull.name) == -1) {
-                        lastfortyfiveDaysContributors.push(pull.name);
+                    if(lastfortyfiveDaysContributors.indexOf(pull.developerName) == -1) {
+                        lastfortyfiveDaysContributors.push(pull.developerName);
                     }
                 }
-                else if(pull.scmCommitTimestamp >= ninetyDays.getTime()) {
+                else if(pull.timestamp >= ninetyDays.getTime()) {
                     lastninetyDayCount++;
                     ctrl.pulls.push(pull);
-                    if(lastninetyDaysContributors.indexOf(pull.name) == -1) {
-                        lastninetyDaysContributors.push(pull.name);
+                    if(lastninetyDaysContributors.indexOf(pull.developerName) == -1) {
+                        lastninetyDaysContributors.push(pull.developerName);
                     }
                 }
 

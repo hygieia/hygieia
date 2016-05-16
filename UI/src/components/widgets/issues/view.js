@@ -80,7 +80,7 @@
             var issues = [];
             var groups = _(data).sortBy('timestamp')
                 .groupBy(function(item) {
-                    return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
+                    return -1 * Math.floor(moment.duration(moment().diff(moment(item.timestamp))).asDays());
                 }).value();
 
             for(var x=-1*numberOfDays+1; x <= 0; x++) {
@@ -128,25 +128,25 @@
             // loop through and add to counts
             _(data).forEach(function (issue) {
 
-                if(issue.scmCommitTimestamp >= today.getTime()) {
+                if(issue.timestamp >= today.getTime()) {
                     lastDayCount++;
 
-                    if(lastDayContributors.indexOf(issue.name) == -1) {
-                        lastDayContributors.push(issue.name);
+                    if(lastDayContributors.indexOf(issue.developerName) == -1) {
+                        lastDayContributors.push(issue.developerName);
                     }
                 }
-                else if(issue.scmCommitTimestamp >= fortyfiveDays.getTime()) {
+                else if(issue.timestamp >= fortyfiveDays.getTime()) {
                     lastfortyfiveDayCount++;
 
-                    if(lastfortyfiveDaysContributors.indexOf(issue.name) == -1) {
-                        lastfortyfiveDaysContributors.push(issue.name);
+                    if(lastfortyfiveDaysContributors.indexOf(issue.developerName) == -1) {
+                        lastfortyfiveDaysContributors.push(issue.developerName);
                     }
                 }
-                else if(issue.scmCommitTimestamp >= ninetyDays.getTime()) {
+                else if(issue.timestamp >= ninetyDays.getTime()) {
                     lastninetyDayCount++;
                     ctrl.issues.push(issue);
-                    if(lastninetyDaysContributors.indexOf(issue.name) == -1) {
-                        lastninetyDaysContributors.push(issue.name);
+                    if(lastninetyDaysContributors.indexOf(issue.developerName) == -1) {
+                        lastninetyDaysContributors.push(issue.developerName);
                     }
                 }
 

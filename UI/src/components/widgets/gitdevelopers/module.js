@@ -5,16 +5,16 @@
         config = {
         view: {
             defaults: {
-                title: 'Contributions Repo' // widget title
+                title: 'Gitdevelopers Data' // widget title
             },
-            controller: 'OrgsRepoViewController',
-            controllerAs: 'repoView',
-            templateUrl: 'components/widgets/contributions/view.html'
+            controller: 'GitdeveloperViewController',
+            controllerAs: 'gitdeveloperView',
+            templateUrl: 'components/widgets/gitdevelopers/view.html'
         },
         config: {
-            controller: 'OrgsRepoConfigController',
-            controllerAs: 'contributionsConfig',
-            templateUrl: 'components/widgets/contributions/config.html'
+            controller: 'GitdeveloperConfigController',
+            controllerAs: 'gitdeveloperConfig',
+            templateUrl: 'components/widgets/gitdevelopers/config.html'
         },
         getState: getState
     };
@@ -26,7 +26,7 @@
     register.$inject = ['widgetManagerProvider', 'WidgetState'];
     function register(widgetManagerProvider, WidgetState) {
         widget_state = WidgetState;
-        widgetManagerProvider.register('contributions', config);
+        widgetManagerProvider.register('gitdevelopers', config);
     }
 
     function getState(widgetConfig) {

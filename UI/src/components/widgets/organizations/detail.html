@@ -1,0 +1,25 @@
+<widget-modal widget-modal-close="true">
+    <div class="widget-detail organization-detail">
+        <div class="widget-detail-body">
+            <span class="no-changesets" ng-hide="detail.organizations.length">No Changes</span>
+            <table class="table" ng-show="detail.organizations.length">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Developer</th>
+                    <th>Title</th>
+                    <th>Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="organization in detail.organizations">
+                    <td>{{::organization.Id | limitTo:8}}</td>
+                    <td>{{::organization.Developer}}</td>
+                    <td>{{::organization.Title}}</td>
+                    <td>{{::organization.Timestamp | date:'MMM d, HH:mm:ss'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</widget-modal>

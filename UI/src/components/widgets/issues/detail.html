@@ -1,22 +1,24 @@
 <widget-modal widget-modal-close="true">
     <div class="widget-detail issue-detail">
         <div class="widget-detail-body">
-            <span class="no-changesets" ng-hide="detail.issue.length">No Changes</span>
+            <span class="no-changesets" ng-hide="detail.issue.length">DETAILS (Some of these issues may be closed)</span>
             <table class="table" ng-show="detail.issues.length">
                 <thead>
                 <tr>
-                    <th>Id</th>
+                    <th>Number</th>
                     <th>Developer</th>
-                    <th>Title</th>
-                    <th>Time</th>
+                    <th>RepoName</th>
+                    <th>Org (of repo)</th>
+                    <th>LOB of Developer</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="issue in detail.issues">
-                    <td>{{::issue.Id | limitTo:8}}</td>
-                    <td>{{::issue.Developer}}</td>
-                    <td>{{::issue.Title}}</td>
-                    <td>{{::issue.Timestamp | date:'MMM d, HH:mm:ss'}}</td>
+                    <td>{{::issue.number | limitTo:8}}</td>
+                    <td>{{::issue.developerName}}</td>
+                    <td>{{::issue.repoName}}</td>
+                    <td>{{::issue.orgName}}</td>
+                    <td>{{::issue.departmentName | date:'MMM d, HH:mm:ss'}}</td>
                 </tr>
                 </tbody>
             </table>

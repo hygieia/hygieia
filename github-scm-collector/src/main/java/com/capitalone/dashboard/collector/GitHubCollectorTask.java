@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.capitalone.dashboard.model.QCommit.commit;
+
 /**
  * CollectorTask that fetches Commit information from GitHub
  */
@@ -132,14 +134,19 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         gitHubRepoRepository.save(repoList);
     }
 
-
     @Override
     public void collect(Collector collector) {
-
         logBanner("Starting...");
         long start = System.currentTimeMillis();
         int repoCount = 0;
         int commitCount = 0;
+        int pullCount = 0;
+        int issueCount = 0;
+        long pullStartCount = pullRepository.count();
+        long issueStartCount = issueRepository.count();
+        long commitStartCount = commitRepository.count();
+
+
 
         clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
@@ -159,48 +166,33 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     commitCount++;
                 }
             }
-            for (Pull commit : gitHubClient.getPulls(repo, firstRun)) {
-                LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
-                if (isNewPull(commit)) {
-                    commit.setCollectorItemId(repo.getId());
-                    pullRepository.save(commit);
-                    commitCount++;
-                }
-            }
-            for (Issue commit : gitHubClient.getIssues(repo, firstRun)) {
-                LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
-                if (isNewIssue(commit)) {
-                    commit.setCollectorItemId(repo.getId());
-                    issueRepository.save(commit);
-                    commitCount++;
-                }
-            }
 
+            for (Pull pull : gitHubClient.getPulls(repo, firstRun, pullRepository)) {
+                LOG.debug(pull.getTimestamp()+":::"+pull.getScmCommitLog());
+                pull.setCollectorItemId(repo.getId());
+                pullRepository.save(pull);
+                pullCount++;
+            }
+            for (Issue issue : gitHubClient.getIssues(repo, firstRun, issueRepository)) {
+                LOG.debug(issue.getTimestamp()+":::"+issue.getScmCommitLog());
+                issue.setCollectorItemId(repo.getId());
+                issueRepository.save(issue);
+                issueCount++;
+            }
             repoCount++;
         }
         log("Repo Count", start, repoCount);
-        log("New Commits", start, commitCount);
-
+        log("New Commits",commitStartCount, commitCount);
+        log("New Pulls", pullStartCount, pullCount);
+        log("New Issues", issueStartCount, issueCount);
     }
-
 
     private List<GitHubRepo> enabledRepos(Collector collector) {
         return gitHubRepoRepository.findEnabledGitHubRepos(collector.getId());
     }
 
-
     private boolean isNewCommit(GitHubRepo repo, Commit commit) {
         return commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo.getId(), commit.getScmRevisionNumber()) == null;
-    }
-
-    private boolean isNewPull(Pull commit) {
-        return pullRepository.findByRepoNameAndNumber(
-                commit.getRepoName(), commit.getNumber()) == null;
-    }
-
-    private boolean isNewIssue(Issue commit) {
-        return issueRepository.findByRepoNameAndNumber(
-                commit.getRepoName(), commit.getNumber()) == null;
     }
 }

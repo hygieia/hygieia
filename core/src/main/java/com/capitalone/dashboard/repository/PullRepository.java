@@ -27,6 +27,6 @@ public interface PullRepository extends CrudRepository<Pull, ObjectId>, QueryDsl
     List<Pull> findByCollectorItemIdAndScmCommitTimestamp(ObjectId collectorItemid, Long scmCommitTimestampThreshold);
 
     Pull findByCollectorItemIdAndNumber(ObjectId collectorItemId, String number);
-    Pull findByRepoNameAndNumber(String repoName, String number);
+    Pull findByOrgNameAndRepoNameAndNumber(String orgName, String repoName, String number);
 
 }

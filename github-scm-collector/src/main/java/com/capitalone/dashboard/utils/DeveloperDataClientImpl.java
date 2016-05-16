@@ -35,10 +35,10 @@ public class DeveloperDataClientImpl implements DeveloperDataClient {
     public Developer getDeveloper(String userId, DeveloperDataSettings keys) {
         try {
             if (!validUser(userId)) {
-                LOG.error("Not valid user : " + userId);
+                //LOG.error("Not valid user : " + userId);
                 return null;
             }
-            LOG.error("getDeveloper called for =[" + userId + "]");
+            //LOG.error("getDeveloper called for =[" + userId + "]");
             HashMap<String, String> peopleData = new HashMap<>();
             peopleData.put("URL",keys.getUrl());
             peopleData.put("password",keys.getPassword());
@@ -56,7 +56,7 @@ public class DeveloperDataClientImpl implements DeveloperDataClient {
     }
 
     private static void setManagers(Developer dev, Map keys) {
-        LOG.error("setDeveloper called for =[" + dev.getUserId() + "]");
+        //LOG.error("setDeveloper called for =[" + dev.getUserId() + "]");
 
         String currMgr = dev.getManager();
         //Job levels - don't go beyond 7 - you should be able to find by then

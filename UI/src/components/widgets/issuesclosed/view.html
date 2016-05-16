@@ -1,0 +1,44 @@
+<div class="issue-view">
+    <div class="widget">
+        <div class="widget-heading">
+            Issues per day
+        </div>
+        <div class="widget-body">
+                <chartist class="ct-chart ct-octave dash-chart-alt"
+                      chartist-chart-type="Line"
+                      chartist-data="issueClosedView.issueChartData"
+                      chartist-chart-options="issueClosedView.issueChartOptions"
+                      chartist-events="issueClosedView.issueChartEvents"
+                    >
+            </chartist>
+        </div>
+    </div>
+
+    <div class="widget">
+        <div class="widget-heading">
+            Summary
+        </div>
+        <div class="widget-body">
+            <table class="table issue-closed-summary-table">
+                <tr>
+                    <td>Total Issues</td>
+                    <td>{{issueClosedView.lastDayIssueCount}}</td>
+                    <td>{{issueClosedView.lastfortyfiveDaysIssueCount}}</td>
+                    <td>{{issueClosedView.lastninetyDaysIssueCount}}</td>
+                </tr>
+                <tr>
+                    <td>(Distinct) Developers</td>
+                    <td>{{issueClosedView.lastDayContributorCount}}</td>
+                    <td>{{issueClosedView.lastfortyfiveDaysContributorCount}}</td>
+                    <td>{{issueClosedView.lastninetyDaysContributorCount}}</td>
+                </tr>
+                <tr class="totals">
+                    <td></td>
+                    <td>Today</td>
+                    <td>Last<br/>45 Days</td>
+                    <td>45 to <br/>90 Days</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
