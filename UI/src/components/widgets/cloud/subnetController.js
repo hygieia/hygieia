@@ -45,7 +45,6 @@
               } else if (data.meta == 'med') {
                 strokeColor = '#ffbd35'
               }
-                                    console.log(data);
 
 
               data.element.attr(
@@ -53,8 +52,6 @@
                 style: 'cursor: pointer; stroke-width: 20px; stroke: ' + strokeColor + ';',
                 onclick: "angular.element(document.getElementById('iptutildiv')).scope().viewSubnetUtilization('" + data.series[data.index].vpc + "')"
               });
-
-              console.log(data.element.classList);
 
               if (data.value.x > 0) {
               var label, labelText, barLength, labelWidth, barClasses,
@@ -138,7 +135,6 @@
                 .then(function(subnets){
                     $scope.vpcs = ctrl.groupByVpc(subnets);
                     $scope.getIpUtilizations();
-                    console.log($scope.vpcs)
             });
         };
 
