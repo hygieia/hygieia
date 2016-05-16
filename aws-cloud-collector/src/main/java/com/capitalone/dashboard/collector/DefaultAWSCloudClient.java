@@ -433,7 +433,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
                 .getMetricStatistics(request);
         // to read data
         List<Datapoint> datapoints = result.getDatapoints();
-        if (datapoints.size() == 0) {
+        if (datapoints.isEmpty()) {
             // This instance has no CPU Util
             return 0.0;
         }
