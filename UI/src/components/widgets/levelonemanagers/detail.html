@@ -1,0 +1,25 @@
+<widget-modal widget-modal-close="true">
+    <div class="widget-detail levelonemanager-detail">
+        <div class="widget-detail-body">
+            <span class="no-changesets" ng-hide="detail.levelonemanagers.length">No Changes</span>
+            <table class="table" ng-show="detail.levelonemanagers.length">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Developer</th>
+                    <th>Title</th>
+                    <th>Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="levelonemanager in detail.levelonemanagers">
+                    <td>{{::levelonemanager.Id | limitTo:8}}</td>
+                    <td>{{::levelonemanager.Developer}}</td>
+                    <td>{{::levelonemanager.Title}}</td>
+                    <td>{{::levelonemanager.Timestamp | date:'MMM d, HH:mm:ss'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</widget-modal>

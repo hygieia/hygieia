@@ -1,0 +1,51 @@
+<div ng-controller="CapOneTemplateController as template">
+    <div id="header">
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+
+                <a ng-href="#/" class="dashboard-logo"></a>
+
+                {{::ctrl.dashboard.title}}
+                 -- Last 90 Days Metrics
+                <div class="pipeline-toggle btn-group"
+                     ng-click="template.toggleView()"
+                     ng-show="template.hasComponents(ctrl.dashboard, ['Deployment'])">
+                    <span class="btn" ng-class="{'btn-primary':template.widgetView, 'btn-default': !template.widgetView}">
+                        <span class="fa fa-th"></span>
+                        Widget
+                    </span>
+                    <span class="btn" ng-class="{'btn-primary':!template.widgetView, 'btn-default': template.widgetView}">
+                        <span class="fa fa-tasks"></span>
+                        Pipeline
+                    </span>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView">
+        <div class="row">
+            <div class="col-md-6">
+                <widget name="gitdevelopers" widget-title="Contributor List "></widget>
+                <widget name="levelonemanagers" widget-title="Contributions By Level One Manager "></widget>
+                <widget name="pulls" widget-title="Pulls Opened Across All ORG(s)"></widget>
+                <widget name="issues" widget-title="Issues Opened Across All ORG(s)"></widget>
+                <widget name="pullshealth" widget-title="Pulls Average Resolution Time "></widget>
+                <!--widget name="pullsbyrepo" widget-title="Pulls By Repo (Latest 10)"></widget-->
+                <widget name="repo" widget-title="Commits Last two weeks"></widget>
+                <!--widget name="repoDevelopes" widget-title="Repos contributed by max # of Developers"></widget-->
+            </div>
+            <div class="col-md-6">
+                <widget name="organizations" widget-title="Organizations "></widget>
+                <widget name="leveltwomanagers" widget-title="Contributions By Level Two Manager "></widget>
+                <widget name="pullsmerged" widget-title="Pulls Merged Across All ORGs "></widget>
+                <widget name="issuesclosed" widget-title="Issues Closed Across All ORGs "></widget>
+                <widget name="issueshealth" widget-title="Issues Average Resolution Time "></widget>
+                <!--widget name="issuesbyrepo" widget-title="Issue By Repo (Latest 10)"></widget-->
+                <!--widget name="issueslongest" widget-title="Top 10 issues (Longest 10)"></widget-->
+                <!--widget name="developerRepo" widget-title="Contributors to Max # of Repos"></widget-->
+                <!--widget name="popularrepo" widget-title="Most Popular Repo (Top 10)"></widget-->
+            </div>
+        </div>
+    </div>
+</div>

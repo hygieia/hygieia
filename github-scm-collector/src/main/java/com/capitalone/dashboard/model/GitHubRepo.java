@@ -1,6 +1,9 @@
 package com.capitalone.dashboard.model;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+
 
 /**
  * CollectorItem extension to store the github repo url and branch.
@@ -13,7 +16,7 @@ public class GitHubRepo extends CollectorItem {
     private static final String LAST_UPDATE_TIME = "lastUpdate";
 
     public String getUserId() {
-        return (String) getOptions().get(USER_ID);
+            return (String) getOptions().get(USER_ID);
     }
 
     public void setUserId(String userId) {
@@ -32,6 +35,15 @@ public class GitHubRepo extends CollectorItem {
     public String getRepoUrl() {
         return (String) getOptions().get(REPO_URL);
     }
+    public String getOrgName() {
+
+        String repoUrl =  (String) getOptions().get("url");
+        //https://github.kdc.capitalone.com/thisIsWhatWeWant/
+        List<String> slist = Arrays.asList(repoUrl.split("/"));
+        String lastToken = slist.get(slist.size() - 1);
+        return lastToken;
+    }
+
 
     public void setRepoUrl(String instanceUrl) {
         getOptions().put(REPO_URL, instanceUrl);

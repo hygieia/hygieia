@@ -80,4 +80,15 @@ public class TestConfig {
 	public PipelineService pipelineService() {
 		return Mockito.mock(PipelineService.class);
 	}
+
+	@Bean
+	public IssueService issueService() {
+		return Mockito.mock(IssueService.class);
+	}
+
+	@Bean
+	public PullService pullService() {
+		return Mockito.mock(PullService.class);
+	}
+
 }

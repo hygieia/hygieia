@@ -22,7 +22,7 @@ public class Commit extends SCM {
     private ObjectId id;
     private ObjectId collectorItemId;
     private long timestamp;
-
+    private String repoName;
     public ObjectId getId() {
         return id;
     }
@@ -45,5 +45,12 @@ public class Commit extends SCM {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+    public String getRepoName() {
+        return repoName;
+    }
+
+    public void setRepoName(String repoName) {
+        this.repoName = repoName;
     }
 }
