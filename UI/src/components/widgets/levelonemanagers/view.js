@@ -163,7 +163,7 @@
             }
             if (list[9] != null) {
                 ctrl.TopRankedTotal10 = list[9].Value;
-                ctrl.TopRanked10 = list[0].Key;
+                ctrl.TopRanked10 = list[9].Key;
             }
 
 

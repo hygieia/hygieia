@@ -6,9 +6,9 @@
 
     angular
         .module(HygieiaConfig.module + '.core')
-        .factory('pullRepoData', pullRepoData);
+        .factory('pullMergedRepoData', pullMergedRepoData);
 
-    function pullRepoData($http) {
+    function pullMergedRepoData($http) {
         var testDetailRoute = 'test-data/commit_detail.json';
         var caDetailRoute = '/api/pullsMerged';
 

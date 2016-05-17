@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('PullMergedViewController', PullMergedViewController);
 
-    PullMergedViewController.$inject = ['$q', '$scope','pullRepoData', '$modal'];
-    function PullMergedViewController($q, $scope, pullRepoData, $modal) {
+    PullMergedViewController.$inject = ['$q', '$scope','pullMergedRepoData', '$modal'];
+    function PullMergedViewController($q, $scope, pullMergedRepoData, $modal) {
         var ctrl = this;
 
         ctrl.pullChartOptions = {
@@ -50,7 +50,7 @@
                 componentId: $scope.widgetConfig.componentId,
                 numberOfDays: 90
             };
-            pullRepoData.details(params).then(function(data) {
+            pullMergedRepoData.details(params).then(function(data) {
                 processResponse(data.result, params.numberOfDays);
                 deferred.resolve(data.lastUpdated);
             });
@@ -62,9 +62,9 @@
                 pointIndex = target.getAttribute('ct:point-index');
 
             $modal.open({
-                controller: 'PullDetailController',
+                controller: 'PullMergedDetailController',
                 controllerAs: 'detail',
-                templateUrl: 'components/widgets/pulls/detail.html',
+                templateUrl: 'components/widgets/pullsmerged/detail.html',
                 size: 'lg',
                 resolve: {
                     pulls: function() {

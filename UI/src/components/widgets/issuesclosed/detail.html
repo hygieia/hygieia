@@ -10,6 +10,7 @@
                     <th>RepoName</th>
                     <th>Org (of repo)</th>
                     <th>LOB of Developer</th>
+                    <th>Title</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -17,8 +18,10 @@
                     <td>{{::issue.number | limitTo:8}}</td>
                     <td>{{::issue.developerName}}</td>
                     <td>{{::issue.repoName}}</td>
+                    <td>{{::issue.resolutiontime}}</td>
                     <td>{{::issue.orgName}}</td>
-                    <td>{{::issue.departmentName | date:'MMM d, HH:mm:ss'}}</td>
+                    <td>{{::issue.departmentName}}</td>
+                    <td>{{::issue.scmCommitLog | date:'MMM d, HH:mm:ss'}}</td>
                 </tr>
                 </tbody>
             </table>

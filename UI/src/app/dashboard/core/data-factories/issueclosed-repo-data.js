@@ -6,9 +6,9 @@
 
     angular
         .module(HygieiaConfig.module + '.core')
-        .factory('issueRepoData', issueRepoData);
+        .factory('issueClosedRepoData', issueClosedRepoData);
 
-    function issueRepoData($http) {
+    function issueClosedRepoData($http) {
         var testDetailRoute = 'test-data/commit_detail.json';
         var caDetailRoute = '/api/issuesClosed';
 

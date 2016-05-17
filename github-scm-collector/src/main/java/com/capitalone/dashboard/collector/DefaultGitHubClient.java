@@ -267,7 +267,6 @@ public class DefaultGitHubClient implements GitHubClient {
 
 						if (pullRepository.findByOrgNameAndRepoNameAndNumber(repo.getOrgName(),repoName, number) != null)
 						{
-							LOG.error("Pull " + number + " already exists for " + repoName + ".. move to next repo");
 							pageNumber = pageCount;
 							break;
 						}
@@ -283,7 +282,7 @@ public class DefaultGitHubClient implements GitHubClient {
 						if (merged != null && merged.length() >= 10) {
 							long mergedTimestamp = new DateTime(merged).getMillis();
 							pull.setScmCommitTimestamp(mergedTimestamp);
-							pull.setResolutiontime(mergedTimestamp - createdTimestamp);
+							pull.setResolutiontime((mergedTimestamp - createdTimestamp)/(24*3600000));
 						}
 						pull.setScmUrl(repo.getRepoUrl());
 						pull.setTimestamp(createdTimestamp);
@@ -403,7 +402,6 @@ public class DefaultGitHubClient implements GitHubClient {
 						String number = str(jsonObject, "number");
 						if (issueRepository.findByOrgNameAndRepoNameAndNumber(repo.getOrgName(),repoName, number) != null)
 						{
-							LOG.error("Issue " + number + " already exists for " + repoName + ".. move to next repo");
 							pageNumber = pageCount;
 							break;
 						}
@@ -416,7 +414,7 @@ public class DefaultGitHubClient implements GitHubClient {
 						if (closed != null && closed.length() >= 10) {
 							long closedTimestamp = new DateTime(closed).getMillis();
 							issue.setScmCommitTimestamp(closedTimestamp);
-							issue.setResolutiontime(closedTimestamp - createdTimestamp);
+							issue.setResolutiontime((closedTimestamp - createdTimestamp)/(24*3600000));
 						}
 						issue.setScmUrl(repo.getRepoUrl());
 						issue.setScmRevisionNumber(number);

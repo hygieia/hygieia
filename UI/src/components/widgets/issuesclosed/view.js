@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('IssueClosedViewController', IssueClosedViewController);
 
-    IssueClosedViewController.$inject = ['$q', '$scope','issueRepoData', '$modal'];
-    function IssueClosedViewController($q, $scope, issueRepoData, $modal) {
+    IssueClosedViewController.$inject = ['$q', '$scope','issueClosedRepoData', '$modal'];
+    function IssueClosedViewController($q, $scope, issueClosedRepoData, $modal) {
         var ctrl = this;
 
         ctrl.issueChartOptions = {
@@ -50,7 +50,7 @@
                 componentId: $scope.widgetConfig.componentId,
                 numberOfDays: 90
             };
-            issueRepoData.details(params).then(function(data) {
+            issueClosedRepoData.details(params).then(function(data) {
                 processResponse(data.result, params.numberOfDays);
                 deferred.resolve(data.lastUpdated);
             });

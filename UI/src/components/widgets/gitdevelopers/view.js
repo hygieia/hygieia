@@ -121,7 +121,7 @@
             byValue.sort(function(a,b) {
                 return b.Value - a.Value;
             });
-            list=byValue.slice(0,9);
+            list=byValue.slice(0,10);
             
             ctrl.TopRankedTotal = data.length;
 
@@ -163,7 +163,7 @@
             }
             if (list[9] != null) {
                 ctrl.TopRankedTotal10 = list[9].Value;
-                ctrl.TopRanked10 = list[0].Key;
+                ctrl.TopRanked10 = list[9].Key;
             }
 
 
