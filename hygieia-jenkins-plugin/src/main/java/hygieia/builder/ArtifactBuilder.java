@@ -1,14 +1,13 @@
 package hygieia.builder;
 
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
-import hudson.EnvVars;
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hygieia.utils.HygieiaUtils;
 import jenkins.plugins.hygieia.HygieiaPublisher;
-import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,61 +37,33 @@ public class ArtifactBuilder {
         String filePattern = publisher.getHygieiaArtifact().getArtifactName().trim();
         String group = publisher.getHygieiaArtifact().getArtifactGroup().trim();
         String version = publisher.getHygieiaArtifact().getArtifactVersion().trim();
-        EnvVars env;
+
+        FilePath rootDirectory = build.getWorkspace().withSuffix(directory);
+        listener.getLogger().println("Hygieia Build Artifact Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory);
         try {
-            env = build.getEnvironment(listener);
-        } catch (Exception e) {
-            listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
-            env = new EnvVars();
-        }
-
-        String path = env.expand("$WORKSPACE");
-
-        path = path + directory;
-        listener.getLogger().println("Hygieia Build Artifact Publisher - Looking for file pattern '" + filePattern + "' in directory " + path);
-        List<File> artifactFiles = HygieiaUtils.getArtifactFiles(new File(path), filePattern, new ArrayList<File>());
-
-        for (File f : artifactFiles) {
-            BinaryArtifactCreateRequest bac = new BinaryArtifactCreateRequest();
-            String v = "";
-            bac.setArtifactGroup(group);
-            if ("".equals(version)) {
-                version = guessVersionNumber(f.getName());
+            List<FilePath> artifactFiles = HygieiaUtils.getArtifactFiles(rootDirectory, filePattern, new ArrayList<FilePath>());
+            for (FilePath f : artifactFiles) {
+                listener.getLogger().println("Hygieia Artifact Publisher: Processing  file: " + f.getRemote());
+                BinaryArtifactCreateRequest bac = new BinaryArtifactCreateRequest();
+                String v = "";
+                bac.setArtifactGroup(group);
+                if ("".equals(version)) {
+                    version = HygieiaUtils.guessVersionNumber(f.getName());
+                }
+                bac.setArtifactVersion(version);
+                bac.setCanonicalName(f.getName());
+                bac.setArtifactName(HygieiaUtils.getFileNameMinusVersion(f, version));
+                bac.setTimestamp(build.getTimeInMillis());
+                bac.setBuildId(buildId);
+                CommitBuilder commitBuilder = new CommitBuilder(build);
+                bac.getSourceChangeSet().addAll(commitBuilder.getCommits());
+                artifacts.add(bac);
             }
-            bac.setArtifactVersion(version);
-            bac.setCanonicalName(f.getName());
-            bac.setArtifactName(getFileNameMinusVersion(f, version));
-            bac.setTimestamp(build.getTimeInMillis());
-            bac.setBuildId(buildId);
-            CommitBuilder commitBuilder = new CommitBuilder(build);
-            bac.getSourceChangeSet().addAll(commitBuilder.getCommits());
-            artifacts.add(bac);
+        } catch (IOException e) {
+            listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException on " + rootDirectory);
+        } catch (InterruptedException e) {
+            listener.getLogger().println("Hygieia BuildArtifact Publisher - InterruptedException on " + rootDirectory);
         }
-    }
-
-    private static String getFileNameMinusVersion(File file, String version) {
-        String ext = FilenameUtils.getExtension(file.getName());
-        if ("".equals(version)) return file.getName();
-        int vIndex = file.getName().indexOf(version);
-        if (vIndex == 0) return file.getName();
-        if ((file.getName().charAt(vIndex - 1) == '-') || (file.getName().charAt(vIndex - 1) == '_')) {
-            vIndex = vIndex - 1;
-        }
-        return file.getName().substring(0, vIndex) + "." + ext;
-    }
-
-    private String guessVersionNumber(String source) {
-        String versionNumber = "";
-        String fileName = source.substring(0, source.lastIndexOf("."));
-        if (fileName.contains(".")) {
-            String majorVersion = fileName.substring(0, fileName.indexOf("."));
-            String minorVersion = fileName.substring(fileName.indexOf("."));
-            int delimiter = majorVersion.lastIndexOf("-");
-            if (majorVersion.indexOf("_") > delimiter) delimiter = majorVersion.indexOf("_");
-            majorVersion = majorVersion.substring(delimiter + 1, fileName.indexOf("."));
-            versionNumber = majorVersion + minorVersion;
-        }
-        return versionNumber;
     }
 
 

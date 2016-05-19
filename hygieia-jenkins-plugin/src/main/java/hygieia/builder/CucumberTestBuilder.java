@@ -7,6 +7,7 @@ import com.capitalone.dashboard.model.TestSuite;
 import com.capitalone.dashboard.model.TestSuiteType;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.EnvVars;
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hygieia.transformer.CucumberJsonToTestResultTransformer;
@@ -17,9 +18,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,30 +45,30 @@ public class CucumberTestBuilder {
     private void buildTestResults() {
         String directory = publisher.getHygieiaTest().getTestResultsDirectory().trim();
         String filePattern = publisher.getHygieiaTest().getTestFileNamePattern().trim();
-
-        EnvVars env;
+        FilePath rootDirectory = build.getWorkspace().withSuffix(directory);
+        listener.getLogger().println("Hygieia Test Result Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory.getRemote());
+        List<FilePath> testFiles = null;
         try {
-            env = build.getEnvironment(listener);
-        } catch (Exception e) {
-            listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
-            env = new EnvVars();
+            testFiles = HygieiaUtils.getArtifactFiles(rootDirectory, filePattern, new ArrayList<FilePath>());
+        } catch (IOException e) {
+            e.printStackTrace();
+            listener.getLogger().println("Hygieia Test Result Publisher - IOException on " + rootDirectory);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            listener.getLogger().println("Hygieia Test Result Publisher - InterruptedException on " + rootDirectory);
         }
-
-        String path = env.expand("$WORKSPACE");
-        path = path + directory;
-        listener.getLogger().println("Hygieia Test Result Publisher - Looking for file pattern '" + filePattern + "' in directory " + path);
-        List<File> testFiles = HygieiaUtils.getArtifactFiles(new File(path), filePattern, new ArrayList<File>());
+//        List<File> testFiles = HygieiaUtils.getArtifactFilesiInPath(directory, filePattern, new ArrayList<File>(), build);
         testResult = buildTestResultObject(getCapabilities(testFiles));
     }
 
-    private List<TestCapability> getCapabilities(List<File> testFiles) {
+    private List<TestCapability> getCapabilities(List<FilePath> testFiles) {
         List<TestCapability> capabilities = new ArrayList<TestCapability>();
         JSONParser parser = new JSONParser();
         CucumberJsonToTestResultTransformer cucumberTransformer = new CucumberJsonToTestResultTransformer();
-        for (File file : testFiles) {
+        for (FilePath file : testFiles) {
             try {
-                listener.getLogger().println("Hygieia Publisher: Processing test file: " + file.getAbsolutePath());
-                JSONArray cucumberJson = (JSONArray) parser.parse(new FileReader(file));
+                listener.getLogger().println("Hygieia Test Publisher: Processing file: " + file.getRemote());
+                JSONArray cucumberJson = (JSONArray) parser.parse(file.readToString());
                 TestCapability cap = new TestCapability();
                 cap.setType(TestSuiteType.Functional);
                 List<TestSuite> testSuites = cucumberTransformer.transformer(cucumberJson);
@@ -113,18 +112,18 @@ public class CucumberTestBuilder {
                 cap.setExecutionId(String.valueOf(build.getNumber()));
                 capabilities.add(cap);
             } catch (FileNotFoundException e) {
-                listener.getLogger().println("Hygieia Publisher: Test File Not Found: " + file.getAbsolutePath());
+                listener.getLogger().println("Hygieia Publisher: Test File Not Found: " + file.getRemote());
             } catch (ParseException e) {
-                listener.getLogger().println("Hygieia Publisher: Error Parsing File: " + file.getAbsolutePath());
+                listener.getLogger().println("Hygieia Publisher: Error Parsing File: " + file.getRemote());
             } catch (IOException e) {
-                listener.getLogger().println("Hygieia Publisher: Error Reading File: " + file.getAbsolutePath());
+                listener.getLogger().println("Hygieia Publisher: Error Reading File: " + file.getName());
             }
         }
         return capabilities;
     }
 
-    private static String getCapabilityDescription(File file) {
-        String newFileName = file.getPath().replace(file.getName(), "");
+    private static String getCapabilityDescription(FilePath file) {
+        String newFileName = file.getRemote().replace(file.getName(), "");
         boolean isUnix = newFileName.endsWith("/");
         int lastFolderIndex = -1;
         newFileName = newFileName.substring(0, newFileName.length() - 1);
