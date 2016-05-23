@@ -175,10 +175,10 @@
 					teamName : ctrl.collectorItemId.teamName,
 					teamId : ctrl.collectorItemId.teamId,
 					showStatus : {
-			      kanban: false,
-			      scrum: true
+			      kanban: true,
+			      scrum: false
 			    },
-					intervalOff : false
+					intervalOff : 2
 				},
 				componentId : modalData.dashboard.application.components[0].id,
 				collectorItemId : ctrl.collectorItemId.value

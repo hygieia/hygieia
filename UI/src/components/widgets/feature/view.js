@@ -29,12 +29,8 @@
     ctrl.setFeatureLimit = setFeatureLimit;
     ctrl.showStatus = $scope.widgetConfig.options.showStatus;
     ctrl.animateAgileView = animateAgileView;
-    var intervalOff = $scope.widgetConfig.options.intervalOff;
-    ctrl.timeout = $interval(function() {
-      if (intervalOff === false) {
-        animateAgileView();
-      }
-    }, 7000);
+    ctrl.intervalOff = $scope.widgetConfig.options.intervalOff;
+    ctrl.timeout = null;
 
     /**
      * Every controller must have a load method. It will be called every 60
@@ -171,6 +167,10 @@
       var daysTilEnd = null;
       var iteration = null;
       var dupes = true;
+      // Reset on every processing
+      ctrl.showStatus = $scope.widgetConfig.options.showStatus;
+      ctrl.intervalOff = $scope.widgetConfig.options.intervalOff;
+
 
       for (var i = 0; i < data.result.length; i++) {
         if (data.result[i].sSprintID === undefined) {
@@ -244,11 +244,9 @@
       }
 
       // Check if iteration switching is needed
-      if (ctrl.iterations.length >= 1) {
-        intervalOff = false;
-      } else {
+      if (ctrl.iterations.length < 1) {
         ctrl.showStatus.scrum = false;
-        intervalOff = true;
+        ctrl.intervalOff --;
       }
     }
 
@@ -339,11 +337,9 @@
       }
 
       // Check if iteration switching is needed
-      if (ctrl.iterationsKanban.length >= 1) {
-        intervalOff = false;
-      } else {
+      if (ctrl.iterationsKanban.length < 1) {
         ctrl.showStatus.kanban = false;
-        intervalOff = true;
+        ctrl.intervalOff --;
       }
     }
 
@@ -380,6 +376,20 @@
       }
     }
 
+    /**
+     * Changes timeout boolean based on agile iterations available,
+     * turning off the agile view switching if only one or none are
+     * available
+     */
+    ctrl.timeout = $interval(function() {
+      if (ctrl.intervalOff === 2) {
+        animateAgileView();
+      }
+    }, 1000);
+
+    /**
+     * Animates agile view switching
+     */
     function animateAgileView() {
       var show = false;
 
