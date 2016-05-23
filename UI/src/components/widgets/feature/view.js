@@ -385,7 +385,7 @@
       if (ctrl.intervalOff === 2) {
         animateAgileView();
       }
-    }, 1000);
+    }, 7000);
 
     /**
      * Animates agile view switching
