@@ -156,8 +156,8 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         object.setLastUpdatedDate(System.currentTimeMillis());
         object.setAge(getInstanceAge(currInstance));
         object.setCpuUtilization(getInstanceCPUSinceLastRun(currInstance.getInstanceId(), lastUpdated));
-        object.setTagged(isInstanceTagged(currInstance));
-        object.setStopped(isInstanceStopped(currInstance));
+        object.setIsTagged(isInstanceTagged(currInstance));
+        object.setIsStopped(isInstanceStopped(currInstance));
         object.setNetworkIn(getLastHourInstanceNetworkIn(currInstance.getInstanceId(), lastUpdated));
         object.setNetworkOut(getLastHourIntanceNetworkOut(currInstance.getInstanceId(), lastUpdated));
         object.setDiskRead(getLastHourInstanceDiskRead(currInstance.getInstanceId(), lastUpdated));
@@ -166,7 +166,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         object.setImageId(currInstance.getImageId());
         object.setInstanceId(currInstance.getInstanceId());
         object.setInstanceType(currInstance.getInstanceType());
-        object.setMonitored("enabled".equalsIgnoreCase(currInstance.getMonitoring().getState()));
+        object.setIsMonitored("enabled".equalsIgnoreCase(currInstance.getMonitoring().getState()));
         object.setPrivateDns(currInstance.getPrivateDnsName());
         object.setPrivateIp(currInstance.getPrivateIpAddress());
         object.setPublicDns(currInstance.getPublicDnsName());
