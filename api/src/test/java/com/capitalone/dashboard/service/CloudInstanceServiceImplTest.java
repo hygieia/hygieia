@@ -200,6 +200,5 @@ public class CloudInstanceServiceImplTest {
         req.getTags().addAll(instance.getTags());
         req.getSecurityGroups().addAll(instance.getSecurityGroups());
         return req;
-
     }
 }
