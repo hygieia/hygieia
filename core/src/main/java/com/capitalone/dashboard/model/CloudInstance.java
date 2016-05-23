@@ -66,7 +66,7 @@ public class CloudInstance extends BaseModel{
         return isStopped;
     }
 
-    public void setStopped(boolean isStopped) {
+    public void setIsStopped(boolean isStopped) {
         this.isStopped = isStopped;
     }
 
@@ -74,7 +74,7 @@ public class CloudInstance extends BaseModel{
         return isTagged;
     }
 
-    public void setTagged(boolean isTagged) {
+    public void setIsTagged(boolean isTagged) {
         this.isTagged = isTagged;
     }
 
@@ -114,7 +114,7 @@ public class CloudInstance extends BaseModel{
         return isMonitored;
     }
 
-    public void setMonitored(boolean isMonitored) {
+    public void setIsMonitored(boolean isMonitored) {
         this.isMonitored = isMonitored;
     }
 

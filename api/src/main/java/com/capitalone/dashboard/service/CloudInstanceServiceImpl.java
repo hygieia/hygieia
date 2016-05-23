@@ -146,15 +146,15 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         if (request.getInstanceOwner() != null) instance.setInstanceOwner(request.getInstanceOwner());
         if (request.getInstanceType() != null) instance.setInstanceType(request.getInstanceType());
         if (request.getLastAction() != null) instance.setLastAction(request.getLastAction());
-        if (request.getIsMonitored() != null) instance.setMonitored(Boolean.parseBoolean(request.getIsMonitored()));
+        if (request.getIsMonitored() != null) instance.setIsMonitored(Boolean.parseBoolean(request.getIsMonitored()));
         if (request.getNetworkIn() != null) instance.setNetworkIn(Double.parseDouble(request.getNetworkIn()));
         if (request.getNetworkOut() != null) instance.setNetworkOut(Double.parseDouble(request.getNetworkOut()));
         if (request.getLastUpdatedDate() != null)
             instance.setLastUpdatedDate(Long.parseLong(request.getLastUpdatedDate()));
         if (request.getPrivateDns() != null) instance.setPrivateDns(request.getPrivateDns());
         if (request.getPublicIp() != null) instance.setPublicIp(request.getPublicIp());
-        if (request.getIsStopped() != null) instance.setStopped(Boolean.parseBoolean(request.getIsStopped()));
-        if (request.getIsTagged() != null) instance.setTagged(Boolean.parseBoolean(request.getIsTagged()));
+        if (request.getIsStopped() != null) instance.setIsStopped(Boolean.parseBoolean(request.getIsStopped()));
+        if (request.getIsTagged() != null) instance.setIsTagged(Boolean.parseBoolean(request.getIsTagged()));
         if (request.getAutoScaleName() != null) instance.setAutoScaleName(request.getAutoScaleName());
         if (!CollectionUtils.isEmpty(request.getTags())) {
             instance.getTags().clear();
