@@ -344,7 +344,7 @@
                     var latestCharge = instanceDataHistory.filter(function(data) {
                         return data.time == latestHistoryEpochTime;
                     });
-                    ctrl.estimatedMonthlyCharge = latestCharge[0].estimatedCharge;
+                   ctrl.estimatedMonthlyCharge = latestCharge[0].estimatedCharge;
 
                     //retrieve instance average
                     var dailyAvg = ctrl.calculateAverageForInterval(instanceDataHistory,convertEpochTimeToDate)

@@ -100,4 +100,9 @@ public class TestConfig {
     public CloudVirtualNetworkService cloudVirtualNetworkService() {
         return Mockito.mock(CloudVirtualNetworkService.class);
     }
+
+    @Bean
+    public CloudVolumeService cloudVolumeService() {
+        return Mockito.mock(CloudVolumeService.class);
+    }
 }

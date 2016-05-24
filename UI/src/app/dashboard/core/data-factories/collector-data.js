@@ -26,16 +26,7 @@
         }
 
         function createCollectorItem(collectorItem) {
-
-            var deferred = $q.defer();
-            $http.post(itemRoute, collectorItem).success(function (data) {
-                    deferred.resolve(data);
-                })
-                .error(function(error) {
-                    deferred.reject(error);
-                });
-
-            return deferred.promise;
+            return $http.post(itemRoute, collectorItem);
         }
 
         function collectorsByType(type) {
