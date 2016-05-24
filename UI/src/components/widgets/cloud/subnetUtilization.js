@@ -33,8 +33,28 @@
 
         ctrl.utilizationPercent = function(subnet) {
             var util = ctrl.percentUsed(subnet);
-            return {series: [(100 - util), util]};
-        };        
+            return {series: [ {meta: 'used', value: util}, {meta:'available', value: (100 - util)}]};
+        };   
+
+        $scope.utillizationEvents = {
+
+          draw: function (data) {
+
+            if (data.type === 'slice') {
+
+              var strokeColor = '#05ac45';
+
+              if (data.meta == 'used') {
+                  strokeColor = '#d8514d';
+              }
+              
+              data.element.attr(
+              {
+                style: 'stroke-width: 20px; stroke: ' + strokeColor + ';'
+              });
+            }
+          }
+        }
         
         ctrl.aggregateSubnetsByAz = function(subnets) {
           var azMap = {};
