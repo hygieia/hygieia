@@ -4,9 +4,9 @@
   angular.module(HygieiaConfig.module).controller('featureViewController',
     featureViewController);
 
-  featureViewController.$inject = ['$scope', '$interval', 'featureData'];
+  featureViewController.$inject = ['$scope', '$q', '$interval', 'featureData'];
 
-  function featureViewController($scope, $interval, featureData) {
+  function featureViewController($scope, $q, $interval, featureData) {
     /* jshint validthis:true */
     var ctrl = this;
     var today = new Date(_.now());
@@ -30,7 +30,10 @@
     ctrl.showStatus = $scope.widgetConfig.options.showStatus;
     ctrl.animateAgileView = animateAgileView;
     ctrl.intervalOff = $scope.widgetConfig.options.intervalOff;
-    ctrl.timeout = null;
+    var timeoutPromise = null;
+    ctrl.changeDetect = null;
+    ctrl.pauseAgileView = pauseAgileView;
+    ctrl.pausePlaySymbol = "||";
 
     /**
      * Every controller must have a load method. It will be called every 60
@@ -40,27 +43,33 @@
      * timestamp.
      */
     ctrl.load = function() {
-      // Scrum
-      featureData.total($scope.widgetConfig.componentId, filterTeamId)
-        .then(processTotalResponse);
-      featureData.wip($scope.widgetConfig.componentId, filterTeamId)
-        .then(processWipResponse);
-      featureData.done($scope.widgetConfig.componentId, filterTeamId)
-        .then(processDoneResponse);
-      featureData.featureWip($scope.widgetConfig.componentId,
-        filterTeamId).then(processFeatureWipResponse);
-      featureData.sprint($scope.widgetConfig.componentId, filterTeamId)
-        .then(processSprintResponse);
+      var deferred = $q.all([
+        // Scrum
+        featureData.total($scope.widgetConfig.componentId, filterTeamId)
+          .then(processTotalResponse),
+        featureData.wip($scope.widgetConfig.componentId, filterTeamId)
+          .then(processWipResponse),
+        featureData.done($scope.widgetConfig.componentId, filterTeamId)
+          .then(processDoneResponse),
+        featureData.featureWip($scope.widgetConfig.componentId,
+          filterTeamId).then(processFeatureWipResponse),
+        featureData.sprint($scope.widgetConfig.componentId, filterTeamId)
+          .then(processSprintResponse),
 
-      // Kanban
-      featureData.totalKanban($scope.widgetConfig.componentId, filterTeamId)
-        .then(processTotalKanbanResponse);
-      featureData.wipKanban($scope.widgetConfig.componentId, filterTeamId)
-        .then(processWipKanbanResponse);
-      featureData.featureWipKanban($scope.widgetConfig.componentId,
-        filterTeamId).then(processFeatureWipKanbanResponse);
-      featureData.sprintKanban($scope.widgetConfig.componentId, filterTeamId)
-        .then(processSprintKanbanResponse);
+        // Kanban
+        featureData.totalKanban($scope.widgetConfig.componentId, filterTeamId)
+          .then(processTotalKanbanResponse),
+        featureData.wipKanban($scope.widgetConfig.componentId, filterTeamId)
+          .then(processWipKanbanResponse),
+        featureData.featureWipKanban($scope.widgetConfig.componentId,
+          filterTeamId).then(processFeatureWipKanbanResponse),
+        featureData.sprintKanban($scope.widgetConfig.componentId, filterTeamId)
+          .then(processSprintKanbanResponse)
+      ]);
+
+      deferred.then(function(){
+        detectIterationChange();
+      });
     };
 
     /**
@@ -381,35 +390,87 @@
      * turning off the agile view switching if only one or none are
      * available
      */
-    ctrl.timeout = $interval(function() {
-      if (ctrl.intervalOff === 2) {
-        animateAgileView();
-      }
-    }, 7000);
+    ctrl.startTimeout = function() {
+      ctrl.stopTimeout();
+
+      timeoutPromise = $interval(function() {
+        if (ctrl.intervalOff === 2) {
+          animateAgileView(true);
+        } else if (ctrl.intervalOff === 1) {
+          animateAgileView(false);
+        }
+      }, 7000);
+    }
+
+    /**
+     * Stops the current agile iteration cycler promise
+     */
+    ctrl.stopTimeout = function() {
+      $interval.cancel(timeoutPromise);
+    };
+
+    /**
+     * Starts timeout cycle function by default
+     */
+    ctrl.startTimeout();
+
+    /**
+     * Triggered by the resolution of the data factory promises, iterations
+     * types are detected from their resolutions and then initialized based
+     * on data results.  This is a one time action per promise resolution.
+     */
+    function detectIterationChange () {
+      animateAgileView(false);
+    }
 
     /**
      * Animates agile view switching
      */
-    function animateAgileView() {
-      var show = false;
+    function animateAgileView(multipleDetects) {
+      switch (multipleDetects) {
+        case true:
+          // Swap Kanban
+          if (ctrl.showStatus.kanban === false) {
+            ctrl.showStatus.kanban = true;
+          } else if (ctrl.showStatus.kanban === true) {
+            ctrl.showStatus.kanban = false;
+          }
 
-      if (ctrl.showStatus.kanban === false) {
-        show = true
-        ctrl.showStatus.kanban = show;
-      } else if (ctrl.showStatus.kanban === true) {
-        show = false
-        ctrl.showStatus.kanban = show;
+          // Swap Scrum
+          if (ctrl.showStatus.scrum === false) {
+            ctrl.showStatus.scrum = true;
+          } else if (ctrl.showStatus.scrum === true) {
+            ctrl.showStatus.scrum = false;
+          }
+          break;
+        case false:
+          // Use case for clean up and one time loads
+          if (ctrl.iterationsKanban.length >= 1) {
+            ctrl.showStatus.kanban = true;
+            ctrl.showStatus.scrum = false;
+          } else if (ctrl.iterations.length >= 1) {
+            ctrl.showStatus.scrum = true;
+            ctrl.showStatus.kanban = false;
+          }
+          break;
+        default:
+          ctrl.showStatus.scrum = false;
+          ctrl.showStatus.kanban = false;
+          console.log("This shouldn't happen!  Please raise an issue on GitHub.");
       }
-
-      if (ctrl.showStatus.scrum === false) {
-        show = true
-        ctrl.showStatus.scrum = show;
-      } else if (ctrl.showStatus.scrum === true) {
-        show = false
-        ctrl.showStatus.scrum = show;
-      }
-
-      return show;
     }
+
+    /**
+     * Pauses agile view switching via manual button from user interaction
+     */
+    function pauseAgileView() {
+      if (timeoutPromise.$$state.value === "canceled") {
+        ctrl.pausePlaySymbol = "||";
+        ctrl.startTimeout();
+      } else {
+        ctrl.pausePlaySymbol = ">";
+        ctrl.stopTimeout();
+      }
+    };
   }
 })();
