@@ -16,6 +16,7 @@ public class CloudSubnetCreateRequest {
     private String cidrCount;
     private String zone;
     private String availableIPCount;
+    private String subscribedIPCount;
     private String usedIPCount;
     private String defaultForZone;
     private String state;
@@ -135,6 +136,14 @@ public class CloudSubnetCreateRequest {
 
     public void setIpUsage(Map<String, Integer> ipUsage) {
         this.ipUsage = ipUsage;
+    }
+
+    public String getSubscribedIPCount() {
+        return subscribedIPCount;
+    }
+
+    public void setSubscribedIPCount(String subscribedIPCount) {
+        this.subscribedIPCount = subscribedIPCount;
     }
 
     @Override
