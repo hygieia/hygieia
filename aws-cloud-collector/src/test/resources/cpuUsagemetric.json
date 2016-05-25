@@ -1,0 +1,10 @@
+{
+  "label": "CPUUtilization",
+  "datapoints": [
+    {
+      "timestamp": "May 24, 2016 10:41:00 PM",
+      "average": 1.263,
+      "unit": "Percent"
+    }
+  ]
+}
