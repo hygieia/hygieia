@@ -32,37 +32,10 @@
   .story-done {
     color: @dash-status-pass;
   }
-  .story-total-pass {
-    color: @dash-status-pass;
-  }
-  .story-total-warn {
-    color: @dash-status-warn;
-  }
-  .story-total-fail {
-    color: @dash-status-fail;
-  }
-  .story-wip-pass {
-    color: @dash-status-pass;
-  }
-  .story-wip-warn {
-    color: @dash-status-warn;
-  }
-  .story-wip-fail {
-    color: @dash-status-fail;
-  }
-  .story-done-pass {
-    color: @dash-status-pass;
-  }
-  .story-done-warn {
-    color: @dash-status-warn;
-  }
-  .story-done-fail {
-    color: @dash-status-fail;
-  }
 	// Handles Feature Widget agile view transition switching
   .animate-show.ng-hide-remove {
     animation-name: example;
-    animation-duration: 0.3s;
+    animation-duration: 0.9s;
   }
   @keyframes example {
     from {
@@ -71,5 +44,22 @@
     to {
       opacity: 1;
     }
+  }
+  .iteration-change-btn {
+    padding-bottom: 1em;
+  }
+  #next-btn {
+    background: none;
+    border: 0;
+    color: @dash-status-pass;
+  }
+  #pause-btn {
+    background: none;
+    border: 0;
+    color: @dash-status-warn;
+  }
+  #next-btn:hover, #pause-btn:hover {
+    background-color: #2F4F4F;
+    opacity: 0.5;
   }
 }
