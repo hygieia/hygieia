@@ -6,6 +6,7 @@
   "cidrCount" : 25,
   "zone" : "us-east-1a",
   "availableIPCount" : 73,
+  "subscribedIPCount": 15,
   "usedIPCount" : 50,
   "defaultForZone" : false,
   "state" : "available",

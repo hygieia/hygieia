@@ -18,6 +18,7 @@ public class CloudSubNetwork extends BaseModel{
     private int cidrCount;
     private String zone;
     private int availableIPCount;
+    private int subscribedIPCount;
     private int usedIPCount;
     private boolean defaultForZone;
     private String state;
@@ -135,6 +136,13 @@ public class CloudSubNetwork extends BaseModel{
         this.cidrCount = cidrCount;
     }
 
+    public int getSubscribedIPCount() {
+        return subscribedIPCount;
+    }
+
+    public void setSubscribedIPCount(int subscribedIPCount) {
+        this.subscribedIPCount = subscribedIPCount;
+    }
 
     @Override
     public int hashCode() {
