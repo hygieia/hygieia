@@ -1,0 +1,10 @@
+{
+  "label": "DiskWriteBytes",
+  "datapoints": [
+    {
+      "timestamp": "May 24, 2016 10:07:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    }
+  ]
+}

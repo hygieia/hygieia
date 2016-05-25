@@ -68,7 +68,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     }
 
 
-    private void setClients() {
+    protected void setClients() {
         System.getProperties().put("http.proxyHost", settings.getProxyHost());
         System.getProperties().put("http.proxyPort", settings.getProxyPort());
         System.getProperties().put("https.proxyHost", settings.getProxyHost());
@@ -254,7 +254,8 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
     /* Averages CPUUtil every minute for the last hour */
     @SuppressWarnings("PMD.UnusedFormalParameter")
-    private static Double getInstanceCPUSinceLastRun(String instanceId, long lastUpdated) {
+    @Override
+    public Double getInstanceCPUSinceLastRun(String instanceId, long lastUpdated) {
 
 //        long offsetInMilliseconds = Math.min(ONE_DAY_MILLI_SECOND,System.currentTimeMillis() - lastUpdated);
         Dimension instanceDimension = new Dimension().withName("InstanceId")
@@ -285,8 +286,9 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     }
 
     /* Averages CPUUtil every minute for the last hour */
-    private static Double getLastHourInstanceNetworkIn(String instanceId,
-                                                       long lastUpdated) {
+    @Override
+    public Double getLastHourInstanceNetworkIn(String instanceId,
+                                               long lastUpdated) {
         long offsetInMilliseconds = Math.min(ONE_DAY_MILLI_SECOND,
                 System.currentTimeMillis() - lastUpdated);
         Dimension instanceDimension = new Dimension().withName("InstanceId")
@@ -313,7 +315,8 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     }
 
     /* Averages CPUUtil every minute for the last hour */
-    private static Double getLastHourIntanceNetworkOut(String instanceId, long lastUpdated) {
+    @Override
+    public Double getLastHourIntanceNetworkOut(String instanceId, long lastUpdated) {
         long offsetInMilliseconds = Math.min(ONE_DAY_MILLI_SECOND,
                 System.currentTimeMillis() - lastUpdated);
         Dimension instanceDimension = new Dimension().withName("InstanceId")
@@ -340,8 +343,9 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     }
 
     /* Averages CPUUtil every minute for the last hour */
-    private static Double getLastHourInstanceDiskRead(String instanceId,
-                                                      long lastUpdated) {
+    @Override
+    public Double getLastHourInstanceDiskRead(String instanceId,
+                                              long lastUpdated) {
 
 
         long offsetInMilliseconds = Math.min(ONE_DAY_MILLI_SECOND,
@@ -372,7 +376,8 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     }
 
     /* Averages CPUUtil every minute for the last hour */
-    private static Double getLastInstanceHourDiskWrite(String instanceId) {
+    @Override
+    public Double getLastInstanceHourDiskWrite(String instanceId) {
         Dimension instanceDimension = new Dimension().withName("InstanceId")
                 .withValue(instanceId);
         GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
@@ -412,6 +417,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     }
 
 
+    @Override
     public Double get24HourInstanceEstimatedCharge() {
         Dimension instanceDimension = new Dimension().withName("Currency")
                 .withValue("USD");
@@ -453,11 +459,26 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
 
     @Override
     public CloudVirtualNetwork getCloudVPC(CloudVirtualNetworkRepository repository) {
+        //Not implemented yet.
         return null;
     }
 
     @Override
     public CloudSubNetwork getCloudSubnet(CloudSubNetworkRepository repository) {
+
+        //Not implemented yet
         return null;
+    }
+
+    public void setEc2Client(AmazonEC2Client ec2Client) {
+        DefaultAWSCloudClient.ec2Client = ec2Client;
+    }
+
+    public  void setCloudWatchClient(AmazonCloudWatchClient cloudWatchClient) {
+        DefaultAWSCloudClient.cloudWatchClient = cloudWatchClient;
+    }
+
+    public  void setAutoScalingClient(AmazonAutoScaling autoScalingClient) {
+        DefaultAWSCloudClient.autoScalingClient = autoScalingClient;
     }
 }
