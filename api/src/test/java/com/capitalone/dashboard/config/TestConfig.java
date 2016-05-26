@@ -52,6 +52,15 @@ public class TestConfig {
 	}
 
 	@Bean
+	public PullService pullService() {
+		return Mockito.mock(PullService.class);
+	}
+	@Bean
+	public IssueService issueService() {
+		return Mockito.mock(IssueService.class);
+	}
+
+	@Bean
 	public TestResultService testResultService() {
 		return Mockito.mock(TestResultService.class);
 	}

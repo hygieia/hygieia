@@ -1,0 +1,23 @@
+<widget-modal widget-modal-close="true">
+    <div class="widget-detail issue-detail">
+        <div class="widget-detail-body">
+            <span class="no-changesets" ng-hide="detail.issue.length">DETAILS (Some of these issues may be closed)</span>
+            <table class="table" ng-show="detail.issues.length">
+                <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>RepoName</th>
+                    <th>Title of Issue</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="pull in detail.pulls">
+                    <td>{{::pull.number | limitTo:8}}</td>
+                    <td>{{::pull.repoName}}</td>
+                    <td>{{::pull.scmCommitLog | date:'MMM d, HH:mm:ss'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</widget-modal>
