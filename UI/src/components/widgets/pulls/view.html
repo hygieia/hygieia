@@ -1,0 +1,44 @@
+<div class="pull-view">
+    <div class="widget">
+        <div class="widget-heading">
+            pulls per day
+        </div>
+        <div class="widget-body">
+            <chartist class="ct-chart ct-octave dash-chart-alt"
+                      chartist-chart-type="Line"
+                      chartist-data="pullView.pullChartData"
+                      chartist-chart-options="pullView.pullChartOptions"
+                      chartist-events="pullView.pullChartEvents"
+            >
+            </chartist>
+        </div>
+    </div>
+
+    <div class="widget">
+        <div class="widget-heading">
+            Summary
+        </div>
+        <div class="widget-body">
+            <table class="table pull-summary-table">
+                <tr>
+                    <td>Total pulls</td>
+                    <td>{{pullView.lastDayPullCount}}</td>
+                    <td>{{pullView.lastfortyfiveDaysPullCount}}</td>
+                    <td>{{pullView.lastninetyDaysPullCount}}</td>
+                </tr>
+                <tr>
+                    <td>(Distinct) Developers</td>
+                    <td>{{pullView.lastDayContributorCount}}</td>
+                    <td>{{pullView.lastfortyfiveDaysContributorCount}}</td>
+                    <td>{{pullView.lastninetyDaysContributorCount}}</td>
+                </tr>
+                <tr class="totals">
+                    <td></td>
+                    <td>Today</td>
+                    <td>Last<br/>45 Days</td>
+                    <td>45 to <br/>90 Days</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

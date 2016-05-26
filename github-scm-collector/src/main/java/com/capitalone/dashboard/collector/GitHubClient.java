@@ -2,6 +2,8 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.Issue;
+import com.capitalone.dashboard.model.Pull;
 
 import java.util.List;
 
@@ -15,10 +17,27 @@ public interface GitHubClient {
      *
      * @param repo SubversionRepo
      * @param firstRun
-     * @param startRevision starting revision number
      * @return all commits in repo
      */
 
 	List<Commit> getCommits(GitHubRepo repo, boolean firstRun);
+    /**
+     * Fetch all of the commits for the provided SubversionRepo.
+     *
+     * @param repo SubversionRepo
+     * @param firstRun
+     * @return all commits in repo
+     */
+
+    List<Pull> getPulls(GitHubRepo repo, boolean firstRun);
+    /**
+     * Fetch all of the commits for the provided SubversionRepo.
+     *
+     * @param repo SubversionRepo
+     * @param firstRun
+     * @return all commits in repo
+     */
+
+    List<Issue> getIssues(GitHubRepo repo, boolean firstRun);
 
 }

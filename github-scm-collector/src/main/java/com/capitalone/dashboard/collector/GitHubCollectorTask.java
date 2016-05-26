@@ -6,10 +6,14 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.Issue;
+import com.capitalone.dashboard.model.Pull;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitHubRepoRepository;
+import com.capitalone.dashboard.repository.IssueRepository;
+import com.capitalone.dashboard.repository.PullRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -32,11 +36,14 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     private final BaseCollectorRepository<Collector> collectorRepository;
     private final GitHubRepoRepository gitHubRepoRepository;
     private final CommitRepository commitRepository;
+    private final PullRepository pullRepository;
+    private final IssueRepository issueRepository;
+
     private final GitHubClient gitHubClient;
     private final GitHubSettings gitHubSettings;
     private final ComponentRepository dbComponentRepository;
 
-    @Autowired
+    /*@Autowired
     public GitHubCollectorTask(TaskScheduler taskScheduler,
                                    BaseCollectorRepository<Collector> collectorRepository,
                                    GitHubRepoRepository gitHubRepoRepository,
@@ -50,9 +57,31 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         this.commitRepository = commitRepository;
         this.gitHubClient = gitHubClient;
         this.gitHubSettings = gitHubSettings;
+        this.issueRepository = null;
+        this.pullRepository = null;
+        this.dbComponentRepository = dbComponentRepository;
+    }*/
+    @Autowired
+    public GitHubCollectorTask(TaskScheduler taskScheduler,
+                               BaseCollectorRepository<Collector> collectorRepository,
+                               GitHubRepoRepository gitHubRepoRepository,
+                               CommitRepository commitRepository,
+                               PullRepository pullRepository,
+                               IssueRepository issueRepository,
+                               GitHubClient gitHubClient,
+                               GitHubSettings gitHubSettings,
+                               ComponentRepository dbComponentRepository) {
+        super(taskScheduler, "GitHub");
+        this.collectorRepository = collectorRepository;
+        this.gitHubRepoRepository = gitHubRepoRepository;
+        this.commitRepository = commitRepository;
+        this.issueRepository = issueRepository;
+        this.pullRepository = pullRepository;
+
+        this.gitHubClient = gitHubClient;
+        this.gitHubSettings = gitHubSettings;
         this.dbComponentRepository = dbComponentRepository;
     }
-
     @Override
     public Collector getCollector() {
         Collector protoType = new Collector();
@@ -140,7 +169,22 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     commitCount++;
                 }
             }
-
+            for (Issue issue : gitHubClient.getIssues(repo, firstRun)) {
+                LOG.debug(issue.getTimestamp()+":::"+issue.getScmCommitLog());
+                if (isNewIssue(repo, issue)) {
+                    issue.setCollectorItemId(repo.getId());
+                    issueRepository.save(issue);
+                    commitCount++;
+                }
+            }
+            for (Pull pull : gitHubClient.getPulls(repo, firstRun)) {
+                LOG.debug(pull.getTimestamp()+":::"+pull.getScmCommitLog());
+                if (isNewPull(repo, pull)) {
+                    pull.setCollectorItemId(repo.getId());
+                    pullRepository.save(pull);
+                    commitCount++;
+                }
+            }
             repoCount++;
         }
         log("Repo Count", start, repoCount);
@@ -159,5 +203,13 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 repo.getId(), commit.getScmRevisionNumber()) == null;
     }
 
+    private boolean isNewIssue(GitHubRepo repo, Issue issue) {
+        return issueRepository.findByCollectorItemIdAndScmRevisionNumber(
+                repo.getId(), issue.getScmRevisionNumber()) == null;
+    }
+    private boolean isNewPull(GitHubRepo repo, Pull pull) {
+        return pullRepository.findByCollectorItemIdAndScmRevisionNumber(
+                repo.getId(), pull.getScmRevisionNumber()) == null;
+    }
 
 }
