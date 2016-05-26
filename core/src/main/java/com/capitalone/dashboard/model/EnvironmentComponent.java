@@ -12,6 +12,7 @@ public class EnvironmentComponent extends BaseModel {
      * Deploy collectorItemId
      */
     private ObjectId collectorItemId;
+    private String environmentID;
     private String environmentName;
     private String environmentUrl;
     private String componentID;
@@ -29,6 +30,14 @@ public class EnvironmentComponent extends BaseModel {
 
     public void setCollectorItemId(ObjectId collectorItemId) {
         this.collectorItemId = collectorItemId;
+    }
+    
+    public String getEnvironmentID() {
+    	return environmentID;
+    }
+    
+    public void setEnvironmentID(String environmentID) {
+    	this.environmentID = environmentID;
     }
 
     public String getEnvironmentName() {
