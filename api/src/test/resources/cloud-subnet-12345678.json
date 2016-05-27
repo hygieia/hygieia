@@ -8,6 +8,7 @@
   "availableIPCount" : 73,
   "subscribedIPCount": 15,
   "usedIPCount" : 50,
+  "subscribedIPCount": 190,
   "defaultForZone" : false,
   "state" : "available",
   "creationDate" : 1463072005914,
@@ -20,5 +21,8 @@
   ],
   "ipUsage" : {
     "MYTAG" : 1
+  },
+  "subscribedIpUsage": {
+    "MYTAG": 1
   }
 }
