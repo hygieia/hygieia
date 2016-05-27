@@ -2,6 +2,8 @@ package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * An individual test case in a {@link TestSuite}.
@@ -42,6 +44,12 @@ public class TestCase {
     private TestCaseStatus status = TestCaseStatus.Unknown;
 
     private Collection<TestCaseStep> testSteps = new ArrayList<>();
+
+    private Set<String> tags = new HashSet<>();
+
+    private TestCaseCondition before;
+
+    private TestCaseCondition after;
 
 
     public String getId() {
@@ -124,4 +132,31 @@ public class TestCase {
         return testSteps;
     }
 
+    public int getUnknownStatusTestStepCount() {
+        return unknownStatusTestStepCount;
+    }
+
+    public void setUnknownStatusTestStepCount(int unknownStatusTestStepCount) {
+        this.unknownStatusTestStepCount = unknownStatusTestStepCount;
+    }
+
+    public Set<String> getTags() {
+        return tags;
+    }
+
+    public TestCaseCondition getBefore() {
+        return before;
+    }
+
+    public void setBefore(TestCaseCondition before) {
+        this.before = before;
+    }
+
+    public TestCaseCondition getAfter() {
+        return after;
+    }
+
+    public void setAfter(TestCaseCondition after) {
+        this.after = after;
+    }
 }
