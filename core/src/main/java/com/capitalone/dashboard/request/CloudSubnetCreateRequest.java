@@ -24,6 +24,7 @@ public class CloudSubnetCreateRequest {
     private String lastUpdateDate;
     private List<NameValue> tags = new ArrayList<>();
     private Map<String, Integer> ipUsage;
+    private Map<String, Integer> subscribedIdUsage;
 
 
     public String getSubnetId() {
@@ -144,6 +145,14 @@ public class CloudSubnetCreateRequest {
 
     public void setSubscribedIPCount(String subscribedIPCount) {
         this.subscribedIPCount = subscribedIPCount;
+    }
+
+    public Map<String, Integer> getSubscribedIdUsage() {
+        return subscribedIdUsage;
+    }
+
+    public void setSubscribedIdUsage(Map<String, Integer> subscribedIdUsage) {
+        this.subscribedIdUsage = subscribedIdUsage;
     }
 
     @Override

@@ -26,6 +26,7 @@ public class CloudSubNetwork extends BaseModel{
     private long lastUpdateDate;
     private List<NameValue> tags = new ArrayList<>();
     private Map<String, Integer> ipUsage;
+    private Map<String, Integer> subscribedIpUsage;
 
 
     public Map<String, Integer> getIpUsage() {
@@ -142,6 +143,14 @@ public class CloudSubNetwork extends BaseModel{
 
     public void setSubscribedIPCount(int subscribedIPCount) {
         this.subscribedIPCount = subscribedIPCount;
+    }
+
+    public Map<String, Integer> getSubscribedIpUsage() {
+        return subscribedIpUsage;
+    }
+
+    public void setSubscribedIpUsage(Map<String, Integer> subscribedIpUsage) {
+        this.subscribedIpUsage = subscribedIpUsage;
     }
 
     @Override

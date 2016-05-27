@@ -93,6 +93,7 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
         subnet.getTags().addAll(request.getTags());
         subnet.setIpUsage(request.getIpUsage());
         subnet.setSubscribedIPCount(Integer.parseInt(request.getSubscribedIPCount()));
+        subnet.setSubscribedIpUsage(request.getSubscribedIdUsage());
         return subnet;
     }
 
@@ -114,6 +115,7 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
         if (request.getUsedIPCount() != null) existing.setUsedIPCount(Integer.parseInt(request.getUsedIPCount()));
         if (request.getIpUsage() != null) existing.setIpUsage(request.getIpUsage());
         if (request.getSubscribedIPCount() != null) existing.setSubscribedIPCount(Integer.parseInt(request.getSubscribedIPCount()));
+        if (request.getSubscribedIdUsage() != null) existing.setSubscribedIpUsage(request.getSubscribedIdUsage());
         if (!CollectionUtils.isEmpty(request.getTags())) {
             existing.getTags().clear();
             existing.getTags().addAll(request.getTags());
