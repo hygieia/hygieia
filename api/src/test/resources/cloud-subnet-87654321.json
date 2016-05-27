@@ -21,7 +21,7 @@
   "ipUsage" : {
     "MYTAG" : 1
   },
-  "subscribedIpUsage": {
+  "subscribedIPUsage": {
     "MYTAG": 1
   }
 }
