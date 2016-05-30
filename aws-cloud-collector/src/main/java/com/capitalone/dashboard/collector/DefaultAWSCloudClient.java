@@ -68,7 +68,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
     }
 
 
-    protected void setClients() {
+    public final void setClients() {
         System.getProperties().put("http.proxyHost", settings.getProxyHost());
         System.getProperties().put("http.proxyPort", settings.getProxyPort());
         System.getProperties().put("https.proxyHost", settings.getProxyHost());
