@@ -211,6 +211,7 @@
 				<module>jira-feature-collector</module>
 				<module>jenkins-cucumber-test-collector</module>
 				<module>chat-ops-collector</module>
+				<module>aws-cloud-collector</module>
 			</modules>
 			<build>
 				<plugins>
