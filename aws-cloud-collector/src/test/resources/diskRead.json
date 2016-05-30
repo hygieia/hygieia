@@ -1,0 +1,125 @@
+{
+  "label": "DiskReadBytes",
+  "datapoints": [
+    {
+      "timestamp": "May 24, 2016 6:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 9:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 5:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 7:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 8:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 10:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 7:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 6:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 23, 2016 11:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 2:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 10:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 2:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 3:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 3:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 5:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 12:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 11:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 4:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 9:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 4:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 8:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 1:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 12:09:00 AM",
+      "average": 0.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 1:09:00 PM",
+      "average": 0.0,
+      "unit": "Bytes"
+    }
+  ]
+}
