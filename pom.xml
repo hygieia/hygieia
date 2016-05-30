@@ -4,13 +4,8 @@
   <groupId>com.capitalone.dashboard</groupId>
   <artifactId>Hygieia</artifactId>
   <packaging>pom</packaging>
-<<<<<<< HEAD
-  <version>2.0.0-SNAPSHOT</version>
-    <name>${project.groupId}:${project.artifactId}</name>
-=======
   <version>2.0.2-SNAPSHOT</version>
   <name>${project.groupId}:${project.artifactId}</name>
->>>>>>> master
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
