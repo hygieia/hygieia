@@ -1,0 +1,326 @@
+<div>
+
+    <div class="pipeline-toggle btn-group">
+                    <span class="btn" ng-repeat="tab in cloudView.tabs" ng-click="cloudView.toggleView($index)"
+                          ng-class="tab.name == cloudView.toggledView ? 'btn-primary' : 'btn-default'">
+                        <span ng-class="tab.name === 'Overview' ? 'fa fa-th-large' : 'fa fa-task'"></span>
+                        {{tab.name}}
+                    </span>
+    </div>
+
+    <div class="container-fluid" ng-if="cloudView.toggledView == 'Overview'">
+        <h3>Account Overview<p class="small">Account Number: {{ cloudView.accountNumber }}</p></h3>
+        <hr>
+
+
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-info" style="width: 20%;"><span class="fa fa-tasks header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbsp&nbspInstance Count {{cloudView.instancesByAccount.length}}</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-success" style="width: 20%;"><span class="fa fa-database header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspRunning Count {{
+                        cloudView.calculateRunningInstances(cloudView.instancesByAccount)
+                        }}
+                    </h3>
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-warning" style="width: 20%;"><span class="fa fa-usd header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspEC2 Cost/Month</br>
+                        &nbsp&nbsp&nbsp${{ cloudView.estimatedMonthlyCharge | number:0 }}
+                    </h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspUtilization {{ cloudView.calculateUtilization(cloudView.instancesByAccount) | number:1}}%</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="well override-panel-background-color">
+                    <h3>Running/Stopped</h3>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="canvas-holder-1">
+                                <chartist
+                                        class="ct-chart ct-square db-chart-primary ct-chart-Ok"
+                                        chartist-data="cloudView.runningStoppedInstances"
+                                        chartist-chart-options="{
+                                                showLabel: false,
+                                                donut: true
+                                            }"
+                                        chartist-chart-type="Pie"></chartist>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <blockquote style="border-left:5px solid #4C9900;"><p>Running - {{
+                                cloudView.calculateRunningInstances(cloudView.instancesByAccount)
+                                }}</p></blockquote>
+                            <blockquote style="border-left:5px solid #FF5A5E;"><p>Stopped - {{
+                                cloudView.calculateStoppedInstances(cloudView.instancesByAccount)
+                                }}</p></blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="well override-panel-background-color">
+                    <h3>Instances By Age</h3>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="canvas-holder-2">
+                                <chartist
+                                        class="ct-chart ct-square db-chart-primary ct-chart-Ok"
+                                        chartist-data="cloudView.ageOfInstances"
+                                        chartist-chart-options="{ showLabel: false }"
+                                        chartist-chart-type="Pie"></chartist>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 ">
+                            <blockquote style="border-left:5px solid #4C9900;"><p>&lt; 15 Days {{
+                                cloudView.calculateInstancesByAge(cloudView.instancesByAccount,0, 15)
+                                }}</p></blockquote>
+                            <blockquote style="border-left:5px solid #FFBD35;"><p>&lt; 45 Days {{
+                                cloudView.calculateInstancesByAge(cloudView.instancesByAccount,15,45)
+                                }}</p></blockquote>
+                            <blockquote style="border-left:5px solid #FF5A5E;"><p>&gt; 45 Days {{
+                                cloudView.calculateInstancesByAge(cloudView.instancesByAccount,45, undefined)
+                                }}</p></blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <div class="well override-panel-background-color">
+                    <h3>Instance Usage - Monthly</h3>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="canvas-holder-3">
+                                <chartist
+                                        class="ct-chart ct-series-d ct-point ct-line"
+                                        chartist-data="cloudView.instanceUsageMonthly"
+                                        chartist-chart-options="cloudView.instanceUsageMonthlyLineOptions"
+                                        chartist-chart-type="Line">
+                                </chartist>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+                <div id="iptutildiv" class="well override-panel-background-color" ng-controller="subnetController" ng-init="getSubnets()">
+                    <div class="row" ng-init="getIpUtilizations()" >
+                        <div class="col-lg-5"><h3>IP Utilization</h3>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <blockquote style="border-left:5px solid #949FB1;">Total IP's: {{totalIPs}}</blockquote>
+                                </div>
+                                <div class="col-xs-6">
+                                    <blockquote style="border-left:5px solid #949FB1;">Avg utilization: {{avgUtilization}}%</blockquote>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12" style="width:600px;height: {{ getHeight() }}px">
+
+                            <chartist
+                                    class="ct-chart"
+                                    chartist-chart-type="Bar"
+                                    chartist-data="ipUtilizations"
+                                    chartist-chart-options="ipUtilizationsOptions"
+                                    chartist-events="ipUtilizationsEvents"
+                            ></chartist>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <blockquote style="border-left:5px solid #4C9900;">&lt; 50%</blockquote>
+                            </div>
+                            <div class="col-lg-4">
+
+                                <blockquote style="border-left:5px solid #FFBD35;">&lt; 70% </blockquote>
+                            </div>
+                            <div class="col-lg-4">
+
+                                <blockquote style="border-left:5px solid #FF5A5E;">&gt; 70%</blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="well override-panel-background-color">
+                    <h3>Instance Usage - Hourly</h3>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div id="canvas-holder-4">
+                                <chartist
+                                        class="ct-chart dash-chart-alt"
+                                        chartist-data="cloudView.instanceUsageHourly"
+                                        chartist-chart-options="cloudView.instanceUsageHourlyLineOptions"
+                                        chartist-chart-type="Line">
+
+
+                                </chartist>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="container-fluid" ng-if="cloudView.toggledView == 'Detail'">
+        <h3>Account Detail<p class="small">Account Number: {{ cloudView.accountNumber }}, Tag Name: {{cloudView.tagName}}, Tag Value: {{cloudView.tagValue}}</p></h3>
+        <hr>
+
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-info" style="width: 20%;"><span class="fa fa-tasks header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspInstance Count {{cloudView.filteredInstancesByAccount.length}}</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-success" style="width: 20%;"><span class="fa fa-database header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspStorage {{
+
+                        cloudView.formatVolume(
+                        cloudView.calculateVolumeInBytes(cloudView.filteredVolumesByAccount)
+                        )
+
+                        }}</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="progress progress-headers">
+                    <div class="progress-bar progress-bar-danger" style="width: 20%;"><span class="fa fa-line-chart header-icon"></span></div>
+                    <h3 class="info-icon-label text-primary">&nbsp&nbsp&nbspUtilization {{cloudView.calculateUtilization(cloudView.filteredInstancesByAccount) | number:1}}%</h3>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div>
+                    <div>
+                        <div class="pull-right"><label>Search: <input type="text" class="form-control" placeholder="Enter a value" ng-model="cloudView.searchFilter"/></label></div>
+                        <div>
+                            <div>
+                                <table class="table widget-striped">
+                                    <thead>
+                                    <tr class="widget-font-bold">
+                                        <th ng-click="cloudView.changeSortDirection('instanceId')">Instance ID&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('instanceId')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('instanceType')">Type&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('instanceType')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('imageId')">AMI&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('imageId')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('daysToExpiration')">Days Left&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('daysToExpiration')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('privateIp')">IP Address&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('privateIp')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('subnetId')">Subnet ID&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('subnetId')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('stopped')">Stopped&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('stopped')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('alarmClockStatus')">Alarm Clock&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('alarmClockStatus')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('monitored')">Monitored&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('monitored')"></span></th>
+                                        <th ng-click="cloudView.changeSortDirection('cpuUtilization')">CPU&nbsp;
+                                            <span ng-class="'fa fa-' + cloudView.getSortDirection('cpuUtilization')"></span></th>
+                                        <th>Misc</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="instance in cloudView.filteredInstancesByAccount |
+                                            orderBy:cloudView.sortType |
+                                            filter:cloudView.searchFilter |
+                                            pagination: cloudView.curPage * cloudView.pageSize |
+                                            limitTo: cloudView.pageSize">
+                                        <td>{{instance.instanceId}}</td>
+                                        <td>{{instance.instanceType}}</td>
+                                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.daysToExpiration)">
+                                            {{instance.imageId}}
+                                        </td>
+                                        <td ng-class="'widget-font-' + cloudView.checkImageAgeStatus(instance.daysToExpiration)">
+                                            {{instance.daysToExpiration}}
+                                        </td>
+                                        <td>{{instance.privateIp}}</td>
+                                        <td ng-class="{'widget-font-fail': instance.subnetUsageStatus == 'fail',
+                                            'widget-font-warn': instance.subnetUsageStatus == 'warn',
+                                            'widget-font-pass': instance.subnetUsageStatus == 'pass'
+                                            }">{{instance.subnetId}}</td>
+                                        <td>{{instance.stopped}}</td>
+                                        <td ng-class="{'widget-font-fail': instance.alarmClockStatus == 'disabled', 'widget-font-pass': instance.alarmClockStatus == 'enabled'}">
+                                            {{instance.alarmClockStatus}}
+                                        </td>
+                                        <td ng-class="'widget-font-' + cloudView.checkMonitoredStatus(instance.monitored)">
+                                            {{instance.monitored}}
+                                        </td>
+                                        <td ng-class="'widget-font-' + cloudView.checkUtilizationStatus(instance.cpuUtilization)">
+                                            {{instance.cpuUtilization | number:1}}%
+                                        </td>
+                                        <td tooltip-html-unsafe="{{instance.formattedTags}}" tooltip-placement="left">Tags</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="container-fluid pipeline-toggle btn-group pull-right" ng-show="cloudView.filteredInstancesByAccount.length">
+                <table><tr><td><button class="btn btn-default" ng-disabled="cloudView.curPage == 0" ng-click="cloudView.curPage=cloudView.curPage-1">
+                    <span class="fa fa-chevron-left"></span>
+                    Prev
+                </button></td>
+                    <td><input class="form-control input-sm" readonly value="Page {{cloudView.curPage + 1}} of {{ cloudView.numberOfPages(cloudView.filteredInstancesByAccount.length) }}"/></td>
+                    <td><button class="btn btn-default" ng-disabled="curPage >= cloudView.filteredInstancesByAccount.length/pageSize-1" ng-click="cloudView.curPage = cloudView.curPage+1">
+                        <span class="fa fa-chevron-right"></span>
+                        Next
+                    </button></td>
+                </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+

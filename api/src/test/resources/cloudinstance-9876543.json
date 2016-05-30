@@ -1,0 +1,36 @@
+{
+  "instanceId": "i-98765432",
+  "accountNumber": "123456789",
+  "instanceType": "m4.4xlarge",
+  "imageId": "ami-abcd1234",
+  "imageExpirationDate": 0,
+  "imageApproved": false,
+  "isMonitored": false,
+  "privateDns": "ip-13-133-13-133.ec2.internal",
+  "privateIp": "10.100.10.101",
+  "publicDns": "",
+  "subnetId": "subnet-abcd1235",
+  "virtualNetworkId": "vpc-abcd1234",
+  "age": 17,
+  "isStopped": false,
+  "isTagged": false,
+  "cpuUtilization": 0.34450000000000003,
+  "lastUpdatedDate": 1463109397378,
+  "securityGroups": [
+    "DC-Client-ABC-DE-Ghijkl-ABCD1234",
+    "AD-MyController-Only-DEV-SG-SecurityGroupDEV-ABCDEF1234"
+  ],
+  "tags": [
+    {
+      "name": "MYEnvironment",
+      "value": "MYSECONDENVIRONMENT"
+    }
+  ],
+  "networkIn": 0.0,
+  "networkOut": 0.0,
+  "diskRead": 0.0,
+  "diskWrite": 0.0,
+  "rootDeviceName": "/dev/sda1",
+  "autoScaleName": "NONE",
+  "lastAction": "ADD"
+}

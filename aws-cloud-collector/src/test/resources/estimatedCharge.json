@@ -1,0 +1,10 @@
+{
+  "label": "EstimatedCharges",
+  "datapoints": [
+    {
+      "timestamp": "May 23, 2016 11:17:00 PM",
+      "average": 9999.9999,
+      "unit": "None"
+    }
+  ]
+}
