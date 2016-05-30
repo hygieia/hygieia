@@ -5,27 +5,6 @@ public class TestCaseCondition {
     private TestCaseConditionResult result;
 
 
-    private class TestCaseConditionResult {
-        private TestCaseStatus status;
-        private long duration;
-
-        public TestCaseStatus getStatus() {
-            return status;
-        }
-
-        public void setStatus(TestCaseStatus status) {
-            this.status = status;
-        }
-
-        public long getDuration() {
-            return duration;
-        }
-
-        public void setDuration(long duration) {
-            this.duration = duration;
-        }
-    }
-
     public String getCondition() {
         return condition;
     }
@@ -38,7 +17,10 @@ public class TestCaseCondition {
         return result;
     }
 
-    public void setResult(TestCaseConditionResult result) {
+    public void setResult(TestCaseStatus status, long duration) {
+        TestCaseConditionResult result = new TestCaseConditionResult();
+        result.setDuration(duration);
+        result.setStatus(status);
         this.result = result;
     }
 }

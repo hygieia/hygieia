@@ -47,9 +47,9 @@ public class TestCase {
 
     private Set<String> tags = new HashSet<>();
 
-    private TestCaseCondition before;
+    private Collection<TestCaseCondition> before = new ArrayList<>();
 
-    private TestCaseCondition after;
+    private Collection<TestCaseCondition> after = new ArrayList<>();
 
 
     public String getId() {
@@ -144,19 +144,11 @@ public class TestCase {
         return tags;
     }
 
-    public TestCaseCondition getBefore() {
+    public Collection<TestCaseCondition> getBefore() {
         return before;
     }
 
-    public void setBefore(TestCaseCondition before) {
-        this.before = before;
-    }
-
-    public TestCaseCondition getAfter() {
+    public Collection<TestCaseCondition> getAfter() {
         return after;
-    }
-
-    public void setAfter(TestCaseCondition after) {
-        this.after = after;
     }
 }
