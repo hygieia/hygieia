@@ -11,17 +11,11 @@ import org.springframework.web.client.RestTemplate;
  */
 @Component
 public class RestOperationsSupplier implements Supplier<RestOperations> {
-	/**
-	 * Handles the REST operation HTTP connection timeout behavior
-	 *
-	 * @return A configured REST template artifact
-	 */
-	@Override
-	public RestOperations get() {
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		requestFactory.setConnectTimeout(40000);
-		requestFactory.setReadTimeout(40000);
-
-		return new RestTemplate(requestFactory);
-	}
+    @Override
+    public RestOperations get() {
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(120000);
+        requestFactory.setReadTimeout(120000);
+        return new RestTemplate(requestFactory);
+    }
 }

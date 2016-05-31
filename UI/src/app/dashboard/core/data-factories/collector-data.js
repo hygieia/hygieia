@@ -8,7 +8,7 @@
         .module(HygieiaConfig.module + '.core')
         .factory('collectorData', collectorData);
 
-    function collectorData($http) {
+    function collectorData($http, $q) {
         var itemRoute = '/api/collector/item';
         var itemsByTypeRoute = '/api/collector/item/type/';
         var collectorsByTypeRoute = '/api/collector/type/';

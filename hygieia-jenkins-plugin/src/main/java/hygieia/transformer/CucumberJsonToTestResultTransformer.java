@@ -1,6 +1,7 @@
 package hygieia.transformer;
 
 import com.capitalone.dashboard.model.TestCase;
+import com.capitalone.dashboard.model.TestCaseCondition;
 import com.capitalone.dashboard.model.TestCaseStatus;
 import com.capitalone.dashboard.model.TestCaseStep;
 import com.capitalone.dashboard.model.TestSuite;
@@ -130,7 +131,57 @@ public class CucumberJsonToTestResultTransformer implements Transformer<JSONArra
         } else {
             testCase.setStatus(TestCaseStatus.Unknown);
         }
+
+        for (Object tag : getJsonArray(scenarioElement, "tags")) {
+            testCase.getTags().add(getString((JSONObject) tag, "name"));
+        }
+
+        for (Object before : getJsonArray(scenarioElement, "before")) {
+            TestCaseCondition condition = getTestCondition((JSONObject) before);
+            if (condition != null) {
+                testCase.getBefore().add(condition);
+            }
+        }
+        for (Object after : getJsonArray(scenarioElement, "after")) {
+            TestCaseCondition condition = getTestCondition((JSONObject) after);
+            if (condition != null) {
+                testCase.getAfter().add(condition);
+            }
+        }
         return testCase;
+    }
+
+    private TestCaseCondition getTestCondition(JSONObject cond) {
+        TestCaseCondition condition = new TestCaseCondition();
+        JSONObject match = (JSONObject) cond.get("match");
+        if (match == null) return null;
+        if (match.get("location") instanceof JSONObject) {
+            JSONObject location = (JSONObject) match.get("location");
+            if (location == null) return null;
+            JSONObject filepath = (JSONObject) location.get("filepath");
+            if (filepath == null) return null;
+            condition.setCondition("Match: " + getString(filepath, "filename"));
+        } else {
+            condition.setCondition("Match: " + getString(match, "location"));
+        }
+        JSONObject result = (JSONObject) cond.get("result");
+        String stat = getString(result, "status");
+        long duration = (long) result.get("duration");
+        condition.setResult(getStatus(stat), duration);
+        return condition;
+    }
+
+    private TestCaseStatus getStatus(String stat) {
+        switch (stat) {
+            case "passed":
+                return TestCaseStatus.Success;
+            case "skipped":
+                return TestCaseStatus.Skipped;
+            case "failed":
+                return TestCaseStatus.Failure;
+            default:
+                return TestCaseStatus.Unknown;
+        }
     }
 
     private TestCaseStep parseStepAsTestCaseStep(JSONObject stepObject) {

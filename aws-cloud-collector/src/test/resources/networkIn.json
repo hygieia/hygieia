@@ -1,0 +1,125 @@
+{
+  "label": "NetworkIn",
+  "datapoints": [
+    {
+      "timestamp": "May 24, 2016 11:08:00 AM",
+      "average": 577673.7166666667,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 4:08:00 AM",
+      "average": 66692.6,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 9:08:00 AM",
+      "average": 87318.86666666667,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 6:08:00 PM",
+      "average": 66239.55,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 1:08:00 AM",
+      "average": 66486.55,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 4:08:00 PM",
+      "average": 78226.68333333333,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 1:08:00 PM",
+      "average": 80868.68333333333,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 7:08:00 PM",
+      "average": 53186.566666666666,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 8:08:00 AM",
+      "average": 67251.33333333333,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 12:08:00 AM",
+      "average": 69272.1,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 3:08:00 PM",
+      "average": 76809.43333333333,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 5:08:00 PM",
+      "average": 53776.65,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 6:08:00 AM",
+      "average": 172149.65,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 10:08:00 PM",
+      "average": 161015.03333333333,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 2:08:00 PM",
+      "average": 602794.7666666667,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 3:08:00 AM",
+      "average": 69638.8,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 9:08:00 PM",
+      "average": 53261.166666666664,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 7:08:00 AM",
+      "average": 69275.1,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 12:08:00 PM",
+      "average": 861578.4,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 23, 2016 11:08:00 PM",
+      "average": 111862.76666666666,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 10:08:00 AM",
+      "average": 73716.1,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 8:08:00 PM",
+      "average": 55484.21666666667,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 5:08:00 AM",
+      "average": 68604.45,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 2:08:00 AM",
+      "average": 69809.58333333333,
+      "unit": "Bytes"
+    }
+  ]
+}

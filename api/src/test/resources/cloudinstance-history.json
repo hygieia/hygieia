@@ -1,0 +1,15 @@
+{
+  "accountNumber" : "123456789",
+  "time" : 1462505132647,
+  "total" : 295,
+  "nonTagged" : 94,
+  "stopped" : 12,
+  "expiredImage" : 0,
+  "estimatedCharge" : 0.0,
+  "cpu" : 4.437895866636435,
+  "diskRead" : 3241.162485875707,
+  "diskWrite" : 9565.250562273119,
+  "networkIn" : 2396777.2433030307,
+  "networkOut" : 2319656.765502381,
+  "currency" : "USD"
+}

@@ -1,0 +1,12 @@
+{
+  "autoScalingInstances": [
+    {
+      "instanceId": "i-12345678",
+      "autoScalingGroupName": "myauto-KFK-uat-develop-aaa-1",
+      "availabilityZone": "us-east-1e",
+      "lifecycleState": "InService",
+      "healthStatus": "HEALTHY",
+      "protectedFromScaleIn": false
+    }
+  ]
+}

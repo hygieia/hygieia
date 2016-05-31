@@ -1,0 +1,1 @@
+var HygieiaConfig = {"module":"hygieia-dashboard","refresh":60}
