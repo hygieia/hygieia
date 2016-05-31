@@ -61,5 +61,13 @@
         "title": "Another Dashboard",
         "applicationName": "Cap One Dashboard",
         "componentName": "API"
+    },
+    {
+        "id": "570bf066a2b5113bd6890e9c",
+        "template": "capone",
+        "title": "My Lovely Dashboard",
+        "applicationName": "Capstone",
+        "componentName": "LovelyDashboard"
     }
+
 ]

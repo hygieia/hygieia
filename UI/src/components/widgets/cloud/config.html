@@ -1,0 +1,41 @@
+<widget-modal widget-modal-title="Configure Cloud Widget" class="cloud-config">
+    <form name="cloudConfigForm" role="form" ng-submit="cloudConfig.submit(cloudConfigForm.$valid)" novalidate="novalidate">
+        <table>
+            <tr><form-group input="accountNumber" errors="{required: 'Please enter an account number'}">
+                <td class="cloud-data-entry"><span class="modal-label">Account number:</span></td>
+                <td><input
+                        type="text"
+                        name="accountNumber"
+                        class="form-control-inline text-left"
+                        ng-model="cloudConfig.accountNumber"
+                        required>
+                </td>
+            </form-group>
+            </tr>
+            <tr><form-group input="tagName">
+                <td class="cloud-data-entry"><span class="modal-label">Tag Name:</span></td>
+                <td><input
+                        type="text"
+                        name="tagName"
+                        class="form-control-inline text-left"
+                        ng-model="cloudConfig.tagName"
+                ></td>
+            </form-group>
+            </tr>
+            <tr><form-group input="tagValue">
+                <td class="cloud-data-entry"><span class="modal-label">Tag Value:</span></td>
+                <td><input
+                        type="text"
+                        name="tagValue"
+                        class="form-control-inline text-left"
+                        ng-model="cloudConfig.tagValue"
+                ></td>
+            </form-group></tr>
+        </table>
+
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+</widget-modal>
+
