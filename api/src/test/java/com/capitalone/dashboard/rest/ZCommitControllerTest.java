@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
 @WebAppConfiguration
-public class CommitControllerTest {
+public class ZCommitControllerTest {
 
     private MockMvc mockMvc;
 

@@ -42,6 +42,11 @@ public class TestConfig {
 	}
 
 	@Bean
+	public CloudSubnetService cloudService() {
+		return Mockito.mock(CloudSubnetService.class);
+	}
+
+	@Bean
 	public CodeQualityService codeQualityService() {
 		return Mockito.mock(CodeQualityService.class);
 	}
@@ -80,4 +85,24 @@ public class TestConfig {
 	public PipelineService pipelineService() {
 		return Mockito.mock(PipelineService.class);
 	}
+
+    @Bean
+    public CloudInstanceService cloudInstanceService() {
+        return Mockito.mock(CloudInstanceService.class);
+    }
+
+    @Bean
+    public CloudSubnetService cloudSubnetService() {
+        return Mockito.mock(CloudSubnetService.class);
+    }
+
+    @Bean
+    public CloudVirtualNetworkService cloudVirtualNetworkService() {
+        return Mockito.mock(CloudVirtualNetworkService.class);
+    }
+
+    @Bean
+    public CloudVolumeService cloudVolumeService() {
+        return Mockito.mock(CloudVolumeService.class);
+    }
 }

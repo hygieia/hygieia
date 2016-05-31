@@ -1,0 +1,58 @@
+{
+  "volumes": [
+    {
+      "volumeId": "vol-12345678",
+      "size": 1,
+      "snapshotId": "snap-12345678",
+      "availabilityZone": "us-east-1b",
+      "state": "in-use",
+      "createTime": "May 18, 2015 9:33:20 AM",
+      "attachments": [
+        {
+          "volumeId": "vol-12345678",
+          "instanceId": "i-12345678",
+          "device": "/dev/sda1",
+          "state": "attached",
+          "attachTime": "May 18, 2015 9:33:20 AM",
+          "deleteOnTermination": true
+        }
+      ],
+      "volumeType": "gp2",
+      "iops": 3,
+      "encrypted": false
+    },
+    {
+      "volumeId": "vol-98765432",
+      "size": 20,
+      "snapshotId": "snap-98765432",
+      "availabilityZone": "us-east-1b",
+      "state": "in-use",
+      "createTime": "May 18, 2015 9:33:20 AM",
+      "attachments": [
+        {
+          "volumeId": "vol-98765432",
+          "instanceId": "i-23456789",
+          "device": "/dev/sdc",
+          "state": "attached",
+          "attachTime": "May 18, 2015 9:33:20 AM",
+          "deleteOnTermination": true
+        }
+      ],
+      "volumeType": "gp2",
+      "iops": 60,
+      "encrypted": false
+    },
+    {
+      "volumeId": "vol-87654321",
+      "size": 100,
+      "snapshotId": "snap-87654321",
+      "availabilityZone": "us-east-1b",
+      "state": "available",
+      "createTime": "Aug 3, 2015 1:27:26 PM",
+      "volumeType": "gp2",
+      "iops": 300,
+      "encrypted": true,
+      "kmsKeyId": "arn:aws:kms:us-east-1:0987654321:key/12345678-1234-1234-1234-123456781234"
+    }
+  ]
+}

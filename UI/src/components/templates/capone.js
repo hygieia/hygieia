@@ -13,9 +13,15 @@
     function CapOneTemplateController() {
         var ctrl = this;
 
-        ctrl.widgetView = true;
-        ctrl.toggleView = function () {
-            ctrl.widgetView = !ctrl.widgetView;
+        ctrl.tabs = [
+            { name: "Widget"},
+            { name: "Pipeline"},
+            { name: "Cloud"}
+           ];
+
+        ctrl.widgetView = ctrl.tabs[0].name;
+        ctrl.toggleView = function (index) {
+            ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
         };
 
         ctrl.hasComponents = function (dashboard, names) {

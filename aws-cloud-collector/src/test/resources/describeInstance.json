@@ -1,0 +1,227 @@
+{
+  "reservations": [
+    {
+      "reservationId": "r-12345678",
+      "ownerId": "123456789123",
+      "groups": [],
+      "groupNames": [],
+      "instances": [
+        {
+          "instanceId": "i-12345678",
+          "imageId": "ami-12345678",
+          "state": {
+            "code": 16,
+            "name": "running"
+          },
+          "privateDnsName": "ip-10-111-1-222.ec2.internal",
+          "publicDnsName": "",
+          "stateTransitionReason": "",
+          "keyName": "MyAwesomeKey",
+          "amiLaunchIndex": 0,
+          "productCodes": [],
+          "instanceType": "c3.8xlarge",
+          "launchTime": "May 14, 2016 12:11:28 PM",
+          "placement": {
+            "availabilityZone": "us-east-1a",
+            "groupName": "",
+            "tenancy": "default"
+          },
+          "monitoring": {
+            "state": "disabled"
+          },
+          "subnetId": "subnet-12345678",
+          "vpcId": "vpc-12345678",
+          "privateIpAddress": "10.111.1.222",
+          "architecture": "x86_64",
+          "rootDeviceType": "ebs",
+          "rootDeviceName": "/dev/sda1",
+          "blockDeviceMappings": [
+            {
+              "deviceName": "/dev/sda1",
+              "ebs": {
+                "volumeId": "vol-12345678",
+                "status": "attached",
+                "attachTime": "May 14, 2016 12:11:28 PM",
+                "deleteOnTermination": true
+              }
+            },
+            {
+              "deviceName": "/dev/xvdg",
+              "ebs": {
+                "volumeId": "vol-23456789",
+                "status": "attached",
+                "attachTime": "May 14, 2016 12:11:28 PM",
+                "deleteOnTermination": true
+              }
+            }
+          ],
+          "virtualizationType": "hvm",
+          "clientToken": "NiceToken",
+          "tags": [
+            {
+              "key": "Name",
+              "value": "Value"
+            },
+            {
+              "key": "Env",
+              "value": "MyAwesomeEnv"
+            }
+          ],
+          "securityGroups": [
+            {
+              "groupName": "AAAA-Base-SG-QA-XXXX-WhoCares-1212121212",
+              "groupId": "sg-12345678"
+            }
+          ],
+          "sourceDestCheck": true,
+          "hypervisor": "xen",
+          "networkInterfaces": [
+            {
+              "networkInterfaceId": "eni-12345678",
+              "subnetId": "subnet-12345678",
+              "vpcId": "vpc-12345678",
+              "description": "",
+              "ownerId": "123456789123",
+              "status": "in-use",
+              "macAddress": "00:11:22:33:44:55",
+              "privateIpAddress": "10.111.1.222",
+              "privateDnsName": "ip-10-111-1-222.ec2.internal",
+              "sourceDestCheck": true,
+              "groups": [
+                {
+                  "groupName": "AAAA-Base-SG-QA-XXXX-WhoCares-1212121212",
+                  "groupId": "sg-12345678"
+                }
+              ],
+              "attachment": {
+                "attachmentId": "eni-attach-12345678",
+                "deviceIndex": 0,
+                "status": "attached",
+                "attachTime": "May 14, 2016 12:11:28 PM",
+                "deleteOnTermination": true
+              },
+              "privateIpAddresses": [
+                {
+                  "privateIpAddress": "10.111.1.222",
+                  "privateDnsName": "ip-10-111-1-222.ec2.internal",
+                  "primary": true
+                }
+              ]
+            }
+          ],
+          "ebsOptimized": false
+        }
+      ]
+    },
+    {
+      "reservationId": "r-23456789",
+      "ownerId": "123456789123",
+      "requesterId": "112233445566",
+      "groups": [],
+      "groupNames": [],
+      "instances": [
+        {
+          "instanceId": "i-23456789",
+          "imageId": "ami-23456789",
+          "state": {
+            "code": 16,
+            "name": "running"
+          },
+          "privateDnsName": "ip-10-111-3-222.ec2.internal",
+          "publicDnsName": "",
+          "stateTransitionReason": "",
+          "keyName": "Key",
+          "amiLaunchIndex": 0,
+          "productCodes": [],
+          "instanceType": "m3.large",
+          "launchTime": "May 24, 2016 4:31:02 PM",
+          "placement": {
+            "availabilityZone": "us-east-1a",
+            "groupName": "",
+            "tenancy": "default"
+          },
+          "monitoring": {
+            "state": "enabled"
+          },
+          "subnetId": "subnet-12345678",
+          "vpcId": "vpc-12345678",
+          "privateIpAddress": "10.111.3.222",
+          "architecture": "x86_64",
+          "rootDeviceType": "ebs",
+          "rootDeviceName": "/dev/sda1",
+          "blockDeviceMappings": [
+            {
+              "deviceName": "/dev/sda1",
+              "ebs": {
+                "volumeId": "vol-2345678",
+                "status": "attached",
+                "attachTime": "May 24, 2016 4:31:03 PM",
+                "deleteOnTermination": true
+              }
+            },
+            {
+              "deviceName": "/dev/sdh",
+              "ebs": {
+                "volumeId": "vol-345678912",
+                "status": "attached",
+                "attachTime": "May 24, 2016 4:31:03 PM",
+                "deleteOnTermination": false
+              }
+            }
+          ],
+          "virtualizationType": "hvm",
+          "clientToken": "11111111-2222-3333-4444-112233445566_subnet-12345678",
+          "tags": [
+            {
+              "key": "Env",
+              "value": "Env2"
+            }
+          ],
+          "securityGroups": [
+            {
+              "groupName": "AAAA-QA-XXXXX-SG-SG1-12345678",
+              "groupId": "sg-082bca6e"
+            }
+          ],
+          "sourceDestCheck": true,
+          "hypervisor": "xen",
+          "networkInterfaces": [
+            {
+              "networkInterfaceId": "eni-23456789",
+              "subnetId": "subnet-23456789",
+              "vpcId": "vpc-23456789",
+              "description": "",
+              "ownerId": "123456789123",
+              "status": "in-use",
+              "macAddress": "00:aa:bb:cc:dd:ee",
+              "privateIpAddress": "10.111.3.222",
+              "privateDnsName": "ip-10-111-3-222.ec2.internal",
+              "sourceDestCheck": true,
+              "groups": [
+                {
+                  "groupName": "AAAA-QA-XXXXX-SG-SG1-123123123",
+                  "groupId": "sg-2345678"
+                }
+              ],
+              "attachment": {
+                "attachmentId": "eni-attach-2345678",
+                "deviceIndex": 0,
+                "status": "attached",
+                "attachTime": "May 24, 2016 4:31:02 PM",
+                "deleteOnTermination": true
+              },
+              "privateIpAddresses": [
+                {
+                  "privateIpAddress": "10.111.3.222",
+                  "privateDnsName": "ip-10-111-3-222.ec2.internal",
+                  "primary": true
+                }
+              ]
+            }
+          ],
+          "ebsOptimized": false
+        }
+      ]
+    }
+  ]
+}

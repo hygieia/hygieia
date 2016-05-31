@@ -106,9 +106,9 @@ public abstract class CollectorTask<T extends Collector> implements Runnable {
         String token2 = "";
         String token3;
         if (count == null) {
-            token3 = Strings.padStart(elapsed, 30 - text.length(), ' ');
+            token3 = Strings.padStart(elapsed, 35 - text.length(), ' ');
         } else {
-            token2 = Strings.padStart(count.toString(), 20 - text.length(), ' ');
+            token2 = Strings.padStart(count.toString(), 25 - text.length(), ' ');
             token3 = Strings.padStart(elapsed, 10, ' ');
         }
         LOGGER.info(text + token2 + token3);
@@ -118,8 +118,8 @@ public abstract class CollectorTask<T extends Collector> implements Runnable {
     }
 
     protected void logBanner(String instanceUrl) {
-        LOGGER.info("------------------------------");
+        LOGGER.info("-----------------------------------");
         LOGGER.info(instanceUrl);
-        LOGGER.info("------------------------------");
+        LOGGER.info("-----------------------------------");
     }
 }
