@@ -15,6 +15,7 @@ import com.google.gerrit.extensions.common.ChangeInfo;
 import com.google.gerrit.extensions.restapi.RestApiException;
 import com.urswolfer.gerrit.client.rest.GerritAuthData;
 import com.urswolfer.gerrit.client.rest.GerritRestApiFactory;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -23,7 +24,9 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +43,7 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
     private final CommitRepository commitRepository;
     private final GerritSettings gerritSettings;
     private final ComponentRepository dbComponentRepository;
+    private final String GERRIT_TIME_FORMAT = "yyyy-MM-dd[HH:mm:ss[.sss][Z]]";
 
     @Autowired
     public GerritCollectorTask(TaskScheduler taskScheduler,
@@ -145,7 +149,7 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
 
     private List<Commit> getCommits(GerritRepo repo) {
         List<Commit> commits = new ArrayList<>();
-        List<ChangeInfo> changes = getChanges(repo.getProject(), repo.getBranch());
+        List<ChangeInfo> changes = getChanges(repo);
         for (ChangeInfo ci : changes) {
             Commit commit = new Commit();
             commit.setTimestamp(System.currentTimeMillis());
@@ -161,12 +165,14 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
     }
 
 
-    private List<ChangeInfo> getChanges(String project, String branch) {
+    private List<ChangeInfo> getChanges(GerritRepo repo) {
         GerritRestApiFactory gerritRestApiFactory = new GerritRestApiFactory();
         GerritAuthData.Basic authData = new GerritAuthData.Basic(gerritSettings.getHost(), gerritSettings.getUser(), gerritSettings.getPassword());
         GerritApi gerritApi = gerritRestApiFactory.create(authData);
+
         try {
-            return gerritApi.changes().query("status:" + gerritSettings.getStatusToCollect()+"+project:" + project + "+branch:" + branch).get();
+            return gerritApi.changes().query("status:" + gerritSettings.getStatusToCollect() + "+project:"
+                    + repo.getProject() + "+branch:" + repo.getBranch() + "+since:" + getDateTimeSince(repo.getLastUpdated())).get();
         } catch (RestApiException e) {
             log("Error Getting Gerrit Changes." + e.getMessage());
         }
@@ -180,5 +186,17 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
     private boolean isNewCommit(GerritRepo repo, Commit commit) {
         return commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo.getId(), commit.getScmRevisionNumber()) == null;
+    }
+
+    private String getDateTimeSince(long start) {
+
+        Date startDateTime;
+        if (start == 0) {
+            startDateTime = DateUtils.addDays(new Date(), -gerritSettings.getFirstRunHistoryDays());
+        } else {
+            startDateTime = DateUtils.addMinutes(new Date(start), -gerritSettings.getCollectionOffsetMins());
+        }
+        SimpleDateFormat format = new SimpleDateFormat(GERRIT_TIME_FORMAT);
+        return format.format(startDateTime);
     }
 }

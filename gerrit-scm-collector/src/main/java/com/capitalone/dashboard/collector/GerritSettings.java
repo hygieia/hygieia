@@ -15,6 +15,7 @@ public class GerritSettings {
     private String password;
     private String statusToCollect;
     private int firstRunHistoryDays;
+    private int collectionOffsetMins;
 
 
 	public String getHost() {
@@ -63,5 +64,13 @@ public class GerritSettings {
 
     public void setStatusToCollect(String statusToCollect) {
         this.statusToCollect = statusToCollect;
+    }
+
+    public int getCollectionOffsetMins() {
+        return collectionOffsetMins;
+    }
+
+    public void setCollectionOffsetMins(int collectionOffsetMins) {
+        this.collectionOffsetMins = collectionOffsetMins;
     }
 }

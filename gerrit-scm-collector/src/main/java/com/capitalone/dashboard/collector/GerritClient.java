@@ -15,7 +15,6 @@ public interface GerritClient {
      *
      * @param repo SubversionRepo
      * @param firstRun
-     * @param startRevision starting revision number
      * @return all commits in repo
      */
 
