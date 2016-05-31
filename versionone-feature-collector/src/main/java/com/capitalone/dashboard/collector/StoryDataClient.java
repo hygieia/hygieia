@@ -161,7 +161,7 @@ public class StoryDataClient extends BaseClient {
 			// sEpicIsDeleted
 			feature.setsEpicIsDeleted(getJSONString(dataMainObj, "Super.IsDeleted"));
 
-			if (dateUtil.evaluateSprintLength(getJSONString(dataMainObj, "Timebox.StartDate"),
+			if (dateUtil.evaluateSprintLength(getJSONString(dataMainObj, "Timebox.BeginDate"),
 					getJSONString(dataMainObj, "Timebox.EndDate"))) {
 				// sSprintID
 				tmpObj = (JSONObject) dataMainObj.get("Timebox.ID");
