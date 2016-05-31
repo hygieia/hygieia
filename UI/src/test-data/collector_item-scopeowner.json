@@ -1,0 +1,27 @@
+[{
+  "id": "57434891ec52a31f1c6d5518",
+  "description": "Brave",
+  "enabled": false,
+  "pushed": false,
+  "collectorId": "57434890ec52a31f1c6d54c2",
+  "lastUpdated": 0,
+  "options": {
+    "isDeleted": "False",
+    "teamId": "12831",
+    "changeDate": "",
+    "assetState": "Active"
+  },
+  "collector": {
+    "id": "57434890ec52a31f1c6d54c2",
+    "name": "Jira",
+    "collectorType": "ScopeOwner",
+    "enabled": true,
+    "online": false,
+    "lastExecuted": 1464717445568
+  },
+  "name": "Brave",
+  "teamId": "12831",
+  "changeDate": "",
+  "isDeleted": "False",
+  "assetState": "Active"
+}]

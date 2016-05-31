@@ -1,0 +1,15 @@
+[{
+  "id": "57434890ec52a31f1c6d54c2",
+  "name": "Jira",
+  "collectorType": "ScopeOwner",
+  "enabled": true,
+  "online": false,
+  "lastExecuted": 1464717445568
+}, {
+  "id": "57434e26ec52a3205f5f14fb",
+  "name": "VersionOne",
+  "collectorType": "ScopeOwner",
+  "enabled": true,
+  "online": false,
+  "lastExecuted": 1464713386968
+}]

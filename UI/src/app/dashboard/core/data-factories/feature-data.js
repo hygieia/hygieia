@@ -13,25 +13,25 @@
 			scrum : "&agileType=scrum",
 		};
 
-		var testTotal = 'http://localhost:8080/api/feature/estimates/total/Team:9933916?component=552e7b21c44a49be6261d54a';
+		var testTotal = 'test-data/feature-total.json';
 		var buildTotal = '/api/feature/estimates/total/';
 
-		var testWip = 'http://localhost:8080/api/feature/estimates/wip/Team:9933916?component=552e7b21c44a49be6261d54a';
+		var testWip = 'test-data/feature-wip.json';
 		var buildWip = '/api/feature/estimates/wip/';
 
-		var testDone = 'http://localhost:8080/api/feature/estimates/done/Team:9933916?component=552e7b21c44a49be6261d54a';
+		var testDone = 'test-data/feature-done.json';
 		var buildDone = '/api/feature/estimates/done/';
 
-		var testFeatureWip = 'http://localhost:8080/api/feature/estimates/super/Team:9933916?component=552e7b21c44a49be6261d54a';
+		var testFeatureWip = 'test-data/feature-super.json';
 		var buildFeatureWip = '/api/feature/estimates/super/';
 
-		var testSprint = 'http://localhost:8080/api/iteration/Team:9933916?component=552e7b21c44a49be6261d54a';
+		var testSprint = 'test-data/feature-iteration.json';
 		var buildSprint = '/api/iteration/';
 
-		var testTeams = 'http://localhost:8080/api/collector/item/type/ScopeOwner';
+		var testTeams = 'test-data/collector_type-scopeowner.json';
 		var buildTeams = '/api/collector/item/type/ScopeOwner';
 
-		var testTeamByCollectorItemId = 'http://localhost:8080/api/collector/item/552ecefac44af4d37f321a6e';
+		var testTeamByCollectorItemId = 'test-data/collector_item-scopeowner.json';
 		var buildTeamByCollectorItemId = '/api/collector/item/';
 
 		return {
@@ -55,7 +55,7 @@
 		 * @param filterTeamId
 		 */
 		function total(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testTotal + agileType.scrum : buildTotal + filterTeamId + param + componentId + agileType.scrum)
+			return $http.get(HygieiaConfig.local ? testTotal : buildTotal + filterTeamId + param + componentId + agileType.scrum)
 					.then(function(response) {
 						return response.data;
 					});
@@ -68,7 +68,7 @@
 		 * @param filterTeamId
 		 */
 		function wip(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testWip + agileType.scrum : buildWip + filterTeamId + param + componentId + agileType.scrum)
+			return $http.get(HygieiaConfig.local ? testWip : buildWip + filterTeamId + param + componentId + agileType.scrum)
 					.then(function(response) {
 						return response.data;
 					});
@@ -81,7 +81,7 @@
 		 * @param filterTeamId
 		 */
 		function done(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testDone + agileType.scrum : buildDone + filterTeamId + param + componentId + agileType.scrum)
+			return $http.get(HygieiaConfig.local ? testDone : buildDone + filterTeamId + param + componentId + agileType.scrum)
 					.then(function(response) {
 						return response.data;
 					});
@@ -95,7 +95,7 @@
 		 * @param filterTeamId
 		 */
 		function featureWip(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testFeatureWip + agileType.scrum : buildFeatureWip + filterTeamId + param + componentId + agileType.scrum)
+			return $http.get(HygieiaConfig.local ? testFeatureWip : buildFeatureWip + filterTeamId + param + componentId + agileType.scrum)
 					.then(function(response) {
 						return response.data;
 					});
@@ -108,7 +108,7 @@
 		 * @param filterTeamId
 		 */
 		function sprint(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testSprint + agileType.scrum : buildSprint + filterTeamId + param + componentId + agileType.scrum)
+			return $http.get(HygieiaConfig.local ? testSprint : buildSprint + filterTeamId + param + componentId + agileType.scrum)
 					.then(function(response) {
 						return response.data;
 					});
@@ -122,7 +122,7 @@
 		 * @param filterTeamId
 		 */
 		function totalKanban(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testTotal + agileType.kanban : buildTotal + filterTeamId + param + componentId + agileType.kanban)
+			return $http.get(HygieiaConfig.local ? testTotal : buildTotal + filterTeamId + param + componentId + agileType.kanban)
 					.then(function(response) {
 						return response.data;
 					});
@@ -136,7 +136,7 @@
 		 * @param filterTeamId
 		 */
 		function wipKanban(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testWip + agileType.kanban : buildWip + filterTeamId + param + componentId + agileType.kanban)
+			return $http.get(HygieiaConfig.local ? testWip : buildWip + filterTeamId + param + componentId + agileType.kanban)
 					.then(function(response) {
 						return response.data;
 					});
@@ -150,7 +150,7 @@
 		 * @param filterTeamId
 		 */
 		function featureWipKanban(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testFeatureWip + agileType.kanban : buildFeatureWip + filterTeamId + param + componentId + agileType.kanban)
+			return $http.get(HygieiaConfig.local ? testFeatureWip : buildFeatureWip + filterTeamId + param + componentId + agileType.kanban)
 					.then(function(response) {
 						return response.data;
 					});
@@ -163,7 +163,7 @@
 		 * @param filterTeamId
 		 */
 		function sprintKanban(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testSprint + agileType.kanban : buildSprint + filterTeamId + param + componentId + agileType.kanban)
+			return $http.get(HygieiaConfig.local ? testSprint : buildSprint + filterTeamId + param + componentId + agileType.kanban)
 					.then(function(response) {
 						return response.data;
 					});
