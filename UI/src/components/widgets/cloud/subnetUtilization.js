@@ -14,10 +14,10 @@
         var ctrl = this;
         ctrl.vpc = vpc;
         ctrl.close = close;
-
+        $scope.viewToDisplay = "IPUtilization";
         function close() {
             $modalInstance.dismiss('close');
-        }
+        };
 
         ctrl.pieOptions = {
             donut: true,
@@ -26,14 +26,43 @@
             total: 200,
             showLabel: false
         };
+
+
+
+        ctrl.showOverSubscription = function() {
+          $scope.viewToDisplay = "OverSubscription"
+          $scope.subnets =  ctrl.subnetsForOveSub;        
+        };
+
+        ctrl.showIpUtilization = function() {
+           $scope.viewToDisplay = "IPUtilization";
+           $scope.subnets =  ctrl.subnetsForIpUtil;       
+        };      
+
+        $scope.dispayView = function(view) {
+          return ($scope.viewToDisplay === view);
+        }
         
         ctrl.percentUsed = function(subnet) { 
             return subnet.usedIPCount/(subnet.usedIPCount + subnet.availableIPCount) * 100;
         }
 
-        ctrl.utilizationPercent = function(subnet) {
+        ctrl.percentSubscribed = function(subnet) {
+          var subscribed = subnet.subscribedIPCount;
+          var available = subnet.availableIPCount;
+          return subscribed/(subscribed + available) * 100;
+        }
+
+        ctrl.subnetDetailData = function(subnet) {
+          if ($scope.viewToDisplay === "IPUtilization") {
             var util = ctrl.percentUsed(subnet);
             return {series: [ {meta: 'used', value: util}, {meta:'available', value: (100 - util)}]};
+          }
+          else
+          {
+            var util = ctrl.percentSubscribed(subnet);
+            return {series: [ {meta: 'used', value: util}, {meta:'available', value: (100 - util)}]};            
+          }
         };   
 
         $scope.utillizationEvents = {
@@ -74,7 +103,10 @@
           return availabilityZones;
         };
 
-        ctrl.subnets =  ctrl.aggregateSubnetsByAz(ctrl.vpc.subnets);        
+        ctrl.subnetsForIpUtil =  ctrl.aggregateSubnetsByAz(ctrl.vpc.subnets);   
+        ctrl.subnetsForOveSub =  ctrl.aggregateSubnetsByAz(ctrl.vpc.subnets);   
+
+        $scope.subnets = ctrl.subnetsForIpUtil;
 
         ctrl.detail = function(subnet) {
           $modal.open({
