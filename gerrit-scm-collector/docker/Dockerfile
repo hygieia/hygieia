@@ -13,6 +13,6 @@ WORKDIR /hygieia
 
 VOLUME ["/hygieia/logs"]
 
-CMD ./github-properties-builder.sh && \
+CMD ./gerrit-scm-properties-builder.sh && \
   java -jar gerrit-scm-collector*.jar --spring.config.location=/hygieia/hygieia-gerrit-scm-collector.properties
 
