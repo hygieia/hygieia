@@ -20,5 +20,8 @@
   ],
   "ipUsage" : {
     "MYTAG" : 1
+  },
+  "subscribedIPUsage": {
+    "MYTAG": 1
   }
 }
