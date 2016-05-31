@@ -97,6 +97,7 @@ public class DefaultUDeployClient implements UDeployClient {
                         .get("compliancy");
 
                 EnvironmentComponent component = new EnvironmentComponent();
+                component.setEnvironmentID(environment.getId());
                 component.setEnvironmentName(environment.getName());
                 component.setEnvironmentUrl(normalizeUrl(
                         application.getInstanceUrl(), "/#environment/"

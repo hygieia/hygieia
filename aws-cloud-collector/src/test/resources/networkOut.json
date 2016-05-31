@@ -1,0 +1,125 @@
+{
+  "label": "NetworkOut",
+  "datapoints": [
+    {
+      "timestamp": "May 24, 2016 6:09:00 PM",
+      "average": 178259.4,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 9:09:00 AM",
+      "average": 201472.0,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 5:09:00 AM",
+      "average": 184173.96666666667,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 7:09:00 PM",
+      "average": 152487.11666666667,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 8:09:00 AM",
+      "average": 185753.51666666666,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 10:09:00 PM",
+      "average": 155243.73333333334,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 7:09:00 AM",
+      "average": 187692.65,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 6:09:00 AM",
+      "average": 187138.38333333333,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 23, 2016 11:09:00 PM",
+      "average": 210797.95,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 2:09:00 PM",
+      "average": 456404.25,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 10:09:00 AM",
+      "average": 181478.65,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 2:09:00 AM",
+      "average": 188420.23333333334,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 3:09:00 AM",
+      "average": 184224.61666666667,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 3:09:00 PM",
+      "average": 160545.06666666668,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 5:09:00 PM",
+      "average": 152973.93333333332,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 12:09:00 PM",
+      "average": 758100.5166666667,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 11:09:00 AM",
+      "average": 544619.4,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 4:09:00 AM",
+      "average": 183543.38333333333,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 9:09:00 PM",
+      "average": 156866.76666666666,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 4:09:00 PM",
+      "average": 173697.75,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 8:09:00 PM",
+      "average": 154019.18333333332,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 1:09:00 AM",
+      "average": 183728.3,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 12:09:00 AM",
+      "average": 185438.6,
+      "unit": "Bytes"
+    },
+    {
+      "timestamp": "May 24, 2016 1:09:00 PM",
+      "average": 177002.51666666666,
+      "unit": "Bytes"
+    }
+  ]
+}
