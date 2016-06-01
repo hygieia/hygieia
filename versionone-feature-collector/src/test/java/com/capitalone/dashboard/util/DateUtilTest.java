@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 public class DateUtilTest {
 	private static Logger logger = LoggerFactory.getLogger("DateUtilTest");
 	protected static DateUtil classUnderTest;
+	private static int MAX_KANBAN_ITERATION_LENTH = 28;
 
 	@Before
 	public void setUp() throws Exception {
@@ -33,9 +34,9 @@ public class DateUtilTest {
 		String endKanban = "2016-08-01T00:00:00.000000";
 
 		assertTrue("The response was not indicative of a scrum iteration",
-				classUnderTest.evaluateSprintLength(startScrum, endScrum));
+				classUnderTest.evaluateSprintLength(startScrum, endScrum, DateUtilTest.MAX_KANBAN_ITERATION_LENTH));
 		assertFalse("The response was not indicative of a kanban iteration",
-				classUnderTest.evaluateSprintLength(startKanban, endKanban));
+				classUnderTest.evaluateSprintLength(startKanban, endKanban, DateUtilTest.MAX_KANBAN_ITERATION_LENTH));
 	}
 
 	/**
@@ -49,8 +50,8 @@ public class DateUtilTest {
 		String endKanban = "2016-4-14T00:00:00.000000";
 
 		assertFalse("The response was not indicative of a kanban iteration",
-				classUnderTest.evaluateSprintLength(startScrum, endScrum));
+				classUnderTest.evaluateSprintLength(startScrum, endScrum, DateUtilTest.MAX_KANBAN_ITERATION_LENTH));
 		assertFalse("The response was not indicative of a kanban iteration",
-				classUnderTest.evaluateSprintLength(startKanban, endKanban));
+				classUnderTest.evaluateSprintLength(startKanban, endKanban, DateUtilTest.MAX_KANBAN_ITERATION_LENTH));
 	}
 }

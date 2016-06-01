@@ -66,7 +66,7 @@ public final class DateUtil {
 	 *            The end date of a sprint in ISO format
 	 * @return True indicates a scrum sprint; False indicates a Kanban sprint
 	 */
-	public boolean evaluateSprintLength(String startDate, String endDate) {
+	public boolean evaluateSprintLength(String startDate, String endDate, int maxKanbanIterationLength) {
 		boolean sprintIndicator = false;
 		Calendar startCalendar = Calendar.getInstance();
 		Calendar endCalendar = Calendar.getInstance();
@@ -87,7 +87,7 @@ public final class DateUtil {
 			long diffMill = endCalendar.getTimeInMillis() - startCalendar.getTimeInMillis();
 			long diffDays = TimeUnit.DAYS.convert(diffMill, TimeUnit.MILLISECONDS);
 
-			if (diffDays <= 28) {
+			if (diffDays <= maxKanbanIterationLength) {
 				// Scrum-enough
 				sprintIndicator = true;
 			}
@@ -100,6 +100,16 @@ public final class DateUtil {
 		return sprintIndicator;
 	}
 
+	/**
+	 * Determines if string is an integer of the radix base number system
+	 * provided.
+	 * 
+	 * @param s
+	 *            String to be evaluated for integer type
+	 * @param radix
+	 *            Base number system (e.g., 10 = base 10 number system)
+	 * @return boolean
+	 */
 	private boolean isInteger(String s, int radix) {
 		Scanner sc = new Scanner(s.trim());
 		if (!sc.hasNextInt(radix))
