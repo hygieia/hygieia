@@ -2,9 +2,6 @@ package hygieia.builder;
 
 import com.capitalone.dashboard.model.SCM;
 import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.Cause;
-import hudson.model.Hudson;
 import hudson.scm.ChangeLogSet;
 
 import java.util.LinkedList;
@@ -13,33 +10,12 @@ import java.util.logging.Logger;
 
 public class CommitBuilder {
     private static final Logger logger = Logger.getLogger(CommitBuilder.class.getName());
-    private AbstractBuild build;
     private List<SCM> commitList = new LinkedList<>();
 
     public CommitBuilder(AbstractBuild build) {
-        this.build = getBuild(build);
         buildCommits(build.getChangeSet());
     }
 
-    private AbstractBuild getBuild(AbstractBuild build) {
-        ChangeLogSet changeSet = build.getChangeSet();
-        List<ChangeLogSet.Entry> entries = new LinkedList<>();
-        for (Object o : changeSet.getItems()) {
-            ChangeLogSet.Entry entry = (ChangeLogSet.Entry) o;
-            entries.add(entry);
-        }
-        if (entries.isEmpty()) {
-            Cause.UpstreamCause c = (Cause.UpstreamCause) build.getCause(Cause.UpstreamCause.class);
-            if (c != null) {
-                String upProjectName = c.getUpstreamProject();
-                int buildNumber = c.getUpstreamBuild();
-                AbstractProject project = Hudson.getInstance().getItemByFullName(upProjectName, AbstractProject.class);
-                AbstractBuild upBuild = project.getBuildByNumber(buildNumber);
-                return getBuild(upBuild);
-            }
-        }
-        return build;
-    }
 
     private void buildCommits(ChangeLogSet changeLogSet) {
         for (Object o : changeLogSet.getItems()) {
