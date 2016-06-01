@@ -160,6 +160,7 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
             commit.setScmCommitTimestamp(ci.updated.getTime());
             commit.setNumberOfChanges(ci._number);
             commits.add(commit);
+
         }
         return commits;
     }
@@ -169,7 +170,6 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
         GerritRestApiFactory gerritRestApiFactory = new GerritRestApiFactory();
         GerritAuthData.Basic authData = new GerritAuthData.Basic(gerritSettings.getHost(), gerritSettings.getUser(), gerritSettings.getPassword());
         GerritApi gerritApi = gerritRestApiFactory.create(authData);
-
         try {
             return gerritApi.changes().query("status:" + gerritSettings.getStatusToCollect() + "+project:"
                     + repo.getProject() + "+branch:" + repo.getBranch() + "+since:" + getDateTimeSince(repo.getLastUpdated())).get();
