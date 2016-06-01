@@ -17,12 +17,12 @@ import java.util.logging.Logger;
 public class ArtifactBuilder {
 
     private static final Logger logger = Logger.getLogger(ArtifactBuilder.class.getName());
-    AbstractBuild build;
-    HygieiaPublisher publisher;
-    BuildListener listener;
-    String buildId;
+    private AbstractBuild build;
+    private HygieiaPublisher publisher;
+    private BuildListener listener;
+    private String buildId;
 
-    Set<BinaryArtifactCreateRequest> artifacts = new HashSet<BinaryArtifactCreateRequest>();
+    private Set<BinaryArtifactCreateRequest> artifacts = new HashSet<>();
 
     public ArtifactBuilder(AbstractBuild build, HygieiaPublisher publisher, BuildListener listener, String buildId) {
         this.build = build;
