@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 
 public class CommitBuilder {
     private static final Logger logger = Logger.getLogger(CommitBuilder.class.getName());
-    AbstractBuild build;
-    private List<SCM> commitList = new LinkedList<SCM>();
+    private AbstractBuild build;
+    private List<SCM> commitList = new LinkedList<>();
 
     public CommitBuilder(AbstractBuild build) {
         this.build = getBuild(build);
@@ -23,7 +23,7 @@ public class CommitBuilder {
 
     private AbstractBuild getBuild(AbstractBuild build) {
         ChangeLogSet changeSet = build.getChangeSet();
-        List<ChangeLogSet.Entry> entries = new LinkedList<ChangeLogSet.Entry>();
+        List<ChangeLogSet.Entry> entries = new LinkedList<>();
         for (Object o : changeSet.getItems()) {
             ChangeLogSet.Entry entry = (ChangeLogSet.Entry) o;
             entries.add(entry);

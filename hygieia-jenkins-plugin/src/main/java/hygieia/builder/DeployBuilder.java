@@ -18,12 +18,12 @@ import java.util.logging.Logger;
 public class DeployBuilder {
 
     private static final Logger logger = Logger.getLogger(DeployBuilder.class.getName());
-    AbstractBuild build;
-    HygieiaPublisher publisher;
-    BuildListener listener;
-    String buildId;
+    private AbstractBuild build;
+    private HygieiaPublisher publisher;
+    private BuildListener listener;
+    private String buildId;
 
-    Set<DeployDataCreateRequest> deploys = new HashSet<DeployDataCreateRequest>();
+    private Set<DeployDataCreateRequest> deploys = new HashSet<>();
 
     public DeployBuilder(AbstractBuild build, HygieiaPublisher publisher, BuildListener listener, String buildId) {
         this.build = build;
@@ -68,9 +68,7 @@ public class DeployBuilder {
                 EnvVars env = null;
                 try {
                     env = build.getEnvironment(listener);
-                } catch (IOException e) {
-                    logger.warning("Error getting environment variables");
-                } catch (InterruptedException e) {
+                } catch (IOException | InterruptedException e) {
                     logger.warning("Error getting environment variables");
                 }
                 if (env != null) {

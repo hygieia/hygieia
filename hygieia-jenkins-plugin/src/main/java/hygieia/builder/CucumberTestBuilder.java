@@ -27,12 +27,11 @@ import java.util.logging.Logger;
 
 public class CucumberTestBuilder {
     private static final Logger logger = Logger.getLogger(CucumberTestBuilder.class.getName());
-    AbstractBuild build;
-    HygieiaPublisher publisher;
-    BuildListener listener;
-    String buildId;
-    TestResult testResult;
-    TestDataCreateRequest testDataCreateRequest;
+    private AbstractBuild build;
+    private HygieiaPublisher publisher;
+    private BuildListener listener;
+    private String buildId;
+    private TestResult testResult;
 
     public CucumberTestBuilder(AbstractBuild build, HygieiaPublisher publisher, BuildListener listener, String buildId) {
         this.build = build;
@@ -57,12 +56,11 @@ public class CucumberTestBuilder {
             e.printStackTrace();
             listener.getLogger().println("Hygieia Test Result Publisher - InterruptedException on " + rootDirectory);
         }
-//        List<File> testFiles = HygieiaUtils.getArtifactFilesiInPath(directory, filePattern, new ArrayList<File>(), build);
         testResult = buildTestResultObject(getCapabilities(testFiles));
     }
 
     private List<TestCapability> getCapabilities(List<FilePath> testFiles) {
-        List<TestCapability> capabilities = new ArrayList<TestCapability>();
+        List<TestCapability> capabilities = new ArrayList<>();
         JSONParser parser = new JSONParser();
         CucumberJsonToTestResultTransformer cucumberTransformer = new CucumberJsonToTestResultTransformer();
         for (FilePath file : testFiles) {
@@ -125,7 +123,7 @@ public class CucumberTestBuilder {
     private static String getCapabilityDescription(FilePath file) {
         String newFileName = file.getRemote().replace(file.getName(), "");
         boolean isUnix = newFileName.endsWith("/");
-        int lastFolderIndex = -1;
+        int lastFolderIndex;
         newFileName = newFileName.substring(0, newFileName.length() - 1);
         if (isUnix) {
             lastFolderIndex = newFileName.lastIndexOf("/");
@@ -204,9 +202,7 @@ public class CucumberTestBuilder {
             EnvVars env = null;
             try {
                 env = build.getEnvironment(listener);
-            } catch (IOException e) {
-                logger.warning("Error getting environment variables");
-            } catch (InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 logger.warning("Error getting environment variables");
             }
             if (env != null) {
