@@ -32,6 +32,17 @@ feature.pageSize=2000
 feature.deltaStartDate=2016-03-01T00:00:00.000000
 feature.masterStartDate=2016-03-01T00:00:00.000000
 feature.deltaCollectorItemStartDate=2016-03-01T00:00:00.000000
+#############################################################################
+# Maximum Kanban iteration length allowed for a sprint start/end date before
+# being converted a Kanban generic type iteration.  e.g., If you want anything
+# longer than a 3 week sprint to be considered as Kanban in the Feature Widget,
+# change this value to say: 36.  Default value is 28 days.
+#
+# Note:  This field otherwise does NOT need to be included, and is commented out
+#############################################################################
+# 
+# feature.maxKanbanIterationLength=28
+
 # Chron schedule: S M D M Y [Day of the Week]
 feature.cron=0 * * * * *
 

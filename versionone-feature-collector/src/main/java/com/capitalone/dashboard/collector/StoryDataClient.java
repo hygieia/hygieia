@@ -162,7 +162,8 @@ public class StoryDataClient extends BaseClient {
 			feature.setsEpicIsDeleted(getJSONString(dataMainObj, "Super.IsDeleted"));
 
 			if (dateUtil.evaluateSprintLength(getJSONString(dataMainObj, "Timebox.BeginDate"),
-					getJSONString(dataMainObj, "Timebox.EndDate"))) {
+					getJSONString(dataMainObj, "Timebox.EndDate"),
+					featureSettings.getMaxKanbanIterationLength())) {
 				// sSprintID
 				tmpObj = (JSONObject) dataMainObj.get("Timebox.ID");
 				feature.setsSprintID(getJSONString(tmpObj, "_oid"));
