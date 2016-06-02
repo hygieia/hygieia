@@ -71,6 +71,6 @@ This project adheres to the [Open Code of Conduct][code-of-conduct]. By particip
 
 ![Image](/media/images/overview/9.png)
 
-### What's new in Hygieia℠ 2.0
+### What's new in Hygieia℠ 2.0:
 [Read about Hygieia 2.0](Hygieia2.md)
 
