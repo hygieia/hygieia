@@ -12,7 +12,7 @@ mvn install
 ```
 to package the collector into an executable JAR file. Copy this file to your server and launch it using :
 ```
-java -JAR xldeploy-collector.jar
+java -jar xldeploy-collector.jar
 ```
 You will need to provide an **application.properties** file that contains information about how
 to connect to the Dashboard MongoDB database instance, as well as properties the XLDeploy collector requires. See
