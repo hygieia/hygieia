@@ -2,6 +2,7 @@ package com.capitalone.dashboard.datafactory.jira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
@@ -221,7 +222,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 				} else {
 					issues = new ArrayList<Issue>();
 				}
-			} catch (Exception e) {
+			} catch (RestClientException e) {
 				issues = new ArrayList<Issue>();
 				LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
 						+ e.getCause());
@@ -252,7 +253,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 				} else {
 					issues = new ArrayList<BasicProject>();
 				}
-			} catch (Exception e) {
+			} catch (RestClientException e) {
 				issues = new ArrayList<BasicProject>();
 				LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
 						+ e.getCause());
