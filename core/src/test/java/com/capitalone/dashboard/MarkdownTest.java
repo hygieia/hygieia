@@ -60,7 +60,7 @@ public class MarkdownTest {
         return new File(".").getAbsoluteFile().getParentFile().getParentFile();
     }
 
-    CharSequence fromFile(String filename) throws IOException {
+    private CharSequence fromFile(String filename) throws IOException {
     	FileInputStream input = null;
         try {
         	input = new FileInputStream(filename);
