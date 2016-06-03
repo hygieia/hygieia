@@ -7,9 +7,6 @@ if [ "$MONGO_PORT" != "" ]; then
   export SPRING_DATA_MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
 fi
 
-echo "SPRING_DATA_MONGODB_HOST: $SPRING_DATA_MONGODB_HOST"
-echo "SPRING_DATA_MONGODB_PORT: $SPRING_DATA_MONGODB_PORT"
-
 
 cat > dashboard.properties <<EOF
 #Database Name - default is test
@@ -27,3 +24,14 @@ dbusername=${SPRING_DATA_MONGODB_USERNAME:-db}
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 EOF
+
+echo "
+
+===========================================
+Properties file created `date`:  $SPRING_CONFIG_LOCATION
+Note: passwords hidden
+===========================================
+$(egrep -vi 'password' "$SPRING_CONFIG_LOCATION")
+"
+
+exit 0

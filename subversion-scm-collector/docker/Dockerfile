@@ -3,6 +3,8 @@ FROM docker.io/java:openjdk-8-jdk
 
 MAINTAINER Hygieia@capitalone.com
 
+ENV SPRING_CONFIG_LOCATION=/hygieia/hygieia-subversion-collector.properties
+
 RUN \
   mkdir /hygieia
 
@@ -14,5 +16,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./subversion-properties-builder.sh && \
-  java -jar subversion-collector*.jar --spring.config.location=/hygieia/hygieia-subversion-collector.properties
+  java -jar subversion-collector*.jar --spring.config.location="$SPRING_CONFIG_LOCATION"
 

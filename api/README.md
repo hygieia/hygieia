@@ -97,6 +97,11 @@ Environment variables for dashboard properties can be specified like:
 docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -i hygieia-api:latest
 ```
 
+Alternatively the spring configuration file can be specified by overriding the SPRING_CONFIG_LOCATION variable and creating a docker mount:
+```
+docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -v /config:/hygieia/config "SPRING_CONFIG_LOCATION=/hygieia/config/myconfig.properties" -i hygieia-api:latest
+```
+
 For more properties see the [Dockerfile](Dockerfile)
 
 ### List containers

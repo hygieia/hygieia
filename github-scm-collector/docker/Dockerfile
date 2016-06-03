@@ -3,6 +3,8 @@ FROM docker.io/java:openjdk-8-jdk
 
 MAINTAINER Hygieia@capitalone.com
 
+ENV SPRING_CONFIG_LOCATION=/hygieia/hygieia-github-scm-collector.properties
+
 RUN \
   mkdir /hygieia
 
@@ -14,5 +16,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./github-properties-builder.sh && \
-  java -jar github-scm-collector*.jar --spring.config.location=/hygieia/hygieia-github-scm-collector.properties
+  java -jar github-scm-collector*.jar --spring.config.location="$SPRING_CONFIG_LOCATION"
 

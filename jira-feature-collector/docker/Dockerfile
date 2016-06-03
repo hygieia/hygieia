@@ -3,6 +3,8 @@ FROM docker.io/java:openjdk-8-jdk
 
 MAINTAINER Hygieia@capitalone.com
 
+ENV SPRING_CONFIG_LOCATION=/hygieia/hygieia-jira-feature-collector.properties
+
 RUN \
 
   mkdir  /hygieia
@@ -15,4 +17,4 @@ WORKDIR /hygieia/
 VOLUME ["/hygieia/logs"]
 
 CMD ./jira-properties-builder.sh &&\
-	 java -jar jira-feature-collector*.jar --spring.config.location=hygieia-jira-feature-collector.properties
+	 java -jar jira-feature-collector*.jar --spring.config.location="$SPRING_CONFIG_LOCATION"
