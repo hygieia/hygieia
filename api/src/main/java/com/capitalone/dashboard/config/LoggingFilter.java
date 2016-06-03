@@ -88,10 +88,10 @@ public class LoggingFilter implements Filter {
             chain.doFilter(bufferedRequest, bufferedResponse);
             requestLog.setResponseContentType(httpServletResponse.getContentType());
             try {
-                if (new MimeType(httpServletRequest.getContentType()).match(new MimeType(APPLICATION_JSON_VALUE))) {
+                if ((httpServletRequest.getContentType() != null) && (new MimeType(httpServletRequest.getContentType()).match(new MimeType(APPLICATION_JSON_VALUE)))) {
                     requestLog.setRequestBody(JSON.parse(bufferedRequest.getRequestBody()));
                 }
-                if (new MimeType(bufferedResponse.getContentType()).match(new MimeType(APPLICATION_JSON_VALUE))){
+                if ((bufferedResponse.getContentType() != null) && (new MimeType(bufferedResponse.getContentType()).match(new MimeType(APPLICATION_JSON_VALUE)))){
                     requestLog.setResponseBody(JSON.parse(bufferedResponse.getContent()));
                 }
             } catch (MimeTypeParseException e) {

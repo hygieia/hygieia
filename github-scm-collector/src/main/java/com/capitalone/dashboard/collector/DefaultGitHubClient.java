@@ -1,11 +1,13 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitHubRepo;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -67,7 +69,7 @@ public class DefaultGitHubClient implements GitHubClient {
 		if (repoUrl.endsWith(".git")) {
 			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
 		}
-		URL url = null;
+		URL url;
 		String hostName = "";
 		String protocol = "";
 		try {
@@ -80,7 +82,7 @@ public class DefaultGitHubClient implements GitHubClient {
 		}
 		String hostUrl = protocol + "://" + hostName + "/";
 		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
-		String apiUrl = "";
+		String apiUrl;
 		if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
 			apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + repoName;
 		} else {
@@ -130,6 +132,8 @@ public class DefaultGitHubClient implements GitHubClient {
 				JSONArray jsonArray = paresAsArray(response);
 				for (Object item : jsonArray) {
 					JSONObject jsonObject = (JSONObject) item;
+                    JSONArray parents = (JSONArray) jsonObject.get("parents");
+                    CommitType commitType = (CollectionUtils.size(parents) > 1) ? CommitType.Merge : CommitType.New;
 					String sha = str(jsonObject, "sha");
 					JSONObject commitObject = (JSONObject) jsonObject.get("commit");
 					JSONObject authorObject = (JSONObject) commitObject.get("author");
@@ -140,14 +144,16 @@ public class DefaultGitHubClient implements GitHubClient {
 					Commit commit = new Commit();
 					commit.setTimestamp(System.currentTimeMillis());
 					commit.setScmUrl(repo.getRepoUrl());
+                    commit.setScmBranch(repo.getBranch());
 					commit.setScmRevisionNumber(sha);
 					commit.setScmAuthor(author);
 					commit.setScmCommitLog(message);
 					commit.setScmCommitTimestamp(timestamp);
 					commit.setNumberOfChanges(1);
+                    commit.setType(commitType);
 					commits.add(commit);
 				}
-				if (jsonArray == null || jsonArray.isEmpty()) {
+				if (CollectionUtils.isEmpty(jsonArray)) {
 					lastPage = true;
 				} else {
 					lastPage = isThisLastPage(response);
