@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.Authenticator;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
 import java.net.Proxy;
@@ -24,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -40,6 +42,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	protected int pageSize;
 	protected int pageIndex;
 	protected String basicQuery;
+	protected boolean realDNS = false;
 
 	/**
 	 * Default constructor required for Spring (not used)
@@ -65,10 +68,18 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 			LOGGER.error("There was a problem reading the provide Jira base URI syntax");
 			jiraUri = null;
 		}
-		client = factory.createWithBasicHttpAuthentication(jiraUri,
-				this.decodeCredentials(jiraCredentials).get("username"),
-				this.decodeCredentials(jiraCredentials).get("password"));
-
+		try {
+			InetAddress.getByName(jiraUri.getHost());
+			client = factory.createWithBasicHttpAuthentication(jiraUri,
+					this.decodeCredentials(jiraCredentials).get("username"),
+					this.decodeCredentials(jiraCredentials).get("password"));
+			LOGGER.debug("The Jira host name is valid");
+			realDNS = true;
+		} catch (UnknownHostException e) {
+			LOGGER.debug("The Jira host name is invalid");
+			realDNS = false;
+		}
+		
 		this.pageSize = 1000;
 		this.pageIndex = 0;
 	}
@@ -104,9 +115,17 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 					jiraUri = null;
 				}
 			}
-			client = factory.createWithBasicHttpAuthentication(jiraUri,
-					this.decodeCredentials(jiraCredentials).get("username"), this
-							.decodeCredentials(jiraCredentials).get("password"));
+			try {
+				InetAddress.getByName(jiraUri.getHost());
+				client = factory.createWithBasicHttpAuthentication(jiraUri,
+						this.decodeCredentials(jiraCredentials).get("username"), this
+								.decodeCredentials(jiraCredentials).get("password"));
+				LOGGER.debug("The Jira host name is valid");
+				realDNS = true;
+			} catch (UnknownHostException e) {
+				LOGGER.debug("The Jira host name is invalid");
+				realDNS = false;
+			}
 		} else {
 			LOGGER.error("At runtime in a property setting at minimum, a valid Jira URI and basic authentication credentials must be provided");
 		}
@@ -135,10 +154,19 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 			LOGGER.error("There was a problem reading the provide Jira base URI syntax");
 			jiraUri = null;
 		}
-		this.client = factory.createWithBasicHttpAuthentication(jiraUri,
-				this.decodeCredentials(jiraCredentials).get("username"),
-				this.decodeCredentials(jiraCredentials).get("password"));
-
+		
+		try {
+			InetAddress.getByName(jiraUri.getHost());
+			this.client = factory.createWithBasicHttpAuthentication(jiraUri,
+					this.decodeCredentials(jiraCredentials).get("username"),
+					this.decodeCredentials(jiraCredentials).get("password"));
+			LOGGER.debug("The Jira host name is valid");
+			realDNS = true;
+		} catch (UnknownHostException e) {
+			LOGGER.debug("The Jira host name is invalid");
+			realDNS = false;
+		}
+		
 		this.pageSize = inPageSize;
 		pageIndex = 0;
 	}
@@ -177,9 +205,19 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 					jiraUri = null;
 				}
 			}
-			this.client = factory.createWithBasicHttpAuthentication(jiraUri, this
-					.decodeCredentials(jiraCredentials).get("username"),
-					this.decodeCredentials(jiraCredentials).get("password"));
+			
+			try {
+				InetAddress.getByName(jiraUri.getHost());
+				this.client = factory.createWithBasicHttpAuthentication(jiraUri, this
+						.decodeCredentials(jiraCredentials).get("username"),
+						this.decodeCredentials(jiraCredentials).get("password"));
+				LOGGER.debug("The Jira host name is valid");
+				realDNS = true;
+			} catch (UnknownHostException e) {
+				LOGGER.debug("The Jira host name is invalid");
+				realDNS = false;
+			}
+			
 		} else {
 			LOGGER.error("At runtime in a property setting at minimum, a valid Jira URI and basic authentication credentials must be provided");
 		}
@@ -212,7 +250,10 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 		List<Issue> issues = new ArrayList<Issue>();
 		Set<String> fields = new LinkedHashSet<String>();
 		fields.add("*all");
-		if (client != null) {
+		if (!realDNS) {
+			issues = new ArrayList<Issue>();
+			LOGGER.warn("Your host name was not valid, and a blank response was returned");
+		} else if (client != null) {
 			Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(
 					this.getBasicQuery(), this.getPageSize(), this.getPageIndex(), fields);
 			try {
@@ -244,7 +285,10 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	public List<BasicProject> getJiraTeams() {
 		Iterable<BasicProject> jiraRawRs = null;
 		List<BasicProject> issues = new ArrayList<BasicProject>();
-		if (client != null) {
+		if (!realDNS) {
+			issues = new ArrayList<BasicProject>();
+			LOGGER.warn("Your host name was not valid, and a blank response was returned");
+		} else if (client != null) {
 			Promise<Iterable<BasicProject>> promisedRs = client.getProjectClient().getAllProjects();
 			try {
 				jiraRawRs = promisedRs.claim();
