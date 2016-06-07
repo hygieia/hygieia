@@ -13,10 +13,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -45,6 +47,8 @@ import java.util.TimeZone;
  * @see <a href="https://confluence.atlassian.com/bitbucketserver/bitbucket-rebrand-faq-779298912.html">Bitbucket rebrand FAQ</a>
  * @see <a href="https://github.com/capitalone/Hygieia/issues/609">Confusion on Stash/Bitbucket implementations #609</a>
  */
+@Component("bitbucket-server")
+@ConditionalOnProperty(prefix = "git", name = "product", havingValue = "server")
 public class DefaultBitbucketServerClient implements GitClient {
 	private static final Log LOG = LogFactory.getLog(DefaultBitbucketServerClient.class);
 
