@@ -19,13 +19,13 @@ public class GitRepoTests {
 	@Before
     public void init() {
 		gitRepo1 = new GitRepo();
-		gitRepo1.setRepoUrl("https://stash.com/capitalone/Hygiea.git");
+		gitRepo1.setRepoUrl("https://bitbucket.com/capitalone/Hygiea.git");
 		gitRepo1.setBranch("master");
 		gitRepo2 = new GitRepo();
-		gitRepo2.setRepoUrl("https://stash.com/capitalone/Hygiea.git");
+		gitRepo2.setRepoUrl("https://bitbucket.com/capitalone/Hygiea.git");
         gitRepo2.setBranch("master");
         gitRepo3=new GitRepo();
-        gitRepo3.setRepoUrl("https://stash.com/capitalone/Hygieas.git");
+        gitRepo3.setRepoUrl("https://bitbucket.com/capitalone/Hygieas.git");
         gitRepo3.setBranch("master");
         }
 	
