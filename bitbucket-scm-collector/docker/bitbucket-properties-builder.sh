@@ -8,7 +8,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-stash-scm-collector.properties
+	PROP_FILE=hygieia-bitbucket-scm-collector.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then
@@ -42,14 +42,14 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-git.cron=${STASH_CRON:-0 0/5 * * * *}
+git.cron=${BITBUCKET_CRON:-0 0/5 * * * *}
 
-    #mandatory
-git.host=${STASH_HOST:-mystashrepo.com/}
-git.api=${STASH_API:-/rest/api/1.0/}
+#mandatory
+git.host=${BITBUCKET_HOST:-mybitbucketrepo.com/}
+git.api=${BITBUCKET_API:-/rest/api/1.0/}
 
 #Maximum number of days to go back in time when fetching commits
-git.commitThresholdDays=${STASH_COMMIT_THRESHOLD_DAYS:-15}
+git.commitThresholdDays=${BITBUCKET_COMMIT_THRESHOLD_DAYS:-15}
 
 EOF
 

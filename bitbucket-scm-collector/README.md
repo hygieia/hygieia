@@ -1,7 +1,7 @@
-StashSourceCodeCollector
+BitbucketSourceCodeCollector
 =========================
 
-Collect source code details from stash based on URL and branch
+Collect source code details from Bitbucket based on URL and branch. Provides implementations for both Bitbucket Cloud (formerly known as Bitbucket) and Bitbucket Server (formerly known as Stash).
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
 
@@ -14,10 +14,10 @@ mvn install
 ```
 to package the collector into an executable JAR file. Copy this file to your server and launch it using : 
 ```
-java -jar stash-collector.jar
+java -jar bitbucket-collector.jar
 ```
 You will need to provide an **application.properties** file that contains information about how
-to connect to the Dashboard MongoDB database instance, as well as properties the Stash collector requires. See
+to connect to the Dashboard MongoDB database instance, as well as properties the Bitbucket collector requires. See
 the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files)
 for information about sourcing this properties file.
 
@@ -43,7 +43,7 @@ for information about sourcing this properties file.
     git.cron=0 0/5 * * * *
 
     #mandatory
-    git.host=mystashrepo.com/
+    git.host=mybitbucketrepo.com/
     
     #mandatory
     git.api=/rest/api/1.0/

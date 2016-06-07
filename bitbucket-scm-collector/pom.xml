@@ -4,7 +4,7 @@
 	<artifactId>bitbucket-scm-collector</artifactId>
 	<packaging>jar</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>Stash Collector Microservice collecting stats from Stash</description>
+	<description>Bitbucket Collector Microservice collecting stats from Bitbucket Cloud (formerly known as Bitbucket) and Bitbucket Server (formerly known as Stash)</description>
 	<url>https://github.com/capitalone/Hygieia</url>
 
 
@@ -38,7 +38,7 @@
 				<artifactId>docker-maven-plugin</artifactId>
 				<configuration>
 					<skipDockerBuild>false</skipDockerBuild>
-					<imageName>hygieia-stash-scm-collector</imageName>
+					<imageName>hygieia-bitbucket-scm-collector</imageName>
 					<dockerDirectory>${project.basedir}/docker</dockerDirectory>
 					<resources>
 						<resource>

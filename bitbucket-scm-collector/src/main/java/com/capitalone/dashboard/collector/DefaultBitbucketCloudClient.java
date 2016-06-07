@@ -33,13 +33,23 @@ import java.util.List;
 import java.util.TimeZone;
 
 /**
- * BitbucketClient implementation that uses SVNKit to fetch information about
- * Subversion repositories.
+ * Implementation of a git client to connect to an Atlassian Bitbucket <i>Cloud</i> product. 
+ * <p>
+ * Note about naming scheme: Atlassian has two different Bitbucket products that use different
+ * rest API's: Bitbucket <i>Cloud</i> (formerly known as Bitbucket) and Bitbucket <i>Server</i> (formerly known as Stash).
+ * <p>
+ * Rest API's:
+ * <ul>
+ * <li><b>Bitbucket Cloud:</b> https://confluence.atlassian.com/bitbucket/version-2-423626329.html</li>
+ * <li><b>Bitbucket Server:</b> https://developer.atlassian.com/static/rest/stash/3.11.3/stash-rest.html</li>
+ * </ul>
+ * <b>
+ * @see <a href="https://confluence.atlassian.com/bitbucketserver/bitbucket-rebrand-faq-779298912.html">Bitbucket rebrand FAQ</a>
+ * @see <a href="https://github.com/capitalone/Hygieia/issues/609">Confusion on Stash/Bitbucket implementations #609</a>
  */
-
 @Component
-public class DefaultBitbucketClient implements GitClient {
-	private static final Log LOG = LogFactory.getLog(DefaultBitbucketClient.class);
+public class DefaultBitbucketCloudClient implements GitClient {
+	private static final Log LOG = LogFactory.getLog(DefaultBitbucketCloudClient.class);
 
 	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
 
@@ -48,7 +58,7 @@ public class DefaultBitbucketClient implements GitClient {
 	private final RestOperations restOperations;
 
 	@Autowired
-	public DefaultBitbucketClient(GitSettings settings,
+	public DefaultBitbucketCloudClient(GitSettings settings,
 			Supplier<RestOperations> restOperationsSupplier) {
 		this.settings = settings;
 		this.restOperations = restOperationsSupplier.get();

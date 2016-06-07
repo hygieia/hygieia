@@ -192,9 +192,9 @@ hygieia-subversion-scm-collector:
 #Maximum number of days to go back in time when fetching commits
 #  - SUBVERSION_COMMIT_THRESHOLD_DAYS=15
 
-hygieia-stash-scm-collector:
-  image: hygieia-stash-scm-collector:latest
-  container_name: hygieia-stash
+hygieia-bitbucket-scm-collector:
+  image: hygieia-bitbucket-scm-collector:latest
+  container_name: hygieia-bitbucket
   volumes:
   - ./logs:/hygieia/logs
   links:
@@ -202,13 +202,13 @@ hygieia-stash-scm-collector:
   - hygieia-api
 #  environment:
     #mandatory
-#  - STASH_HOST=mystashrepo.com/
-#  - STASH_API=/rest/api/1.0/
+#  - BITBUCKET_HOST=mybitbucketrepo.com/
+#  - BITBUCKET_API=/rest/api/1.0/
 
-#  - STASH_CRON:-0 0/5 * * * *
+#  - BITBUCKET_CRON:-0 0/5 * * * *
 
 #Maximum number of days to go back in time when fetching commits
-#  - STASH_COMMIT_THRESHOLD_DAYS=15
+#  - BITBUCKET_COMMIT_THRESHOLD_DAYS=15
 
 hygieia-versionone-collector:
   image: hygieia-versionone-collector:latest

@@ -45,7 +45,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
                             GitClient gitClient,
                             GitSettings gitSettings,
                             ComponentRepository dbComponentRepository) {
-        super(taskScheduler, "Stash");
+        super(taskScheduler, "Bitbucket");
         this.collectorRepository = collectorRepository;
         this.gitRepoRepository = gitRepoRepository;
         this.commitRepository = commitRepository;
@@ -57,7 +57,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
     @Override
     public Collector getCollector() {
         Collector protoType = new Collector();
-        protoType.setName("Stash");
+        protoType.setName("Bitbucket");
         protoType.setCollectorType(CollectorType.SCM);
         protoType.setOnline(true);
         protoType.setEnabled(true);
@@ -84,7 +84,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
         /**
          * Logic: For each component, retrieve the collector item list of the type SCM.
-         * Store their IDs in a unique set ONLY if their collector IDs match with Stash collectors ID.
+         * Store their IDs in a unique set ONLY if their collector IDs match with Bitbucket collectors ID.
          */
         for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
             if (comp.getCollectorItems() == null || comp.getCollectorItems().isEmpty()) continue;
