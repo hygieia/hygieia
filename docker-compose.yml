@@ -40,6 +40,7 @@ hygieia-github-scm-collector:
 #  - GITHUB_COMMIT_THREASHOLD_DAYS=15
 
 
+
 hygieia-jira-feature-collector:
   image: hygieia-jira-feature-collector:latest
   container_name: hygieia-jira
@@ -204,8 +205,8 @@ hygieia-bitbucket-scm-collector:
     #mandatory
 #  - BITBUCKET_HOST=mybitbucketrepo.com/
 #  - BITBUCKET_API=/rest/api/1.0/
-
-#  - BITBUCKET_CRON:-0 0/5 * * * *
+#  - BITBUCKET_CRON=0 0/5 * * * *
+#  - BITBUCKET_PRODUCT=cloud
 
 #Maximum number of days to go back in time when fetching commits
 #  - BITBUCKET_COMMIT_THRESHOLD_DAYS=15
