@@ -2,13 +2,12 @@ package hygieia.builder;
 
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import hudson.EnvVars;
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hygieia.utils.HygieiaUtils;
 import jenkins.plugins.hygieia.HygieiaPublisher;
-import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,12 +18,12 @@ import java.util.logging.Logger;
 public class DeployBuilder {
 
     private static final Logger logger = Logger.getLogger(DeployBuilder.class.getName());
-    AbstractBuild build;
-    HygieiaPublisher publisher;
-    BuildListener listener;
-    String buildId;
+    private AbstractBuild build;
+    private HygieiaPublisher publisher;
+    private BuildListener listener;
+    private String buildId;
 
-    Set<DeployDataCreateRequest> deploys = new HashSet<DeployDataCreateRequest>();
+    private Set<DeployDataCreateRequest> deploys = new HashSet<>();
 
     public DeployBuilder(AbstractBuild build, HygieiaPublisher publisher, BuildListener listener, String buildId) {
         this.build = build;
@@ -41,83 +40,52 @@ public class DeployBuilder {
         String version = publisher.getHygieiaDeploy().getArtifactVersion().trim();
         String environmentName = publisher.getHygieiaDeploy().getEnvironmentName();
         String applicationName = publisher.getHygieiaDeploy().getApplicationName();
-
-        EnvVars env;
+        FilePath rootDirectory = build.getWorkspace().withSuffix(directory);
+        listener.getLogger().println("Hygieia Deployment Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory);
         try {
-            env = build.getEnvironment(listener);
-        } catch (Exception e) {
-            listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
-            env = new EnvVars();
-        }
+            List<FilePath> artifactFiles = HygieiaUtils.getArtifactFiles(rootDirectory, filePattern, new ArrayList<FilePath>());
+            for (FilePath f : artifactFiles) {
+                listener.getLogger().println("Hygieia Deployment Publisher: Processing  file: " + f.getRemote());
+                DeployDataCreateRequest bac = new DeployDataCreateRequest();
+                String v = "";
+                bac.setArtifactGroup(group);
+                if ("".equals(version)) {
+                    version = HygieiaUtils.guessVersionNumber(f.getName());
+                }
+                bac.setArtifactVersion(version);
+                bac.setArtifactName(HygieiaUtils.getFileNameMinusVersion(f, version));
+                bac.setDeployStatus(build.getResult().toString());
+                bac.setDuration(build.getDuration());
+                bac.setEndTime(build.getStartTimeInMillis() + build.getDuration());
+                bac.setStartTime(build.getStartTimeInMillis());
+                bac.setExecutionId(String.valueOf(build.getNumber()));
+                bac.setHygieiaId(buildId);
+                bac.setAppName(applicationName);
+                bac.setEnvName(environmentName);
+                bac.setJobName(build.getProject().getName());
+                bac.setJobUrl(build.getProject().getAbsoluteUrl());
+                bac.setNiceName(publisher.getDescriptor().getHygieiaJenkinsName());
+                EnvVars env = null;
+                try {
+                    env = build.getEnvironment(listener);
+                } catch (IOException | InterruptedException e) {
+                    logger.warning("Error getting environment variables");
+                }
+                if (env != null) {
+                    bac.setInstanceUrl(env.get("JENKINS_URL"));
+                } else {
+                    String jobPath = "/job" + "/" + build.getProject().getName() + "/";
+                    int ind = build.getProject().getAbsoluteUrl().indexOf(jobPath);
+                    bac.setInstanceUrl(build.getProject().getAbsoluteUrl().substring(0, ind));
+                }
 
-        String path = env.expand("$WORKSPACE");
-        path = path + directory;
-        listener.getLogger().println("Hygieia Deployment Publisher - Looking for file pattern '" + filePattern + "' in directory " + path);
-        List<File> artifactFiles = HygieiaUtils.getArtifactFiles(new File(path), filePattern, new ArrayList<File>());
-
-        for (File f : artifactFiles) {
-            DeployDataCreateRequest bac = new DeployDataCreateRequest();
-            String v = "";
-            bac.setArtifactGroup(group);
-            if ("".equals(version)) {
-                version = guessVersionNumber(f.getName());
+                deploys.add(bac);
             }
-            bac.setArtifactVersion(version);
-            bac.setArtifactName(getFileNameMinusVersion(f, version));
-            bac.setDeployStatus(build.getResult().toString());
-            bac.setDuration(build.getDuration());
-            bac.setEndTime(build.getStartTimeInMillis() + build.getDuration());
-            bac.setStartTime(build.getStartTimeInMillis());
-            bac.setExecutionId(String.valueOf(build.getNumber()));
-            bac.setHygieiaId(buildId);
-            bac.setAppName(applicationName);
-            bac.setEnvName(environmentName);
-            bac.setJobName(build.getProject().getName());
-            bac.setJobUrl(build.getProject().getAbsoluteUrl());
-            bac.setNiceName(publisher.getDescriptor().getHygieiaJenkinsName());
-            try {
-                env = build.getEnvironment(listener);
-            } catch (IOException e) {
-                logger.warning("Error getting environment variables");
-            } catch (InterruptedException e) {
-                logger.warning("Error getting environment variables");
-            }
-            if (env != null) {
-                bac.setInstanceUrl(env.get("JENKINS_URL"));
-            } else {
-                String jobPath = "/job" + "/" + build.getProject().getName() + "/";
-                int ind = build.getProject().getAbsoluteUrl().indexOf(jobPath);
-                bac.setInstanceUrl(build.getProject().getAbsoluteUrl().substring(0, ind));
-            }
-
-            deploys.add(bac);
+        } catch (IOException e) {
+            listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException on " + rootDirectory);
+        } catch (InterruptedException e) {
+            listener.getLogger().println("Hygieia BuildArtifact Publisher - InterruptedException on " + rootDirectory);
         }
-    }
-
-    private static String getFileNameMinusVersion(File file, String version) {
-        String ext = FilenameUtils.getExtension(file.getName());
-        if ("".equals(version)) return file.getName();
-
-        int vIndex = file.getName().indexOf(version);
-        if (vIndex <= 0) return file.getName();
-        if ((file.getName().charAt(vIndex - 1) == '-') || (file.getName().charAt(vIndex - 1) == '_')) {
-            vIndex = vIndex - 1;
-        }
-        return file.getName().substring(0, vIndex) + "." + ext;
-    }
-
-    private String guessVersionNumber(String source) {
-        String versionNumber = "";
-        String fileName = source.substring(0, source.lastIndexOf("."));
-        if (fileName.contains(".")) {
-            String majorVersion = fileName.substring(0, fileName.indexOf("."));
-            String minorVersion = fileName.substring(fileName.indexOf("."));
-            int delimiter = majorVersion.lastIndexOf("-");
-            if (majorVersion.indexOf("_") > delimiter) delimiter = majorVersion.indexOf("_");
-            majorVersion = majorVersion.substring(delimiter + 1, fileName.indexOf("."));
-            versionNumber = majorVersion + minorVersion;
-        }
-        return versionNumber;
     }
 
 
