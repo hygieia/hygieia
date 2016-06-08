@@ -1,4 +1,4 @@
-FROM jenkins:1.642.1
+FROM jenkins:latest
 
 #based on MAINTAINER Maxfield Stewart - github: maxfields2000/dockerjenkins_tutorial
 

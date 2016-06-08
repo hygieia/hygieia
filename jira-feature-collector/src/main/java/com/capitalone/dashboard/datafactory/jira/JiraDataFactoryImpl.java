@@ -2,6 +2,7 @@ package com.capitalone.dashboard.datafactory.jira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
@@ -254,8 +255,20 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 				}
 			} catch (Exception e) {
 				issues = new ArrayList<BasicProject>();
-				LOGGER.warn("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
-						+ e.getCause());
+				if (e.getClass() == RestClientException.class) {
+					RestClientException cause = (RestClientException) e.getCause();
+					if (cause.getStatusCode().get() == 401 ) {
+						LOGGER.error("Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.");
+					} else {
+						LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
+								+ e.getCause());
+					}
+					throw e;
+
+				} else {
+					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:"
+							+ e.getCause());
+				}
 			}
 		} else {
 			issues = null;
@@ -325,8 +338,9 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 	protected Map<String, String> decodeCredentials(String jiraBasicAuthCredentialsInBase64) {
 		Map<String, String> credMap = new LinkedHashMap<String, String>();
 		if (jiraBasicAuthCredentialsInBase64 != null) {
+				//the tokenize includes a \n to ensure we trim those off the end (mac base64 adds these!)
 			StringTokenizer tokenizer = new StringTokenizer(new String(
-					Base64.decodeBase64(jiraBasicAuthCredentialsInBase64)), ":");
+					Base64.decodeBase64(jiraBasicAuthCredentialsInBase64)), ":\n");
 			for (int i = 0; tokenizer.hasMoreTokens(); i++) {
 				if (i == 0) {
 					credMap.put("username", tokenizer.nextToken());
@@ -335,7 +349,7 @@ public class JiraDataFactoryImpl implements JiraDataFactory {
 				}
 			}
 		}
-
+		
 		return credMap;
 
 	}
