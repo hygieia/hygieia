@@ -1,12 +1,19 @@
 <widget-modal id="subnetUtilization" widget-modal-close="true">
     <div  style="height:1200px;width:800px;">
+            <div ng-click="subnetUtilization.showIpUtilization()">IP Utilization</div>
+            <div ng-click="subnetUtilization.showOverSubscription()">Over Subscription</div>
+
         <div class="widget">
-            <div class="widget-heading">
+            <div ng-show="dispayView('IPUtilization')" class="widget-heading">
                 Subnet IP Utilization ({{subnetUtilization.vpc.id}})
             </div>
-            <div ng-repeat="availZone in subnetUtilization.subnets | orderBy: 'name' " class="col-xs-3">
+            <div ng-show="dispayView('OverSubscription')" class="widget-heading">
+                Subnet Over Subscription ({{subnetUtilization.vpc.id}})
+            </div>            
+            <div class="row">
+            <div ng-repeat="availZone in subnets | orderBy: 'name' " class="col-xs-3">
                 <div class="widget-heading">{{availZone.name}}</div>
-                <div ng-repeat="item in availZone.subnets" ng-init="utilization = subnetUtilization.utilizationPercent(item)">
+                <div ng-repeat="item in availZone.subnets" ng-init="subnetDetailData = subnetUtilization.subnetDetailData(item)">
                     <div style="font-size: 1.2rem; text-align: center;">{{ item.subnetId }}</div>
                     <div guage-container>
                         <div class="ct-wrapper clearfix"
@@ -18,20 +25,25 @@
                              tabindex="0">
                             <chartist
                                     class="ct-chart ct-square db-chart-primary ct-chart-Ok"
-                                    chartist-data="utilization"
+                                    chartist-data="subnetDetailData"
                                     chartist-chart-options="subnetUtilization.pieOptions"
                                     chartist-chart-type="Pie"
                                     chartist-events="utillizationEvents"/>
-                            <div class="guage-number">
+                            <div class="guage-number"  ng-show="dispayView('IPUtilization')">
                                 <span fit-text>{{subnetUtilization.percentUsed(item) | number:0 }}<small class="percent">%</small></span>
                             </div>
+                            <div class="guage-number"  ng-show="dispayView('OverSubscription')">
+                                <span fit-text>{{subnetUtilization.percentSubscribed(item) | number:0 }}<small class="percent">%</small></span>
+                            </div>                            
                         </div>
                     </div>
                     <div class="clearfix"></div>
-                    <div class="ca-value text-center">{{item.usedIPCount}} out of {{item.usedIPCount + item.availableIPCount}}</div>
+                    <div class="ca-value text-center" ng-show="dispayView('IPUtilization')">Used {{item.usedIPCount}} out of {{item.usedIPCount + item.availableIPCount}}</div>
+                    <div class="ca-value text-center" ng-show="dispayView('OverSubscription')">Subscribed {{item.subscribedIPCount}} out of {{item.usedIPCount + item.availableIPCount}}</div>
                     <div class="padding_bottom">&nbsp;</div> 
                  </div>
             </div>
-        </div>
+            </div>
+        </div>     
     </div>
 </widget-modal>
