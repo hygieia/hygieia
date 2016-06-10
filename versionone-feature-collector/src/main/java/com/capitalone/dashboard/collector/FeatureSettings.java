@@ -46,6 +46,7 @@ public class FeatureSettings {
 	private String versionOneProxyUrl;
 	private String versionOneBaseUri;
 	private String versionOneAccessToken;
+	private int maxKanbanIterationLength;
 
 	public String getCron() {
 		return cron;
@@ -198,5 +199,13 @@ public class FeatureSettings {
 
 	public void setVersionOneAccessToken(String versionOneAccessToken) {
 		this.versionOneAccessToken = versionOneAccessToken;
+	}
+
+	public int getMaxKanbanIterationLength() {
+		return maxKanbanIterationLength;
+	}
+
+	public void setMaxKanbanIterationLength(int maxKanbanIterationLength) {
+		this.maxKanbanIterationLength = maxKanbanIterationLength;
 	}
 }
