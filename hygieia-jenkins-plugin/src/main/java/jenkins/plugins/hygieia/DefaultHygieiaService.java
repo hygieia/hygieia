@@ -8,7 +8,6 @@ import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.model.BuildListener;
 import hygieia.utils.HygieiaUtils;
 import org.apache.commons.httpclient.HttpStatus;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -44,7 +43,7 @@ public class DefaultHygieiaService implements HygieiaService {
         this.useProxy = useProxy;
     }
 
-    void setHygieiaAPIUrl(String hygieiaAPIUrl) {
+    public void setHygieiaAPIUrl(String hygieiaAPIUrl) {
         this.hygieiaAPIUrl = hygieiaAPIUrl;
     }
 

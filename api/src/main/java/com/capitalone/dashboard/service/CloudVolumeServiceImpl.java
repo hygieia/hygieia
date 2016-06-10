@@ -160,9 +160,6 @@ public class CloudVolumeServiceImpl implements CloudVolumeService {
     }
 
     private CloudVolumeAggregatedResponse aggregate(Collection<CloudVolumeStorage> volumes, CloudConfig config) {
-        if (config == null) {
-            config = new CloudConfig();
-        }
         int ageAlertCount = 0;
         int ageErrorCount = 0;
         int ageGoodCount = 0;

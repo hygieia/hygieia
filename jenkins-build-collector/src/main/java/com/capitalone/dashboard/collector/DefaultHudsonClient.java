@@ -113,7 +113,7 @@ public class DefaultHudsonClient implements HudsonClient {
                         // A basic Build object. This will be fleshed out later if this is a new Build.
                         String dockerLocalHostIP = settings.getDockerLocalHostIP();
                         String buildNumber = jsonBuild.get("number").toString();
-                        if (!buildNumber.equals("0")) {
+                        if (!"0".equals(buildNumber)) {
                             Build hudsonBuild = new Build();
                             hudsonBuild.setNumber(buildNumber);
                             String buildURL = getString(jsonBuild, "url");

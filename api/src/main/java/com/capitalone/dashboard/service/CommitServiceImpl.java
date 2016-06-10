@@ -126,7 +126,7 @@ public class CommitServiceImpl implements CommitService {
         private String url;
 
         private JSONObject jsonObject;
-        JSONParser parser = new JSONParser();
+        private JSONParser parser = new JSONParser();
 
 
         public GitHubv3(String json) throws ParseException, HygieiaException {
