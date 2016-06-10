@@ -10,6 +10,8 @@ ENV SPRING_DATA_MONGODB_PORT=9999
 ENV SPRING_DATA_MONGODB_USERNAME=db
 ENV SPRING_DATA_MONGODB_PASSWORD=dbpass
 
+ENV SPRING_CONFIG_LOCATION=/hygieia/dashboard.properties
+
 
 RUN \
   mkdir /hygieia
@@ -25,4 +27,4 @@ VOLUME ["/hygieia/logs"]
 
 EXPOSE 8080
 CMD ./properties-builder.sh &&\
-  java -Djava.security.egd=file:/dev/./urandom -jar api.jar --spring.config.location=/hygieia/dashboard.properties
+  java -Djava.security.egd=file:/dev/./urandom -jar api.jar --spring.config.location="$SPRING_CONFIG_LOCATION"

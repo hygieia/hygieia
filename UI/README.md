@@ -5,8 +5,8 @@
 
 ### Requirements
 
-- NodeJS
-- npm
+- NodeJS (5.4.1)
+- npm (2.14.15)
 - gulp
 - bower
 
