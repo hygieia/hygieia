@@ -6,6 +6,7 @@ import com.capitalone.dashboard.model.CodeQualityMetricStatus;
 import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.model.SonarProject;
 import com.capitalone.dashboard.util.Supplier;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,11 +15,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -44,10 +50,14 @@ public class DefaultSonarClient implements SonarClient {
     private static final String DATE = "date";
 
     private final RestOperations rest;
+    private final HttpEntity<String> httpHeaders;
     private final SonarSettings sonarSettings;
 
     @Autowired
     public DefaultSonarClient(Supplier<RestOperations> restOperationsSupplier, SonarSettings settings) {
+        this.httpHeaders = new HttpEntity<String>(
+                this.createHeaders(settings.getUsername(), settings.getPassword())
+            );
         this.rest = restOperationsSupplier.get();
         this.sonarSettings = settings;
     }
@@ -120,7 +130,8 @@ public class DefaultSonarClient implements SonarClient {
     }
 
     private JSONArray parseAsArray(String url) throws ParseException {
-        return (JSONArray) new JSONParser().parse(rest.getForObject(url, String.class));
+        ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
+        return (JSONArray) new JSONParser().parse(response.getBody());
     }
 
     private long timestamp(JSONObject json, String key) {
@@ -167,5 +178,19 @@ public class DefaultSonarClient implements SonarClient {
             case STATUS_ALERT: return CodeQualityMetricStatus.Alert;
             default:           return CodeQualityMetricStatus.Ok;
         }
+    }
+
+    private HttpHeaders createHeaders(String username, String password){
+        HttpHeaders headers = new HttpHeaders();
+        if (username != null && !username.isEmpty() &&
+            password != null && !password.isEmpty()) {
+          String auth = username + ":" + password;
+          byte[] encodedAuth = Base64.encodeBase64(
+              auth.getBytes(Charset.forName("US-ASCII"))
+          );
+          String authHeader = "Basic " + new String(encodedAuth);
+          headers.set("Authorization", authHeader);
+        }
+        return headers;
     }
 }
