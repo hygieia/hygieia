@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import javax.xml.bind.DatatypeConverter;
@@ -39,21 +40,27 @@ public class FeatureServiceImplTest {
 	private static Feature mockV1Feature;
 	private static Feature mockJiraFeature;
 	private static Feature mockJiraFeature2;
+	private static Feature mockJiraFeature3;
 	private static Component mockComponent;
 	private static Collector mockV1Collector;
 	private static Collector mockJiraCollector;
 	private static CollectorItem mockItem;
 	private static CollectorItem mockItem2;
 	private static CollectorItem mockItem3;
+	private static CollectorItem mockItem4;
 	private static final String generalUseDate = "2015-11-01T00:00:00.000-00:00";
+	private static final String KANBAN_START_DATE = "1900-01-01T00:00:00.000-00:00";
+	private static final String KANBAN_END_DATE = "9999-12-31T59:59:59.999-99:99";
+	private static final String KANBAN_SPRINT_ID = "KANBAN";
 	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.000-00:00");
 	private static Calendar cal = Calendar.getInstance();
-	private static final String maxDateWinner = DatatypeConverter.printDateTime(Calendar
-			.getInstance(TimeZone.getTimeZone("UTC")));
+	private static final String maxDateWinner = DatatypeConverter
+			.printDateTime(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
 	private static String maxDateLoser = new String();
 	private static String currentSprintEndDate = new String();
 	private static final ObjectId jiraCollectorId = new ObjectId();
 	private static final ObjectId jiraCollectorId2 = new ObjectId();
+	private static final ObjectId jiraCollectorId3 = new ObjectId();
 	private static final ObjectId v1CollectorId = new ObjectId();
 	private static final ObjectId mockComponentId = new ObjectId();
 
@@ -128,8 +135,8 @@ public class FeatureServiceImplTest {
 		mockV1Feature.setsProjectID("Scope:231870");
 		mockV1Feature.setsProjectIsDeleted("False");
 		mockV1Feature.setsProjectName("Test Scope 1");
-		mockV1Feature.setsProjectPath("Top -> Middle -> Bottome -> "
-				+ mockV1Feature.getsProjectName());
+		mockV1Feature
+				.setsProjectPath("Top -> Middle -> Bottome -> " + mockV1Feature.getsProjectName());
 		mockV1Feature.setsProjectState("Active");
 		mockV1Feature.setsSprintAssetState("Inactive");
 		mockV1Feature.setsSprintBeginDate(generalUseDate);
@@ -243,6 +250,54 @@ public class FeatureServiceImplTest {
 		mockJiraFeature2.setsTeamIsDeleted("False");
 		mockJiraFeature2.setsTeamName("Saiya-jin Warriors");
 
+		// Mock feature 2
+		mockJiraFeature3 = new Feature();
+		mockJiraFeature3.setCollectorId(jiraCollectorId3);
+		mockJiraFeature3.setIsDeleted("False");
+		mockJiraFeature3.setChangeDate(maxDateLoser);
+		mockJiraFeature3.setsEpicAssetState("Active");
+		mockJiraFeature3.setsEpicBeginDate("");
+		mockJiraFeature3.setsEpicChangeDate(maxDateLoser);
+		mockJiraFeature3.setsEpicEndDate("");
+		mockJiraFeature3.setsEpicID("32112345");
+		mockJiraFeature3.setsEpicIsDeleted("");
+		mockJiraFeature3.setsEpicName("Test Epic 1");
+		mockJiraFeature3.setsEpicNumber("12938715");
+		mockJiraFeature3.setsEpicType("");
+		mockJiraFeature3.setsEstimate("40");
+		mockJiraFeature3.setsId("0812347");
+		mockJiraFeature3.setsName("Test Story 4");
+		mockJiraFeature3.setsNumber("12345417");
+		mockJiraFeature3.setsOwnersChangeDate(sOwnerDates);
+		mockJiraFeature3.setsOwnersFullName(sOwnerNames);
+		mockJiraFeature3.setsOwnersID(sOwnerIds);
+		mockJiraFeature3.setsOwnersIsDeleted(sOwnerBools);
+		mockJiraFeature3.setsOwnersShortName(sOwnerNames);
+		mockJiraFeature3.setsOwnersState(sOwnerStates);
+		mockJiraFeature3.setsOwnersUsername(sOwnerNames);
+		mockJiraFeature3.setsProjectBeginDate(maxDateLoser);
+		mockJiraFeature3.setsProjectChangeDate(maxDateLoser);
+		mockJiraFeature3.setsProjectEndDate(maxDateLoser);
+		mockJiraFeature3.setsProjectID("583483");
+		mockJiraFeature3.setsProjectIsDeleted("False");
+		mockJiraFeature3.setsProjectName("Not Cell!");
+		mockJiraFeature3.setsProjectPath("");
+		mockJiraFeature3.setsProjectState("Active");
+		mockJiraFeature3.setsSprintAssetState("Active");
+		mockJiraFeature3.setsSprintBeginDate(KANBAN_START_DATE);
+		mockJiraFeature3.setsSprintChangeDate(maxDateWinner);
+		mockJiraFeature3.setsSprintEndDate(KANBAN_END_DATE);
+		mockJiraFeature3.setsSprintID(KANBAN_SPRINT_ID);
+		mockJiraFeature3.setsSprintIsDeleted("False");
+		mockJiraFeature3.setsSprintName(KANBAN_SPRINT_ID);
+		mockJiraFeature3.setsState("Active");
+		mockJiraFeature3.setsStatus("In Progress");
+		mockJiraFeature3.setsTeamAssetState("Active");
+		mockJiraFeature3.setsTeamChangeDate(maxDateWinner);
+		mockJiraFeature3.setsTeamID("08374321");
+		mockJiraFeature3.setsTeamIsDeleted("False");
+		mockJiraFeature3.setsTeamName("Saiya-jin Warriors");
+
 		// Creating Collector and Component relationship artifacts
 		mockV1Collector = new Collector();
 		mockV1Collector.setCollectorType(CollectorType.Feature);
@@ -279,9 +334,16 @@ public class FeatureServiceImplTest {
 		mockItem3.setEnabled(true);
 		mockItem3.setCollector(mockJiraCollector);
 
+		mockItem4 = new CollectorItem();
+		mockItem4.setId(new ObjectId());
+		mockItem4.setCollectorId(jiraCollectorId);
+		mockItem4.setDescription(mockJiraFeature3.getsTeamName());
+		mockItem4.setEnabled(true);
+		mockItem4.setCollector(mockJiraCollector);
+
 		mockComponent = new Component();
 		mockComponent.getCollectorItems().put(CollectorType.ScopeOwner,
-				Arrays.asList(mockItem2, mockItem3));
+				Arrays.asList(mockItem2, mockItem3, mockItem4));
 		mockComponent.setId(mockComponentId);
 		mockComponent.setName("Feature Widget Test");
 		mockComponent.setOwner("kfk884");
@@ -293,6 +355,7 @@ public class FeatureServiceImplTest {
 		featureRepository.save(mockV1Feature);
 		featureRepository.save(mockJiraFeature);
 		featureRepository.save(mockJiraFeature2);
+		featureRepository.save(mockJiraFeature3);
 	}
 
 	@After
@@ -300,31 +363,46 @@ public class FeatureServiceImplTest {
 		mockV1Feature = null;
 		mockJiraFeature = null;
 		mockJiraFeature2 = null;
+		mockJiraFeature3 = null;
 		mockV1Collector = null;
 		mockItem = null;
+		mockItem2 = null;
+		mockItem3 = null;
+		mockItem4 = null;
 		mockComponent = null;
 	}
 
-	/*
-	 * This test is valuable and should be completed - however, it is not
-	 * currently working as expected and has thus been ignored for now
-	 */
 	@Test
 	public void testGetFeatureEstimates_ManySameSuperFeatures_OneSuperFeatureRs() {
 		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
 		when(collectorRepository.findOne(mockItem2.getCollectorId())).thenReturn(mockJiraCollector);
-		when(
-				featureRepository.getInProgressFeaturesEstimatesByTeamId((String) notNull(),
-						(String) notNull())).thenReturn(
-				Arrays.asList(mockJiraFeature, mockJiraFeature2));
+		when(featureRepository.getInProgressFeaturesEstimatesByTeamId((String) notNull(),
+				(String) notNull())).thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
 
 		DataResponse<List<Feature>> result = featureService.getFeatureEstimates(mockComponentId,
-				mockJiraFeature.getsTeamID());
+				mockJiraFeature.getsTeamID(), Optional.empty());
 		assertThat(
 				"There should only be one result even with multiple same super features over several sub features",
 				result.getResult(), hasSize(1));
 		assertThat(
 				"The total super feature estimate should be the sum total of any similar super features present in the response",
 				Integer.valueOf(result.getResult().get(0).getsEstimate()), equalTo(80));
+	}
+
+	@Test
+	public void testGetCurrentSprintDetail_ValidKanbanTeam_ShowKanban() {
+		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
+		when(collectorRepository.findOne(mockItem3.getCollectorId())).thenReturn(mockJiraCollector);
+		when(featureRepository.getCurrentSprintDetail((String) notNull(), (String) notNull()))
+				.thenReturn(Arrays.asList(mockJiraFeature3));
+
+		DataResponse<List<Feature>> result = featureService.getCurrentSprintDetail(mockComponentId,
+				mockJiraFeature3.getsTeamID(), Optional.empty());
+		assertThat(
+				"There should only be one result even with multiple same super features over several sub features",
+				result.getResult(), hasSize(1));
+		assertThat(
+				"The total super feature estimate should be the sum total of any similar super features present in the response",
+				result.getResult().get(0).getsSprintName(), equalTo(KANBAN_SPRINT_ID));
 	}
 }
