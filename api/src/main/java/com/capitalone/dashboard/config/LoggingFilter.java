@@ -257,10 +257,10 @@ public class LoggingFilter implements Filter {
 
     public class BufferedResponseWrapper implements HttpServletResponse {
 
-        HttpServletResponse original;
-        TeeServletOutputStream teeStream;
-        ByteArrayOutputStream bos;
-        PrintWriter teeWriter;
+        private HttpServletResponse original;
+        private TeeServletOutputStream teeStream;
+        private ByteArrayOutputStream bos;
+        private PrintWriter teeWriter;
 
         public BufferedResponseWrapper(HttpServletResponse response) {
             original = response;

@@ -44,7 +44,7 @@ public class HygieiaListener extends RunListener<AbstractBuild> {
     }
 
     @SuppressWarnings("unchecked")
-    FineGrainedNotifier getNotifier(AbstractProject project, TaskListener listener) {
+    public FineGrainedNotifier getNotifier(AbstractProject project, TaskListener listener) {
         Map<Descriptor<Publisher>, Publisher> map = project.getPublishersList().toMap();
         for (Publisher publisher : map.values()) {
             if (publisher instanceof HygieiaPublisher) {

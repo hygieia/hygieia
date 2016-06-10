@@ -15,7 +15,7 @@ public class HygieiaPublisherStub extends HygieiaPublisher {
         }
 
         @Override
-        HygieiaService getHygieiaService(final String host, final String authToken, final String jenkinsName, final boolean useProxy) {
+        public HygieiaService getHygieiaService(final String host, final String authToken, final String jenkinsName, final boolean useProxy) {
             return hygieiaService;
         }
 

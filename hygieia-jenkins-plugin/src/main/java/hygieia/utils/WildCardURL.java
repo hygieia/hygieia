@@ -64,7 +64,7 @@ public final class WildCardURL implements java.io.Serializable {
      * @return The userInfo part of this <code>URL</code>
      */
     public String getUserInfo() {
-        return user + (password.equals("*") ? "" : ":"+password);
+        return user + ("*".equals(password) ? "" : ":"+password);
     }
 
     /**
@@ -93,7 +93,7 @@ public final class WildCardURL implements java.io.Serializable {
     public String getAuthority() {
         String userInfo = getUserInfo();
         StringBuffer auth = new StringBuffer();
-        if(!userInfo.equals("*")) {
+        if(!"*".equals(userInfo)) {
             auth.append(userInfo).append("@");
         }
         auth.append('@').append(host).append(':').append(port);
@@ -219,6 +219,6 @@ public final class WildCardURL implements java.io.Serializable {
                 (port == -1?"":":"+port)+
                 getPath()+
                 query+
-                (ref.equals("*")?"":"#"+ref);
+                ("*".equals(ref)?"":"#"+ref);
     }
 }

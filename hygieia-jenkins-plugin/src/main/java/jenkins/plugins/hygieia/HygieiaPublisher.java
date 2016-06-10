@@ -279,7 +279,7 @@ public class HygieiaPublisher extends Notifier {
         private String testApplicationNameSelected;
         private String testEnvSelected;
 
-        Map<String, Set<String>> appEnv = new HashMap<String, Set<String>>();
+        private Map<String, Set<String>> appEnv = new HashMap<String, Set<String>>();
 
         public DescriptorImpl() {
             load();
@@ -505,7 +505,7 @@ public class HygieiaPublisher extends Notifier {
             return super.configure(sr, formData);
         }
 
-        HygieiaService getHygieiaService(final String hygieiaAPIUrl, final String hygieiaToken, final String hygieiaJenkinsName, final boolean useProxy) {
+        public HygieiaService getHygieiaService(final String hygieiaAPIUrl, final String hygieiaToken, final String hygieiaJenkinsName, final boolean useProxy) {
             return new DefaultHygieiaService(hygieiaAPIUrl, hygieiaToken, hygieiaJenkinsName, useProxy);
         }
 
