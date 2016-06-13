@@ -1,12 +1,11 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.Environment;
-import com.capitalone.dashboard.model.EnvironmentComponent;
-import com.capitalone.dashboard.model.UDeployApplication;
-import com.capitalone.dashboard.model.UDeployEnvResCompData;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.util.Supplier;
+import com.mongodb.util.JSON;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -48,9 +47,9 @@ public class DefaultUDeployClient implements UDeployClient {
     @Override
     public List<UDeployApplication> getApplications(String instanceUrl) {
         List<UDeployApplication> applications = new ArrayList<>();
-
+//        String apiPath = "cli/application"
         for (Object item : paresAsArray(makeRestCall(instanceUrl,
-                "deploy/application"))) {
+                "application"))) {
             JSONObject jsonObject = (JSONObject) item;
             UDeployApplication application = new UDeployApplication();
             application.setInstanceUrl(instanceUrl);
@@ -64,8 +63,7 @@ public class DefaultUDeployClient implements UDeployClient {
     @Override
     public List<Environment> getEnvironments(UDeployApplication application) {
         List<Environment> environments = new ArrayList<>();
-        String url = "deploy/application/" + application.getApplicationId()
-                + "/environments/false";
+        String url = "/application/environmentsInApplication/" + "?application=" + application.getApplicationName();
 
         for (Object item : paresAsArray(makeRestCall(
                 application.getInstanceUrl(), url))) {
@@ -79,14 +77,12 @@ public class DefaultUDeployClient implements UDeployClient {
 
     @SuppressWarnings("PMD.AvoidCatchingNPE")
     @Override
-    public List<EnvironmentComponent> getEnvironmentComponents(
-            UDeployApplication application, Environment environment) {
+    public List<EnvironmentComponent> getEnvironmentComponents(UDeployApplication application, Environment environment) {
         List<EnvironmentComponent> components = new ArrayList<>();
         String url = "deploy/environment/" + environment.getId()
                 + "/latestDesiredInventory";
         try {
-            for (Object item : paresAsArray(makeRestCall(
-                    application.getInstanceUrl(), url))) {
+            for (Object item : paresAsArray(makeRestCallWithAlternativeApi(application.getInstanceUrl(), url))) {
                 JSONObject jsonObject = (JSONObject) item;
 
                 JSONObject versionObject = (JSONObject) jsonObject
@@ -120,93 +116,63 @@ public class DefaultUDeployClient implements UDeployClient {
     // Called by DefaultEnvironmentStatusUpdater
 //    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, this method needs refactoring.
     @Override
-    public List<UDeployEnvResCompData> getEnvironmentResourceStatusData(
-            UDeployApplication application, Environment environment) {
-
+    public List<UDeployEnvResCompData> getEnvironmentResourceStatusData(UDeployApplication application, Environment environment) {
         List<UDeployEnvResCompData> environmentStatuses = new ArrayList<>();
-        String urlNonCompliantResources = "deploy/environment/"
-                + environment.getId() + "/noncompliantResources";
-        String urlAllResources = "deploy/environment/" + environment.getId()
-                + "/resources";
+        String componentInformationPath = "/deploy/environment/" + environment.getId() + "/latestDesiredInventory";
+        ResponseEntity<String> componentResponse = makeRestCallWithAlternativeApi( application.getInstanceUrl(), componentInformationPath );
+        JSONArray componentsArray = paresAsArray(componentResponse);
 
-        ResponseEntity<String> nonCompliantResourceResponse = makeRestCall(
-                application.getInstanceUrl(), urlNonCompliantResources);
-        JSONArray nonCompliantResourceJSON = paresAsArray(nonCompliantResourceResponse);
-        ResponseEntity<String> allResourceResponse = makeRestCall(
-                application.getInstanceUrl(), urlAllResources);
-        JSONArray allResourceJSON = paresAsArray(allResourceResponse);
-/**
- * New logic - Dec16/2015
- * json has generic parent->children relationship that can be N deep where N can be anything.
- * Logic should be to get each parentobject, get to the the lowest leaf children and process each child.
- * How to get to the lowest leaf? Leaf child has '"hasChildren": false'
- *
- * For resource json, the structure is this: top->agent (agent) -> domain (subresource) -> component
- * For nonCompliance resources, the path is: top -> children -> version -> component
- * 1. Write a method to return the lowest leaf children as jsonArray and then process.
- * 2. From resources json, if version is empty, it is not a component to deploy. if version if non-empty, those are the actual compnent
- * 3. From nonCompliance resource, it will have entries that were failed in depolyment.
- */
-
-        // Failed to deploy list:
-        Set<String> failedComponents = getFailedComponents(nonCompliantResourceJSON);
-        Map<String, List<String>> versionFileMap = new HashMap<>();
-        for (Object item : allResourceJSON) {
-            JSONObject jsonObject = (JSONObject) item;
-            if (jsonObject == null) continue;
-            JSONArray childArray = getLowestLevelChildren(jsonObject, new JSONArray());
-            if (childArray.isEmpty()) continue;
-            for (Object child : childArray) {
-                JSONObject childObject = (JSONObject) child;
-                JSONArray jsonVersions = (JSONArray) childObject.get("versions");
-                if (jsonVersions == null || jsonVersions.size() == 0) continue;
-                JSONObject versionObject = (JSONObject) jsonVersions.get(0);
-                // get version fileTree and build data.
-                List<String> physicalFileNames = versionFileMap.get(str(versionObject, "id"));
-                if (CollectionUtils.isEmpty(physicalFileNames)) {
-                    physicalFileNames = getPhysicalFileList(application, versionObject);
-                    versionFileMap.put(str(versionObject, "id"), physicalFileNames);
-                }
-                for (String fileName : physicalFileNames) {
-                    environmentStatuses.add(buildUdeployEnvResCompData(environment, application, versionObject, fileName, childObject, failedComponents));
-                }
-            }
+        for( Object component : componentsArray) {
+            JSONObject componentObject = (JSONObject)component;
+            JSONObject componentNameObject = (JSONObject) componentObject.get("component");
+            JSONObject componentVersionObject = (JSONObject) componentObject.get("version");
+            JSONObject compliancyObject = (JSONObject) componentObject.get("compliancy");
+            UDeployEnvResCompData data = new UDeployEnvResCompData();
+            data.setEnvironmentName(environment.getName());
+            data.setCollectorItemId(application.getId());
+            data.setComponentVersion((String) componentVersionObject.get("name"));
+            data.setAsOfDate((Long) componentVersionObject.get("created"));
+            data.setDeployed( (long)compliancyObject.get("missingCount") == 0);
+            data.setComponentName((String) componentNameObject.get("name"));
+            data.setOnline(true);
+            environmentStatuses.add(data);
         }
+
         return environmentStatuses;
     }
 
-    private List<String> getPhysicalFileList(UDeployApplication application, JSONObject versionObject) {
-        List<String> list = new ArrayList<>();
-        String fileTreeUrl = "deploy/version/" + str(versionObject, "id") + "/fileTree";
-        ResponseEntity<String> fileTreeResponse = makeRestCall(
-                application.getInstanceUrl(), fileTreeUrl);
-        JSONArray fileTreeJson = paresAsArray(fileTreeResponse);
-        for (Object f : fileTreeJson) {
-            JSONObject fileJson = (JSONObject) f;
-            list.add(cleanFileName(str(fileJson, "name"), str(versionObject, "name")));
-        }
-        return list;
-    }
+//    private List<String> getPhysicalFileList(UDeployApplication application, JSONObject versionObject) {
+//        List<String> list = new ArrayList<>();
+//        String fileTreeUrl = "deploy/version/" + str(versionObject, "id") + "/fileTree";
+//        ResponseEntity<String> fileTreeResponse = makeRestCall(
+//                application.getInstanceUrl(), fileTreeUrl);
+//        JSONArray fileTreeJson = paresAsArray(fileTreeResponse);
+//        for (Object f : fileTreeJson) {
+//            JSONObject fileJson = (JSONObject) f;
+//            list.add(cleanFileName(str(fileJson, "name"), str(versionObject, "name")));
+//        }
+//        return list;
+//    }
 
-    private Set<String> getFailedComponents(JSONArray nonCompliantResourceJSON) {
-        HashSet<String> failedComponents = new HashSet<>();
-        for (Object nonCompItem : nonCompliantResourceJSON) {
-            JSONArray nonCompChildrenArray = (JSONArray) ((JSONObject) nonCompItem)
-                    .get("children");
-            for (Object nonCompChildItem : nonCompChildrenArray) {
-                JSONObject nonCompChildObject = (JSONObject) nonCompChildItem;
-                JSONObject nonCompVersionObject = (JSONObject) nonCompChildObject
-                        .get("version");
-                if (nonCompVersionObject == null) continue;
-                JSONObject nonCompComponentObject =
-                        (JSONObject) nonCompVersionObject.get("component");
-                if (nonCompComponentObject != null) {
-                    failedComponents.add(str(nonCompComponentObject, "name"));
-                }
-            }
-        }
-        return failedComponents;
-    }
+//    private Set<String> getFailedComponents(JSONArray nonCompliantResourceJSON) {
+//        HashSet<String> failedComponents = new HashSet<>();
+//        for (Object nonCompItem : nonCompliantResourceJSON) {
+//            JSONArray nonCompChildrenArray = (JSONArray) ((JSONObject) nonCompItem)
+//                    .get("children");
+//            for (Object nonCompChildItem : nonCompChildrenArray) {
+//                JSONObject nonCompChildObject = (JSONObject) nonCompChildItem;
+//                JSONObject nonCompVersionObject = (JSONObject) nonCompChildObject
+//                        .get("version");
+//                if (nonCompVersionObject == null) continue;
+//                JSONObject nonCompComponentObject =
+//                        (JSONObject) nonCompVersionObject.get("component");
+//                if (nonCompComponentObject != null) {
+//                    failedComponents.add(str(nonCompComponentObject, "name"));
+//                }
+//            }
+//        }
+//        return failedComponents;
+//    }
 
     private String cleanFileName(String fileName, String version) {
         if (fileName.contains("-" + version))
@@ -256,7 +222,7 @@ public class DefaultUDeployClient implements UDeployClient {
 
     private ResponseEntity<String> makeRestCall(String instanceUrl,
                                                 String endpoint) {
-        String url = normalizeUrl(instanceUrl, "/rest/" + endpoint);
+        String url = normalizeUrl(instanceUrl, "/cli/" + endpoint);
         ResponseEntity<String> response = null;
         try {
             response = restOperations.exchange(url, HttpMethod.GET,
@@ -268,7 +234,17 @@ public class DefaultUDeployClient implements UDeployClient {
         }
         return response;
     }
-
+    private ResponseEntity<String> makeRestCallWithAlternativeApi(String instanceUrl, String endpoint) {
+        String url = normalizeUrl(instanceUrl, "/rest/" + endpoint);
+        ResponseEntity<String> response = null;
+        try {
+            response = restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(createHeaders()), String.class);
+        } catch (RestClientException re) {
+            LOGGER.error("Error with REST url: " + url);
+            LOGGER.error(re.getMessage());
+        }
+        return response;
+    }
     private String normalizeUrl(String instanceUrl, String remainder) {
         return StringUtils.removeEnd(instanceUrl, "/") + remainder;
     }
