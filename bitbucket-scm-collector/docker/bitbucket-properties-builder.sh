@@ -48,8 +48,11 @@ git.cron=${BITBUCKET_CRON:-0 0/5 * * * *}
 git.host=${BITBUCKET_HOST:-mybitbucketrepo.com/}
 git.api=${BITBUCKET_API:-/rest/api/1.0/}
 
-#Maximum number of days to go back in time when fetching commits
+#Maximum number of days to go back in time when fetching commits. Only applicable to Bitbucket Cloud.
 git.commitThresholdDays=${BITBUCKET_COMMIT_THRESHOLD_DAYS:-15}
+
+#Page size for data calls. Only applicable to Bitbucket Server.
+git.pageSize=${BITBUCKET_PAGE_SIZE,-50}
 
 #Bitbucket product
 # Set to "cloud" to use Bitbucket Cloud (formerly known as Bitbucket)

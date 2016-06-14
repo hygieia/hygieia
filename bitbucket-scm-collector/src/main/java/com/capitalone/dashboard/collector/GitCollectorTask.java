@@ -18,6 +18,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -126,17 +127,28 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         for (GitRepo repo : enabledRepos(collector)) {
             boolean firstRun = false;
             if (repo.getLastUpdateTime() == null) firstRun = true;
-            repo.setLastUpdateTime(new Date());
-            gitRepoRepository.save(repo);
             LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
-            for (Commit commit : gitClient.getCommits(repo, firstRun)) {
-                LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
+            
+            List<Commit> commits = gitClient.getCommits(repo, firstRun);
+            for (Commit commit : commits) {
+            	if (LOG.isDebugEnabled()) {
+            		LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
+            	}
+            	
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
                     commitRepository.save(commit);
                     commitCount++;
                 }
             }
+            
+            repo.setLastUpdateTime(Calendar.getInstance().getTime());
+            if (!commits.isEmpty()) {
+            	// It appears that the first commit in the list is the HEAD of the branch
+            	repo.setLastUpdateCommit(commits.get(0).getScmRevisionNumber());
+            }
+            
+            gitRepoRepository.save(repo);
 
             repoCount++;
         }

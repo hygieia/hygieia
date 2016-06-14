@@ -13,7 +13,8 @@ public class GitRepo extends CollectorItem {
     private static final String USER_ID = "userID";
     private static final String PASSWORD = "password";
     private static final String LAST_UPDATE_TIME = "lastUpdate";
-
+    private static final String LAST_UPDATE_COMMIT = "lastUpdateCommit"; // Bitbucket Server api uses last update commit instead of time
+    
     public String getUserId() {
         return (String) getOptions().get(USER_ID);
     }
@@ -55,24 +56,50 @@ public class GitRepo extends CollectorItem {
     public void setLastUpdateTime(Date date) {
         getOptions().put(LAST_UPDATE_TIME, date);
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-        	return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-        	return false;
-        }
-
-        GitRepo gitRepo = (GitRepo) o;
-
-        return getRepoUrl().equals(gitRepo.getRepoUrl()) & getBranch().equals(gitRepo.getBranch());
+    
+    public String getLastUpdateCommit() {
+    	return (String) getOptions().get(LAST_UPDATE_COMMIT);
+    }
+    
+    public void setLastUpdateCommit(String sha) {
+    	getOptions().put(LAST_UPDATE_COMMIT, sha);
     }
 
-    @Override
-    public int hashCode() {
-        return getRepoUrl().hashCode();
-    }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GitRepo other = (GitRepo) obj;
+		if (getBranch() == null) {
+			if (other.getBranch() != null)
+				return false;
+		} else if (!getBranch().equals(other.getBranch()))
+			return false;
+		if (getRepoUrl() == null) {
+			if (other.getRepoUrl() != null)
+				return false;
+		} else if (!getRepoUrl().equals(other.getRepoUrl()))
+			return false;
+		return true;
+	}
+
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((getBranch() == null) ? 0 : getBranch().hashCode());
+		result = prime * result + ((getRepoUrl() == null) ? 0 : getRepoUrl().hashCode());
+		return result;
+	}
 
 }
