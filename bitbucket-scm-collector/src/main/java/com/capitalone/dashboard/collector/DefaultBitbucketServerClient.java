@@ -8,6 +8,7 @@ import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.utils.URIBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -22,15 +23,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Implementation of a git client to connect to an Atlassian Bitbucket <i>Server</i> product. 
@@ -52,8 +49,6 @@ import java.util.TimeZone;
 public class DefaultBitbucketServerClient implements GitClient {
 	private static final Log LOG = LogFactory.getLog(DefaultBitbucketServerClient.class);
 
-	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
-
 	private final GitSettings settings;
 
 	private final RestOperations restOperations;
@@ -66,76 +61,31 @@ public class DefaultBitbucketServerClient implements GitClient {
 	}
 
 	@Override
-	@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"}) // agreed, fixme
 	public List<Commit> getCommits(GitRepo repo, boolean firstRun) {
-
 		List<Commit> commits = new ArrayList<>();
-
-		// format URL
-		String repoUrl = (String) repo.getOptions().get("url");
-		if (repoUrl.endsWith(".git")) {
-			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
-		}
-		URL url = null;
-		String hostName = "";
-		String protocol = "";
+		URI queryUriPage = null;
+		
 		try {
-			url = new URL(repoUrl);
-			hostName = url.getHost();
-			protocol = url.getProtocol();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			LOG.error(e.getMessage());
-		}
-		String hostUrl = protocol + "://" + hostName + "/";
-		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
-		String apiUrl = "";
-		if (hostName.startsWith(settings.getHost())) {
-			apiUrl = protocol + "://" + settings.getHost() + repoName;
-		} else {
-			apiUrl = protocol + "://" + hostName + settings.getApi() + repoName;
-			LOG.debug("API URL IS:"+apiUrl);
-		}
-		Date dt;
-		if (firstRun) {
-			int firstRunDaysHistory = settings.getFirstRunHistoryDays();
-			if (firstRunDaysHistory > 0) {
-				dt = getDate(new Date(), -firstRunDaysHistory, 0);
-			} else {
-				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
+	
+			URI queryUri = buildUri((String) repo.getOptions().get("url"), repo.getBranch(), repo.getLastUpdateCommit());
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Rest Url: " + queryUri);
 			}
-		} else {
-			dt = getDate(repo.getLastUpdateTime(), 0, -10);
-		}
-		Calendar calendar = new GregorianCalendar();
-		TimeZone timeZone = calendar.getTimeZone();
-		Calendar cal = Calendar.getInstance(timeZone);
-		cal.setTime(dt);
-		String thisMoment = String.format("%tFT%<tRZ", cal);
-
-		String queryUrl = apiUrl.concat("/commits?sha=" + repo.getBranch()
-				+ "&since=" + thisMoment);
-		/*
-		 * Calendar cal = Calendar.getInstance(); cal.setTime(dateInstance);
-		 * cal.add(Calendar.DATE, -30); Date dateBefore30Days = cal.getTime();
-		 */
-
-		// decrypt password
-		String decryptedPassword = "";
-		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
-			try {
-				decryptedPassword = Encryption.decryptString(
-						repo.getPassword(), settings.getKey());
-			} catch (EncryptionException e) {
-				LOG.error(e.getMessage());
+			
+			// decrypt password
+			String decryptedPassword = "";
+			if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
+				try {
+					decryptedPassword = Encryption.decryptString(repo.getPassword(), settings.getKey());
+				} catch (EncryptionException e) {
+					LOG.error(e.getMessage());
+				}
 			}
-		}
-		boolean lastPage = false;
-		int pageNumber = 1;
-		String queryUrlPage = queryUrl;
-		while (!lastPage) {
-			try {
-				ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+			
+			boolean lastPage = false;
+			queryUriPage = queryUri;
+			while (!lastPage) {
+				ResponseEntity<String> response = makeRestCall(queryUriPage, repo.getUserId(), decryptedPassword);
 				JSONObject jsonParentObject = paresAsObject(response);
 				JSONArray jsonArray = (JSONArray) jsonParentObject.get("values");
 
@@ -146,6 +96,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 					String message = str(jsonObject, "message");
 					String author = str(authorObject, "name");
 					long timestamp = Long.valueOf(str(jsonObject,"authorTimestamp"));
+					
 					Commit commit = new Commit();
 					commit.setTimestamp(System.currentTimeMillis());
 					commit.setScmUrl(repo.getRepoUrl());
@@ -159,54 +110,117 @@ public class DefaultBitbucketServerClient implements GitClient {
 				if (jsonArray == null || jsonArray.isEmpty()) {
 					lastPage = true;
 				} else {
-					lastPage = isThisLastPage(response);
-					pageNumber++;
-					queryUrlPage = queryUrl + "&page=" + pageNumber;
+					String isLastPage = str(jsonParentObject, "isLastPage");
+					lastPage = isLastPage == null || Boolean.valueOf(isLastPage);
+					
+					String nextPageStart = str(jsonParentObject, "nextPageStart");
+					if (nextPageStart != null && !"null".equals(nextPageStart)) {
+						queryUriPage = new URIBuilder(queryUri).addParameter("start", nextPageStart).build();
+					}
 				}
-
-			} catch (RestClientException re) {
-				LOG.error(re.getMessage() + ":" + queryUrl);
-				lastPage = true;
-
 			}
+			
+			repo.setLastUpdated(System.currentTimeMillis());
+		} catch (URISyntaxException e) {
+			LOG.error("Invalid uri: " + e.getMessage());
+		} catch (RestClientException re) {
+			LOG.error("Failed to obtain commits from " + queryUriPage, re);
 		}
+		
 		return commits;
 	}
-
-	private Date getDate(Date dateInstance, int offsetDays, int offsetMinutes) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(dateInstance);
-		cal.add(Calendar.DATE, offsetDays);
-		cal.add(Calendar.MINUTE, offsetMinutes);
-		return cal.getTime();
-	}
-
-	private boolean isThisLastPage(ResponseEntity<String> response) {
-		HttpHeaders header = response.getHeaders();
-		List<String> link = header.get("Link");
-		if (link == null || link.isEmpty()) {
-			return true;
-		} else {
-			for (String l : link) {
-				if (l.contains("rel=\"next\"")) {
-					return false;
-				}
-
-			}
+	
+	// package for junit
+	@SuppressWarnings({"PMD.NPathComplexity"})
+	/*package*/ URI buildUri(final String rawUrl, final String branch, final String lastKnownCommit) throws URISyntaxException {
+		URIBuilder builder = new URIBuilder();
+		
+		/*
+		 * Examples:
+		 * 
+		 * ssh://git@comany.com/project/repository.git
+		 * https://username@company.com/scm/project/repository.git
+		 * ssh://git@company.com/~username/repository.git
+		 * https://username@company.com/scm/~username/repository.git
+		 * 
+		 */
+		
+		String repoUrlRaw = rawUrl;
+		String repoUrlProcessed = repoUrlRaw;
+		
+		if (repoUrlProcessed.endsWith(".git")) {
+			repoUrlProcessed = repoUrlProcessed.substring(0, repoUrlProcessed.lastIndexOf(".git"));
 		}
-		return true;
+		
+		URI uri = URI.create(repoUrlProcessed);
+		
+		String host = uri.getHost();
+		String scheme = "ssh".equalsIgnoreCase(uri.getScheme())? "http" : uri.getScheme();
+		int port = uri.getPort();
+		String path = uri.getPath();
+		if ((path.startsWith("scm/") || path.startsWith("/scm")) && path.length() > 4) {
+			path = path.substring(4);
+		}
+		if (path.length() > 0 && path.charAt(0) == '/') {
+			path = path.substring(1, path.length());
+		}
+		
+		String[] splitPath = path.split("/");
+		String projectKey = "";
+		String repositorySlug = "";
+		
+		if (splitPath.length > 1) {
+			projectKey = splitPath[0];
+			repositorySlug = path.substring(path.indexOf('/') + 1, path.length());
+		} else {
+			// Shouldn't get to this case
+			projectKey = "";
+			repositorySlug = path;
+		}
+		
+		String apiPath = settings.getApi() != null? settings.getApi() : "";
+		
+		if (apiPath.endsWith("/")) {
+			apiPath = settings.getApi().substring(0, settings.getApi().length() - 1);
+		}
+		
+		builder.setScheme(scheme);
+		builder.setHost(host);
+		if (port != -1) {
+			builder.setPort(port);
+		}
+		
+		builder.setPath(apiPath + "/projects/" + projectKey + "/repos/" + repositorySlug + "/commits");
+		if (branch == null || branch.length() == 0) {
+			builder.addParameter("until", "master");
+		} else {
+			builder.addParameter("until", branch);
+		}
+		
+		if (lastKnownCommit != null && lastKnownCommit.length() > 0) {
+			builder.addParameter("since", lastKnownCommit);
+		}
+		
+		if (settings.getPageSize() > 0) {
+			builder.addParameter("limit", String.valueOf(settings.getPageSize()));
+		}
+		
+		return builder.build();
 	}
 
-	private ResponseEntity<String> makeRestCall(String url, String userId,
+	private ResponseEntity<String> makeRestCall(URI uri, String userId,
 			String password) {
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("GET " + uri);
+		}
 		// Basic Auth only.
 		if (!"".equals(userId) && !"".equals(password)) {
-			return restOperations.exchange(url, HttpMethod.GET,
+			return restOperations.exchange(uri, HttpMethod.GET,
 					new HttpEntity<>(createHeaders(userId, password)),
 					String.class);
 
 		} else {
-			return restOperations.exchange(url, HttpMethod.GET, null,
+			return restOperations.exchange(uri, HttpMethod.GET, null,
 					String.class);
 		}
 

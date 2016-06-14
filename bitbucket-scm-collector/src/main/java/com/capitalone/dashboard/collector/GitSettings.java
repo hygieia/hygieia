@@ -14,7 +14,7 @@ public class GitSettings {
     private String key;
     private int firstRunHistoryDays;
     private String api;
-
+    private int pageSize;
 
 	public String getHost() {
 		return host;
@@ -54,5 +54,13 @@ public class GitSettings {
 
 	public void setApi(String api) {
 		this.api = api;
+	}
+	
+	public int getPageSize() {
+		return pageSize;
+	}
+	
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
 	}
 }
