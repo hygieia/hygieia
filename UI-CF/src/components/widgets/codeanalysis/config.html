@@ -1,0 +1,69 @@
+<widget-modal widget-modal-title="Configure Code Analysis Widget" class="ca-config">
+    <form name="configForm" role="form"
+          ng-submit="caWidget.submit(caWidget.caCollectorItem, caWidget.saCollectorItem, caWidget.testConfigs)"
+          novalidate="novalidate">
+
+        <div class="box">
+
+            <form-group input="caCollectorItem" class="text-center">
+
+                <div class="text-center modal-label">Static Code Analysis:</div>
+
+                <select name="caCollectorItem"
+                        class="form-control"
+                        ng-model="caWidget.caCollectorItem"
+                        ng-options="(item.displayName + ' - ' + item.description) for item in caWidget.caJobs | orderBy:['collector.name','description'] track by item.id"
+                        ng-disabled="caWidget.caJobs.length === 0">
+                    <option value="" disabled>{{caWidget.caToolsDropdownPlaceholder}}</option>
+                </select>
+            </form-group>
+        </div>
+
+
+        <div class="form-group text-center">
+            <div class="text-center modal-label">Security Scan:</div>
+            <select name="saCollectorItem"
+                    class="form-control"
+                    ng-model="caWidget.saCollectorItem"
+                    ng-options="(item.collector.name + ' - ' + item.options.projectName + '-' + item.options.projectversion) for item in caWidget.saJobs | orderBy:['collector.name','description'] track by item.id"
+                    ng-disabled="caWidget.saJobs.length === 0">
+                <option value="">{{caWidget.saToolsDropdownPlaceholder}}</option>
+            </select>
+        </div>
+
+
+        <form-group class="text-center">
+            <div class="text-center modal-label">Functional Tests:</div>
+
+            <div class="form-group text-center" ng-repeat="configItem in caWidget.testConfigs">
+                <div class="col-sm-3">
+                    <input
+                            type="text"
+                            name="testJobName"
+                            class="form-control-inline text-center"
+                            ng-model="configItem.testJobName"
+                            minlength="1"
+                            maxlength="8"
+                            required>
+                </div>
+                <div class="col-sm-8">
+                    <select class="form-control" name="collectorItemList"
+                            ng-model="configItem.testCollectorItem"
+                            ng-options="(item.niceName + '-' + item.description) for item in configItem.testJob | orderBy:['collector.name','description'] track by item.id"
+                            ng-disabled="caWidget.testJobs.length === 0">
+                        <option value="">{{caWidget.testToolsDropdownPlaceholder}}</option>
+                    </select>
+                </div>
+                <dash-trash class="fa-lg" ng-click="caWidget.deleteTestConfig(configItem)"></dash-trash>
+            </div>
+            <div class="form-group text-center"
+                 ng-show="caWidget.testConfigs.length==0 || caWidget.testConfigs[caWidget.testConfigs.length-1].testCollectorItem != null">
+                <span class="fa fa-plus-circle fa-2x clickable" ng-click="caWidget.addTestConfig()"></span>
+            </div>
+            <div class="form group text-center">
+                <label></label>
+                <button type="submit" class="btn btn-primary btn-wide">Save</button>
+            </div>
+        </form-group>
+    </form>
+</widget-modal>

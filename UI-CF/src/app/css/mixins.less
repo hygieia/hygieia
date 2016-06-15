@@ -1,0 +1,163 @@
+@import '../../../bower_components/bootstrap/less/mixins.less';
+@import 'variables.less';
+
+.blink-keyframe() {
+    @-webkit-keyframes blink {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @-moz-keyframes blink {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @keyframes blink {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+}
+.border-radius (@radius: 5px) {
+    .border-top-radius(@radius);
+    .border-bottom-radius(@radius);
+}
+
+.box-shadow (@string) {
+    -webkit-box-shadow: @string;
+    -moz-box-shadow: @string;
+    box-shadow: @string;
+}
+
+.register-font(@name; @file; @version: 1; @font-weight: normal; @font-style: normal;) {
+    @font-face {
+        font-family: '@{name}';
+        src: url('../fonts/@{file}.eot?v=@{version}');
+        src: url('../fonts/@{file}.eot?#iefix&v=@{version}') format('embedded-opentype'),
+        url('../fonts/@{file}.woff?v=@{version}') format('woff'),
+        url('../fonts/@{file}.ttf?v=@{version}') format('truetype'),
+        url('../fonts/@{file}.svg?v=@{version}#opensansregular') format('svg');
+        font-weight: @font-weight;
+        font-style: @font-style;
+    }
+}
+
+.animate-appear (@speed: 200ms; @max-height:50px) {
+    .ng-enter,
+    .ng-leave
+    {
+        transition: max-height @speed linear, opacity @speed linear @speed;
+        position: relative;
+        display: block;
+        overflow: hidden;
+        text-overflow: clip;
+        white-space:nowrap;
+    }
+
+    .ng-leave.ng-leave-active,
+    .ng-enter {
+        opacity: .5;
+        max-height: 0;
+    }
+
+    .ng-enter.ng-enter-active,
+    .ng-leave {
+        opacity: 1;
+        max-height: @max-height;
+    }
+}
+
+.animate-fade (@speed: .3s) {
+    .ng-enter,
+    .ng-leave.ng-leave-active {
+        opacity:0;
+        transition:opacity @speed linear;
+    }
+
+    .ng-leave,
+    .ng-enter.ng-enter-active {
+        opacity:1;
+        transition:opacity @speed linear;
+    }
+}
+
+.transform(@transform) {
+    -ms-transform: @transform;
+    -webkit-transform: @transform;
+    -moz-transform: @transform;
+    transform: @transform;
+}
+
+.center-y() {
+    position: absolute;
+    top: 50%;
+    .transform(translateY(-50%));
+}
+
+.center-x() {
+    position: absolute;
+    left: 50%;
+    .transform(translateX(-50%));
+}
+
+.text(@font-size; @line-height:@font-size) {
+    font-size: @font-size * 1rem;
+    line-height: @line-height * 1rem
+}
+
+// TEXT
+// ========================================
+.text-standard {
+    .text(@dash-text-standard-size, @dash-text-standard-line-height);
+    font-weight: 600;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.text-standard-lg {
+    .text(1.7, 2.25);
+}
+
+.text-standard-date {
+    .text(1.2, 2);
+    color: #aaa;
+}
+
+.text-lg {
+    .text(1.7, 2.25);
+}
+
+.text-1x {
+    .text(1, 2);
+}
+
+.text-2x {
+    .text(2, 3.5);
+}
+
+.text-2x-bold {
+    .text(2.5, 3);
+    font-weight: bold;
+    vertical-align: middle;
+}

@@ -1,0 +1,88 @@
+@import (reference) 'variables';
+@import (reference) 'mixins';
+
+.town-city {
+    margin: 5px 0;
+    min-width: 120px;
+
+    .ng-enter,
+    .ng-leave.ng-leave-active {
+        transition-delay: 0s !important;
+    }
+
+    .ng-leave,
+    .ng-enter.ng-enter-active {
+        transition-delay: .6s !important;
+    }
+
+    &.commit-blocks-legend {
+        .village,
+        .town,
+        .city,
+        .state {
+            background-color: @dash-widget-section-highlight;
+        }
+
+        .commit-blocks-legend-block {
+            display: inline-block;
+            line-height: 46px;
+            height: 46px;
+            margin-right: 2rem;
+
+            .village, .town, .city {
+                position: relative;
+                top: 50%;
+                .transform(translateY(-50%));
+            }
+        }
+    }
+
+    .village,
+    .town,
+    .city,
+    .state {
+        float: left;
+        display: inline-block;
+        margin-right: 2px;
+        margin-bottom: 2px;
+    }
+
+    .commit-fail {
+        background-color: @state-danger-text;
+
+        @line: rgba(122, 122, 122, .15);
+        background: repeating-linear-gradient(
+            135deg,
+            @line,
+            @line 2px,
+            @state-danger-text 2px,
+            @state-danger-text 4px
+        );
+    }
+
+    .commit-pass {
+        background-color: @state-success-text;
+    }
+
+    .village {
+        width: 10px;
+        height: 10px;
+    }
+
+    .town {
+        width: 22px;
+        height: 10px;
+    }
+
+    .city {
+        width: 22px;
+        height: 22px;
+        border-radius: 4px;
+    }
+
+    .state {
+        width: 22px;
+        height: 46px;
+        border-radius: 4px;
+    }
+}

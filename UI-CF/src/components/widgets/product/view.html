@@ -1,0 +1,199 @@
+<div id="product-dashboard">
+
+    <div class="product-dash-header clearfix">
+        <div class="product-dash-header-text">
+            Averages and trends are calculated over a 90 Day period.
+        </div>
+        <div class="product-dash-header-legend clearfix">
+            <span class="commit-blocks-legend town-city">
+                <div class="commit-blocks-legend-block">
+                    <div class="state"></div> 1000 commits
+                </div>
+                <div class="commit-blocks-legend-block">
+                    <div class="city"></div> 100 commits
+                </div>
+                <div class="commit-blocks-legend-block">
+                    <div class="town"></div> 10 commits
+                </div>
+                <div class="commit-blocks-legend-block">
+                    <div class="village"></div> 1 commit
+                </div>
+            </span>
+        </div>
+    </div>
+
+    <div class="product-table">
+        <div class="product-table-tr">
+            <div class="product-table-th"></div>
+            <div class="product-table-th" ng-repeat="stage in ctrl.stages">{{stage}}</div>
+        </div>
+        <div class="product-table-tbody" as-sortable="ctrl.sortableOptions" ng-model="ctrl.configuredTeams">
+            <div class="product-table-tr"
+                 as-sortable-item
+                 ng-repeat="team in ctrl.configuredTeams">
+
+                <div class="product-table-td team-name-cell" as-sortable-item-handle>
+                    <span class="fa fa-cog" ng-click="ctrl.editTeam(team.collectorItemId)"></span>
+
+                    <a title="{{item.customName || item.name}}"
+                       class="team-name"
+                       ng-click="ctrl.openDashboard(team)">
+                        {{team.customName || team.name}}
+                    </a>
+
+                    <div class="team-quality">
+                        <div class="team-quality-desc">
+                            90-day Pipeline Health
+                        </div>
+
+                        <div class="team-quality-trends">
+                            <div class="trend-wrap-animation trend-wrap-7">
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 0)"
+                                        number="team.summary.unitTests.number"
+                                        percent="true"
+                                        trend-up="team.summary.unitTests.trendUp"
+                                        success-state="team.summary.unitTests.successState"
+                                        caption="Unit tests passed"></product-team-summary-field>
+                                </div>
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 1)"
+                                        number="team.summary.codeCoverage.number"
+                                        percent="true"
+                                        trend-up="team.summary.codeCoverage.trendUp"
+                                        success-state="team.summary.codeCoverage.successState"
+                                        caption="Code coverage"></product-team-summary-field>
+                                </div>
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 2)"
+                                        number="team.summary.codeIssues.number"
+                                        percent="false"
+                                        trend-up="team.summary.codeIssues.trendUp"
+                                        success-state="team.summary.codeIssues.successState"
+                                        caption="Code issues"></product-team-summary-field>
+                                </div>
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 3)"
+                                        number="team.summary.securityIssues.number"
+                                        percent="false"
+                                        trend-up="team.summary.securityIssues.trendUp"
+                                        success-state="team.summary.securityIssues.successState"
+                                        caption="Security issues"></product-team-summary-field>
+                                </div>
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 4)"
+                                        number="team.summary.buildSuccess.number"
+                                        percent="true"
+                                        trend-up="team.summary.buildSuccess.trendUp"
+                                        success-state="team.summary.buildSuccess.successState"
+                                        caption="Build success"></product-team-summary-field>
+                                </div>
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 5)"
+                                        number="team.summary.buildFix.number"
+                                        measurement="{{team.summary.buildFix.metric}}"
+                                        trend-up="team.summary.buildFix.trendUp"
+                                        success-state="team.summary.buildFix.successState"
+                                        caption="Build fix rate"></product-team-summary-field>
+                                </div>
+                                <div class="trend">
+                                    <product-team-summary-field
+                                        ng-click="ctrl.viewQualityDetails(team, stage, 6)"
+                                        number="team.summary.functionalTestsPassed.number"
+                                        percent="true"
+                                        trend-up="team.summary.functionalTestsPassed.trendUp"
+                                        success-state="team.summary.functionalTestsPassed.successState"
+                                        caption="Func tests passed"></product-team-summary-field>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-table-td team-data-cell"
+                     as-sortable-item-handle
+                     ng-class="{'team-stage-needs-configured': team.stages[stage].needsConfiguration}"
+                     ng-repeat="stage in ctrl.stages | filter: '!PROD'"
+                     >
+                    {{teamStageData = team.stages[stage].summary;""}}
+                    <div ng-class="{'clickable':teamStageData.hasCommits}" ng-click="ctrl.viewTeamStageDetails(team, stage)">
+                        <div class="team-data-cell-header" ng-if="teamStageData.average">
+                            <div class="clearfix team-data-cell-average-days">
+                                <!-- only leading zeros get small size -->
+                                <span class="team-time-average-lg" ng-if="teamStageData.average.days">{{teamStageData.average.days}}</span>
+                                <span class="team-time-average-desc" ng-if="teamStageData.average.days > 0">D</span>
+                                <span class="team-time-average-lg" ng-if="teamStageData.average.hours > 0 || teamStageData.average.days > 0">{{teamStageData.average.hours}}</span>
+                                <span class="team-time-average-desc" ng-if="teamStageData.average.hours > 0 || teamStageData.average.days > 0">H</span>
+                                <span class="team-time-average-lg">{{teamStageData.average.minutes}}</span>
+                                <span class="team-time-average-desc">M</span>
+                            </div>
+                            <div class="clearfix team-time-average">
+                                <span class="pull-left">Average</span>
+                                <span class="pull-right">
+                                    <span>+/-</span>
+                                    <span class="team-time-stddev-num">{{teamStageData.deviation.number}}</span>
+                                    <span class="team-time-stddev-desc">{{teamStageData.deviation.descriptor}}</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="team-data-cell-body">
+                            <div class="team-data-cell-last-updated" title="{{teamStageData.lastUpdated.longDisplay}}" ng-if="teamStageData.lastUpdated">
+                                Updated: <span class="team-last-updated-num">{{teamStageData.lastUpdated.shortDisplay}}</span>
+                            </div>
+
+                            <commit-blocks commit-fail="teamStageData.commitsOutsideTimeframe" commit-pass="teamStageData.commitsInsideTimeframe"></commit-blocks>
+
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <div class="team-data-cell-last-build" ng-if="stage === 'Build' && team.latestBuild">
+                            Latest build #: <span class="fa" ng-class="{'fa-refresh fa-spin product-text-active':team.latestBuild.inProgress, 'text-success fa-thumbs-up': !team.latestBuild.inProgress && team.latestBuild.success, 'text-danger fa-thumbs-down': !team.latestBuild.inProgress && !team.latestBuild.success}"></span> <span class="team-data-cell-last-build-num">{{team.latestBuild.number}}</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="product-table-td team-prod-cell"
+                     ng-class="{'team-stage-needs-configured': team.stages['Prod'].needsConfiguration}"
+                     as-sortable-item-handle>
+                    <div ng-if="team.prod">
+                        <div class="clearfix team-prod-average-header">
+                            <span class="pull-left team-prod-arrow fa" ng-class="{'fa-long-arrow-up text-danger':team.prod.trendUp == true, 'fa-long-arrow-down text-success': team.prod.trendUp == false}" ng-if="team.prod.trendUp != undefined"></span>
+                            <span class="pull-left product-text-active">{{team.prod.averageDays}}</span>
+                            <span class="pull-left team-prod-average-days"><ng-pluralize count="team.prod.averageDays" when="{1:' DAY',other:' DAYS'}"></ng-pluralize></span>
+                        </div>
+
+                        <div class="team-prod-average-desc">
+                            average from commit to production
+                        </div>
+
+                        <div class="team-prod-last-90">
+                            <span class="team-prod-last-90-num">{{team.prod.totalCommits}}</span>
+                            <ng-pluralize count="team.prod.totalCommits" when="{1:' commit ',other:' commits '}"></ng-pluralize> in the last <span class="widget-font-bold">90 days</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div
+                class="product-table-tr new-team-row"
+                ng-class="{'no-teams': !ctrl.configuredTeams.length}"
+                ng-click="ctrl.addTeam()">
+                <div class="product-table-td">
+                    <span class="fa fa-plus fa-thin-border"></span>
+                    <div>Add a team</div>
+                </div>
+                <div class="product-table-td" ng-repeat="stages in ctrl.stages"></div>
+            </div>
+        </div>
+    </div>
+
+</div>

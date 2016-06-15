@@ -1,0 +1,31 @@
+<div class="chatops-view">
+    <div class="widget">
+        <div class="widget-body">
+            <div class="animate-show" ng-hide="chatOpsView.showMessages">
+                <i class="fa fa-refresh fa-spin fa-5x"></i>
+            </div>
+
+            <div class="animate-show" ng-show="chatOpsView.showMessages"
+                 ng-repeat="messFrom in chatOpsView.messageArray track by $index">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="media">
+                           <!-- <a class="pull-left" href="#">
+                                <img class="media-object img-circle" src="http://lorempixel.com/30/30/people/1/" alt="">
+                            </a>-->
+
+                            <div class="media-body">
+                                <span class="chat-user">{{messFrom.from.name}}</span>
+                                <span class="chat-timestamp small pull-right" ng-hide="chatOpsView.apiErrorOccured">{{messFrom.date | fromNow}} </span>
+                            </div>
+                               <div class="chat-message" ng-bind-html="chatOpsView.replaceURL(messFrom.message) | unsafe"></div>
+
+                            <!--    <p>{{chatOpsView.getImage(chatOpsView.getImageUrl(messFrom.from.id))}}</p> -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

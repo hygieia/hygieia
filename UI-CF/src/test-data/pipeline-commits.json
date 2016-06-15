@@ -1,0 +1,319 @@
+
+[
+    {
+        "collectorItemId": "56a67a88689a6c2d50757022",
+        "unmappedStages": ["Perf", "Int"],
+        "stages": {
+            "Dev": [
+                {
+                    "scmRevisionNumber": "a2b5d0fc46a59160e544fa9eb88b0a5124c005c3",
+                    "scmCommitLog": "dev 2",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454618253000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "Commit": 1454618253000,
+                        "Dev": 1454618340239,
+                        "Build": 1454618316211
+                    }
+                },
+                {
+                    "scmRevisionNumber": "2ad58b64060c502e0a516a3feacb49968d9a3abf",
+                    "scmCommitLog": "to dev 5",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454618296000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "Commit": 1454618296000,
+                        "Dev": 1454618340239,
+                        "Build": 1454618316211
+                    }
+                },
+                {
+                    "scmRevisionNumber": "314d6f7c89b66d0e90155fd05a1e183cd72027cd",
+                    "scmCommitLog": "to dev 4",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454618282000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "Commit": 1454618282000,
+                        "Dev": 1454618340239,
+                        "Build": 1454618316211
+                    }
+                },
+                {
+                    "scmRevisionNumber": "0afe0f31917b00fd3a76ab2349ffaaef68829109",
+                    "scmCommitLog": "dev 1",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454618245000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "Commit": 1454618245000,
+                        "Dev": 1454618340239,
+                        "Build": 1454618316211
+                    }
+                },
+                {
+                    "scmRevisionNumber": "a6d304f81cdc44d62d83c4c89c16ca13f0161fc6",
+                    "scmCommitLog": "to dev 3",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454618265000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "Commit": 1454618265000,
+                        "Dev": 1454618340239,
+                        "Build": 1454618316211
+                    }
+                }
+            ],
+            "Prod": [
+                {
+                    "scmRevisionNumber": "3208d11d32105c46bc6dd1b02e125843c61d4409",
+                    "scmCommitLog": "change for jason",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454527217000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454528633059,
+                        "Prod": 1454608887995,
+                        "Commit": 1454527217000,
+                        "Dev": 1454528541507,
+                        "Build": 1454527568774
+                    }
+                },
+                {
+                    "scmRevisionNumber": "8645dd086b9f76a15ad40e7387ecaaac09051208",
+                    "scmCommitLog": "too messy",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454527627000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454528633059,
+                        "Prod": 1454608887995,
+                        "Commit": 1454527627000,
+                        "Dev": 1454528541507,
+                        "Build": 1454527968502
+                    }
+                },
+                {
+                    "scmRevisionNumber": "632ecdb009c2acf18856a0ce2aa7f34e32e2e5f7",
+                    "scmCommitLog": "Update Application.java",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454527514000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454528633059,
+                        "Prod": 1454608887995,
+                        "Commit": 1454527514000,
+                        "Dev": 1454528541507,
+                        "Build": 1454527568774
+                    }
+                },
+                {
+                    "scmRevisionNumber": "8cab66f397c24a596f61dd8b44c19073dc44f39d",
+                    "scmCommitLog": "wednesday starting point",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454522580000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454524576319,
+                        "Prod": 1454608887995,
+                        "Commit": 1454522580000,
+                        "Dev": 1454524300555
+                    }
+                },
+                {
+                    "scmRevisionNumber": "53f683dbc8f1e6f35893b45b0e977cb8a2ae8d7e",
+                    "scmCommitLog": "breaking code.",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454527841000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454528633059,
+                        "Prod": 1454608887995,
+                        "Commit": 1454527841000,
+                        "Dev": 1454528541507,
+                        "Build": 1454527968502
+                    }
+                },
+                {
+                    "scmRevisionNumber": "b31a0700b1ccb600f3c87d5420ce69b933728f91",
+                    "scmCommitLog": "another for jason",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454527496000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454528633059,
+                        "Prod": 1454608887995,
+                        "Commit": 1454527496000,
+                        "Dev": 1454528541507,
+                        "Build": 1454527568774
+                    }
+                },
+                {
+                    "scmRevisionNumber": "92a68e3c2c21ab2c819faf2204534cbc2a88898a",
+                    "scmCommitLog": "test thursday",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454608750000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454610711681,
+                        "Prod": 1454610786423,
+                        "Commit": 1454608750000,
+                        "Dev": 1454616461620,
+                        "Build": 1454610488157
+                    }
+                },
+                {
+                    "scmRevisionNumber": "671b1667aae52202e723a81d4747ccf5e29e9ded",
+                    "scmCommitLog": "change for build.",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454524081000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454524576319,
+                        "Prod": 1454608887995,
+                        "Commit": 1454524081000,
+                        "Dev": 1454524300555,
+                        "Build": 1454524138986
+                    }
+                },
+                {
+                    "scmRevisionNumber": "ab9b5323041d4bc5bd9c33d12cfba59bfe51ce8a",
+                    "scmCommitLog": "Update readme.md",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454610418000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454610711681,
+                        "Prod": 1454610786423,
+                        "Commit": 1454610418000,
+                        "Dev": 1454616461620,
+                        "Build": 1454610488157
+                    }
+                },
+                {
+                    "scmRevisionNumber": "e94951a08e77a6792ceb189a40086ebb08eda1a2",
+                    "scmCommitLog": "first wed commit",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454520014000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454524576319,
+                        "Prod": 1454608887995,
+                        "Dev": 1454524300555
+                    }
+                },
+                {
+                    "scmRevisionNumber": "c06eb6e2cd521e298fe7e3c76d00695be5ed5b5e",
+                    "scmCommitLog": "showcase for jason",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454528615000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454610711681,
+                        "Prod": 1454608887995,
+                        "Commit": 1454528615000,
+                        "Dev": 1454616461620,
+                        "Build": 1454529713539
+                    }
+                },
+                {
+                    "scmRevisionNumber": "9bf144061ecaa60b63d7cc21231fdcf05e07bcf5",
+                    "scmCommitLog": "fixed the break",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454527895000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454528633059,
+                        "Prod": 1454608887995,
+                        "Commit": 1454527895000,
+                        "Dev": 1454528541507,
+                        "Build": 1454527968502
+                    }
+                }
+            ],
+            "QA": [
+                {
+                    "scmRevisionNumber": "33b1bc0ca3cb9b4ffb43b00f4060f98add7fad18",
+                    "scmCommitLog": "qa1",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454616304000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454618138315,
+                        "Commit": 1454616304000,
+                        "Dev": 1454616461620,
+                        "Build": 1454616350434
+                    }
+                },
+                {
+                    "scmRevisionNumber": "5c2693f5dc411c4c3ed7018ee74e946e0e30a3bd",
+                    "scmCommitLog": "qa3",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454616325000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454618138315,
+                        "Commit": 1454616325000,
+                        "Dev": 1454616461620,
+                        "Build": 1454616350434
+                    }
+                },
+                {
+                    "scmRevisionNumber": "f53f80ef16267348c3938a7a6856c9042ca89df6",
+                    "scmCommitLog": "qa2",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454616316000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "QA": 1454618138315,
+                        "Commit": 1454616316000,
+                        "Dev": 1454616461620,
+                        "Build": 1454616350434
+                    }
+                }
+            ],
+            "Commit": [
+                {
+                    "scmUrl": "https://github.com/johnkangcurd/test-file-creator",
+                    "scmBranch": "master",
+                    "scmRevisionNumber": "09c1e9927e35a8d39e8f24f35880a3cb0498317f",
+                    "scmCommitLog": "commit1",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454618501000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "Commit": 1454618501000
+                    }
+                }
+            ],
+            "Build": [
+                {
+                    "scmRevisionNumber": "36417c0133c87770b5c4c5256b02655a98ce6b09",
+                    "scmCommitLog": "build 2",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454618363000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "Commit": 1454618363000,
+                        "Build": 1454618435530
+                    }
+                },
+                {
+                    "scmRevisionNumber": "e35f2e022c584f48e8ae38af3a61a611a3a6da84",
+                    "scmCommitLog": "build 1",
+                    "scmAuthor": "johnkangcurd",
+                    "scmCommitTimestamp": 1454618353000,
+                    "numberOfChanges": 1,
+                    "processedTimestamps": {
+                        "Commit": 1454618353000,
+                        "Build": 1454618435530
+                    }
+                }
+            ],
+            "Int": [],
+            "Perf": []
+        }
+    }
+]

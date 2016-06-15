@@ -1,0 +1,99 @@
+@import (reference) '../../../app/css/variables.less';
+@import (reference) '../../../app/css/mixins.less';
+
+.deploy-config hr {
+    margin: 30px 0;
+}
+
+#dashboard {
+    .deploy-view {
+        .table {
+            margin-bottom: 0;
+        }
+
+        td {
+            padding: 0 .5rem 0 0;
+            vertical-align: bottom;
+            white-space: nowrap;
+        }
+
+        .environment-name {
+            .text-lg;
+            max-width: 8rem;
+        }
+
+        .deploy-server-count {
+            min-width: 6rem;
+            max-width: 10rem;
+        }
+
+        .server-count {
+            .text-lg;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .servers-up {
+            color: @dash-status-pass;
+        }
+
+        .servers-down {
+            color: @dash-status-fail;
+        }
+    }
+
+    .widget.alert {
+        .servers-up {
+            color: @dash-status-alert-pass;
+        }
+
+        .servers-down {
+            color: @dash-status-alert-fail;
+        }
+    }
+}
+
+.deploy-detail {
+    .environment-name {
+        .text-2x-bold;
+    }
+    .last-updated {
+        padding-top: .5em;
+    }
+    .view-in-tool {
+        padding-top: .5em;
+        a {
+            display: inline-block;
+            width: 100%;
+            text-align: right;
+
+            &:hover {
+                text-decoration: underline;
+                color: #000;
+            }
+        }
+    }
+
+    .server-count {
+        color: #777;
+        .text-2x-bold;
+
+        .fa-arrow-up {
+            padding-right: .25em;
+        }
+    }
+
+    .servers-up {
+        color: @dash-status-pass;
+        .fa {
+            color: @dash-status-pass;
+        }
+    }
+
+    .servers-down {
+        color: @dash-status-fail;
+        .fa {
+            color: @dash-status-fail;
+        }
+    }
+}

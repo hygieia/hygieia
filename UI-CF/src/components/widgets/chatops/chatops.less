@@ -1,0 +1,50 @@
+@import (reference) '../../../app/css/variables.less';
+@import (reference) '../../../app/css/mixins.less';
+
+
+.chatops-view {
+
+  .animate-show {
+    line-height: 20px;
+    opacity: 1;
+    padding: 10px;
+    border: 1px solid black;
+    background: transparent;
+  }
+
+  .animate-show.ng-hide-add, .animate-show.ng-hide-remove {
+    transition: all linear 0.5s;
+  }
+
+  .animate-show.ng-hide {
+    line-height: 0;
+    opacity: 0;
+    padding: 0 10px;
+  }
+
+  .check-element {
+    padding: 10px;
+    border: 1px solid black;
+    background: white;
+  }
+  .chat-user {
+    color: whitesmoke;
+    font-size: 75%;
+  }
+  .chat-timestamp {
+    color: #f8fcf8;
+  }
+  .chat-message{
+    color: cyan;
+    font-size: 80%;
+  }
+  .chat-link{
+    color: gold;
+    a:link    { color: #c00 }  /* unvisited links */
+    a:visited { color: #0c0 }  /* visited links   */
+    a:hover   { color: #00c }  /* user hovers     */
+    a:active  { color: #ccc }  /* active links    */
+  }
+
+}
+

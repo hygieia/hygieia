@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "date": "2015-12-28T14:03:17.659849-05:00",
+      "from": {
+        "id": 2390054,
+        "links": {
+          "self": "https://api.hipchat.com/v2/user/2390054"
+        },
+        "mention_name": "Amitmawkin",
+        "name": "Amit mawkin",
+        "version": "00000000"
+      },
+      "id": "9841a8cb-a5b7-4b19-8500-02f216038469",
+      "mentions": [],
+      "message": "hello hygieia",
+      "type": "message"
+    },
+    {
+      "date": "2015-12-28T14:05:15.132070-05:00",
+      "from": {
+        "id": 2390054,
+        "links": {
+          "self": "https://api.hipchat.com/v2/user/2390054"
+        },
+        "mention_name": "Amitmawkin",
+        "name": "Amit mawkin",
+        "version": "00000000"
+      },
+      "id": "ca651719-d372-46ef-bdc0-5d04ec47b317",
+      "mentions": [],
+      "message": "testing for hygieia",
+      "type": "message"
+    }
+  ],
+  "links": {
+    "self": "https://api.hipchat.com/v2/room/testroom/history/latest"
+  },
+  "maxResults": 5,
+  "startIndex": 0
+}

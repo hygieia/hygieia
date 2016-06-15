@@ -1,0 +1,135 @@
+@import (reference) '../../../../../bower_components/bootstrap/less/variables';
+@import (reference) '../../../../../bower_components/bootstrap/less/mixins/gradients';
+@import (reference) '../../../../app/css/variables';
+@import (reference) '../../../../app/css/mixins';
+@import (reference) '../product-mixins';
+
+#quality-details {
+    .quality-cell-style(@dash-text, @dash-text);
+
+    .tab-content {
+        min-height: 350px;
+    }
+
+    .nav-tabs > li {
+        a, a:hover, a:focus {
+            border-radius: 0;
+        }
+
+        &.active a {
+            border-top-color: @modal-content-bg;
+
+            #gradient > .vertical(@start-color: @modal-content-bg; @end-color: @nav-tabs-active-link-hover-bg; @start-percent: 0; @end-percent: 50%);
+        }
+    }
+
+    // x-axis label
+    .ct-label.ct-horizontal {
+        min-width: 5rem;
+        text-anchor: middle;
+        margin-left: -1.25rem;
+    }
+
+    @quality-series-a: lighten(@btn-primary-bg, 75%);
+    @quality-series-b: lighten(@btn-primary-bg, 50%);
+    @quality-series-c: lighten(@btn-primary-bg, 25%);
+    @quality-series-d: @btn-primary-bg;
+
+    // workaround for bar label positioning
+    .ct-chart-bar .ct-label.ct-horizontal.ct-end {
+        justify-content: flex-start;
+    }
+
+    .quality-details-series-chart {
+        .ct-bar {
+            stroke-width: 7px;
+        }
+
+        .ct-series.ct-series-a {
+            .ct-bar, .ct-line, .ct-point {
+                stroke: @quality-series-a;
+            }
+            .ct-area {
+                fill: @quality-series-a;
+            }
+        }
+
+        .ct-series.ct-series-b {
+            .ct-bar, .ct-line, .ct-point {
+                stroke: @quality-series-b;
+            }
+
+            .ct-area {
+                fill: @quality-series-b;
+            }
+        }
+
+        .ct-series.ct-series-c {
+            .ct-bar, .ct-line, .ct-point {
+                stroke: @quality-series-c;
+            }
+
+            .ct-area {
+                fill: @quality-series-c;
+            }
+        }
+
+        .ct-series.ct-series-d {
+            .ct-bar, .ct-line, .ct-point {
+                stroke: @quality-series-d;
+            }
+
+            .ct-area {
+                fill: @quality-series-d;
+            }
+        }
+    }
+
+    .code-quality-series-legend {
+        background-color: @modal-content-bg;
+
+        border-top: 1px solid @modal-content-border-color;
+        padding: .5rem 1rem;
+
+        .legend-block {
+            display: inline-block;
+            margin-right: 2rem;
+
+            .legend-square {
+                display: inline-block;
+                width: 2rem;
+                height: 2rem;
+                margin-right: 1rem;
+                border: 2px solid @dash-dashboard-text-hover;
+                top: .5rem;
+                position: relative;
+            }
+
+            .legend-text {
+                .text(1.5, 3);
+            }
+
+            &.legend-block-a .legend-square {
+                background: @quality-series-a;
+            }
+
+            &.legend-block-b .legend-square {
+                background: @quality-series-b;
+            }
+
+            &.legend-block-c .legend-square {
+                background: @quality-series-c;
+            }
+
+            &.legend-block-d .legend-square {
+                background: @quality-series-d;
+            }
+        }
+    }
+
+    .fixed-build-chart {
+        .ct-point {
+            stroke-width: 10px;
+        }
+    }
+}

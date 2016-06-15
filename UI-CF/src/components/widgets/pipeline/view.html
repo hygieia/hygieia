@@ -1,0 +1,40 @@
+<div class="pipeline-view">
+    <header class="clearfix">
+        <div class="col-xs-push-3 col-xs-9">
+            <div class="row">
+                <span class="pipeline-environment-header col-xs-{{pipelineView.colGridSize}}" ng-repeat="key in pipelineView.environmentKeys" ng-class="{'down':pipelineView.isDown(key)}">
+                    <span>
+                        {{::key.toUpperCase()}}
+                    </span>
+                </span>
+            </div>
+        </div>
+    </header>
+    <section>
+        <div class="pipeline-row clearfix" ng-repeat="unit in pipelineView.units">
+            <div class="col-xs-3">
+                <div class="row">
+                    <div class="pipeline-unit-name dash-overflow">
+                        {{unit.name}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-xs-{{pipelineView.colGridSize}}" ng-repeat="key in pipelineView.environmentKeys">
+                        <div class="pipeline-data-cell">
+                            <span dash-status="false" ng-if="unit.environments[key].somethingDown"></span>
+
+                            <div class="version">
+                                {{::unit.environments[key].version}}
+                            </div>
+                            <div class="text-standard-date">
+                                {{::unit.environments[key].lastUpdate | fromNow}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

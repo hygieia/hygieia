@@ -1,0 +1,40 @@
+@import (reference) '../../../app/css/variables.less';
+@import (reference) '../../../app/css/mixins.less';
+.quality-cell-style(@mainColor; @secondaryColor) {
+    .quality-cell-wrapper {
+        cursor: pointer;
+        display: inline-block;
+        text-align: left;
+    }
+
+    .quality-num {
+        .text(2.5);
+        color: @mainColor;
+
+        .fa {
+            margin-right: -.15em;
+        }
+
+        sup, sub {
+            font-size: .6em;
+            margin-left: -.3em;
+            color: @secondaryColor;
+        }
+
+        sup {
+            top: -.5em;
+        }
+
+        sub {
+            bottom: -0.05em;
+            text-transform: uppercase;
+        }
+    }
+
+    .quality-text {
+        .text(1);
+        color: @mainColor;
+        margin-top: .4em;
+        white-space: nowrap;
+    }
+}

@@ -1,0 +1,22 @@
+{
+  "result": [{
+    "id": "574dbe968b0c9a1cf3ab2b1d",
+    "sEstimate": "32",
+    "sEpicName": "Plugin Kit",
+    "sEpicNumber": "EI-5967",
+    "sEpicID": "159709"
+  }, {
+    "id": "574dbe948b0c9a1cf3ab2b18",
+    "sEstimate": "166",
+    "sEpicName": "EPIC 1",
+    "sEpicNumber": "BRAVE-3",
+    "sEpicID": "43890"
+  }, {
+    "id": "574dbe958b0c9a1cf3ab2b1a",
+    "sEstimate": "167",
+    "sEpicName": "E5",
+    "sEpicNumber": "BRAVE-8",
+    "sEpicID": "43909"
+  }],
+  "lastUpdated": 1464717445568
+}

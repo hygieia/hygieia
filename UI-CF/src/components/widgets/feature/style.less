@@ -1,0 +1,65 @@
+@import (reference) '../../../app/css/variables.less';
+@import (reference) '../../../app/css/mixins.less';
+/* Add custom styles here. Any properties involving colors
+   should considering using values from the variables.less file.
+   All dash variables are prefixed with @dash.
+
+   Widget styles should only consume variables from dash and never
+   set a dash or bootstrap variables. This allows the theme to maintain
+   control of overall styles
+*/
+.feature-view {
+  .sprintDaysTilEnd {
+    font-size: 1.5rem;
+    float: right;
+  }
+  .story-summary-count {
+    border-bottom: 1px solid @dash-divider;
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+  .story-summary-type {
+    .text-standard;
+    text-align: center;
+  }
+  .story-total {
+    color: @dash-chart-alt-fill;
+  }
+  .story-wip {
+    color: @dash-status-warn;
+  }
+  .story-done {
+    color: @dash-status-pass;
+  }
+	// Handles Feature Widget agile view transition switching
+  .animate-show.ng-hide-remove {
+    animation-name: example;
+    animation-duration: 0.9s;
+  }
+  @keyframes example {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .iteration-change-btn {
+    padding-bottom: 1em;
+  }
+  #next-btn {
+    background: none;
+    border: 0;
+    color: @dash-status-pass;
+  }
+  #pause-btn {
+    background: none;
+    border: 0;
+    color: @dash-status-warn;
+  }
+  #next-btn:hover, #pause-btn:hover {
+    background-color: #2F4F4F;
+    opacity: 0.5;
+  }
+}

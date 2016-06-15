@@ -1,0 +1,112 @@
+@import '../../../bower_components/bootstrap/less/variables.less';
+
+/*
+ A list of variables that can be used by themes and widgets. All values default
+ to bootstrap. Themes can then override the dash values to ensure
+ widgets will use the proper theme color.
+ */
+
+@dash-image-path: "../assets/img/";
+
+// applied to all pages
+@dash-bg:                           @panel-default-heading-bg;
+@dash-text:                         @panel-default-text;
+@dash-text-inverse:                 @dash-bg;
+
+// used for hr tags or widgets to split sections or rows
+@dash-divider:                      @dash-text;
+@dash-divider-light:                lighten(@dash-text, 20%);
+
+// custom values can be overridden on the dashboard page
+@dash-dashboard-bg:                 @dash-bg;
+@dash-dashboard-text:               lighten(@dash-text, 20%);
+@dash-dashboard-text-hover:         @dash-text; // on hover, should stand out more than normal text
+@dash-dashboard-text-light:         @dash-text;
+
+// styles for the brand header
+@dash-header-bg:                    @panel-primary-heading-bg;
+@dash-header-text:                  @panel-primary-text;
+@dash-header-font-size:             2.5rem;
+
+// dash secondary styles
+@dash-btn-secondary-bg:             darken(@body-bg, 10%);
+@dash-btn-secondary-border:         lighten(@btn-default-border, 20%);
+@dash-btn-secondary-color:          lighten(@text-color, 20%);
+
+// logo
+@dash-header-logo-url: '@{dash-image-path}hygieia_b.png';
+@dash-header-logo-width:            135px;
+@dash-header-logo-height:           35px;
+@dash-header-logo-left:             10px;
+@dash-header-logo-top:              8px;
+
+@dash-header-logo-inverse-url: '@{dash-image-path}hygieia_w.png';
+
+// logo for smaller screens
+@dash-header-icon-url: '@{dash-image-path}hygieia_b.png';
+@dash-header-icon-width:            41px;
+@dash-header-icon-height:           48px;
+@dash-header-icon-left:             60px;
+@dash-header-icon-top:              10px;
+
+// values for modals
+@dash-modal-bg:                     @dash-bg;
+@dash-modal-heading-text:           @dash-dashboard-text;
+@dash-modal-heading-border:         @dash-dashboard-text;
+@dash-modal-divider:                @dash-dashboard-text;
+@dash-modal-icon-text:              @dash-dashboard-text;
+
+// values for detail views
+@dash-detail-heading-text:			@dash-dashboard-text;
+@dash-detail-heading-border:		@dash-dashboard-text;
+@dash-detail-icon-text:				@dash-dashboard-text;
+@dash-detail-divider:               @dash-dashboard-text;
+
+// when widget is in alert state
+@dash-widget-alert-bg:              @brand-danger;
+@dash-widget-alert-text:            @panel-danger-text;
+@dash-widget-alert-heading-border:  @panel-danger-text;
+
+// widget settings
+@dash-widget-border-radius:         .5rem;
+@dash-widget-heading-border:        @dash-divider;
+@dash-widget-sub-heading-border:    @dash-divider;
+@dash-widget-heading-text:          @dash-dashboard-text;
+@dash-widget-section-highlight:     @well-bg;
+
+// widget when in configure state
+@dash-state-config-bg:              @dash-widget-section-highlight;
+@dash-state-config-bg-hover:        @dash-state-config-bg;
+@dash-state-config-text:            @dash-dashboard-text;
+@dash-state-config-text-hover:      @dash-state-config-text;
+
+// dash-status colors
+@dash-status-pass:                  @brand-success;
+@dash-status-warn:                  @brand-warning;
+@dash-status-fail:                  @brand-danger;
+@dash-status-fail-border:           darken(@dash-status-fail, 30%);
+@dash-status-fail-text:             contrast(@dash-status-fail);
+
+@dash-status-alert-pass:            @dash-status-pass;
+@dash-status-alert-warn:            @dash-status-warn;
+@dash-status-alert-fail:            @dash-status-fail;
+
+// values defined for all chartist charts
+@dash-chart-alt-color:              contrast(@dash-bg);
+@dash-chart-alt-fill:               rgba(red(@dash-chart-alt-color), green(@dash-chart-alt-color), blue(@dash-chart-alt-color), .75);
+@dash-chart-area-opacity:           .5;
+@dash-chart-line-width:             2px;
+@dash-chart-point-size:             6px;
+@dash-chart-text-color:             @dash-dashboard-text;
+@dash-chart-bar-width:              14;
+@dash-chart-grid:                   @dash-dashboard-text;
+@dash-chart-horizontal-text-align:  center;
+@dash-chart-halo-color:             transparent;
+@dash-chart-halo-size:              3px;
+
+
+@dash-text-standard-size:           1.1;
+@dash-text-standard-line-height:    1.2;
+
+@dash-btn-wide: @padding-base-horizontal * 2;
+@dash-btn-wide-2x: @dash-btn-wide * 2;

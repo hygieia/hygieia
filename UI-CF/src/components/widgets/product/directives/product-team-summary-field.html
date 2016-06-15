@@ -1,0 +1,11 @@
+<span class="quality-cell-wrapper">
+    <div class="quality-num">
+        <span class="fa" ng-class="{'text-success': successState == true, 'text-danger': successState == false, 'fa-long-arrow-up': trendUp == true, 'fa-long-arrow-down': trendUp == false}" ng-if="trendUp != undefined"></span>
+        {{number == undefined ? '--' : number}}
+        <sup ng-if="percent == 'true'">%</sup>
+        <sub ng-if="measurement">{{measurement}}</sub>
+    </div>
+    <div class="quality-text">
+        {{caption}}
+    </div>
+</span>
