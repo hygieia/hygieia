@@ -288,5 +288,5 @@ gulp.task('chartist', function() {
 });
 
 gulp.start('serve', function() {
-	console.log('Serving you now mother fucker');	
+	console.log('Serving you now!!!');	
 });
