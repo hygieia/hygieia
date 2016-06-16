@@ -138,7 +138,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 		/*
 		 * Examples:
 		 * 
-		 * ssh://git@comany.com/project/repository.git
+		 * ssh://git@company.com/project/repository.git
 		 * https://username@company.com/scm/project/repository.git
 		 * ssh://git@company.com/~username/repository.git
 		 * https://username@company.com/scm/~username/repository.git
@@ -152,10 +152,10 @@ public class DefaultBitbucketServerClient implements GitClient {
 			repoUrlProcessed = repoUrlProcessed.substring(0, repoUrlProcessed.lastIndexOf(".git"));
 		}
 		
-		URI uri = URI.create(repoUrlProcessed);
+		URI uri = URI.create(repoUrlProcessed.replaceAll(" ", "%20"));
 		
 		String host = uri.getHost();
-		String scheme = "ssh".equalsIgnoreCase(uri.getScheme())? "http" : uri.getScheme();
+		String scheme = "ssh".equalsIgnoreCase(uri.getScheme())? "https" : uri.getScheme();
 		int port = uri.getPort();
 		String path = uri.getPath();
 		if ((path.startsWith("scm/") || path.startsWith("/scm")) && path.length() > 4) {
@@ -194,7 +194,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 		if (branch == null || branch.length() == 0) {
 			builder.addParameter("until", "master");
 		} else {
-			builder.addParameter("until", branch);
+			builder.addParameter("until", branch.replaceAll(" ", "%20"));
 		}
 		
 		if (lastKnownCommit != null && lastKnownCommit.length() > 0) {
