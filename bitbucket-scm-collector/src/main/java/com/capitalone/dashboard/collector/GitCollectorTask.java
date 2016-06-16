@@ -130,6 +130,7 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
             
             List<Commit> commits = gitClient.getCommits(repo, firstRun);
+            List<Commit> newCommits = new ArrayList<>();
             for (Commit commit : commits) {
             	if (LOG.isDebugEnabled()) {
             		LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
@@ -137,10 +138,11 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             	
                 if (isNewCommit(repo, commit)) {
                     commit.setCollectorItemId(repo.getId());
-                    commitRepository.save(commit);
-                    commitCount++;
+                    newCommits.add(commit);
                 }
             }
+            commitRepository.save(newCommits);
+            commitCount += newCommits.size();
             
             repo.setLastUpdateTime(Calendar.getInstance().getTime());
             if (!commits.isEmpty()) {
