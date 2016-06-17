@@ -43,7 +43,7 @@ public class GerritCollectorTask extends CollectorTask<Collector> {
     private final CommitRepository commitRepository;
     private final GerritSettings gerritSettings;
     private final ComponentRepository dbComponentRepository;
-    private final String GERRIT_TIME_FORMAT = "yyyy-MM-dd[HH:mm:ss[.sss][Z]]";
+    private final static  String GERRIT_TIME_FORMAT = "yyyy-MM-dd[HH:mm:ss[.sss][Z]]";
 
     @Autowired
     public GerritCollectorTask(TaskScheduler taskScheduler,
