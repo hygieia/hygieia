@@ -27,7 +27,7 @@
             showLabel: false
         };
         
-        ctrl.percentUsed = function(subnet) {
+        ctrl.percentUsed = function(subnet) { 
             return subnet.usedIPCount/(subnet.usedIPCount + subnet.availableIPCount) * 100;
         }
 
