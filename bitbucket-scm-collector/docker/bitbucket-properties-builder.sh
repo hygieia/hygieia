@@ -51,7 +51,7 @@ git.api=${BITBUCKET_API:-/rest/api/1.0/}
 #Maximum number of days to go back in time when fetching commits. Only applicable to Bitbucket Cloud.
 git.commitThresholdDays=${BITBUCKET_COMMIT_THRESHOLD_DAYS:-15}
 
-#Page size for data calls. Only applicable to Bitbucket Server.
+#Page size for rest calls. Only applicable to Bitbucket Server.
 git.pageSize=${BITBUCKET_PAGE_SIZE,-25}
 
 #Bitbucket product

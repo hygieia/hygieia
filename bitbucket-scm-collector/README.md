@@ -50,3 +50,12 @@ for information about sourcing this properties file.
 
     #Maximum number of days to go back in time when fetching commits
     git.commitThresholdDays=15
+    
+    #Page size for rest calls. Only applicable to Bitbucket Server. Only applicable to Bitbucket Cloud.
+    git.pageSize=25
+    
+    #Bitbucket product
+    # Set to "cloud" to use Bitbucket Cloud (formerly known as Bitbucket)
+    # Set to "server" to use Bitbucket Server (formerly known as Stash)
+    # More information can be found here: href="https://github.com/capitalone/Hygieia/issues/609
+    git.product=server
