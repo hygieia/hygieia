@@ -208,8 +208,11 @@ hygieia-bitbucket-scm-collector:
 #  - BITBUCKET_CRON=0 0/5 * * * *
 #  - BITBUCKET_PRODUCT=cloud
 
-#Maximum number of days to go back in time when fetching commits
+#Maximum number of days to go back in time when fetching commits. Only applicable to Bitbucket Cloud.
 #  - BITBUCKET_COMMIT_THRESHOLD_DAYS=15
+
+#Page size for rest calls. Only applicable to Bitbucket Server.
+#  - BITBUCKET_PAGE_SIZE=25
 
 hygieia-versionone-collector:
   image: hygieia-versionone-collector:latest
