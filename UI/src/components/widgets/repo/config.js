@@ -20,8 +20,8 @@
 			name: 'Subversion',
 			value: 'Subversion'
 		},{
-			name: 'Stash',
-			value: 'Stash'
+			name: 'Bitbucket',
+			value: 'Bitbucket'
 		}];
 
 //console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
@@ -112,12 +112,12 @@
 						branch: branch
 					}
 				};
-			} else if (repoTypeName.indexOf("Stash") != -1) {
+			} else if (repoTypeName.indexOf("Bitbucket") != -1) {
 
 				item = {
-					collectorId: _.findWhere(ctrl.collectors, {name: 'Stash'}).id,
+					collectorId: _.findWhere(ctrl.collectors, {name: 'Bitbucket'}).id,
 					options: {
-						scm: 'Stash',
+						scm: 'Bitbucket',
 						url: url,
 						branch: branch
 					}
