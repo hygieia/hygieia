@@ -16,7 +16,7 @@
     "angular-chartist.js": "~3.3.13",
     "chartist": "~0.9.5",
     "moment": "~2.9.0",
-    "lodash": "^4.0.0",
+    "lodash": "~2.4.1",
     "components-font-awesome": "~4.2.0",
     "bootstrap": "~3.3.2",
     "hygieia-jstz-detect": "~1.0.5",
