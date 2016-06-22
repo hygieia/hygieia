@@ -1,0 +1,27 @@
+<widget-modal widget-modal-title="Configure Performance Widget">
+<form name="configForm"
+	ng-submit="performanceConfig.submit(configForm.$valid)"
+	novalidate="novalidate">
+
+
+	<form-group errors="{required:'App ID is required'}"
+				input="appID"
+				class="text-center">
+
+		<label class="modal-label" id="appID">APP ID</label>
+
+		<input
+			type="text"
+			name="appId"
+			class="form-control text-center"
+			ng-model="performaceConfig.appId"
+			placeholder="Enter AppID"
+			required />
+
+	</form-group>
+
+	<div class="button-row row text-center">
+		<button type="submit" class="btn btn-primary btn-wide">Save</button>
+	</div>
+</form>
+</widget-modal>
