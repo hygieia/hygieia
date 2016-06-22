@@ -5,7 +5,9 @@ AWS Collector is part of Hygieia 2.1 release and bring in Ops view to the alread
 The AWS Collector is a microservice with sole task of collecting data from your AWS footprint for the dashboards configured. Again as part of our component architecture this is optional
 and if you don't use public cloud providers , you don't need to run this.
 
-Supported Cloud platform is Amazon Web Service(AWS).
+####  Supported Cloud platforms. 
+
+- Amazon Web Service(AWS).
 
 
 Building and Deploying
