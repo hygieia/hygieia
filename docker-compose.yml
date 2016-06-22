@@ -40,6 +40,7 @@ hygieia-github-scm-collector:
 #  - GITHUB_COMMIT_THREASHOLD_DAYS=15
 
 
+
 hygieia-jira-feature-collector:
   image: hygieia-jira-feature-collector:latest
   container_name: hygieia-jira
@@ -192,9 +193,9 @@ hygieia-subversion-scm-collector:
 #Maximum number of days to go back in time when fetching commits
 #  - SUBVERSION_COMMIT_THRESHOLD_DAYS=15
 
-hygieia-stash-scm-collector:
-  image: hygieia-stash-scm-collector:latest
-  container_name: hygieia-stash
+hygieia-bitbucket-scm-collector:
+  image: hygieia-bitbucket-scm-collector:latest
+  container_name: hygieia-bitbucket
   volumes:
   - ./logs:/hygieia/logs
   links:
@@ -202,13 +203,16 @@ hygieia-stash-scm-collector:
   - hygieia-api
 #  environment:
     #mandatory
-#  - STASH_HOST=mystashrepo.com/
-#  - STASH_API=/rest/api/1.0/
+#  - BITBUCKET_HOST=mybitbucketrepo.com/
+#  - BITBUCKET_API=/rest/api/1.0/
+#  - BITBUCKET_CRON=0 0/5 * * * *
+#  - BITBUCKET_PRODUCT=cloud
 
-#  - STASH_CRON:-0 0/5 * * * *
+#Maximum number of days to go back in time when fetching commits. Only applicable to Bitbucket Cloud.
+#  - BITBUCKET_COMMIT_THRESHOLD_DAYS=15
 
-#Maximum number of days to go back in time when fetching commits
-#  - STASH_COMMIT_THRESHOLD_DAYS=15
+#Page size for rest calls. Only applicable to Bitbucket Server.
+#  - BITBUCKET_PAGE_SIZE=25
 
 hygieia-versionone-collector:
   image: hygieia-versionone-collector:latest
