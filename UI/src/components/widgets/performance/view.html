@@ -1,89 +1,67 @@
-<div class="repo-view">
-    <div class="widget">
+<div class="row performance-view">
+    <div class="col-lg-4 col-sm-6">
+      <div class="widget health-bars">
         <div class="widget-heading">
-            Application Health Status
+          Business Transaction Health
         </div>
-        <div class="row">
-            <div class="col-xs-4">
-                <div class="row">
-                    <div class="round-labels">
-                        {{performanceView.responsetime}}ms
-                    </div>
-                </div>
-                <div class="row topbar">Response Time</div>
-            </div>
-            <div class="col-xs-4">
-                <div class="row">
-                    <div class="round-labels">
-                        {{performanceView.calls}}
-                    </div>
-                </div>
-                <div class="row topbar">Calls</div>
-            </div>
-            <div class="col-xs-4">
-                <div class="row">
-                    <div class="round-labels">
-                        {{performanceView.callspm}}
-                    </div>
-                </div>
-                <div class="row topbar">Calls/min</div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-4">
-                <div class="row">
-                    <div class="round-labels">
-                        {{performanceView.errors}}
-                    </div>
-                </div>
-                <div class="row topbar">Errors</div>
-            </div>
-            <div class="col-xs-4">
-                <div class="row">
-                    <div class="round-labels">
-                        {{performanceView.errorspc}}%
-                    </div>
-                </div>
-                <div class="row topbar">Errors</div>
-            </div>
-            <div class="col-xs-4">
-                <div class="row">
-                    <div class="round-labels">
-                        {{performanceView.errorspm}}
-                    </div>
-                </div>
-                <div class="row topbar">Errors/min</div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <div class="widget">
+    <div class="col-lg-4 col-sm-6">
+      <div class="widget health-bars">
         <div class="widget-heading">
-            Business Transaction Health
+          Node Health
         </div>
-        <div class="progress" style="height: 10px;">
-            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: {{performanceView.businesshealth}}%">
-                <span class="sr-only">80% Complete (danger)</span>
-            </div>
-            <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: {{100-performanceView.businesshealth}}%">
-                <span class="sr-only">80% Complete (danger)</span>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <div class="widget">
+    <div class="col-lg-2 col-sm-6">
+      <div class="widget health-arrows">
         <div class="widget-heading">
-            Node Health
+          Response Time
         </div>
-        <div class="progress" style="height: 10px;">
-            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: {{performanceView.nodehealth}}%">
-                <span class="sr-only">80% Complete (danger)</span>
-            </div>
-            <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: {{100-performanceView.nodehealth}}%">
-                <span class="sr-only">80% Complete (danger)</span>
-            </div>
-        </div>
+      </div>
     </div>
 
+    <div class="col-lg-2 col-sm-6">
+      <div class="widget health-arrows">
+        <div class="widget-heading">
+          Errors
+        </div>
+      </div>
+    </div>
 
+    <div class="col-lg-6 col-sm-12">
+      <div class="widget health-charts health-charts-calls">
+        <div class="widget-heading">
+          Calls
+        </div>
+        <div class="widget-body">
+          <chartist class="ct-chart ct-octave dash-chart-alt"
+                    chartist-chart-type="Line"
+                    chartist-data=""
+                    chartist-chart-options="performanceView.callsChartOptions"
+                    chartist-events=""
+                    >
+          </chartist>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 col-sm-12">
+      <div class="widget health-charts health-charts-errors">
+        <div class="widget-heading">
+          Errors
+        </div>
+        <div class="widget-body">
+          <chartist class="ct-chart ct-octave dash-chart-alt"
+                    chartist-chart-type="Line"
+                    chartist-data=""
+                    chartist-chart-options=""
+                    chartist-events=""
+                    >
+          </chartist>
+        </div>
+      </div>
+    </div>
 </div>

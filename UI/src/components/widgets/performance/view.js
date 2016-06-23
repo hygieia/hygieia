@@ -9,6 +9,37 @@
     function performanceViewController($q, $scope, performanceData, $modal) {
         var ctrl = this;
 
+
+        ctrl.callsChartOptions = {
+          plugins: [
+            Chartist.plugins.gridBoundaries(),
+            Chartist.plugins.lineAboveArea(),
+            Chartist.plugins.pointHalo(),
+            Chartist.plugins.ctPointClick({
+              //TODO
+            }),
+            Chartist.plugins.axisLabels({
+              axisX: {
+                labels: [
+
+                ]
+              }
+            }),
+            Chartist.plugins.ctPointLabels({
+              textAnchor: 'middle'
+            })
+          ],
+          showArea: true,
+          lineSmooth: false,
+          fullWidth: true,
+          axisY: {
+            offset: 30,
+            showGrid: true,
+            showLabel: true,
+            labelInterpolationFnc: function(value) {return Math.round(value * 100)/100;}
+          }
+        };
+
         ctrl.calls = 100;
 
         //ctrl.showDetail = showDetail;
