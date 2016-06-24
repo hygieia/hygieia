@@ -13,7 +13,7 @@ public interface DataClientSetup {
 	 *
 	 * @see Story
 	 */
-	void updateObjectInformation();
+	int updateObjectInformation();
 
 	String getLocalTimeStampFromUnix(long unixTimeStamp);
 

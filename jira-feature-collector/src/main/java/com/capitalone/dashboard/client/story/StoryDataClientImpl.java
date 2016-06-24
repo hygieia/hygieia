@@ -67,7 +67,9 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 			FeatureSettings featureSettings, FeatureRepository featureRepository,
 			FeatureCollectorRepository featureCollectorRepository) {
 		super(featureSettings, featureRepository, featureCollectorRepository);
-		LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
+		}
 
 		this.coreFeatureSettings = coreFeatureSettings;
 		this.featureSettings = featureSettings;
@@ -86,7 +88,9 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	@SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.NcssMethodCount", "PMD.NPathComplexity",
 			"PMD.AvoidDeeplyNestedIfStmts" })
 	protected void updateMongoInfo(List<Issue> currentPagedJiraRs) {
-		LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
+		}
 		if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
 			Iterator<Issue> globalResponseItr = currentPagedJiraRs.iterator();
 			while (globalResponseItr.hasNext()) {
@@ -504,7 +508,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
 	 */
-	public void updateStoryInformation() {
+	public int updateStoryInformation() {
 		super.objClass = Feature.class;
 		super.returnDate = this.featureSettings.getDeltaStartDate();
 		if (super.getMaxChangeDate() != null) {
@@ -515,8 +519,11 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 		String queryName = this.featureSettings.getStoryQuery();
 		super.query = this.featureWidgetQueries.getStoryQuery(returnDate,
 				super.featureSettings.getJiraIssueTypeId(), queryName);
-		LOGGER.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
-		updateObjectInformation();
+		
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
+		}
+		return updateObjectInformation();
 
 	}
 
@@ -535,7 +542,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 			for (Feature f : listOfFeature) {
 				featureRepo.delete(f.getId());
 				deleted = true;
-				LOGGER.debug("Removed existing entities that will be replaced by newer instances");
+					LOGGER.debug("Removed existing entities that will be replaced by newer instances");
 			}
 		} catch (IndexOutOfBoundsException ioobe) {
 			LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);

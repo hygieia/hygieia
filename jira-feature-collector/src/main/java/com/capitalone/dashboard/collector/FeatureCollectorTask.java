@@ -12,8 +12,6 @@ import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -25,8 +23,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
-
 	private final CoreFeatureSettings coreFeatureSettings;
 	private final FeatureRepository featureRepository;
 	private final ScopeOwnerRepository teamRepository;
@@ -92,20 +88,27 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 */
 	@Override
 	public void collect(FeatureCollector collector) {
-		LOGGER.info("Starting Feature collection...");
+		logBanner(featureSettings.getJiraBaseUrl());
+		int count = 0;
 
+		long teamDataStart = System.currentTimeMillis();
 		TeamDataClientImpl teamData = new TeamDataClientImpl(this.featureCollectorRepository,
 				this.featureSettings, this.teamRepository);
-		teamData.updateTeamInformation();
+		count = teamData.updateTeamInformation();
+		log("Team Data", teamDataStart, count);
 
+		long projectDataStart = System.currentTimeMillis();
 		ProjectDataClientImpl projectData = new ProjectDataClientImpl(this.featureSettings,
 				this.projectRepository, this.featureCollectorRepository);
-		projectData.updateProjectInformation();
+		count = projectData.updateProjectInformation();
+		log("Project Data", projectDataStart, count);
 
+		long storyDataStart = System.currentTimeMillis();
 		StoryDataClientImpl storyData = new StoryDataClientImpl(this.coreFeatureSettings,
 				this.featureSettings, this.featureRepository, this.featureCollectorRepository);
-		storyData.updateStoryInformation();
+		count = storyData.updateStoryInformation();
 
-		LOGGER.info("Feature Data Collection Finished");
+		log("Story Data", storyDataStart, count);
+		log("Finished", teamDataStart);
 	}
 }

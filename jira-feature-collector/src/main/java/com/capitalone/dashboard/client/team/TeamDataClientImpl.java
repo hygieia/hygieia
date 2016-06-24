@@ -42,7 +42,9 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 	public TeamDataClientImpl(FeatureCollectorRepository featureCollectorRepository,
 			FeatureSettings featureSettings, ScopeOwnerRepository teamRepository) {
 		super(featureSettings, teamRepository, featureCollectorRepository);
-		LOGGER.debug("Constructing data collection for the feature widget, team-level data...");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Constructing data collection for the feature widget, team-level data...");
+		}
 
 		this.featureSettings = featureSettings;
 		this.featureCollectorRepository = featureCollectorRepository;
@@ -58,7 +60,9 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 	 */
 	@Override
 	protected void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
-		LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
+		}
 		if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
 			Iterator<BasicProject> globalResponseItr = currentPagedJiraRs.iterator();
 			while (globalResponseItr.hasNext()) {
@@ -120,14 +124,14 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
 	 */
-	public void updateTeamInformation() {
+	public int updateTeamInformation() {
 		super.objClass = ScopeOwnerCollectorItem.class;
 		super.returnDate = this.featureSettings.getDeltaCollectorItemStartDate();
 		if (super.getMaxChangeDate() != null) {
 			super.returnDate = super.getMaxChangeDate();
 		}
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
-		updateObjectInformation();
+		return updateObjectInformation();
 	}
 
 	/**
@@ -149,7 +153,9 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 				deleted = true;
 			}
 		} catch (IndexOutOfBoundsException ioobe) {
-			LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
+			}
 		} catch (Exception e) {
 			LOGGER.error("There was a problem validating the redundancy of the data model", e);
 		}

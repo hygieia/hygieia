@@ -37,7 +37,9 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	public ProjectDataClientImpl(FeatureSettings featureSettings,
 			ScopeRepository projectRepository, FeatureCollectorRepository featureCollectorRepository) {
 		super(featureSettings, projectRepository, featureCollectorRepository);
-		LOGGER.debug("Constructing data collection for the feature widget, project-level data...");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Constructing data collection for the feature widget, project-level data...");
+		}
 
 		this.featureSettings = featureSettings;
 		this.projectRepo = projectRepository;
@@ -52,7 +54,9 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	 */
 	@Override
 	protected void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
-		LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
+		}
 		if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
 			Iterator<BasicProject> globalResponseItr = currentPagedJiraRs.iterator();
 			while (globalResponseItr.hasNext()) {
@@ -118,14 +122,14 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
 	 */
-	public void updateProjectInformation() {
+	public int updateProjectInformation() {
 		super.objClass = Scope.class;
 		super.returnDate = this.featureSettings.getDeltaStartDate();
 		if (super.getMaxChangeDate() != null) {
 			super.returnDate = super.getMaxChangeDate();
 		}
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
-		updateObjectInformation();
+		return updateObjectInformation();
 	}
 
 	/**
@@ -139,9 +143,9 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 
 		try {
 			ObjectId tempEntId = projectRepo.getScopeIdById(localId).get(0).getId();
-			if (localId.equalsIgnoreCase(projectRepo.getScopeIdById(localId).get(0).getpId())) {
-				projectRepo.delete(tempEntId);
-				deleted = true;
+				if (localId.equalsIgnoreCase(projectRepo.getScopeIdById(localId).get(0).getpId())) {
+					projectRepo.delete(tempEntId);
+					deleted = true;
 			}
 		} catch (IndexOutOfBoundsException ioobe) {
 			LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
