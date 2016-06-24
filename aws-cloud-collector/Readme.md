@@ -65,3 +65,16 @@ for information about sourcing this properties file.
     
     #AWS Profile to be used if any
     aws.profile=
+
+
+
+you don't need to provide credentials in the properties file , the preferred mechanism is via the Default credentials provider mechanism or via an IAM role.
+as described here http://docs.aws.amazon.com/AWSSdkDocsJava/latest/DeveloperGuide/credentials.html
+you can also create an AWS credentials file using the CLI or hand such as
+```
+[default]
+aws_access_key_id={YOUR_ACCESS_KEY_ID}
+aws_secret_access_key={YOUR_SECRET_ACCESS_KEY}
+```
+if you are running on an EC2 instance with an IAM role with appropriate access defined, that should also be sufficient.
+I will update the documentation with this.
