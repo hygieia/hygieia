@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +59,9 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 	public ProjectDataClientSetupImpl(FeatureSettings featureSettings,
 			ScopeRepository projectRepository, FeatureCollectorRepository featureCollectorRepository) {
 		super();
-		LOGGER.debug("Constructing data collection for the feature widget...");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Constructing data collection for the feature widget...");
+		}
 
 		this.featureSettings = featureSettings;
 		this.projectRepo = projectRepository;
@@ -74,9 +75,10 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 	 * collector model definitions.
 	 *
 	 */
-	public void updateObjectInformation() {
-		LOGGER.info("Beginning collection of project data at " + Calendar.getInstance().getTime());
-		long start = System.nanoTime();
+	@Override
+	public int updateObjectInformation() {
+		int count = 0;
+		
 		String jiraCredentials = this.featureSettings.getJiraCredentials();
 		String jiraBaseUrl = this.featureSettings.getJiraBaseUrl();
 		String proxyUri = null;
@@ -92,6 +94,7 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 			List<BasicProject> rs = jiraDataFactory.getJiraTeams();
 			if ((rs != null) && (!rs.isEmpty())) {
 				updateMongoInfo(rs);
+				count += rs.size();
 			} else {
 				LOGGER.error("The response from Jira was blank or non existant - please check your property configurations");
 			}
@@ -101,9 +104,8 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 		} finally {
 			jiraDataFactory.destroy();
 		}
-
-		double elapsedTime = (System.nanoTime() - start) / 1000000000.0;
-		LOGGER.info("Process took :" + elapsedTime + " seconds to update");
+		
+		return count;
 	}
 
 	/**
@@ -118,7 +120,9 @@ public abstract class ProjectDataClientSetupImpl implements DataClientSetup {
 
 		SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
 		String date = sdf.format(unixSeconds);
-		LOGGER.debug(unixSeconds + "==>" + date);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug(unixSeconds + "==>" + date);
+		}
 
 		return date;
 	}
