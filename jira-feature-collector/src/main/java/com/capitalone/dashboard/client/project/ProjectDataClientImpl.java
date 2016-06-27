@@ -11,7 +11,6 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 
 	private final FeatureSettings featureSettings;
 	private final ScopeRepository projectRepo;
-	private final static ClientUtil TOOLS = new ClientUtil();
+	private final static ClientUtil TOOLS = ClientUtil.getInstance();
 
 	/**
 	 * Extends the constructor from the super class.
@@ -57,63 +56,54 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
 		}
-		if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
-			Iterator<BasicProject> globalResponseItr = currentPagedJiraRs.iterator();
-			while (globalResponseItr.hasNext()) {
-				try {
-					/*
-					 * Initialize DOMs
-					 */
-					Scope scope = new Scope();
-					BasicProject jiraScope = globalResponseItr.next();
-
-					/*
-					 * Removing any existing entities where they exist in the
-					 * local DB store...
-					 */
-					@SuppressWarnings("unused")
-					boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(jiraScope
-							.getId()));
-
-					/*
-					 * Project Data
-					 */
-					// collectorId
-					scope.setCollectorId(featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA)
-							.getId());
-
-					// ID;
-					scope.setpId(TOOLS.sanitizeResponse(jiraScope.getId()));
-
-					// name;
-					scope.setName(TOOLS.sanitizeResponse(jiraScope.getName()));
-
-					// beginDate - does not exist for jira
-					scope.setBeginDate("");
-
-					// endDate - does not exist for jira
-					scope.setEndDate("");
-
-					// changeDate - does not exist for jira
-					scope.setChangeDate("");
-
-					// assetState - does not exist for jira
-					scope.setAssetState("Active");
-
-					// isDeleted - does not exist for jira
-					scope.setIsDeleted("False");
-
-					// path - does not exist for Jira
-					scope.setProjectPath(TOOLS.sanitizeResponse(jiraScope.getName()));
-
-					// Saving back to MongoDB
-					projectRepo.save(scope);
-
-				} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
-					LOGGER.error(
-							"Unexpected error caused while mapping data from source system to local data store:\n"
-									+ e.getMessage() + " : " + e.getCause(), e);
+		
+		if (currentPagedJiraRs != null) {
+			ObjectId jiraCollectorId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
+			for (BasicProject jiraScope : currentPagedJiraRs) {
+				String scopeId = TOOLS.sanitizeResponse(jiraScope.getId());
+				
+				/*
+				 * Initialize DOMs
+				 */
+				Scope scope = findOneScope(scopeId);
+				
+				if (scope == null) {
+					scope = new Scope();
 				}
+
+				/*
+				 * Project Data
+				 */
+				// collectorId
+				scope.setCollectorId(jiraCollectorId);
+
+				// ID;
+				scope.setpId(TOOLS.sanitizeResponse(scopeId));
+
+				// name;
+				scope.setName(TOOLS.sanitizeResponse(jiraScope.getName()));
+
+				// beginDate - does not exist for jira
+				scope.setBeginDate("");
+
+				// endDate - does not exist for jira
+				scope.setEndDate("");
+
+				// changeDate - does not exist for jira
+				scope.setChangeDate("");
+
+				// assetState - does not exist for jira
+				scope.setAssetState("Active");
+
+				// isDeleted - does not exist for jira
+				scope.setIsDeleted("False");
+
+				// path - does not exist for Jira
+				scope.setProjectPath(TOOLS.sanitizeResponse(jiraScope.getName()));
+
+				// Saving back to MongoDB
+				projectRepo.save(scope);
+				
 			}
 		}
 	}
@@ -131,28 +121,25 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
 		return updateObjectInformation();
 	}
-
+	
 	/**
-	 * Validates current entry and removes new entry if an older item exists in
-	 * the repo
+	 * Find the current collector item for the jira team id
 	 * 
-	 * @param localId repository item ID (not the precise mongoID)
+	 * @param teamId	the team id
+	 * @return			the collector item if it exists or null
 	 */
-	protected Boolean removeExistingEntity(String localId) {
-		boolean deleted = false;
-
-		try {
-			ObjectId tempEntId = projectRepo.getScopeIdById(localId).get(0).getId();
-				if (localId.equalsIgnoreCase(projectRepo.getScopeIdById(localId).get(0).getpId())) {
-					projectRepo.delete(tempEntId);
-					deleted = true;
-			}
-		} catch (IndexOutOfBoundsException ioobe) {
-			LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
-		} catch (Exception e) {
-			LOGGER.error("There was a problem validating the redundancy of the data model", e);
+	protected Scope findOneScope(String scopeId) {
+		List<Scope> scopes = projectRepo.getScopeIdById(scopeId);
+		
+		// Not sure of the state of the data
+		if (scopes.size() > 1) {
+			LOGGER.warn("More than one collector item found for scopeId " + scopeId);
 		}
-
-		return deleted;
+		
+		if (!scopes.isEmpty()) {
+			return scopes.get(0);
+		}
+		
+		return null;
 	}
 }

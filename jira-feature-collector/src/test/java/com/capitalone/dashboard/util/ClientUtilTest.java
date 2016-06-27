@@ -53,7 +53,7 @@ public class ClientUtilTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		logger.info("Beginning tests for com.capitalone.dashboard.collector.ClientUtilTest");
-		classUnderTest = new ClientUtil();
+		classUnderTest = ClientUtil.getInstance();
 	}
 
 	@AfterClass

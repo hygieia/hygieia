@@ -11,7 +11,6 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,14 +24,11 @@ import java.util.List;
  */
 public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientImpl.class);
-	private static final ClientUtil TOOLS = new ClientUtil();
+	private static final ClientUtil TOOLS = ClientUtil.getInstance();
 
 	private final FeatureSettings featureSettings;
 	private final ScopeOwnerRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
-
-	private ObjectId oldTeamId;
-	private boolean oldTeamEnabledState;
 
 	/**
 	 * Extends the constructor from the super class.
@@ -63,59 +59,42 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
 		}
-		if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
-			Iterator<BasicProject> globalResponseItr = currentPagedJiraRs.iterator();
-			while (globalResponseItr.hasNext()) {
-				try {
-					/*
-					 * Initialize DOMs
-					 */
-					ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
-					BasicProject jiraTeam = globalResponseItr.next();
-
-					/*
-					 * Removing any existing entities where they exist in the
-					 * local DB store...
-					 */
-					boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(jiraTeam
-							.getId()));
-
-					/*
-					 * Team Data
-					 */
-					// Id
-					if (deleted) {
-						team.setId(this.getOldTeamId());
-						team.setEnabled(this.isOldTeamEnabledState());
-					}
-
-					// collectorId
-					team.setCollectorId(featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA)
-							.getId());
-
-					// teamId
-					team.setTeamId(TOOLS.sanitizeResponse(jiraTeam.getId()));
-
-					// name
-					team.setName(TOOLS.sanitizeResponse(jiraTeam.getName()));
-
-					// changeDate - does not exist for jira
-					team.setChangeDate("");
-
-					// assetState - does not exist for jira
-					team.setAssetState("Active");
-
-					// isDeleted - does not exist for jira
-					team.setIsDeleted("False");
-
-					// Saving back to MongoDB
-					teamRepo.save(team);
-
-				} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
-					LOGGER.error(
-							"Unexpected error caused while mapping data from source system to local data store:\n"
-									+ e.getMessage() + " : " + e.getCause(), e);
+		
+		if (currentPagedJiraRs != null) {
+			ObjectId jiraCollectorId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
+			
+			for (BasicProject jiraTeam : currentPagedJiraRs) {
+				String teamId = TOOLS.sanitizeResponse(jiraTeam.getId());
+				
+				/*
+				 * Initialize DOMs
+				 */
+				ScopeOwnerCollectorItem team = findOneScopeOwnerCollectorItem(teamId);
+				
+				if (team == null) {
+					team = new ScopeOwnerCollectorItem();
 				}
+
+				// collectorId
+				team.setCollectorId(jiraCollectorId);
+
+				// teamId
+				team.setTeamId(TOOLS.sanitizeResponse(jiraTeam.getId()));
+
+				// name
+				team.setName(TOOLS.sanitizeResponse(jiraTeam.getName()));
+
+				// changeDate - does not exist for jira
+				team.setChangeDate("");
+
+				// assetState - does not exist for jira
+				team.setAssetState("Active");
+
+				// isDeleted - does not exist for jira
+				team.setIsDeleted("False");
+
+				// Saving back to MongoDB
+				teamRepo.save(team);
 			}
 		}
 	}
@@ -133,49 +112,25 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 		super.returnDate = getChangeDateMinutePrior(super.returnDate);
 		return updateObjectInformation();
 	}
-
+	
 	/**
-	 * Validates current entry and removes new entry if an older item exists in
-	 * the repo
+	 * Find the current collector item for the jira team id
 	 * 
-	 * @param localId repository item ID (not the precise mongoID)
+	 * @param teamId	the team id
+	 * @return			the collector item if it exists or null
 	 */
-	protected Boolean removeExistingEntity(String localId) {
-		boolean deleted = false;
-
-		try {
-			ObjectId tempEntId = teamRepo.getTeamIdById(localId).get(0).getId();
-			if (localId.equalsIgnoreCase(teamRepo.getTeamIdById(localId).get(0).getTeamId())) {
-				this.setOldTeamId(tempEntId);
-				this.setOldTeamEnabledState(teamRepo.getTeamIdById(localId).get(0).isEnabled());
-
-				teamRepo.delete(tempEntId);
-				deleted = true;
-			}
-		} catch (IndexOutOfBoundsException ioobe) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
-			}
-		} catch (Exception e) {
-			LOGGER.error("There was a problem validating the redundancy of the data model", e);
+	protected ScopeOwnerCollectorItem findOneScopeOwnerCollectorItem(String teamId) {
+		List<ScopeOwnerCollectorItem> scopeOwnerCollectorItems = teamRepo.getTeamIdById(teamId);
+		
+		// Not sure of the state of the data
+		if (scopeOwnerCollectorItems.size() > 1) {
+			LOGGER.warn("More than one collector item found for teamId " + teamId);
 		}
-
-		return deleted;
-	}
-
-	private ObjectId getOldTeamId() {
-		return oldTeamId;
-	}
-
-	private void setOldTeamId(ObjectId oldTeamId) {
-		this.oldTeamId = oldTeamId;
-	}
-
-	private boolean isOldTeamEnabledState() {
-		return oldTeamEnabledState;
-	}
-
-	private void setOldTeamEnabledState(boolean oldTeamEnabledState) {
-		this.oldTeamEnabledState = oldTeamEnabledState;
+		
+		if (!scopeOwnerCollectorItems.isEmpty()) {
+			return scopeOwnerCollectorItems.get(0);
+		}
+		
+		return null;
 	}
 }

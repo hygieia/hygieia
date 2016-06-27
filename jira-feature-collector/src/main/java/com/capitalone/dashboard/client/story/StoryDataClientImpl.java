@@ -58,7 +58,7 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	private final FeatureSettings featureSettings;
 	private final FeatureWidgetQueries featureWidgetQueries;
 	private final FeatureRepository featureRepo;
-	private final static ClientUtil TOOLS = new ClientUtil();
+	private final static ClientUtil TOOLS = ClientUtil.getInstance();
 
 	/**
 	 * Extends the constructor from the super class.
