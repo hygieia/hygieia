@@ -40,15 +40,17 @@ import java.util.Set;
  * @author KFK884
  * 
  */
-public class ClientUtil {
+public final class ClientUtil {
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClientUtil.class);
 	private final static int MAX_ISO_INDEX = 23;
+	
+	private static final ClientUtil INSTANCE = new ClientUtil();
 
 	/**
 	 * Default constructor
 	 */
-	public ClientUtil() {
+	private ClientUtil() {
 
 	}
 
@@ -250,7 +252,7 @@ public class ClientUtil {
 	 * @return A List artifact representing JSONArray information
 	 * @throws JSONException
 	 */
-	protected List<Object> toList(JSONArray array) throws JSONException {
+	private List<Object> toList(JSONArray array) throws JSONException {
 		List<Object> list = new ArrayList<Object>();
 		for (int i = 0; i < array.size(); i++) {
 			Object value = array.get(i);
@@ -286,5 +288,9 @@ public class ClientUtil {
 		}
 
 		return hours;
+	}
+	
+	public static ClientUtil getInstance() {
+		return INSTANCE;
 	}
 }
