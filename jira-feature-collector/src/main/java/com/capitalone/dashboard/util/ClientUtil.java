@@ -188,15 +188,18 @@ public final class ClientUtil {
 				Iterator<String> listIt = list.iterator();
 				while (listIt.hasNext()) {
 					String temp = listIt.next();
-					List<String> keyValuePair = Arrays.asList(temp.split("=", 2));
-					if ((keyValuePair != null) && !(keyValuePair.isEmpty())) {
-						String key = keyValuePair.get(0).toString();
-						String value = keyValuePair.get(1).toString();
-						if ("<null>".equalsIgnoreCase(value)) {
-							value = "";
-						}
-						canonicalRs.put(key, value);
+					String[] keyValuePair = temp.split("=", 2);
+					String key = keyValuePair[0];
+					String value = "";
+					
+					if (keyValuePair.length > 1) {
+						value = keyValuePair[1];
 					}
+					
+					if ("<null>".equalsIgnoreCase(value)) {
+						value = "";
+					}
+					canonicalRs.put(key, value);
 				}
 			}
 		} else {
