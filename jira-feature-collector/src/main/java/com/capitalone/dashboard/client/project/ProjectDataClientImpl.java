@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.client.project;
 
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
@@ -22,28 +23,48 @@ import java.util.List;
  * @author kfk884
  * 
  */
-public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements ProjectDataClient {
+public class ProjectDataClientImpl implements ProjectDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectDataClientImpl.class);
-
+	private static final ClientUtil TOOLS = ClientUtil.getInstance();
+	
 	private final FeatureSettings featureSettings;
 	private final ScopeRepository projectRepo;
-	private final static ClientUtil TOOLS = ClientUtil.getInstance();
+	private final FeatureCollectorRepository featureCollectorRepository;
+	private final JiraClient jiraClient;
 
 	/**
 	 * Extends the constructor from the super class.
 	 *
 	 */
-	public ProjectDataClientImpl(FeatureSettings featureSettings,
-			ScopeRepository projectRepository, FeatureCollectorRepository featureCollectorRepository) {
-		super(featureSettings, projectRepository, featureCollectorRepository);
+	public ProjectDataClientImpl(FeatureSettings featureSettings, ScopeRepository projectRepository, 
+			FeatureCollectorRepository featureCollectorRepository, JiraClient jiraClient) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Constructing data collection for the feature widget, project-level data...");
 		}
 
 		this.featureSettings = featureSettings;
 		this.projectRepo = projectRepository;
+		this.featureCollectorRepository = featureCollectorRepository;
+		this.jiraClient = jiraClient;
 	}
 
+	/**
+	 * Explicitly updates queries for the source system, and initiates the
+	 * update to MongoDB from those calls.
+	 */
+	public int updateProjectInformation() {
+		int count = 0;
+		
+		List<BasicProject> projects = jiraClient.getProjects();
+		
+		if (projects != null && !projects.isEmpty()) {
+			updateMongoInfo(projects);
+			count += projects.size();
+		}
+		
+		return count;
+	}
+	
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
@@ -51,8 +72,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	 * @param currentPagedJiraRs
 	 *            A list response of Jira issues from the source system
 	 */
-	@Override
-	protected void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
+	private void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
 		}
@@ -107,19 +127,27 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 			}
 		}
 	}
-
+	
 	/**
-	 * Explicitly updates queries for the source system, and initiates the
-	 * update to MongoDB from those calls.
+	 * Retrieves the maximum change date for a given query.
+	 * 
+	 * @return A list object of the maximum change date
 	 */
-	public int updateProjectInformation() {
-		super.objClass = Scope.class;
-		super.returnDate = this.featureSettings.getDeltaStartDate();
-		if (super.getMaxChangeDate() != null) {
-			super.returnDate = super.getMaxChangeDate();
+	public String getMaxChangeDate() {
+		String data = null;
+		try {
+			List<Scope> response = projectRepo
+					.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+							featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId(),
+							featureSettings.getDeltaStartDate());
+			if ((response != null) && !response.isEmpty()) {
+				data = response.get(0).getChangeDate();
+			}
+		} catch (Exception e) {
+			LOGGER.error("There was a problem retrieving or parsing data from the local repository while retrieving a max change date\nReturning null");
 		}
-		super.returnDate = getChangeDateMinutePrior(super.returnDate);
-		return updateObjectInformation();
+
+		return data;
 	}
 	
 	/**
@@ -128,7 +156,7 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	 * @param teamId	the team id
 	 * @return			the collector item if it exists or null
 	 */
-	protected Scope findOneScope(String scopeId) {
+	private Scope findOneScope(String scopeId) {
 		List<Scope> scopes = projectRepo.getScopeIdById(scopeId);
 		
 		// Not sure of the state of the data

@@ -21,7 +21,7 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.User;
-import com.capitalone.dashboard.datafactory.jira.JiraDataFactoryImpl;
+import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureStatus;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
@@ -29,13 +29,15 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
+import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
-import com.capitalone.dashboard.util.FeatureWidgetQueries;
-
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,16 +57,20 @@ import java.util.Set;
  * @author kfk884
  * 
  */
-public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements StoryDataClient {
+public class StoryDataClientImpl implements StoryDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StoryDataClientImpl.class);
+	private static final ClientUtil TOOLS = ClientUtil.getInstance();
+	
+	// works with ms too (just ignores them)
+	private final DateFormat SETTINGS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 	private final FeatureSettings featureSettings;
-	private final FeatureWidgetQueries featureWidgetQueries;
 	private final FeatureRepository featureRepo;
-	private final static ClientUtil TOOLS = ClientUtil.getInstance();
+	private final FeatureCollectorRepository featureCollectorRepository;
+	private final JiraClient jiraClient;
 	
 	// epicId : list of epics
-	private Map<String, List<Issue>> epicCache;
+	private Map<String, Issue> epicCache;
 	private Set<String> todoCache;
 	private Set<String> inProgressCache;
 	private Set<String> doneCache;
@@ -72,17 +78,17 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	/**
 	 * Extends the constructor from the super class.
 	 */
-	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings,
-			FeatureSettings featureSettings, FeatureRepository featureRepository,
-			FeatureCollectorRepository featureCollectorRepository) {
-		super(featureSettings, featureRepository, featureCollectorRepository);
+	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings, FeatureSettings featureSettings, 
+			FeatureRepository featureRepository, FeatureCollectorRepository featureCollectorRepository,
+			JiraClient jiraClient) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
 		}
 
 		this.featureSettings = featureSettings;
 		this.featureRepo = featureRepository;
-		this.featureWidgetQueries = new FeatureWidgetQueries(this.featureSettings);
+		this.featureCollectorRepository = featureCollectorRepository;
+		this.jiraClient = jiraClient;
 		
 		this.epicCache = new HashMap<>();
 		
@@ -92,23 +98,67 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	}
 
 	/**
+	 * Explicitly updates queries for the source system, and initiates the
+	 * update to MongoDB from those calls.
+	 */
+	public int updateStoryInformation() {
+		int count = 0;
+		epicCache.clear(); // just in case class is made static w/ spring in future
+		
+		//long startDate = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getLastExecuted();
+		
+		String startDateStr = featureSettings.getDeltaStartDate();
+		String maxChangeDate = getMaxChangeDate();
+		if (maxChangeDate != null) {
+			startDateStr = maxChangeDate;
+		}
+		
+		startDateStr = getChangeDateMinutePrior(startDateStr);
+		long startTime;
+		try {
+			startTime = SETTINGS_DATE_FORMAT.parse(startDateStr).getTime();
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+		
+		int pageSize = jiraClient.getPageSize();
+		
+		boolean hasMore = true;
+		for (int i = 0; hasMore; i += pageSize) {
+			List<Issue> issues = jiraClient.getIssues(startTime, i);
+			
+			if (issues != null && !issues.isEmpty()) {
+				updateMongoInfo(issues);
+				count += issues.size();
+			}
+			
+			// will result in an extra call if number of results == pageSize
+			// but I would rather do that then complicate the jira client implementation
+			if (issues == null || issues.size() < pageSize) {
+				hasMore = false;
+				break;
+			}
+		}
+		
+		return count;
+	}
+
+	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
 	 * 
 	 * @param currentPagedJiraRs
 	 *            A list response of Jira issues from the source system
 	 */
-	@Override
-	//@SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.NcssMethodCount", "PMD.NPathComplexity",
-	//		"PMD.AvoidDeeplyNestedIfStmts" })
-	protected void updateMongoInfo(List<Issue> currentPagedJiraRs) {
+	@SuppressWarnings({ "PMD.AvoidDeeplyNestedIfStmts" })
+	private void updateMongoInfo(List<Issue> currentPagedJiraRs) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
 		}
 		
 		if (currentPagedJiraRs != null) {
 			ObjectId jiraFeatureId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
-			String issueTypeName = super.featureSettings.getJiraIssueTypeId();
+			String issueTypeName = featureSettings.getJiraIssueTypeId();
 			
 			for (Issue issue : currentPagedJiraRs) {
 				String issueId = TOOLS.sanitizeResponse(issue.getId());
@@ -121,10 +171,14 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 				Map<String, IssueField> fields = buildFieldMap(issue.getFields());
 				IssueType issueType = issue.getIssueType();
 				User assignee = issue.getAssignee();
-				IssueField epic = fields.get(super.featureSettings.getJiraEpicIdFieldName());
-				IssueField sprint = fields.get(super.featureSettings.getJiraSprintDataFieldName());
+				IssueField epic = fields.get(featureSettings.getJiraEpicIdFieldName());
+				IssueField sprint = fields.get(featureSettings.getJiraSprintDataFieldName());
 				
 				if (TOOLS.sanitizeResponse(issueType.getName()).equalsIgnoreCase(issueTypeName)) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Processing " + TOOLS.sanitizeResponse(issue.getKey()));
+					}
+					
 					// collectorId
 					feature.setCollectorId(jiraFeatureId);
 
@@ -218,15 +272,15 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	
 	private void processEpicData(Feature feature, IssueField epic) {
 		if (epic != null && epic.getValue() != null && !TOOLS.sanitizeResponse(epic.getValue()).isEmpty()) {
-			List<Issue> epicData = this.getEpicData(TOOLS.sanitizeResponse(epic.getValue()));
-			if (epicData != null && !epicData.isEmpty()) {
-				Map<String, IssueField> epicFields = buildFieldMap(epicData.get(0).getFields());
-				String epicId = epicData.get(0).getId().toString();
-				String epicNumber = epicData.get(0).getKey().toString();
-				String epicName = epicData.get(0).getSummary().toString();
-				String epicBeginDate = epicData.get(0).getCreationDate().toString();
+			Issue epicData = getEpicData(TOOLS.sanitizeResponse(epic.getValue()));
+			if (epicData != null) {
+				Map<String, IssueField> epicFields = buildFieldMap(epicData.getFields());
+				String epicId = epicData.getId().toString();
+				String epicNumber = epicData.getKey().toString();
+				String epicName = epicData.getSummary().toString();
+				String epicBeginDate = epicData.getCreationDate().toString();
 				IssueField epicEndDate = epicFields.get("duedate");
-				String epicStatus = epicData.get(0).getStatus().getName();
+				String epicStatus = epicData.getStatus().getName();
 	
 				// sEpicID
 				feature.setsEpicID(TOOLS.sanitizeResponse(epicId));
@@ -407,6 +461,30 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 		
 		return canonicalStatus;
 	}
+	
+	/**
+	 * Retrieves the maximum change date for a given query.
+	 * 
+	 * @return A list object of the maximum change date
+	 */
+	public String getMaxChangeDate() {
+		String data = null;
+
+		try {
+			List<Feature> response = featureRepo
+					.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+							featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId(),
+							featureSettings.getDeltaStartDate());
+			if ((response != null) && !response.isEmpty()) {
+				data = response.get(0).getChangeDate();
+			}
+		} catch (Exception e) {
+			LOGGER.error("There was a problem retrieving or parsing data from the local "
+					+ "repository while retrieving a max change date\nReturning null", e);
+		}
+
+		return data;
+	}
 
 	/**
 	 * Retrieves the related Epic to the current issue from Jira. To make this
@@ -416,67 +494,24 @@ public class StoryDataClientImpl extends FeatureDataClientSetupImpl implements S
 	 *            A given Epic Key
 	 * @return A valid Jira Epic issue object
 	 */
-	protected List<Issue> getEpicData(String epicKey) {
+	private Issue getEpicData(String epicKey) {
 		if (epicCache.containsKey(epicKey)) {
 			return epicCache.get(epicCache);
+		} else {
+			Issue epic = jiraClient.getEpic(epicKey);
+			epicCache.put(epicKey, epic);
+			
+			return epic;
 		}
-		
-		List<Issue> epicRs = new ArrayList<Issue>();
-		JiraDataFactoryImpl jiraConnect = null;
-		String jiraCredentials = this.featureSettings.getJiraCredentials();
-		String jiraBaseUrl = this.featureSettings.getJiraBaseUrl();
-		String query = this.featureWidgetQueries.getEpicQuery(epicKey, "epic");
-		String proxyUri = null;
-		String proxyPort = null;
-		try {
-			if (!this.featureSettings.getJiraProxyUrl().isEmpty()
-					&& (this.featureSettings.getJiraProxyPort() != null)) {
-				proxyUri = this.featureSettings.getJiraProxyUrl();
-				proxyPort = this.featureSettings.getJiraProxyPort();
-			}
-			// TODO don't create new object & connection each time
-			jiraConnect = new JiraDataFactoryImpl(jiraCredentials, jiraBaseUrl, proxyUri,
-					proxyPort);
-			jiraConnect.setQuery(query);
-			epicRs = jiraConnect.getJiraIssues();
-			epicCache.put(epicKey, epicRs);
-		} catch (Exception e) {
-			LOGGER.error(
-					"There was a problem connecting to Jira while getting sub-relationships to epics:"
-							+ e.getMessage() + " : " + e.getCause(),
-					e);
-		} finally {
-			jiraConnect.destroy();
-		}
-
-		return epicRs;
-	}
-
-	/**
-	 * Explicitly updates queries for the source system, and initiates the
-	 * update to MongoDB from those calls.
-	 */
-	public int updateStoryInformation() {
-		epicCache.clear(); // just in case class is made static w/ spring in future
-		super.objClass = Feature.class;
-		super.returnDate = this.featureSettings.getDeltaStartDate();
-		if (super.getMaxChangeDate() != null) {
-			super.returnDate = super.getMaxChangeDate();
-		}
-		super.returnDate = getChangeDateMinutePrior(super.returnDate);
-		super.returnDate = TOOLS.toNativeDate(super.returnDate);
-		String queryName = this.featureSettings.getStoryQuery();
-		super.query = this.featureWidgetQueries.getStoryQuery(returnDate,
-				super.featureSettings.getJiraIssueTypeId(), queryName);
-		
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("updateStoryInformation: queryName = " + query + "; query = " + query);
-		}
-		return updateObjectInformation();
-
 	}
 	
-	protected Feature findOneFeature(String featureId) {
+	private String getChangeDateMinutePrior(String changeDateISO) {
+		int priorMinutes = this.featureSettings.getScheduledPriorMin();
+		return DateUtil.toISODateRealTimeFormat(DateUtil.getDatePriorToMinutes(
+				DateUtil.fromISODateTimeFormat(changeDateISO), priorMinutes));
+	}
+	
+	private Feature findOneFeature(String featureId) {
 		List<Feature> features = featureRepo.getFeatureIdById(featureId);
 		
 		// Not sure of the state of the data

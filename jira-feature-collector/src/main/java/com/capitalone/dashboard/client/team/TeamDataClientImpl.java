@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.client.team;
 
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
@@ -22,22 +23,22 @@ import java.util.List;
  * @author kfk884
  * 
  */
-public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamDataClient {
+public class TeamDataClientImpl implements TeamDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientImpl.class);
 	private static final ClientUtil TOOLS = ClientUtil.getInstance();
 
 	private final FeatureSettings featureSettings;
 	private final ScopeOwnerRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
+	private final JiraClient jiraClient;
 
 	/**
 	 * Extends the constructor from the super class.
 	 * 
 	 * @param teamRepository
 	 */
-	public TeamDataClientImpl(FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings, ScopeOwnerRepository teamRepository) {
-		super(featureSettings, teamRepository, featureCollectorRepository);
+	public TeamDataClientImpl(FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings, 
+			ScopeOwnerRepository teamRepository, JiraClient jiraClient) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Constructing data collection for the feature widget, team-level data...");
 		}
@@ -45,6 +46,24 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 		this.featureSettings = featureSettings;
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepo = teamRepository;
+		this.jiraClient = jiraClient;
+	}
+	
+	/**
+	 * Explicitly updates queries for the source system, and initiates the
+	 * update to MongoDB from those calls.
+	 */
+	public int updateTeamInformation() {
+		int count = 0;
+		
+		List<BasicProject> projects = jiraClient.getProjects();
+		
+		if (projects != null && !projects.isEmpty()) {
+			updateMongoInfo(projects);
+			count += projects.size();
+		}
+		
+		return count;
 	}
 
 	/**
@@ -54,8 +73,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 	 * @param currentPagedJiraRs
 	 *            A list response of Jira issues from the source system
 	 */
-	@Override
-	protected void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
+	private void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
 		}
@@ -98,19 +116,28 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 			}
 		}
 	}
-
+	
 	/**
-	 * Explicitly updates queries for the source system, and initiates the
-	 * update to MongoDB from those calls.
+	 * Retrieves the maximum change date for a given query.
+	 * 
+	 * @return A list object of the maximum change date
 	 */
-	public int updateTeamInformation() {
-		super.objClass = ScopeOwnerCollectorItem.class;
-		super.returnDate = this.featureSettings.getDeltaCollectorItemStartDate();
-		if (super.getMaxChangeDate() != null) {
-			super.returnDate = super.getMaxChangeDate();
+	public String getMaxChangeDate() {
+		String data = null;
+
+		try {
+			List<ScopeOwnerCollectorItem> response = teamRepo.findTopByChangeDateDesc(
+					featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId(),
+					featureSettings.getDeltaCollectorItemStartDate());
+			if ((response != null) && !response.isEmpty()) {
+				data = response.get(0).getChangeDate();
+			}
+		} catch (Exception e) {
+			LOGGER.error("There was a problem retrieving or parsing data from the local "
+					+ "repository while retrieving a max change date\nReturning null");
 		}
-		super.returnDate = getChangeDateMinutePrior(super.returnDate);
-		return updateObjectInformation();
+
+		return data;
 	}
 	
 	/**
@@ -119,7 +146,7 @@ public class TeamDataClientImpl extends TeamDataClientSetupImpl implements TeamD
 	 * @param teamId	the team id
 	 * @return			the collector item if it exists or null
 	 */
-	protected ScopeOwnerCollectorItem findOneScopeOwnerCollectorItem(String teamId) {
+	private ScopeOwnerCollectorItem findOneScopeOwnerCollectorItem(String teamId) {
 		List<ScopeOwnerCollectorItem> scopeOwnerCollectorItems = teamRepo.getTeamIdById(teamId);
 		
 		// Not sure of the state of the data
