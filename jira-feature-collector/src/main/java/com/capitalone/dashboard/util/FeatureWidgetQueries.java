@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.util;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
@@ -11,6 +13,7 @@ import org.stringtemplate.v4.STGroupDir;
  * @author kfk884
  * 
  */
+@Component
 public class FeatureWidgetQueries {
 	private final STGroup folder;
 
@@ -21,6 +24,7 @@ public class FeatureWidgetQueries {
 	 * @param featureSettings
 	 *            Feature collector system settings
 	 */
+	@Autowired
 	public FeatureWidgetQueries(FeatureSettings featureSettings) {
 		this.folder = new STGroupDir(featureSettings.getQueryFolder(), '$', '$');
 	}
