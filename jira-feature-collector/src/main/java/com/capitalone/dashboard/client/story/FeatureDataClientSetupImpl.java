@@ -115,6 +115,7 @@ public abstract class FeatureDataClientSetupImpl implements DataClientSetup {
 		} catch (Exception e) {
 			LOGGER.error("Unexpected error in Jira paging request of " + e.getClass().getName()
 					+ "\n[" + e.getMessage() + "]");
+			LOGGER.debug("Exception", e);
 		} finally {
 			jiraDataFactory.destroy();
 		}
