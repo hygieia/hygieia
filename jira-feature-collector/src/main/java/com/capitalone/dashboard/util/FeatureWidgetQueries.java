@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.util;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.stringtemplate.v4.ST;
@@ -76,6 +78,14 @@ public class FeatureWidgetQueries {
 	public String getEpicQuery(String epicKeyParam, String queryName) {
 		ST st = folder.getInstanceOf(queryName);
 		st.add("epicKey", epicKeyParam);
+		String query = st.render();
+
+		return query;
+	}
+	
+	public String getEpicQuery(List<String> epicKeysParam, String queryName) {
+		ST st = folder.getInstanceOf(queryName);
+		st.add("epicKeys", epicKeysParam);
 		String query = st.render();
 
 		return query;
