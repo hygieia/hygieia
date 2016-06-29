@@ -18,6 +18,11 @@ import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.lang.*;
+import java.lang.Integer;
+import java.lang.InterruptedException;
+import java.lang.String;
+import java.lang.Thread;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -33,8 +38,12 @@ public class SonarBuilder {
      */
     public static final String URL_PATTERN_IN_LOGS = ".*" + Pattern.quote("ANALYSIS SUCCESSFUL, you can browse ") + "(.*)";
     public static final String URL_PROJECT_ID_FRAGMENT = "/api/projects?format=json&key=%s";
-    public static final String URL_METRIC_FRAGMENT = "/api/resources?format=json&resource=%s&metrics=%s&includealerts=true";
-    public static final String METRICS = "security-violations,ncloc,violations,critical_violations,major_violations,blocker_violations,violations_density,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index";
+
+    public static final String CE_URL_PATTERN_IN_LOGS = ".*" + Pattern.quote("More about the report processing at ") + "(.*)";
+    public static final String CE_URL_PROJECT_ID_FRAGMENT = "/ce/task?id=%s";
+
+    public static final String URL_METRIC_FRAGMENT = "/api/resources?format=json&resource=%s&metrics=%s&includealerts=true&includetrends=true";
+    public static final String METRICS = "security-violations,ncloc,violations,critical_violations,major_violations,blocker_violations,violations_density,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,new_violations,new_blocker_violations,new_critical_violations,new_major_violations,new_coverage,new_lines_to_cover,new_line_coverage";
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
     private static final String ID = "id";
     private static final String NAME = "name";
@@ -55,6 +64,9 @@ public class SonarBuilder {
     private String buildId;
     private BuildListener listener;
     private HygieiaPublisher publisher;
+    private String sonarCEAPIUrl;
+    private int ceQueryIntervalInSeconds;
+    private int ceQueryMaxAttempts;
 
     /**
      * Hide utility-class constructor.
@@ -73,21 +85,123 @@ public class SonarBuilder {
             this.sonarServer = sonarBuildLink.substring(0, sonarBuildLink.indexOf("/dashboard/index/" + this.sonarProjectName));
             this.sonarProjectID = getSonarProjectID(this.sonarProjectName);
         }
+        //sonar 5.3 changes
+        String sonarCEAPILink =  extractSonarProjectCEUrlFromLogs(build);
+        if (!StringUtils.isEmpty(sonarCEAPILink)) {
+            this.sonarCEAPIUrl = sonarCEAPILink;
+            String queryIntervalFromConfig = StringUtils.defaultIfBlank(publisher.getHygieiaSonar().getCeQueryIntervalInSeconds(), "10");
+            String queryMaxAttempts = StringUtils.defaultIfBlank(publisher.getHygieiaSonar().getCeQueryMaxAttempts(), "30");
+
+            try {
+                this.ceQueryIntervalInSeconds = Integer.parseInt(queryIntervalFromConfig);
+            } catch (java.lang.NumberFormatException nfe) {
+                // the value could not be fetched from config, use the
+                // Sonar recommended value for query interval
+                this.ceQueryIntervalInSeconds = 10;
+            }
+            try {
+                this.ceQueryMaxAttempts = Integer.parseInt(queryMaxAttempts);
+            } catch (java.lang.NumberFormatException nfe) {
+                // the value could not be fetched from config, use the
+                // Sonar recommended value for query max attempts
+                this.ceQueryMaxAttempts = 30;
+            }
+        }
 
     }
+
+    /** Keeps polling Sonar's Compute Engine (CE) API to determine status of sonar analysis
+     * From Sonar 5.2+, the final analysis is now an asynchronous and the status
+     * of the sonar analysis needs to be determined from the Sonar CE API
+     * @param restCall
+     * @return true after Compute Engine has completed processing or it is an old Sonar version.
+     * Else returns false
+     * @throws ParseException
+     */
+    private boolean ceProcessingComplete(RestCall restCall) throws ParseException {
+        // Sonar 5.2+ check if the sonar ce api url exists. If not,
+        // then the project is using old sonar version and hence
+        // request to Compute Engine api is not required.
+        if (StringUtils.isEmpty(this.sonarCEAPIUrl)) {
+            // request to CE API is not required as Sonar Version < 5.2
+            return true;
+        }
+
+        // keep polling Sonar CE API for max configured attempts to fetch
+        // status of sonar analysis. After every attempt if CE API is not yet
+        // ready, sleep for configured interval period.
+        // Return true as soon as the status changes to SUCCESS
+        for(int i=0;i<this.ceQueryMaxAttempts;i++) {
+            // get the status of sonar analysis using Sonar CE API
+            RestCall.RestCallResponse ceAPIResponse = restCall.makeRestCallGet(this.sonarCEAPIUrl);
+            int responseCodeCEAPI = ceAPIResponse.getResponseCode();
+            if (responseCodeCEAPI == HttpStatus.SC_OK) {
+                String taskStatus = getCETaskStatus(ceAPIResponse.getResponseString());
+                switch (taskStatus) {
+                    case "IN_PROGRESS":
+                    case "PENDING":
+                        // Wait the configured interval then retry
+                        listener.getLogger().println("Waiting for report processing to complete...");
+                        try {
+                            Thread.sleep(this.ceQueryIntervalInSeconds * 1000);
+                        } catch (InterruptedException ie) {
+                            listener.getLogger().println("Sonar report processing errored while getting the status...");
+                            return false;
+                        }
+                        break;
+                    case "SUCCESS":
+                        // Exit
+                        listener.getLogger().println("Sonar report processing completed...");
+                        return true;
+                    default:
+                        listener.getLogger().println("Hygieia Publisher: Sonar CE API returned bad status: " + taskStatus);
+                        return false;
+                }
+
+            }
+            else {
+                listener.getLogger().println("Hygieia Publisher: Sonar CE API Connection failed. Response: " + responseCodeCEAPI);
+                return false;
+            }
+        }
+        listener.getLogger().println("Hygieia Publisher: Sonar CE API could not return response on time.");
+        return false;
+    }
+
 
     public CodeQualityCreateRequest getSonarMetrics() throws ParseException {
         if (StringUtils.isEmpty(sonarServer) || StringUtils.isEmpty(sonarProjectID)) return null;
         String url = String.format(sonarServer + URL_METRIC_FRAGMENT, sonarProjectID, METRICS);
         RestCall restCall = new RestCall(publisher.getDescriptor().isUseProxy());
-        RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
-        int responseCode = callResponse.getResponseCode();
-        if (responseCode == HttpStatus.SC_OK) {
-            String resp = callResponse.getResponseString();
-            return buildQualityRequest(resp);
+
+        //sonar 5.2+ changes - CE api
+        if(ceProcessingComplete(restCall)) {
+            RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
+            int responseCode = callResponse.getResponseCode();
+            if (responseCode == HttpStatus.SC_OK) {
+                String resp = callResponse.getResponseString();
+                return buildQualityRequest(resp);
+            }
+            listener.getLogger().println("Hygieia Publisher: Sonar Connection Failed. Response: " + responseCode);
+            return null;
         }
-        listener.getLogger().println("Hygieia Publisher: Sonar Connection Failed. Response: " + responseCode);
-        return null;
+        else {
+            listener.getLogger().println("Hygieia Publisher: Sonar Compute Engine API Failed. ");
+            return null;
+        }
+
+    }
+
+    /***
+     * Parses the task status as returned from Sonar's CE API
+     * @param ceTaskResponse
+     * @return value of status element in the CE API Response
+     * @throws org.json.simple.parser.ParseException
+     */
+    private String getCETaskStatus(String ceTaskResponse) throws org.json.simple.parser.ParseException {
+        JSONObject ceTaskResponseObject = (JSONObject) new org.json.simple.parser.JSONParser().parse(ceTaskResponse);
+        JSONObject task = (JSONObject) ceTaskResponseObject.get("task");
+        return str(task, "status");
     }
 
     private CodeQualityCreateRequest buildQualityRequest(String json) throws ParseException {
@@ -107,8 +221,28 @@ public class SonarBuilder {
             for (Object metricObj : (JSONArray) prjData.get(MSR)) {
                 JSONObject metricJson = (JSONObject) metricObj;
                 CodeQualityMetric metric = new CodeQualityMetric(str(metricJson, KEY));
-                metric.setValue(metricJson.get(VALUE));
-                metric.setFormattedValue(str(metricJson, FORMATTED_VALUE));
+
+
+                // if data element is set, set data into value property
+                // this usually happens for custom metrics
+                if(metricJson.get("data") != null) {
+                    metric.setFormattedValue(metricJson.get("data").toString());
+                    metric.setValue(metricJson.get("data"));
+                }
+                else if (metric.getName().startsWith("new_")) {
+                    // for new  metrics- use var2 and fvar2
+                    // this is because var2 and fvar2 represents values since
+                    // last analysis
+                    if (metricJson.get("var2") != null || metricJson.get("fvar2") != null) {
+                        metric.setValue(metricJson.get("var2"));
+                        metric.setFormattedValue(str(metricJson, "fvar2"));
+                    }
+                }
+                else {
+                    // for other regular metrics - use default fields
+                    metric.setValue(metricJson.get(VALUE));
+                    metric.setFormattedValue(str(metricJson, FORMATTED_VALUE));
+                }
                 metric.setStatus(metricStatus(str(metricJson, ALERT)));
                 metric.setStatusMessage(str(metricJson, ALERT_TEXT));
                 codeQuality.getMetrics().add(metric);
@@ -154,6 +288,30 @@ public class SonarBuilder {
             br = new BufferedReader(build.getLogReader());
             String strLine;
             Pattern p = Pattern.compile(URL_PATTERN_IN_LOGS);
+            while ((strLine = br.readLine()) != null) {
+                Matcher match = p.matcher(strLine);
+                if (match.matches()) {
+                    url = match.group(1);
+                }
+            }
+        } finally {
+            IOUtils.closeQuietly(br);
+        }
+        return url;
+    }
+
+    /**
+     * Sonar 5.3 Changes: As per changes in Sonar 5.3 onwards, the sonar analysis update on server
+     * is now processed asynchronously on server. Sonar provides an API called Compute Engine (CE)
+     * whihc needs to be polled regularly to determine status of the analysis. URL of CE API can be taken from logs
+     */
+    public String extractSonarProjectCEUrlFromLogs(AbstractBuild build) throws IOException {
+        BufferedReader br = null;
+        String url = null;
+        try {
+            br = new BufferedReader(build.getLogReader());
+            String strLine;
+            Pattern p = Pattern.compile(CE_URL_PATTERN_IN_LOGS);
             while ((strLine = br.readLine()) != null) {
                 Matcher match = p.matcher(strLine);
                 if (match.matches()) {

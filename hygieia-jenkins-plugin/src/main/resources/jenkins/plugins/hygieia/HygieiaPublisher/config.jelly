@@ -40,6 +40,14 @@
             <f:checkbox name="publishBuildStart" title="Publish Build Start Status" value="true"
                         checked="${instance.getHygieiaSonar().isPublishBuildStart()}"/>
         </f:entry>
+        <f:entry name="ceQueryIntervalInSeconds" title="CE Engine Query Interval (in seconds)" field="ceQueryIntervalInSeconds"
+                 help="/plugin/hygieia-publisher/help-projectConfig-sonarQueryInterval.html">
+            <f:textbox name="ceQueryIntervalInSeconds" value="${instance.getHygieiaSonar().getCeQueryIntervalInSeconds()}"/>
+        </f:entry>
+        <f:entry name="ceQueryMaxAttempts" title="CE Engine Query Max Attempts" field="ceQueryMaxAttempts"
+                 help="/plugin/hygieia-publisher/help-projectConfig-sonarQueryMaxAttempts.html">
+            <f:textbox name="ceQueryMaxAttempts" value="${instance.getHygieiaSonar().getCeQueryMaxAttempts()}"/>
+        </f:entry>
     </f:optionalBlock>
 
     <f:optionalBlock name="hygieiaDeploy" title="Publish Deployment Results"
