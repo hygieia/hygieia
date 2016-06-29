@@ -1,8 +1,28 @@
-<div class="row performance-view">
+<div class="performance-view">
+  <div class="row">
     <div class="col-lg-4 col-sm-6">
       <div class="widget health-bars">
         <div class="widget-heading">
           Business Transaction Health
+        </div>
+        <div class="widget-body">
+          <div guage-container>
+            <div class="ct-wrapper clearfix"
+                 ng-class=""
+                 popover-html-unsafe=""
+                 popover-trigger="focus"
+                 popover-placement="right"
+                 tabindex="0">
+                  <chartist class="ct-chart ct-square db-chart-primary ct-chart-Warning"
+                  chartist-data="performanceView.transactionHealthData"
+                  chartist-chart-options="performanceView.pieOptions"
+                  chartist-chart-type="Pie">
+                  </chartist>
+                  <div class="guage-number">
+                    <span fit-text>43<small class="percent">%</small></span>
+                  </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -12,6 +32,25 @@
         <div class="widget-heading">
           Node Health
         </div>
+        <div class="widget-body">
+          <div guage-container>
+            <div class="ct-wrapper clearfix"
+                 ng-class=""
+                 popover-html-unsafe=""
+                 popover-trigger="focus"
+                 popover-placement="right"
+                 tabindex="0">
+                  <chartist class="ct-chart ct-square db-chart-primary ct-chart-Warning"
+                  chartist-data="performanceView.nodeHealthData"
+                  chartist-chart-options="performanceView.pieOptions"
+                  chartist-chart-type="Pie">
+                  </chartist>
+                  <div class="guage-number">
+                    <span fit-text>96<small class="percent">%</small></span>
+                  </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -20,6 +59,9 @@
         <div class="widget-heading">
           Response Time
         </div>
+        <div class="widget-body">
+
+        </div>
       </div>
     </div>
 
@@ -28,40 +70,49 @@
         <div class="widget-heading">
           Errors
         </div>
-      </div>
-    </div>
-
-    <div class="col-lg-6 col-sm-12">
-      <div class="widget health-charts health-charts-calls">
-        <div class="widget-heading">
-          Calls
-        </div>
         <div class="widget-body">
-          <chartist class="ct-chart ct-octave dash-chart-alt"
-                    chartist-chart-type="Line"
-                    chartist-data=""
-                    chartist-chart-options="performanceView.callsChartOptions"
-                    chartist-events=""
-                    >
-          </chartist>
+          data:
+          <span>{{performanceView.dataexample}}</span>
         </div>
       </div>
     </div>
 
+
+  </div>
+  <div class="row">
     <div class="col-lg-6 col-sm-12">
-      <div class="widget health-charts health-charts-errors">
-        <div class="widget-heading">
-          Errors
+          <div class="widget health-charts health-charts-calls">
+            <div class="widget-heading">
+              Calls
+            </div>
+            <div class="widget-body">
+              <chartist class="ct-chart ct-octave dash-chart-alt"
+                        chartist-chart-type="Line"
+                        chartist-data="performanceView.callsChartData"
+                        chartist-chart-options="performanceView.genericChartOptions"
+                        chartist-events=""
+                        >
+              </chartist>
+            </div>
+          </div>
         </div>
-        <div class="widget-body">
-          <chartist class="ct-chart ct-octave dash-chart-alt"
-                    chartist-chart-type="Line"
-                    chartist-data=""
-                    chartist-chart-options=""
-                    chartist-events=""
-                    >
-          </chartist>
+
+        <div class="col-lg-6 col-sm-12">
+          <div class="widget health-charts health-charts-errors">
+            <div class="widget-heading">
+              Errors
+            </div>
+            <div class="widget-body">
+              <chartist class="ct-chart ct-octave dash-chart-alt"
+                        chartist-chart-type="Line"
+                        chartist-data="performanceView.errorsChartData"
+                        chartist-chart-options="performanceView.genericChartOptions"
+                        chartist-events=""
+                        >
+              </chartist>
+            </div>
+          </div>
         </div>
-      </div>
     </div>
+  </div>
 </div>
