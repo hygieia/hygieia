@@ -65,8 +65,6 @@ This project adheres to the [Open Code of Conduct][code-of-conduct]. By particip
 
 ![Image](/media/images/overview/6.png)
 
-![Image](/media/images/overview/7.png)
-
 ![Image](/media/images/overview/8.png)
 
 ![Image](/media/images/overview/9.png)
