@@ -87,7 +87,7 @@ public class DefaultJiraClient implements JiraClient {
 					if (LOGGER.isDebugEnabled()) {
 						int pageEnd = Math.min(pageStart + getPageSize() - 1, sr.getTotal());
 						
-						LOGGER.debug(String.format("Processing issues %5d - %5d out of %d", pageStart, pageEnd, sr.getTotal()));
+						LOGGER.debug(String.format("Processing issues %d - %d out of %d", pageStart, pageEnd, sr.getTotal()));
 					}
 					
 					rt = Lists.newArrayList(jiraRawRs);
@@ -171,6 +171,50 @@ public class DefaultJiraClient implements JiraClient {
 		}
 		
 		return rt.isEmpty()? null : rt.iterator().next();
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public List<Issue> getEpics(List<String> epicKeys) {
+		List<Issue> rt = new ArrayList<>();
+		
+		if (client != null) {
+			try {
+				String query = this.featureWidgetQueries.getEpicQuery(epicKeys, "epics");
+				
+				// This could be paged too
+				int total = Integer.MAX_VALUE;
+				for (int j = 0; j < total; j += featureSettings.getPageSize()) {
+
+					Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(
+							query, featureSettings.getPageSize(), j, DEFAULT_FIELDS);
+					
+					SearchResult sr = promisedRs.claim();
+					total = sr.getTotal();
+					
+					Iterable<Issue> jiraRawRs = sr.getIssues();
+					
+					if (jiraRawRs != null) {
+						rt.addAll(Lists.newArrayList(jiraRawRs));
+					}
+				}
+			} catch (RestClientException e) {
+				if (e.getStatusCode().get() != null && e.getStatusCode().get() == 401 ) {
+					LOGGER.error("Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.");
+				} else {
+					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
+				}
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Exception", e);
+				}
+			}
+		} else {
+			LOGGER.warn("Jira client setup failed. No results obtained. Check your jira setup.");
+		}
+		
+		return rt;
 	}
 	
 	@Override

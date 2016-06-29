@@ -40,6 +40,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -125,7 +126,14 @@ public class StoryDataClientImpl implements StoryDataClient {
 		
 		boolean hasMore = true;
 		for (int i = 0; hasMore; i += pageSize) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Obtaining story information starting at index " + i + "...");
+			}
+			long queryStart = System.currentTimeMillis();
 			List<Issue> issues = jiraClient.getIssues(startTime, i);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Story information query took " + (System.currentTimeMillis() - queryStart) + " ms");
+			}
 			
 			if (issues != null && !issues.isEmpty()) {
 				updateMongoInfo(issues);
@@ -150,13 +158,16 @@ public class StoryDataClientImpl implements StoryDataClient {
 	 * @param currentPagedJiraRs
 	 *            A list response of Jira issues from the source system
 	 */
-	@SuppressWarnings({ "PMD.AvoidDeeplyNestedIfStmts" })
+	@SuppressWarnings({ "PMD.AvoidDeeplyNestedIfStmts", "PMD.NPathComplexity" })
 	private void updateMongoInfo(List<Issue> currentPagedJiraRs) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
 		}
 		
 		if (currentPagedJiraRs != null) {
+			List<Feature> featuresToSave = new ArrayList<>();
+			
+			Map<Long, String> issueEpics = new HashMap<>();
 			ObjectId jiraFeatureId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
 			String issueTypeName = featureSettings.getJiraIssueTypeId();
 			
@@ -176,24 +187,51 @@ public class StoryDataClientImpl implements StoryDataClient {
 				
 				if (TOOLS.sanitizeResponse(issueType.getName()).equalsIgnoreCase(issueTypeName)) {
 					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("Processing " + TOOLS.sanitizeResponse(issue.getKey()));
+						LOGGER.debug(String.format("[%-12s] %s", 
+								TOOLS.sanitizeResponse(issue.getKey()),
+								TOOLS.sanitizeResponse(issue.getSummary())));
 					}
 					
 					// collectorId
 					feature.setCollectorId(jiraFeatureId);
 
 					processFeatureData(feature, issue);
+					
+					// delay processing epic data for performance
+					if (epic != null && epic.getValue() != null && !TOOLS.sanitizeResponse(epic.getValue()).isEmpty()) {
+						issueEpics.put(issue.getId(), TOOLS.sanitizeResponse(epic.getValue()));
+					}
 
-					processEpicData(feature, epic);
 					
 					processSprintData(feature, sprint);
 					
 					processAssigneeData(feature, assignee);
+					
+					featuresToSave.add(feature);
 				}
-
-				// Saving back to MongoDB
-				featureRepo.save(feature);
 			}
+			
+			// Load epic data into cache
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Processing epic data");
+			}
+			
+			long epicStartTime = System.currentTimeMillis();
+			Collection<String> epicsToLoad = issueEpics.values();
+			loadEpicData(epicsToLoad);
+			
+			for (Feature feature : featuresToSave) {
+				String epicKey = issueEpics.get(feature.getsId());
+				
+				processEpicData(feature, epicKey);
+			}
+			
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Processing epic data took " + (System.currentTimeMillis() - epicStartTime) + " ms");
+			}
+			
+			// Saving back to MongoDB
+			featureRepo.save(featuresToSave);
 		}
 	}
 	
@@ -270,9 +308,9 @@ public class StoryDataClientImpl implements StoryDataClient {
 		feature.setsOwnersIsDeleted(TOOLS.toCanonicalList(Collections.<String>emptyList()));
 	}
 	
-	private void processEpicData(Feature feature, IssueField epic) {
-		if (epic != null && epic.getValue() != null && !TOOLS.sanitizeResponse(epic.getValue()).isEmpty()) {
-			Issue epicData = getEpicData(TOOLS.sanitizeResponse(epic.getValue()));
+	private void processEpicData(Feature feature, String epicKey) {
+		if (epicKey != null && !epicKey.isEmpty()) {
+			Issue epicData = getEpicData(epicKey);
 			if (epicData != null) {
 				Map<String, IssueField> epicFields = buildFieldMap(epicData.getFields());
 				String epicId = epicData.getId().toString();
@@ -484,6 +522,38 @@ public class StoryDataClientImpl implements StoryDataClient {
 		}
 
 		return data;
+	}
+	
+	private void loadEpicData(Collection<String> epicKeys) {
+		// No need to lookup items that are already cached
+		Set<String> epicsToLookup = new HashSet<>();
+		epicsToLookup.addAll(epicKeys);
+		epicsToLookup.removeAll(epicCache.keySet());
+		
+		List<String> epicsToLookupL = new ArrayList<>(epicsToLookup);
+		
+		if (!epicsToLookupL.isEmpty()) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Obtaining epic information for epics: " + epicsToLookupL);
+			}
+			
+			// Do this at most 50 at a time as jira doesn't seem to always work when there are a lot of items in an in clause
+			int maxEpicsToLookup = Math.min(featureSettings.getPageSize(), 50);
+			
+			for (int i = 0; i < epicsToLookupL.size(); i += maxEpicsToLookup) {
+				int endIdx = Math.min(i + maxEpicsToLookup, epicsToLookupL.size());
+				
+				List<String> epicKeysSub = epicsToLookupL.subList(i, endIdx);
+				
+				List<Issue> epics = jiraClient.getEpics(epicKeysSub);
+				
+				for (Issue epic : epics) {
+					String epicKey = epic.getKey();
+					
+					epicCache.put(epicKey, epic);
+				}
+			}
+		}
 	}
 
 	/**

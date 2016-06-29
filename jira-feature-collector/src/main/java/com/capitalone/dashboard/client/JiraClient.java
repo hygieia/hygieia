@@ -13,4 +13,6 @@ public interface JiraClient {
 	Issue getEpic(String epicId);
 	
 	int getPageSize();
+
+	List<Issue> getEpics(List<String> epicKeys);
 }
