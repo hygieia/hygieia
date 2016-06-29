@@ -24,6 +24,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.lang.String;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -169,13 +170,45 @@ public class HygieiaPublisher extends Notifier {
     public static class HygieiaSonar {
         private final boolean publishBuildStart;
 
+        //Sonar 5.2+ changes: get query interval and max attempts from config
+        private final String ceQueryIntervalInSeconds;
+        private final String ceQueryMaxAttempts;
+
         @DataBoundConstructor
-        public HygieiaSonar(boolean publishBuildStart) {
+        public HygieiaSonar(boolean publishBuildStart, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts ) {
             this.publishBuildStart = publishBuildStart;
+            this.ceQueryIntervalInSeconds = ceQueryIntervalInSeconds;
+            this.ceQueryMaxAttempts = ceQueryMaxAttempts;
         }
 
         public boolean isPublishBuildStart() {
             return publishBuildStart;
+        }
+
+        /** Sonar 5.2+ changes: get query interval from config
+         * If value is empty or null - return 10 (recommended value from SonarQube)
+         * @return max number of attempts to query Sonar CE API (10 if blank)
+         */
+        public String getCeQueryIntervalInSeconds() {
+            if (!StringUtils.isEmpty(ceQueryIntervalInSeconds)) {
+                return ceQueryIntervalInSeconds;
+            }
+            else {
+                return "10";
+            }
+        }
+
+        /** Sonar 5.2+ changes: get query max attempts from config
+         * If value is empty or null - return 30 (recommended value from SonarQube)
+         * @return max number of attempts to query Sonar CE API (30 if blank)
+         */
+        public String getCeQueryMaxAttempts() {
+            if (!StringUtils.isEmpty(ceQueryIntervalInSeconds)) {
+                return ceQueryMaxAttempts;
+            }
+            else {
+                return "30";
+            }
         }
 
     }
