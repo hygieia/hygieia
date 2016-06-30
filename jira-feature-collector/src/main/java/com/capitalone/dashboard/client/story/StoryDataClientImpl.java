@@ -22,6 +22,7 @@ import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.capitalone.dashboard.client.JiraClient;
+import com.capitalone.dashboard.client.Sprint;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureStatus;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
@@ -31,6 +32,8 @@ import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
+
+import org.apache.commons.lang.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +65,19 @@ import java.util.Set;
 public class StoryDataClientImpl implements StoryDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StoryDataClientImpl.class);
 	private static final ClientUtil TOOLS = ClientUtil.getInstance();
+	
+	private static final Comparator<Sprint> SPRINT_COMPARATOR = new Comparator<Sprint>() {
+		@Override
+		public int compare(Sprint o1, Sprint o2) {
+			int cmp1 = ObjectUtils.compare(o1.getStartDateStr(), o2.getStartDateStr());
+			
+			if (cmp1 != 0) {
+				return cmp1;
+			}
+			
+			return ObjectUtils.compare(o1.getEndDateStr(), o2.getEndDateStr());
+		}
+	};
 	
 	// works with ms too (just ignores them)
 	private final DateFormat SETTINGS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -388,42 +405,60 @@ public class StoryDataClientImpl implements StoryDataClient {
 		feature.setsEpicIsDeleted("False");
 	}
 	
-	private void processSprintData(Feature feature, IssueField sprint) {
-		if (sprint != null && sprint.getValue() != null && !TOOLS.sanitizeResponse(sprint.getValue()).isEmpty()) {
-			Map<String, Object> canonicalSprint = TOOLS.toCanonicalSprintPOJO(sprint.getValue().toString());
-			// sSprintID
-			if (canonicalSprint.get("id") != null) {
-				feature.setsSprintID(canonicalSprint.get("id").toString());
-			} else {
-				feature.setsSprintID("");
-			}
+	private void processSprintData(Feature feature, IssueField sprintField) {
+		if (sprintField != null && sprintField.getValue() != null && !"".equals(sprintField.getValue())) {
+			Object sValue = sprintField.getValue();
+			
+			try {
+				
+				List<Sprint> sprints = TOOLS.parseSprints(sValue);
 
-			// sSprintName
-			if (canonicalSprint.get("name") != null) {
-				feature.setsSprintName(canonicalSprint.get("name").toString());
-			} else {
-				feature.setsSprintName("");
-			}
-
-			// sSprintBeginDate
-			if (canonicalSprint.get("startDate") != null) {
-				feature.setsSprintBeginDate(TOOLS.toCanonicalDate(canonicalSprint.get("startDate").toString()));
-			} else {
-				feature.setsSprintBeginDate("");
-			}
-
-			// sSprintEndDate
-			if (canonicalSprint.get("endDate") != null) {
-				feature.setsSprintEndDate(TOOLS.toCanonicalDate(canonicalSprint.get("endDate").toString()));
-			} else {
-				feature.setsSprintEndDate("");
-			}
-
-			// sSprintAssetState
-			if (canonicalSprint.get("state") != null) {
-				feature.setsSprintAssetState(canonicalSprint.get("state").toString());
-			} else {
-				feature.setsSprintAssetState("");
+				// Now sort so we can use the most recent one
+				// yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
+				Collections.sort(sprints, SPRINT_COMPARATOR);
+				
+				if (!sprints.isEmpty()) {
+					Sprint sprint = sprints.iterator().next();
+					
+					// sSprintID
+					if (sprint.getId() != null) {
+						feature.setsSprintID(String.valueOf(sprint.getId()));
+					} else {
+						feature.setsSprintID("");
+					}
+					
+					// sSprintName
+					if (sprint.getName() != null) {
+						feature.setsSprintName(sprint.getName());
+					} else {
+						feature.setsSprintName("");
+					}
+	
+					// sSprintBeginDate
+					if (sprint.getStartDateStr() != null) {
+						feature.setsSprintBeginDate(TOOLS.toCanonicalDate(sprint.getStartDateStr()));
+					} else {
+						feature.setsSprintBeginDate("");
+					}
+	
+					// sSprintEndDate
+					if (sprint.getEndDateStr() != null) {
+						feature.setsSprintEndDate(TOOLS.toCanonicalDate(sprint.getEndDateStr()));
+					} else {
+						feature.setsSprintEndDate("");
+					}
+	
+					// sSprintAssetState
+					if (sprint.getState() != null) {
+						feature.setsSprintAssetState(sprint.getState());
+					} else {
+						feature.setsSprintAssetState("");
+					}
+				} else {
+					LOGGER.error("Failed to obtain sprint data from " + sValue);
+				}
+			} catch (ParseException | RuntimeException e) {
+				LOGGER.error("Failed to obtain sprint data from " + sValue, e);
 			}
 		} else {
 			/*
