@@ -1,1 +1,1 @@
-epics(epicKeys) ::= "key in ($epicKeys$)"
+epics(epicKeys) ::= "key in ($epicKeys; separator=\",\"$)"
