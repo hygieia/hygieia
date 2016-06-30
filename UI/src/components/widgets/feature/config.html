@@ -6,7 +6,9 @@
 		ng-class="{'has-error': configForm.collectorItemId.$invalid && ctrl.submitted}">
 
 		<div class="col-sm-push-2 col-sm-8">
-			<label class="modal-label">Agile Content Tool Type:</label> <select
+			<label class="modal-label">Agile Content Tool Type:</label>
+
+			<select
 				name="collectorId" class="form-control" ng-model="ctrl.collectorId"
 				ng-init="ctrl.collectorId"
 				ng-change="ctrl.evaluateTypeSelection()"
@@ -15,20 +17,49 @@
 				<option value="">{{ctrl.typeDropdownPlaceholder}}</option>
 			</select>
 
+			<!--<ui-select id="collectorId" ng-model="ctrl.collectorId" ng-init="ctrl.collectorId" ng-change="ctrl.evaluateTypeSelection()" theme="bootstrap" ng-disabled="ctrl.toolsDropdownDisabled" required>
+				<ui-select-match placeholder={{ctrl.toolsDropdownPlaceholder}} >{{$select.selected.value}}</ui-select-match>
+				<ui-select-choices repeat="featureTypeOption in (ctrl.featureTypeOptions | filter: $select.search) track by featureTypeOption.id"
+								   refresh="refreshPatients($select.search)"
+								   refresh-delay="0">
+					<div ng-bind-html="featureTypeOption.value | highlight: $select.search"></div>
+				</ui-select-choices>
+				<ui-select-no-choice>
+					Dang!  We couldn't find any teams...
+				</ui-select-no-choice>
+			</ui-select>-->
+
+
 			<p class="help-block"
 				ng-if="configForm.collectorItemId.$error.required">Please select
 				a valid feature data source</p>
 		</div>
 
 		<div ng-hide="ctrl.hideScopeOwnerDropDown" class="col-sm-push-2 col-sm-8">
-			<label class="modal-label">Team/Project Name:</label> <select
+			<label class="modal-label">Team/Project Name:</label>
+			<!--<select
 				name="collectorItemId" class="form-control"
 				ng-model="ctrl.collectorItemId"
 				ng-options="item.teamName for item in ctrl.scopeOwners | orderBy: 'teamName' track by item.value"
 				ng-disabled="ctrl.toolsDropdownDisabled"
 				required>
 				<option value="">{{ctrl.toolsDropdownPlaceholder}}</option>
-			</select>
+			</select>-->
+
+			<ui-select id="collectorItemId" ng-model="ctrl.collectorItemId" theme="bootstrap"
+					   ng-disabled="ctrl.toolsDropdownDisabled" required>
+				<ui-select-match placeholder={{ctrl.toolsDropdownPlaceholder}}>{{$select.selected.teamName}}
+				</ui-select-match>
+				<ui-select-choices repeat="item in (ctrl.scopeOwners | filter: $select.search) track by item.value"
+								   refresh="refreshPatients($select.search)"
+								   refresh-delay="0">
+					<div ng-bind-html="item.teamName | highlight: $select.search"></div>
+				</ui-select-choices>
+				<ui-select-no-choice>
+					Dang! We couldn't find any teams...
+				</ui-select-no-choice>
+			</ui-select>
+
 
 			<p class="help-block"
 				ng-if="configForm.collectorItemId.$error.required">Please select
