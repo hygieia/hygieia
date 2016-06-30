@@ -39,13 +39,6 @@
           }
         };
 
-      ctrl.callsChartData = {
-          labels: ['A', 'B', 'C', 'D', 'E'],
-          series: [
-            [1, 2, 3, 4, 5]
-          ]
-        };
-
       ctrl.errorsChartData = {
         labels: ['A', 'b', 'c', 'd', 'e', 'f'],
         series: [
@@ -54,12 +47,7 @@
       };
 
         ctrl.calls = 100;
-        ctrl.transactionHealthData = {
-          series: [45, 55]
-        };
-        ctrl.nodeHealthData = {
-          series: [96, 4]
-        };
+
         ctrl.pieOptions = {
           donut: true,
           donutWidth: 20,
@@ -77,9 +65,9 @@
             };
             console.log("checkpoint1");
             performanceData.report(params).then(function(data) {
-              console.log("checkpoint2");
-              debugger;
-                processResponse(data);
+                console.log("checkpoint2");
+                console.log("data: " + data);
+                processResponse(data.result);
                 deferred.resolve(data.lastUpdated);
             });
 
@@ -104,7 +92,7 @@
             });
         }*/
 
-        var groupedCallsData = [];
+        //var groupedCallsData = [];
         function processResponse(data) {
             //debugger;
             //ctrl.responsetime = data.responsetime;
@@ -115,19 +103,36 @@
             ctrl.errorspm = data.errorspm;
             ctrl.businesshealth = data.businesshealth;
             ctrl.nodehealth = data.nodehealth;*/
-            console.log("Processing...");
-            ctrl.dataexample = data.lastUpdated;
-            console.log(ctrl.dataexample);
-            console.log("Log: " + data.lastUpdated);
-
-            /*_(data).forEach(function(element){
+            var groupedCallsData = [];
+            var labels = [];
+            var count = 0;
+            var nodehealth = 0;
+            var businesshealth = 0;
+            _(data).forEach(function(element){
                 groupedCallsData.push(element.calls);
+                labels.push('');
+                count++;
+                nodehealth += parseInt(element.nodehealth);
+                businesshealth += parseInt(element.businesshealth);
             });
+            console.log(groupedCallsData);
+            console.log(labels);
+            var nodehealthavg = Math.round(nodehealth/count * 10)/10;
+            console.log("nodehealth: " + nodehealthavg);
+            var businesshealthavg = Math.round(businesshealth/count * 10)/10;
+            ctrl.businessavg = businesshealthavg;
+            ctrl.nodeavg = nodehealthavg;
+            ctrl.transactionHealthData = {
+              series: [businesshealthavg, 100-businesshealthavg]
+            };
 
+            ctrl.nodeHealthData = {
+              series: [nodehealthavg, 100-nodehealthavg]
+            };
             ctrl.callsChartData = {
               series: [groupedCallsData],
-              labels: ['A', 'B', 'C', 'D']
-            }*/
+              labels: labels
+            }
         }
 
     }

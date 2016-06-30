@@ -19,10 +19,12 @@
 
 		function report(params){ //switch the order of the routes when done with api calls!!!!!
 			console.log("I'm here!");
-			return $http.get(/*HygieiaConfig.local ? testReportRoute : */caReportRoute /*,{params: params}*/)
-					.then(function(response) {
+			//debugger;
+			return $http.get(/*HygieiaConfig.local ? testReportRoute : */caReportRoute/*,{params: params}*/).then(function(response) {
 						console.log("hit something");
 						return response.data;
+					}, function(error){
+						console.log("error is: " + error);
 					});
 			}
 	}
