@@ -167,7 +167,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		if (currentPagedJiraRs != null) {
 			List<Feature> featuresToSave = new ArrayList<>();
 			
-			Map<Long, String> issueEpics = new HashMap<>();
+			Map<String, String> issueEpics = new HashMap<>();
 			ObjectId jiraFeatureId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
 			String issueTypeName = featureSettings.getJiraIssueTypeId();
 			
@@ -194,12 +194,15 @@ public class StoryDataClientImpl implements StoryDataClient {
 					
 					// collectorId
 					feature.setCollectorId(jiraFeatureId);
+					
+					// ID
+					feature.setsId(TOOLS.sanitizeResponse(issue.getId()));
 
 					processFeatureData(feature, issue);
 					
 					// delay processing epic data for performance
 					if (epic != null && epic.getValue() != null && !TOOLS.sanitizeResponse(epic.getValue()).isEmpty()) {
-						issueEpics.put(issue.getId(), TOOLS.sanitizeResponse(epic.getValue()));
+						issueEpics.put(feature.getsId(), TOOLS.sanitizeResponse(epic.getValue()));
 					}
 
 					
@@ -240,9 +243,6 @@ public class StoryDataClientImpl implements StoryDataClient {
 		String status = this.toCanonicalFeatureStatus(issue.getStatus().getName());
 		String estimate = String.valueOf(issue.getTimeTracking().getRemainingEstimateMinutes());
 		String changeDate = issue.getUpdateDate().toString();
-
-		// ID
-		feature.setsId(TOOLS.sanitizeResponse(issue.getId()));
 		
 		// sNumber
 		feature.setsNumber(TOOLS.sanitizeResponse(issue.getKey()));
@@ -288,6 +288,12 @@ public class StoryDataClientImpl implements StoryDataClient {
 
 		// sProjectPath - does not exist in Jira
 		feature.setsProjectPath("");
+		
+		// sTeamID
+		feature.setsTeamID(TOOLS.sanitizeResponse(project.getId()));
+
+		// sTeamName
+		feature.setsTeamName(TOOLS.sanitizeResponse(project.getName()));
 		
 		// sTeamChangeDate - not able to retrieve at this asset level from Jira
 		feature.setsTeamChangeDate("");
@@ -566,7 +572,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 	 */
 	private Issue getEpicData(String epicKey) {
 		if (epicCache.containsKey(epicKey)) {
-			return epicCache.get(epicCache);
+			return epicCache.get(epicKey);
 		} else {
 			Issue epic = jiraClient.getEpic(epicKey);
 			epicCache.put(epicKey, epic);
