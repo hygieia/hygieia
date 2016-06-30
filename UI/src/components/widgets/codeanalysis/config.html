@@ -67,12 +67,25 @@
                             required>
                 </div>
                 <div class="col-sm-8">
-                    <select class="form-control" name="collectorItemList"
+                    <!--<select class="form-control" name="collectorItemList"
                             ng-model="configItem.testCollectorItem"
                             ng-options="(item.niceName + '-' + item.description) for item in configItem.testJob | orderBy:['collector.name','description'] track by item.id"
                             ng-disabled="caWidget.testJobs.length === 0">
                         <option value="">{{caWidget.testToolsDropdownPlaceholder}}</option>
-                    </select>
+                    </select>-->
+
+                    <ui-select ng-model="configItem.testCollectorItem" theme="bootstrap"
+                               ng-disabled="caWidget.testJobs.length === 0">
+                        <ui-select-match placeholder="{{caWidget.testToolsDropdownPlaceholder}}">
+                            {{$select.selected.description}}
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="item in (configItem.testJob | filter: $select.search) track by item.id">
+                            <div ng-bind-html="(item.niceName + '-' + item.description) | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+
+
                 </div>
                 <dash-trash class="fa-lg" ng-click="caWidget.deleteTestConfig(configItem)"></dash-trash>
             </div>
