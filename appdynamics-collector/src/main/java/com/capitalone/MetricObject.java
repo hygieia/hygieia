@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by PXD338 on 6/29/2016.
+ * Created by on 6/29/2016.
  */
 public class MetricObject {
 
@@ -30,8 +30,8 @@ public class MetricObject {
     private RESTAccess getAccess() {
         final String controller = "appdyn-hqa-c01";
         final String port = "80";
-        final String user = "pxd338";
-        final String passwd = "***REMOVED***";
+        final String user = "";
+        final String passwd = "";
         final String account = "customer1";
         final boolean useSSL = false;
 
