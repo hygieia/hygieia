@@ -83,7 +83,8 @@
             //});
         }
 
-        function submitForm(valid) {
+        function submitForm(valid, collector) {
+            console.log("Collector" + JSON.stringify(collector));
             if (valid) {
                 var form = document.buildConfigForm;
                 var postObj = {
@@ -94,8 +95,9 @@
                         consecutiveFailureThreshold: parseFloat(form.buildConsecutiveFailureThreshold.value)
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: form.collectorItemId.value
+                    collectorItemId: collector.value
                 };
+
 
                 console.log(modalData.dashboard.application.components[0].id);
 
