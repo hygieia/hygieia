@@ -22,9 +22,12 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capitalone.dashboard.client.Sprint;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +49,9 @@ public final class ClientUtil {
 	private final static int MAX_ISO_INDEX = 23;
 	
 	private static final ClientUtil INSTANCE = new ClientUtil();
+	
+	// not static because not thread safe
+	private static final String SPRINT_SPLIT = "(?=,\\w+=)";
 
 	/**
 	 * Default constructor
@@ -245,6 +251,79 @@ public final class ClientUtil {
 		}
 
 		return canonicalSprint;
+	}
+	
+	public List<Sprint> parseSprints(Object data) throws ParseException {
+		List<Sprint> sprints = new ArrayList<>();
+		
+		if (data instanceof JSONArray) {
+			for (Object obj : (JSONArray)data) {
+				String rawToString = obj != null? obj.toString() : null;
+				
+				Sprint sprint = parseSprint(rawToString);
+				
+				sprints.add(sprint);
+			}
+		} else if (data instanceof org.codehaus.jettison.json.JSONArray) {
+			org.codehaus.jettison.json.JSONArray jsonA = (org.codehaus.jettison.json.JSONArray)data;
+			for (int i = 0; i < jsonA.length(); ++i) {
+				Object obj;
+				try {
+					obj = jsonA.get(i);
+				} catch (JSONException e) {
+					throw new RuntimeException("", e);
+				}
+				
+				String rawToString = obj != null? obj.toString() : null;
+				
+				Sprint sprint = parseSprint(rawToString);
+				
+				sprints.add(sprint);
+			}
+		}
+		
+		return sprints;
+	}
+	
+	@SuppressWarnings({ "PMD.NPathComplexity" })
+	public Sprint parseSprint(String rawSprintToString) throws ParseException {
+		Sprint sprint = new Sprint();
+		
+		if (rawSprintToString != null && rawSprintToString.matches(".*\\[.+\\][^\\]]*")) {
+			String rawToString = rawSprintToString.substring(rawSprintToString.indexOf('[') + 1, rawSprintToString.length() - 1);
+			String[] kvRaws = rawToString.split(SPRINT_SPLIT);
+			
+			for (String kvRaw : kvRaws) {
+				int eqIdx = kvRaw.indexOf('=');
+				
+				// just in case logic changes above
+				if (eqIdx > 0) {
+					String key = kvRaw.charAt(0) == ','? kvRaw.substring(1, eqIdx) : kvRaw.substring(0, eqIdx);
+					String valueAsStr = eqIdx == kvRaw.length() - 1? "" : kvRaw.substring(eqIdx + 1, kvRaw.length());
+					
+					if ("<null>".equalsIgnoreCase(valueAsStr)) {
+						valueAsStr = "";
+					}
+
+					if ("id".equals(key)) {
+						sprint.setId(Long.valueOf(valueAsStr));
+					} else if ("state".equals(key)) {
+						sprint.setState(valueAsStr);
+					} else if ("name".equals(key)) {
+						sprint.setName(valueAsStr);
+					} else if ("startDate".equals(key)) {
+						sprint.setStartDateStr(valueAsStr);
+					} else if ("endDate".equals(key)) {
+						sprint.setEndDateStr(valueAsStr);
+					} else if ("completeDate".equals(key)) {
+						sprint.setCompleteDateStr(valueAsStr);
+					} else if ("sequence".equals(key)) {
+						sprint.setSequence(Integer.valueOf(valueAsStr));
+					}
+				}
+			}
+		}
+		return sprint;
 	}
 
 	/**
