@@ -311,7 +311,7 @@ public class FeatureServiceImpl implements FeatureService {
 
 		default:
 			storyEstimates = new ArrayList<>();
-
+			break;
 		}
 
 		List<Feature> cumulativeEstimate = new ArrayList<>();

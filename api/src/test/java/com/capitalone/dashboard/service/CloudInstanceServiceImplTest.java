@@ -126,7 +126,6 @@ public class CloudInstanceServiceImplTest {
 
     @Test
     public void refreshInstances() throws Exception {
-        CloudInstance[] toDelete = {testInstance9876543};
         when(cloudInstanceRepository.findByAccountNumber("123456789")).thenReturn(collectionInstance);
         Collection<String> deleted = cloudInstanceService.refreshInstances(makeRefreshRequest());
         assertThat(deleted, hasSize(1));
@@ -136,7 +135,6 @@ public class CloudInstanceServiceImplTest {
 
     @Test
     public void refreshInstancesEmpty() throws Exception {
-        CloudInstance[] toDelete = {testInstance9876543};
         when(cloudInstanceRepository.findByAccountNumber("123456789")).thenReturn(collectionInstance);
         Collection<String> deleted = cloudInstanceService.refreshInstances(new CloudInstanceListRefreshRequest());
         assertThat(deleted, hasSize(0));
