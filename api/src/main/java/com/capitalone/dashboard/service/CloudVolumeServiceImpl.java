@@ -28,7 +28,7 @@ import java.util.Set;
 
 @Service
 public class CloudVolumeServiceImpl implements CloudVolumeService {
-    private static final Log logger = LogFactory
+    private static final Log LOGGER = LogFactory
             .getLog(CloudVolumeServiceImpl.class);
 
     private final CloudVolumeRepository cloudVolumeRepository;
@@ -152,7 +152,7 @@ public class CloudVolumeServiceImpl implements CloudVolumeService {
                         cloudVolumeRepository.save(existing);
                         objectIds.add(existing.getId().toString());
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        logger.error("Error saving cloud volume info for volumeID: " + ci.getVolumeId(), e);
+                    	LOGGER.error("Error saving cloud volume info for volumeID: " + ci.getVolumeId(), e);
                     }
                 }
             }
@@ -160,15 +160,6 @@ public class CloudVolumeServiceImpl implements CloudVolumeService {
     }
 
     private CloudVolumeAggregatedResponse aggregate(Collection<CloudVolumeStorage> volumes, CloudConfig config) {
-        int ageAlertCount = 0;
-        int ageErrorCount = 0;
-        int ageGoodCount = 0;
-        int cpuHighCount = 0;
-        int cpuAlertCount = 0;
-        int cpuLowCount = 0;
-        int unEcryptedComputeCount = 0;
-        int unTaggedCount = 0;
-        int stoppedCount = 0;
         int totalCount = 0;
         /** For future enhancements
          double estimatedCharge = 0.0;

@@ -13,8 +13,6 @@ import com.capitalone.dashboard.repository.CloudInstanceRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,8 +27,6 @@ import java.util.Set;
 
 @Service
 public class CloudInstanceServiceImpl implements CloudInstanceService {
-    private static final Log logger = LogFactory
-            .getLog(CloudInstanceServiceImpl.class);
 
     private final CloudInstanceRepository cloudInstanceRepository;
     private final CloudInstanceHistoryRepository cloudInstanceHistoryRepository;
