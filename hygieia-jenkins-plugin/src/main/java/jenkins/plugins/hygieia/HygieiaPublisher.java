@@ -174,6 +174,9 @@ public class HygieiaPublisher extends Notifier {
         private final String ceQueryIntervalInSeconds;
         private final String ceQueryMaxAttempts;
 
+        public static final int DEFAULT_QUERY_INTERVAL = 10;
+        public static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
+
         @DataBoundConstructor
         public HygieiaSonar(boolean publishBuildStart, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts ) {
             this.publishBuildStart = publishBuildStart;
@@ -194,7 +197,7 @@ public class HygieiaPublisher extends Notifier {
                 return ceQueryIntervalInSeconds;
             }
             else {
-                return "10";
+                return String.valueOf(DEFAULT_QUERY_INTERVAL);
             }
         }
 
@@ -207,7 +210,7 @@ public class HygieiaPublisher extends Notifier {
                 return ceQueryMaxAttempts;
             }
             else {
-                return "30";
+                return String.valueOf(DEFAULT_QUERY_MAX_ATTEMPTS);
             }
         }
 
