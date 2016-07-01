@@ -95,14 +95,14 @@ public class SonarBuilder {
             } catch (java.lang.NumberFormatException nfe) {
                 // the value could not be fetched from config, use the
                 // Sonar recommended value for query interval
-                this.ceQueryIntervalInSeconds = 10;
+                this.ceQueryIntervalInSeconds = publisher.getHygieiaSonar().DEFAULT_QUERY_INTERVAL;
             }
             try {
                 this.ceQueryMaxAttempts = Integer.parseInt(queryMaxAttempts);
             } catch (java.lang.NumberFormatException nfe) {
                 // the value could not be fetched from config, use the
                 // Sonar recommended value for query max attempts
-                this.ceQueryMaxAttempts = 30;
+                this.ceQueryMaxAttempts = publisher.getHygieiaSonar().DEFAULT_QUERY_MAX_ATTEMPTS;
             }
         }
 
