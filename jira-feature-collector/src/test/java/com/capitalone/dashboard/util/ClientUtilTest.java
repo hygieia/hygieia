@@ -16,6 +16,8 @@
 
 package com.capitalone.dashboard.util;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -109,9 +111,9 @@ public class ClientUtilTest {
 		String testBlank = "";
 
 		assertEquals("Actual date format did not match expected date format output",
-				"2015-01-03T00:00:00.0000000", classUnderTest.toCanonicalDate(testLongDateFormat));
+				dateLocal("2015-01-03T00:00:00.000") + "0000", classUnderTest.toCanonicalDate(testLongDateFormat));
 		assertEquals("Actual date format did not match expected date format output",
-				"2015-06-15T12:49:08.0050000",
+				dateLocal("2015-06-15T12:49:08.005-04:00") + "0000",
 				classUnderTest.toCanonicalDate(testLongDateFormatJira));
 		assertEquals("Actual date format did not match expected date format output", "",
 				classUnderTest.toCanonicalDate(testBlank));
@@ -272,5 +274,10 @@ public class ClientUtilTest {
 		Sprint sprint2 = classUnderTest.parseSprint(sprintRaw2);
 		assertEquals(Long.valueOf(2145), sprint2.getId());
 		assertEquals("Sprint 18, with comma", sprint2.getName());
+	}
+	
+	private String dateLocal(String date) {
+		DateTime dt = ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(date);
+		return ISODateTimeFormat.dateHourMinuteSecondMillis().print(dt);
 	}
 }
