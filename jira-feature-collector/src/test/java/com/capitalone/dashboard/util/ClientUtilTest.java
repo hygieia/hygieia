@@ -25,6 +25,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.capitalone.dashboard.client.Sprint;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -250,5 +253,24 @@ public class ClientUtilTest {
 		assertEquals("The response was unexpectedly not zero", "0", classUnderTest.toHours("0"));
 		assertEquals("The response was unexpectedly not zero", "0", classUnderTest.toHours(null));
 		assertEquals("The response was unexpectedly not zero", "0", classUnderTest.toHours("null"));
+	}
+	
+	@Test
+	public void testParseSprint() throws ParseException {
+		String sprintRaw1 = "com.atlassian.greenhopper.service.sprint.Sprint@2189d27[id=2144,rapidViewId=1645,state=OPEN,name=Sprint 18,startDate=2016-05-31T14:06:46.350-04:00,endDate=2016-06-16T17:06:00.000-04:00,completeDate=2016-06-20T14:21:57.131-04:00,sequence=2144]";
+		String sprintRaw2 = "com.atlassian.greenhopper.service.sprint.Sprint@2189d27[id=2145,rapidViewId=1645,state=OPEN,name=Sprint 18, with comma,startDate=2016-05-31T14:06:46.350-04:00,endDate=2016-06-16T17:06:00.000-04:00,completeDate=2016-06-20T14:21:57.131-04:00,sequence=2144]";
+
+		Sprint sprint1 = classUnderTest.parseSprint(sprintRaw1);
+		assertEquals(Long.valueOf(2144), sprint1.getId());
+		assertEquals("OPEN", sprint1.getState());
+		assertEquals("Sprint 18", sprint1.getName());
+		assertEquals("2016-05-31T14:06:46.350-04:00", sprint1.getStartDateStr());
+		assertEquals("2016-06-16T17:06:00.000-04:00", sprint1.getEndDateStr());
+		assertEquals("2016-06-20T14:21:57.131-04:00", sprint1.getCompleteDateStr());
+		assertEquals(2144, sprint1.getSequence());
+		
+		Sprint sprint2 = classUnderTest.parseSprint(sprintRaw2);
+		assertEquals(Long.valueOf(2145), sprint2.getId());
+		assertEquals("Sprint 18, with comma", sprint2.getName());
 	}
 }
