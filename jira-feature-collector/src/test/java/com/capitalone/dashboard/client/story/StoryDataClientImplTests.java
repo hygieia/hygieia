@@ -15,6 +15,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -203,8 +204,7 @@ public class StoryDataClientImplTests {
 						Arrays.asList(createField("custom_epic", "String", "1002")))
 				);
 		
-		Issue jiraClientEpicResponse = createIssue(1002, 1467739128322L, STATUS_IN_PROGRESS, null, 
-				Arrays.asList(createField("duedate", "String", "2016-08-05T13:02:08.3220000")));
+		Issue jiraClientEpicResponse = createIssue(1002, 1467739128322L, STATUS_IN_PROGRESS, null, null);
 		
 		Mockito.when(jiraClient.getIssues(Mockito.anyLong(), Mockito.eq(0))).thenReturn(jiraClientResponse);
 		Mockito.when(jiraClient.getEpic(Mockito.eq("1002"))).thenReturn(jiraClientEpicResponse);
@@ -220,8 +220,8 @@ public class StoryDataClientImplTests {
 		assertEquals("1002", feature1.getsEpicID());
 		assertEquals("key1002", feature1.getsEpicNumber());
 		assertEquals("summary1002", feature1.getsEpicName());
-		assertEquals("2016-07-05T13:02:08.3220000", feature1.getsEpicBeginDate());
-		assertEquals("2016-08-05T13:02:08.3220000", feature1.getsEpicEndDate());
+		assertEquals("2016-06-23T23:32:08.3220000", feature1.getsEpicBeginDate());
+		assertEquals("2016-07-17T03:05:28.3220000", feature1.getsEpicEndDate());
 		assertEquals("IN_PROGRESS", feature1.getsEpicAssetState());
 		
 		assertNotNull(feature1.getsEpicType());
@@ -246,9 +246,9 @@ public class StoryDataClientImplTests {
 				Collections.emptyList(), // attachments
 				USER1, // reporter
 				USER1, // assignee
-				new DateTime(updateDate - 1000000), // creationDate
-				new DateTime(updateDate), // updateDate
-				new DateTime(updateDate + 1000000), // dueDate
+				new DateTime(updateDate - 1000000000, DateTimeZone.UTC), // creationDate
+				new DateTime(updateDate, DateTimeZone.UTC), // updateDate
+				new DateTime(updateDate + 1000000000, DateTimeZone.UTC), // dueDate
 				Collections.emptyList(), // affectedVersions
 				Collections.emptyList(), // fixVersions
 				Collections.emptyList(), // components
