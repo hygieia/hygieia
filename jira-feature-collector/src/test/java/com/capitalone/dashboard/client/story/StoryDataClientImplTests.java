@@ -16,6 +16,7 @@ import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -144,8 +145,8 @@ public class StoryDataClientImplTests {
 		// processSprintData
 		assertEquals("2144", feature1.getsSprintID());
 		assertEquals("Sprint 18", feature1.getsSprintName());
-		assertEquals("2016-05-31T14:06:46.3500000", feature1.getsSprintBeginDate());
-		assertEquals("2016-06-16T17:06:00.0000000", feature1.getsSprintEndDate());
+		assertEquals(dateLocal("2016-05-31T14:06:46.350-04:00") + "0000", feature1.getsSprintBeginDate());
+		assertEquals(dateLocal("2016-06-16T17:06:00.000-04:00") + "0000", feature1.getsSprintEndDate());
 		assertEquals("OPEN", feature1.getsSprintAssetState());
 		assertNotNull(feature1.getsSprintChangeDate());
 		assertEquals("False", feature1.getsSprintIsDeleted());
@@ -220,8 +221,8 @@ public class StoryDataClientImplTests {
 		assertEquals("1002", feature1.getsEpicID());
 		assertEquals("key1002", feature1.getsEpicNumber());
 		assertEquals("summary1002", feature1.getsEpicName());
-		assertEquals("2016-06-23T23:32:08.3220000", feature1.getsEpicBeginDate());
-		assertEquals("2016-07-17T03:05:28.3220000", feature1.getsEpicEndDate());
+		assertEquals(dateLocal("2016-06-24T03:32:08.322-00:00") + "0000", feature1.getsEpicBeginDate());
+		assertEquals(dateLocal("2016-07-17T07:05:28.322-00:00") + "0000", feature1.getsEpicEndDate());
 		assertEquals("IN_PROGRESS", feature1.getsEpicAssetState());
 		
 		assertNotNull(feature1.getsEpicType());
@@ -284,5 +285,10 @@ public class StoryDataClientImplTests {
 		rt.put(User.S48_48, URI.create("http://foobar.com"));
 		
 		return rt;
+	}
+	
+	private String dateLocal(String date) {
+		DateTime dt = ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(date);
+		return ISODateTimeFormat.dateHourMinuteSecondMillis().print(dt);
 	}
 }
