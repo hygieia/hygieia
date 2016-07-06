@@ -335,12 +335,10 @@ public class StoryDataClientImpl implements StoryDataClient {
 		if (epicKey != null && !epicKey.isEmpty()) {
 			Issue epicData = getEpicData(epicKey);
 			if (epicData != null) {
-				Map<String, IssueField> epicFields = buildFieldMap(epicData.getFields());
 				String epicId = epicData.getId().toString();
 				String epicNumber = epicData.getKey().toString();
 				String epicName = epicData.getSummary().toString();
 				String epicBeginDate = epicData.getCreationDate().toString();
-				IssueField epicEndDate = epicFields.get("duedate");
 				String epicStatus = epicData.getStatus().getName();
 	
 				// sEpicID
@@ -361,9 +359,9 @@ public class StoryDataClientImpl implements StoryDataClient {
 				}
 	
 				// sEpicEndDate
-				if (epicEndDate != null) {
+				if (epicData.getDueDate() != null) {
 					feature.setsEpicEndDate(TOOLS.toCanonicalDate(
-							TOOLS.sanitizeResponse(epicEndDate.getValue())));
+							TOOLS.sanitizeResponse(epicData.getDueDate())));
 				} else {
 					feature.setsEpicEndDate("");
 				}

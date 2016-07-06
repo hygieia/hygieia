@@ -17,6 +17,8 @@
 package com.capitalone.dashboard.util;
 
 import org.codehaus.jettison.json.JSONException;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -44,9 +46,7 @@ import java.util.Set;
  * 
  */
 public final class ClientUtil {
-	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClientUtil.class);
-	private final static int MAX_ISO_INDEX = 23;
 	
 	private static final ClientUtil INSTANCE = new ClientUtil();
 	
@@ -104,17 +104,20 @@ public final class ClientUtil {
 	 * @return A stringified canonical date format
 	 */
 	public String toCanonicalDate(String nativeRs) {
-		String canonicalRs = "";
-
-		if ((nativeRs != null) && !(nativeRs.isEmpty())) {
-			StringBuilder interrimRs = new StringBuilder(nativeRs);
-			if (interrimRs.length() > 0) {
-				canonicalRs = interrimRs.substring(0, MAX_ISO_INDEX);
-				canonicalRs = canonicalRs.concat("0000");
+		if (nativeRs != null && !nativeRs.isEmpty()) {
+			try {
+				DateTime dt = ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(nativeRs);
+				// add 0's at end for backwards compatability
+				return ISODateTimeFormat.dateHourMinuteSecondMillis().print(dt) + "0000";
+			} catch (IllegalArgumentException e) {
+				LOGGER.error("Failed to parse date: " + nativeRs);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Exception", e);
+				}
 			}
 		}
-
-		return canonicalRs;
+		
+		return "";
 	}
 
 	/**
