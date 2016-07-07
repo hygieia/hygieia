@@ -416,7 +416,8 @@ public class StoryDataClientImpl implements StoryDataClient {
 				Collections.sort(sprints, SPRINT_COMPARATOR);
 				
 				if (!sprints.isEmpty()) {
-					Sprint sprint = sprints.iterator().next();
+					// Use the latest sprint
+					Sprint sprint = sprints.get(sprints.size() - 1);
 					
 					// sSprintID
 					if (sprint.getId() != null) {
