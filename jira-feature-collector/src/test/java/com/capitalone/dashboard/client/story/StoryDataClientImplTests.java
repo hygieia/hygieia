@@ -101,8 +101,11 @@ public class StoryDataClientImplTests {
 		
 		// This is actually how the data comes back from jira
 		String sprintRaw = "com.atlassian.greenhopper.service.sprint.Sprint@2189d27[id=2144,rapidViewId=1645,state=OPEN,name=Sprint 18,startDate=2016-05-31T14:06:46.350-04:00,endDate=2016-06-16T17:06:00.000-04:00,completeDate=2016-06-20T14:21:57.131-04:00,sequence=2144]";
+		String sprintRaw2 = "com.atlassian.greenhopper.service.sprint.Sprint@2189d27[id=2144,rapidViewId=1645,state=OPEN,name=Sprint 17,startDate=2016-04-31T14:06:46.350-04:00,endDate=2016-05-31T17:06:00.000-04:00,completeDate=2016-05-31T14:21:57.131-04:00,sequence=2144]";
+
 		JSONArray jsonA = new JSONArray();
 		jsonA.put(sprintRaw);
+		jsonA.put(sprintRaw2);
 		
 		List<Issue> jiraClientResponse = Arrays.asList(
 				createIssue(1001, 10000000, STATUS_TODO, createTimeTracking(5 * 60, 4 * 60, 1 * 60), Arrays.asList(createField("custom_sprint", "List", jsonA)))
