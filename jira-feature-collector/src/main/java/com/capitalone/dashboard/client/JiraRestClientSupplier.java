@@ -72,9 +72,7 @@ public class JiraRestClientSupplier implements Supplier<JiraRestClient> {
 		} catch (UnknownHostException | URISyntaxException e) {
 			LOGGER.error("The Jira host name is invalid. Further jira collection cannot proceed.");
 			
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Exception", e);
-			}
+			LOGGER.debug("Exception", e);
 		}
 		
 		return client;

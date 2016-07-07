@@ -111,9 +111,7 @@ public final class ClientUtil {
 				return ISODateTimeFormat.dateHourMinuteSecondMillis().print(dt) + "0000";
 			} catch (IllegalArgumentException e) {
 				LOGGER.error("Failed to parse date: " + nativeRs);
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Exception", e);
-				}
+				LOGGER.debug("Exception", e);
 			}
 		}
 		
@@ -256,6 +254,13 @@ public final class ClientUtil {
 		return canonicalSprint;
 	}
 	
+	/**
+	 * Parse a json array of raw sprint tostrings to Sprint objects
+	 * 
+	 * @param data
+	 * @return a list of Sprints that were parsed if possible.
+	 * @throws ParseException if a sprint could not be parsed
+	 */
 	public List<Sprint> parseSprints(Object data) throws ParseException {
 		List<Sprint> sprints = new ArrayList<>();
 		
@@ -325,7 +330,10 @@ public final class ClientUtil {
 					}
 				}
 			}
+		} else {
+			throw new ParseException("Unparsable sprint: " + rawSprintToString, 0);
 		}
+		
 		return sprint;
 	}
 

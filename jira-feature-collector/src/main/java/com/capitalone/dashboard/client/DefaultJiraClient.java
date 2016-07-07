@@ -22,6 +22,15 @@ import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import com.google.common.collect.Lists;
 
+/**
+ * A client that communicates via REST API calls to jira.
+ * <p>
+ * Latest REST API: https://docs.atlassian.com/jira/REST/latest/
+ * <br>
+ * Created against API for Jira 7.x. Should work with 6.x and 5.x.
+ * 
+ * @author <a href="mailto:MarkRx@users.noreply.github.com">MarkRx</a>
+ */
 @Component
 public class DefaultJiraClient implements JiraClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultJiraClient.class);
@@ -79,9 +88,7 @@ public class DefaultJiraClient implements JiraClient {
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
 				}
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Exception", e);
-				}
+				LOGGER.debug("Exception", e);
 			}
 		} else {
 			LOGGER.warn("Jira client setup failed. No results obtained. Check your jira setup.");
@@ -108,9 +115,7 @@ public class DefaultJiraClient implements JiraClient {
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
 				}
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Exception", e);
-				}
+				LOGGER.debug("Exception", e);
 			}
 		} else {
 			LOGGER.warn("Jira client setup failed. No results obtained. Check your jira setup.");
@@ -143,9 +148,7 @@ public class DefaultJiraClient implements JiraClient {
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
 				}
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Exception", e);
-				}
+				LOGGER.debug("Exception", e);
 			}
 		} else {
 			LOGGER.warn("Jira client setup failed. No results obtained. Check your jira setup.");
@@ -187,9 +190,7 @@ public class DefaultJiraClient implements JiraClient {
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
 				}
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Exception", e);
-				}
+				LOGGER.debug("Exception", e);
 			}
 		} else {
 			LOGGER.warn("Jira client setup failed. No results obtained. Check your jira setup.");
