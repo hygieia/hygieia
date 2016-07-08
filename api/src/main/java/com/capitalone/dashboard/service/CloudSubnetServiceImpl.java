@@ -11,8 +11,6 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
 import com.capitalone.dashboard.request.CloudSubnetCreateRequest;
 import com.capitalone.dashboard.response.CloudSubNetworkAggregatedResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,8 +24,6 @@ import java.util.Set;
 
 @Service
 public class CloudSubnetServiceImpl implements CloudSubnetService {
-    private static final Log logger = LogFactory
-            .getLog(CloudSubnetServiceImpl.class);
 
     private final CloudSubNetworkRepository cloudSubNetworkRepository;
     private final ComponentRepository componentRepository;
