@@ -67,7 +67,6 @@ public class CloudInstanceControllerTest {
     public void refreshInstancesBadRequest() throws Exception {
         CloudInstanceListRefreshRequest req = new CloudInstanceListRefreshRequest();
         req.setAccountNumber("1234");
-        long now = System.currentTimeMillis();
         List<String> curList = Arrays.asList("i-1234", "i-2345", "i-3456");
 
         when(cloudInstanceService.refreshInstances(Matchers.any(CloudInstanceListRefreshRequest.class))).thenReturn(curList);
@@ -81,8 +80,6 @@ public class CloudInstanceControllerTest {
     public void refreshInstancesEmptyRequest() throws Exception {
         CloudInstanceListRefreshRequest req = new CloudInstanceListRefreshRequest();
         req.setAccountNumber("1234");
-        long now = System.currentTimeMillis();
-        List<String> curList = Arrays.asList("i-1234", "i-2345", "i-3456");
 
         mockMvc.perform(post("/cloud/instance/refresh")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)

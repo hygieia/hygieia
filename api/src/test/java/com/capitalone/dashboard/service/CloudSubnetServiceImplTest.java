@@ -78,7 +78,6 @@ public class CloudSubnetServiceImplTest {
 
     @Test
     public void refreshSubnets() throws Exception {
-        CloudSubNetwork[] toDelete = {testsubnet87654321};
         when(cloudSubNetworkRepository.findByAccountNumber("123456789")).thenReturn(collectionSubnet);
         Collection<String> deleted = cloudSubnetService.refreshSubnets(makeRefreshRequest());
         assertThat(deleted, hasSize(1));
