@@ -20,6 +20,13 @@
         ctrl.buildDurationThreshold = 3;
         ctrl.buildConsecutiveFailureThreshold = 5;
 
+        ctrl.oridata = null;
+        ctrl.loading = true;
+        ctrl.paginationRange = 100;
+
+
+
+
         // set values from config
         if (widgetConfig) {
             if (widgetConfig.options.buildDurationThreshold) {
@@ -33,6 +40,7 @@
 
         // public methods
         ctrl.submit = submitForm;
+        ctrl.fetch = paginationFetch;
 
         // request all the build collector items
         collectorData.itemsByType('build').then(processResponse);
@@ -71,9 +79,11 @@
             worker.getBuildJobs(data, buildCollectorId, getBuildsCallback);
         }
 
+
         function getBuildsCallback(data) {
             //$scope.$apply(function () {
                 ctrl.buildJobs = data.builds;
+            ctrl.oridata = data.builds;
                 ctrl.toolsDropdownPlaceholder = 'Select a Build Job';
                 ctrl.toolsDropdownDisabled = false;
 
@@ -81,6 +91,51 @@
                     ctrl.collectorItemId = ctrl.buildJobs[data.selectedIndex];
                 }
             //});
+        }
+
+
+        function paginationFetch($select, $event, x) {
+            if (!$event) {
+                console.log("called first time")
+            } else {
+                $event.stopPropagation();
+                $event.preventDefault();
+                console.log("called subsequent time");
+                updatePaginationVariables(ctrl.oridata, x);
+            }
+
+        }
+
+
+        function updatePaginationVariables(m, startIndex) {
+
+            console.log("Before:" + m.length);
+            var y = [];
+
+            if (m.length <= 200) {
+                y = m;
+                ctrl.loading = false;
+            }
+            else {
+                for (var p = 0; p < ctrl.paginationRange; p++) {
+                    var value = {
+                        value: m[p].value,
+                        name: m[p].name
+                    }
+
+                    y.push(value);
+                    m.shift();
+                }
+            }
+
+            console.log("Y is :" + JSON.stringify(y));
+
+            $scope.$applyAsync(function () {
+                ctrl.buildJobs = y;
+            });
+
+            console.log("After:" + m.length);
+
         }
 
         function submitForm(valid, collector) {
