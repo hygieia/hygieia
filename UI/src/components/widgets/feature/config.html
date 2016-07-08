@@ -1,6 +1,6 @@
 <widget-modal widget-modal-title="Configure Feature Widget">
 <form name="configForm"
-	ng-submit="ctrl.submit(configForm.$valid, ctrl.collectorItemId)"
+	ng-submit="ctrl.submit(configForm.$valid, ctrl.collectorItemId, ctrl.estimateMetricType)"
 	novalidate="novalidate">
 	<div class="form-group clearfix"
 		ng-class="{'has-error': configForm.collectorItemId.$invalid && ctrl.submitted}">
@@ -33,6 +33,20 @@
 			<p class="help-block"
 				ng-if="configForm.collectorItemId.$error.required">Please select
 				a valid team / project</p>
+		</div>
+		
+		<div ng-hide="ctrl.hideEstimateMetricDropDown" class="col-sm-push-2 col-sm-8">
+			<label class="modal-label">Estimate Metric:</label> <select
+				name="estimateMetricType" class="form-control"
+				ng-model="ctrl.estimateMetricType"
+				ng-options="item.type as item.value for item in ctrl.estimateMetrics"
+				ng-disabled="ctrl.estimateMetricDropdownDisabled"
+				required>
+			</select>
+
+			<p class="help-block"
+				ng-if="configForm.estimateMetricType.$error.required">Please select
+				a valid estimate metric</p>
 		</div>
 	</div>
 

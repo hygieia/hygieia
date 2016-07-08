@@ -12,6 +12,7 @@
 			kanban : "&agileType=kanban",
 			scrum : "&agileType=scrum",
 		};
+		var estimateMetricTypeParam = "&estimateMetricType=";
 
 		var testTotal = 'test-data/feature-total.json';
 		var buildTotal = '/api/feature/estimates/total/';
@@ -54,8 +55,9 @@
 		 * @param componentId
 		 * @param filterTeamId
 		 */
-		function total(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testTotal : buildTotal + filterTeamId + param + componentId + agileType.scrum)
+		function total(componentId,filterTeamId,estimateMetricType) {
+			return $http.get(HygieiaConfig.local ? testTotal : buildTotal + filterTeamId + param + componentId + agileType.scrum
+					+ (estimateMetricType != null? estimateMetricTypeParam + estimateMetricType : ""))
 					.then(function(response) {
 						return response.data;
 					});
@@ -67,8 +69,9 @@
 		 * @param componentId
 		 * @param filterTeamId
 		 */
-		function wip(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testWip : buildWip + filterTeamId + param + componentId + agileType.scrum)
+		function wip(componentId,filterTeamId,estimateMetricType) {
+			return $http.get(HygieiaConfig.local ? testWip : buildWip + filterTeamId + param + componentId + agileType.scrum
+					+ (estimateMetricType != null? estimateMetricTypeParam + estimateMetricType : ""))
 					.then(function(response) {
 						return response.data;
 					});
@@ -80,8 +83,9 @@
 		 * @param componentId
 		 * @param filterTeamId
 		 */
-		function done(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testDone : buildDone + filterTeamId + param + componentId + agileType.scrum)
+		function done(componentId,filterTeamId,estimateMetricType) {
+			return $http.get(HygieiaConfig.local ? testDone : buildDone + filterTeamId + param + componentId + agileType.scrum
+					+ (estimateMetricType != null? estimateMetricTypeParam + estimateMetricType : ""))
 					.then(function(response) {
 						return response.data;
 					});
@@ -94,8 +98,9 @@
 		 * @param componentId
 		 * @param filterTeamId
 		 */
-		function featureWip(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testFeatureWip : buildFeatureWip + filterTeamId + param + componentId + agileType.scrum)
+		function featureWip(componentId,filterTeamId,estimateMetricType) {
+			return $http.get(HygieiaConfig.local ? testFeatureWip : buildFeatureWip + filterTeamId + param + componentId + agileType.scrum
+					+ (estimateMetricType != null? estimateMetricTypeParam + estimateMetricType : ""))
 					.then(function(response) {
 						return response.data;
 					});
@@ -121,8 +126,9 @@
 		 * @param componentId
 		 * @param filterTeamId
 		 */
-		function totalKanban(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testTotal : buildTotal + filterTeamId + param + componentId + agileType.kanban)
+		function totalKanban(componentId,filterTeamId,estimateMetricType) {
+			return $http.get(HygieiaConfig.local ? testTotal : buildTotal + filterTeamId + param + componentId + agileType.kanban
+					+ (estimateMetricType != null? estimateMetricTypeParam + estimateMetricType : ""))
 					.then(function(response) {
 						return response.data;
 					});
@@ -135,8 +141,9 @@
 		 * @param componentId
 		 * @param filterTeamId
 		 */
-		function wipKanban(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testWip : buildWip + filterTeamId + param + componentId + agileType.kanban)
+		function wipKanban(componentId,filterTeamId,estimateMetricType) {
+			return $http.get(HygieiaConfig.local ? testWip : buildWip + filterTeamId + param + componentId + agileType.kanban
+					+ (estimateMetricType != null? estimateMetricTypeParam + estimateMetricType : ""))
 					.then(function(response) {
 						return response.data;
 					});
@@ -149,8 +156,9 @@
 		 * @param componentId
 		 * @param filterTeamId
 		 */
-		function featureWipKanban(componentId,filterTeamId) {
-			return $http.get(HygieiaConfig.local ? testFeatureWip : buildFeatureWip + filterTeamId + param + componentId + agileType.kanban)
+		function featureWipKanban(componentId,filterTeamId,estimateMetricType) {
+			return $http.get(HygieiaConfig.local ? testFeatureWip : buildFeatureWip + filterTeamId + param + componentId + agileType.kanban
+					+ (estimateMetricType != null? estimateMetricTypeParam + estimateMetricType : ""))
 					.then(function(response) {
 						return response.data;
 					});
