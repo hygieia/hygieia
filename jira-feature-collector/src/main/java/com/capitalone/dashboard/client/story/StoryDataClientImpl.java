@@ -280,7 +280,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		} else if (fields.get("aggregatetimeoriginalestimate") != null
 				&& fields.get("aggregatetimeoriginalestimate").getValue() != null) {
 			// this value is in seconds
-			originalEstimate = ((Integer)fields.get("aggregatetimeestimate").getValue()) / 60;
+			originalEstimate = ((Integer)fields.get("aggregatetimeoriginalestimate").getValue()) / 60;
 		}
 		
 		feature.setsEstimateTime(originalEstimate);
