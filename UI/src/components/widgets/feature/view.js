@@ -11,6 +11,7 @@
     var ctrl = this;
     var today = new Date(_.now());
     var filterTeamId = $scope.widgetConfig.options.teamId;
+    var estimateMetricType = $scope.widgetConfig.options.estimateMetricType;
     ctrl.teamName = $scope.widgetConfig.options.teamName;
     // Scrum
     ctrl.iterations = [];
@@ -45,24 +46,24 @@
     ctrl.load = function() {
       var deferred = $q.all([
         // Scrum
-        featureData.total($scope.widgetConfig.componentId, filterTeamId)
+        featureData.total($scope.widgetConfig.componentId, filterTeamId, estimateMetricType)
           .then(processTotalResponse),
-        featureData.wip($scope.widgetConfig.componentId, filterTeamId)
+        featureData.wip($scope.widgetConfig.componentId, filterTeamId, estimateMetricType)
           .then(processWipResponse),
-        featureData.done($scope.widgetConfig.componentId, filterTeamId)
+        featureData.done($scope.widgetConfig.componentId, filterTeamId, estimateMetricType)
           .then(processDoneResponse),
         featureData.featureWip($scope.widgetConfig.componentId,
-          filterTeamId).then(processFeatureWipResponse),
+          filterTeamId, estimateMetricType).then(processFeatureWipResponse),
         featureData.sprint($scope.widgetConfig.componentId, filterTeamId)
           .then(processSprintResponse),
 
         // Kanban
-        featureData.totalKanban($scope.widgetConfig.componentId, filterTeamId)
+        featureData.totalKanban($scope.widgetConfig.componentId, filterTeamId, estimateMetricType)
           .then(processTotalKanbanResponse),
-        featureData.wipKanban($scope.widgetConfig.componentId, filterTeamId)
+        featureData.wipKanban($scope.widgetConfig.componentId, filterTeamId, estimateMetricType)
           .then(processWipKanbanResponse),
         featureData.featureWipKanban($scope.widgetConfig.componentId,
-          filterTeamId).then(processFeatureWipKanbanResponse),
+          filterTeamId, estimateMetricType).then(processFeatureWipKanbanResponse),
         featureData.sprintKanban($scope.widgetConfig.componentId, filterTeamId)
           .then(processSprintKanbanResponse)
       ]);

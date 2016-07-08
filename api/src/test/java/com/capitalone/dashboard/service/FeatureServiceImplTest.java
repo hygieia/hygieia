@@ -380,7 +380,7 @@ public class FeatureServiceImplTest {
 				(String) notNull())).thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
 
 		DataResponse<List<Feature>> result = featureService.getFeatureEstimates(mockComponentId,
-				mockJiraFeature.getsTeamID(), Optional.empty());
+				mockJiraFeature.getsTeamID(), Optional.empty(), Optional.empty());
 		assertThat(
 				"There should only be one result even with multiple same super features over several sub features",
 				result.getResult(), hasSize(1));
