@@ -1,7 +1,0 @@
-Average Response Time (ms)
-Total Calls
-Calls per Minute
-Total Errors
-Errors per Minute
-Business Health Percent
-Node Health Percent
