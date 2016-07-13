@@ -16,9 +16,8 @@
                        ng-disabled="deployConfig.jobDropdownDisabled" required>
                 <ui-select-match placeholder={{deployConfig.jobDropdownPlaceholder}}>{{$select.selected.name}}
                 </ui-select-match>
-                <ui-select-choices repeat="job in (deployConfig.deployJobs| filter: $select.search) track by job.value"
-                                   refresh="refreshPatients($select.search)"
-                                   refresh-delay="0">
+                <ui-select-choices
+                        repeat="job in (deployConfig.deployJobs| orderBy: 'name' | filter: $select.search) track by job.value">
                     <div ng-bind-html="job.name | highlight: $select.search"></div>
                 </ui-select-choices>
                 <ui-select-no-choice>
