@@ -53,6 +53,9 @@
                         refresh-delay="0">
                     <div ng-bind-html="(item.collector.name + ' - ' + item.options.projectName + '-' + item.options.projectversion) | highlight: $select.search"></div>
                 </ui-select-choices>
+                <ui-select-no-choice>
+                    No Jobs were found
+                </ui-select-no-choice>
             </ui-select>
 
         </div>
@@ -89,6 +92,9 @@
                                            repeat="item in (configItem.testJob | orderBy:['collector.name','description'] | filter: $select.search ) track by item.id">
                             <div ng-bind-html="(item.niceName + '-' + item.description) | highlight: $select.search"></div>
                         </ui-select-choices>
+                        <ui-select-no-choice>
+                            No Jobs were found
+                        </ui-select-no-choice>
                     </ui-select>
 
 
