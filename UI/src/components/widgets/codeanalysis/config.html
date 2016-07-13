@@ -21,8 +21,11 @@
                            ng-disabled="caWidget.caJobs.length === 0">
                     <ui-select-match placeholder="Select your CodeAnalysis job">{{$select.selected.description}}
                     </ui-select-match>
-                    <ui-select-choices repeat="item in (caWidget.caJobs | filter: $select.search) track by item.id">
-                        <div ng-bind-html="(item.description) | highlight: $select.search"></div>
+                    <ui-select-choices
+                            repeat="item in (caWidget.caJobs | orderBy:['collector.name','description'] | filter: $select.search) track by item.id"
+                            refresh="refreshPatients($select.search)"
+                            refresh-delay="0">
+                        <div ng-bind-html="(item.displayName + ' - ' + item.description) | highlight: $select.search"></div>
                     </ui-select-choices>
                 </ui-select>
 
@@ -44,7 +47,10 @@
             <ui-select ng-model="caWidget.saCollectorItem" theme="bootstrap" ng-disabled="caWidget.saJobs.length === 0">
                 <ui-select-match placeholder="Select your SecurityAnalysis job">{{$select.selected.description}}
                 </ui-select-match>
-                <ui-select-choices repeat="item in (caWidget.saJobs | filter: $select.search) track by item.id">
+                <ui-select-choices
+                        repeat="item in (caWidget.saJobs | orderBy:['item.collector.name','description'] | filter: $select.search ) track by item.id"
+                        refresh="refreshPatients($select.search)"
+                        refresh-delay="0">
                     <div ng-bind-html="(item.collector.name + ' - ' + item.options.projectName + '-' + item.options.projectversion) | highlight: $select.search"></div>
                 </ui-select-choices>
             </ui-select>
@@ -79,8 +85,8 @@
                         <ui-select-match placeholder="{{caWidget.testToolsDropdownPlaceholder}}">
                             {{$select.selected.description}}
                         </ui-select-match>
-                        <ui-select-choices
-                                repeat="item in (configItem.testJob | filter: $select.search) track by item.id">
+                        <ui-select-choices allow-clear="true"
+                                           repeat="item in (configItem.testJob | orderBy:['collector.name','description'] | filter: $select.search ) track by item.id">
                             <div ng-bind-html="(item.niceName + '-' + item.description) | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>

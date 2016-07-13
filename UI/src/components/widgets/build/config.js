@@ -59,7 +59,8 @@
                     var obj = data[x];
                     var item = {
                         value: obj.id,
-                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description : obj.collector.name + '-' + obj.description)
+                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description : obj.collector.name + '-' + obj.description),
+                        group: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName : obj.collector.name)
                     };
                     builds.push(item);
 
@@ -128,7 +129,7 @@
                 }
             }
 
-            console.log("Y is :" + JSON.stringify(y));
+            //console.log("Y is :" + JSON.stringify(y));
 
             $scope.$applyAsync(function () {
                 ctrl.buildJobs = y;

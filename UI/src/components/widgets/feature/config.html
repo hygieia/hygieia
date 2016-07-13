@@ -50,9 +50,8 @@
 					   ng-disabled="ctrl.toolsDropdownDisabled" required>
 				<ui-select-match placeholder={{ctrl.toolsDropdownPlaceholder}}>{{$select.selected.teamName}}
 				</ui-select-match>
-				<ui-select-choices repeat="item in (ctrl.scopeOwners | filter: $select.search) track by item.value"
-								   refresh="refreshPatients($select.search)"
-								   refresh-delay="0">
+				<ui-select-choices
+						repeat="item in (ctrl.scopeOwners | orderBy: 'teamName' | filter: $select.search)  track by item.value">
 					<div ng-bind-html="item.teamName | highlight: $select.search"></div>
 				</ui-select-choices>
 				<ui-select-no-choice>
