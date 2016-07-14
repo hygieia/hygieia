@@ -39,13 +39,6 @@
           }
         };
 
-      ctrl.errorsChartData = {
-        labels: ['A', 'b', 'c', 'd', 'e', 'f'],
-        series: [
-          [2, 3, 1, 5, 2, 6]
-        ]
-      };
-
         ctrl.calls = 100;
 
         ctrl.pieOptions = {
@@ -104,17 +97,31 @@
             ctrl.businesshealth = data.businesshealth;
             ctrl.nodehealth = data.nodehealth;*/
             var groupedCallsData = [];
+            var groupedErrorsData = [];
             var labels = [];
             var count = 0;
             var nodehealth = 0;
             var businesshealth = 0;
+            var errorspm = 0;
+            var callspm = 0;
+            var responsetime = 0;
             _(data).forEach(function(element){
                 groupedCallsData.push(element.calls);
+                groupedErrorsData.push(element.errors);
                 labels.push('');
                 count++;
                 nodehealth += parseInt(element.nodehealth);
                 businesshealth += parseInt(element.businesshealth);
+                errorspm += parseFloat(element.errorspm);
+                callspm += parseFloat(element.callspm);
+                responsetime += parseInt(element.responsetime);
             });
+            errorspm = Math.round(errorspm/count * 10)/10;
+            callspm = Math.round(callspm/count * 10)/10;
+            responsetime = Math.round(responsetime/count * 10)/10;
+            ctrl.errorspm = errorspm;
+            ctrl.callspm = callspm;
+            ctrl.responsetime = responsetime;
             console.log(groupedCallsData);
             console.log(labels);
             var nodehealthavg = Math.round(nodehealth/count * 10)/10;
@@ -132,7 +139,11 @@
             ctrl.callsChartData = {
               series: [groupedCallsData],
               labels: labels
-            }
+            };
+            ctrl.errorsChartData = {
+              series: [groupedErrorsData],
+              labels: labels
+            };
         }
 
     }

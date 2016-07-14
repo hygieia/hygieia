@@ -54,25 +54,47 @@
       </div>
     </div>
 
-    <div class="col-lg-2 col-sm-6">
+    <div class="col-lg-4 col-sm-12">
       <div class="widget health-arrows">
         <div class="widget-heading">
-          Response Time
+          Overall Health
         </div>
         <div class="widget-body">
-
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-2 col-sm-6">
-      <div class="widget health-arrows">
-        <div class="widget-heading">
-          Errors
-        </div>
-        <div class="widget-body">
-          data:
-          <span>{{performanceView.dataexample}}</span>
+          <table class="table">
+            <tr>
+              <td>
+                <span dash-status="ok"></span>
+              </td>
+              <td>
+                Response Time
+              </td>
+              <td>
+                {{performanceView.responsetime}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span dash-status="alert"></span>
+              </td>
+              <td>
+                Calls Per Minute
+              </td>
+              <td>
+                {{performanceView.callspm}}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span dash-status="alert"></span>
+              </td>
+              <td>
+                Errors Per Minute
+              </td>
+              <td>
+                {{performanceView.errorspm}}
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
     </div>
