@@ -115,11 +115,47 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     // TODO: Implement these using AppD rest api
     @Override
     public List<AppdynamicsApplication> getApplications(String server) {
+
+        /**
+         * user1@customer1:secret http://demo.appdynamics.com/controller/rest/applications
+         *
+         * <applications>
+         <application>
+         <id>5</id>
+         <name>ECommerce_E2E</name>
+         </application>
+         <application>
+         <id>8</id>
+         <name>ECommerce_E2E-Fulfillment</name>
+         </application>
+         <application>
+         <id>11</id>
+         <name>jimix12110919</name>
+         <description></description>
+         </application>
+         </applications>
+         */
         return null;
     }
 
     @Override
     public Performance getPerformance(AppdynamicsApplication application) {
+        /**
+         * All metrics names: http://demo.appdynamics.com/controller/rest/applications/DIGITAL_RTM_PERF/metrics?output=json
+         *
+         *
+         * Get all metrics for a given app:
+         * http://demo.appdynamics.com/controller/rest/applications/DIGITAL_RTM_PERF/metric-data?metric-path=*|*|*|*|*&time-range-type=BEFORE_NOW&duration-in-mins=15&output=json
+         *
+         * UI rest api (sort of backdoor apis)
+         *
+         * Get overall performance stats
+         * http://demo.appdynamics.com/controller/restui/bt/performanceRequestStats?applicationId=996&entityType=APPLICATION&entityId=996&time-range=last_15_minutes.BEFORE_NOW.-1.-1.15
+         *
+         * Get Application health:
+         * http://demo.appdynamics.com/controller/restui/applicationManagerUiBean/applicationHealthSummary/996?time-range=last_15_minutes.BEFORE_NOW.-1.-1.15
+         *
+         */
         return null;
     }
 }
