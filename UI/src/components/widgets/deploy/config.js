@@ -66,7 +66,7 @@
         }
 
 
-        function submit(valid) {
+        function submit(valid, job) {
             ctrl.submitted = true;
 
             if (valid) {
@@ -77,7 +77,7 @@
                         id: widgetConfig.options.id
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: form.deployJob.value
+                    collectorItemId: job.value
                 };
 
                 $modalInstance.close(postObj);
