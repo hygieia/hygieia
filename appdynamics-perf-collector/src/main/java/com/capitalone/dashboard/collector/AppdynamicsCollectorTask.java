@@ -1,15 +1,7 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.AppdynamicsApplication;
-import com.capitalone.dashboard.model.AppdynamicsCollector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Performance;
-import com.capitalone.dashboard.repository.AppDynamicsApplicationRepository;
-import com.capitalone.dashboard.repository.AppdynamicsCollectorRepository;
-import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.PerformanceRepository;
+import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.repository.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -156,7 +148,7 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         int count = 0;
 
         for (AppdynamicsApplication project : sonarProjects) {
-            Performance performance = appdynamicsClient.getPerformance(project);
+            Performance performance = appdynamicsClient.getPerformanceMetrics(project);
             if (performance != null && isNewQualityData(project, performance)) {
                 performance.setCollectorItemId(project.getId());
                 performanceRepository.save(performance);
@@ -167,6 +159,8 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
     }
 
     private List<AppdynamicsApplication> enabledProjects(AppdynamicsCollector collector, String instanceUrl) {
+        String temp = instanceUrl; //temp to relieve error
+        temp.length(); //temp
         return appDynamicsApplicationRepository.findEnabledAppdynamicsApplications(collector.getId());
     }
 
