@@ -20,3 +20,4 @@ after_success:
 branches:
   only:
   - master
+  - gerrit-integration
