@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # if we are linked, use that info
-if [ "$MONGO_PORT" != "" ]; then
-  # Sample: MONGO_PORT=tcp://172.17.0.20:27017
-  export SPRING_DATA_MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
-  export SPRING_DATA_MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
+if [ "$MONGO_STARTED" != "" ]; then
+  # links now use hostnames
+  # todo: retrieve linked information such as hostname and port exposition
+  export SPRING_DATA_MONGODB_HOST=mongodb
+  export SPRING_DATA_MONGODB_PORT=27017
 fi
 
 echo "SPRING_DATA_MONGODB_HOST: $SPRING_DATA_MONGODB_HOST"
