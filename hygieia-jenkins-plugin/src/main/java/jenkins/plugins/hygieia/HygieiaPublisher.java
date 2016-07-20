@@ -218,6 +218,7 @@ public class HygieiaPublisher extends Notifier {
 
     public static class HygieiaTest {
         private final boolean publishTestStart;
+        private final boolean publishEvenBuildFails;
         private final String testFileNamePattern;
         private final String testResultsDirectory;
         private final String testType;
@@ -225,8 +226,9 @@ public class HygieiaPublisher extends Notifier {
         private final String testEnvironmentName;
 
         @DataBoundConstructor
-        public HygieiaTest(boolean publishTestStart, String testFileNamePattern, String testResultsDirectory, String testType, String testApplicationName, String testEnvironmentName) {
+        public HygieiaTest(boolean publishTestStart, boolean publishEvenBuildFails, String testFileNamePattern, String testResultsDirectory, String testType, String testApplicationName, String testEnvironmentName) {
             this.publishTestStart = publishTestStart;
+            this.publishEvenBuildFails = publishEvenBuildFails;
             this.testFileNamePattern = testFileNamePattern;
             this.testResultsDirectory = testResultsDirectory;
             this.testType = testType;
@@ -236,6 +238,10 @@ public class HygieiaPublisher extends Notifier {
 
         public boolean isPublishTestStart() {
             return publishTestStart;
+        }
+
+        public boolean isPublishEvenBuildFails() {
+            return publishEvenBuildFails;
         }
 
         public String getTestFileNamePattern() {
