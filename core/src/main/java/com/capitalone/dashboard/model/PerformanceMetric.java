@@ -1,22 +1,22 @@
 package com.capitalone.dashboard.model;
 
 public class PerformanceMetric {
-    private String type; //example "Business Transaction", "Health Rules" etc.
+    //  private String type; //example "Business Transaction", "Health Rules" etc.
     private String name; //Example: "totalTransactions",
     private Object value; //original value coming from the tool.
-    private String formattedValue; //formatted for Hygieia, if needed
-    private PerformanceMetricStatus status;
-    private String statusMessage; // free format text
+    //private String formattedValue; //formatted for Hygieia, if needed
+    //private PerformanceMetricStatus status;
+    //private String statusMessage; // free format text
 
 
-    public String getType() {
-        return type;
-    }
+    /* public String getType() {
+         return type;
+     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
+     public void setType(String type) {
+         this.type = type;
+     }
+ */
     public String getName() {
         return name;
     }
@@ -33,7 +33,7 @@ public class PerformanceMetric {
         this.value = value;
     }
 
-    public String getFormattedValue() {
+     /*  public String getFormattedValue() {
         return formattedValue;
     }
 
@@ -49,11 +49,11 @@ public class PerformanceMetric {
         this.status = status;
     }
 
-    public String getStatusMessage() {
+ public String getStatusMessage() {
         return statusMessage;
     }
 
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
-    }
+    }*/
 }

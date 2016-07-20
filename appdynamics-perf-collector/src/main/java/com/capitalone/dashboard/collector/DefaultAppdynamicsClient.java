@@ -2,13 +2,13 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.AppdynamicsApplication;
 import com.capitalone.dashboard.model.Performance;
-import com.capitalone.dashboard.model.PerformanceMetricStatus;
+import com.capitalone.dashboard.model.PerformanceMetric;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appdynamics.appdrestapi.RESTAccess;
+import org.appdynamics.appdrestapi.data.Application;
 import org.appdynamics.appdrestapi.data.MetricData;
 import org.appdynamics.appdrestapi.data.PolicyViolation;
 import org.json.simple.JSONArray;
@@ -30,17 +30,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
 public class DefaultAppdynamicsClient implements AppdynamicsClient {
     private static final Log LOG = LogFactory.getLog(DefaultAppdynamicsClient.class);
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
-    private static final String STATUS_WARN = "WARN";
-    private static final String STATUS_ALERT = "ALERT";
+    // private static final String STATUS_WARN = "WARN";
+    // private static final String STATUS_CRITICAL = "CRITICAL";
     private final RestOperations rest;
     private final HttpEntity<String> httpHeaders;
-    //  private final AppdynamicsSettings appdynamicsSettings;
 
     @Autowired
     public DefaultAppdynamicsClient(Supplier<RestOperations> restOperationsSupplier, AppdynamicsSettings settings) {
@@ -95,17 +95,17 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         return obj == null ? null : Boolean.valueOf(obj.toString());
     }
 
-    private PerformanceMetricStatus metricStatus(String status) {
+    /*private PerformanceMetricStatus metricStatus(String status) {
         if (StringUtils.isBlank(status)) {
-            return PerformanceMetricStatus.Ok;
+            return PerformanceMetricStatus.OK;
         }
 
         switch(status) {
-            case STATUS_WARN:  return PerformanceMetricStatus.Warning;
-            case STATUS_ALERT: return PerformanceMetricStatus.Alert;
-            default:           return PerformanceMetricStatus.Ok;
+            case STATUS_WARN:  return PerformanceMetricStatus.WARNING;
+            case STATUS_CRITICAL: return PerformanceMetricStatus.CRITICAL;
+            default:           return PerformanceMetricStatus.OK;
         }
-    }
+    }*/
 
     private HttpHeaders createHeaders(String username, String password){
         HttpHeaders headers = new HttpHeaders();
@@ -122,50 +122,45 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     }
 
     // TODO: Implement these using AppD rest api
-    /* @Override
+    @Override
    public List<AppdynamicsApplication> getApplications(RESTAccess access) {
 
-       **
-         * user1@customer1:secret http://demo.appdynamics.com/controller/rest/applications
-         *
-         * <applications>
-         <application>
-         <id>5</id>
-         <name>ECommerce_E2E</name>
-         </application>
-         <application>
-         <id>8</id>
-         <name>ECommerce_E2E-Fulfillment</name>
-         </application>
-         <application>
-         <id>11</id>
-         <name>jimix12110919</name>
-         <description></description>
-         </application>
-         </applications>
-         *
-        return null;
-    }*/
+        List<AppdynamicsApplication> temp = new ArrayList<>();
+
+        for (Application app : access.getApplications().getApplications())
+            temp.add(new AppdynamicsApplication(app));
+
+        return temp;
+    }
 
     @Override
-    public Performance getPerformanceMetrics(AppdynamicsApplication application) {
-        /**
-         * All metrics names: http://demo.appdynamics.com/controller/rest/applications/DIGITAL_RTM_PERF/metrics?output=json
-         *
-         *
-         * Get all metrics for a given app:
-         * http://demo.appdynamics.com/controller/rest/applications/DIGITAL_RTM_PERF/metric-data?metric-path=*|*|*|*|*&time-range-type=BEFORE_NOW&duration-in-mins=15&output=json
-         *
-         * UI rest api (sort of backdoor apis)
-         *
-         * Get overall performance stats
-         * http://demo.appdynamics.com/controller/restui/bt/performanceRequestStats?applicationId=996&entityType=APPLICATION&entityId=996&time-range=last_15_minutes.BEFORE_NOW.-1.-1.15
-         *
-         * Get Application health:
-         * http://demo.appdynamics.com/controller/restui/applicationManagerUiBean/applicationHealthSummary/996?time-range=last_15_minutes.BEFORE_NOW.-1.-1.15
-         *
-         */
-        return null;
+    public Performance getPerformanceMetrics(AppdynamicsApplication application, RESTAccess access) {
+
+        Performance performance = new Performance();
+
+        appName = application.getAppName();
+        try {
+            buildMetricDataMap(access);
+        } catch (IOException e) {
+            LOG.error("Oops", e);
+        } catch (IllegalAccessException e) {
+            LOG.error("Oops", e);
+        }
+
+        for (Map.Entry<String, Double> entry : applicationDataMap.entrySet()) {
+            String metricName = entry.getKey();
+            Double metricValue = entry.getValue();
+
+            PerformanceMetric metric = new PerformanceMetric();
+            metric.setName(metricName);
+            metric.setValue(metricValue);
+
+            performance.getMetrics().add(metric);
+
+        }
+
+        return performance;
+
     }
 
     /*
@@ -173,18 +168,18 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     ===========================================================
      */
 
-    private final int NUM_MINUTES = 600; //14 days
-    private final double DEFAULT_VALUE = -1.0;
+    private static final int NUM_MINUTES = 600; //14 days
+    private static final double DEFAULT_VALUE = -1.0;
     // private final String METRIC_FILEPATH = "src\\main\\java\\com\\capitalone\\metrics.txt";
     private Map<String, Double> applicationDataMap;
     private String appName = "NA";
-    private int appID = -1;
+    //private int appID = -1;
 
     public Map<String, Double> getApplicationDataMap() {
         return applicationDataMap;
     }
 
-    private RESTAccess getAccess() {
+    /*private RESTAccess getAccess() {
         final String controller = "appdyn-hqa-c01";
         final String port = "80";
 
@@ -194,21 +189,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         final boolean useSSL = false;
 
         return new RESTAccess(controller, port, useSSL, user, passwd, account);
-    }
-
-    public AppdynamicsApplication initialize(String appIdentifier) throws IOException, IllegalAccessException {
-
-        RESTAccess access = getAccess();
-
-        if (StringUtils.isNumeric(appIdentifier))
-            setAppName(access.getApplications().getApplications(), appIdentifier);
-        else
-            setAppID(access.getApplications().getApplications(), appIdentifier);
-
-        buildMetricDataMap(access);
-
-        return this;
-    }
+    }*/
 
 
     private void buildMetricDataMap(RESTAccess access) throws IOException, IllegalAccessException {
@@ -236,7 +217,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
         applicationDataMap.put("Error Rate Severity", 0.0);
         applicationDataMap.put("Response Time Severity", 0.0);
-        ArrayList<PolicyViolation> violations = access.getHealthRuleViolations(appName, start, end).getPolicyViolations();
+        List<PolicyViolation> violations = access.getHealthRuleViolations(appName, start, end).getPolicyViolations();
         for (PolicyViolation violation : violations) {
 
             double currErrorRateSeverity = applicationDataMap.get("Error Rate Severity");
@@ -248,25 +229,27 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
             double severity = violation.getSeverity().equals("CRITICAL") ? 2.0 : 1.0;
 
-            if (violation.getName().equals("Business Transaction error rate is much higher than normal"))
+            if (violation.getName().equals("Business Transaction error rate is much higher than normal")) {
                 applicationDataMap.replace("Error Rate Severity", Math.max(currErrorRateSeverity, severity));
-            else if (violation.getName().equals("Business Transaction response time is much higher than normal"))
+            } else if (violation.getName().equals("Business Transaction response time is much higher than normal")) {
                 applicationDataMap.replace("Response Time Severity", Math.max(currResponseTimeSeverity, severity));
+            }
         }
 
     }
 
-    private void setAppName(ArrayList<org.appdynamics.appdrestapi.data.Application> apps, String appIdentifier) {
+    /*private void setAppName(List<Application> apps, String appIdentifier) {
 
         appID = Integer.valueOf(appIdentifier);
 
         if (apps == null) {
-            System.out.println("Something went wrong because getting applications should be easy!");
-            System.exit(1);
+            LOG.debug("Something went wrong because getting applications should be easy!");
+            //System.exit(1);
+            return;
         }
 
         // iterate through array of applications to find the one with matching ID
-        for (org.appdynamics.appdrestapi.data.Application app : apps) {
+        for (Application app : apps) {
             if (app.getId() == appID) {
                 // extract the name so that we can pull value from appdynamics
                 appName = app.getName();
@@ -274,33 +257,34 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
             }
         }
 
-        System.out.println("Could not find application with ID: " + appID + ".");
-        System.exit(1);
-
+        LOG.debug("Could not find application with ID: " + appID + ".");
+       // System.exit(1);
+       // return;
     }
 
-    private void setAppID(ArrayList<org.appdynamics.appdrestapi.data.Application> apps, String appIdentifier) {
+    private void setAppID(List<Application> apps, String appIdentifier) {
 
 
         appName = appIdentifier;
 
 
         if (apps == null) {
-            System.out.println("Something went wrong because getting applications should be easy!");
-            System.exit(1);
+            LOG.debug("Something went wrong because getting applications should be easy!");
+           // System.exit(1);
+            return;
         }
 
-        for (org.appdynamics.appdrestapi.data.Application app : apps) {
+        for (Application app : apps) {
             if (app.getName() == appName) {
                 appID = app.getId();
                 return;
             }
         }
 
-        System.out.println("Could not find application with Name: " + appName + ".");
-        System.exit(1);
+        LOG.debug("Could not find application with Name: " + appName + ".");
+       // System.exit(1);
 
-    }
+    }*/
 
     private void populateMetricFields(RESTAccess access) throws IllegalAccessException, IOException {
 
@@ -311,7 +295,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         long start = cal.getTimeInMillis();
 
         //metrics that need to be calculated (some "totals", "percents", etc. aren't provided by appdynamics)
-        ArrayList<String> unknownMetrics = new ArrayList<>();
+        List<String> unknownMetrics = new ArrayList<>();
 
         //contains the names of the metrics requested by user
         for (Map.Entry<String, Double> entry : applicationDataMap.entrySet()) {
@@ -334,16 +318,16 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
 
         buildViolationSeverityMap(access, start, end);
-        testInit();
+        //testInit();
     }
 
     private double getMetricValue(String metricPath, RESTAccess access, long start, long end) throws IllegalAccessException {
 
         // generic call to appdynamics api to retrieve metric value
-        ArrayList<MetricData> metricDataArr = access.getRESTGenericMetricQuery(appName, metricPath, start, end, true).getMetric_data();
+        List<MetricData> metricDataArr = access.getRESTGenericMetricQuery(appName, metricPath, start, end, true).getMetric_data();
 
         // if resulting array is empty, the metric doesn't exist--we have to calculate
-        if (metricDataArr.size() > 0)
+        if (!metricDataArr.isEmpty())
             return metricDataArr.get(0).getSingleValue().getValue();
         return -1;
     }
@@ -359,18 +343,9 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         if (metricName.equals("Node Health Percent"))
             return getNodeHealthPercent(access, start, end);
 
-        // must pull all of the transactions and all of the health violations.
-        // 100 - (Num Violations / Num Transactions) = Business Health Percent
-        if (metricName.equals("Business Health Percent"))
-            return getBusinessHealthPercent(access, start, end);
-
         return -1;
     }
 
-    // Don't need anymore?
-    private double getBusinessHealthPercent(RESTAccess access, long start, long end) {
-        return -1.0;
-    }
 
     private double getNodeHealthPercent(RESTAccess access, long start, long end) {
 
@@ -391,8 +366,8 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         // "Open", "Close" part is deprecated. Needed when using reflection. Probably not anymore.
         return "Overall Application Performance|" + currMember.replace("OPEN", "(").replace("CLOSE", ")");
     }
-
+/*
     private void testInit() throws IllegalAccessException {
-        applicationDataMap.forEach((k, v) -> System.out.println(k + ": " + v));
-    }
+        applicationDataMap.forEach((k, v) -> LOG.debug(k + ": " + v));
+    }*/
 }

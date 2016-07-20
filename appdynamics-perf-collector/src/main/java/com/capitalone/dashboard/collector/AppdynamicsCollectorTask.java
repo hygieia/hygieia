@@ -1,7 +1,15 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.model.AppdynamicsApplication;
+import com.capitalone.dashboard.model.AppdynamicsCollector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Performance;
+import com.capitalone.dashboard.repository.AppDynamicsApplicationRepository;
+import com.capitalone.dashboard.repository.AppdynamicsCollectorRepository;
+import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.PerformanceRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -24,6 +32,7 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
     private final AppdynamicsSettings appdynamicsSettings;
     private final ComponentRepository dbComponentRepository;
 
+
     @Autowired
     public AppdynamicsCollectorTask(TaskScheduler taskScheduler,
                                     AppdynamicsCollectorRepository appdynamicsCollectorRepository,
@@ -43,7 +52,7 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
 
     @Override
     public AppdynamicsCollector getCollector() {
-        return AppdynamicsCollector.prototype(appdynamicsSettings.getServers());
+        return AppdynamicsCollector.prototype(appdynamicsSettings.getAccess());
     }
 
     @Override
@@ -58,9 +67,12 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
 
     @Override
     public void collect(AppdynamicsCollector collector) {
-        long start = System.currentTimeMillis();
 
-        Set<ObjectId> udId = new HashSet<>();
+        // long start = System.currentTimeMillis();
+        refreshData(enabledProjects(collector));
+
+/*
+       Set<ObjectId> udId = new HashSet<>();
         udId.add(collector.getId());
         List<AppdynamicsApplication> existingProjects = appDynamicsApplicationRepository.findByCollectorIdIn(udId);
         List<AppdynamicsApplication> latestProjects = new ArrayList<>();
@@ -69,7 +81,7 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         for (String instanceUrl : collector.getAppdynamicsServers()) {
             logBanner(instanceUrl);
 
-            List<AppdynamicsApplication> projects = appdynamicsClient.getApplications(instanceUrl);
+            List<AppdynamicsApplication> projects = appdynamicsClient.getApplications(appdynamicsSettings.getAccess());
             latestProjects.addAll(projects);
 
             int projSize = ((projects != null) ? projects.size() : 0);
@@ -82,6 +94,8 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
             log("Finished", start);
         }
         deleteUnwantedJobs(latestProjects, existingProjects, collector);
+
+        clean(collector.);*/
     }
 
 
@@ -126,29 +140,29 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
     }
 
 
-    private void deleteUnwantedJobs(List<AppdynamicsApplication> latestProjects, List<AppdynamicsApplication> existingProjects, AppdynamicsCollector collector) {
-        List<AppdynamicsApplication> deleteJobList = new ArrayList<>();
+    /*  private void deleteUnwantedJobs(List<AppdynamicsApplication> latestProjects, List<AppdynamicsApplication> existingProjects, AppdynamicsCollector collector) {
+          List<AppdynamicsApplication> deleteJobList = new ArrayList<>();
 
-        // First delete collector items that are not supposed to be collected anymore because the servers have moved(?)
-        for (AppdynamicsApplication job : existingProjects) {
-            if (job.isPushed()) continue; // do not delete jobs that are being pushed via API
-            if (!collector.getAppdynamicsServers().contains(job.getAppUrl()) ||
-                    (!job.getCollectorId().equals(collector.getId())) ||
-                    (!latestProjects.contains(job))) {
-                deleteJobList.add(job);
-            }
-        }
-        if (!CollectionUtils.isEmpty(deleteJobList)) {
-            appDynamicsApplicationRepository.delete(deleteJobList);
-        }
-    }
-
+          // First delete collector items that are not supposed to be collected anymore because the servers have moved(?)
+          for (AppdynamicsApplication job : existingProjects) {
+              if (job.isPushed()) continue; // do not delete jobs that are being pushed via API
+              if (!collector.getAppdynamicsServers().contains(job.getAppUrl()) ||
+                      (!job.getCollectorId().equals(collector.getId())) ||
+                      (!latestProjects.contains(job))) {
+                  deleteJobList.add(job);
+              }
+          }
+          if (!CollectionUtils.isEmpty(deleteJobList)) {
+              appDynamicsApplicationRepository.delete(deleteJobList);
+          }
+      }
+  */
     private void refreshData(List<AppdynamicsApplication> sonarProjects) {
         long start = System.currentTimeMillis();
         int count = 0;
 
         for (AppdynamicsApplication project : sonarProjects) {
-            Performance performance = appdynamicsClient.getPerformanceMetrics(project);
+            Performance performance = appdynamicsClient.getPerformanceMetrics(project, appdynamicsSettings.getAccess());
             if (performance != null && isNewQualityData(project, performance)) {
                 performance.setCollectorItemId(project.getId());
                 performanceRepository.save(performance);
@@ -158,9 +172,7 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         log("Updated", start, count);
     }
 
-    private List<AppdynamicsApplication> enabledProjects(AppdynamicsCollector collector, String instanceUrl) {
-        String temp = instanceUrl; //temp to relieve error
-        temp.length(); //temp
+    private List<AppdynamicsApplication> enabledProjects(AppdynamicsCollector collector) {
         return appDynamicsApplicationRepository.findEnabledAppdynamicsApplications(collector.getId());
     }
 

@@ -11,6 +11,6 @@ public interface AppdynamicsClient {
     //List<AppdynamicsApplication> getApplications(String server);
     List<AppdynamicsApplication> getApplications(RESTAccess access);
 
-    Performance getPerformanceMetrics(AppdynamicsApplication application);
+    Performance getPerformanceMetrics(AppdynamicsApplication application, RESTAccess access);
 
 }

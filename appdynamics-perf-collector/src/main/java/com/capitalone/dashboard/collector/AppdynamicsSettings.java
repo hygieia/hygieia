@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import org.appdynamics.appdrestapi.RESTAccess;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -10,10 +11,47 @@ public class AppdynamicsSettings {
     // private String cron;
     private String username;
     private String password;
-    //private String metrics;
-    // private List<String> servers;
+    private String account;
+    private boolean useSSL;
+    private String controller;
+    private String port;
     private String appID;
     private String appName;
+    private String cron;
+
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public boolean isUseSSL() {
+        return useSSL;
+    }
+
+    public void setUseSSL(boolean useSSL) {
+        this.useSSL = useSSL;
+    }
+
+    public String getController() {
+        return controller;
+    }
+
+    public void setController(String controller) {
+        this.controller = controller;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
 
     public String getAppID() {
         return appID;
@@ -31,14 +69,19 @@ public class AppdynamicsSettings {
         this.appName = appName;
     }
 
-    /*  public String getCron() {
+    /**
+     * Accessor method for the current chronology setting, for the scheduler
+     */
+    public String getCron() {
          return cron;
      }
+
+    //TODO: implement users put in own metrics to use
 
      public void setCron(String cron) {
          this.cron = cron;
      }
- */
+
     public String getUsername() {
         return username;
     }
@@ -53,6 +96,11 @@ public class AppdynamicsSettings {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public RESTAccess getAccess() {
+
+        return new RESTAccess(controller, port, useSSL, username, password, account);
     }
 
   /*  public String getMetrics() {

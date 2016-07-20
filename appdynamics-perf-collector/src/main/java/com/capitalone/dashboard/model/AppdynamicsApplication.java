@@ -1,12 +1,14 @@
 package com.capitalone.dashboard.model;
 
-/**
- * CollectorItem extension to store the github repo url and branch.
- */
+
 public class AppdynamicsApplication extends CollectorItem {
     private static final String APP_NAME = "appName"; // http://github.company.com/jack/somejavacode
     private static final String APP_ID = "appID"; // master, development etc.
 
+    public AppdynamicsApplication(org.appdynamics.appdrestapi.data.Application app) {
+        getOptions().put(APP_ID, app.getId());
+        getOptions().put(APP_NAME, app.getName());
+    }
 
     public String getAppName() {
         return (String) getOptions().get(APP_NAME);
