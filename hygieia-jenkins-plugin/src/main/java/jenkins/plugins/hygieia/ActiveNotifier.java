@@ -100,7 +100,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
                 }
             }
 
-            boolean publishTest = (publisher.getHygieiaTest() != null) && successBuild;
+            boolean publishTest = (publisher.getHygieiaTest() != null) && (successBuild || publisher.getHygieiaTest().isPublishEvenBuildFails());
 
             if (publishTest) {
                 CucumberTestBuilder builder = new CucumberTestBuilder(r, publisher, listener, buildResponse.getResponseValue());
