@@ -21,6 +21,9 @@ public final class FeatureCollectorConstants {
         public static final String KANBAN_END_DATE = "9999-12-31T59:59:59.9999999";
         public static final String KANBAN_SPRINT_ID = "KANBAN";
 		public static final String SCRUM_SPRINT_ID = "SCRUM";
+		
+		public static final String STORY_HOURS_ESTIMATE = "hours";
+		public static final String STORY_POINTS_ESTIMATE = "storypoints";
 
         private FeatureCollectorConstants() {
                 // This class should not be instantiable

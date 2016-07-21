@@ -169,6 +169,7 @@ public class FeatureServiceImplTest {
 		mockJiraFeature.setsEpicNumber("12938715");
 		mockJiraFeature.setsEpicType("");
 		mockJiraFeature.setsEstimate("40");
+		mockJiraFeature.setsEstimateTime(160);
 		mockJiraFeature.setsId("0812345");
 		mockJiraFeature.setsName("Test Story 2");
 		mockJiraFeature.setsNumber("12345416");
@@ -217,6 +218,7 @@ public class FeatureServiceImplTest {
 		mockJiraFeature2.setsEpicNumber("12938715");
 		mockJiraFeature2.setsEpicType("");
 		mockJiraFeature2.setsEstimate("40");
+		mockJiraFeature2.setsEstimateTime(170);
 		mockJiraFeature2.setsId("0812346");
 		mockJiraFeature2.setsName("Test Story 3");
 		mockJiraFeature2.setsNumber("12345417");
@@ -380,13 +382,30 @@ public class FeatureServiceImplTest {
 				(String) notNull())).thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
 
 		DataResponse<List<Feature>> result = featureService.getFeatureEstimates(mockComponentId,
-				mockJiraFeature.getsTeamID(), Optional.empty());
+				mockJiraFeature.getsTeamID(), Optional.empty(), Optional.empty());
 		assertThat(
 				"There should only be one result even with multiple same super features over several sub features",
 				result.getResult(), hasSize(1));
 		assertThat(
 				"The total super feature estimate should be the sum total of any similar super features present in the response",
 				Integer.valueOf(result.getResult().get(0).getsEstimate()), equalTo(80));
+	}
+	
+	@Test
+	public void testGetFeatureEstimates_ManySameSuperFeatures_OneSuperFeatureRs_Hours() {
+		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
+		when(collectorRepository.findOne(mockItem2.getCollectorId())).thenReturn(mockJiraCollector);
+		when(featureRepository.getInProgressFeaturesEstimatesByTeamId((String) notNull(),
+				(String) notNull())).thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
+
+		DataResponse<List<Feature>> result = featureService.getFeatureEstimates(mockComponentId,
+				mockJiraFeature.getsTeamID(), Optional.empty(), Optional.of("hours"));
+		assertThat(
+				"There should only be one result even with multiple same super features over several sub features",
+				result.getResult(), hasSize(1));
+		assertThat(
+				"The total super feature estimate should be the sum total of any similar super features present in the response",
+				Integer.valueOf(result.getResult().get(0).getsEstimate()), equalTo(5));
 	}
 
 	@Test
