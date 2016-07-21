@@ -84,6 +84,8 @@ public class FeatureSettings {
 	 *  https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
 	 */
 	private String jiraEpicIdFieldName;
+	
+	private String jiraStoryPointsFieldName;
 
 	public String getCron() {
 		return this.cron;
@@ -299,5 +301,13 @@ public class FeatureSettings {
 
 	public void setJiraEpicIdFieldName(String jiraEpicIdFieldName) {
 		this.jiraEpicIdFieldName = jiraEpicIdFieldName;
+	}
+
+	public String getJiraStoryPointsFieldName() {
+		return jiraStoryPointsFieldName;
+	}
+
+	public void setJiraStoryPointsFieldName(String jiraStoryPointsFieldName) {
+		this.jiraStoryPointsFieldName = jiraStoryPointsFieldName;
 	}
 }

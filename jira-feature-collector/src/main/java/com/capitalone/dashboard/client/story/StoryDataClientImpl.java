@@ -215,7 +215,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 					// ID
 					feature.setsId(TOOLS.sanitizeResponse(issue.getId()));
 
-					processFeatureData(feature, issue);
+					processFeatureData(feature, issue, fields);
 					
 					// delay processing epic data for performance
 					if (epic != null && epic.getValue() != null && !TOOLS.sanitizeResponse(epic.getValue()).isEmpty()) {
@@ -255,10 +255,9 @@ public class StoryDataClientImpl implements StoryDataClient {
 		}
 	}
 	
-	private void processFeatureData(Feature feature, Issue issue) {
+	private void processFeatureData(Feature feature, Issue issue, Map<String, IssueField> fields) {
 		BasicProject project = issue.getProject();
 		String status = this.toCanonicalFeatureStatus(issue.getStatus().getName());
-		String estimate = String.valueOf(issue.getTimeTracking().getRemainingEstimateMinutes());
 		String changeDate = issue.getUpdateDate().toString();
 		
 		// sNumber
@@ -272,9 +271,28 @@ public class StoryDataClientImpl implements StoryDataClient {
 
 		// sState
 		feature.setsState(TOOLS.sanitizeResponse(status));
-
-		// sEstimate,
-		feature.setsEstimate(TOOLS.toHours(estimate));
+		
+		int originalEstimate = 0;
+		
+		// Tasks use timetracking, stories use aggregatetimeoriginalestimate and aggregatetimeestimate
+		if (issue.getTimeTracking() != null && issue.getTimeTracking().getOriginalEstimateMinutes() != null) {
+			originalEstimate = issue.getTimeTracking().getOriginalEstimateMinutes();
+		} else if (fields.get("aggregatetimeoriginalestimate") != null
+				&& fields.get("aggregatetimeoriginalestimate").getValue() != null) {
+			// this value is in seconds
+			originalEstimate = ((Integer)fields.get("aggregatetimeoriginalestimate").getValue()) / 60;
+		}
+		
+		feature.setsEstimateTime(originalEstimate);
+		
+		// sStoryPoints
+		IssueField storyPointsField = fields.get(featureSettings.getJiraStoryPointsFieldName());
+		if (storyPointsField != null && storyPointsField.getValue() != null && !TOOLS.sanitizeResponse(storyPointsField.getValue()).isEmpty()) {
+			Double value = Double.parseDouble(TOOLS.sanitizeResponse(storyPointsField.getValue()));
+			feature.setsEstimate(String.valueOf(value.intValue()));
+		} else {
+			feature.setsEstimate("0");
+		}
 
 		// sChangeDate
 		feature.setChangeDate(TOOLS.toCanonicalDate(TOOLS.sanitizeResponse(changeDate)));
@@ -408,7 +426,6 @@ public class StoryDataClientImpl implements StoryDataClient {
 			Object sValue = sprintField.getValue();
 			
 			try {
-				
 				List<Sprint> sprints = TOOLS.parseSprints(sValue);
 
 				// Now sort so we can use the most recent one
