@@ -2,8 +2,6 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.AppdynamicsApplication;
 import com.capitalone.dashboard.model.AppdynamicsCollector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Performance;
 import com.capitalone.dashboard.repository.AppDynamicsApplicationRepository;
 import com.capitalone.dashboard.repository.AppdynamicsCollectorRepository;
@@ -52,7 +50,7 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
 
     @Override
     public AppdynamicsCollector getCollector() {
-        return AppdynamicsCollector.prototype(appdynamicsSettings.getAccess());
+        return AppdynamicsCollector.prototype(appdynamicsSettings);
     }
 
     @Override
@@ -68,103 +66,37 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
     @Override
     public void collect(AppdynamicsCollector collector) {
 
-        // long start = System.currentTimeMillis();
-        refreshData(enabledProjects(collector));
-
-/*
-       Set<ObjectId> udId = new HashSet<>();
-        udId.add(collector.getId());
-        List<AppdynamicsApplication> existingProjects = appDynamicsApplicationRepository.findByCollectorIdIn(udId);
-        List<AppdynamicsApplication> latestProjects = new ArrayList<>();
-        clean(collector, existingProjects);
-
-        for (String instanceUrl : collector.getAppdynamicsServers()) {
-            logBanner(instanceUrl);
-
-            List<AppdynamicsApplication> projects = appdynamicsClient.getApplications(appdynamicsSettings.getAccess());
-            latestProjects.addAll(projects);
-
-            int projSize = ((projects != null) ? projects.size() : 0);
-            log("Fetched projects   " + projSize, start);
-
-            addNewProjects(projects, existingProjects, collector);
-
-            refreshData(enabledProjects(collector, instanceUrl));
-
-            log("Finished", start);
-        }
-        deleteUnwantedJobs(latestProjects, existingProjects, collector);
-
-        clean(collector.);*/
-    }
-
-
-	/**
-	 * Clean up unused sonar collector items
-	 *
-	 * @param collector
-
-	 */
-
-    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed PMD, fixme
-    private void clean(AppdynamicsCollector collector, List<AppdynamicsApplication> existingProjects) {
-        Set<ObjectId> uniqueIDs = new HashSet<>();
-        for (com.capitalone.dashboard.model.Component comp : dbComponentRepository
-                .findAll()) {
-            if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
-                List<CollectorItem> itemList = comp.getCollectorItems().get(
-                        CollectorType.CodeQuality);
-                if (itemList != null) {
-                    for (CollectorItem ci : itemList) {
-                        if (ci != null && ci.getCollectorId().equals(collector.getId())) {
-                            uniqueIDs.add(ci.getId());
-                        }
-                    }
-                }
-            }
-        }
-        List<AppdynamicsApplication> stateChangeJobList = new ArrayList<>();
+        long start = System.currentTimeMillis();
         Set<ObjectId> udId = new HashSet<>();
         udId.add(collector.getId());
-        for (AppdynamicsApplication job : existingProjects) {
-            // collect the jobs that need to change state : enabled vs disabled.
-            if ((job.isEnabled() && !uniqueIDs.contains(job.getId())) ||  // if it was enabled but not on a dashboard
-                    (!job.isEnabled() && uniqueIDs.contains(job.getId()))) { // OR it was disabled and now on a dashboard
-                job.setEnabled(uniqueIDs.contains(job.getId()));
-                stateChangeJobList.add(job);
-            }
-        }
-        if (!CollectionUtils.isEmpty(stateChangeJobList)) {
-            appDynamicsApplicationRepository.save(stateChangeJobList);
-        }
+        List<AppdynamicsApplication> existingApps = appDynamicsApplicationRepository.findByCollectorIdIn(udId);
+        List<AppdynamicsApplication> latestProjects = new ArrayList<>();
+
+        logBanner(collector.getController());
+
+        Set<AppdynamicsApplication> apps = appdynamicsClient.getApplications();
+        latestProjects.addAll(apps);
+
+        log("Fetched applications   " + ((apps != null) ? apps.size() : 0), start);
+
+        addNewProjects(apps, existingApps, collector);
+
+        refreshData(enabledApplications(collector));
+
+        log("Finished", start);
     }
 
 
-    /*  private void deleteUnwantedJobs(List<AppdynamicsApplication> latestProjects, List<AppdynamicsApplication> existingProjects, AppdynamicsCollector collector) {
-          List<AppdynamicsApplication> deleteJobList = new ArrayList<>();
 
-          // First delete collector items that are not supposed to be collected anymore because the servers have moved(?)
-          for (AppdynamicsApplication job : existingProjects) {
-              if (job.isPushed()) continue; // do not delete jobs that are being pushed via API
-              if (!collector.getAppdynamicsServers().contains(job.getAppUrl()) ||
-                      (!job.getCollectorId().equals(collector.getId())) ||
-                      (!latestProjects.contains(job))) {
-                  deleteJobList.add(job);
-              }
-          }
-          if (!CollectionUtils.isEmpty(deleteJobList)) {
-              appDynamicsApplicationRepository.delete(deleteJobList);
-          }
-      }
-  */
-    private void refreshData(List<AppdynamicsApplication> sonarProjects) {
+
+    private void refreshData(List<AppdynamicsApplication> apps) {
         long start = System.currentTimeMillis();
         int count = 0;
 
-        for (AppdynamicsApplication project : sonarProjects) {
-            Performance performance = appdynamicsClient.getPerformanceMetrics(project, appdynamicsSettings.getAccess());
-            if (performance != null && isNewQualityData(project, performance)) {
-                performance.setCollectorItemId(project.getId());
+        for (AppdynamicsApplication app : apps) {
+            Performance performance = appdynamicsClient.getPerformanceMetrics(app);
+            if (performance != null && isNewPerformanceData(app, performance)) {
+                performance.setCollectorItemId(app.getId());
                 performanceRepository.save(performance);
                 count++;
             }
@@ -172,38 +104,33 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         log("Updated", start, count);
     }
 
-    private List<AppdynamicsApplication> enabledProjects(AppdynamicsCollector collector) {
+    private List<AppdynamicsApplication> enabledApplications(AppdynamicsCollector collector) {
         return appDynamicsApplicationRepository.findEnabledAppdynamicsApplications(collector.getId());
     }
 
-    private void addNewProjects(List<AppdynamicsApplication> projects, List<AppdynamicsApplication> existingProjects, AppdynamicsCollector collector) {
+    private void addNewProjects(Set<AppdynamicsApplication> apps, List<AppdynamicsApplication> exisingApps, AppdynamicsCollector collector) {
         long start = System.currentTimeMillis();
         int count = 0;
-        List<AppdynamicsApplication> newProjects = new ArrayList<>();
-        for (AppdynamicsApplication project : projects) {
-            if (!existingProjects.contains(project)) {
-                project.setCollectorId(collector.getId());
-                project.setEnabled(false);
-                project.setDescription(project.getAppName());
-                newProjects.add(project);
+        Set<AppdynamicsApplication> allApps = appdynamicsClient.getApplications();
+        Set<AppdynamicsApplication> newApps = new HashSet<>();
+
+        for (AppdynamicsApplication app : allApps) {
+            if (!exisingApps.contains(app)) {
+                app.setCollectorId(collector.getId());
+                app.setEnabled(false);
+                newApps.add(app);
                 count++;
             }
         }
         //save all in one shot
-        if (!CollectionUtils.isEmpty(newProjects)) {
-            appDynamicsApplicationRepository.save(newProjects);
+        if (!CollectionUtils.isEmpty(newApps)) {
+            appDynamicsApplicationRepository.save(newApps);
         }
-        log("New projects", start, count);
+        log("New appplications: ", start, count);
     }
 
-    @SuppressWarnings("unused")
-	private boolean isNewProject(AppdynamicsCollector collector, AppdynamicsApplication application) {
-        return appDynamicsApplicationRepository.findAppdynamicsApplicationByCollectorIdAndAppID(
-                collector.getId(), application.getAppID()) == null;
-    }
-
-    private boolean isNewQualityData(AppdynamicsApplication project, Performance performance) {
+    private boolean isNewPerformanceData(AppdynamicsApplication appdynamicsApplication, Performance performance) {
         return performanceRepository.findByCollectorItemIdAndTimestamp(
-                project.getId(), performance.getTimestamp()) == null;
+                appdynamicsApplication.getId(), performance.getTimestamp()) == null;
     }
 }

@@ -2,13 +2,10 @@ package com.capitalone.dashboard.model;
 
 
 public class AppdynamicsApplication extends CollectorItem {
-    private static final String APP_NAME = "appName"; // http://github.company.com/jack/somejavacode
-    private static final String APP_ID = "appID"; // master, development etc.
+    private static final String APP_NAME = "appName";
+    private static final String APP_ID = "appID";
+    private static final String APP_DESC = "appDesc";
 
-    public AppdynamicsApplication(org.appdynamics.appdrestapi.data.Application app) {
-        getOptions().put(APP_ID, app.getId());
-        getOptions().put(APP_NAME, app.getName());
-    }
 
     public String getAppName() {
         return (String) getOptions().get(APP_NAME);
@@ -26,4 +23,29 @@ public class AppdynamicsApplication extends CollectorItem {
         getOptions().put(APP_ID, id);
     }
 
+    public String getAppDesc() {
+        return (String) getOptions().get(APP_DESC);
+    }
+
+    public void setAppDesc (String desc) {
+        getOptions().put(APP_DESC, desc);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AppdynamicsApplication app = (AppdynamicsApplication) o;
+
+        return getAppID().equals(app.getAppID());
+    }
+
+    @Override
+    public int hashCode() {
+        return getAppID().hashCode();
+    }
 }

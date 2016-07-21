@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-import org.appdynamics.appdrestapi.RESTAccess;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +14,6 @@ public class AppdynamicsSettings {
     private boolean useSSL;
     private String controller;
     private String port;
-    private String appID;
-    private String appName;
     private String cron;
 
 
@@ -52,23 +49,6 @@ public class AppdynamicsSettings {
         this.port = port;
     }
 
-
-    public String getAppID() {
-        return appID;
-    }
-
-    public void setAppID(String appID) {
-        this.appID = appID;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
     /**
      * Accessor method for the current chronology setting, for the scheduler
      */
@@ -98,25 +78,4 @@ public class AppdynamicsSettings {
         this.password = password;
     }
 
-    public RESTAccess getAccess() {
-
-        return new RESTAccess(controller, port, useSSL, username, password, account);
-    }
-
-  /*  public String getMetrics() {
-        return metrics;
-    }
-
-    public void setMetrics(String metrics) {
-        this.metrics = metrics;
-    }
-
-    public List<String> getServers() {
-        return servers;
-    }
-
-    public void setServers(List<String> servers) {
-        this.servers = servers;
-    }
-    */
 }

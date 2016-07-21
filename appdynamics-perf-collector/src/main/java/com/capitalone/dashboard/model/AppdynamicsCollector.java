@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.model;
 
-import org.appdynamics.appdrestapi.RESTAccess;
+import com.capitalone.dashboard.collector.AppdynamicsSettings;
 
 /**
  * Collector implementation for Feature that stores system configuration
@@ -9,17 +9,14 @@ import org.appdynamics.appdrestapi.RESTAccess;
  * @author pxd338
  */
 public class AppdynamicsCollector extends Collector {
+    private String controller;
 
-
-    private static RESTAccess access = null;
-
-
-    public static RESTAccess getAccess() {
-        return access;
+    public String getController() {
+        return controller;
     }
 
-    public static void setAccess(RESTAccess access) {
-        AppdynamicsCollector.access = access;
+    public void setController(String controller) {
+        this.controller = controller;
     }
 
     /**
@@ -30,15 +27,14 @@ public class AppdynamicsCollector extends Collector {
      * @return A configured Feature Collector prototype
      */
 
-    public static AppdynamicsCollector prototype(RESTAccess access) {
+    public static AppdynamicsCollector prototype(AppdynamicsSettings settings) {
         AppdynamicsCollector protoType = new AppdynamicsCollector();
         protoType.setName("Appdynamics");
         protoType.setCollectorType(CollectorType.AppPerformance);
         protoType.setOnline(true);
         protoType.setEnabled(true);
         protoType.setLastExecuted(System.currentTimeMillis());
-        protoType.setAccess(access);
-
+        protoType.setController(settings.getController());
         return protoType;
     }
 }
