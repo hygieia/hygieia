@@ -6,8 +6,8 @@ import com.capitalone.dashboard.model.Performance;
 import com.capitalone.dashboard.repository.AppDynamicsApplicationRepository;
 import com.capitalone.dashboard.repository.AppdynamicsCollectorRepository;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.PerformanceRepository;
+import org.appdynamics.appdrestapi.RESTAccess;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -28,7 +28,8 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
     private final PerformanceRepository performanceRepository;
     private final AppdynamicsClient appdynamicsClient;
     private final AppdynamicsSettings appdynamicsSettings;
-    private final ComponentRepository dbComponentRepository;
+
+
 
 
     @Autowired
@@ -37,15 +38,13 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
                                     AppDynamicsApplicationRepository appDynamicsApplicationRepository,
                                     PerformanceRepository performanceRepository,
                                     AppdynamicsSettings appdynamicsSettings,
-                                    AppdynamicsClient appdynamicsClient,
-                                    ComponentRepository dbComponentRepository) {
+                                    AppdynamicsClient appdynamicsClient) {
         super(taskScheduler, "Appdynamics");
         this.appdynamicsCollectorRepository = appdynamicsCollectorRepository;
         this.appDynamicsApplicationRepository = appDynamicsApplicationRepository;
         this.performanceRepository = performanceRepository;
         this.appdynamicsSettings = appdynamicsSettings;
         this.appdynamicsClient = appdynamicsClient;
-        this.dbComponentRepository = dbComponentRepository;
     }
 
     @Override
@@ -63,6 +62,10 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         return appdynamicsSettings.getCron();
     }
 
+    private RESTAccess getAppdynamicsRestClient() {
+        return new RESTAccess(appdynamicsSettings.getController(), appdynamicsSettings.getPort(), appdynamicsSettings.isUseSSL(),
+                appdynamicsSettings.getUsername(), appdynamicsSettings.getPassword(), appdynamicsSettings.getAccount());
+    }
     @Override
     public void collect(AppdynamicsCollector collector) {
 
@@ -73,15 +76,16 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         List<AppdynamicsApplication> latestProjects = new ArrayList<>();
 
         logBanner(collector.getController());
+        RESTAccess restClient = getAppdynamicsRestClient();
 
-        Set<AppdynamicsApplication> apps = appdynamicsClient.getApplications();
+        Set<AppdynamicsApplication> apps = appdynamicsClient.getApplications(restClient);
         latestProjects.addAll(apps);
 
         log("Fetched applications   " + ((apps != null) ? apps.size() : 0), start);
 
         addNewProjects(apps, existingApps, collector);
 
-        refreshData(enabledApplications(collector));
+        refreshData(enabledApplications(collector), restClient);
 
         log("Finished", start);
     }
@@ -89,12 +93,12 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
 
 
 
-    private void refreshData(List<AppdynamicsApplication> apps) {
+    private void refreshData(List<AppdynamicsApplication> apps, RESTAccess restClient) {
         long start = System.currentTimeMillis();
         int count = 0;
 
         for (AppdynamicsApplication app : apps) {
-            Performance performance = appdynamicsClient.getPerformanceMetrics(app);
+            Performance performance = appdynamicsClient.getPerformanceMetrics(app, restClient);
             if (performance != null && isNewPerformanceData(app, performance)) {
                 performance.setCollectorItemId(app.getId());
                 performanceRepository.save(performance);
@@ -108,10 +112,9 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         return appDynamicsApplicationRepository.findEnabledAppdynamicsApplications(collector.getId());
     }
 
-    private void addNewProjects(Set<AppdynamicsApplication> apps, List<AppdynamicsApplication> exisingApps, AppdynamicsCollector collector) {
+    private void addNewProjects(Set<AppdynamicsApplication> allApps, List<AppdynamicsApplication> exisingApps, AppdynamicsCollector collector) {
         long start = System.currentTimeMillis();
         int count = 0;
-        Set<AppdynamicsApplication> allApps = appdynamicsClient.getApplications();
         Set<AppdynamicsApplication> newApps = new HashSet<>();
 
         for (AppdynamicsApplication app : allApps) {

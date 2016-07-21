@@ -3,7 +3,6 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.AppdynamicsApplication;
 import com.capitalone.dashboard.model.Performance;
 import com.capitalone.dashboard.model.PerformanceMetric;
-import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appdynamics.appdrestapi.RESTAccess;
@@ -11,7 +10,6 @@ import org.appdynamics.appdrestapi.data.MetricData;
 import org.appdynamics.appdrestapi.data.PolicyViolation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestOperations;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,22 +23,18 @@ import java.util.Set;
 @Component
 public class DefaultAppdynamicsClient implements AppdynamicsClient {
     private static final Log LOG = LogFactory.getLog(DefaultAppdynamicsClient.class);
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+//    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+    private static final int NUM_MINUTES = 600; //14 days
+    private static final double DEFAULT_VALUE = -1.0;
+    private Map<String, Double> applicationDataMap = new HashMap<>();
+
     // private static final String STATUS_WARN = "WARN";
     // private static final String STATUS_CRITICAL = "CRITICAL";
-    private final AppdynamicsSettings appdynamicsSettings;
-    private static RESTAccess restClient;
-
 
     @Autowired
-    public DefaultAppdynamicsClient(Supplier<RestOperations> restOperationsSupplier, AppdynamicsSettings settings, AppdynamicsSettings appdynamicsSettings) {
-        this.appdynamicsSettings = appdynamicsSettings;
-        this.restClient = new RESTAccess(settings.getController(), settings.getPort(), settings.isUseSSL(),
-                settings.getUsername(), settings.getPassword(), settings.getAccount());
+    public DefaultAppdynamicsClient() {
+
     }
-
-
-
 
     /*private PerformanceMetricStatus metricStatus(String status) {
         if (StringUtils.isBlank(status)) {
@@ -57,7 +51,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
     // TODO: Implement these using AppD rest api
     @Override
-   public Set<AppdynamicsApplication> getApplications() {
+   public Set<AppdynamicsApplication> getApplications(RESTAccess restClient) {
 
         Set<AppdynamicsApplication> returnSet = new HashSet<>();
         for (org.appdynamics.appdrestapi.data.Application app : restClient.getApplications().getApplications()) {
@@ -71,13 +65,11 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     }
 
     @Override
-    public Performance getPerformanceMetrics(AppdynamicsApplication application) {
+    public Performance getPerformanceMetrics(AppdynamicsApplication application, RESTAccess restClient) {
 
         Performance performance = new Performance();
-
-        appName = application.getAppName();
         try {
-            buildMetricDataMap(restClient);
+            buildMetricDataMap(restClient, application);
         } catch (IOException e) {
             LOG.error("Oops", e);
         } catch (IllegalAccessException e) {
@@ -100,17 +92,6 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
     }
 
-    /*
-    ===========================================================
-    ===========================================================
-     */
-
-    private static final int NUM_MINUTES = 600; //14 days
-    private static final double DEFAULT_VALUE = -1.0;
-    // private final String METRIC_FILEPATH = "src\\main\\java\\com\\capitalone\\metrics.txt";
-    private Map<String, Double> applicationDataMap;
-    private String appName = "NA";
-    //private int appID = -1;
 
     public Map<String, Double> getApplicationDataMap() {
         return applicationDataMap;
@@ -129,7 +110,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     }*/
 
 
-    private void buildMetricDataMap(RESTAccess access) throws IOException, IllegalAccessException {
+    private void buildMetricDataMap(RESTAccess access, AppdynamicsApplication application) throws IOException, IllegalAccessException {
 
         String[] metrics = new String[]{
                 "Average Response Time (ms)",
@@ -140,17 +121,14 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                 "Node Health Percent"
         };
 
-        applicationDataMap = new HashMap<String, Double>();
-
-
         for (String metricName : metrics)
             applicationDataMap.put(metricName, DEFAULT_VALUE);
 
         //populate fields
-        populateMetricFields(access);
+        populateMetricFields(application.getAppName(), access);
     }
 
-    private void buildViolationSeverityMap(RESTAccess access, long start, long end) throws IOException {
+    private void buildViolationSeverityMap(String appName, RESTAccess access, long start, long end) throws IOException {
 
         applicationDataMap.put("Error Rate Severity", 0.0);
         applicationDataMap.put("Response Time Severity", 0.0);
@@ -175,55 +153,8 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
     }
 
-    /*private void setAppName(List<Application> apps, String appIdentifier) {
 
-        appID = Integer.valueOf(appIdentifier);
-
-        if (apps == null) {
-            LOG.debug("Something went wrong because getting applications should be easy!");
-            //System.exit(1);
-            return;
-        }
-
-        // iterate through array of applications to find the one with matching ID
-        for (Application app : apps) {
-            if (app.getId() == appID) {
-                // extract the name so that we can pull value from appdynamics
-                appName = app.getName();
-                return;
-            }
-        }
-
-        LOG.debug("Could not find application with ID: " + appID + ".");
-       // System.exit(1);
-       // return;
-    }
-
-    private void setAppID(List<Application> apps, String appIdentifier) {
-
-
-        appName = appIdentifier;
-
-
-        if (apps == null) {
-            LOG.debug("Something went wrong because getting applications should be easy!");
-           // System.exit(1);
-            return;
-        }
-
-        for (Application app : apps) {
-            if (app.getName() == appName) {
-                appID = app.getId();
-                return;
-            }
-        }
-
-        LOG.debug("Could not find application with Name: " + appName + ".");
-       // System.exit(1);
-
-    }*/
-
-    private void populateMetricFields(RESTAccess access) throws IllegalAccessException, IOException {
+    private void populateMetricFields(String appName, RESTAccess access) throws IllegalAccessException, IOException {
 
         //set boundaries. 2 weeks (20160 minutes), in this case.
         Calendar cal = Calendar.getInstance();
@@ -241,7 +172,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
             double metricValue;
             // uses appdynamics api to obtain value. If it returns -1, it isn't a valid metric name--we have to calculate it.
             // "createPath" allows for generic code (e.g. "Total Calls" -> "Overall Application Performance|Total Calls"
-            if ((metricValue = getMetricValue(createPath(metricName), access, start, end)) == -1) {
+            if ((metricValue = getMetricValue(appName, createPath(metricName), access, start, end)) == -1) {
                 unknownMetrics.add(metricName);
                 continue;
             }
@@ -251,14 +182,14 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
         //individually handle atypical possibilities (e.g. "Total Errors", "Node Health Percent", etc.)
         for (String metricName : unknownMetrics)
-            applicationDataMap.replace(metricName, generateMetricValue(metricName, access, start, end));
+            applicationDataMap.replace(metricName, generateMetricValue(appName, metricName, access, start, end));
 
 
-        buildViolationSeverityMap(access, start, end);
+        buildViolationSeverityMap(appName, access, start, end);
         //testInit();
     }
 
-    private double getMetricValue(String metricPath, RESTAccess access, long start, long end) throws IllegalAccessException {
+    private double getMetricValue(String appName, String metricPath, RESTAccess access, long start, long end) throws IllegalAccessException {
 
         // generic call to appdynamics api to retrieve metric value
         List<MetricData> metricDataArr = access.getRESTGenericMetricQuery(appName, metricPath, start, end, true).getMetric_data();
@@ -269,7 +200,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         return -1;
     }
 
-    private double generateMetricValue(String metricName, RESTAccess access, long start, long end) throws IllegalAccessException {
+    private double generateMetricValue(String appName, String metricName, RESTAccess access, long start, long end) throws IllegalAccessException {
 
         // we have "Errors per Minute", for example. Manipulating the names gives us a generic way to handle all totals
         if (metricName.contains("Total"))
@@ -278,13 +209,13 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         // must pull all of the nodes and all of the health violations.
         // 100 - (Num Violations / Num Nodes) = Node Health Percent
         if (metricName.equals("Node Health Percent"))
-            return getNodeHealthPercent(access, start, end);
+            return getNodeHealthPercent(appName, access, start, end);
 
         return -1;
     }
 
 
-    private double getNodeHealthPercent(RESTAccess access, long start, long end) {
+    private double getNodeHealthPercent(String appName, RESTAccess access, long start, long end) {
 
         //get # of violations, divide by # of nodes
         int numNodes = (access.getNodesForApplication(appName).getNodes()).size();
