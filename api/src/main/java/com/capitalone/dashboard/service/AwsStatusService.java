@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.AwsStatus;
+import com.capitalone.dashboard.request.AwsStatusDataCreateRequest;
 import org.bson.types.ObjectId;
 
 import java.util.List;
@@ -30,11 +31,10 @@ public interface AwsStatusService {
      * Create a new status for a given dashboard.
      *
      * @param dashboardId id of dashboard
-     * @param name name of new status
-     * @param url url of the new status to check
+     * @param awsStatusDataCreateRequest the dat for the aws status request
      * @return AwsStatus
      */
-    AwsStatus create(ObjectId dashboardId, String name, String url);
+    AwsStatus create(ObjectId dashboardId, AwsStatusDataCreateRequest awsStatusDataCreateRequest);
 
     /**
      * Update an existing aws status.

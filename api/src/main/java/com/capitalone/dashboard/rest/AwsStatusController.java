@@ -2,6 +2,7 @@ package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.AwsStatus;
+import com.capitalone.dashboard.request.AwsStatusDataCreateRequest;
 import com.capitalone.dashboard.request.AwsStatusRequest;
 import com.capitalone.dashboard.service.AwsStatusService;
 import com.capitalone.dashboard.service.AwsStatusServiceImpl;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
@@ -48,11 +51,11 @@ public class AwsStatusController {
     // Create a new status object.
     @RequestMapping(value = "/dashboard/{id}/awsStatus", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<AwsStatus> createService(@PathVariable ObjectId id, @NotNull @RequestBody String name,
-            @NotNull @RequestBody String url) {
+    public ResponseEntity<AwsStatus> createAwsStatus(@PathVariable ObjectId id, @Valid @RequestBody
+            AwsStatusDataCreateRequest awsStatusDataCreateRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(awsStatusService.create(id,name,url));
+                .body(awsStatusService.create(id,awsStatusDataCreateRequest));
     }
 
     // Update existing status object

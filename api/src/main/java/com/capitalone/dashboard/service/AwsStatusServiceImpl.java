@@ -4,6 +4,8 @@ import com.capitalone.dashboard.model.AwsStatus;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.repository.AwsStatusRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.request.AwsStatusDataCreateRequest;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,10 +40,10 @@ public class AwsStatusServiceImpl implements AwsStatusService {
     }
 
     @Override
-    public AwsStatus create(ObjectId dashboardId, String name, String url) {
+    public AwsStatus create(ObjectId dashboardId, AwsStatusDataCreateRequest awsStatusDataCreateRequest) {
         AwsStatus awsStatus = new AwsStatus();
-        awsStatus.setName(name);
-        awsStatus.setUrl(url);
+        awsStatus.setName(awsStatusDataCreateRequest.getName());
+        awsStatus.setUrl(awsStatusDataCreateRequest.getUrl());
         awsStatus.setDashboardId(dashboardId);
         awsStatus.setLastUpdated(System.currentTimeMillis());
 
