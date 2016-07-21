@@ -8,7 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.appdynamics.appdrestapi.RESTAccess;
 import org.appdynamics.appdrestapi.data.MetricData;
 import org.appdynamics.appdrestapi.data.PolicyViolation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -31,7 +30,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     // private static final String STATUS_WARN = "WARN";
     // private static final String STATUS_CRITICAL = "CRITICAL";
 
-    @Autowired
+//    @Autowired
     public DefaultAppdynamicsClient() {
 
     }

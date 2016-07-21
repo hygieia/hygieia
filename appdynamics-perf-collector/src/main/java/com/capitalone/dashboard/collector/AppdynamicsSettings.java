@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "appdynamics")
 public class AppdynamicsSettings {
-    // private String cron;
     private String username;
     private String password;
     private String account;
