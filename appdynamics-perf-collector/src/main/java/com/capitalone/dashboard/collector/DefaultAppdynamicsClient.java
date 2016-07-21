@@ -55,6 +55,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         Set<AppdynamicsApplication> returnSet = new HashSet<>();
         for (org.appdynamics.appdrestapi.data.Application app : restClient.getApplications().getApplications()) {
             AppdynamicsApplication newApp = new AppdynamicsApplication();
+            newApp.setDescription(app.getName());
             newApp.setAppID(String.valueOf(app.getId()));
             newApp.setAppDesc(app.getDescription());
             newApp.setAppName(app.getName());
