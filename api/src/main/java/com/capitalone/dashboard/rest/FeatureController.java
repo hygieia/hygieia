@@ -96,10 +96,11 @@ public class FeatureController {
 	@RequestMapping(value = "/feature/estimates/super/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> featureEstimates(
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
+			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
 		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getFeatureEstimates(componentId, teamId, agileType);
+		return this.featureService.getFeatureEstimates(componentId, teamId, agileType, estimateMetricType);
 	}
 
 	/**
@@ -114,10 +115,11 @@ public class FeatureController {
 	@RequestMapping(value = "/feature/estimates/total/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> featureTotalEstimate(
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
+			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
 		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getTotalEstimate(componentId, teamId, agileType);
+		return this.featureService.getTotalEstimate(componentId, teamId, agileType, estimateMetricType);
 	}
 
 	/**
@@ -132,10 +134,11 @@ public class FeatureController {
 	@RequestMapping(value = "/feature/estimates/wip/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> featureInProgressEstimate(
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
+			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
 		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getInProgressEstimate(componentId, teamId, agileType);
+		return this.featureService.getInProgressEstimate(componentId, teamId, agileType, estimateMetricType);
 	}
 
 	/**
@@ -150,9 +153,10 @@ public class FeatureController {
 	@RequestMapping(value = "/feature/estimates/done/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> featureDoneEstimate(
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
+			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
 		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getDoneEstimate(componentId, teamId, agileType);
+		return this.featureService.getDoneEstimate(componentId, teamId, agileType, estimateMetricType);
 	}
 }

@@ -97,11 +97,11 @@ feature.masterStartDate=${JIRA_MASTER_START_DATE:-2008-01-01T00:00:00.000000}
 # In Jira, general IssueType IDs are associated to various "issue"
 # attributes. However, there is one attribute which this collector's
 # queries rely on that change between different instantiations of Jira.
-# Please provide a numerical ID reference to your instance's IssueType for
+# Please provide a String Name reference to your instance's IssueType for
 # the lowest level of Issues (e.g., "user story") specific to your Jira
-# instance.  Note:  You can retrieve your instance's IssueType ID
+# instance.  Note:  You can retrieve your instance's IssueType Name
 # listings via the following URI:  https://[your-jira-domain-name]/rest/api/2/issuetype/
-feature.jiraIssueTypeId=${JIRA_ISSUE_TYPE_ID:-7}
+feature.jiraIssueTypeId=${JIRA_ISSUE_TYPE_ID:Story}
 
 # In Jira, your instance will have its own custom field created for "sprint" or "timebox" details,
 # which includes a list of information.  This field allows you to specify that data field for your
@@ -118,6 +118,14 @@ feature.jiraSprintDataFieldName=${JIRA_SPRINT_DATA_FIELD_NAME:-customfield_10007
 # epic value you expect to see, and is the only field that does this for a given issue:
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
 feature.jiraEpicIdFieldName=${JIRA_EPIC_FIELD_NAME:-customfield_10400}
+
+# In Jira, your instance will have its own custom field created for "story points"
+# This field allows you to specify that data field for your instance
+# of Jira.  Note:  You can retrieve your instance's storypoints ID field name via the following URI where your
+# queried user story issue has story points set on it; your custom field name describes the
+# story points value you expect to see:
+# https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
+feature.jiraStoryPointsFieldName=${JIRA_STORY_POINTS_FIELD_NAME:-customfield_10002}
 
 EOF
 
