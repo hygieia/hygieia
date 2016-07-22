@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.AppdynamicsApplication;
 import com.capitalone.dashboard.model.AppdynamicsCollector;
 import com.capitalone.dashboard.model.Performance;
+import com.capitalone.dashboard.model.PerformanceType;
 import com.capitalone.dashboard.repository.AppDynamicsApplicationRepository;
 import com.capitalone.dashboard.repository.AppdynamicsCollectorRepository;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
@@ -99,18 +100,25 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
 
         for (AppdynamicsApplication app : apps) {
             Performance performance = appdynamicsClient.getPerformanceMetrics(app, restClient);
-            if (performance != null && isNewPerformanceData(app, performance)) {
+
+            if (performance != null) {
                 performance.setCollectorItemId(app.getId());
-                performanceRepository.save(performance);
-                count++;
+                performance.setTimestamp(System.currentTimeMillis());
+                performance.setType(PerformanceType.ApplicationPerformance);
+                if (isNewPerformanceData(app, performance)) {
+                    performanceRepository.save(performance);
+                    count++;
+                }
             }
         }
         log("Updated", start, count);
     }
 
     private List<AppdynamicsApplication> enabledApplications(AppdynamicsCollector collector) {
-        return appDynamicsApplicationRepository.findEnabledAppdynamicsApplications(collector.getId());
+//        return appDynamicsApplicationRepository.findEnabledAppdynamicsApplications(collector.getId());
+        return  appDynamicsApplicationRepository.findByCollectorIdAndEnabled(collector.getId(), true);
     }
+
 
     private void addNewProjects(Set<AppdynamicsApplication> allApps, List<AppdynamicsApplication> exisingApps, AppdynamicsCollector collector) {
         long start = System.currentTimeMillis();

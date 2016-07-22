@@ -9,10 +9,12 @@ import java.util.List;
 public interface AppDynamicsApplicationRepository extends BaseCollectorItemRepository<AppdynamicsApplication> {
 
 
-    AppdynamicsApplication findAppdynamicsApplicationByCollectorIdAndAppName(ObjectId collectorId, String appName);
+    AppdynamicsApplication findByCollectorIdAndAppName(ObjectId collectorId, String appName);
 
-    AppdynamicsApplication findAppdynamicsApplicationByCollectorIdAndAppID(ObjectId collectorId, String appID);
+    AppdynamicsApplication findByCollectorIdAndAppID(ObjectId collectorId, String appID);
 
-    @Query(value="{ 'collectorId' : ?0, enabled: true}")
+    @Query(value="{ 'collectorId' : ?0, 'enabled': true}")
     List<AppdynamicsApplication> findEnabledAppdynamicsApplications(ObjectId collectorId);
+
+    List<AppdynamicsApplication> findByCollectorIdAndEnabled(ObjectId collectorId, boolean enabled);
 }
