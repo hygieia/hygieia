@@ -87,9 +87,19 @@ feature.jiraSprintDataFieldName=customfield_10000
 feature.jiraEpicIdFieldName=customfield_10002
 
 #############################################################################
+# In Jira, your instance will have its own custom field created for "story points"
+# This field allows you to specify that data field for your instance
+# of Jira.  Note:  You can retrieve your instance's storypoints ID field name via the following URI where your
+# queried user story issue has story points set on it; your custom field name describes the
+# story points value you expect to see:
+# https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
+#############################################################################
+feature.jiraStoryPointsFieldName=customfield_10003
+
+#############################################################################
 # Internal Status Mappings - THESE SHOULD BE FILLED OUT FOR EVERY CUSTOM STATUS VALUE
 # IN YOUR JIRA INSTANCE
-#
+# 
 # Use the following API call to get all of your status mappings:  http://jira.your.instance.com/rest/api/2/status/
 #############################################################################
 feature.todoStatuses[0]=

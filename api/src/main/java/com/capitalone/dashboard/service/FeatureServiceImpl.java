@@ -11,8 +11,6 @@ import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
-import com.capitalone.dashboard.util.SuperFeatureComparator;
-import com.google.common.collect.Iterables;
 import com.mysema.query.BooleanBuilder;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +21,9 @@ import org.springframework.util.StringUtils;
 import javax.xml.bind.DatatypeConverter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 
@@ -166,7 +165,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 */
 	@Override
 	public DataResponse<List<Feature>> getFeatureEstimates(ObjectId componentId, String teamId,
-			Optional<String> agileType) {
+			Optional<String> agileType, Optional<String> estimateMetricType) {
 		Component component = componentRepository.findOne(componentId);
 
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
@@ -198,44 +197,45 @@ public class FeatureServiceImpl implements FeatureService {
 			relevantFeatureEstimates = featureRepository
 					.getInProgressFeaturesEstimatesByTeamId(teamId, getCurrentISODateTime());
 		}
-		Collections.sort(relevantFeatureEstimates, new SuperFeatureComparator());
-
-		List<Feature> relevantSuperFeatureEstimates = new ArrayList<>();
-		String lastEpicID = "";
-		int lineTotalEstimate = 0;
-
+		// epicID : epic information (in the form of a Feature object)
+		Map<String, Feature> epicIDToEpicFeatureMap = new HashMap<>();
+		
 		for (Feature tempRs : relevantFeatureEstimates) {
-			if (StringUtils.isEmpty(tempRs.getsEpicID()))
+			String epicID = tempRs.getsEpicID();
+			
+			if (StringUtils.isEmpty(epicID))
 				continue;
-
-			if (tempRs.getsEpicID().equalsIgnoreCase(lastEpicID)) {
-
-				lineTotalEstimate += Integer.valueOf((tempRs.getsEstimate()));
-				Iterables.getLast(relevantSuperFeatureEstimates);
-
-				if (!CollectionUtils.isEmpty(relevantSuperFeatureEstimates)) {
-					Iterables.getLast(relevantSuperFeatureEstimates)
-							.setsEstimate(Integer.toString(lineTotalEstimate));
-				}
-
-			} else {
-				lastEpicID = tempRs.getsEpicID();
-				lineTotalEstimate += Integer.valueOf((tempRs.getsEstimate()));
-				Feature f = new Feature();
-				f.setId(tempRs.getId());
-				f.setsEpicID(tempRs.getsEpicID());
-				f.setsEpicNumber(tempRs.getsEpicNumber());
-				f.setsEpicName(tempRs.getsEpicName());
-				f.setsEstimate(Integer.toString(lineTotalEstimate));
-				relevantSuperFeatureEstimates.add(f);
+			
+			Feature feature = epicIDToEpicFeatureMap.get(epicID);
+			if (feature == null) {
+				feature = new Feature();
+				feature.setId(null);
+				feature.setsEpicID(epicID);
+				feature.setsEpicNumber(tempRs.getsEpicNumber());
+				feature.setsEpicName(tempRs.getsEpicName());
+				feature.setsEstimate("0");
+				epicIDToEpicFeatureMap.put(epicID, feature);
+			}
+			
+			// if estimateMetricType is hours accumulate time estimate in minutes for better precision ... divide by 60 later
+			int estimate = getEstimate(tempRs, estimateMetricType);
+			
+			feature.setsEstimate(String.valueOf(Integer.valueOf(feature.getsEstimate()) + estimate));
+		}
+		
+		if (isEstimateTime(estimateMetricType)) {
+			// time estimate is in minutes but we want to return in hours
+			for (Feature f : epicIDToEpicFeatureMap.values()) {
+				f.setsEstimate(String.valueOf(Integer.valueOf(f.getsEstimate()) / 60));
 			}
 		}
+		
 		Collector collector = collectorRepository.findOne(item.getCollectorId());
-		return new DataResponse<>(relevantSuperFeatureEstimates, collector.getLastExecuted());
+		return new DataResponse<>(new ArrayList<>(epicIDToEpicFeatureMap.values()), collector.getLastExecuted());
 	}
 
 	private DataResponse<List<Feature>> getEstimate(ObjectId componentId, String teamId,
-			Status status, Optional<String> agileType) {
+			Status status, Optional<String> agileType, Optional<String> estimateMetricType) {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
@@ -318,10 +318,15 @@ public class FeatureServiceImpl implements FeatureService {
 		Feature f = new Feature();
 		int lineTotalEstimate = 0;
 		for (Feature tempRs : storyEstimates) {
-			if (StringUtils.isEmpty(tempRs.getsEstimate()))
-				continue;
-			lineTotalEstimate += Integer.parseInt(tempRs.getsEstimate());
+			// if estimateMetricType is hours accumulate time estimate in minutes for better precision ... divide by 60 later
+			lineTotalEstimate += getEstimate(tempRs, estimateMetricType);
 		}
+		
+		if (isEstimateTime(estimateMetricType)) {
+			// time estimate is in minutes but we want to return in hours
+			lineTotalEstimate /= 60;
+		}
+		
 		f.setsEstimate(Integer.toString(lineTotalEstimate));
 		cumulativeEstimate.add(f);
 		Collector collector = collectorRepository.findOne(item.getCollectorId());
@@ -342,8 +347,8 @@ public class FeatureServiceImpl implements FeatureService {
 	 */
 	@Override
 	public DataResponse<List<Feature>> getTotalEstimate(ObjectId componentId, String teamId,
-			Optional<String> agileType) {
-		return getEstimate(componentId, teamId, Status.TOTAL, agileType);
+			Optional<String> agileType, Optional<String> estimateMetricType) {
+		return getEstimate(componentId, teamId, Status.TOTAL, agileType, estimateMetricType);
 	}
 
 	/**
@@ -360,8 +365,8 @@ public class FeatureServiceImpl implements FeatureService {
 	 */
 	@Override
 	public DataResponse<List<Feature>> getInProgressEstimate(ObjectId componentId, String teamId,
-			Optional<String> agileType) {
-		return getEstimate(componentId, teamId, Status.InProgress, agileType);
+			Optional<String> agileType, Optional<String> estimateMetricType) {
+		return getEstimate(componentId, teamId, Status.InProgress, agileType, estimateMetricType);
 	}
 
 	/**
@@ -378,8 +383,8 @@ public class FeatureServiceImpl implements FeatureService {
 	 */
 	@Override
 	public DataResponse<List<Feature>> getDoneEstimate(ObjectId componentId, String teamId,
-			Optional<String> agileType) {
-		return getEstimate(componentId, teamId, Status.DONE, agileType);
+			Optional<String> agileType, Optional<String> estimateMetricType) {
+		return getEstimate(componentId, teamId, Status.DONE, agileType, estimateMetricType);
 	}
 
 	/**
@@ -445,5 +450,26 @@ public class FeatureServiceImpl implements FeatureService {
 	 */
 	private String getCurrentISODateTime() {
 		return DatatypeConverter.printDateTime(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+	}
+	
+	private boolean isEstimateTime(Optional<String> estimateMetricType) {
+		return estimateMetricType.isPresent() && FeatureCollectorConstants.STORY_HOURS_ESTIMATE.equalsIgnoreCase(estimateMetricType.get());
+	}
+	
+	private int getEstimate(Feature feature, Optional<String> estimateMetricType) {
+		int rt = 0;
+		
+		if (isEstimateTime(estimateMetricType)) {
+			if (feature.getsEstimateTime() != null) {
+				rt = feature.getsEstimateTime().intValue();
+			}
+		} else {
+			// default to story points since that should be the most common use case
+			if (!StringUtils.isEmpty(feature.getsEstimate())) {
+				rt = Integer.parseInt(feature.getsEstimate());
+			}
+		}
+		
+		return rt;
 	}
 }

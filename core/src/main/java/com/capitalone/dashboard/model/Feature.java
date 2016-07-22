@@ -42,7 +42,8 @@ public class Feature extends BaseModel {
 	private String sName;
 	private String sStatus;
 	private String sState;
-	private String sEstimate;
+	private String sEstimate; // estimate in story points
+	private Integer sEstimateTime; // estimate in minutes
 	@Indexed
 	private String changeDate;
 	private String isDeleted;
@@ -161,6 +162,14 @@ public class Feature extends BaseModel {
 
 	public void setsEstimate(String sEstimate) {
 		this.sEstimate = sEstimate;
+	}
+
+	public Integer getsEstimateTime() {
+		return sEstimateTime;
+	}
+
+	public void setsEstimateTime(Integer sEstimateTime) {
+		this.sEstimateTime = sEstimateTime;
 	}
 
 	public String getsProjectID() {
