@@ -1,24 +1,20 @@
-<widget-modal widget-modal-title="Configure Performance Widget">
-<form name="configForm"
-	ng-submit="performanceConfig.submit(configForm.$valid)"
+<widget-modal widget-modal-title="Configure Performance Widget" class="pa-config">
+<form name="configForm" role="form"
+	ng-submit="performanceConfig.submit(performanceConfig.paCollectorItem)"
 	novalidate="novalidate">
 
+    <form-group input="paCollectorItem" class="text-center">
 
-	<form-group errors="{required:'App ID is required'}"
-				input="appID"
-				class="text-center">
+        <div class="text-center modal-label">Performance Analysis Job:</div>
 
-		<label class="modal-label" id="appID">APP ID</label>
-
-		<input
-			type="text"
-			name="appId"
-			class="form-control text-center"
-			ng-model="performaceConfig.appId"
-			placeholder="Enter AppID"
-			required />
-
-	</form-group>
+        <select name="paCollectorItem"
+                class="form-control"
+                ng-model="performanceConfig.paCollectorItem"
+                ng-options="(item.collector.name + ' - ' + item.description) for item in performanceConfig.paJobs | orderBy:['collector.name','description'] track by item.id"
+                ng-disabled="performanceConfig.paJobs.length === 0">
+            <option value="" disabled>{{performanceConfig.paToolsDropdownPlaceholder}}</option>
+        </select>
+    </form-group>
 
 	<div class="button-row row text-center">
 		<button type="submit" class="btn btn-primary btn-wide">Save</button>

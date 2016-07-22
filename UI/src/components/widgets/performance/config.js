@@ -1,5 +1,5 @@
 /**
- * Build widget configuration
+ * Performance widget configuration
  */
 (function() {
 	'use strict';
@@ -12,35 +12,38 @@
 	function performanceConfigController(modalData, $modalInstance, collectorData) {
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
+        var component = modalData.dashboard.application.components[0];
+        ctrl.paToolsDropdownPlaceholder = 'Loading Performance Analysis Jobs...';
 
+        ctrl.submit = submitForm;
+        collectorData.itemsByType('appPerformance').then(processPaResponse);
 
-//console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
-//		console.log(JSON.stringify(widgetConfig.options.id));
-
-		ctrl.appId = "kek";
+        function processPaResponse(data) {
+            var paCollectorItems = component.collectorItems.AppPerformance;
+            var paCollectorItemId = _.isEmpty(paCollectorItems) ? null : paCollectorItems[0].id;
+            ctrl.paJobs = data;
+            ctrl.paCollectorItem = paCollectorItemId ? _.findWhere(ctrl.paJobs, {id: paCollectorItemId}) : null;
+            ctrl.paToolsDropdownPlaceholder = data.length ? 'Select a Performance Analysis Job' : 'No Performance Analysis Job Found';
+        }
 
 		// public variables
 		ctrl.submitted = false;
 
-		// public methods
-		ctrl.submit = submitForm;
 
-		// Request collecters
-		//collectorData.collectorsByType('scm').then(processCollectorsResponse);
-
-		function processCollectorsResponse(data) {
-			ctrl.collectors = data;
-		}
-
-		/*
-		 * function submitForm(valid, url) { ctrl.submitted = true; if (valid &&
-		 * ctrl.collectors.length) {
-		 * createCollectorItem(url).then(processCollectorItemResponse); } }
-		 */
-
-		function submitForm() {
-			ctrl.submitted = true;
-		}
+        function submitForm(paCollectorItem) {
+            var collectorItems = [];
+            if (paCollectorItem) collectorItems.push(paCollectorItem.id);
+            var postObj = {
+                name: 'performanceanalysis',
+                options: {
+                    id: widgetConfig.options.id
+                },
+                componentId: component.id,
+                collectorItemIds: collectorItems
+            };
+            // pass this new config to the modal closing so it's saved
+            $modalInstance.close(postObj);
+        }
 
 
 	}
