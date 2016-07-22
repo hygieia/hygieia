@@ -1,6 +1,8 @@
 language: java
 jdk:
 - oraclejdk8
+script:
+  mvn verify
 notifications:
   webhooks:
     urls:
