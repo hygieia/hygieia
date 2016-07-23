@@ -1,3 +1,6 @@
+dependencies:
+ override:
+    - mvn install
 test:
   pre:
     - pwd
