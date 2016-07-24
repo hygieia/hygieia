@@ -3,6 +3,12 @@ jdk:
 - oraclejdk8
 script:
   mvn verify
+
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/UI/node_modules
+
 notifications:
   webhooks:
     urls:
