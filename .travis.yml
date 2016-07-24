@@ -2,9 +2,6 @@ language: java
 jdk:
 - oraclejdk8
 
-script:
-  mvn verify
-
 cache:
   directories:
     - $HOME/.m2
