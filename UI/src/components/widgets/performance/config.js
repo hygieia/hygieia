@@ -32,6 +32,7 @@
 
         function submitForm(paCollectorItem) {
             var collectorItems = [];
+            console.log(paCollectorItem);
             if (paCollectorItem) collectorItems.push(paCollectorItem.id);
             var postObj = {
                 name: 'performanceanalysis',

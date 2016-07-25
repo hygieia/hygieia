@@ -2,30 +2,37 @@
  * Gets code repo related data
  */
 
-(function(){
-	'use strict';
+(function () {
+    'use strict';
 
-	angular
-		.module(HygieiaConfig.module + '.core')
-		.factory('performanceData', performanceData);
+    angular
+        .module(HygieiaConfig.module + '.core')
+        .factory('performanceData', performanceData);
 
-	function performanceData($http){
-		var caReportRoute = 'api/ad_report.json';
-		var testReportRoute = 'test-data/ad_report.json';
+    function performanceData($http) {
+        var paApplicationPerformanceRoute = 'api/performance/application';
+        var paInfrastructurePerformanceRoute = 'api/performance/infrastructure';
+        var testApplicationPerformanceRoute = 'test-data/ad_app_perfoamance.json';
+        var testInfrastructurePerformanceRoute = 'test-data/ad_infra_performance.json';
 
-		return {
-			report: report
-		};
+        return {
+            appPerformance: appPerformance,
+            infraPerformance: infraPerformance
+        };
 
-		function report(params){ //switch the order of the routes when done with api calls!!!!!
-			console.log("I'm here!");
-			//debugger;
-			return $http.get(/*HygieiaConfig.local ? testReportRoute : */caReportRoute/*,{params: params}*/).then(function(response) {
-						console.log("hit something");
-						return response.data;
-					}, function(error){
-						console.log("error is: " + error);
-					});
-			}
-	}
+        function appPerformance(params) {
+            return $http.get(HygieiaConfig.local ? testApplicationPerformanceRoute : paApplicationPerformanceRoute, {params: params})
+                .then(function (response) {
+                    return response.data;
+                });
+        }
+
+
+        function infraPerformance(params) {
+            return $http.get(HygieiaConfig.local ? testInfrastructurePerformanceRoute : paInfrastructurePerformanceRoute, {params: params})
+                .then(function (response) {
+                    return response.data;
+                });
+        }
+    }
 })();
