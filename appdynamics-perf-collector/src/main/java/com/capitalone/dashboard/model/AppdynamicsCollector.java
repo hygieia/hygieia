@@ -9,14 +9,14 @@ import com.capitalone.dashboard.collector.AppdynamicsSettings;
  * @author pxd338
  */
 public class AppdynamicsCollector extends Collector {
-    private String controller;
+    private String instanceUrl;
 
-    public String getController() {
-        return controller;
+    public String getInstanceUrl() {
+        return instanceUrl;
     }
 
-    public void setController(String controller) {
-        this.controller = controller;
+    public void setInstanceUrl(String instanceUrl) {
+        this.instanceUrl = instanceUrl;
     }
 
     /**
@@ -34,7 +34,7 @@ public class AppdynamicsCollector extends Collector {
         protoType.setOnline(true);
         protoType.setEnabled(true);
         protoType.setLastExecuted(System.currentTimeMillis());
-        protoType.setController(settings.getController());
+        protoType.setInstanceUrl(settings.getInstanceUrl());
         return protoType;
     }
 }

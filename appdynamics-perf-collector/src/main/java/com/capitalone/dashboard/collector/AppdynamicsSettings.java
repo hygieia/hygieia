@@ -10,9 +10,7 @@ public class AppdynamicsSettings {
     private String username;
     private String password;
     private String account;
-    private boolean useSSL;
-    private String controller;
-    private String port;
+    private String instanceUrl;
     private String cron;
     private String dashboardUrl;
 
@@ -25,28 +23,12 @@ public class AppdynamicsSettings {
         this.account = account;
     }
 
-    public boolean isUseSSL() {
-        return useSSL;
+    public String getInstanceUrl() {
+        return instanceUrl;
     }
 
-    public void setUseSSL(boolean useSSL) {
-        this.useSSL = useSSL;
-    }
-
-    public String getController() {
-        return controller;
-    }
-
-    public void setController(String controller) {
-        this.controller = controller;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
+    public void setInstanceUrl(String instanceUrl) {
+        this.instanceUrl = instanceUrl;
     }
 
     /**

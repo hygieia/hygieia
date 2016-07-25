@@ -8,7 +8,6 @@ import com.capitalone.dashboard.repository.AppDynamicsApplicationRepository;
 import com.capitalone.dashboard.repository.AppdynamicsCollectorRepository;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.PerformanceRepository;
-import org.appdynamics.appdrestapi.RESTAccess;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -63,10 +62,6 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         return appdynamicsSettings.getCron();
     }
 
-    private RESTAccess getAppdynamicsRestClient() {
-        return new RESTAccess(appdynamicsSettings.getController(), appdynamicsSettings.getPort(), appdynamicsSettings.isUseSSL(),
-                appdynamicsSettings.getUsername(), appdynamicsSettings.getPassword(), appdynamicsSettings.getAccount());
-    }
     @Override
     public void collect(AppdynamicsCollector collector) {
 
@@ -76,17 +71,16 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         List<AppdynamicsApplication> existingApps = appDynamicsApplicationRepository.findByCollectorIdIn(udId);
         List<AppdynamicsApplication> latestProjects = new ArrayList<>();
 
-        logBanner(collector.getController());
-        RESTAccess restClient = getAppdynamicsRestClient();
+        logBanner(collector.getInstanceUrl());
 
-        Set<AppdynamicsApplication> apps = appdynamicsClient.getApplications(restClient);
+        Set<AppdynamicsApplication> apps = appdynamicsClient.getApplications();
         latestProjects.addAll(apps);
 
         log("Fetched applications   " + ((apps != null) ? apps.size() : 0), start);
 
         addNewProjects(apps, existingApps, collector);
 
-        refreshData(enabledApplications(collector), restClient);
+        refreshData(enabledApplications(collector));
 
 
         log("Finished", start);
@@ -95,12 +89,12 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
 
 
 
-    private void refreshData(List<AppdynamicsApplication> apps, RESTAccess restClient) {
+    private void refreshData(List<AppdynamicsApplication> apps) {
         long start = System.currentTimeMillis();
         int count = 0;
 
         for (AppdynamicsApplication app : apps) {
-            Performance performance = appdynamicsClient.getPerformanceMetrics(app, restClient);
+            Performance performance = appdynamicsClient.getPerformanceMetrics(app);
 
             if (performance != null) {
                 performance.setCollectorItemId(app.getId());
