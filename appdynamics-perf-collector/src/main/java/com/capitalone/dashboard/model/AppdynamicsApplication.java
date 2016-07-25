@@ -5,7 +5,7 @@ public class AppdynamicsApplication extends CollectorItem {
     private static final String APP_NAME = "appName";
     private static final String APP_ID = "appID";
     private static final String APP_DESC = "appDesc";
-
+    private static final String APP_DASHBOARD_URL = "dashboardUrl";
 
     public String getAppName() {
         return (String) getOptions().get(APP_NAME);
@@ -30,6 +30,9 @@ public class AppdynamicsApplication extends CollectorItem {
     public void setAppDesc (String desc) {
         getOptions().put(APP_DESC, desc);
     }
+
+    public void setAppDashboardUrl (String url) {getOptions().put(APP_DASHBOARD_URL, url);}
+    public String getAppDashboardUrl() {return (String) getOptions().get(APP_DASHBOARD_URL);}
 
     @Override
     public boolean equals(Object o) {

@@ -12,5 +12,4 @@ public interface AppdynamicsClient {
     Set<AppdynamicsApplication> getApplications(RESTAccess restClient);
 
     Performance getPerformanceMetrics(AppdynamicsApplication application, RESTAccess restClient);
-
 }

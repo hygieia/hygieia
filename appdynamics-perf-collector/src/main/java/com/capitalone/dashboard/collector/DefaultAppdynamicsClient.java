@@ -193,7 +193,6 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
         // generic call to appdynamics api to retrieve metric value
         List<MetricData> metricDataArr = access.getRESTGenericMetricQuery(appName, metricPath, start, end, true).getMetric_data();
-
         // if resulting array is empty, the metric doesn't exist--we have to calculate
         if (!metricDataArr.isEmpty())
             return metricDataArr.get(0).getSingleValue().getValue();

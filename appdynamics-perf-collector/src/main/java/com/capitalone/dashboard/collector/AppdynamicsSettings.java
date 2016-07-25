@@ -14,6 +14,7 @@ public class AppdynamicsSettings {
     private String controller;
     private String port;
     private String cron;
+    private String dashboardUrl;
 
 
     public String getAccount() {
@@ -77,4 +78,11 @@ public class AppdynamicsSettings {
         this.password = password;
     }
 
+    public String getDashboardUrl() {
+        return dashboardUrl;
+    }
+
+    public void setDashboardUrl(String dashboardUrl) {
+        this.dashboardUrl = dashboardUrl;
+    }
 }

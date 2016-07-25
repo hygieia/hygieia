@@ -88,6 +88,7 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
 
         refreshData(enabledApplications(collector), restClient);
 
+
         log("Finished", start);
     }
 
@@ -128,6 +129,7 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         for (AppdynamicsApplication app : allApps) {
             if (!exisingApps.contains(app)) {
                 app.setCollectorId(collector.getId());
+                app.setAppDashboardUrl(String.format(appdynamicsSettings.getDashboardUrl(),app.getAppID()));
                 app.setEnabled(false);
                 newApps.add(app);
                 count++;
