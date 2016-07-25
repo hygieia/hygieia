@@ -1,0 +1,24 @@
+machine:
+  java:
+    version: oraclejdk8
+dependencies:
+ override:
+    - mvn install
+test:
+  pre:
+    - pwd
+    - echo $CIRCLE_ARTIFACTS
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - mkdir -p $CIRCLE_ARTIFACTS/cobertura/
+    - mkdir -p $CIRCLE_ARTIFACTS/jacoco/
+    - cp -r $HOME/lcd/api/target/surefire-reports/cobertura $CIRCLE_ARTIFACTS/cobertura
+    - cp -r $HOME/lcd/api/target/site/jacoco $CIRCLE_ARTIFACTS/jacoco
+    - pip install --user codecov
+    - codecov --token=$CODECOV_TOKEN
+    - curl http://www.jpm4j.org/install/script > jpmInstall.sh
+    - sudo sh jpmInstall.sh
+    - sudo chmod a+x jpmInstall.sh
+    - sudo jpm install com.codacy:codacy-coverage-reporter:assembly
+    - codacy-coverage-reporter -l Java -r api/target/site/jacoco/jacoco.xml --prefix api/src/main/java/
