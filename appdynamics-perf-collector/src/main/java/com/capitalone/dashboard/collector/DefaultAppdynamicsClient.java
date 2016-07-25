@@ -9,15 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appdynamics.appdrestapi.RESTAccess;
-import org.appdynamics.appdrestapi.data.Backends;
-import org.appdynamics.appdrestapi.data.BusinessTransactions;
-import org.appdynamics.appdrestapi.data.ConfigurationItems;
-import org.appdynamics.appdrestapi.data.MetricData;
-import org.appdynamics.appdrestapi.data.MetricItem;
-import org.appdynamics.appdrestapi.data.MetricItems;
-import org.appdynamics.appdrestapi.data.Nodes;
-import org.appdynamics.appdrestapi.data.PolicyViolation;
-import org.appdynamics.appdrestapi.exportdata.ExApplication;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,15 +22,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,7 +43,10 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     private final RestOperations rest;
 
     private static final String APPLICATION_LIST_PATH = "/controller/rest/applications?output=json";
-    private static final String OVERALL_METRIC_PATH = "controller/rest/applications/%s/metric-data?metric-path=Overall%20Application%20Performance%7C*&time-range-type=BEFORE_NOW&duration-in-mins=60&output=json";
+    private static final String OVERALL_SUFFIX = "Overall Application Performance|*";
+    private static final String OVERALL_METRIC_PATH = "/controller/rest/applications/%s/metric-data?metric-path=%s&time-range-type=BEFORE_NOW&duration-in-mins=60&output=json";
+    private static final String METRIC_PATH_DELIMITER = "\\|";
+
 
     // private static final String STATUS_WARN = "WARN";
     // private static final String STATUS_CRITICAL = "CRITICAL";
@@ -78,7 +70,6 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     }*/
 
 
-    // TODO: Implement these using AppD rest api
     @Override
     public Set<AppdynamicsApplication> getApplications() {
         Set<AppdynamicsApplication> returnSet = new HashSet<>();
@@ -108,17 +99,67 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                     returnSet.add(app);
                 }
             } catch (ParseException e) {
-                LOG.error("Parsing jobs on instance: " + settings.getInstanceUrl(), e);
+                LOG.error("Parsing applications on instance: " + settings.getInstanceUrl(), e);
             }
         } catch (RestClientException rce) {
-            LOG.error("client exception loading jobs", rce);
+            LOG.error("client exception loading applications", rce);
             throw rce;
         } catch (MalformedURLException mfe) {
-            LOG.error("malformed url for loading jobs", mfe);
+            LOG.error("malformed url for loading applications", mfe);
         }
         return returnSet;
     }
 
+
+    @Override
+    public Performance getPerformanceMetrics(AppdynamicsApplication application) {
+        Performance performance = new Performance();
+        try {
+            String url = joinURL(settings.getInstanceUrl(), String.format(OVERALL_METRIC_PATH, application.getAppID(), URLEncoder.encode(OVERALL_SUFFIX, "UTF-8")));
+            ResponseEntity<String> responseEntity = makeRestCall(url);
+            String returnJSON = responseEntity.getBody();
+            JSONParser parser = new JSONParser();
+
+            try {
+                JSONArray array = (JSONArray) parser.parse(returnJSON);
+
+                for (Object entry : array) {
+                    JSONObject jsonEntry = (JSONObject) entry;
+                    String metricPath = getString(jsonEntry, "metricPath");
+                    JSONObject mObj = (JSONObject) getJsonArray(jsonEntry, "metricValues").get(0);
+                    Long metricValue = getLong(mObj, "value");
+                    PerformanceMetric metric = new PerformanceMetric();
+                    metric.setName(parseMetricName(metricPath));
+                    metric.setValue(metricValue);
+                    performance.getMetrics().add(metric);
+                }
+            } catch (ParseException | RestClientException e) {
+                LOG.error("Parsing metircs for : " + settings.getInstanceUrl() + ". Application =" + application.getAppName(), e);
+            }
+        } catch (MalformedURLException | UnsupportedEncodingException mfe) {
+            LOG.error("malformed url for loading jobs", mfe);
+        }
+        return performance;
+    }
+
+    private String parseMetricName(String metricPath) {
+        String[] arr = metricPath.split(METRIC_PATH_DELIMITER);
+        if (arr == null) return "";
+        return arr[arr.length - 1];
+    }
+
+
+    private double getNodeHealthPercent(String appName, RESTAccess access, long start, long end) {
+
+        //get # of violations, divide by # of nodes
+        int numNodes = (access.getNodesForApplication(appName).getNodes()).size();
+        int numViolations = (access.getHealthRuleViolations(appName, start, end)).getPolicyViolations().size();
+
+        return 100.0 - (numViolations / numNodes);
+
+    }
+
+    //Utils
     protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
         URI thisuri = URI.create(sUrl);
         String userInfo = thisuri.getUserInfo();
@@ -175,211 +216,8 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         return (Long) json.get(key);
     }
 
-    private String getRevision(JSONObject jsonItem) {
-        // Use revision if provided, otherwise use id
-        Long revision = (Long) jsonItem.get("revision");
-        return revision == null ? getString(jsonItem, "id") : revision.toString();
-    }
-
     private JSONArray getJsonArray(JSONObject json, String key) {
         Object array = json.get(key);
         return array == null ? new JSONArray() : (JSONArray) array;
-    }
-
-
-    @Override
-    public Performance getPerformanceMetrics(AppdynamicsApplication application) {
-        RESTAccess restClient = null;
-        testingSDKCapabilities(restClient, application);
-        Performance performance = new Performance();
-        try {
-            buildMetricDataMap(restClient, application);
-        } catch (IOException e) {
-            LOG.error("Oops", e);
-        } catch (IllegalAccessException e) {
-            LOG.error("Oops", e);
-        }
-
-        for (Map.Entry<String, Double> entry : applicationDataMap.entrySet()) {
-            String metricName = entry.getKey();
-            Double metricValue = entry.getValue();
-
-            PerformanceMetric metric = new PerformanceMetric();
-            metric.setName(metricName);
-            metric.setValue(metricValue);
-
-            performance.getMetrics().add(metric);
-
-        }
-        return performance;
-
-    }
-
-
-    public Map<String, Double> getApplicationDataMap() {
-        return applicationDataMap;
-    }
-
-
-    private void buildMetricDataMap(RESTAccess access, AppdynamicsApplication application) throws IOException, IllegalAccessException {
-
-        String[] metrics = new String[]{
-                "Average Response Time (ms)",
-                "Total Calls",
-                "Calls per Minute",
-                "Total Errors",
-                "Errors per Minute",
-                "Node Health Percent"
-        };
-
-        for (String metricName : metrics)
-            applicationDataMap.put(metricName, DEFAULT_VALUE);
-
-        //populate fields
-        populateMetricFields(application.getAppName(), access);
-    }
-
-    private void buildViolationSeverityMap(String appName, RESTAccess access, long start, long end) throws IOException {
-
-        applicationDataMap.put("Error Rate Severity", 0.0);
-        applicationDataMap.put("Response Time Severity", 0.0);
-        List<PolicyViolation> violations = access.getHealthRuleViolations(appName, start, end).getPolicyViolations();
-        for (PolicyViolation violation : violations) {
-
-            double currErrorRateSeverity = applicationDataMap.get("Error Rate Severity");
-            double currResponseTimeSeverity = applicationDataMap.get("Response Time Severity");
-
-            // If both are already critical, it's pointless to continue
-            if (currErrorRateSeverity == 2.0 && currResponseTimeSeverity == 2.0)
-                return;
-
-            double severity = violation.getSeverity().equals("CRITICAL") ? 2.0 : 1.0;
-
-            if (violation.getName().equals("Business Transaction error rate is much higher than normal")) {
-                applicationDataMap.replace("Error Rate Severity", Math.max(currErrorRateSeverity, severity));
-            } else if (violation.getName().equals("Business Transaction response time is much higher than normal")) {
-                applicationDataMap.replace("Response Time Severity", Math.max(currResponseTimeSeverity, severity));
-            }
-        }
-
-    }
-
-
-    private void populateMetricFields(String appName, RESTAccess access) throws IllegalAccessException, IOException {
-
-        //set boundaries. 2 weeks (20160 minutes), in this case.
-        Calendar cal = Calendar.getInstance();
-        long end = cal.getTimeInMillis();
-        cal.add(Calendar.MINUTE, -NUM_MINUTES);
-        long start = cal.getTimeInMillis();
-
-        //metrics that need to be calculated (some "totals", "percents", etc. aren't provided by appdynamics)
-        List<String> unknownMetrics = new ArrayList<>();
-
-        //contains the names of the metrics requested by user
-        for (Map.Entry<String, Double> entry : applicationDataMap.entrySet()) {
-            String metricName = entry.getKey();
-
-            double metricValue;
-            // uses appdynamics api to obtain value. If it returns -1, it isn't a valid metric name--we have to calculate it.
-            // "createPath" allows for generic code (e.g. "Total Calls" -> "Overall Application Performance|Total Calls"
-            if ((metricValue = getMetricValue(appName, createPath(metricName), access, start, end)) == -1) {
-                unknownMetrics.add(metricName);
-                continue;
-            }
-
-            entry.setValue(metricValue);
-        }
-
-        //individually handle atypical possibilities (e.g. "Total Errors", "Node Health Percent", etc.)
-        for (String metricName : unknownMetrics)
-            applicationDataMap.replace(metricName, generateMetricValue(appName, metricName, access, start, end));
-
-
-        buildViolationSeverityMap(appName, access, start, end);
-        //testInit();
-    }
-
-    private double getMetricValue(String appName, String metricPath, RESTAccess access, long start, long end) throws IllegalAccessException {
-
-        // generic call to appdynamics api to retrieve metric value
-        List<MetricData> metricDataArr = access.getRESTGenericMetricQuery(appName, metricPath, start, end, true).getMetric_data();
-        // if resulting array is empty, the metric doesn't exist--we have to calculate
-        if (!metricDataArr.isEmpty())
-            return metricDataArr.get(0).getSingleValue().getValue();
-        return -1;
-    }
-
-    private double generateMetricValue(String appName, String metricName, RESTAccess access, long start, long end) throws IllegalAccessException {
-
-        // we have "Errors per Minute", for example. Manipulating the names gives us a generic way to handle all totals
-        if (metricName.contains("Total"))
-            return NUM_MINUTES * applicationDataMap.get(totalToPerMinute(metricName));
-
-        // must pull all of the nodes and all of the health violations.
-        // 100 - (Num Violations / Num Nodes) = Node Health Percent
-        if (metricName.equals("Node Health Percent"))
-            return getNodeHealthPercent(appName, access, start, end);
-
-        return -1;
-    }
-
-
-    private double getNodeHealthPercent(String appName, RESTAccess access, long start, long end) {
-
-        //get # of violations, divide by # of nodes
-        int numNodes = (access.getNodesForApplication(appName).getNodes()).size();
-        int numViolations = (access.getHealthRuleViolations(appName, start, end)).getPolicyViolations().size();
-
-        return 100.0 - (numViolations / numNodes);
-
-    }
-
-    private String totalToPerMinute(String currField) {
-
-        return currField.replace("Total ", "") + " per Minute";
-    }
-
-    private String createPath(String currMember) {
-
-        // "Open", "Close" part is deprecated. Needed when using reflection. Probably not anymore.
-        return "Overall Application Performance|" + currMember.replace("OPEN", "(").replace("CLOSE", ")");
-    }
-/*
-    private void testInit() throws IllegalAccessException {
-        applicationDataMap.forEach((k, v) -> LOG.debug(k + ": " + v));
-    }*/
-
-//public List<String> getMetricsPathsAuto (RESTAccess access, AppdynamicsApplication app, String pathName) {
-//
-//    List<String> paths = new ArrayList<>();
-//    MetricItems baseMetricList = access.getBaseMetricList(app.getAppName());
-//    for (MetricItem mi: baseMetricList.getMetricItems()) {
-//        if (mi.isFolder()) {
-//            getMetricsPathsAuto(access, app, mi.getName());
-//        } else {
-//            paths.add()
-//        }
-//        MetricItems newItems = access.getBaseMetricListPath(app.getAppName(), mi.getName());
-//        ArrayList<MetricItem> mis = newItems.getMetricItems();
-//
-//    }
-//    return paths;
-//}
-
-
-    public void testingSDKCapabilities(RESTAccess access, AppdynamicsApplication app) {
-        ExApplication exApplication = access.getApplicationExportObjById(Integer.parseInt(app.getAppID()));
-        MetricItems baseMetricList = access.getBaseMetricList(app.getAppName());
-        for (MetricItem mi : baseMetricList.getMetricItems()) {
-            MetricItems newItems = access.getBaseMetricListPath(app.getAppName(), mi.getName());
-            ArrayList<MetricItem> mis = newItems.getMetricItems();
-        }
-        Backends backends = access.getBackendsForApplication(app.getAppName());
-        BusinessTransactions businessTransactions = access.getBTSForApplication(app.getAppName());
-        Nodes nodes = access.getNodesForApplication(Integer.parseInt(app.getAppID()));
-        ConfigurationItems configurationItems = access.getConfigurationItems(app.getAppName());
-        String customePojoExportAll = access.getRESTCustomPojoExportAll(app.getAppName());
-        String exportOfAuto = access.getRESTExportOfAuto(app.getAppName());
     }
 }
