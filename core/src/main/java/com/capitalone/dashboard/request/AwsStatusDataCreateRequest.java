@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 public class AwsStatusDataCreateRequest {
     @NotNull
     private String name;
-    @NotNull
     private String url;
 
     public String getName() { return this.name; }

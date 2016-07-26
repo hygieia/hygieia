@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.Console;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,9 +54,11 @@ public class AwsStatusController {
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<AwsStatus> createAwsStatus(@PathVariable ObjectId id, @Valid @RequestBody
             AwsStatusDataCreateRequest awsStatusDataCreateRequest) {
+
+        AwsStatus response = awsStatusService.create(id,awsStatusDataCreateRequest);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(awsStatusService.create(id,awsStatusDataCreateRequest));
+                .body(response);
     }
 
     // Update existing status object

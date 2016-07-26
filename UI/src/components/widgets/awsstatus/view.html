@@ -1,0 +1,32 @@
+<div class="aws-status-view">
+    <div class="widget">
+        <div class="widget-heading">
+            Our AWS Instances
+        </div>
+        <div class="widget-body">
+            <div class="awsstatus-row dash-row clickable"
+                 ng-repeat="awsStatus in ctrl.awsStatuses | orderBy: ['name']"
+                 ng-click="ctrl.openStatusWindow(awsStatus)">
+                <span class="pull-left" dash-status="{{awsStatus.status}}"></span>
+                <div class="dash-overflow">{{awsStatus.name}}</div>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-center" ng-if="!ctrl.awsStatuses.length">
+        No AWS Instances configured
+    </p>
+</div>
+
+<!-- A modal used to modify-->
+<script type="text/ng-template" id="awsStatusStatus.html">
+<widget-modal widget-modal-title="Status">
+    <form role="form" ng-submit="ctrl.submit()" novalidate="novalidate">
+        <div class="form-group">
+            <label class="control-label">Name: {{::ctrl.awsStatus.name}}</label><br/>
+            <label class="control-label">Url: {{::ctrl.awsStatus.url}}</label><br/>
+            <button class="btn btn-primary pull-right" ng-click="ctrl.updateStatus()">Ok</button>
+        </div>
+    </form>
+</widget-modal>
+</script>

@@ -1,0 +1,41 @@
+<widget-modal class="awsstatus-config form-horizontal" widget-modal-title="AWS Status Configuration">
+    <form ng-submit="ctrl.save()">
+        <section>
+            <header>Our AWS instances</header>
+            <div class="list-animate clearfix">
+                <!--current aws instances-->
+                <div class="dash-modal-row clearfix" ng-repeat="awsStatus in ctrl.dashboardAwsStatuses">
+                    <label>{{awsStatus.name}}</label>
+                    <label>{{awsStatus.url}}</label>
+                    <dash-trash class="pull-right fa-lg" ng-click="ctrl.deleteDashboardAwsStatus($index)"></dash-trash>
+                </div>
+
+                <!--new services-->
+                <div class="dash-modal-row clearfix form-horizontal" ng-repeat="awsStatus in ctrl.newDashboardAwsStatuses">
+                    <dash-trash class="pull-right fa-lg" ng-click="ctrl.deleteDashboardAwsInstance($index)"></dash-trash>
+                    <label class="control-label pull-left">{{::ctrl.appName}}&nbsp;&nbsp;</label>
+                    <span class="form-control-inline-container">
+                        <input type="text" class="form-control" ng-model="awsStatus.name" placeholder="Instance Name"/>
+                        <input type="text" class="form-control" ng-model="awsStatus.url" placeholder="Instance URL"/>
+                    </span>
+                </div>
+            </div>
+
+            <br/>
+
+            <button type="button" class="btn btn-default" ng-click="ctrl.addNewDashboardAwsStatus()">
+                <span class="fa fa-stack">
+                    <span class="fa fa-stack">
+                        <span class="fa-circle-thin fa-stack-2x"></span>
+                        <span class="fa-plus fa-stack-1x"></span>
+                    </span>
+                </span>
+            </button>
+        </section>
+        <br/><br/>
+        <div class="row text-center">
+            <br/><br/>
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+</widget-modal>
