@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('performanceViewController', performanceViewController);
 
-    performanceViewController.$inject = ['$q', '$scope','performanceData', '$modal'];
-    function performanceViewController($q, $scope, performanceData, $modal) {
+    performanceViewController.$inject = ['$q', '$scope','performanceData', '$modal', 'collectorData'];
+    function performanceViewController($q, $scope, performanceData, $modal, collectorData) {
         var ctrl = this;
 
         ctrl.genericChartOptions = {
@@ -48,6 +48,25 @@
           total: 200,
           showLabel: false
         };
+
+                /*function showDetail(evt) {
+                    var target = evt.target,
+                        pointIndex = target.getAttribute('ct:point-index');
+
+                    $modal.open({
+                        controller: 'RepoDetailController',
+                        controllerAs: 'detail',
+                        templateUrl: 'components/widgets/repo/detail.html',
+                        size: 'lg',
+                        resolve: {
+                            commits: function() {
+                                return groupedCommitData[pointIndex];
+                            }
+                        }
+                    });
+                }*/
+
+                //var groupedCallsData = [];
         //ctrl.showDetail = showDetail;
         ctrl.load = function() {
 
@@ -55,13 +74,17 @@
             var params = {
                 componentId: $scope.widgetConfig.componentId,
             };
+            collectorData.itemsByType('appPerformance').then(function(data){
+              data.forEach(function(element){
+                if (element.enabled)
+                  ctrl.appname = element.description;
+              });
+            });
+
             console.log("checkpoint1");
-            performanceData.infraPerformance({componentId: $scope.widgetConfig.componentId}).then(function(data) {
+            performanceData.appPerformance({componentId: $scope.widgetConfig.componentId}).then(function(data) {
                 console.log("checkpoint2");
                 console.log("widget component id: " + $scope.widgetConfig.componentId);
-                console.log("data: " + data);
-                console.log("printing: " + data.result);
-                console.log("printing: " + data.lastUpdated);
                 processResponse(data.result);
                 deferred.resolve(data.lastUpdated);
             });
@@ -70,24 +93,6 @@
             return deferred.promise;
         };
 
-        /*function showDetail(evt) {
-            var target = evt.target,
-                pointIndex = target.getAttribute('ct:point-index');
-
-            $modal.open({
-                controller: 'RepoDetailController',
-                controllerAs: 'detail',
-                templateUrl: 'components/widgets/repo/detail.html',
-                size: 'lg',
-                resolve: {
-                    commits: function() {
-                        return groupedCommitData[pointIndex];
-                    }
-                }
-            });
-        }*/
-
-        //var groupedCallsData = [];
         function processResponse(data) {
             //debugger;
             //ctrl.responsetime = data.responsetime;
@@ -107,12 +112,10 @@
             var errorspm = 0;
             var callspm = 0;
             var responsetime = 0;
-            console.log("is this doing anything");
-            console.log("Data values: " + data);
-            _(data).forEach(function(element){
+            _(data).sortBy('timeStamp').forEach(function(element){
                 console.log("Element" + element);
-                groupedCallsData.push(element.calls);
-                groupedErrorsData.push(element.errors);
+                groupedCallsData.push(element.metrics[5].value);
+                groupedErrorsData.push(element.metrics[2].value);
                 labels.push('');
                 count++;
                 nodehealth += parseInt(element.nodehealth);
