@@ -95,6 +95,10 @@
     <f:optionalBlock name="hygieiaTest" title="Publish Test Results" checked="${instance.getHygieiaTest() != null}"
                      help="/plugin/hygieia-publisher/help-projectConfig-sendTestInfo.html">
         <f:entry>
+            <f:checkbox name="publishEvenBuildFails" title="Publish even if build fails" value="true"
+                        checked="${instance.getHygieiaTest().isPublishEvenBuildFails()}"/>
+        </f:entry>
+        <f:entry>
             <f:checkbox name="publishTestStart" title="Publish Build Start Status" value="true"
                         checked="${instance.getHygieiaTest().isPublishTestStart()}"/>
         </f:entry>
