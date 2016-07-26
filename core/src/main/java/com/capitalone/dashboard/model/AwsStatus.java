@@ -10,6 +10,7 @@ Represents the getters and setters for the Aws Server Status object.
 public class AwsStatus extends BaseModel {
     private String name;
     private String url;
+    private int status;
     private ObjectId dashboardId;
     private long lastUpdated;
     private String applicationName;
@@ -25,6 +26,10 @@ public class AwsStatus extends BaseModel {
     public String getUrl() { return this.url; }
 
     public void setUrl(String url) { this.url = url; }
+
+    public int getStatus() { return this.status; }
+
+    public void setStatus(int status) { this.status = status; }
 
     public ObjectId getDashboardId() {
         return dashboardId;

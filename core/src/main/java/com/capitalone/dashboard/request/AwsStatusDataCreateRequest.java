@@ -6,6 +6,7 @@ public class AwsStatusDataCreateRequest {
     @NotNull
     private String name;
     private String url;
+    private int status;
 
     public String getName() { return this.name; }
 
@@ -14,4 +15,8 @@ public class AwsStatusDataCreateRequest {
     public String getUrl() { return this.url; }
 
     public void setUrl(String url) { this.url = url; }
+
+    public int getStatus() { return this.status; }
+
+    public void setStatus(int status) { this.status = status; }
 }
