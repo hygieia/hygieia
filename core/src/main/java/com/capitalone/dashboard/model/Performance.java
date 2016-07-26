@@ -3,8 +3,8 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 @Document(collection="performance")
 public class Performance extends BaseModel{
@@ -15,7 +15,8 @@ public class Performance extends BaseModel{
     private PerformanceType type;
     private String version; // application version, environment version
     private  ObjectId executionId; // optional: in case we have to tie it to a Jenkins build, for example
-    private Map<String, PerformanceMetric> metrics = new HashMap<>();
+   // private Map<String, PerformanceMetric> metrics = new HashMap<>();
+    private Set<PerformanceMetric> metrics = new HashSet<>();
 
 
     public ObjectId getCollectorItemId() {
@@ -66,7 +67,7 @@ public class Performance extends BaseModel{
         this.executionId = executionId;
     }
 
-    public Map<String, PerformanceMetric> getMetrics() {
+    public Set<PerformanceMetric> getMetrics() {
         return metrics;
     }
 

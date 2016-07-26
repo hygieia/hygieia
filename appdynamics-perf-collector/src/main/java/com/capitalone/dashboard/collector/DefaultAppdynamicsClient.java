@@ -133,7 +133,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                     PerformanceMetric metric = new PerformanceMetric();
                     metric.setName(parseMetricName(metricPath));
                     metric.setValue(metricValue);
-                    performance.getMetrics().put(metric.getName(),metric);
+                    performance.getMetrics().add(metric);
                 }
             } catch (ParseException | RestClientException e) {
                 LOG.error("Parsing metircs for : " + settings.getInstanceUrl() + ". Application =" + application.getAppName(), e);
@@ -142,27 +142,13 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
             LOG.error("malformed url for loading jobs", mfe);
         }
 
-        calculateUnprovidedValues(application, performance);
+        calculateUnprovidedValues(performance);
+        calculateHealthPercents(application, performance);
 
         return performance;
     }
 
-    private void calculateUnprovidedValues(AppdynamicsApplication application, Performance performance) {
-
-        // Total Errors
-        PerformanceMetric metric = new PerformanceMetric();
-        metric.setName("Total Errors");
-        // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
-        metric.setValue((long)performance.getMetrics().get("Errors per Minute").getValue() * 60);
-        performance.getMetrics().put(metric.getName(), metric);
-
-        // Total Calls
-        metric = new PerformanceMetric();
-        metric.setName("Total Calls");
-        // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
-        metric.setValue((long)performance.getMetrics().get("Calls per Minute").getValue() * 60);
-        performance.getMetrics().put(metric.getName(), metric);
-
+    private void calculateHealthPercents(AppdynamicsApplication application, Performance performance) {
         // business health percent
         long numNodeViolations = 0;
         long numBusinessViolations = 0;
@@ -220,11 +206,11 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         if (numNodes != 0)
             nodeHealthPercent = 1 - (numNodeViolations/numNodes);
 
-        metric = new PerformanceMetric();
+        PerformanceMetric metric = new PerformanceMetric();
         metric.setName("Node Health Percent");
         // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
         metric.setValue(nodeHealthPercent);
-        performance.getMetrics().put(metric.getName(), metric);
+        performance.getMetrics().add(metric);
 
         if (numBusinessTransactions != 0)
             businessHealthPercent = 1 - (numBusinessViolations/numBusinessTransactions);
@@ -233,7 +219,38 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         metric.setName("Business Transaction Health Percent");
         // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
         metric.setValue(businessHealthPercent);
-        performance.getMetrics().put(metric.getName(), metric);
+        performance.getMetrics().add(metric);
+
+    }
+
+    private void calculateUnprovidedValues(Performance performance) {
+
+        long errorsPerMinVal = 0;
+        long callsPerMinVal = 0;
+
+        for (PerformanceMetric cm : performance.getMetrics()){
+            if (cm.getName().equals("Errors per Minute")){
+                errorsPerMinVal = (long) cm.getValue();
+            }
+            if (cm.getName().equals("Calls per Minute")){
+                callsPerMinVal = (long) cm.getValue();
+            }
+        }
+
+        // Total Errors
+        PerformanceMetric metric = new PerformanceMetric();
+        metric.setName("Total Errors");
+        // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
+        metric.setValue(errorsPerMinVal * 60);
+        performance.getMetrics().add(metric);
+
+        // Total Calls
+        metric = new PerformanceMetric();
+        metric.setName("Total Calls");
+        // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
+        metric.setValue(callsPerMinVal * 60);
+        performance.getMetrics().add(metric);
+
 
 
     }
