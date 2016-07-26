@@ -27,18 +27,16 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @Component
 public class DefaultAppdynamicsClient implements AppdynamicsClient {
     private static final Log LOG = LogFactory.getLog(DefaultAppdynamicsClient.class);
     //    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
-    private static final int NUM_MINUTES = 600; //14 days
-    private static final double DEFAULT_VALUE = -1.0;
-    private Map<String, Double> applicationDataMap = new HashMap<>();
+    //   private static final int NUM_MINUTES = 600; //14 days
+    //  private static final double DEFAULT_VALUE = -1.0;
+    //  private Map<String, Double> applicationDataMap = new HashMap<>();
     private final AppdynamicsSettings settings;
     private final RestOperations rest;
 
