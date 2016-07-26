@@ -54,12 +54,14 @@
             var deferred = $q.defer();
             var params = {
                 componentId: $scope.widgetConfig.componentId,
-                app_Id: "blank" //to change dynamically
             };
             console.log("checkpoint1");
-            performanceData.report(params).then(function(data) {
+            performanceData.infraPerformance({componentId: $scope.widgetConfig.componentId}).then(function(data) {
                 console.log("checkpoint2");
+                console.log("widget component id: " + $scope.widgetConfig.componentId);
                 console.log("data: " + data);
+                console.log("printing: " + data.result);
+                console.log("printing: " + data.lastUpdated);
                 processResponse(data.result);
                 deferred.resolve(data.lastUpdated);
             });
@@ -105,7 +107,10 @@
             var errorspm = 0;
             var callspm = 0;
             var responsetime = 0;
+            console.log("is this doing anything");
+            console.log("Data values: " + data);
             _(data).forEach(function(element){
+                console.log("Element" + element);
                 groupedCallsData.push(element.calls);
                 groupedErrorsData.push(element.errors);
                 labels.push('');
