@@ -43,7 +43,11 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     private static final String APPLICATION_LIST_PATH = "/controller/rest/applications?output=json";
     private static final String OVERALL_SUFFIX = "Overall Application Performance|*";
     private static final String OVERALL_METRIC_PATH = "/controller/rest/applications/%s/metric-data?metric-path=%s&time-range-type=BEFORE_NOW&duration-in-mins=60&output=json";
+    private static final String HEALTH_VIOLATIONS_PATH = "/controller/rest/applications/%s/problems/healthrule-violations?time-range-type=BEFORE_NOW&duration-in-mins=60&output=json";
+    private static final String NODE_LIST_PATH = "/controller/rest/applications/%s/nodes?output=json";
+    private static final String BUSINESS_TRANSACTION_LIST_PATH = "/controller/rest/applications/%s/business-transactions?output=json";
     private static final String METRIC_PATH_DELIMITER = "\\|";
+
 
 
     // private static final String STATUS_WARN = "WARN";
@@ -129,7 +133,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                     PerformanceMetric metric = new PerformanceMetric();
                     metric.setName(parseMetricName(metricPath));
                     metric.setValue(metricValue);
-                    performance.getMetrics().add(metric);
+                    performance.getMetrics().put(metric.getName(),metric);
                 }
             } catch (ParseException | RestClientException e) {
                 LOG.error("Parsing metircs for : " + settings.getInstanceUrl() + ". Application =" + application.getAppName(), e);
@@ -137,7 +141,101 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         } catch (MalformedURLException | UnsupportedEncodingException mfe) {
             LOG.error("malformed url for loading jobs", mfe);
         }
+
+        calculateUnprovidedValues(application, performance);
+
         return performance;
+    }
+
+    private void calculateUnprovidedValues(AppdynamicsApplication application, Performance performance) {
+
+        // Total Errors
+        PerformanceMetric metric = new PerformanceMetric();
+        metric.setName("Total Errors");
+        // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
+        metric.setValue((long)performance.getMetrics().get("Errors per Minute").getValue() * 60);
+        performance.getMetrics().put(metric.getName(), metric);
+
+        // Total Calls
+        metric = new PerformanceMetric();
+        metric.setName("Total Calls");
+        // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
+        metric.setValue((long)performance.getMetrics().get("Calls per Minute").getValue() * 60);
+        performance.getMetrics().put(metric.getName(), metric);
+
+        // business health percent
+        long numNodeViolations = 0;
+        long numBusinessViolations = 0;
+        long numNodes = 0;
+        long numBusinessTransactions = 0;
+        double nodeHealthPercent = 0.0;
+        double businessHealthPercent = 0.0;
+
+        try {
+            // NUMBER OF VIOLATIONS
+            String url = joinURL(settings.getInstanceUrl(), String.format(HEALTH_VIOLATIONS_PATH, application.getAppID()));
+            ResponseEntity<String> responseEntity = makeRestCall(url);
+            String returnJSON = responseEntity.getBody();
+            JSONParser parser = new JSONParser();
+
+            JSONArray array = (JSONArray) parser.parse(returnJSON);
+
+            for (Object entry : array) {
+                JSONObject jsonEntry = (JSONObject) entry;
+                JSONObject affEntityObj = (JSONObject) jsonEntry.get("affectedEntityDefinition");
+
+                String entityType = getString(affEntityObj, "entityType");
+
+                if (entityType.equals("APPLICATION_COMPONENT_NODE")) {
+                    numNodeViolations++;
+                } else if (entityType.equals("BUSINESS_TRANSACTION")) {
+                    numBusinessViolations++;
+                }
+            }
+
+            // NUMBER OF NODES
+            url = joinURL(settings.getInstanceUrl(), String.format(NODE_LIST_PATH, application.getAppID()));
+            responseEntity = makeRestCall(url);
+            returnJSON = responseEntity.getBody();
+            parser = new JSONParser();
+            array = (JSONArray) parser.parse(returnJSON);
+
+            numNodes = array.size();
+
+            // NUMBER OF TRANSACTIONS
+            url = joinURL(settings.getInstanceUrl(), String.format(BUSINESS_TRANSACTION_LIST_PATH, application.getAppID()));
+            responseEntity = makeRestCall(url);
+            returnJSON = responseEntity.getBody();
+            parser = new JSONParser();
+            array = (JSONArray) parser.parse(returnJSON);
+
+            numBusinessTransactions = array.size();
+
+        } catch (MalformedURLException e) {
+            LOG.error("client exception loading applications", e);
+        } catch (ParseException e) {
+            LOG.error("client exception loading applications", e);
+        }
+
+        if (numNodes != 0)
+            nodeHealthPercent = 1 - (numNodeViolations/numNodes);
+
+        metric = new PerformanceMetric();
+        metric.setName("Node Health Percent");
+        // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
+        metric.setValue(nodeHealthPercent);
+        performance.getMetrics().put(metric.getName(), metric);
+
+        if (numBusinessTransactions != 0)
+            businessHealthPercent = 1 - (numBusinessViolations/numBusinessTransactions);
+
+        metric = new PerformanceMetric();
+        metric.setName("Business Transaction Health Percent");
+        // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
+        metric.setValue(businessHealthPercent);
+        performance.getMetrics().put(metric.getName(), metric);
+
+
     }
 
     private String parseMetricName(String metricPath) {
@@ -150,8 +248,8 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     private double getNodeHealthPercent(String appName, RESTAccess access, long start, long end) {
 
         //get # of violations, divide by # of nodes
-        int numNodes = (access.getNodesForApplication(appName).getNodes()).size();
-        int numViolations = (access.getHealthRuleViolations(appName, start, end)).getPolicyViolations().size();
+        long numNodes = (access.getNodesForApplication(appName).getNodes()).size();
+        long numViolations = (access.getHealthRuleViolations(appName, start, end)).getPolicyViolations().size();
 
         return 100.0 - (numViolations / numNodes);
 

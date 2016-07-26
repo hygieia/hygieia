@@ -185,8 +185,9 @@ public class PerformanceServiceImpl implements PerformanceService {
         performance.setVersion(request.getProjectVersion());
         performance.setTimestamp(System.currentTimeMillis());
         for (PerformanceMetric cm : request.getMetrics()) {
-            performance.getMetrics().add(cm);
+            performance.getMetrics().put(cm.getName(), cm);
         }
+
         return performanceRepository.save(performance); // Save = Update (if ID present) or Insert (if ID not there)
     }
 
