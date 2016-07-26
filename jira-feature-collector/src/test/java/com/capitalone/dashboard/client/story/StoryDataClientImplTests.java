@@ -82,6 +82,7 @@ public class StoryDataClientImplTests {
 		featureSettings.setJiraIssueTypeId("Story");
 		featureSettings.setJiraSprintDataFieldName("custom_sprint");
 		featureSettings.setJiraEpicIdFieldName("custom_epic");
+		featureSettings.setJiraStoryPointsFieldName("custom_storypoints");
 		featureSettings.setDeltaStartDate("2016-03-01T00:00:00.000000");
 		featureSettings.setPageSize(25);
 		
@@ -108,7 +109,8 @@ public class StoryDataClientImplTests {
 		jsonA.put(sprintRaw2);
 		
 		List<Issue> jiraClientResponse = Arrays.asList(
-				createIssue(1001, 10000000, STATUS_TODO, createTimeTracking(5 * 60, 4 * 60, 1 * 60), Arrays.asList(createField("custom_sprint", "List", jsonA)))
+				createIssue(1001, 10000000, STATUS_TODO, createTimeTracking(5 * 60, 4 * 60, 1 * 60), 
+						Arrays.asList(createField("custom_sprint", "List", jsonA), createField("custom_storypoints", "Integer", 3)))
 				);
 		
 		Mockito.when(jiraClient.getIssues(Mockito.anyLong(), Mockito.eq(0))).thenReturn(jiraClientResponse);
@@ -126,7 +128,8 @@ public class StoryDataClientImplTests {
 		assertEquals("summary1001", feature1.getsName());
 		assertEquals(FeatureStatus.BACKLOG.getStatus(), feature1.getsStatus());
 		assertEquals(FeatureStatus.BACKLOG.getStatus(), feature1.getsState());
-		assertEquals("4", feature1.getsEstimate());
+		assertEquals("3", feature1.getsEstimate());
+		assertEquals(Integer.valueOf(5 * 60), feature1.getsEstimateTime());
 		assertEquals("False", feature1.getIsDeleted());
 		assertEquals("project1", feature1.getsProjectID());
 		assertEquals("projectname1", feature1.getsProjectName());
