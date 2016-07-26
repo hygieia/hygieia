@@ -117,7 +117,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     public Performance getPerformanceMetrics(AppdynamicsApplication application) {
         Performance performance = new Performance();
         try {
-            String url = joinURL(settings.getInstanceUrl(), String.format(OVERALL_METRIC_PATH, application.getAppID(), URLEncoder.encode(OVERALL_SUFFIX, "UTF-8")));
+            String url = joinURL(settings.getInstanceUrl(), String.format(OVERALL_METRIC_PATH, application.getAppID(), URLEncoder.encode(OVERALL_SUFFIX, "UTF-8"), String.valueOf(settings.getTimeWindow())));
             ResponseEntity<String> responseEntity = makeRestCall(url);
             String returnJSON = responseEntity.getBody();
             JSONParser parser = new JSONParser();
