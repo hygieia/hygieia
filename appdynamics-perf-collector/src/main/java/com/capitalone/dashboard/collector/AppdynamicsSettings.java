@@ -13,6 +13,7 @@ public class AppdynamicsSettings {
     private String instanceUrl;
     private String cron;
     private String dashboardUrl;
+    private Integer timeWindow = 15; //default to 15 minutes
 
 
     public String getAccount() {
@@ -66,5 +67,13 @@ public class AppdynamicsSettings {
 
     public void setDashboardUrl(String dashboardUrl) {
         this.dashboardUrl = dashboardUrl;
+    }
+
+    public Integer getTimeWindow() {
+        return timeWindow;
+    }
+
+    public void setTimeWindow(Integer timeWindow) {
+        this.timeWindow = timeWindow;
     }
 }

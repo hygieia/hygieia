@@ -42,7 +42,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
     private static final String APPLICATION_LIST_PATH = "/controller/rest/applications?output=json";
     private static final String OVERALL_SUFFIX = "Overall Application Performance|*";
-    private static final String OVERALL_METRIC_PATH = "/controller/rest/applications/%s/metric-data?metric-path=%s&time-range-type=BEFORE_NOW&duration-in-mins=60&output=json";
+    private static final String OVERALL_METRIC_PATH = "/controller/rest/applications/%s/metric-data?metric-path=%s&time-range-type=BEFORE_NOW&duration-in-mins=%s&output=json";
     private static final String METRIC_PATH_DELIMITER = "\\|";
 
 
@@ -113,7 +113,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     public Performance getPerformanceMetrics(AppdynamicsApplication application) {
         Performance performance = new Performance();
         try {
-            String url = joinURL(settings.getInstanceUrl(), String.format(OVERALL_METRIC_PATH, application.getAppID(), URLEncoder.encode(OVERALL_SUFFIX, "UTF-8")));
+            String url = joinURL(settings.getInstanceUrl(), String.format(OVERALL_METRIC_PATH, application.getAppID(), URLEncoder.encode(OVERALL_SUFFIX, "UTF-8"), String.valueOf(settings.getTimeWindow())));
             ResponseEntity<String> responseEntity = makeRestCall(url);
             String returnJSON = responseEntity.getBody();
             JSONParser parser = new JSONParser();
