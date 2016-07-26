@@ -17,17 +17,22 @@
             Chartist.plugins.ctPointClick({
               //TODO
             }),
-            Chartist.plugins.axisLabels({
+            Chartist.plugins.ctAxisTitle({
               axisX: {
-                labels: [
-
-                ]
+                axisTitle: 'Timestamp',
+                axisClass: 'ct-axis-title',
+                offset: {
+                  x: 0,
+                  y: 50
+                },
+                textAnchor: 'middle'
               }
             }),
             Chartist.plugins.ctPointLabels({
               textAnchor: 'middle'
             })
           ],
+          low: 0,
           showArea: true,
           lineSmooth: false,
           fullWidth: true,
@@ -74,6 +79,8 @@
             var params = {
                 componentId: $scope.widgetConfig.componentId,
             };
+
+            console.log($scope.widgetConfig.componentId);
             collectorData.itemsByType('appPerformance').then(function(data){
               data.forEach(function(element){
                 if (element.enabled)
@@ -105,34 +112,65 @@
             ctrl.nodehealth = data.nodehealth;*/
             var groupedCallsData = [];
             var groupedErrorsData = [];
-            var labels = [];
-            var count = 0;
+            var calllabels = [];
+            var errorlabels = [];
+            var errorcount = 0;
+            var callcount = 0;
+            var responsecount = 0;
             var nodehealth = 0;
             var businesshealth = 0;
             var errorspm = 0;
             var callspm = 0;
             var responsetime = 0;
-            _(data).sortBy('timeStamp').forEach(function(element){
-                console.log("Element" + element);
-                groupedCallsData.push(element.metrics[5].value);
-                groupedErrorsData.push(element.metrics[2].value);
-                labels.push('');
-                count++;
-                nodehealth += parseInt(element.nodehealth);
-                businesshealth += parseInt(element.businesshealth);
-                errorspm += parseFloat(element.errorspm);
-                callspm += parseFloat(element.callspm);
-                responsetime += parseInt(element.responsetime);
+
+            _(data).sortBy('timeStamp').reverse().forEach(function(element){
+              var metrictime = element.timestamp;
+              var mins = (metrictime/60000) % 60;
+              var hours = (metrictime/60/60000) % 24;
+              element.metrics.forEach(function(innerelem){
+                if (innerelem.name === "Errors per Minute" && innerelem.value>0){
+                  errorcount++;
+                  errorspm += innerelem.value;
+                  groupedErrorsData.push(innerelem.value);
+                  errorlabels.push(Math.round(hours) + ":" + Math.round(mins));
+                }
+                if (innerelem.name === "Calls per Minute" && innerelem.value>0){
+                  callcount++;
+                  callspm += innerelem.value;
+                  groupedCallsData.push(innerelem.value);
+                  calllabels.push(Math.round(hours) + ":" + Math.round(mins));
+                }
+                if (innerelem.name === "Average Response Time (ms)" && innerelem.value>0){
+                  responsecount++;
+                  responsetime += innerelem.value;
+                }
+              });
             });
-            errorspm = Math.round(errorspm/count * 10)/10;
-            callspm = Math.round(callspm/count * 10)/10;
-            responsetime = Math.round(responsetime/count * 10)/10;
+
+            console.log(groupedCallsData);
+            console.log(calllabels);
+
+            /*
+            _(data).sortBy('timeStamp').reverse().slice(0, 15).forEach(function(element){
+                element.metrics.forEach(function(innerelem2){
+                  if (innerelem2.name === "Calls per Minute")
+                    groupedCallsData.push(innerelem2.value);
+                  if (innerelem2.name === "Errors per Minute")
+                    groupedErrorsData.push(innerelem2.value);
+
+                });
+                labels.push('');
+            });*/
+
+            errorspm = Math.round(errorspm/errorcount * 10)/10;
+            callspm = Math.round(callspm/callcount * 10)/10;
+            responsetime = Math.round(responsetime/responsecount * 10)/10;
             ctrl.errorspm = errorspm;
             ctrl.callspm = callspm;
             ctrl.responsetime = responsetime;
-            console.log(groupedCallsData);
-            console.log(labels);
-            var nodehealthavg = Math.round(nodehealth/count * 10)/10;
+            //console.log(groupedCallsData);
+            //console.log(labels);
+            /*var nodehealthavg = Math.round(nodehealth/count * 10)/10;
             console.log("nodehealth: " + nodehealthavg);
             var businesshealthavg = Math.round(businesshealth/count * 10)/10;
             ctrl.businessavg = businesshealthavg;
@@ -143,14 +181,15 @@
 
             ctrl.nodeHealthData = {
               series: [nodehealthavg, 100-nodehealthavg]
-            };
+            };*/
             ctrl.callsChartData = {
-              series: [groupedCallsData],
-              labels: labels
+              series: [groupedCallsData.slice(groupedCallsData.length-7, groupedCallsData.length)],
+              labels: calllabels.slice(calllabels.length-7, calllabels.length)
             };
+
             ctrl.errorsChartData = {
-              series: [groupedErrorsData],
-              labels: labels
+              series: [groupedErrorsData.slice(groupedErrorsData.length-7, groupedErrorsData.length)],
+              labels: errorlabels.slice(errorlabels.length-7, errorlabels.length)
             };
         }
 
