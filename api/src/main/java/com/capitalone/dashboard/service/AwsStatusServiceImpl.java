@@ -44,6 +44,7 @@ public class AwsStatusServiceImpl implements AwsStatusService {
         AwsStatus awsStatus = new AwsStatus();
         awsStatus.setName(awsStatusDataCreateRequest.getName());
         awsStatus.setUrl(awsStatusDataCreateRequest.getUrl());
+        awsStatus.setStatus(3);
         awsStatus.setDashboardId(dashboardId);
         awsStatus.setLastUpdated(System.currentTimeMillis());
 

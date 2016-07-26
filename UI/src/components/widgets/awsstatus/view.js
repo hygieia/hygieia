@@ -73,29 +73,17 @@
 
             function get(awsStatuses) {
                 return _.map(awsStatuses, function(item) {
-                    console.log('getting url...');
+                    item.status = 3;
                     $http.head(item.url)
-                        .success(function (response) {
-                            console.log('PASS');
-                            item.status = statuses.PASS;
-                        })
-                        .error(function (response) {
-                            console.log(response.status);
-                            item.status = statuses.FAIL;
+                        .then(function (response) {
+                            if (response.status < 300) {
+                                item.status = 1;
+                            } else if (response.status > 300) {
+                                item.status = 3;
+                            }
+                        }, function (response) {
+                            item.status = 3;
                         });
-                        // .then(function (response) {
-                        //     console.log('Status ' + response.status);
-                        //     switch (response.status) {
-                        //         case 200:
-                        //             item.status = statuses.PASS;
-                        //             break;
-                        //         case 404:
-                        //             item.status = statuses.FAIL;
-                        //             break;
-                        //     }
-                        // }, function (response) {
-                        //     item.status = statuses.FAIL;
-                        // });
                     return {
                         id: item.id,
                         name: item.name,
