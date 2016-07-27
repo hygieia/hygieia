@@ -74,6 +74,7 @@
             function get(awsStatuses) {
                 return _.map(awsStatuses, function(item) {
                     item.status = 3;
+                    // NOTE: In order for the request to work correctly, the endpoint must allow cross-domain requests.
                     $http.head(item.url)
                         .then(function (response) {
                             if (response.status < 300) {
