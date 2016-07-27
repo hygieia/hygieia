@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.AppdynamicsApplication;
 import com.capitalone.dashboard.model.AppdynamicsCollector;
 import com.capitalone.dashboard.model.Performance;
+import com.capitalone.dashboard.model.PerformanceMetric;
 import com.capitalone.dashboard.model.PerformanceType;
 import com.capitalone.dashboard.repository.AppDynamicsApplicationRepository;
 import com.capitalone.dashboard.repository.AppdynamicsCollectorRepository;
@@ -94,12 +95,14 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         int count = 0;
 
         for (AppdynamicsApplication app : apps) {
-            Performance performance = appdynamicsClient.getPerformanceMetrics(app);
+            List<PerformanceMetric> metrics = appdynamicsClient.getPerformanceMetrics(app);
 
-            if (performance != null) {
+            if (!CollectionUtils.isEmpty(metrics)) {
+                Performance performance = new Performance();
                 performance.setCollectorItemId(app.getId());
                 performance.setTimestamp(System.currentTimeMillis());
                 performance.setType(PerformanceType.ApplicationPerformance);
+                performance.getMetrics().addAll(metrics);
                 if (isNewPerformanceData(app, performance)) {
                     performanceRepository.save(performance);
                     count++;

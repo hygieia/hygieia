@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.AppdynamicsApplication;
-import com.capitalone.dashboard.model.Performance;
 import com.capitalone.dashboard.model.PerformanceMetric;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
@@ -27,7 +26,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -114,8 +115,17 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
 
     @Override
-    public Performance getPerformanceMetrics(AppdynamicsApplication application) {
-        Performance performance = new Performance();
+    public List<PerformanceMetric> getPerformanceMetrics(AppdynamicsApplication application) {
+        List<PerformanceMetric> metrics = new ArrayList<>();
+
+        metrics.addAll(getOverallMetics(application));
+        metrics.addAll(getHealthMetrics(application));
+        metrics.addAll(getCalculatedMetrics(metrics));
+        return metrics;
+    }
+
+    private List<PerformanceMetric> getOverallMetics (AppdynamicsApplication application) {
+        List<PerformanceMetric> overallMetrics = new ArrayList<>();
         try {
             String url = joinURL(settings.getInstanceUrl(), String.format(OVERALL_METRIC_PATH, application.getAppID(), URLEncoder.encode(OVERALL_SUFFIX, "UTF-8"), String.valueOf(settings.getTimeWindow())));
             ResponseEntity<String> responseEntity = makeRestCall(url);
@@ -133,7 +143,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                     PerformanceMetric metric = new PerformanceMetric();
                     metric.setName(parseMetricName(metricPath));
                     metric.setValue(metricValue);
-                    performance.getMetrics().add(metric);
+                    overallMetrics.add(metric);
                 }
             } catch (ParseException | RestClientException e) {
                 LOG.error("Parsing metircs for : " + settings.getInstanceUrl() + ". Application =" + application.getAppName(), e);
@@ -141,14 +151,11 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         } catch (MalformedURLException | UnsupportedEncodingException mfe) {
             LOG.error("malformed url for loading jobs", mfe);
         }
-
-        calculateUnprovidedValues(performance);
-        calculateHealthPercents(application, performance);
-
-        return performance;
+        return overallMetrics;
     }
 
-    private void calculateHealthPercents(AppdynamicsApplication application, Performance performance) {
+
+    private List<PerformanceMetric> getHealthMetrics (AppdynamicsApplication application) {
         // business health percent
         long numNodeViolations = 0;
         long numBusinessViolations = 0;
@@ -156,6 +163,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         long numBusinessTransactions = 0;
         double nodeHealthPercent = 0.0;
         double businessHealthPercent = 0.0;
+        List<PerformanceMetric> heathMetrics = new ArrayList<>();
 
         try {
             // NUMBER OF VIOLATIONS
@@ -210,7 +218,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         metric.setName("Node Health Percent");
         // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
         metric.setValue(nodeHealthPercent);
-        performance.getMetrics().add(metric);
+        heathMetrics.add(metric);
 
         if (numBusinessTransactions != 0)
             businessHealthPercent = 1 - (numBusinessViolations/numBusinessTransactions);
@@ -219,16 +227,16 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         metric.setName("Business Transaction Health Percent");
         // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
         metric.setValue(businessHealthPercent);
-        performance.getMetrics().add(metric);
-
+        heathMetrics.add(metric);
+        return heathMetrics;
     }
 
-    private void calculateUnprovidedValues(Performance performance) {
+    private List<PerformanceMetric> getCalculatedMetrics(List<PerformanceMetric> metrics) {
 
         long errorsPerMinVal = 0;
         long callsPerMinVal = 0;
-
-        for (PerformanceMetric cm : performance.getMetrics()){
+        List<PerformanceMetric> calculatedMetrics = new ArrayList<>();
+        for (PerformanceMetric cm : metrics){
             if (cm.getName().equals("Errors per Minute")){
                 errorsPerMinVal = (long) cm.getValue();
             }
@@ -242,17 +250,17 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         metric.setName("Total Errors");
         // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
         metric.setValue(errorsPerMinVal * 60);
-        performance.getMetrics().add(metric);
+        calculatedMetrics.add(metric);
 
         // Total Calls
         metric = new PerformanceMetric();
         metric.setName("Total Calls");
         // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
         metric.setValue(callsPerMinVal * 60);
-        performance.getMetrics().add(metric);
+        calculatedMetrics.add(metric);
 
 
-
+        return calculatedMetrics;
     }
 
     private String parseMetricName(String metricPath) {
