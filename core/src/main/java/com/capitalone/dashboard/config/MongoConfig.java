@@ -26,12 +26,19 @@ public class MongoConfig extends AbstractMongoConfiguration {
 
     @Value("${dbname:dashboarddb}")
     private String databaseName;
+    @Value("${dbhost:localhost}")
+    private String host;
+    @Value("${dbport:27017}")
+    private int port;
+    @Value("${dbreplicaset:false}")
+    private String dbreplicaset;
     @Value("#{'${dbhostport}'.split(',')}")
     private List<String> hostport;
     @Value("${dbusername:}")
     private String userName;
     @Value("${dbpassword:}")
     private String password;
+
 
 
     @Override
@@ -42,26 +49,42 @@ public class MongoConfig extends AbstractMongoConfiguration {
     @Override
     @Bean
     public MongoClient mongo() throws Exception {
-        List<ServerAddress> serverAddressList = new ArrayList<>();
-        for (String h : hostport) {
-            String myHost = h.substring(0, h.indexOf(":"));
-            int myPort = Integer.parseInt(h.substring(h.indexOf(":") + 1, h.length()));
-            ServerAddress serverAddress = new ServerAddress(myHost, myPort);
-            serverAddressList.add(serverAddress);
 
-        }
-        LOGGER.info("Initializing Mongo Client server at: {}", serverAddressList.toArray().toString());
         MongoClient client;
+        LOGGER.info("ReplicaSet" + dbreplicaset);
 
+        if (Boolean.parseBoolean(dbreplicaset)) {
+            List<ServerAddress> serverAddressList = new ArrayList<>();
+            for (String h : hostport) {
+                String myHost = h.substring(0, h.indexOf(":"));
+                int myPort = Integer.parseInt(h.substring(h.indexOf(":") + 1, h.length()));
+                ServerAddress serverAddress = new ServerAddress(myHost, myPort);
+                serverAddressList.add(serverAddress);
+            }
 
-        if (StringUtils.isEmpty(userName)) {
-            client = new MongoClient(serverAddressList);
+            for (ServerAddress s : serverAddressList) {
+                LOGGER.info("Initializing Mongo Client server ReplicaSet at: {}", s);
+            }
+
+            if (StringUtils.isEmpty(userName)) {
+                client = new MongoClient(serverAddressList);
+            } else {
+                MongoCredential mongoCredential = MongoCredential.createScramSha1Credential(
+                        userName, databaseName, password.toCharArray());
+                client = new MongoClient(serverAddressList, Collections.singletonList(mongoCredential));
+            }
         } else {
-            MongoCredential mongoCredential = MongoCredential.createScramSha1Credential(
-                    userName, databaseName, password.toCharArray());
-            client = new MongoClient(serverAddressList, Collections.singletonList(mongoCredential));
-        }
+            ServerAddress serverAddr = new ServerAddress(host, port);
+            LOGGER.info("Initializing Mongo Client server at: {}", serverAddr);
+            if (StringUtils.isEmpty(userName)) {
+                client = new MongoClient(serverAddr);
+            } else {
+                MongoCredential mongoCredential = MongoCredential.createScramSha1Credential(
+                        userName, databaseName, password.toCharArray());
+                client = new MongoClient(serverAddr, Collections.singletonList(mongoCredential));
+            }
 
+        }
         LOGGER.info("Connecting to Mongo: {}", client);
         return client;
     }
