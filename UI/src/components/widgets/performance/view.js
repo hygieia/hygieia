@@ -123,10 +123,19 @@
             var callspm = 0;
             var responsetime = 0;
 
+            _(data).sortBy('timeStamp').__wrapped__[0].metrics.forEach(function(innerelem){
+              if (innerelem.name === 'Business Transaction Health Percent'){
+                ctrl.businessavg = innerelem.value*100;
+              }
+              if (innerelem.name === 'Node Health Percent'){
+                ctrl.nodeavg = innerelem.value*100;
+              }
+            });
+
             _(data).sortBy('timeStamp').reverse().forEach(function(element){
               var metrictime = element.timestamp;
               var mins = (metrictime/60000) % 60;
-              var hours = (((metrictime/60/60000) % 24) + 19) % 24;
+              var hours = (metrictime/60/60000) % 24;
               element.metrics.forEach(function(innerelem){
                 if (innerelem.name === "Errors per Minute" && innerelem.value>0){
                   errorcount++;
@@ -182,6 +191,15 @@
             ctrl.nodeHealthData = {
               series: [nodehealthavg, 100-nodehealthavg]
             };*/
+
+            ctrl.transactionHealthData = {
+              series: [ctrl.businessavg, 100-ctrl.businessavg]
+            };
+
+            ctrl.nodeHealthData = {
+              series: [ctrl.nodeavg, 100-ctrl.nodeavg]
+            };
+
             ctrl.callsChartData = {
               series: [groupedCallsData.slice(groupedCallsData.length-7, groupedCallsData.length)],
               labels: calllabels.slice(calllabels.length-7, calllabels.length)
