@@ -15,6 +15,7 @@ public class Performance extends BaseModel{
     private PerformanceType type;
     private String version; // application version, environment version
     private  ObjectId executionId; // optional: in case we have to tie it to a Jenkins build, for example
+   // private Map<String, PerformanceMetric> metrics = new HashMap<>();
     private Set<PerformanceMetric> metrics = new HashSet<>();
 
 

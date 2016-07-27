@@ -187,6 +187,7 @@ public class PerformanceServiceImpl implements PerformanceService {
         for (PerformanceMetric cm : request.getMetrics()) {
             performance.getMetrics().add(cm);
         }
+
         return performanceRepository.save(performance); // Save = Update (if ID present) or Insert (if ID not there)
     }
 
