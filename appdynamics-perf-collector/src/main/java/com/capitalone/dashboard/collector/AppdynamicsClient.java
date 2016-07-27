@@ -1,8 +1,9 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.AppdynamicsApplication;
-import com.capitalone.dashboard.model.Performance;
+import com.capitalone.dashboard.model.PerformanceMetric;
 
+import java.util.List;
 import java.util.Set;
 
 public interface AppdynamicsClient {
@@ -10,5 +11,5 @@ public interface AppdynamicsClient {
     //List<AppdynamicsApplication> getApplications(String server);
     Set<AppdynamicsApplication> getApplications();
 
-    Performance getPerformanceMetrics(AppdynamicsApplication application);
+    List<PerformanceMetric> getPerformanceMetrics(AppdynamicsApplication application);
 }
