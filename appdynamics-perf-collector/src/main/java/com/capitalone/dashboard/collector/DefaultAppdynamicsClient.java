@@ -7,7 +7,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.appdynamics.appdrestapi.RESTAccess;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -212,7 +211,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         }
 
         if (numNodes != 0)
-            nodeHealthPercent = 1.0 - ((double) (numNodeViolations) / (double) (numNodes));
+            nodeHealthPercent = Math.floor(100.0 * (1.0 - ((double) (numNodeViolations) / (double) (numNodes)))) / 100.0;
 
         PerformanceMetric metric = new PerformanceMetric();
         metric.setName("Node Health Percent");
@@ -221,7 +220,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         heathMetrics.add(metric);
 
         if (numBusinessTransactions != 0)
-            businessHealthPercent = 1 - (numBusinessViolations/numBusinessTransactions);
+            businessHealthPercent = Math.floor(100.0 * (1.0 - ((double) (numBusinessViolations) / (double) (numBusinessTransactions)))) / 100.0;
 
         metric = new PerformanceMetric();
         metric.setName("Business Transaction Health Percent");
@@ -269,16 +268,6 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         return arr[arr.length - 1];
     }
 
-
-    private double getNodeHealthPercent(String appName, RESTAccess access, long start, long end) {
-
-        //get # of violations, divide by # of nodes
-        long numNodes = (access.getNodesForApplication(appName).getNodes()).size();
-        long numViolations = (access.getHealthRuleViolations(appName, start, end)).getPolicyViolations().size();
-
-        return 100.0 - (numViolations / numNodes);
-
-    }
 
     //Utils
     protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
