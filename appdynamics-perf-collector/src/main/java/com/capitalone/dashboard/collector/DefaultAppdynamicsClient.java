@@ -212,7 +212,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         }
 
         if (numNodes != 0)
-            nodeHealthPercent = 1 - (numNodeViolations/numNodes);
+            nodeHealthPercent = 1.0 - ((double) (numNodeViolations) / (double) (numNodes));
 
         PerformanceMetric metric = new PerformanceMetric();
         metric.setName("Node Health Percent");
