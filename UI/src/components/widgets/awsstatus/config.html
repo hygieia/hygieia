@@ -5,8 +5,8 @@
             <div class="list-animate clearfix">
                 <!--current aws instances-->
                 <div class="dash-modal-row clearfix" ng-repeat="awsStatus in ctrl.dashboardAwsStatuses">
-                    <label>{{awsStatus.name}}</label>
-                    <label>{{awsStatus.url}}</label>
+                    <label>Name: </label>{{awsStatus.name}}<br/>
+                    <label>Url: </label>{{awsStatus.url}}<br />
                     <dash-trash class="pull-right fa-lg" ng-click="ctrl.deleteDashboardAwsStatus($index)"></dash-trash>
                 </div>
 

@@ -72,31 +72,33 @@
             });
 
             function get(awsStatuses) {
-                return _.map(awsStatuses, function(item) {
-                    item.status = 3;
-                    // NOTE: In order for the request to work correctly, the endpoint must allow cross-domain requests.
-                    $http.head(item.url)
+                var defer = $q.defer();
+                var promises = [];
+                angular.forEach(awsStatuses, function (awsStatus) {
+                    promises.push($http.head(awsStatus.url)
                         .then(function (response) {
                             if (response.status < 300) {
-                                item.status = 1;
+                                awsStatus.status = 1;
                             } else if (response.status > 300) {
-                                item.status = 3;
+                                awsStatus.status = 3;
                             }
+                            return awsStatus;
                         }, function (response) {
-                            item.status = 3;
-                        });
-                    return {
-                        id: item.id,
-                        name: item.name,
-                        url: item.url,
-                        status: item.status
-                    }
+                            awsStatus.status = 3;
+                            return awsStatus;
+                        }));
                 });
+
+                return $q.all(promises);
             }
         }
 
         function workerCallback(data) {
-            ctrl.awsStatuses = data.awsStatuses;
+            console.log(data);
+            data.awsStatuses.then(function(result) {
+                console.log(result);
+                ctrl.awsStatuses = result;
+            });
         }
     }
 
