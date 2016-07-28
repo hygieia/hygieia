@@ -135,7 +135,7 @@
             _(data).sortBy('timeStamp').reverse().forEach(function(element){
               var metrictime = element.timestamp;
               var mins = (metrictime/60000) % 60;
-              var hours = (metrictime/60/60000) % 24;
+              var hours = (((metrictime/60/60000) % 24) + 19) % 24;
               element.metrics.forEach(function(innerelem){
                 if (innerelem.name === "Errors per Minute" && innerelem.value>0){
                   errorcount++;

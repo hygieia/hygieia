@@ -27,7 +27,7 @@
                   chartist-chart-type="Pie">
                   </chartist>
                   <div class="guage-number">
-                    <span fit-text>{{performanceView.businessavg}}<small class="percent">%</small></span>
+                    <span ng-if="performanceView.businessavg" fit-text>{{performanceView.businessavg}}<small class="percent">%</small></span>
                   </div>
             </div>
           </div>
@@ -54,7 +54,7 @@
                   chartist-chart-type="Pie">
                   </chartist>
                   <div class="guage-number">
-                    <span fit-text>{{performanceView.nodeavg}}<small class="percent">%</small></span>
+                    <span ng-if="performanceView.nodeavg" fit-text>{{performanceView.nodeavg}}<small class="percent">%</small></span>
                   </div>
             </div>
           </div>
