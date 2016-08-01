@@ -141,13 +141,13 @@
                   errorcount++;
                   errorspm += innerelem.value;
                   groupedErrorsData.push(innerelem.value);
-                  errorlabels.push(Math.round(hours) + ":" + Math.round(mins));
+                  errorlabels.push(Math.floor(hours) + ":" + Math.round(mins));
                 }
                 if (innerelem.name === "Calls per Minute" && innerelem.value>0){
                   callcount++;
                   callspm += innerelem.value;
                   groupedCallsData.push(innerelem.value);
-                  calllabels.push(Math.round(hours) + ":" + Math.round(mins));
+                  calllabels.push(Math.floor(hours) + ":" + Math.round(mins));
                 }
                 if (innerelem.name === "Average Response Time (ms)" && innerelem.value>0){
                   responsecount++;
