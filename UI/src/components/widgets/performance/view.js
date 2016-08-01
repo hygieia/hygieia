@@ -41,6 +41,7 @@
           lineSmooth: false,
           fullWidth: true,
           axisY: {
+            allowDecimals: false,
             offset: 30,
             showGrid: true,
             showLabel: true,
@@ -80,6 +81,7 @@
           lineSmooth: false,
           fullWidth: true,
           axisY: {
+            allowDecimals: false,
             offset: 30,
             showGrid: true,
             showLabel: true,
@@ -135,7 +137,7 @@
                 templateUrl: 'components/widgets/performance/detail.html',
                 size: 'lg',
                 resolve: {
-                  deeplink: function(){
+                  index: function(){
                     return pointIndex;
                   },
                   calls: function(){
@@ -152,6 +154,9 @@
                   },
                   errorlabels: function(){
                     return ctrl.errortimestamp[pointIndex];
+                  },
+                  healthruleviolations: function(){
+                    return ctrl.healthruleviolations[pointIndex];
                   }
                 }
               });
@@ -172,6 +177,7 @@
             var responsetime = 0;
             var calltimestamp = [];
             var errortimestamp = [];
+            var healthruleviolations = [];
 
 
             _(data).sortBy('timeStamp').__wrapped__[0].metrics.forEach(function(innerelem){
@@ -181,6 +187,12 @@
               if (innerelem.name === 'Node Health Percent'){
                 ctrl.nodeavg = Math.round(innerelem.value*100 *10)/10;
               }
+              if (innerelem.name === 'Error Rate Severity'){
+                ctrl.errorvalue = innerelem.value;
+              }
+              if (innerelem.name === 'Response Time Severity'){
+                ctrl.responsevalue = innerelem.value;
+              }
             });
 
             _(data).sortBy('timeStamp').reverse().forEach(function(element){
@@ -188,6 +200,11 @@
               var mins = (metrictime/60000) % 60;
               var hours = (((metrictime/60/60000) % 24) + 19) % 24;
               element.metrics.forEach(function(innerelem){
+                if (innerelem.name === "Yolo JSON Object"){
+                  healthruleviolations.push({
+                    metrictime: metrictime,
+                    value: innerelem.value});
+                }
                 if (innerelem.name === "Errors per Minute" && innerelem.value>0){
                   errorcount++;
                   errorspm += innerelem.value;
@@ -208,6 +225,7 @@
                 }
               });
             });
+            ctrl.healthruleviolations = healthruleviolations.slice(healthruleviolations.length-7, healthruleviolations.length);
             ctrl.groupedCallsData = groupedCallsData;
             ctrl.groupedErrorsData = groupedErrorsData;
             ctrl.errorlabels = errorlabels;
@@ -215,8 +233,8 @@
             ctrl.errortimestamp = errortimestamp;
             ctrl.calltimestamp = calltimestamp;
 
-            console.log(groupedCallsData);
-            console.log(calllabels);
+            //console.log(groupedCallsData);
+            //console.log(calllabels);
 
             /*
             _(data).sortBy('timeStamp').reverse().slice(0, 15).forEach(function(element){
@@ -229,10 +247,13 @@
                 });
                 labels.push('');
             });*/
+            if (errorcount!=0) errorspm = Math.round(errorspm/errorcount * 10)/10;
+            else errorspm = 'No Data Collected';
+            if (responsecount!=0) responsetime = Math.round(responsetime/responsecount * 10)/10;
+            else responsetime = 'No Data Collected';
+            if (callcount!=0) callspm = Math.round(callspm/callcount * 10)/10;
+            else callspm = 'No Data Collected';
 
-            errorspm = Math.round(errorspm/errorcount * 10)/10;
-            callspm = Math.round(callspm/callcount * 10)/10;
-            responsetime = Math.round(responsetime/responsecount * 10)/10;
             ctrl.errorspm = errorspm;
             ctrl.callspm = callspm;
             ctrl.responsetime = responsetime;

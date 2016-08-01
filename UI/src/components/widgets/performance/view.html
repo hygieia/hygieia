@@ -70,7 +70,9 @@
           <table class="table">
             <tr>
               <td>
-                <span dash-status="ok"></span>
+                <span dash-status="ok" ng-if="performanceView.responsevalue == 0"></span>
+                <span dash-status="warning" ng-if="performanceView.responsevalue == 1"></span>
+                <span dash-status="alert" ng-if="performanceView.responsevalue == 2"></span>
               </td>
               <td>
                 Response Time
@@ -79,26 +81,29 @@
                 {{performanceView.responsetime}}
               </td>
             </tr>
+
             <tr>
               <td>
-                <span dash-status="alert"></span>
-              </td>
-              <td>
-                Calls Per Minute
-              </td>
-              <td>
-                {{performanceView.callspm}}
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span dash-status="alert"></span>
+                <span dash-status="ok" ng-if="performanceView.errorvalue == 0"></span>
+                <span dash-status="warning" ng-if="performanceView.errorvalue == 1"></span>
+                <span dash-status="alert" ng-if="performanceView.errorvalue == 2"></span>
               </td>
               <td>
                 Errors Per Minute
               </td>
               <td>
                 {{performanceView.errorspm}}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+              </td>
+              <td>
+                Calls Per Minute
+              </td>
+              <td>
+                {{performanceView.callspm}}
               </td>
             </tr>
           </table>

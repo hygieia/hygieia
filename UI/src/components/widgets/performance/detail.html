@@ -20,10 +20,25 @@
                 </tr>
                 </tbody>
             </table>-->
-            <h1>Hello there</h1>
-            <h2>Im displaying {{detail.calls}}</h2>
-            <h3>It was displayed at {{detail.calllabels}}</h3>
-            {{performanceDetail.deeplink}}
+            <h1></h1>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="obj in detail.healthruleviolations">
+                  <td>{{obj.name}}</td>
+                  <td>{{obj.startTimeInMillis | date:'MMM d, HH:mm:ss'}}</td>
+                  <td>{{obj.incidentStatus}}</td>
+                  <td>{{obj.description}}</td>
+                </tr>
+              </tbody>
+            </table>
         </div>
     </div>
 </widget-modal>
