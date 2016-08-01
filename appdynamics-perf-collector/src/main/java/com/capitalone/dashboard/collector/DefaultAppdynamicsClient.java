@@ -44,6 +44,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     private static final String OVERALL_SUFFIX = "Overall Application Performance|*";
     private static final String OVERALL_METRIC_PATH = "/controller/rest/applications/%s/metric-data?metric-path=%s&time-range-type=BEFORE_NOW&duration-in-mins=60&output=json";
     private static final String HEALTH_VIOLATIONS_PATH = "/controller/rest/applications/%s/problems/healthrule-violations?time-range-type=BEFORE_NOW&duration-in-mins=60&output=json";
+    private static final String YOLO_JSON_PATH = "/controller/rest/applications/%s/problems/healthrule-violations?time-range-type=BEFORE_NOW&duration-in-mins=10&output=json";
     private static final String NODE_LIST_PATH = "/controller/rest/applications/%s/nodes?output=json";
     private static final String BUSINESS_TRANSACTION_LIST_PATH = "/controller/rest/applications/%s/business-transactions?output=json";
     private static final String METRIC_PATH_DELIMITER = "\\|";
@@ -120,7 +121,35 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         metrics.addAll(getHealthMetrics(application));
         metrics.addAll(getCalculatedMetrics(metrics));
         metrics.addAll(getSeverityMetrics(application));
+        metrics.addAll(getYOLOJSONObj(application));
         return metrics;
+    }
+
+    private List<PerformanceMetric> getYOLOJSONObj(AppdynamicsApplication application) {
+        List<PerformanceMetric> yoloJSONs = new ArrayList<>();
+
+        try {
+            String url = joinURL(settings.getInstanceUrl(), String.format(YOLO_JSON_PATH, application.getAppID()));
+            ResponseEntity<String> responseEntity = makeRestCall(url);
+            String returnJSON = responseEntity.getBody();
+            JSONParser parser = new JSONParser();
+
+            JSONArray array = (JSONArray) parser.parse(returnJSON);
+
+            PerformanceMetric yoloJson = new PerformanceMetric();
+            yoloJson.setName("Yolo JSON Object");
+            // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
+            yoloJson.setValue(array);
+            yoloJSONs.add(yoloJson);
+
+        } catch (MalformedURLException e) {
+            LOG.error("client exception loading applications", e);
+        } catch (ParseException e) {
+            LOG.error("client exception loading applications", e);
+        }
+
+        return yoloJSONs;
+
     }
 
     private List<PerformanceMetric> getOverallMetrics(AppdynamicsApplication application) {
@@ -145,7 +174,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                     overallMetrics.add(metric);
                 }
             } catch (ParseException | RestClientException e) {
-                LOG.error("Parsing metircs for : " + settings.getInstanceUrl() + ". Application =" + application.getAppName(), e);
+                LOG.error("Parsing metrics for : " + settings.getInstanceUrl() + ". Application =" + application.getAppName(), e);
             }
         } catch (MalformedURLException | UnsupportedEncodingException mfe) {
             LOG.error("malformed url for loading jobs", mfe);
@@ -168,6 +197,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
             JSONParser parser = new JSONParser();
 
             JSONArray array = (JSONArray) parser.parse(returnJSON);
+
 
             for (Object entry : array) {
                 JSONObject jsonEntry = (JSONObject) entry;
