@@ -9,13 +9,13 @@
     function performanceViewController($q, $scope, performanceData, $modal, collectorData) {
         var ctrl = this;
 
-        ctrl.genericChartOptions = {
+        ctrl.callsChartOptions = {
           plugins: [
             Chartist.plugins.gridBoundaries(),
             Chartist.plugins.lineAboveArea(),
             Chartist.plugins.pointHalo(),
             Chartist.plugins.ctPointClick({
-              //TODO
+              onClick: showDetail
             }),
             Chartist.plugins.ctAxisTitle({
               axisX: {
@@ -32,7 +32,11 @@
               textAnchor: 'middle'
             })
           ],
-          low: 0,
+          //low: 0,
+          chartPadding: {
+            right: 35,
+            top: 20
+          },
           showArea: true,
           lineSmooth: false,
           fullWidth: true,
@@ -44,7 +48,44 @@
           }
         };
 
-        ctrl.calls = 100;
+        ctrl.errorsChartOptions = {
+          plugins: [
+            Chartist.plugins.gridBoundaries(),
+            Chartist.plugins.lineAboveArea(),
+            Chartist.plugins.pointHalo(),
+            Chartist.plugins.ctPointClick({
+              onClick: showDetail
+            }),
+            Chartist.plugins.ctAxisTitle({
+              axisX: {
+                axisTitle: 'Timestamp',
+                axisClass: 'ct-axis-title',
+                offset: {
+                  x: 0,
+                  y: 50
+                },
+                textAnchor: 'middle'
+              }
+            }),
+            Chartist.plugins.ctPointLabels({
+              textAnchor: 'middle'
+            })
+          ],
+          //low: 0,
+          chartPadding: {
+            right: 35,
+            top: 20
+          },
+          showArea: true,
+          lineSmooth: false,
+          fullWidth: true,
+          axisY: {
+            offset: 30,
+            showGrid: true,
+            showLabel: true,
+            labelInterpolationFnc: function(value) {return Math.round(value * 100)/100;}
+          }
+        };
 
         ctrl.pieOptions = {
           donut: true,
@@ -54,25 +95,6 @@
           showLabel: false
         };
 
-                /*function showDetail(evt) {
-                    var target = evt.target,
-                        pointIndex = target.getAttribute('ct:point-index');
-
-                    $modal.open({
-                        controller: 'RepoDetailController',
-                        controllerAs: 'detail',
-                        templateUrl: 'components/widgets/repo/detail.html',
-                        size: 'lg',
-                        resolve: {
-                            commits: function() {
-                                return groupedCommitData[pointIndex];
-                            }
-                        }
-                    });
-                }*/
-
-                //var groupedCallsData = [];
-        //ctrl.showDetail = showDetail;
         ctrl.load = function() {
 
             var deferred = $q.defer();
@@ -85,6 +107,7 @@
               data.forEach(function(element){
                 if (element.enabled)
                   ctrl.appname = element.description;
+                  ctrl.appID = element.options.appID;
               });
             });
 
@@ -100,16 +123,41 @@
             return deferred.promise;
         };
 
+        ctrl.showDetail = showDetail;
+
+        function showDetail(evt){
+          var target = evt.target,
+              pointIndex = target.getAttribute('ct:point-index');
+
+              $modal.open({
+                controller: 'PerformanceDetailController',
+                controllerAs: 'detail',
+                templateUrl: 'components/widgets/performance/detail.html',
+                size: 'lg',
+                resolve: {
+                  deeplink: function(){
+                    return pointIndex;
+                  },
+                  calls: function(){
+                    return ctrl.groupedCallsData.slice(ctrl.groupedCallsData.length-7, ctrl.groupedCallsData.length)[pointIndex];
+                  },
+                  errors: function(){
+                    return ctrl.groupedErrorsData[pointIndex];
+                  },
+                  appid: function(){
+                    return ctrl.appID;
+                  },
+                  calllabels: function(){
+                    return ctrl.calltimestamp.slice(ctrl.calllabels.length-7, ctrl.calllabels.length)[pointIndex];
+                  },
+                  errorlabels: function(){
+                    return ctrl.errortimestamp[pointIndex];
+                  }
+                }
+              });
+        }
+
         function processResponse(data) {
-            //debugger;
-            //ctrl.responsetime = data.responsetime;
-            /*ctrl.calls = data.calls;
-            ctrl.callspm = data.callspm;
-            ctrl.errors = data.errors;
-            ctrl.errorspc = data.errorspc;
-            ctrl.errorspm = data.errorspm;
-            ctrl.businesshealth = data.businesshealth;
-            ctrl.nodehealth = data.nodehealth;*/
             var groupedCallsData = [];
             var groupedErrorsData = [];
             var calllabels = [];
@@ -122,13 +170,16 @@
             var errorspm = 0;
             var callspm = 0;
             var responsetime = 0;
+            var calltimestamp = [];
+            var errortimestamp = [];
+
 
             _(data).sortBy('timeStamp').__wrapped__[0].metrics.forEach(function(innerelem){
               if (innerelem.name === 'Business Transaction Health Percent'){
-                ctrl.businessavg = innerelem.value*100;
+                ctrl.businessavg = Math.round(innerelem.value*100 *10)/10;
               }
               if (innerelem.name === 'Node Health Percent'){
-                ctrl.nodeavg = innerelem.value*100;
+                ctrl.nodeavg = Math.round(innerelem.value*100 *10)/10;
               }
             });
 
@@ -142,12 +193,14 @@
                   errorspm += innerelem.value;
                   groupedErrorsData.push(innerelem.value);
                   errorlabels.push(Math.floor(hours) + ":" + Math.round(mins));
+                  errortimestamp.push(metrictime);
                 }
                 if (innerelem.name === "Calls per Minute" && innerelem.value>0){
                   callcount++;
                   callspm += innerelem.value;
                   groupedCallsData.push(innerelem.value);
                   calllabels.push(Math.floor(hours) + ":" + Math.round(mins));
+                  calltimestamp.push(metrictime);
                 }
                 if (innerelem.name === "Average Response Time (ms)" && innerelem.value>0){
                   responsecount++;
@@ -155,6 +208,12 @@
                 }
               });
             });
+            ctrl.groupedCallsData = groupedCallsData;
+            ctrl.groupedErrorsData = groupedErrorsData;
+            ctrl.errorlabels = errorlabels;
+            ctrl.calllabels = calllabels;
+            ctrl.errortimestamp = errortimestamp;
+            ctrl.calltimestamp = calltimestamp;
 
             console.log(groupedCallsData);
             console.log(calllabels);

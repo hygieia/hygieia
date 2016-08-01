@@ -3,15 +3,22 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('RepoDetailController', RepoDetailController);
+        .controller('PerformanceDetailController', PerformanceDetailController);
 
-    RepoDetailController.$inject = ['$modalInstance', 'commits', 'DashStatus'];
-    function RepoDetailController($modalInstance, commits, DashStatus) {
+    PerformanceDetailController.$inject = ['$modalInstance', '$http', 'deeplink', 'calls', 'calllabels', 'errorlabels', 'errors', 'appid', 'DashStatus'];
+    function PerformanceDetailController($modalInstance, $http, deeplink, calls, calllabels, errorlabels, errors, appid, DashStatus) {
         /*jshint validthis:true */
         var ctrl = this;
 
+        console.log(deeplink);
         ctrl.statuses = DashStatus;
-        ctrl.commits = commits;
+        ctrl.deeplink = deeplink;
+        ctrl.calls = calls;
+        ctrl.errors = errors;
+        ctrl.appID = appid;
+        ctrl.calllabels = calllabels;
+        ctrl.errorlabels = errorlabels;
 
+      
     }
 })();
