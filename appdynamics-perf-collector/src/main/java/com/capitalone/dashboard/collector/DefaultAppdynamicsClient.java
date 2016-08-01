@@ -49,7 +49,6 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     private static final String METRIC_PATH_DELIMITER = "\\|";
 
 
-
     // private static final String STATUS_WARN = "WARN";
     // private static final String STATUS_CRITICAL = "CRITICAL";
 
@@ -117,13 +116,14 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     public List<PerformanceMetric> getPerformanceMetrics(AppdynamicsApplication application) {
         List<PerformanceMetric> metrics = new ArrayList<>();
 
-        metrics.addAll(getOverallMetics(application));
+        metrics.addAll(getOverallMetrics(application));
         metrics.addAll(getHealthMetrics(application));
         metrics.addAll(getCalculatedMetrics(metrics));
+        metrics.addAll(getSeverityMetrics(application));
         return metrics;
     }
 
-    private List<PerformanceMetric> getOverallMetics (AppdynamicsApplication application) {
+    private List<PerformanceMetric> getOverallMetrics(AppdynamicsApplication application) {
         List<PerformanceMetric> overallMetrics = new ArrayList<>();
         try {
             String url = joinURL(settings.getInstanceUrl(), String.format(OVERALL_METRIC_PATH, application.getAppID(), URLEncoder.encode(OVERALL_SUFFIX, "UTF-8"), String.valueOf(settings.getTimeWindow())));
@@ -153,8 +153,64 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         return overallMetrics;
     }
 
+    private List<PerformanceMetric> getSeverityMetrics(AppdynamicsApplication application) {
 
-    private List<PerformanceMetric> getHealthMetrics (AppdynamicsApplication application) {
+        long responseTimeSeverity = 0;
+        long errorRateSeverity = 0;
+
+        List<PerformanceMetric> severityMetrics = new ArrayList<>();
+
+        try {
+            // NUMBER OF VIOLATIONS
+            String url = joinURL(settings.getInstanceUrl(), String.format(HEALTH_VIOLATIONS_PATH, application.getAppID()));
+            ResponseEntity<String> responseEntity = makeRestCall(url);
+            String returnJSON = responseEntity.getBody();
+            JSONParser parser = new JSONParser();
+
+            JSONArray array = (JSONArray) parser.parse(returnJSON);
+
+            for (Object entry : array) {
+                JSONObject jsonEntry = (JSONObject) entry;
+                JSONObject affEntityObj = (JSONObject) jsonEntry.get("affectedEntityDefinition");
+
+                String entityType = getString(affEntityObj, "entityType");
+
+
+                if (entityType.equals("BUSINESS_TRANSACTION")) {
+
+                    long severity = getString(jsonEntry, "severity").equals("CRITICAL") ? 2 : 1;
+
+                    if (getString(jsonEntry, "name").equals("Business Transaction error rate is much higher than normal")) {
+                        errorRateSeverity = Math.max(errorRateSeverity, severity);
+                    } else if (getString(jsonEntry, "name").equals("Business Transaction response time is much higher than normal")) {
+                        responseTimeSeverity = Math.max(responseTimeSeverity, severity);
+                    }
+                }
+            }
+        } catch (MalformedURLException e) {
+            LOG.error("client exception loading applications", e);
+        } catch (ParseException e) {
+            LOG.error("client exception loading applications", e);
+        }
+
+        PerformanceMetric metric = new PerformanceMetric();
+        metric.setName("Error Rate Severity");
+        // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
+        metric.setValue(errorRateSeverity);
+        severityMetrics.add(metric);
+
+        metric = new PerformanceMetric();
+        metric.setName("Response Time Severity");
+        // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
+        metric.setValue(responseTimeSeverity);
+        severityMetrics.add(metric);
+
+
+        return severityMetrics;
+
+    }
+
+    private List<PerformanceMetric> getHealthMetrics(AppdynamicsApplication application) {
         // business health percent
         long numNodeViolations = 0;
         long numBusinessViolations = 0;
@@ -162,6 +218,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         long numBusinessTransactions = 0;
         double nodeHealthPercent = 0.0;
         double businessHealthPercent = 0.0;
+
         List<PerformanceMetric> heathMetrics = new ArrayList<>();
 
         try {
@@ -181,8 +238,10 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
                 if (entityType.equals("APPLICATION_COMPONENT_NODE")) {
                     numNodeViolations++;
+
                 } else if (entityType.equals("BUSINESS_TRANSACTION")) {
                     numBusinessViolations++;
+
                 }
             }
 
@@ -227,6 +286,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         // Right now the timeframe is hard-coded to 60 min. Change this if that changes.
         metric.setValue(businessHealthPercent);
         heathMetrics.add(metric);
+
         return heathMetrics;
     }
 
@@ -235,11 +295,11 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         long errorsPerMinVal = 0;
         long callsPerMinVal = 0;
         List<PerformanceMetric> calculatedMetrics = new ArrayList<>();
-        for (PerformanceMetric cm : metrics){
-            if (cm.getName().equals("Errors per Minute")){
+        for (PerformanceMetric cm : metrics) {
+            if (cm.getName().equals("Errors per Minute")) {
                 errorsPerMinVal = (long) cm.getValue();
             }
-            if (cm.getName().equals("Calls per Minute")){
+            if (cm.getName().equals("Calls per Minute")) {
                 callsPerMinVal = (long) cm.getValue();
             }
         }
