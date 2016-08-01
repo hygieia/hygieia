@@ -1,8 +1,8 @@
 <widget-modal widget-modal-close="true">
-    <div class="widget-detail repo-detail">
+    <div class="widget-detail performance-detail">
         <div class="widget-detail-body">
-            <span class="no-changesets" ng-hide="detail.commits.length">No Changes</span>
-            <table class="table" ng-show="detail.commits.length">
+            <!--<span class="no-changesets" ng-hide="detail.commits.length">No Changes</span>-->
+            <!--<table class="table">
                 <thead>
                 <tr>
                     <th>Revision</th>
@@ -19,7 +19,11 @@
                     <td>{{::commit.scmCommitTimestamp | date:'MMM d, HH:mm:ss'}}</td>
                 </tr>
                 </tbody>
-            </table>
+            </table>-->
+            <h1>Hello there</h1>
+            <h2>Im displaying {{detail.calls}}</h2>
+            <h3>It was displayed at {{detail.calllabels}}</h3>
+            {{performanceDetail.deeplink}}
         </div>
     </div>
 </widget-modal>
