@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <div class="col-lg-6 col-sm-12">
+    <div class="col-lg-5 col-sm-10">
       <div class="widget health-arrows">
         <div class="widget-heading">
           Overall Health
@@ -106,7 +106,39 @@
                 {{performanceView.callspm}}
               </td>
             </tr>
+
+
           </table>
+        </div>
+      </div>
+
+      <div class="col-lg-1 col-sm-2">
+        <div class="widget">
+          <div class="widget-heading">
+            Warning
+          </div>
+          <div class="widget-body">
+            <table class="table violations">
+              <tr>
+                <td ng-click="performanceView.showDetail(0)">
+                  <span dash-status="ok"></span>
+                  {{performanceView.good.length}}
+                </td>
+              </tr>
+              <tr>
+                <td ng-click="performanceView.showDetail(1)">
+                  <span dash-status="warning"></span>
+                  {{performanceView.warning.length}}
+                </td>
+              </tr>
+              <tr>
+                <td ng-click="performanceView.showDetail(2)">
+                  <span dash-status="alert"></span>
+                  {{performanceView.bad.length}}
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
     </div>

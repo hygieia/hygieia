@@ -15,7 +15,7 @@
             Chartist.plugins.lineAboveArea(),
             Chartist.plugins.pointHalo(),
             Chartist.plugins.ctPointClick({
-              onClick: showDetail
+
             }),
             Chartist.plugins.ctAxisTitle({
               axisX: {
@@ -55,7 +55,7 @@
             Chartist.plugins.lineAboveArea(),
             Chartist.plugins.pointHalo(),
             Chartist.plugins.ctPointClick({
-              onClick: showDetail
+
             }),
             Chartist.plugins.ctAxisTitle({
               axisX: {
@@ -128,8 +128,8 @@
         ctrl.showDetail = showDetail;
 
         function showDetail(evt){
-          var target = evt.target,
-              pointIndex = target.getAttribute('ct:point-index');
+
+          var pointIndex = evt;
 
               $modal.open({
                 controller: 'PerformanceDetailController',
@@ -138,25 +138,16 @@
                 size: 'lg',
                 resolve: {
                   index: function(){
-                    return pointIndex;
+                    return evt;
                   },
-                  calls: function(){
-                    return ctrl.groupedCallsData.slice(ctrl.groupedCallsData.length-7, ctrl.groupedCallsData.length)[pointIndex];
+                  warnings: function(){
+                    return ctrl.warning;
                   },
-                  errors: function(){
-                    return ctrl.groupedErrorsData[pointIndex];
+                  good: function(){
+                    return ctrl.good;
                   },
-                  appid: function(){
-                    return ctrl.appID;
-                  },
-                  calllabels: function(){
-                    return ctrl.calltimestamp.slice(ctrl.calllabels.length-7, ctrl.calllabels.length)[pointIndex];
-                  },
-                  errorlabels: function(){
-                    return ctrl.errortimestamp[pointIndex];
-                  },
-                  healthruleviolations: function(){
-                    return ctrl.healthruleviolations[pointIndex];
+                  bad: function(){
+                    return ctrl.bad;
                   }
                 }
               });
@@ -178,7 +169,9 @@
             var calltimestamp = [];
             var errortimestamp = [];
             var healthruleviolations = [];
-
+            var warnings = [];
+            var good = [];
+            var bad = [];
 
             _(data).sortBy('timeStamp').__wrapped__[0].metrics.forEach(function(innerelem){
               if (innerelem.name === 'Business Transaction Health Percent'){
@@ -193,7 +186,23 @@
               if (innerelem.name === 'Response Time Severity'){
                 ctrl.responsevalue = innerelem.value;
               }
+              if (innerelem.name === 'Yolo JSON Object'){
+                ctrl.violations = innerelem.value;
+              }
             });
+
+            ctrl.violations.forEach(function(element){
+              if (element.severity === "WARNING"){
+                if (element.incidentStatus === "OPEN") warnings.push(element);
+                else good.push(element);
+              }else {
+                bad.push(element);
+              }
+            });
+
+            ctrl.warning = warnings;
+            ctrl.good = good;
+            ctrl.bad = bad;
 
             _(data).sortBy('timeStamp').reverse().forEach(function(element){
               var metrictime = element.timestamp;
@@ -233,20 +242,7 @@
             ctrl.errortimestamp = errortimestamp;
             ctrl.calltimestamp = calltimestamp;
 
-            //console.log(groupedCallsData);
-            //console.log(calllabels);
 
-            /*
-            _(data).sortBy('timeStamp').reverse().slice(0, 15).forEach(function(element){
-                element.metrics.forEach(function(innerelem2){
-                  if (innerelem2.name === "Calls per Minute")
-                    groupedCallsData.push(innerelem2.value);
-                  if (innerelem2.name === "Errors per Minute")
-                    groupedErrorsData.push(innerelem2.value);
-
-                });
-                labels.push('');
-            });*/
             if (errorcount!=0) errorspm = Math.round(errorspm/errorcount * 10)/10;
             else errorspm = 'No Data Collected';
             if (responsecount!=0) responsetime = Math.round(responsetime/responsecount * 10)/10;
@@ -257,20 +253,7 @@
             ctrl.errorspm = errorspm;
             ctrl.callspm = callspm;
             ctrl.responsetime = responsetime;
-            //console.log(groupedCallsData);
-            //console.log(labels);
-            /*var nodehealthavg = Math.round(nodehealth/count * 10)/10;
-            console.log("nodehealth: " + nodehealthavg);
-            var businesshealthavg = Math.round(businesshealth/count * 10)/10;
-            ctrl.businessavg = businesshealthavg;
-            ctrl.nodeavg = nodehealthavg;
-            ctrl.transactionHealthData = {
-              series: [businesshealthavg, 100-businesshealthavg]
-            };
 
-            ctrl.nodeHealthData = {
-              series: [nodehealthavg, 100-nodehealthavg]
-            };*/
 
             ctrl.transactionHealthData = {
               series: [ctrl.businessavg, 100-ctrl.businessavg]
