@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.request;
 
-import com.capitalone.dashboard.model.AwsStatus;
+import com.capitalone.dashboard.model.Monitor2;
 
 // Provides additional functionality to the Aws Status model.
-public class AwsStatusRequest {
+public class Monitor2Request {
     private String name;
     private String url;
     private int status;
@@ -20,10 +20,10 @@ public class AwsStatusRequest {
 
     public void setUrl(String url) { this.url = url; }
 
-    public AwsStatus update (AwsStatus awsStatus) {
-        awsStatus.setName(this.name);
-        awsStatus.setUrl(this.url);
-        awsStatus.setStatus(this.status);
-        return awsStatus;
+    public Monitor2 update (Monitor2 monitor2) {
+        monitor2.setName(this.name);
+        monitor2.setUrl(this.url);
+        monitor2.setStatus(this.status);
+        return monitor2;
     }
 }

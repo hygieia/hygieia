@@ -3,46 +3,46 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('awsStatusConfigController', awsStatusConfigController);
+        .controller('monitor2ConfigController', monitor2ConfigController);
 
-    awsStatusConfigController.$inject = ['$scope', '$q', '$modalInstance', 'awsStatusData', 'modalData'];
-    function awsStatusConfigController($scope, $q, $modalInstance, awsStatusData, modalData) {
+    monitor2ConfigController.$inject = ['$scope', '$q', '$modalInstance', 'monitor2Data', 'modalData'];
+    function monitor2ConfigController($scope, $q, $modalInstance, monitor2Data, modalData) {
         var ctrl= this;
 
         // request and process data
-        awsStatusData.details(modalData.dashboard.id)
+        monitor2Data.details(modalData.dashboard.id)
             .then(processDetailResponse);
-        awsStatusData.search()
+        monitor2Data.search()
             .then(processSearchResponse);
 
         // local variables
         var deletedDashboardStatuses = [];
         ctrl.appName = modalData.dashboard.application.name;
-        ctrl.newDashboardAwsStatuses = [];
-        ctrl.dashboardAwsStatuses = [];
-        ctrl.allAwsStatuses = [];
+        ctrl.newDashboardMonitor2es = [];
+        ctrl.dashboardMonitor2es = [];
+        ctrl.allMonitor2es = [];
 
         // methods
         ctrl.save = save;
-        ctrl.deleteDashboardAwsStatus = deleteDashboardAwsStatus;
-        ctrl.addNewDashboardAwsStatus = addNewDashboardAwsStatus;
-        ctrl.deleteNewDashboardAwsStatus = deleteNewDashboardAwsStatus;
+        ctrl.deleteDashboardMonitor2 = deleteDashboardMonitor2;
+        ctrl.addNewDashboardMonitor2 = addNewDashboardMonitor2;
+        ctrl.deleteNewDashboardMonitor2 = deleteNewDashboardMonitor2;
 
         // Processes the response of from the server for a detail request.
         function processDetailResponse(response) {
             var worker = {
-                getAwsStatuses: getAwsStatuses
+                getMonitor2es: getMonitor2es
             };
 
-            function getAwsStatuses(data, cb) {
-                cb({dashboardAwsStatuses: getDashboardAwsStatuses(data.result.awsStatuses)})
+            function getMonitor2es(data, cb) {
+                cb({dashboardMonitor2es: getDashboardMonitor2es(data.result.monitor2es)})
             }
 
-            function getDashboardAwsStatuses(awsStatuses) {
-                return awsStatuses;
+            function getDashboardMonitor2es(monitor2es) {
+                return monitor2es;
             }
 
-            worker.getAwsStatuses(response, workerDetailCallback);
+            worker.getMonitor2es(response, workerDetailCallback);
         }
 
         // process the server response for search request
@@ -63,24 +63,24 @@
         }
 
         function workerDetailCallback(obj) {
-            ctrl.dashboardAwsStatuses = obj.dashboardAwsStatuses;
+            ctrl.dashboardMonitor2es = obj.dashboardMonitor2es;
         }
 
         // Add deleted item to list for saving.
-        function deleteDashboardAwsStatus(idx) {
+        function deleteDashboardMonitor2(idx) {
             deletedDashboardStatuses.push(
-                ctrl.dashboardAwsStatuses.splice(idx, 1)[0]
+                ctrl.dashboardMonitor2es.splice(idx, 1)[0]
             );
         }
 
         // add new item to list for saving.
-        function addNewDashboardAwsStatus() {
-            ctrl.newDashboardAwsStatuses.push({name: '', url: ''});
+        function addNewDashboardMonitor2() {
+            ctrl.newDashboardMonitor2es.push({name: '', url: ''});
         }
 
         // delete a status that hasnt been saved yet.
-        function deleteNewDashboardAwsStatus(idx) {
-            ctrl.newDashboardAwsStatuses.splice(idx, 1);
+        function deleteNewDashboardMonitor2(idx) {
+            ctrl.newDashboardMonitor2es.splice(idx, 1);
         }
 
         function save() {
@@ -94,21 +94,21 @@
             }
 
             _(deletedDashboardStatuses).forEach(function (item) {
-                promises.push(awsStatusData.deleteAwsStatus(dashboardId, item.id));
+                promises.push(monitor2Data.deleteMonitor2(dashboardId, item.id));
             });
 
-            whereName(ctrl.newDashboardAwsStatuses)
+            whereName(ctrl.newDashboardMonitor2es)
                 .uniq(function (item) {
                     return item.name.toLowerCase();
                 })
                 .forEach(function (item) {
-                    promises.push(awsStatusData.createAwsStatus(dashboardId, item.name, item.url))
+                    promises.push(monitor2Data.createMonitor2(dashboardId, item.name, item.url))
                 });
 
             $q.all(promises)
                 .then(function (responses) {
                     var widgetResponse = {
-                        name: 'aws-status',
+                        name: 'monitor2',
                         options: {
                             id: modalData.widgetConfig.options.id
                         }
