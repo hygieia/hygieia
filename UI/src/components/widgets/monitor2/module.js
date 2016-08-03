@@ -5,16 +5,16 @@
     var config = {
             view: {
                 defaults: {
-                    title: 'AWS Status' // widget title
+                    title: 'Monitor2' // widget title
                 },
-                controller: 'awsStatusViewController',
+                controller: 'monitor2ViewController',
                 controllerAs: 'ctrl',
-                templateUrl: 'components/widgets/awsstatus/view.html'
+                templateUrl: 'components/widgets/monitor2/view.html'
             },
             config: {
-                controller: 'awsStatusConfigController',
+                controller: 'monitor2ConfigController',
                 controllerAs: 'ctrl',
-                templateUrl: 'components/widgets/awsstatus/config.html'
+                templateUrl: 'components/widgets/monitor2/config.html'
             },
             getState: getState
         };
@@ -26,7 +26,7 @@
     register.$inject = ['widgetManagerProvider', 'WidgetState'];
     function register(widgetManagerProvider, WidgetState) {
         widget_state = WidgetState;
-        widgetManagerProvider.register('awsstatus', config);
+        widgetManagerProvider.register('monitor2', config);
     }
 
     function getState(widgetConfig) {

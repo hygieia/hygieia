@@ -1,18 +1,18 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.AwsStatus;
-import com.capitalone.dashboard.request.AwsStatusDataCreateRequest;
+import com.capitalone.dashboard.model.Monitor2;
+import com.capitalone.dashboard.request.Monitor2DataCreateRequest;
 import org.bson.types.ObjectId;
 
 import java.util.List;
 
 
-public interface AwsStatusService {
+public interface Monitor2Service {
     /**
      *
      * @return All registered services
      */
-    Iterable<AwsStatus> all();
+    Iterable<Monitor2> all();
 
     /**
      * All statuses for a given dashboard.
@@ -20,30 +20,30 @@ public interface AwsStatusService {
      * @param dashboardId unique id of dashboard.
      * @return awsStatuses
      */
-    List<AwsStatus> dashboardAwsStatuses(ObjectId dashboardId);
+    List<Monitor2> dashboardMonitor2es(ObjectId dashboardId);
 
     /**
      * A particular status.
      */
-    AwsStatus get(ObjectId awsStatusId);
+    Monitor2 get(ObjectId awsStatusId);
 
     /**
      * Create a new status for a given dashboard.
      *
      * @param dashboardId id of dashboard
      * @param awsStatusDataCreateRequest the dat for the aws status request
-     * @return AwsStatus
+     * @return Monitor2
      */
-    AwsStatus create(ObjectId dashboardId, AwsStatusDataCreateRequest awsStatusDataCreateRequest);
+    Monitor2 create(ObjectId dashboardId, Monitor2DataCreateRequest awsStatusDataCreateRequest);
 
     /**
      * Update an existing aws status.
      *
      * @param dashboardId id of Dashboard
-     * @param awsStatus updated AwsStatus
-     * @return AwsStatus
+     * @param awsStatus updated Monitor2
+     * @return Monitor2
      */
-    AwsStatus update(ObjectId dashboardId, AwsStatus awsStatus);
+    Monitor2 update(ObjectId dashboardId, Monitor2 awsStatus);
 
     /**
      * Delete an existing aws status.

@@ -6,8 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 /*
 Represents the getters and setters for the Aws Server Status object.
  */
-@Document(collection = "aws-status")
-public class AwsStatus extends BaseModel {
+@Document(collection = "monitor2")
+public class Monitor2 extends BaseModel {
     private String name;
     private String url;
     private int status;
