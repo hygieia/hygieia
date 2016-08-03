@@ -105,23 +105,22 @@
             };
 
             console.log($scope.widgetConfig.componentId);
+
             collectorData.itemsByType('appPerformance').then(function(data){
               data.forEach(function(element){
                 if (element.enabled)
                   ctrl.appname = element.description;
                   ctrl.appID = element.options.appID;
+                  ctrl.appname2 = element.options.appName;
               });
             });
 
-            console.log("checkpoint1");
+
             performanceData.appPerformance({componentId: $scope.widgetConfig.componentId}).then(function(data) {
-                console.log("checkpoint2");
-                console.log("widget component id: " + $scope.widgetConfig.componentId);
+
                 processResponse(data.result);
                 deferred.resolve(data.lastUpdated);
             });
-
-            console.log("checkpoint3");
             return deferred.promise;
         };
 
@@ -172,6 +171,11 @@
             var warnings = [];
             var good = [];
             var bad = [];
+
+
+
+
+            console.log(ctrl.appname2, ctrl.appID);
 
             _(data).sortBy('timeStamp').__wrapped__[0].metrics.forEach(function(innerelem){
               if (innerelem.name === 'Business Transaction Health Percent'){
