@@ -251,6 +251,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
         List<PerformanceMetric> heathMetrics = new ArrayList<>();
 
+
         try {
             // NUMBER OF VIOLATIONS
             String url = joinURL(settings.getInstanceUrl(), String.format(HEALTH_VIOLATIONS_PATH, application.getAppID()));
@@ -261,7 +262,12 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
             JSONArray array = (JSONArray) parser.parse(returnJSON);
 
             for (Object entry : array) {
+
                 JSONObject jsonEntry = (JSONObject) entry;
+
+                if (getString(jsonEntry, "incidentStatus").equals("RESOLVED"))
+                    continue;
+
                 JSONObject affEntityObj = (JSONObject) jsonEntry.get("affectedEntityDefinition");
 
                 String entityType = getString(affEntityObj, "entityType");
