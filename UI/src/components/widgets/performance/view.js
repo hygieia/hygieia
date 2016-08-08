@@ -108,10 +108,11 @@
 
             collectorData.itemsByType('appPerformance').then(function(data){
               data.forEach(function(element){
-                if (element.enabled)
+                if (element.enabled){
                   ctrl.appname = element.description;
                   ctrl.appID = element.options.appID;
                   ctrl.appname2 = element.options.appName;
+                }
               });
             });
 
