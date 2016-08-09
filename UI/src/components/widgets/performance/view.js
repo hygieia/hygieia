@@ -129,8 +129,6 @@
 
         function showDetail(evt){
 
-          var pointIndex = evt;
-
               $modal.open({
                 controller: 'PerformanceDetailController',
                 controllerAs: 'detail',
@@ -166,8 +164,6 @@
             var errorspm = 0;
             var callspm = 0;
             var responsetime = 0;
-            var calltimestamp = [];
-            var errortimestamp = [];
             var healthruleviolations = [];
             var warnings = [];
             var good = [];
@@ -224,14 +220,12 @@
                   errorspm += innerelem.value;
                   groupedErrorsData.push(innerelem.value);
                   errorlabels.push(Math.floor(hours) + ":" + Math.round(mins));
-                  errortimestamp.push(metrictime);
                 }
                 if (innerelem.name === "Calls per Minute" && innerelem.value>0){
                   callcount++;
                   callspm += innerelem.value;
                   groupedCallsData.push(innerelem.value);
                   calllabels.push(Math.floor(hours) + ":" + Math.round(mins));
-                  calltimestamp.push(metrictime);
                 }
                 if (innerelem.name === "Average Response Time (ms)" && innerelem.value>0){
                   responsecount++;
@@ -244,9 +238,6 @@
             ctrl.groupedErrorsData = groupedErrorsData;
             ctrl.errorlabels = errorlabels;
             ctrl.calllabels = calllabels;
-            ctrl.errortimestamp = errortimestamp;
-            ctrl.calltimestamp = calltimestamp;
-
 
             if (errorcount!=0) errorspm = Math.round(errorspm/errorcount * 10)/10;
             else errorspm = 'No Data Collected';
