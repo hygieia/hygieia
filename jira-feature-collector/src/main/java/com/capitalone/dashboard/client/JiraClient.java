@@ -15,4 +15,10 @@ public interface JiraClient {
 	int getPageSize();
 
 	List<Issue> getEpics(List<String> epicKeys);
+	
+	List<String> getTodoStatuses();
+	
+	List<String> getDoingStatuses();
+	
+	List<String> getDoneStatuses();
 }

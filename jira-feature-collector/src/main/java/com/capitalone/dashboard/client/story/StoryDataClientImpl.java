@@ -29,7 +29,6 @@ import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
-import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 
@@ -96,7 +95,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 	/**
 	 * Extends the constructor from the super class.
 	 */
-	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings, FeatureSettings featureSettings, 
+	public StoryDataClientImpl(FeatureSettings featureSettings, 
 			FeatureRepository featureRepository, FeatureCollectorRepository featureCollectorRepository,
 			JiraClient jiraClient) {
 		if (LOGGER.isDebugEnabled()) {
@@ -110,9 +109,9 @@ public class StoryDataClientImpl implements StoryDataClient {
 		
 		this.epicCache = new HashMap<>();
 		
-		todoCache = buildStatusCache(coreFeatureSettings.getTodoStatuses());
-		inProgressCache = buildStatusCache(coreFeatureSettings.getDoingStatuses());
-		doneCache = buildStatusCache(coreFeatureSettings.getDoneStatuses());
+		todoCache = buildStatusCache(jiraClient.getTodoStatuses());
+		inProgressCache = buildStatusCache(jiraClient.getDoingStatuses());
+		doneCache = buildStatusCache(jiraClient.getDoneStatuses());
 	}
 
 	/**

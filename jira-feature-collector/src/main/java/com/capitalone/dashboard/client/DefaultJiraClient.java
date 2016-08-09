@@ -1,5 +1,13 @@
 package com.capitalone.dashboard.client;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,6 +15,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +58,62 @@ public class DefaultJiraClient implements JiraClient {
 	private final FeatureWidgetQueries featureWidgetQueries;
 	
 	private JiraRestClient client;
+	private List<String> todoStatuses = new ArrayList<>();
+	private List<String> doingStatuses = new ArrayList<>();
+	private List<String> doneStatuses = new ArrayList<>();
 	
 	@Autowired
 	public DefaultJiraClient(FeatureSettings featureSettings, FeatureWidgetQueries featureWidgetQueries, JiraRestClientSupplier restSupplier) {
 		this.featureSettings = featureSettings;
 		this.featureWidgetQueries = featureWidgetQueries;
 		this.client = restSupplier.get();
+		
+		try {			
+			URL url = new URL(featureSettings.getJiraBaseUrl() + featureSettings.getJiraQueryEndpoint() + "status/");
+			HttpURLConnection request = (HttpURLConnection) url.openConnection();
+			request.setRequestProperty("Authorization","Basic " + featureSettings.getJiraCredentials());
+			request.connect();
+			
+			InputStream in = (InputStream) request.getContent();
+			BufferedReader inReader = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
+			StringBuilder sb = new StringBuilder();
+		    
+			int cp;
+		    while ((cp = inReader.read()) != -1) {
+				sb.append((char) cp);		      
+		    } 
+            JSONParser parser = new JSONParser();
+
+            try {
+                JSONArray statuses = (JSONArray) parser.parse(sb.toString());
+
+                for (Object status : statuses) {
+                    JSONObject jsonStatus = (JSONObject) status;
+                    String statusName = (String) jsonStatus.get("name");
+                    
+                    Object statusCategory = jsonStatus.get("statusCategory");
+                    JSONObject jsonStatusCategory = (JSONObject) statusCategory;
+                    String statusCategoryName = (String) jsonStatusCategory.get("name");
+					
+					if ("To Do".equals(statusCategoryName)) {
+						todoStatuses.add(statusName);
+					} else if ("In Progress".equals(statusCategoryName)) {
+						doingStatuses.add(statusName);
+					} else if ("Done".equals(statusCategoryName)) {
+						doneStatuses.add(statusName);
+					}
+                }
+            } catch (ParseException pe) {
+                LOGGER.error("Parsing jobs on instance", pe);
+            } 
+        } catch (org.springframework.web.client.RestClientException rce) {
+            LOGGER.error("Client exception loading statuses", rce);
+            throw rce;
+        }  catch (MalformedURLException mfe) {
+            LOGGER.error("Malformed url for loading statuses", mfe);
+        } catch (IOException ioe) {
+			LOGGER.error("IOException", ioe);
+		}
 	}
 	
 	@Override
@@ -203,4 +265,20 @@ public class DefaultJiraClient implements JiraClient {
 	public int getPageSize() {
 		return featureSettings.getPageSize();
 	}
+	
+	@Override
+	public List<String> getTodoStatuses() {
+		return todoStatuses;
+	}
+	
+	@Override
+	public List<String> getDoingStatuses() {
+		return doingStatuses;
+	}
+	
+	@Override
+	public List<String> getDoneStatuses() {
+		return doneStatuses;
+	}
+	
 }

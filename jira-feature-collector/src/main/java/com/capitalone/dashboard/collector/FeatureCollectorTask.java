@@ -11,7 +11,6 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
-import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureSettings;
 
 import org.slf4j.Logger;
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Component;
 public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 	
-	private final CoreFeatureSettings coreFeatureSettings;
 	private final FeatureRepository featureRepository;
 	private final ScopeOwnerRepository teamRepository;
 	private final ScopeRepository projectRepository;
@@ -51,7 +49,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	 *            system
 	 */
 	@Autowired
-	public FeatureCollectorTask(CoreFeatureSettings coreFeatureSettings,
+	public FeatureCollectorTask(
 			TaskScheduler taskScheduler, FeatureRepository featureRepository,
 			ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
 			FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings,
@@ -61,7 +59,6 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 		this.teamRepository = teamRepository;
 		this.projectRepository = projectRepository;
 		this.featureRepository = featureRepository;
-		this.coreFeatureSettings = coreFeatureSettings;
 		this.featureSettings = featureSettings;
 		this.jiraClient = jiraClient;
 	}
@@ -114,7 +111,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 			log("Project Data", projectDataStart, count);
 	
 			long storyDataStart = System.currentTimeMillis();
-			StoryDataClientImpl storyData = new StoryDataClientImpl(this.coreFeatureSettings,
+			StoryDataClientImpl storyData = new StoryDataClientImpl(
 					this.featureSettings, this.featureRepository, this.featureCollectorRepository, jiraClient);
 			count = storyData.updateStoryInformation();
 			
