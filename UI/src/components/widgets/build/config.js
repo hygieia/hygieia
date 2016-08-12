@@ -157,7 +157,7 @@
                         consecutiveFailureThreshold: parseFloat(form.buildConsecutiveFailureThreshold.value)
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: collector.value
+                    collectorItemId: ctrl.collectorItemId
                 };
 
 
