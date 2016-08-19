@@ -40,6 +40,20 @@ public class DeployBuilder {
         String version = publisher.getHygieiaDeploy().getArtifactVersion().trim();
         String environmentName = publisher.getHygieiaDeploy().getEnvironmentName();
         String applicationName = publisher.getHygieiaDeploy().getApplicationName();
+        EnvVars envVars = null;
+        try {
+            envVars = build.getEnvironment(listener);
+            version = envVars.expand(version);
+            group = envVars.expand(group);
+            directory = envVars.expand(directory);
+            filePattern = envVars.expand(filePattern);
+            environmentName = envVars.expand(environmentName);
+        } catch (IOException e) {
+            listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
+        } catch (InterruptedException e) {
+            listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
+        }
+
         FilePath rootDirectory = build.getWorkspace().withSuffix(directory);
         listener.getLogger().println("Hygieia Deployment Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory);
         try {
@@ -65,14 +79,8 @@ public class DeployBuilder {
                 bac.setJobName(build.getProject().getName());
                 bac.setJobUrl(build.getProject().getAbsoluteUrl());
                 bac.setNiceName(publisher.getDescriptor().getHygieiaJenkinsName());
-                EnvVars env = null;
-                try {
-                    env = build.getEnvironment(listener);
-                } catch (IOException | InterruptedException e) {
-                    logger.warning("Error getting environment variables");
-                }
-                if (env != null) {
-                    bac.setInstanceUrl(env.get("JENKINS_URL"));
+                if (envVars != null) {
+                    bac.setInstanceUrl(envVars.get("JENKINS_URL"));
                 } else {
                     String jobPath = "/job" + "/" + build.getProject().getName() + "/";
                     int ind = build.getProject().getAbsoluteUrl().indexOf(jobPath);
