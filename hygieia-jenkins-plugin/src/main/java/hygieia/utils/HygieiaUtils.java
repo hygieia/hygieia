@@ -30,24 +30,6 @@ public class HygieiaUtils {
         return mapper.readValue(json, thisClass);
     }
 
-//    public static List<File> getArtifactFiles(File rootDirectory, String pattern, List<File> results) {
-//        FileFilter filter = new WildcardFileFilter(pattern.replace("**", "*"), IOCase.SYSTEM);
-//        File[] temp = rootDirectory.listFiles(filter);
-//        if ((temp != null) && (temp.length > 0)) {
-//            results.addAll(Arrays.asList(temp));
-//        }
-//
-//        temp = rootDirectory.listFiles();
-//        if ((temp != null) && (temp.length > 0))
-//            for (File currentItem : rootDirectory.listFiles()) {
-//                if (currentItem.isDirectory()) {
-//                    getArtifactFiles(currentItem, pattern, results);
-//                }
-//            }
-//
-//        return results;
-//    }
-
     public static List<FilePath> getArtifactFiles(FilePath rootDirectory, String pattern, List<FilePath> results) throws IOException, InterruptedException {
         FileFilter filter = new WildcardFileFilter(pattern.replace("**", "*"), IOCase.SYSTEM);
         List<FilePath> temp = rootDirectory.list(filter);
@@ -91,7 +73,4 @@ public class HygieiaUtils {
         }
         return versionNumber;
     }
-//    public static List<File> getArtifactFiles(String rootDirectoryString, String pattern, List<File> results) {
-//        return getArtifactFiles(new File(rootDirectoryString), pattern, results);
-//    }
 }

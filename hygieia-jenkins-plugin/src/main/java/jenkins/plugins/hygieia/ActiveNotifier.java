@@ -1,5 +1,7 @@
 package jenkins.plugins.hygieia;
 
+import com.capitalone.dashboard.model.GitRepoBranch;
+import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
@@ -9,16 +11,22 @@ import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.plugins.git.GitSCM;
+
+import hudson.scm.SubversionSCM;
 import hygieia.builder.ArtifactBuilder;
 import hygieia.builder.CommitBuilder;
 import hygieia.builder.CucumberTestBuilder;
 import hygieia.builder.DeployBuilder;
 import hygieia.builder.SonarBuilder;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
+import org.jenkinsci.plugins.multiplescms.MultiSCM;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -146,7 +154,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
                 for (DeployDataCreateRequest bac : requests) {
                     HygieiaResponse deployResponse = getHygieiaService(r).publishDeployData(bac);
                     if (deployResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                        listener.getLogger().println("Hygieia: Published Deploy Data: " +  deployResponse.toString());
+                        listener.getLogger().println("Hygieia: Published Deploy Data: " + deployResponse.toString());
                     } else {
                         listener.getLogger().println("Hygieia: Failed Publishing Deploy Data:" + deployResponse.toString());
                     }
@@ -161,7 +169,6 @@ public class ActiveNotifier implements FineGrainedNotifier {
         request.setJobName(r.getProject().getName());
         request.setBuildUrl(r.getProject().getAbsoluteUrl() + String.valueOf(r.getNumber()) + "/");
         request.setJobUrl(r.getProject().getAbsoluteUrl());
-
         EnvVars env = null;
         try {
             env = r.getEnvironment(listener);
@@ -177,6 +184,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
         }
         request.setNumber(String.valueOf(r.getNumber()));
         request.setStartTime(r.getStartTimeInMillis());
+        request.setCodeRepos(getRepoBranch(r));
         request.setSourceChangeSet(getCommitList(r));
 
         if (isComplete) {
@@ -194,4 +202,43 @@ public class ActiveNotifier implements FineGrainedNotifier {
         return commitBuilder.getCommits();
     }
 
+    private List<RepoBranch> getRepoBranch(AbstractBuild r) {
+        List<RepoBranch> list = new ArrayList<>();
+        if (r.getProject().getScm() instanceof SubversionSCM) {
+            list = getSVNRepoBranch((SubversionSCM) r.getProject().getScm(), r);
+        } else if (r.getProject().getScm() instanceof GitSCM) {
+            list = getGitHubRepoBranch((GitSCM) r.getProject().getScm(), r);
+        } else if (r.getProject().getScm() instanceof MultiSCM) {
+            List<hudson.scm.SCM> multiScms = ((MultiSCM) r.getProject().getScm()).getConfiguredSCMs();
+            for (hudson.scm.SCM scm : multiScms) {
+                if (scm instanceof SubversionSCM) {
+                    list.addAll(getSVNRepoBranch((SubversionSCM) scm, r));
+                } else if (scm instanceof GitSCM) {
+                    list.addAll(getGitHubRepoBranch((GitSCM) scm, r));
+                }
+            }
+        }
+        return list;
+    }
+
+    private List<RepoBranch> getGitHubRepoBranch(GitSCM scm, AbstractBuild r) {
+        List<RepoBranch> list = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(scm.getBuildData(r).remoteUrls)) {
+            for (String url : scm.getBuildData(r).remoteUrls) {
+                list.add(new GitRepoBranch(url, ""));
+            }
+        }
+        return list;
+    }
+
+    private List<RepoBranch> getSVNRepoBranch(SubversionSCM scm, AbstractBuild r) {
+        List<RepoBranch> list = new ArrayList<>();
+        SubversionSCM.ModuleLocation[] mLocations = scm.getLocations();
+        if (mLocations != null) {
+            for (int i = 0; i < mLocations.length; i++) {
+                list.add(new RepoBranch(mLocations[i].getURL(), ""));
+            }
+        }
+        return list;
+    }
 }
