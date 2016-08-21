@@ -38,19 +38,19 @@ for information about sourcing this properties file.
     dbpassword=dbpass
 
     #Collector schedule (required)
-    jenkins.cron=0 0/5 * * * *
+    bamboo.cron=0 0/5 * * * *
 
     #Jenkins server (required) - Can provide multiple
-    jenkins.servers[0]=http://jenkins.company.com
+    bamboo.servers[0]=http://jenkins.company.com
     
     #If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
-    jenkins.servers[1]=http://username:token@jenkins.company.com
+    bamboo.servers[1]=http://username:token@jenkins.company.com
     
     #Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
-    jenkins.username=
-    jenkins.apiKey=
+    bamboo.username=
+    bamboo.apiKey=
   
-    #Determines if build console log is collected - defaults to false
-    jenkins.saveLog=true
+    #Determines if build console log is collected - defaults to false - Bamboo for some reason hasn't exposed it as api (Atleast I couldnt find it)
+    bamboo.saveLog=false
 
 
