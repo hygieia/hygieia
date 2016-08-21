@@ -1,0 +1,125 @@
+{
+  "building": false,
+  "duration": 2698495,
+  "number": 2483,
+  "result": "FAILURE",
+  "timestamp": 1421281415000,
+  "url": "https://builds.apache.org/job/Lucene-Solr-Tests-5.x-Java7/2483/",
+  "changeSet": {
+    "items": [
+      {
+        "author": {
+          "fullName": "uschindler"
+        },
+        "commitId": "1651902",
+        "timestamp": 1421279592948,
+        "msg": "Merged revision(s) 1651901 from lucene/dev/trunk:\nLUCENE-6177: fix typo",
+        "paths": [
+          {
+            "file": "/lucene/dev/branches/branch_5x"
+          },
+          {
+            "file": "/lucene/dev/branches/branch_5x/lucene"
+          },
+          {
+            "file": "/lucene/dev/branches/branch_5x/lucene/analysis"
+          },
+          {
+            "file": "/lucene/dev/branches/branch_5x/lucene/analysis/common/src/java/org/apache/lucene/analysis/custom/CustomAnalyzer.java"
+          }
+        ],
+        "revision": 1651902,
+        "user": "uschindler"
+      },
+      {
+        "author": {
+          "fullName": "ehatcher"
+        },
+        "commitId": "1651896",
+        "timestamp": 1421279338234,
+        "msg": "SOLR-6900: bin/post improvements including glob handling, spaces in file names, and improved help output (merged from trunk r1651895)",
+        "paths": [
+          {
+            "file": "/lucene/dev/branches/branch_5x"
+          },
+          {
+            "file": "/lucene/dev/branches/branch_5x/solr"
+          },
+          {
+            "file": "/lucene/dev/branches/branch_5x/solr/CHANGES.txt"
+          },
+          {
+            "file": "/lucene/dev/branches/branch_5x/solr/bin"
+          },
+          {
+            "file": "/lucene/dev/branches/branch_5x/solr/bin/post"
+          }
+        ],
+        "revision": 1651896,
+        "user": "ehatcher"
+      }
+    ],
+    "revisions": [
+      {
+        "module": "http://svn.apache.org/repos/asf/lucene/dev/branches/branch_5x",
+        "revision": 1651902
+      }
+    ]
+  },
+  "culprits": [
+    {
+      "fullName": "ab"
+    },
+    {
+      "fullName": "anshum"
+    },
+    {
+      "fullName": "dsmiley"
+    },
+    {
+      "fullName": "ehatcher"
+    },
+    {
+      "fullName": "erick"
+    },
+    {
+      "fullName": "gchanan"
+    },
+    {
+      "fullName": "hossman"
+    },
+    {
+      "fullName": "jbernste"
+    },
+    {
+      "fullName": "jpountz"
+    },
+    {
+      "fullName": "markrmiller"
+    },
+    {
+      "fullName": "mikemccand"
+    },
+    {
+      "fullName": "noble"
+    },
+    {
+      "fullName": "rmuir"
+    },
+    {
+      "fullName": "sarowe"
+    },
+    {
+      "fullName": "shalin"
+    },
+    {
+      "fullName": "tflobbe"
+    },
+    {
+      "fullName": "thelabdude"
+    },
+    {
+      "fullName": "uschindler"
+    }
+  ]
+}
