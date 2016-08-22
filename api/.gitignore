@@ -25,3 +25,4 @@ target
 # Specific project files
 jir-client.properties
 /bin/
+/src/main/resources/application.properties

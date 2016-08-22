@@ -179,6 +179,7 @@
 				<module>jenkins-cucumber-test-collector</module>
 				<module>chat-ops-collector</module>
 				<module>aws-cloud-collector</module>
+                <module>appdynamics-perf-collector</module>
 				<module>UI</module>
 			</modules>
 			<build>
