@@ -225,6 +225,9 @@ public class ActiveNotifier implements FineGrainedNotifier {
         List<RepoBranch> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(scm.getBuildData(r).remoteUrls)) {
             for (String url : scm.getBuildData(r).remoteUrls) {
+                if (url.endsWith(".git")) {
+                    url =  url.substring(0, url.lastIndexOf(".git"));
+                }
                 list.add(new GitRepoBranch(url, ""));
             }
         }
@@ -236,7 +239,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
         SubversionSCM.ModuleLocation[] mLocations = scm.getLocations();
         if (mLocations != null) {
             for (int i = 0; i < mLocations.length; i++) {
-                list.add(new RepoBranch(mLocations[i].getURL(), ""));
+                list.add(new RepoBranch(mLocations[i].getURL(), "", RepoBranch.RepoType.SVN));
             }
         }
         return list;
