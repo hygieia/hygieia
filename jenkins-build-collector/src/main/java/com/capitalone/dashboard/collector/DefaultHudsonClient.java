@@ -2,7 +2,6 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.GitRepoBranch;
 import com.capitalone.dashboard.model.HudsonJob;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
@@ -186,10 +185,7 @@ public class DefaultHudsonClient implements HudsonClient {
                     if (settings.isSaveLog()) {
                         build.setLog(getLog(buildUrl));
                     }
-                    addRepoBrach(build, buildJson);
                     addChangeSets(build, buildJson);
-                    //Add repos that are being built
-
                     return build;
                 }
 
@@ -209,11 +205,6 @@ public class DefaultHudsonClient implements HudsonClient {
         }
         return null;
     }
-
-    private void addRepoBrach(Build build, JSONObject buildJson) {
-
-    }
-
 
     //This method will rebuild the API endpoint because the buildUrl obtained via Jenkins API
     //does not save the auth user info and we need to add it back.
@@ -251,6 +242,7 @@ public class DefaultHudsonClient implements HudsonClient {
             JSONObject json = (JSONObject) revision;
             RepoBranch rb = new RepoBranch();
             rb.setUrl(getString(json, "module"));
+            rb.setType(RepoBranch.RepoType.fromString(scmType));
             revisionToUrl.put(json.get("revision").toString(), rb);
             build.getCodeRepos().add(rb);
         }
@@ -266,7 +258,6 @@ public class DefaultHudsonClient implements HudsonClient {
             scm.setScmCommitLog(getString(jsonItem, "msg"));
             scm.setScmCommitTimestamp(getCommitTimestamp(jsonItem));
             scm.setScmRevisionNumber(getRevision(jsonItem));
-
             if (SVN_SCM.equalsIgnoreCase(scmType)) {
                 RepoBranch repoBranch = revisionToUrl.get(scm.getScmRevisionNumber());
                 if (repoBranch != null) {
@@ -291,7 +282,12 @@ public class DefaultHudsonClient implements HudsonClient {
             if (jsonAction.size() > 0) {
                 JSONArray remoteUrls = (JSONArray) ((JSONObject) action).get("remoteUrls");
                 for (Object urlObj : remoteUrls) {
-                    GitRepoBranch grb = new GitRepoBranch((String) urlObj, "");
+                    String sUrl = (String) urlObj;
+                    //remove .git from the urls
+                    if (sUrl.endsWith(".git")) {
+                        sUrl = sUrl.substring(0, sUrl.lastIndexOf(".git"));
+                    }
+                    RepoBranch grb = new RepoBranch(sUrl, "", RepoBranch.RepoType.GIT);
                     list.add(grb);
                 }
             }
