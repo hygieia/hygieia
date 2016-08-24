@@ -132,8 +132,6 @@ public class DefaultGitHubClient implements GitHubClient {
 				JSONArray jsonArray = paresAsArray(response);
 				for (Object item : jsonArray) {
 					JSONObject jsonObject = (JSONObject) item;
-                    JSONArray parents = (JSONArray) jsonObject.get("parents");
-                    CommitType commitType = (CollectionUtils.size(parents) > 1) ? CommitType.Merge : CommitType.New;
 					String sha = str(jsonObject, "sha");
 					JSONObject commitObject = (JSONObject) jsonObject.get("commit");
 					JSONObject authorObject = (JSONObject) commitObject.get("author");
@@ -141,6 +139,7 @@ public class DefaultGitHubClient implements GitHubClient {
 					String author = str(authorObject, "name");
 					long timestamp = new DateTime(str(authorObject, "date"))
 							.getMillis();
+                    JSONArray parents = (JSONArray) jsonObject.get("parents");
 					Commit commit = new Commit();
 					commit.setTimestamp(System.currentTimeMillis());
 					commit.setScmUrl(repo.getRepoUrl());
@@ -150,7 +149,7 @@ public class DefaultGitHubClient implements GitHubClient {
 					commit.setScmCommitLog(message);
 					commit.setScmCommitTimestamp(timestamp);
 					commit.setNumberOfChanges(1);
-                    commit.setType(commitType);
+                    commit.setType(getCommitType(CollectionUtils.size(parents), message));
 					commits.add(commit);
 				}
 				if (CollectionUtils.isEmpty(jsonArray)) {
@@ -169,6 +168,17 @@ public class DefaultGitHubClient implements GitHubClient {
 		}
 		return commits;
 	}
+
+	private CommitType getCommitType (int parentSize, String commitMessage ) {
+	    if (parentSize > 1) return CommitType.Merge;
+        if (settings.getNotBuiltCommits() == null) return CommitType.New;
+        for (String s : settings.getNotBuiltCommits()) {
+            if (commitMessage.contains(s)) {
+                return CommitType.NotBuilt;
+            }
+        }
+        return CommitType.New;
+    }
 
 	private Date getDate(Date dateInstance, int offsetDays, int offsetMinutes) {
 		Calendar cal = Calendar.getInstance();

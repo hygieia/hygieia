@@ -13,6 +13,7 @@ public class GitHubSettings {
     private String host;
     private String key;
     private int firstRunHistoryDays;
+    private String[] notBuiltCommits;
 
 
 	public String getHost() {
@@ -46,4 +47,12 @@ public class GitHubSettings {
 	public void setFirstRunHistoryDays(int firstRunHistoryDays) {
 		this.firstRunHistoryDays = firstRunHistoryDays;
 	}
+
+    public String[] getNotBuiltCommits() {
+        return notBuiltCommits;
+    }
+
+    public void setNotBuiltCommits(String[] notBuiltCommits) {
+        this.notBuiltCommits = notBuiltCommits;
+    }
 }
