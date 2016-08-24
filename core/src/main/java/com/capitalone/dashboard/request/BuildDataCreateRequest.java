@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.request;
 
+import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 
 import javax.validation.constraints.NotNull;
@@ -30,6 +31,7 @@ public class BuildDataCreateRequest {
     private long duration;
     private String startedBy;
     private String log;
+    private List<RepoBranch> codeRepos = new ArrayList<>();
     private List<SCM> sourceChangeSet = new ArrayList<>();
 
     public String getNumber() {
@@ -135,5 +137,13 @@ public class BuildDataCreateRequest {
 
     public void setNiceName(String niceName) {
         this.niceName = niceName;
+    }
+
+    public void setCodeRepos(List<RepoBranch> codeRepos) {
+        this.codeRepos = codeRepos;
+    }
+
+    public List<RepoBranch> getCodeRepos() {
+        return codeRepos;
     }
 }

@@ -1,6 +1,5 @@
 package jenkins.plugins.hygieia;
 
-import com.capitalone.dashboard.model.GitRepoBranch;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
@@ -12,7 +11,6 @@ import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.plugins.git.GitSCM;
-
 import hudson.scm.SubversionSCM;
 import hygieia.builder.ArtifactBuilder;
 import hygieia.builder.CommitBuilder;
@@ -228,7 +226,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
                 if (url.endsWith(".git")) {
                     url =  url.substring(0, url.lastIndexOf(".git"));
                 }
-                list.add(new GitRepoBranch(url, ""));
+                list.add(new RepoBranch(url, "", RepoBranch.RepoType.GIT));
             }
         }
         return list;

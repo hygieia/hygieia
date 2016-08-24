@@ -42,7 +42,7 @@ public class BuildServiceImpl implements BuildService {
     public DataResponse<Iterable<Build>> search(BuildSearchRequest request) {
         Component component = componentRepository.findOne(request.getComponentId());
         CollectorItem item = component.getFirstCollectorItemForType(CollectorType.Build);
-        if(item == null){
+        if (item == null) {
             Iterable<Build> results = new ArrayList<>();
             return new DataResponse<>(results, new Date().getTime());
         }
@@ -74,10 +74,9 @@ public class BuildServiceImpl implements BuildService {
         Collector collector = collectorRepository.findOne(item.getCollectorId());
 
         Iterable<Build> result;
-        if(request.getMax() == null) {
+        if (request.getMax() == null) {
             result = buildRepository.findAll(builder.getValue());
-        }
-        else {
+        } else {
             PageRequest pageRequest = new PageRequest(0, request.getMax(), Sort.Direction.DESC, "timestamp");
             result = buildRepository.findAll(builder.getValue(), pageRequest).getContent();
         }
@@ -143,11 +142,11 @@ public class BuildServiceImpl implements BuildService {
         return collectorService.createCollectorItemByNiceNameAndJobName(tempCi, request.getJobName());
     }
 
-        private Build createBuild(CollectorItem collectorItem, BuildDataCreateRequest request) {
+    private Build createBuild(CollectorItem collectorItem, BuildDataCreateRequest request) {
         Build build = buildRepository.findByCollectorItemIdAndNumber(collectorItem.getId(),
                 request.getNumber());
         if (build == null) {
-             build = new Build();
+            build = new Build();
         }
         build.setNumber(request.getNumber());
         build.setBuildUrl(request.getBuildUrl());
@@ -159,6 +158,11 @@ public class BuildServiceImpl implements BuildService {
         build.setCollectorItemId(collectorItem.getId());
         build.setSourceChangeSet(request.getSourceChangeSet());
         build.setTimestamp(System.currentTimeMillis());
+        Set<RepoBranch> rbs = new HashSet<>();
+        rbs.addAll(build.getCodeRepos());
+        rbs.addAll(request.getCodeRepos());
+        build.getCodeRepos().clear();
+        build.getCodeRepos().addAll(rbs);
         return buildRepository.save(build); // Save = Update (if ID present) or Insert (if ID not there)
     }
 }
