@@ -51,7 +51,6 @@ public class DefaultBambooClient implements BambooClient {
 
     private static final String JOBS_URL_SUFFIX = "rest/api/latest/plan?expand=plans&max-result=2000";
     private static final String JOBS_RESULT_SUFFIX= "rest/api/latest/result/";
-
     private static final String BUILD_DETAILS_URL_SUFFIX = "?expand=results.result.artifacts&expand=changes.change.files";
 
     @Autowired
@@ -59,7 +58,7 @@ public class DefaultBambooClient implements BambooClient {
         this.rest = restOperationsSupplier.get();
         this.settings = settings;
     }
-
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     @Override
     public Map<BambooJob, Set<Build>> getInstanceJobs(String instanceUrl) {
         Map<BambooJob, Set<Build>> result = new LinkedHashMap<>();
@@ -71,25 +70,29 @@ public class DefaultBambooClient implements BambooClient {
             JSONParser parser = new JSONParser();
 
             try {
-                JSONObject object = (JSONObject) parser.parse(returnJSON);
+                 JSONObject object = (JSONObject) parser.parse(returnJSON);
 
                 for (Object job : getJsonArray((JSONObject)object.get("plans"), "plan")) {
                     JSONObject jsonJob = (JSONObject) job;
 
-                    final String jobName = getString(jsonJob, "key");
+                    final String planName = getString(jsonJob, "key");
                     JSONObject link=(JSONObject)jsonJob.get("link");
-                    final String jobURL = getString(link, "href");
+                    final String planURL = getString(link, "href");
 
-                    LOG.debug("Job:" + jobName);
-                    LOG.debug("jobURL: " + jobURL);
+                    LOG.info("Plan:" + planName);
+                    LOG.info("PlanURL: " + planURL);
+
+                    // In terms of Bamboo this is the plan not job
                     BambooJob bambooJob = new BambooJob();
                     bambooJob.setInstanceUrl(instanceUrl);
-                    bambooJob.setJobName(jobName);
-                    bambooJob.setJobUrl(jobURL);
+                    bambooJob.setJobName(planName);
+                    bambooJob.setJobUrl(planURL);
+
+                    // Finding out the results of the top-level plan 
 
                     String resultUrl = joinURL(instanceUrl,JOBS_RESULT_SUFFIX);
-                    resultUrl = joinURL(resultUrl,jobName);
-//                    LOG.info("Job:" + jobName);
+                    resultUrl = joinURL(resultUrl,planName);
+//                    LOG.info("Job:" + planName);
 //                    LOG.info("Result URL:"+ resultUrl);
                     responseEntity = makeRestCall(resultUrl);
                     returnJSON = responseEntity.getBody();
@@ -99,12 +102,12 @@ public class DefaultBambooClient implements BambooClient {
                     Set<Build> builds = new LinkedHashSet<>();
                     for (Object build : getJsonArray((JSONObject)jsonJob.get("results"), "result")) {
                         JSONObject jsonBuild = (JSONObject) build;
-//                        LOG.info("Entered each build for job : "+ jobName);
+//                        LOG.info("Entered each build for job : "+ planName);
                         // A basic Build object. This will be fleshed out later if this is a new Build.
                         String dockerLocalHostIP = settings.getDockerLocalHostIP();
                         String buildNumber = jsonBuild.get("buildNumber").toString();
                         if (!"0".equals(buildNumber)) {
-//                            LOG.info("BuildNO " + buildNumber + " for jobName: " + jobName);
+//                            LOG.info("BuildNO " + buildNumber + " for planName: " + planName);
                             Build bambooBuild = new Build();
                             bambooBuild.setNumber(buildNumber);
                             String buildURL = joinURL(resultUrl,buildNumber); //getString(jsonBuild, "url");
@@ -123,6 +126,57 @@ public class DefaultBambooClient implements BambooClient {
                     }
                     // add the builds to the job
                     result.put(bambooJob, builds);
+
+                    //But we might have many branches and subplans in them so we have to find them out as well
+                    String branchesUrl= joinURL(planURL,"/branch");
+                    responseEntity = makeRestCall(branchesUrl);
+                    returnJSON = responseEntity.getBody();
+                    JSONObject jsonBranches = (JSONObject) parser.parse(returnJSON);
+
+                    for (Object branch : getJsonArray((JSONObject)jsonBranches.get("branches"), "branch")) {
+                        JSONObject branchObject=(JSONObject) branch;
+                        String subPlan=branchObject.get("key").toString();
+                        // Figure out nested jobs under the branches
+
+                        resultUrl = joinURL(instanceUrl,JOBS_RESULT_SUFFIX);
+                        resultUrl = joinURL(resultUrl,subPlan);
+                        LOG.info("sub Plan:" + subPlan);
+                        LOG.info("sub plan-Result URL:"+ resultUrl);
+                        responseEntity = makeRestCall(resultUrl);
+                        returnJSON = responseEntity.getBody();
+    //                    LOG.info("Result :"+ returnJSON);
+                        jsonJob = (JSONObject) parser.parse(returnJSON);
+
+                        for (Object build : getJsonArray((JSONObject)jsonJob.get("results"), "result")) {
+                            JSONObject jsonBuild = (JSONObject) build;
+                           LOG.info("Entered each build for nested plan : "+ subPlan);
+                            // A basic Build object. This will be fleshed out later if this is a new Build.
+                            String dockerLocalHostIP = settings.getDockerLocalHostIP();
+                            String buildNumber = jsonBuild.get("buildNumber").toString();
+                            if (!"0".equals(buildNumber)) {
+    //                            LOG.info("BuildNO " + buildNumber + " for planName: " + planName);
+                                Build bambooBuild = new Build();
+                                bambooBuild.setNumber(buildNumber);
+                                String buildURL = joinURL(resultUrl,buildNumber); //getString(jsonBuild, "url");
+    //                            LOG.info(buildURL);
+                                //Modify localhost if Docker Natting is being done
+                                if (!dockerLocalHostIP.isEmpty()) {
+                                    buildURL = buildURL.replace("localhost", dockerLocalHostIP);
+                                    LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
+                                } else {
+                                    LOG.debug(" Adding Build: " + buildURL);
+                                }
+
+                                bambooBuild.setBuildUrl(buildURL);
+                                builds.add(bambooBuild);
+                            }
+                        }
+                        // add the builds to the job
+                        result.put(bambooJob, builds);
+
+                        // Ended with nested branches
+                    }
+
                 }
             } catch (ParseException e) {
                 LOG.error("Parsing jobs on instance: " + instanceUrl, e);
