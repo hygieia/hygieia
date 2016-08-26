@@ -8,7 +8,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-jenkins-build-collector.properties
+	PROP_FILE=hygieia-bamboo-build-collector.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then
@@ -68,23 +68,23 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-jenkins.cron=${JENKINS_CRON:-0 0/5 * * * *}
+bamboo.cron=${JENKINS_CRON:-0 0/5 * * * *}
 
 #Jenkins server (required) - Can provide multiple
-jenkins.servers[0]=${JENKINS_MASTER:-http://jenkins.company.com}
+bamboo.servers[0]=${JENKINS_MASTER:-http://jenkins.company.com}
 
 #Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
-jenkins.username=${JENKINS_USERNAME}
-jenkins.apiKey=${JENKINS_API_KEY}
+bamboo.username=${JENKINS_USERNAME}
+bamboo.apiKey=${JENKINS_API_KEY}
 
 #Determines if build console log is collected - defaults to false
-jenkins.saveLog=${JENKINS_SAVE_LOG:-true}
+bamboo.saveLog=${JENKINS_SAVE_LOG:-false}
 
 #map the entry localhost so URLS in jenkins resolve properly
 # Docker NATs the real host localhost to 10.0.2.2 when running in docker
 # as localhost is stored in the JSON payload from jenkins we need
 # this hack to fix the addresses
-jenkins.dockerLocalHostIP=${DOCKER_LOCALHOST}
+bamboo.dockerLocalHostIP=${DOCKER_LOCALHOST}
 
 EOF
 
@@ -94,7 +94,7 @@ then
 	cat >> $PROP_FILE <<EOF
 #If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
 #jenkins.servers[1]=${JENKINS_OP_CENTER:-http://username:token@jenkins.company.com}
-jenkins.servers[1]=${JENKINS_OP_CENTER}
+bamboo.servers[1]=${JENKINS_OP_CENTER}
 EOF
 
 fi
