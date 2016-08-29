@@ -184,7 +184,7 @@
 
       for (var i = 0; i < data.result.length; i++) {
         if (data.result[i].sSprintID === undefined) {
-          sprintID = "[No Sprint Available]"
+          sprintID = "[No Sprint Available]";
           sprintName = "[No Sprint Available]";
         } else {
           sprintID = data.result[i].sSprintID;
@@ -237,20 +237,6 @@
         daysTilEnd = null;
         iteration = null;
 
-        /*
-         * Checks iterations array for existing elements
-         */
-        function isInArray(timebox, iterations) {
-          var dupe = false;
-
-          iterations.forEach(function(timebox) {
-            if (timebox.id === sprintID) {
-              dupe = true;
-            }
-          });
-
-          return dupe;
-        }
       }
 
       // Check if iteration switching is needed
@@ -277,7 +263,7 @@
 
       for (var i = 0; i < data.result.length; i++) {
         if (data.result[i].sSprintID === undefined) {
-          sprintID = "[No Sprint Available]"
+          sprintID = "[No Sprint Available]";
           sprintName = "[No Sprint Available]";
         } else {
           sprintID = data.result[i].sSprintID;
@@ -329,21 +315,6 @@
         sprintName = null;
         daysTilEnd = null;
         iteration = null;
-
-        /*
-         * Checks iterations array for existing elements
-         */
-        function isInArray(timebox, iterations) {
-          var dupe = false;
-
-          iterations.forEach(function(timebox) {
-            if (timebox.id === sprintID) {
-              dupe = true;
-            }
-          });
-
-          return dupe;
-        }
       }
 
       // Check if iteration switching is needed
@@ -351,6 +322,21 @@
         ctrl.showStatus.kanban = false;
         ctrl.intervalOff --;
       }
+    }
+
+    /*
+     * Checks iterations array for existing elements
+     */
+    function isInArray(timebox, iterations) {
+      var dupe = false;
+
+      iterations.forEach(function(timebox) {
+        if (timebox.id === sprintID) {
+          dupe = true;
+        }
+      });
+
+      return dupe;
     }
 
     /**
@@ -401,7 +387,7 @@
           animateAgileView(false);
         }
       }, 7000);
-    }
+    };
 
     /**
      * Stops the current agile iteration cycler promise
@@ -472,6 +458,6 @@
         ctrl.pausePlaySymbol = ">";
         ctrl.stopTimeout();
       }
-    };
+    }
   }
 })();
