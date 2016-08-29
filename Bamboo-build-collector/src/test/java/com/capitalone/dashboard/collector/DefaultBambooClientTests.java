@@ -57,47 +57,47 @@ public class DefaultBambooClientTests {
 
     @Test
     public void joinURLsTest() throws Exception {
-        String u = DefaultBambooClient.joinURL("http://jenkins.com",
+        String u = DefaultBambooClient.joinURL("http://bamboo.com",
                 "/api/json?tree=jobs[name,url,builds[number,url]]");
-        assertEquals("http://jenkins.com/api/json?tree=jobs[name,url,builds[number,url]]", u);
+        assertEquals("http://bamboo.com/api/json?tree=jobs[name,url,builds[number,url]]", u);
 
-        String u4 = DefaultBambooClient.joinURL("http://jenkins.com/", "test",
+        String u4 = DefaultBambooClient.joinURL("http://bamboo.com/", "test",
                 "/api/json?tree=jobs[name,url,builds[number,url]]");
-        assertEquals("http://jenkins.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u4);
+        assertEquals("http://bamboo.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u4);
 
-        String u2 = DefaultBambooClient.joinURL("http://jenkins.com/", "/test/",
+        String u2 = DefaultBambooClient.joinURL("http://bamboo.com/", "/test/",
                 "/api/json?tree=jobs[name,url,builds[number,url]]");
-        assertEquals("http://jenkins.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u2);
+        assertEquals("http://bamboo.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u2);
 
-        String u3 = DefaultBambooClient.joinURL("http://jenkins.com", "///test",
+        String u3 = DefaultBambooClient.joinURL("http://bamboo.com", "///test",
                 "/api/json?tree=jobs[name,url,builds[number,url]]");
-        assertEquals("http://jenkins.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u3);
+        assertEquals("http://bamboo.com/test/api/json?tree=jobs[name,url,builds[number,url]]", u3);
     }
 
     @Test
     public void rebuildURLTest() throws Exception {
 
-        String u1 = DefaultBambooClient.rebuildJobUrl("http://jenkins.com/job/job1", "https://123456:234567@jenkins.com");
-        assertEquals("https://123456:234567@jenkins.com/job/job1", u1);
+        String u1 = DefaultBambooClient.rebuildJobUrl("http://bamboo.com/job/job1", "https://123456:234567@bamboo.com");
+        assertEquals("https://123456:234567@bamboo.com/job/job1", u1);
 
-        String u2 = DefaultBambooClient.rebuildJobUrl("https://jenkins.com/job/job1", "https://123456:234567@jenkins.com");
-        assertEquals("https://123456:234567@jenkins.com/job/job1", u2);
+        String u2 = DefaultBambooClient.rebuildJobUrl("https://bamboo.com/job/job1", "https://123456:234567@bamboo.com");
+        assertEquals("https://123456:234567@bamboo.com/job/job1", u2);
 
-        String u3 = DefaultBambooClient.rebuildJobUrl("http://jenkins.com/job/job1", "http://123456:234567@jenkins.com");
-        assertEquals("http://123456:234567@jenkins.com/job/job1", u3);
+        String u3 = DefaultBambooClient.rebuildJobUrl("http://bamboo.com/job/job1", "http://123456:234567@bamboo.com");
+        assertEquals("http://123456:234567@bamboo.com/job/job1", u3);
 
-        String u4 = DefaultBambooClient.rebuildJobUrl("http://jenkins.com/job/job1", "http://123456:234567@jenkins.com");
-        assertEquals("http://123456:234567@jenkins.com/job/job1", u4);
+        String u4 = DefaultBambooClient.rebuildJobUrl("http://bamboo.com/job/job1", "http://123456:234567@bamboo.com");
+        assertEquals("http://123456:234567@bamboo.com/job/job1", u4);
 
-        String orig = "http://jenkins.com/job/job1%20with%20space";
-        String u5 = DefaultBambooClient.rebuildJobUrl(orig, "http://jenkins.com");
+        String orig = "http://bamboo.com/job/job1%20with%20space";
+        String u5 = DefaultBambooClient.rebuildJobUrl(orig, "http://bamboo.com");
         assertEquals(orig, u5);
     }
 
     @Test
     public void verifyBasicAuth() throws Exception {
         @SuppressWarnings("unused")
-		URL u = new URL(new URL("http://jenkins.com"), "/api/json?tree=jobs[name,url," +
+        URL u = new URL(new URL("http://bamboo.com"), "/api/json?tree=jobs[name,url," +
                 "builds[number,url]]");
 
         HttpHeaders headers = defaultBambooClient.createHeaders("Aladdin:open sesame");
@@ -110,14 +110,14 @@ public class DefaultBambooClientTests {
         //TODO: This change to clear a JAVA Warning should be correct but test fails, need to investigate
         //HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultBambooClient.createHeaders("user:pass"));
         @SuppressWarnings({ "rawtypes", "unchecked" })
-		HttpEntity headers = new HttpEntity(defaultBambooClient.createHeaders("user:pass"));
+        HttpEntity headers = new HttpEntity(defaultBambooClient.createHeaders("user:pass"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class)))
                 .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
         settings.setApiKey("doesnt");
         settings.setUsername("matter");
-        defaultBambooClient.makeRestCall("http://user:pass@jenkins.com");
+        defaultBambooClient.makeRestCall("http://user:pass@bamboo.com");
         verify(rest).exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class));
     }
@@ -127,14 +127,14 @@ public class DefaultBambooClientTests {
         //TODO: This change to clear a JAVA Warnings should be correct but test fails, need to investigate
         //HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultBambooClient.createHeaders("does:matter"));
         @SuppressWarnings({ "unchecked", "rawtypes" })
-		HttpEntity headers = new HttpEntity(defaultBambooClient.createHeaders("does:matter"));
+        HttpEntity headers = new HttpEntity(defaultBambooClient.createHeaders("does:matter"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class)))
                 .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
         settings.setApiKey("matter");
         settings.setUsername("does");
-        defaultBambooClient.makeRestCall("http://jenkins.com");
+        defaultBambooClient.makeRestCall("http://bamboo.com");
         verify(rest).exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
                 eq(headers), eq(String.class));
     }
@@ -142,7 +142,7 @@ public class DefaultBambooClientTests {
     @Test
     public void verifyGetLogUrl() throws Exception {
         //TODO: This change should be correct but test fails, need to investigate
-    	//HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultBambooClient.createHeaders("does:matter"));
+        //HttpEntity<HttpHeaders> headers = new HttpEntity<HttpHeaders>(defaultBambooClient.createHeaders("does:matter"));
         @SuppressWarnings({ "unchecked", "rawtypes" })
         HttpEntity headers = new HttpEntity(defaultBambooClient.createHeaders("does:matter"));
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET),
@@ -151,8 +151,8 @@ public class DefaultBambooClientTests {
 
         settings.setApiKey("matter");
         settings.setUsername("does");
-        defaultBambooClient.getLog("http://jenkins.com");
-        verify(rest).exchange(eq(URI.create("http://jenkins.com/consoleText")), eq(HttpMethod.GET),
+        defaultBambooClient.getLog("http://bamboo.com");
+        verify(rest).exchange(eq(URI.create("http://bamboo.com/consoleText")), eq(HttpMethod.GET),
                 eq(headers), eq(String.class));
     }
 
