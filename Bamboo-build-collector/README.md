@@ -41,10 +41,10 @@ for information about sourcing this properties file.
     bamboo.cron=0 0/5 * * * *
 
     #Jenkins server (required) - Can provide multiple
-    bamboo.servers[0]=http://jenkins.company.com
+    bamboo.servers[0]=http://bamboo.company.com
     
     #If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
-    bamboo.servers[1]=http://username:token@jenkins.company.com
+    bamboo.servers[1]=http://username:token@bamboo.company.com
     
     #Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
     bamboo.username=
