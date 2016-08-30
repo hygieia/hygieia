@@ -227,12 +227,14 @@ public class DefaultJiraClient implements JiraClient {
 		return featureSettings.getPageSize();
 	}
 	
+	@SuppressWarnings({"PMD.NPathComplexity"})
 	@Override
 	public Map<String, String> getStatusMapping() {
 		Map<String, String> statusMap = new HashMap<>();
 		
 		try {			
-			URL url = new URL(featureSettings.getJiraBaseUrl() + featureSettings.getJiraQueryEndpoint() + "status/");
+			URL url = new URL(featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/")? "" : "/") 
+					+ featureSettings.getJiraQueryEndpoint() + (featureSettings.getJiraQueryEndpoint().endsWith("/")? "" : "/") + "status/");
 			URLConnection connection = null;
 			
 			if (featureSettings.getJiraProxyUrl() != null && !featureSettings.getJiraProxyUrl().isEmpty() && (featureSettings.getJiraProxyPort() != null)) {
