@@ -135,7 +135,7 @@ gulp.task('serve', ['build'], function() {
     });
 
     gulp.watch(jsFiles).on('change', function() {
-        runSequence('js', browserSync.reload);
+        runSequence(['js','html'], browserSync.reload);
     });
 
     // watch the less files in addition to the themes
