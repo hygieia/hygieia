@@ -329,6 +329,7 @@
      */
     function isInArray(timebox, iterations) {
       var dupe = false;
+      var sprintID = timebox;
 
       iterations.forEach(function(timebox) {
         if (timebox.id === sprintID) {
