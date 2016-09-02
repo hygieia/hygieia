@@ -1,0 +1,32 @@
+{
+  "jobs": [
+    {
+      "name": "job1",
+      "url": "http://server/job/job1/",
+      "builds": [
+        {
+          "number": 2,
+          "url": "http://server/job/job1/2/"
+        },
+        {
+          "number": 1,
+          "url": "http://server/job/job1/1/"
+        }
+      ]
+    },
+    {
+      "name": "job2",
+      "url": "http://server/job/job2/",
+      "builds": [
+        {
+          "number": 2,
+          "url": "http://server/job/job2/2/"
+        },
+        {
+          "number": 1,
+          "url": "http://server/job/job2/1/"
+        }
+      ]
+    }
+  ]
+}
