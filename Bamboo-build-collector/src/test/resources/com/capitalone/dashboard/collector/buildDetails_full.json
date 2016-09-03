@@ -1,0 +1,205 @@
+{
+  "expand": "changes,metadata,plan,master,vcsRevisions,artifacts,comments,labels,jiraIssues,stages",
+  "link": {
+    "href": "https://mybamboo.com/rest/api/latest/result/SOME-BUILD71-15",
+    "rel": "self"
+  },
+  "plan": {
+    "master": {
+      "shortName": "build-all-branches",
+      "shortKey": "BUILD",
+      "type": "chain",
+      "enabled": true,
+      "link": {
+        "href": "https://mybamboo.com/rest/api/latest/plan/SOME-BUILD",
+        "rel": "self"
+      },
+      "key": "SOME-BUILD",
+      "name": "Buyer Tool Application API - build-all-branches",
+      "planKey": {
+        "key": "SOME-BUILD"
+      }
+    },
+    "shortName": "release-2.3.0",
+    "shortKey": "BUILD71",
+    "type": "chain_branch",
+    "enabled": true,
+    "link": {
+      "href": "https://mybamboo.com/rest/api/latest/plan/SOME-BUILD71",
+      "rel": "self"
+    },
+    "key": "SOME-BUILD71",
+    "name": "Buyer Tool Application API - build-all-branches - release-2.3.0",
+    "planKey": {
+      "key": "SOME-BUILD71"
+    }
+  },
+  "master": {
+    "shortName": "build-all-branches",
+    "shortKey": "BUILD",
+    "type": "chain",
+    "enabled": true,
+    "link": {
+      "href": "https://mybamboo.com/rest/api/latest/plan/SOME-BUILD",
+      "rel": "self"
+    },
+    "key": "SOME-BUILD",
+    "name": "Buyer Tool Application API - build-all-branches",
+    "planKey": {
+      "key": "SOME-BUILD"
+    }
+  },
+  "planName": "release-2.3.0",
+  "projectName": "Buyer Tool Application API",
+  "buildResultKey": "SOME-BUILD71-15",
+  "lifeCycleState": "Finished",
+  "id": 77367947,
+  "buildStartedTime": "2016-08-25T17:05:10.543+07:00",
+  "prettyBuildStartedTime": "Thu, 25 Aug, 05:05 PM",
+  "buildCompletedTime": "2016-08-25T17:07:33.736+07:00",
+  "buildCompletedDate": "2016-08-25T17:07:33.736+07:00",
+  "prettyBuildCompletedTime": "Thu, 25 Aug, 05:07 PM",
+  "buildDurationInSeconds": 143,
+  "buildDuration": 143193,
+  "buildDurationDescription": "2 minutes",
+  "buildRelativeTime": "2 hours ago",
+  "vcsRevisionKey": "4b499a1b50f9407a68e26382e4ea6c1b904388cd",
+  "vcsRevisions": {
+    "size": 1,
+    "start-index": 0,
+    "max-result": 1
+  },
+  "buildTestSummary": "445 passed",
+  "successfulTestCount": 445,
+  "failedTestCount": 0,
+  "quarantinedTestCount": 0,
+  "skippedTestCount": 0,
+  "continuable": false,
+  "onceOff": false,
+  "restartable": false,
+  "notRunYet": false,
+  "finished": true,
+  "successful": true,
+  "buildReason": "Changes by <a href=\"https://mybamboo.com/users/viewUserSummary.action?currentUserName=faluda\">faluda</a> and <a href=\"https://mybamboo.com/users/viewUserSummary.action?currentUserName=faluda\">blah</a>",
+  "reasonSummary": "Changes by <a href=\"https://mybamboo.com/users/viewUserSummary.action?currentUserName=faluda\">faluda</a> and <a href=\"https://mybamboo.com/users/viewUserSummary.action?currentUserName=faluda\">blah</a>",
+  "artifacts": {
+    "size": 0,
+    "start-index": 0,
+    "max-result": 0
+  },
+  "comments": {
+    "size": 0,
+    "start-index": 0,
+    "max-result": 0
+  },
+  "labels": {
+    "size": 0,
+    "start-index": 0,
+    "max-result": 0
+  },
+  "jiraIssues": {
+    "size": 1,
+    "start-index": 0,
+    "max-result": 1
+  },
+  "stages": {
+    "size": 1,
+    "start-index": 0,
+    "max-result": 1
+  },
+  "changes": {
+    "size": 3,
+    "expand": "change",
+    "change": [
+      {
+        "expand": "files",
+        "author": "something",
+        "userName": "something",
+        "fullName": "something",
+        "comment": "add new value in sysparam.properties",
+        "changesetId": "dde5f6ce438ab6749a2873d75706bb27071576fa",
+        "commitUrl": "http://coderepo.com/projects/janina/repos/api/commits/dde5f6ce438ab6749a2873d75706bb27071576fa",
+        "date": "2016-08-25T16:34:36.000+07:00",
+        "files": {
+          "size": 1,
+          "start-index": 0,
+          "max-result": 1,
+          "file": [
+            {
+              "name": "api-rest-web/src/main/resources/sysparam.properties",
+              "revision": "dde5f6ce438ab6749a2873d75706bb27071576fa"
+            }
+          ]
+        }
+      },
+      {
+        "expand": "files",
+        "author": "Something",
+        "userName": "Something",
+        "fullName": "Something",
+        "comment": "fix image path",
+        "changesetId": "c3dd4c0d232b8b475da24815280d8bf09cdc449f",
+        "commitUrl": "http://coderepo.com/projects/janina/repos/api/commits/c3dd4c0d232b8b475da24815280d8bf09cdc449f",
+        "date": "2016-08-25T13:17:04.000+07:00",
+        "files": {
+          "size": 4,
+          "start-index": 0,
+          "max-result": 4,
+          "file": [
+            {
+              "name": "api-model/src/main/java/com/fdn/x/someta/constant/SystemParameter.java",
+              "revision": "c3dd4c0d232b8b475da24815280d8bf09cdc449f"
+            },
+            {
+              "name": "api-rest-web/src/main/java/com/fdn/x/someta/rest/web/util/ConverterUtil.java",
+              "revision": "c3dd4c0d232b8b475da24815280d8bf09cdc449f"
+            },
+            {
+              "name": "api-service-impl/src/main/java/com/fdn/x/someta/service/impl/ProductLevel3ServiceImpl.java",
+              "revision": "c3dd4c0d232b8b475da24815280d8bf09cdc449f"
+            },
+            {
+              "name": "api-service-impl/src/test/java/com/fdn/x/someta/test/service/impl/ProductLevel3ServiceImplTest.java",
+              "revision": "c3dd4c0d232b8b475da24815280d8bf09cdc449f"
+            }
+          ]
+        }
+      },
+      {
+        "expand": "files",
+        "author": "Something",
+        "userName": "Something",
+        "fullName": "Something",
+        "comment": "Merge branch 'bugfix/BUYER-7671' into release/2.3.0\n",
+        "changesetId": "4b499a1b50f9407a68e26382e4ea6c1b904388cd",
+        "commitUrl": "http://coderepo.com/projects/janina/repos/api/commits/4b499a1b50f9407a68e26382e4ea6c1b904388cd",
+        "date": "2016-08-25T17:01:27.000+07:00",
+        "files": {
+          "size": 0,
+          "start-index": 0,
+          "max-result": 0,
+          "file": []
+        }
+      }
+    ],
+    "start-index": 0,
+    "max-result": 3
+  },
+  "metadata": {
+    "size": 0,
+    "start-index": 0,
+    "max-result": 0
+  },
+  "key": "SOME-BUILD71-15",
+  "planResultKey": {
+    "key": "SOME-BUILD71-15",
+    "entityKey": {
+      "key": "SOME-BUILD71"
+    },
+    "resultNumber": 15
+  },
+  "state": "Successful",
+  "buildState": "Successful",
+  "number": 15,
+  "buildNumber": 15
+}
