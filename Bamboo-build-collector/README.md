@@ -43,7 +43,7 @@ for information about sourcing this properties file.
     #Jenkins server (required) - Can provide multiple
     bamboo.servers[0]=http://bamboo.company.com
     
-    #If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
+    #If using username/token for api authentication see sample
     bamboo.servers[1]=http://username:token@bamboo.company.com
     
     #Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
