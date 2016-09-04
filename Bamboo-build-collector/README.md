@@ -1,5 +1,5 @@
-Build Collector
-=================
+Bamboo Build Collector (Hygieia Community Contribution)
+=======================================================
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
 
