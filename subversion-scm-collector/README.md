@@ -43,6 +43,7 @@ for information about sourcing this properties file.
     #Shared subversion username and password
     subversion.username=foo
     subversion.password=bar
+    subversion.host=my.subversion.com
 
     #Maximum number of days to go back in time when fetching commits
     subversion.commitThresholdDays=15
