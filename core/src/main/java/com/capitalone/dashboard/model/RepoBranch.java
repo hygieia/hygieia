@@ -15,6 +15,7 @@ public class RepoBranch {
         Unknown;
 
         public static com.capitalone.dashboard.model.RepoBranch.RepoType fromString(String value) {
+            if (value ==  null) return RepoType.Unknown;
             for (com.capitalone.dashboard.model.RepoBranch.RepoType repoType : values()) {
                 if (repoType.toString().equalsIgnoreCase(value)) {
                     return repoType;
@@ -64,8 +65,7 @@ public class RepoBranch {
 
         RepoBranch that = (RepoBranch) o;
 
-        if (!getRepoName().equals(that.getRepoName())) return false;
-        return branch.equals(that.branch);
+        return getRepoName().equals(that.getRepoName()) && branch.equals(that.branch);
     }
 
     @Override
