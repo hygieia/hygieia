@@ -53,7 +53,6 @@ public class DefaultHudsonClient implements HudsonClient {
     private final HudsonSettings settings;
 
     private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs[name,url,builds[number,url]]";
-    private static final String JOBS_URL_SUFFIX_WITH_REPO = "/api/json?tree=jobs[name,url,builds[number,url,actions[remoteUrls],changeSet[revisions[module]]]]";
 
     private static final String[] CHANGE_SET_ITEMS_TREE = new String[]{
             "user",
@@ -246,10 +245,8 @@ public class DefaultHudsonClient implements HudsonClient {
             revisionToUrl.put(json.get("revision").toString(), rb);
             build.getCodeRepos().add(rb);
         }
-
-        if (GIT_SCM.equalsIgnoreCase(scmType)) {
-            build.getCodeRepos().addAll(getGitRepoBranch(buildJson));
-        }
+        //For git SCM, the below is to get the repoBranch
+        build.getCodeRepos().addAll(getGitRepoBranch(buildJson));
 
         for (Object item : getJsonArray(changeSet, "items")) {
             JSONObject jsonItem = (JSONObject) item;
@@ -258,12 +255,12 @@ public class DefaultHudsonClient implements HudsonClient {
             scm.setScmCommitLog(getString(jsonItem, "msg"));
             scm.setScmCommitTimestamp(getCommitTimestamp(jsonItem));
             scm.setScmRevisionNumber(getRevision(jsonItem));
-            if (SVN_SCM.equalsIgnoreCase(scmType)) {
-                RepoBranch repoBranch = revisionToUrl.get(scm.getScmRevisionNumber());
-                if (repoBranch != null) {
-                    scm.setScmUrl(repoBranch.getUrl());
-                }
+            RepoBranch repoBranch = revisionToUrl.get(scm.getScmRevisionNumber());
+            if (repoBranch != null) {
+                scm.setScmUrl(repoBranch.getUrl());
+                scm.setScmBranch(repoBranch.getBranch());
             }
+
             scm.setNumberOfChanges(getJsonArray(jsonItem, "paths").size());
             build.getSourceChangeSet().add(scm);
         }
@@ -276,7 +273,7 @@ public class DefaultHudsonClient implements HudsonClient {
 
     private List<RepoBranch> getGitRepoBranch(JSONObject buildJson) {
         List<RepoBranch> list = new ArrayList<>();
-        JSONArray actions = (JSONArray) buildJson.get("actions");
+        JSONArray actions = getJsonArray(buildJson, "actions");
         for (Object action : actions) {
             JSONObject jsonAction = (JSONObject) action;
             if (jsonAction.size() > 0) {
