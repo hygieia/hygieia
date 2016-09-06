@@ -79,10 +79,6 @@ public class DefaultHudsonClient implements HudsonClient {
             "actions[lastBuiltRevision[SHA1,branch[SHA1,name]],remoteUrls]"
     };
 
-    private static final String SVN_SCM = "svn";
-    private static final String GIT_SCM = "git";
-
-
     private static final String BUILD_DETAILS_URL_SUFFIX = "/api/json?tree=" + StringUtils.join(BUILD_DETAILS_TREE, ",");
 
     @Autowired
