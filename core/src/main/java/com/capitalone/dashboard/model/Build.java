@@ -32,6 +32,7 @@ public class Build extends BaseModel {
     private BuildStatus buildStatus;
     private String startedBy;
     private String log;
+    private List<RepoBranch> codeRepos = new ArrayList<>();
     private List<SCM> sourceChangeSet = new ArrayList<>();
 
     public ObjectId getCollectorItemId() {
@@ -124,5 +125,9 @@ public class Build extends BaseModel {
 
     public void addSourceChangeSet(SCM scm) {
         getSourceChangeSet().add(scm);
+    }
+
+    public List<RepoBranch> getCodeRepos() {
+        return codeRepos;
     }
 }

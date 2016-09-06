@@ -36,12 +36,12 @@ public class DefaultSubversionClient implements SubversionClient {
     public List<Commit> getCommits(SubversionRepo repo, long startRevision) {
         List<Commit> commits = new ArrayList<>();
 
-        for (Object entry : getHistory(repo.getUrl(), startRevision)) {
+        for (Object entry : getHistory(repo.getRepoUrl(), startRevision)) {
             SVNLogEntry logEntry = (SVNLogEntry) entry;
 
             Commit commit = new Commit();
             commit.setTimestamp(System.currentTimeMillis());
-            commit.setScmUrl(repo.getUrl());
+            commit.setScmUrl(repo.getRepoUrl());
             commit.setScmRevisionNumber(String.valueOf(logEntry.getRevision()));
             commit.setScmAuthor(logEntry.getAuthor());
             commit.setScmCommitLog(logEntry.getMessage());

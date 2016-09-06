@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.HudsonJob;
+import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
@@ -31,9 +32,11 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,8 +74,14 @@ public class DefaultHudsonClient implements HudsonClient {
             "result",
             "culprits[fullName]",
             "changeSet[items[" + StringUtils.join(CHANGE_SET_ITEMS_TREE, ",") + "]",
-            "revisions[module,revision]]"
+            "kind",
+            "revisions[module,revision]]",
+            "actions[lastBuiltRevision[SHA1,branch[SHA1,name]],remoteUrls]"
     };
+
+    private static final String SVN_SCM = "svn";
+    private static final String GIT_SCM = "git";
+
 
     private static final String BUILD_DETAILS_URL_SUFFIX = "/api/json?tree=" + StringUtils.join(BUILD_DETAILS_TREE, ",");
 
@@ -81,6 +90,7 @@ public class DefaultHudsonClient implements HudsonClient {
         this.rest = restOperationsSupplier.get();
         this.settings = settings;
     }
+
 
     @Override
     public Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl) {
@@ -182,19 +192,18 @@ public class DefaultHudsonClient implements HudsonClient {
                 LOG.error("Parsing build: " + buildUrl, e);
             }
         } catch (RestClientException rce) {
-            LOG.error("Client exception loading build details: " + rce.getMessage() + ". URL =" + buildUrl );
+            LOG.error("Client exception loading build details: " + rce.getMessage() + ". URL =" + buildUrl);
         } catch (MalformedURLException mfe) {
-            LOG.error("Malformed url for loading build details" + mfe.getMessage() + ". URL =" + buildUrl );
+            LOG.error("Malformed url for loading build details" + mfe.getMessage() + ". URL =" + buildUrl);
         } catch (URISyntaxException use) {
-            LOG.error("Uri syntax exception for loading build details"+ use.getMessage() + ". URL =" + buildUrl );
+            LOG.error("Uri syntax exception for loading build details" + use.getMessage() + ". URL =" + buildUrl);
         } catch (RuntimeException re) {
-            LOG.error("Unknown error in getting build details. URL="+ buildUrl, re);
+            LOG.error("Unknown error in getting build details. URL=" + buildUrl, re);
         } catch (UnsupportedEncodingException unse) {
             LOG.error("Unsupported Encoding Exception in getting build details. URL=" + buildUrl, unse);
         }
         return null;
     }
-
 
     //This method will rebuild the API endpoint because the buildUrl obtained via Jenkins API
     //does not save the auth user info and we need to add it back.
@@ -222,15 +231,22 @@ public class DefaultHudsonClient implements HudsonClient {
      */
     private void addChangeSets(Build build, JSONObject buildJson) {
         JSONObject changeSet = (JSONObject) buildJson.get("changeSet");
-
-        Map<String, String> revisionToUrl = new HashMap<>();
+        String scmType = getString(changeSet, "kind");
+        Map<String, RepoBranch> revisionToUrl = new HashMap<>();
 
         // Build a map of revision to module (scm url). This is not always
         // provided by the Hudson API, but we can use it if available.
+        // For git, this map is empty.
         for (Object revision : getJsonArray(changeSet, "revisions")) {
             JSONObject json = (JSONObject) revision;
-            revisionToUrl.put(json.get("revision").toString(), getString(json, "module"));
+            RepoBranch rb = new RepoBranch();
+            rb.setUrl(getString(json, "module"));
+            rb.setType(RepoBranch.RepoType.fromString(scmType));
+            revisionToUrl.put(json.get("revision").toString(), rb);
+            build.getCodeRepos().add(rb);
         }
+        //For git SCM, the below is to get the repoBranch
+        build.getCodeRepos().addAll(getGitRepoBranch(buildJson));
 
         for (Object item : getJsonArray(changeSet, "items")) {
             JSONObject jsonItem = (JSONObject) item;
@@ -239,11 +255,41 @@ public class DefaultHudsonClient implements HudsonClient {
             scm.setScmCommitLog(getString(jsonItem, "msg"));
             scm.setScmCommitTimestamp(getCommitTimestamp(jsonItem));
             scm.setScmRevisionNumber(getRevision(jsonItem));
-            scm.setScmUrl(revisionToUrl.get(scm.getScmRevisionNumber()));
-            scm.setNumberOfChanges(getJsonArray(jsonItem, "paths").size());
+            RepoBranch repoBranch = revisionToUrl.get(scm.getScmRevisionNumber());
+            if (repoBranch != null) {
+                scm.setScmUrl(repoBranch.getUrl());
+                scm.setScmBranch(repoBranch.getBranch());
+            }
 
+            scm.setNumberOfChanges(getJsonArray(jsonItem, "paths").size());
             build.getSourceChangeSet().add(scm);
         }
+    }
+
+    /**
+     * Gathers only repo urls from now. There is no way to figure out which branches were built - as of yet.
+     * The JSON from Jenkins for multi repo and multi branch is quite buggy
+     */
+
+    private List<RepoBranch> getGitRepoBranch(JSONObject buildJson) {
+        List<RepoBranch> list = new ArrayList<>();
+        JSONArray actions = getJsonArray(buildJson, "actions");
+        for (Object action : actions) {
+            JSONObject jsonAction = (JSONObject) action;
+            if (jsonAction.size() > 0) {
+                JSONArray remoteUrls = (JSONArray) ((JSONObject) action).get("remoteUrls");
+                for (Object urlObj : remoteUrls) {
+                    String sUrl = (String) urlObj;
+                    //remove .git from the urls
+                    if (sUrl.endsWith(".git")) {
+                        sUrl = sUrl.substring(0, sUrl.lastIndexOf(".git"));
+                    }
+                    RepoBranch grb = new RepoBranch(sUrl, "", RepoBranch.RepoType.GIT);
+                    list.add(grb);
+                }
+            }
+        }
+        return list;
     }
 
     ////// Helpers
