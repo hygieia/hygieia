@@ -77,13 +77,10 @@ public class SubversionCollectorTask extends CollectorTask<Collector> {
 
 	/**
 	 * Clean up unused deployment collector items
-	 *
-	 * @param collector
-	 *            the {@link UDeployCollector}
 	 */
     @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed PMD, fixme
 	private void clean(Collector collector) {
-		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+		Set<ObjectId> uniqueIDs = new HashSet<>();
 		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
 			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
 				List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
@@ -143,7 +140,7 @@ public class SubversionCollectorTask extends CollectorTask<Collector> {
 
     private long startRevision(SubversionRepo repo) {
         Date revisionDate = new DateTime().minusDays(subversionSettings.getCommitThresholdDays()).toDate();
-        long revisionLimit = subversionClient.getRevisionClosestTo(repo.getUrl(), revisionDate);
+        long revisionLimit = subversionClient.getRevisionClosestTo(repo.getRepoUrl(), revisionDate);
         return revisionLimit > repo.getLatestRevision() ? revisionLimit : repo.getLatestRevision();
     }
 

@@ -1,7 +1,21 @@
 package com.capitalone.dashboard.event;
 
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Pipeline;
+import com.capitalone.dashboard.model.PipelineStageType;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.repository.PipelineRepository;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,8 +31,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommitEventListenerTest {
@@ -68,6 +82,51 @@ public class CommitEventListenerTest {
     }
 
     @Test
+    public void mergeCommitSaved_addedToPipeline() {
+        // Arrange
+        Commit commit = createMergeCommit("myCommit");
+        Dashboard dashboard = createDashboard(HAS_BUILD_COLLECTOR);
+        Pipeline pipeline = new Pipeline();
+
+        setupFindDashboards(commit, dashboard);
+        setupGetOrCreatePipeline(dashboard, pipeline);
+
+        // Act
+        eventListener.onAfterSave(new AfterSaveEvent<>(commit, null, ""));
+
+        // Assert
+        boolean commitFound = !pipeline.getStages().isEmpty() &&  pipeline.getStages()
+                .get(PipelineStageType.Commit.name())
+                .getCommits()
+                .stream()
+                .anyMatch(pc -> pc.getScmRevisionNumber().equals(commit.getScmRevisionNumber()));
+        assertThat(commitFound, is(false));
+        verify(pipelineRepository, never()).save(pipeline);
+    }
+
+    @Test
+    public void releaseCommitSaved_addedToPipeline() {
+        // Arrange
+        Commit commit = createMavenCommit("myCommit");
+        Dashboard dashboard = createDashboard(HAS_BUILD_COLLECTOR);
+        Pipeline pipeline = new Pipeline();
+
+        setupFindDashboards(commit, dashboard);
+        setupGetOrCreatePipeline(dashboard, pipeline);
+
+        // Act
+        eventListener.onAfterSave(new AfterSaveEvent<>(commit, null, ""));
+
+        // Assert
+        boolean commitFound = !pipeline.getStages().isEmpty() &&  pipeline.getStages()
+                .get(PipelineStageType.Commit.name())
+                .getCommits()
+                .stream()
+                .anyMatch(pc -> pc.getScmRevisionNumber().equals(commit.getScmRevisionNumber()));
+        assertThat(commitFound, is(false));
+        verify(pipelineRepository, never()).save(pipeline);
+    }
+    @Test
     public void commitSaved_noBuildCollector_notAddedToPipeline() {
         // Arrange
         Commit commit = createCommit("myCommit");
@@ -89,8 +148,26 @@ public class CommitEventListenerTest {
         Commit commit = new Commit();
         commit.setScmRevisionNumber(revisionNumber);
         commit.setCollectorItemId(ObjectId.get());
+        commit.setType(CommitType.New);
         return commit;
     }
+
+    private Commit createMergeCommit(String revisionNumber) {
+        Commit commit = new Commit();
+        commit.setScmRevisionNumber(revisionNumber);
+        commit.setCollectorItemId(ObjectId.get());
+        commit.setType(CommitType.Merge);
+        return commit;
+    }
+
+    private Commit createMavenCommit(String revisionNumber) {
+        Commit commit = new Commit();
+        commit.setScmRevisionNumber(revisionNumber);
+        commit.setCollectorItemId(ObjectId.get());
+        commit.setType(CommitType.NotBuilt);
+        return commit;
+    }
+
 
     private Dashboard createDashboard(boolean hasBuildCollector) {
         Component component = new Component();

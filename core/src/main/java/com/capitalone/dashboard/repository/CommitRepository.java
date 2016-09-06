@@ -23,6 +23,10 @@ public interface CommitRepository extends CrudRepository<Commit, ObjectId>, Quer
      */
     Commit findByCollectorItemIdAndScmRevisionNumber(ObjectId collectorItemId, String revisionNumber);
 
+    Commit findByScmUrlAndScmBranchAndScmRevisionNumber (String scmUrl, String scmBranch, String scmRevisionNumber);
+
+    List<Commit> findByScmRevisionNumber (String scmUrl);
+
     @Query(value="{ 'collectorItemId': ?0, 'scmCommitTimestamp': { $gt: ?1 }}")
     List<Commit> findByCollectorItemIdAndScmCommitTimestamp(ObjectId collectorItemid, Long scmCommitTimestampThreshold);
 
