@@ -96,35 +96,6 @@ feature.jiraEpicIdFieldName=customfield_10002
 #############################################################################
 feature.jiraStoryPointsFieldName=customfield_10003
 
-#############################################################################
-# Internal Status Mappings - THESE SHOULD BE FILLED OUT FOR EVERY CUSTOM STATUS VALUE
-# IN YOUR JIRA INSTANCE
-# 
-# Use the following API call to get all of your status mappings:  http://jira.your.instance.com/rest/api/2/status/
-#############################################################################
-feature.todoStatuses[0]=
-feature.doingStatuses[0]=
-feature.doneStatuses[0]=
-
-# Status mappings, E.g.:
-#
-# feature.todoStatuses[0]=Open
-# feature.todoStatuses[1]=Groom
-# feature.todoStatuses[2]=Selected for Development
-# feature.todoStatuses[3]=Backlog
-# feature.todoStatuses[4]=Grooming
-# feature.todoStatuses[5]=ToDo
-# feature.todoStatuses[6]=To Do
-# feature.todoStatuses[6]=Backlog1
-# feature.doingStatuses[0]=Validation
-# feature.doingStatuses[1]=Test
-# feature.doingStatuses[2]=In Process
-# feature.doingStatuses[3]=In Progress
-# feature.doingStatuses[4]=Awaiting Approval - 2
-# feature.doingStatuses[5]=Change Request - 2
-# feature.doneStatuses[0]=Awaiting Approval
-# feature.doneStatuses[1]=Done
-# feature.doneStatuses[2]=Resolved
 ```
 
 ## Implementation Details:
