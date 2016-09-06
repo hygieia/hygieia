@@ -1,5 +1,5 @@
-XLDeploy Collector
-=================
+XLDeploy Collector (Hygieia Community Contribution)
+===================================================
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies. Code created against XL Deploy 5.1.4.
 

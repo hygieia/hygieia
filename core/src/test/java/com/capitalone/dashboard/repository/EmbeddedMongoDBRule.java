@@ -6,12 +6,7 @@ import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.ArtifactStoreBuilder;
-import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
-import de.flapdoodle.embed.mongo.config.Net;
-import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
+import de.flapdoodle.embed.mongo.config.*;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.store.IProxyFactory;
@@ -20,12 +15,7 @@ import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Proxy;
-import java.net.URL;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
+import java.net.*;
 import java.util.StringTokenizer;
 
 /**
@@ -148,6 +138,8 @@ public class EmbeddedMongoDBRule extends ExternalResource {
 		System.setProperty("dbhost", conf.net().getServerAddress()
 				.getHostAddress());
 		System.setProperty("dbport", Integer.toString(conf.net().getPort()));
+		String dbhostport = conf.net().getServerAddress() + ":" + Integer.toString(conf.net().getPort());
+		System.setProperty("dbhostport", dbhostport);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
-BitbucketSourceCodeCollector
-=========================
+BitbucketSourceCodeCollector (Hygieia Community Contribution)
+=============================================================
 
 Collect source code details from Bitbucket based on URL and branch. Provides implementations for both Bitbucket Cloud (formerly known as Bitbucket) and Bitbucket Server (formerly known as Stash).
 

@@ -20,24 +20,30 @@ The following components are required to run Hygieia℠:
        <code>mongod --dbpath < path to the data directory> </code> <br/>
        for e.g <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongod --dbpath /dev/data/db </code>
       * Run the following commands as shown below at mongodb command prompt
-        <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongo </code>  
-        ```Shell
+        <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongo </code>
+          
+ ```
+       
          $ mongo  
          MongoDB shell version: 3.0.4
          connecting to: test  
-
-         > use dashboard
-         switched to db dashboard
+         
+         > use dashboarddb
+         switched to db dashboarddb
          > db.createUser(
                   {
-                    user: "db",
-                    pwd: "dbpass",
+                    user: "dashboarduser",
+                    pwd: "dbpassword",
                     roles: [
                        {role: "readWrite", db: "dashboard"}
                             ]
                     })
+          
+         
+                    Output similar to below should be seen in your mongo shell
+                    
                 Successfully added user: {
-                  "user" : "dbuser",
+                  "user" : "dashboarduser",
                   "roles" : [
                   {
                     "role" : "readWrite",
@@ -45,11 +51,18 @@ The following components are required to run Hygieia℠:
                   }
                   ]
                 }  
-                ```
+                
 
 
 We recommend that you download  MongoDB clients(RoboMongo etc) to connect to your local
 running Database and make sure that database: dashboard is created and you are successfully able to connect to it.
+
+##### To execute the above via script in an automate fashion, we have provide a script titled mongosrc.js to execute the script just execute the command below
+
+```
+  mongo < mongosrc.js
+
+```
 
 #### API Layer
 Please click on the link below to learn about how to build and run the API layer
