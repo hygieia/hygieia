@@ -1,0 +1,4 @@
+<list>
+	<ci ref="Applications/Helloworld" type="udm.Application"/>
+	<ci ref="Applications/Goodbyeworld" type="udm.ExtendedApplication"/>
+</list>

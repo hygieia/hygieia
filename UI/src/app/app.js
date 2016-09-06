@@ -44,7 +44,8 @@ var localStorageSupported = (function () {
         'angular-chartist',
         'ngCookies',
         'validation.match',
-        'as.sortable'
+        'as.sortable',
+        'ui.select'
     ])
     .config(['$httpProvider',
         // intercepting the http provider allows us to use relative routes

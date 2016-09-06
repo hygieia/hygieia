@@ -26,6 +26,7 @@ public interface ProjectDataClient {
 	/**
 	 * Explicitly updates queries for the source system, and initiates the
 	 * update to MongoDB from those calls.
+	 * @return the number of records processed
 	 */
-	void updateProjectInformation();
+	int updateProjectInformation();
 }

@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.client.project;
 
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
+import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
@@ -11,7 +12,6 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -23,26 +23,48 @@ import java.util.List;
  * @author kfk884
  * 
  */
-public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements ProjectDataClient {
+public class ProjectDataClientImpl implements ProjectDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectDataClientImpl.class);
-
+	private static final ClientUtil TOOLS = ClientUtil.getInstance();
+	
 	private final FeatureSettings featureSettings;
 	private final ScopeRepository projectRepo;
-	private final static ClientUtil TOOLS = new ClientUtil();
+	private final FeatureCollectorRepository featureCollectorRepository;
+	private final JiraClient jiraClient;
 
 	/**
 	 * Extends the constructor from the super class.
 	 *
 	 */
-	public ProjectDataClientImpl(FeatureSettings featureSettings,
-			ScopeRepository projectRepository, FeatureCollectorRepository featureCollectorRepository) {
-		super(featureSettings, projectRepository, featureCollectorRepository);
-		LOGGER.debug("Constructing data collection for the feature widget, project-level data...");
+	public ProjectDataClientImpl(FeatureSettings featureSettings, ScopeRepository projectRepository, 
+			FeatureCollectorRepository featureCollectorRepository, JiraClient jiraClient) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Constructing data collection for the feature widget, project-level data...");
+		}
 
 		this.featureSettings = featureSettings;
 		this.projectRepo = projectRepository;
+		this.featureCollectorRepository = featureCollectorRepository;
+		this.jiraClient = jiraClient;
 	}
 
+	/**
+	 * Explicitly updates queries for the source system, and initiates the
+	 * update to MongoDB from those calls.
+	 */
+	public int updateProjectInformation() {
+		int count = 0;
+		
+		List<BasicProject> projects = jiraClient.getProjects();
+		
+		if (projects != null && !projects.isEmpty()) {
+			updateMongoInfo(projects);
+			count += projects.size();
+		}
+		
+		return count;
+	}
+	
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
@@ -50,105 +72,102 @@ public class ProjectDataClientImpl extends ProjectDataClientSetupImpl implements
 	 * @param currentPagedJiraRs
 	 *            A list response of Jira issues from the source system
 	 */
-	@Override
-	protected void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
-		LOGGER.debug("Size of paged Jira response: ", currentPagedJiraRs.size());
-		if ((currentPagedJiraRs != null) && !(currentPagedJiraRs.isEmpty())) {
-			Iterator<BasicProject> globalResponseItr = currentPagedJiraRs.iterator();
-			while (globalResponseItr.hasNext()) {
-				try {
-					/*
-					 * Initialize DOMs
-					 */
-					Scope scope = new Scope();
-					BasicProject jiraScope = globalResponseItr.next();
-
-					/*
-					 * Removing any existing entities where they exist in the
-					 * local DB store...
-					 */
-					@SuppressWarnings("unused")
-					boolean deleted = this.removeExistingEntity(TOOLS.sanitizeResponse(jiraScope
-							.getId()));
-
-					/*
-					 * Project Data
-					 */
-					// collectorId
-					scope.setCollectorId(featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA)
-							.getId());
-
-					// ID;
-					scope.setpId(TOOLS.sanitizeResponse(jiraScope.getId()));
-
-					// name;
-					scope.setName(TOOLS.sanitizeResponse(jiraScope.getName()));
-
-					// beginDate - does not exist for jira
-					scope.setBeginDate("");
-
-					// endDate - does not exist for jira
-					scope.setEndDate("");
-
-					// changeDate - does not exist for jira
-					scope.setChangeDate("");
-
-					// assetState - does not exist for jira
-					scope.setAssetState("Active");
-
-					// isDeleted - does not exist for jira
-					scope.setIsDeleted("False");
-
-					// path - does not exist for Jira
-					scope.setProjectPath(TOOLS.sanitizeResponse(jiraScope.getName()));
-
-					// Saving back to MongoDB
-					projectRepo.save(scope);
-
-				} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
-					LOGGER.error(
-							"Unexpected error caused while mapping data from source system to local data store:\n"
-									+ e.getMessage() + " : " + e.getCause(), e);
+	private void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
+		}
+		
+		if (currentPagedJiraRs != null) {
+			ObjectId jiraCollectorId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
+			for (BasicProject jiraScope : currentPagedJiraRs) {
+				String scopeId = TOOLS.sanitizeResponse(jiraScope.getId());
+				
+				/*
+				 * Initialize DOMs
+				 */
+				Scope scope = findOneScope(scopeId);
+				
+				if (scope == null) {
+					scope = new Scope();
 				}
+
+				/*
+				 * Project Data
+				 */
+				// collectorId
+				scope.setCollectorId(jiraCollectorId);
+
+				// ID;
+				scope.setpId(TOOLS.sanitizeResponse(scopeId));
+
+				// name;
+				scope.setName(TOOLS.sanitizeResponse(jiraScope.getName()));
+
+				// beginDate - does not exist for jira
+				scope.setBeginDate("");
+
+				// endDate - does not exist for jira
+				scope.setEndDate("");
+
+				// changeDate - does not exist for jira
+				scope.setChangeDate("");
+
+				// assetState - does not exist for jira
+				scope.setAssetState("Active");
+
+				// isDeleted - does not exist for jira
+				scope.setIsDeleted("False");
+
+				// path - does not exist for Jira
+				scope.setProjectPath(TOOLS.sanitizeResponse(jiraScope.getName()));
+
+				// Saving back to MongoDB
+				projectRepo.save(scope);
+				
 			}
 		}
 	}
-
+	
 	/**
-	 * Explicitly updates queries for the source system, and initiates the
-	 * update to MongoDB from those calls.
-	 */
-	public void updateProjectInformation() {
-		super.objClass = Scope.class;
-		super.returnDate = this.featureSettings.getDeltaStartDate();
-		if (super.getMaxChangeDate() != null) {
-			super.returnDate = super.getMaxChangeDate();
-		}
-		super.returnDate = getChangeDateMinutePrior(super.returnDate);
-		updateObjectInformation();
-	}
-
-	/**
-	 * Validates current entry and removes new entry if an older item exists in
-	 * the repo
+	 * Retrieves the maximum change date for a given query.
 	 * 
-	 * @param localId repository item ID (not the precise mongoID)
+	 * @return A list object of the maximum change date
 	 */
-	protected Boolean removeExistingEntity(String localId) {
-		boolean deleted = false;
-
+	public String getMaxChangeDate() {
+		String data = null;
 		try {
-			ObjectId tempEntId = projectRepo.getScopeIdById(localId).get(0).getId();
-			if (localId.equalsIgnoreCase(projectRepo.getScopeIdById(localId).get(0).getpId())) {
-				projectRepo.delete(tempEntId);
-				deleted = true;
+			List<Scope> response = projectRepo
+					.findTopByCollectorIdAndChangeDateGreaterThanOrderByChangeDateDesc(
+							featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId(),
+							featureSettings.getDeltaStartDate());
+			if ((response != null) && !response.isEmpty()) {
+				data = response.get(0).getChangeDate();
 			}
-		} catch (IndexOutOfBoundsException ioobe) {
-			LOGGER.debug("Nothing matched the redundancy checking from the database", ioobe);
 		} catch (Exception e) {
-			LOGGER.error("There was a problem validating the redundancy of the data model", e);
+			LOGGER.error("There was a problem retrieving or parsing data from the local repository while retrieving a max change date\nReturning null");
 		}
 
-		return deleted;
+		return data;
+	}
+	
+	/**
+	 * Find the current collector item for the jira team id
+	 * 
+	 * @param teamId	the team id
+	 * @return			the collector item if it exists or null
+	 */
+	private Scope findOneScope(String scopeId) {
+		List<Scope> scopes = projectRepo.getScopeIdById(scopeId);
+		
+		// Not sure of the state of the data
+		if (scopes.size() > 1) {
+			LOGGER.warn("More than one collector item found for scopeId " + scopeId);
+		}
+		
+		if (!scopes.isEmpty()) {
+			return scopes.get(0);
+		}
+		
+		return null;
 	}
 }

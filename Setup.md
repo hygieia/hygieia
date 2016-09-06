@@ -2,6 +2,8 @@
 --
 
 ### Build Hygieia℠
+Need Java 1.8.
+
 ```bash
 mvn clean install package
 ```

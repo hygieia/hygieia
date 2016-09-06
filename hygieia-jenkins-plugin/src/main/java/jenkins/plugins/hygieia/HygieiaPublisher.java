@@ -24,6 +24,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.lang.String;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -169,19 +170,55 @@ public class HygieiaPublisher extends Notifier {
     public static class HygieiaSonar {
         private final boolean publishBuildStart;
 
+        //Sonar 5.2+ changes: get query interval and max attempts from config
+        private final String ceQueryIntervalInSeconds;
+        private final String ceQueryMaxAttempts;
+
+        public static final int DEFAULT_QUERY_INTERVAL = 10;
+        public static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
+
         @DataBoundConstructor
-        public HygieiaSonar(boolean publishBuildStart) {
+        public HygieiaSonar(boolean publishBuildStart, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts ) {
             this.publishBuildStart = publishBuildStart;
+            this.ceQueryIntervalInSeconds = ceQueryIntervalInSeconds;
+            this.ceQueryMaxAttempts = ceQueryMaxAttempts;
         }
 
         public boolean isPublishBuildStart() {
             return publishBuildStart;
         }
 
+        /** Sonar 5.2+ changes: get query interval from config
+         * If value is empty or null - return 10 (recommended value from SonarQube)
+         * @return max number of attempts to query Sonar CE API (10 if blank)
+         */
+        public String getCeQueryIntervalInSeconds() {
+            if (!StringUtils.isEmpty(ceQueryIntervalInSeconds)) {
+                return ceQueryIntervalInSeconds;
+            }
+            else {
+                return String.valueOf(DEFAULT_QUERY_INTERVAL);
+            }
+        }
+
+        /** Sonar 5.2+ changes: get query max attempts from config
+         * If value is empty or null - return 30 (recommended value from SonarQube)
+         * @return max number of attempts to query Sonar CE API (30 if blank)
+         */
+        public String getCeQueryMaxAttempts() {
+            if (!StringUtils.isEmpty(ceQueryIntervalInSeconds)) {
+                return ceQueryMaxAttempts;
+            }
+            else {
+                return String.valueOf(DEFAULT_QUERY_MAX_ATTEMPTS);
+            }
+        }
+
     }
 
     public static class HygieiaTest {
         private final boolean publishTestStart;
+        private final boolean publishEvenBuildFails;
         private final String testFileNamePattern;
         private final String testResultsDirectory;
         private final String testType;
@@ -189,8 +226,9 @@ public class HygieiaPublisher extends Notifier {
         private final String testEnvironmentName;
 
         @DataBoundConstructor
-        public HygieiaTest(boolean publishTestStart, String testFileNamePattern, String testResultsDirectory, String testType, String testApplicationName, String testEnvironmentName) {
+        public HygieiaTest(boolean publishTestStart, boolean publishEvenBuildFails, String testFileNamePattern, String testResultsDirectory, String testType, String testApplicationName, String testEnvironmentName) {
             this.publishTestStart = publishTestStart;
+            this.publishEvenBuildFails = publishEvenBuildFails;
             this.testFileNamePattern = testFileNamePattern;
             this.testResultsDirectory = testResultsDirectory;
             this.testType = testType;
@@ -200,6 +238,10 @@ public class HygieiaPublisher extends Notifier {
 
         public boolean isPublishTestStart() {
             return publishTestStart;
+        }
+
+        public boolean isPublishEvenBuildFails() {
+            return publishEvenBuildFails;
         }
 
         public String getTestFileNamePattern() {
@@ -279,7 +321,7 @@ public class HygieiaPublisher extends Notifier {
         private String testApplicationNameSelected;
         private String testEnvSelected;
 
-        Map<String, Set<String>> appEnv = new HashMap<String, Set<String>>();
+        private Map<String, Set<String>> appEnv = new HashMap<String, Set<String>>();
 
         public DescriptorImpl() {
             load();
@@ -505,7 +547,7 @@ public class HygieiaPublisher extends Notifier {
             return super.configure(sr, formData);
         }
 
-        HygieiaService getHygieiaService(final String hygieiaAPIUrl, final String hygieiaToken, final String hygieiaJenkinsName, final boolean useProxy) {
+        public HygieiaService getHygieiaService(final String hygieiaAPIUrl, final String hygieiaToken, final String hygieiaJenkinsName, final boolean useProxy) {
             return new DefaultHygieiaService(hygieiaAPIUrl, hygieiaToken, hygieiaJenkinsName, useProxy);
         }
 

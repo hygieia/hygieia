@@ -20,6 +20,13 @@
         ctrl.buildDurationThreshold = 3;
         ctrl.buildConsecutiveFailureThreshold = 5;
 
+        ctrl.oridata = null;
+        ctrl.loading = true;
+        ctrl.paginationRange = 100;
+
+
+
+
         // set values from config
         if (widgetConfig) {
             if (widgetConfig.options.buildDurationThreshold) {
@@ -33,6 +40,7 @@
 
         // public methods
         ctrl.submit = submitForm;
+        ctrl.fetch = paginationFetch;
 
         // request all the build collector items
         collectorData.itemsByType('build').then(processResponse);
@@ -51,7 +59,8 @@
                     var obj = data[x];
                     var item = {
                         value: obj.id,
-                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description : obj.collector.name + '-' + obj.description)
+                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description : obj.collector.name + '-' + obj.description),
+                        group: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName : obj.collector.name)
                     };
                     builds.push(item);
 
@@ -71,9 +80,11 @@
             worker.getBuildJobs(data, buildCollectorId, getBuildsCallback);
         }
 
+
         function getBuildsCallback(data) {
             //$scope.$apply(function () {
                 ctrl.buildJobs = data.builds;
+            ctrl.oridata = data.builds;
                 ctrl.toolsDropdownPlaceholder = 'Select a Build Job';
                 ctrl.toolsDropdownDisabled = false;
 
@@ -83,7 +94,53 @@
             //});
         }
 
-        function submitForm(valid) {
+
+        function paginationFetch($select, $event, x) {
+            if (!$event) {
+                console.log("called first time")
+            } else {
+                $event.stopPropagation();
+                $event.preventDefault();
+                console.log("called subsequent time");
+                updatePaginationVariables(ctrl.oridata, x);
+            }
+
+        }
+
+
+        function updatePaginationVariables(m, startIndex) {
+
+            console.log("Before:" + m.length);
+            var y = [];
+
+            if (m.length <= 200) {
+                y = m;
+                ctrl.loading = false;
+            }
+            else {
+                for (var p = 0; p < ctrl.paginationRange; p++) {
+                    var value = {
+                        value: m[p].value,
+                        name: m[p].name
+                    }
+
+                    y.push(value);
+                    m.shift();
+                }
+            }
+
+            //console.log("Y is :" + JSON.stringify(y));
+
+            $scope.$applyAsync(function () {
+                ctrl.buildJobs = y;
+            });
+
+            console.log("After:" + m.length);
+
+        }
+
+        function submitForm(valid, collector) {
+            console.log("Collector" + JSON.stringify(collector));
             if (valid) {
                 var form = document.buildConfigForm;
                 var postObj = {
@@ -94,8 +151,11 @@
                         consecutiveFailureThreshold: parseFloat(form.buildConsecutiveFailureThreshold.value)
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: form.collectorItemId.value
+                    collectorItemId: collector.value
                 };
+
+
+                console.log(modalData.dashboard.application.components[0].id);
 
                 // pass this new config to the modal closing so it's saved
                 $modalInstance.close(postObj);

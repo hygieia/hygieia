@@ -1,0 +1,94 @@
+<!--<widget-modal id="subnetUtilization" widget-modal-close="true">-->
+    <!--<div  style="height:1200px;width:800px;">-->
+        <!--<ul class="nav nav-tabs">-->
+            <!--<li class="active"><a data-toggle="tab" href="#ip-util-tab">IP Utilization</a></li>-->
+            <!--<li><a data-toggle="tab" href="#ip-oversub-tab">IP Oversubscription</a></li>-->
+        <!--</ul>-->
+
+        <!--<div class="tab-content">-->
+
+            <!--<div id="ip-util-tab" class="tab-pane fade in active">-->
+                <!--<div class="widget">-->
+                    <!--<div class="widget-heading">-->
+                        <!--Subnet IP Utilization ({{subnetUtilization.vpc.id}})-->
+                    <!--</div>-->
+                    <!--<div ng-repeat="availZone in subnetUtilization.subnets | orderBy: 'name' " class="col-xs-3">-->
+                        <!--<div class="widget-heading">{{availZone.name}}</div>-->
+                        <!--<div ng-repeat="item in availZone.subnets" ng-init="utilization = subnetUtilization.utilizationPercent(item)">-->
+                            <!--<div style="font-size: 1.2rem; text-align: center;">{{ item.subnetId }}</div>-->
+                            <!--<div guage-container>-->
+                                <!--<div class="ct-wrapper clearfix"-->
+                                     <!--ng-class="{'clickable': true}"-->
+                                     <!--ng-click="subnetUtilization.detail(item)"-->
+                                     <!--popover-html-unsafe="{{item.subnetId}}"-->
+                                     <!--popover-trigger="focus"-->
+                                     <!--popover-placement="right"-->
+                                     <!--tabindex="0">-->
+                                    <!--<chartist-->
+                                            <!--class="ct-chart ct-square db-chart-primary ct-chart-Ok"-->
+                                            <!--chartist-data="utilization"-->
+                                            <!--chartist-chart-options="subnetUtilization.pieOptions"-->
+                                            <!--chartist-chart-type="Pie"-->
+                                            <!--chartist-events="utillizationEvents"/>-->
+                                    <!--<div class="guage-number">-->
+                                        <!--<span fit-text>{{subnetUtilization.percentUsed(item) | number:0 }}<small class="percent">%</small></span>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="clearfix"></div>-->
+                            <!--<div class="ca-value text-center">{{item.usedIPCount}} out of {{item.usedIPCount + item.availableIPCount}}</div>-->
+                            <!--<div class="padding_bottom">&nbsp;</div>-->
+                         <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <!--<div id="ip-oversub-tab">-->
+                <!--<div class="widget">-->
+                    <!--<div class="widget-heading">-->
+                        <!--Subnet IP Oversubscription blahblah-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+        <!--</div>-->
+    <!--</div>-->
+<!--</widget-modal>-->
+
+<widget-modal id="subnetUtilization" widget-modal-close="true">
+    <div  style="height:1200px;width:800px;">
+        <div class="widget">
+            <div class="widget-heading">
+                Subnet IP Utilization ({{subnetUtilization.vpc.id}})
+            </div>
+            <div ng-repeat="availZone in subnetUtilization.subnets | orderBy: 'name' " class="col-xs-3">
+                <div class="widget-heading">{{availZone.name}}</div>
+                <div ng-repeat="item in availZone.subnets" ng-init="utilization = subnetUtilization.utilizationPercent(item)">
+                    <div style="font-size: 1.2rem; text-align: center;">{{ item.subnetId }}</div>
+                    <div guage-container>
+                        <div class="ct-wrapper clearfix"
+                             ng-class="{'clickable': true}"
+                             ng-click="subnetUtilization.detail(item)"
+                             popover-html-unsafe="{{item.subnetId}}"
+                             popover-trigger="focus"
+                             popover-placement="right"
+                             tabindex="0">
+                            <chartist
+                                    class="ct-chart ct-square db-chart-primary ct-chart-Ok"
+                                    chartist-data="utilization"
+                                    chartist-chart-options="subnetUtilization.pieOptions"
+                                    chartist-chart-type="Pie"
+                                    chartist-events="utillizationEvents"/>
+                            <div class="guage-number">
+                                <span fit-text>{{subnetUtilization.percentUsed(item) | number:0 }}<small class="percent">%</small></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="ca-value text-center">{{item.usedIPCount}} out of {{item.usedIPCount + item.availableIPCount}}</div>
+                    <div class="padding_bottom">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</widget-modal>

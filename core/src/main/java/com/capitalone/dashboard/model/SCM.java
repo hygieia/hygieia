@@ -12,6 +12,7 @@ public class SCM {
     protected String scmAuthor;
     protected long scmCommitTimestamp;
     protected long numberOfChanges;
+    protected CommitType type;
 
     public SCM(){
 
@@ -25,6 +26,18 @@ public class SCM {
         this.scmAuthor = scmAuthor;
         this.scmCommitTimestamp = scmCommitTimestamp;
         this.numberOfChanges = numberOfChanges;
+        this.type = CommitType.New;
+    }
+
+    public SCM(String scmUrl, String scmBranch, String scmRevisionNumber, String scmCommitLog, String scmAuthor, long scmCommitTimestamp, long numberOfChanges, CommitType type) {
+        this.scmUrl = scmUrl;
+        this.scmBranch = scmBranch;
+        this.scmRevisionNumber = scmRevisionNumber;
+        this.scmCommitLog = scmCommitLog;
+        this.scmAuthor = scmAuthor;
+        this.scmCommitTimestamp = scmCommitTimestamp;
+        this.numberOfChanges = numberOfChanges;
+        this.type = type;
     }
 
     public String getScmUrl() {
@@ -81,5 +94,13 @@ public class SCM {
 
     public void setNumberOfChanges(long numberOfChanges) {
         this.numberOfChanges = numberOfChanges;
+    }
+
+    public CommitType getType() {
+        return type;
+    }
+
+    public void setType(CommitType type) {
+        this.type = type;
     }
 }

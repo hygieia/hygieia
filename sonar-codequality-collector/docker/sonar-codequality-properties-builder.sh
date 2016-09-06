@@ -7,10 +7,10 @@ if [ "$TEST_SCRIPT" != "" ]
 then
         #for testing locally
         PROP_FILE=application.properties
-else 
+else
 	PROP_FILE=hygieia-sonar-codequality-collector.properties
 fi
-  
+
 if [ "$MONGO_PORT" != "" ]; then
 	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
 	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
@@ -58,6 +58,12 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 sonar.cron=${SONAR_CRON:-0 0/5 * * * *}
 
 sonar.servers[0]=${SONAR_URL:-http://localhost:9000}
+
+#Sonar Authentication Username - default is blank
+sonar.username=${SONAR_USERNAME:-sonarusername}
+
+#Sonar Authentication Password - default is blank
+sonar.password=${SONAR_PASSWORD:-sonarpassword}
 
 #Sonar Metrics
 sonar.metrics=${SONAR_METRICS:-ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,sqale_index,test_success_density,test_failures,test_errors,tests}

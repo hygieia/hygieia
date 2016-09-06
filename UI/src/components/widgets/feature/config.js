@@ -17,6 +17,7 @@
 		ctrl.toolsDropdownDisabled = true;
 		ctrl.typeDropdownPlaceholder = 'Loading Feature Data Sources ...';
 		ctrl.typeDropdownDisabled = true;
+		ctrl.estimateMetricDropdownDisabled = false;
 		ctrl.submitted = false;
 		ctrl.hideScopeOwnerDropDown = true;
 		ctrl.evaluateTypeSelection = evaluateTypeSelection;
@@ -32,6 +33,9 @@
 		ctrl.submit = submitForm;
 		ctrl.featureTypeOption = "";
 		ctrl.featureTypeOptions = [];
+		ctrl.estimateMetricType = "";
+		ctrl.estimateMetrics = [{type: "hours", value: "Hours"}, {type: "storypoints", value: "Story Points" }];
+
 
 		// Request collectors
 		collectorData.collectorsByType('scopeowner').then(
@@ -40,13 +44,15 @@
 		// Request collector items
 		collectorData.itemsByType('scopeowner').then(
 				processCollectorItemsResponse);
+		
+		initEstimateMetricType(widgetConfig);
 
 		function processCollectorItemsResponse(data, currentCollectorItemId) {
 			var scopeOwners = [];
 			var featureCollector = modalData.dashboard.application.components[0].collectorItems.ScopeOwner;
 			var featureCollectorId = featureCollector ? featureCollector[0].id
 					: null;
-			
+
 			if (ctrl.collectorId !== "") {
 				scopeOwners = getScopeOwners(data, featureCollectorId);
 				evaluateTypeSelection();
@@ -54,10 +60,10 @@
 				getPermanentScopeOwners(data, featureCollectorId);
 				evaluateTypeSelection();
 			}
-			
+
 			ctrl.toolsDropdownPlaceholder = 'Select a scope owner';
 			ctrl.toolsDropdownDisabled = false;
-			
+
 			function getPermanentScopeOwners(data, currentCollectorItemId) {
 				for ( var x = 0; x < data.length; x++) {
 					var obj = data[x];
@@ -74,7 +80,7 @@
 					}
 				}
 			}
-			
+
 			function getScopeOwners(data, currentCollectorItemId) {
 				for ( var x = 0; x < data.length; x++) {
 					var obj = data[x];
@@ -93,7 +99,7 @@
 
 				ctrl.scopeOwners = scopeOwners;
 				ctrl.permanentScopeOwners = scopeOwners;
-				
+
 				if ((ctrl.selectedIndex === undefined) || (ctrl.selectedIndex === null)) {
 					ctrl.collectorItemId = '';
 				} else {
@@ -139,6 +145,14 @@
 				}
 			}
 		}
+		
+		function initEstimateMetricType(widgetConfig) {
+			if (widgetConfig.options.estimateMetricType != undefined && widgetConfig.options.estimateMetricType != null) {
+				ctrl.estimateMetricType = widgetConfig.options.estimateMetricType;
+			} else {
+				ctrl.estimateMetricType = 'storypoints';
+			}
+		}
 
 		function evaluateTypeSelection() {
 			var tempTypeOptions = [];
@@ -146,34 +160,46 @@
 				var sampleScopeOwner = ctrl.permanentScopeOwners[x].teamName
 						.substr(0, ctrl.permanentScopeOwners[x].teamName
 								.indexOf(' '));
-				if (sampleScopeOwner === ctrl.collectorId.value) {
+				if (ctrl.collectorId != null && sampleScopeOwner === ctrl.collectorId.value) {
 					// TODO: remove record from ctrl.scopeowner
 					tempTypeOptions.push(ctrl.permanentScopeOwners[x]);
 				}
 			}
 			ctrl.scopeOwners = tempTypeOptions;
 
-			if (ctrl.collectorId === "") {
+			if (ctrl.collectorId == null || ctrl.collectorId === "") {
 				ctrl.hideScopeOwnerDropDown = true;
+				ctrl.hideEstimateMetricDropDown = true;
 			} else {
+				if (ctrl.collectorId.value === 'Jira') {
+					ctrl.hideEstimateMetricDropDown = false;
+				} else {
+					ctrl.hideEstimateMetricDropDown = true;
+				}
 				ctrl.hideScopeOwnerDropDown = false;
 			}
 		}
 
-		function submitForm(valid, data) {
+		function submitForm(valid, collectorItemId, estimateMetricType) {
 			ctrl.submitted = true;
 			if (valid && ctrl.collectors.length) {
-				processCollectorItemResponse(data);
+				processCollectorItemResponse(collectorItemId, estimateMetricType);
 			}
 		}
 
-		function processCollectorItemResponse(response) {
+		function processCollectorItemResponse(collectorItemId, estimateMetricType) {
 			var postObj = {
 				name : 'feature',
 				options : {
 					id : widgetConfig.options.id,
 					teamName : ctrl.collectorItemId.teamName,
-					teamId : ctrl.collectorItemId.teamId
+					teamId : ctrl.collectorItemId.teamId,
+					showStatus : {
+				      kanban: true,
+				      scrum: false
+				    },
+					intervalOff : 2,
+					estimateMetricType : ctrl.estimateMetricType
 				},
 				componentId : modalData.dashboard.application.components[0].id,
 				collectorItemId : ctrl.collectorItemId.value

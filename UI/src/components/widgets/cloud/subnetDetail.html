@@ -1,0 +1,98 @@
+<widget-modal id="subnetDetail" widget-modal-close="true">
+    <div  style="height:1200px;width:400px;">
+        <div class="widget">
+            <!--<div class="widget-heading">-->
+                <!--Subnet Detail-->
+            <!--</div>-->
+            <div class="container" >
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="well override-panel-background-color">
+                            <div class="row">
+                                <div class="col-xs-4">Subnet ID</div>
+                                <div class="col-xs-1">:</div>
+                                <div class="col-xs-7">{{subnetDetail.subnet.subnetId}}</div>
+                            </div>
+                                <div class="row">
+                                <div class="col-xs-4">VPC ID</div>
+                                <div class="col-xs-1">:</div>
+                                <div class="col-xs-7">{{subnetDetail.subnet.virtualNetworkId}}</div>
+                            </div>
+                                <div class="row">
+                                <div class="col-xs-4">CIDR Block</div>
+                                <div class="col-xs-1">:</div>
+                                <div class="col-xs-7">{{subnetDetail.subnet.cidrBlock}}</div>
+                            </div>
+                                <div class="row">
+                                <div class="col-xs-4">Available Zone</div>
+                                <div class="col-xs-1">:</div>
+                                <div class="col-xs-7">{{subnetDetail.subnet.zone}}</div>
+                            </div>
+                                <div class="row">
+                                <div class="col-xs-4">Available IP Count</div>
+                                <div class="col-xs-1">:</div>
+                                <div class="col-xs-7">{{subnetDetail.subnet.availableIPCount}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4">Subscribed IP Count</div>
+                                <div class="col-xs-1">:</div>
+                                <div class="col-xs-7">{{subnetDetail.subnet.subscribedIPCount}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4">Used IP Count</div>
+                                <div class="col-xs-1">:</div>
+                                <div class="col-xs-7">{{subnetDetail.subnet.usedIPCount}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4">Total IP Count</div>
+                                <div class="col-xs-1">:</div>
+                                <div class="col-xs-7">{{subnetDetail.subnet.usedIPCount + subnetDetail.subnet.availableIPCount}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="well override-panel-background-color">
+                        <div class="row" style="border-bottom: 1px solid rgba(0,0,0,.35); margin-top: 5px;">
+                            IP USAGE BY TAG
+                        </div>
+                            <div class="row">
+                                <div class="col-xs-6" style="border-bottom: 1px solid rgba(0,0,0,.35);">ASV</div>
+                                <div class="col-xs-1"></div>
+                                <div class="col-xs-5" style="border-bottom: 1px solid rgba(0,0,0,.35);"># of IP Used</div>
+                            </div>
+                        <div ng-repeat="(tag, value) in subnetDetail.subnet.ipUsage">
+                            <div class="row">
+                                <div class="col-xs-6">{{tag}}</div>
+                                <div class="col-xs-1"></div>
+                                <div class="col-xs-5">{{value}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="well override-panel-background-color">
+                        <div class="row" style="border-bottom: 1px solid rgba(0,0,0,.35); margin-top: 5px;">
+                            IP OVERSUBSCRIPTION BY TAG
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6" style="border-bottom: 1px solid rgba(0,0,0,.35);">ASV</div>
+                            <div class="col-xs-1"></div>
+                            <div class="col-xs-5" style="border-bottom: 1px solid rgba(0,0,0,.35);"># oversub IPs</div>
+                        </div>
+                        <div ng-repeat="(tag, value) in subnetDetail.subnet.ipUsage">
+                            <div class="row">
+                                <div class="col-xs-6">{{tag}}</div>
+                                <div class="col-xs-1"></div>
+                                <div class="col-xs-5">{{value}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</widget-modal>
+
+ 

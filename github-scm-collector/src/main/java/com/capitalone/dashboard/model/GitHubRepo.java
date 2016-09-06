@@ -6,7 +6,7 @@ import java.util.Date;
  * CollectorItem extension to store the github repo url and branch.
  */
 public class GitHubRepo extends CollectorItem {
-    private static final String REPO_URL = "repoUrl"; // http://github.company.com/jack/somejavacode
+    private static final String REPO_URL = "url"; // http://github.company.com/jack/somejavacode
     private static final String BRANCH = "branch"; // master, development etc.
     private static final String USER_ID = "userID";
     private static final String PASSWORD = "password";

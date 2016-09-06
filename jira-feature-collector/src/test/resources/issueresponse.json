@@ -1,0 +1,223 @@
+{
+   "expand": "schema,names",
+   "startAt": 0,
+   "maxResults": 50,
+   "total": 1,
+   "issues":    [
+            {
+         "expand": "operations,versionedRepresentations,editmeta,changelog,transitions,renderedFields",
+         "id": "100",
+         "self": "https://my.jira.com/rest/api/2/issue/100",
+         "key": "KEY-1",
+         "fields":          {
+            "fixVersions": [],
+            "customfield_11200": null,
+            "resolution": null,
+            "customfield_10900": null,
+            "customfield_10901": null,
+            "customfield_10902": null,
+            "customfield_10507": null,
+            "customfield_10903": null,
+            "customfield_10904": null,
+            "customfield_10905": null,
+            "customfield_10906": null,
+            "customfield_10907": null,
+            "customfield_10908": null,
+            "customfield_10909": null,
+            "lastViewed": null,
+            "customfield_10100": null,
+            "priority":             {
+               "self": "https://my.jira.com/rest/api/2/priority/4",
+               "iconUrl": "https://my.jira.com/images/icons/priorities/minor.svg",
+               "name": "Minor",
+               "id": "4"
+            },
+            "labels": [],
+            "customfield_11700": null,
+            "customfield_11704": null,
+            "timeestimate": null,
+            "aggregatetimeoriginalestimate": null,
+            "versions": [],
+            "issuelinks": [],
+            "assignee":             {
+               "self": "https://my.jira.com/rest/api/2/user?username=bbob",
+               "name": "bbob",
+               "key": "bbob",
+               "emailAddress": "bbob@foobar.com",
+               "avatarUrls":                {
+                  "48x48": "https://my.jira.com/secure/useravatar?avatarId=10122",
+                  "24x24": "https://my.jira.com/secure/useravatar?size=small&avatarId=10122",
+                  "16x16": "https://my.jira.com/secure/useravatar?size=xsmall&avatarId=10122",
+                  "32x32": "https://my.jira.com/secure/useravatar?size=medium&avatarId=10122"
+               },
+               "displayName": "Bob, Billy",
+               "active": true,
+               "timeZone": "America/New_York"
+            },
+            "status":             {
+               "self": "https://my.jira.com/rest/api/2/status/10036",
+               "description": "",
+               "iconUrl": "https://my.jira.com/images/icons/subtask.gif",
+               "name": "Backlog",
+               "id": "10036",
+               "statusCategory":                {
+                  "self": "https://my.jira.com/rest/api/2/statuscategory/2",
+                  "id": 2,
+                  "key": "new",
+                  "colorName": "blue-gray",
+                  "name": "To Do"
+               }
+            },
+            "components": [],
+            "customfield_11301": null,
+            "customfield_11302": null,
+            "customfield_10600": null,
+            "customfield_10601": null,
+            "customfield_10602": null,
+            "customfield_10603": null,
+            "aggregatetimeestimate": null,
+            "customfield_10604": null,
+            "customfield_10605": null,
+            "customfield_10606": null,
+            "customfield_10608": null,
+            "creator":             {
+               "self": "https://my.jira.com/rest/api/2/user?username=bbob",
+               "name": "bbob",
+               "key": "bbob",
+               "emailAddress": "bbob@foobar.com",
+               "avatarUrls":                {
+                  "48x48": "https://my.jira.com/secure/useravatar?avatarId=10122",
+                  "24x24": "https://my.jira.com/secure/useravatar?size=small&avatarId=10122",
+                  "16x16": "https://my.jira.com/secure/useravatar?size=xsmall&avatarId=10122",
+                  "32x32": "https://my.jira.com/secure/useravatar?size=medium&avatarId=10122"
+               },
+               "displayName": "Bob, Billy",
+               "active": false,
+               "timeZone": "America/New_York"
+            },
+            "subtasks": [],
+            "reporter":             {
+               "self": "https://my.jira.com/rest/api/2/user?username=bbob",
+               "name": "bbob",
+               "key": "bbob",
+               "emailAddress": "bbob@foobar.com",
+               "avatarUrls":                {
+                  "48x48": "https://my.jira.com/secure/useravatar?avatarId=10122",
+                  "24x24": "https://my.jira.com/secure/useravatar?size=small&avatarId=10122",
+                  "16x16": "https://my.jira.com/secure/useravatar?size=xsmall&avatarId=10122",
+                  "32x32": "https://my.jira.com/secure/useravatar?size=medium&avatarId=10122"
+               },
+               "displayName": "Bob, Billy",
+               "active": false,
+               "timeZone": "America/New_York"
+            },
+            "customfield_12100": null,
+            "aggregateprogress":             {
+               "progress": 0,
+               "total": 0
+            },
+            "customfield_10200": null,
+            "customfield_11403": null,
+            "customfield_11402":             {
+               "self": "https://my.jira.com/rest/api/2/customFieldOption/11600",
+               "value": "4-Normal",
+               "id": "11600"
+            },
+            "customfield_11404": null,
+            "customfield_11800": null,
+            "customfield_11407": null,
+            "customfield_11406": null,
+            "customfield_11409": "[]",
+            "progress":             {
+               "progress": 0,
+               "total": 0
+            },
+            "votes":             {
+               "self": "https://my.jira.com/rest/api/2/issue/KEY-1/votes",
+               "votes": 0,
+               "hasVoted": false
+            },
+            "issuetype":             {
+               "self": "https://my.jira.com/rest/api/2/issuetype/6",
+               "id": "6",
+               "description": "Created by JIRA Software - do not edit or delete. Issue type for a user story.",
+               "iconUrl": "https://my.jira.com/secure/viewavatar?size=xsmall&avatarId=13001&avatarType=issuetype",
+               "name": "Story",
+               "subtask": false,
+               "avatarId": 13001
+            },
+            "timespent": null,
+            "project":             {
+               "self": "https://my.jira.com/rest/api/2/project/13700",
+               "id": "13700",
+               "key": "PROJ1",
+               "name": "Project 1",
+               "avatarUrls":                {
+                  "48x48": "https://my.jira.com/secure/projectavatar?pid=12415&avatarId=10011",
+                  "24x24": "https://my.jira.com/secure/projectavatar?size=small&pid=12415&avatarId=10011",
+                  "16x16": "https://my.jira.com/secure/projectavatar?size=xsmall&pid=12415&avatarId=10011",
+                  "32x32": "https://my.jira.com/secure/projectavatar?size=medium&pid=12415&avatarId=10011"
+               },
+               "projectCategory":                {
+                  "self": "https://my.jira.com/rest/api/2/projectCategory/10700",
+                  "id": "10700",
+                  "description": "A Description",
+                  "name": "A Name"
+               }
+            },
+            "customfield_11000": null,
+            "customfield_11001": null,
+            "customfield_11002": null,
+            "aggregatetimespent": null,
+            "customfield_11003": null,
+            "customfield_11004": null,
+            "customfield_11400": null,
+            "customfield_10702": "1|y0cmm1:",
+            "customfield_10703": null,
+            "customfield_10307": null,
+            "customfield_10704":             {
+               "self": "https://my.jira.com/rest/api/2/customFieldOption/10535",
+               "value": "None",
+               "id": "10535"
+            },
+            "resolutiondate": null,
+            "customfield_10705": null,
+            "workratio": -1,
+            "watches":             {
+               "self": "https://my.jira.com/rest/api/2/issue/KEY-1/watchers",
+               "watchCount": 2,
+               "isWatching": false
+            },
+            "created": "2016-02-05T10:21:08.000-0500",
+            "customfield_11502": null,
+            "customfield_11501": null,
+            "customfield_10810": null,
+            "customfield_10811": null,
+            "updated": "2016-04-05T10:50:22.000-0400",
+            "timeoriginalestimate": null,
+            "description": "This is a description",
+            "customfield_11101": null,
+            "customfield_11102": null,
+            "customfield_11500": null,
+            "customfield_10005": null,
+            "customfield_10402": null,
+            "customfield_10006": null,
+            "customfield_10800": null,
+            "customfield_10801": null,
+            "customfield_10802": null,
+            "customfield_10809": 0,
+            "summary": "This is a summary",
+            "customfield_10000": null,
+            "customfield_10001": null,
+            "customfield_10002": null,
+            "customfield_10003": null,
+            "customfield_10004": "9223372036854775807",
+            "customfield_11204": "Some text",
+            "customfield_11600": null,
+            "customfield_11206": null,
+            "environment": null,
+            "duedate": null
+         }
+     }
+   ]
+}

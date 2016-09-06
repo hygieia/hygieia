@@ -28,8 +28,8 @@ public class ActiveNotifier implements FineGrainedNotifier {
 
     private static final Logger logger = Logger.getLogger(HygieiaListener.class.getName());
 
-    HygieiaPublisher publisher;
-    BuildListener listener;
+    private HygieiaPublisher publisher;
+    private BuildListener listener;
 
     public ActiveNotifier(HygieiaPublisher publisher, BuildListener listener) {
         super();
@@ -100,7 +100,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
                 }
             }
 
-            boolean publishTest = (publisher.getHygieiaTest() != null) && successBuild;
+            boolean publishTest = (publisher.getHygieiaTest() != null) && (successBuild || publisher.getHygieiaTest().isPublishEvenBuildFails());
 
             if (publishTest) {
                 CucumberTestBuilder builder = new CucumberTestBuilder(r, publisher, listener, buildResponse.getResponseValue());
@@ -133,11 +133,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
                     } else {
                         listener.getLogger().println("Hygieia: Published Sonar Result. Nothing to publish");
                     }
-                } catch (IOException e) {
-                    listener.getLogger().println("Hygieia: Publishing error" + '\n' + e.getMessage());
-                } catch (URISyntaxException e) {
-                    listener.getLogger().println("Hygieia: Publishing error" + '\n' + e.getMessage());
-                } catch (ParseException e) {
+                } catch (IOException | URISyntaxException | ParseException e) {
                     listener.getLogger().println("Hygieia: Publishing error" + '\n' + e.getMessage());
                 }
 
@@ -169,9 +165,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
         EnvVars env = null;
         try {
             env = r.getEnvironment(listener);
-        } catch (IOException e) {
-            logger.warning("Error getting environment variables");
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             logger.warning("Error getting environment variables");
         }
         if (env != null) {
@@ -195,7 +189,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
         return request;
     }
 
-    List<SCM> getCommitList(AbstractBuild r) {
+    private List<SCM> getCommitList(AbstractBuild r) {
         CommitBuilder commitBuilder = new CommitBuilder(r);
         return commitBuilder.getCommits();
     }

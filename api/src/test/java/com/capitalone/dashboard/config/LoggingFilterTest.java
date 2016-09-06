@@ -34,7 +34,7 @@ public class LoggingFilterTest {
     private Logger logger;
     @InjectMocks
     @Autowired
-    LoggingFilter loggingFilter;
+    private LoggingFilter loggingFilter;
 
     @Mock
     private ApiSettings settings;
