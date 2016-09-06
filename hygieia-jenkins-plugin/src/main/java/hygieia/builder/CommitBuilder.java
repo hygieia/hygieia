@@ -12,14 +12,16 @@ public class CommitBuilder {
     private static final Logger logger = Logger.getLogger(CommitBuilder.class.getName());
     private List<SCM> commitList = new LinkedList<>();
 
+
     public CommitBuilder(AbstractBuild build) {
-        buildCommits(build.getChangeSet());
+        buildCommits(build, build.getChangeSet());
     }
 
 
-    private void buildCommits(ChangeLogSet changeLogSet) {
+    private void buildCommits(AbstractBuild build, ChangeLogSet changeLogSet) {
         for (Object o : changeLogSet.getItems()) {
             ChangeLogSet.Entry entry = (ChangeLogSet.Entry) o;
+
             SCM commit = new SCM();
             if (entry.getAffectedFiles() != null) {
                 commit.setNumberOfChanges(entry.getAffectedFiles().size());
@@ -38,7 +40,7 @@ public class CommitBuilder {
                 commitList.add(commit);
             }
             if ((entry.getParent() != null) && (!changeLogSet.equals(entry.getParent()))) {
-                buildCommits(entry.getParent());
+                buildCommits(build, entry.getParent());
             }
         }
     }
