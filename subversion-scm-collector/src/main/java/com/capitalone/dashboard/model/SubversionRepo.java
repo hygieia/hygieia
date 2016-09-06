@@ -7,11 +7,11 @@ public class SubversionRepo extends CollectorItem {
     private static final String URL = "url";
     private static final String LATEST_REV = "rev";
 
-    public String getUrl() {
+    public String getRepoUrl() {
         return (String) getOptions().get(URL);
     }
 
-    public void setUrl(String instanceUrl) {
+    public void setRepoUrl(String instanceUrl) {
         getOptions().put(URL, instanceUrl);
     }
 
@@ -35,11 +35,11 @@ public class SubversionRepo extends CollectorItem {
 
         SubversionRepo subversionRepo = (SubversionRepo) o;
 
-        return getUrl().equals(subversionRepo.getUrl());
+        return getRepoUrl().equals(subversionRepo.getRepoUrl());
     }
 
     @Override
     public int hashCode() {
-        return getUrl().hashCode();
+        return getRepoUrl().hashCode();
     }
 }

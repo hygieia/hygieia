@@ -233,6 +233,24 @@ public class DefaultHudsonClientTests {
         assertThat(scm.getNumberOfChanges(), is(5L));
     }
 
+    @Test
+    public void buildDetails_withRepo() throws Exception {
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(getJson("buildDetails_withRepo.json"), HttpStatus.OK));
+
+        Build build = hudsonClient.getBuildDetails("http://localhost/job/Hygieia-Common/179/", "http://localhost");
+
+        assertThat(build.getTimestamp(), notNullValue());
+        assertThat(build.getNumber(), is("179"));
+        assertThat(build.getBuildUrl(), is("http://localhost/job/Hygieia-Common/179/"));
+        assertThat(build.getStartTime(), is(1473102515400L));
+        assertThat(build.getBuildStatus(), is(BuildStatus.Failure));
+        assertThat(build.getStartedBy(), is(nullValue()));
+        assertThat(build.getSourceChangeSet().size(), is(0));
+        assertThat(build.getCodeRepos().size(), is(1));
+        assertThat(build.getCodeRepos().get(0).getUrl(), is("https://github.com/myrepo/Hygieia"));
+    }
+
     private void assertBuild(Build build, String number, String url) {
         assertThat(build.getNumber(), is(number));
         assertThat(build.getBuildUrl(), is(url));

@@ -1,6 +1,7 @@
 package hygieia.builder;
 
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
+import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
@@ -37,6 +38,19 @@ public class ArtifactBuilder {
         String filePattern = publisher.getHygieiaArtifact().getArtifactName().trim();
         String group = publisher.getHygieiaArtifact().getArtifactGroup().trim();
         String version = publisher.getHygieiaArtifact().getArtifactVersion().trim();
+
+        EnvVars envVars = new EnvVars();
+        try {
+            envVars = build.getEnvironment(listener);
+            version = envVars.expand(version);
+            group = envVars.expand(group);
+            directory = envVars.expand(directory);
+            filePattern = envVars.expand(filePattern);
+        } catch (IOException e) {
+            listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
+        } catch (InterruptedException e) {
+            listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
+        }
 
         FilePath rootDirectory = build.getWorkspace().withSuffix(directory);
         listener.getLogger().println("Hygieia Build Artifact Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory);
