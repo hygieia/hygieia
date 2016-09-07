@@ -98,6 +98,35 @@ feature.jiraStoryPointsFieldName=customfield_10003
 
 ```
 
+#### Troubleshooting
+##### The jira collector log does not pull data in for XXXX
+Verify the jira collector configuration for the custom fields is setup correctly. Hit the rest API outlined in the sample application properties above to see what data is being pulled in. A healthy log will look something like this:
+```
+2016-09-01 07:27:00,006 INFO c.c.d.collector.CollectorTask - Running Collector: Jira
+2016-09-01 07:27:00,010 INFO c.c.d.collector.CollectorTask - -----------------------------------
+2016-09-01 07:27:00,011 INFO c.c.d.collector.CollectorTask - https://my.jira.com/
+2016-09-01 07:27:00,011 INFO c.c.d.collector.CollectorTask - -----------------------------------
+2016-09-01 07:27:02,571 INFO c.c.d.collector.CollectorTask - Team Data 15 2s
+2016-09-01 07:27:03,050 INFO c.c.d.collector.CollectorTask - Project Data 15 1s
+2016-09-01 07:27:03,752 INFO c.c.d.collector.CollectorTask - Story Data 36 1s
+2016-09-01 07:27:03,752 INFO c.c.d.collector.CollectorTask - Finished 4s
+```
+
+##### My jira widget dropdown does not show any teams
+Verify your jira collector configuration. Verify that the jira collector is pulling in data by observing the logs. Connect to the mongo database using a tool such as RoboMongo and check that the 'feature' collection has data. Verify your API container is configured to hit the correct database.
+
+##### My jira widget shows all 0's for estimates
+Verify your jira collector configuration. Verify that the jira collector is pulling in data by observing the logs. Connect to the mongo database using a tool such as RoboMongo and check that the 'feature' collection has data. Check that features associated to an active sprint have the sEstimate (sEstimateTime for hours) field populated.
+
+##### My jira widget only shows kanban sprints
+In order to show scrum sprints there must exist stories with sprints attached to them that are active and have a recent start date. You can verify that this information is being pulled by either hitting the rest API or looking into the mongo database in the feature collection.
+
+##### ERROR c.c.d.client.DefaultJiraClient - No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:RestClientException{statusCode=Optional.of(403), errorCollections=[]}
+This may happen if you have had too many failed login attempts and a CAPTCHA guard has been triggered. Try logging in to jira with a browser successfully to remove the CAPTCHA guard. Verify that the jira credentials are correct.
+
+##### My issue is not listed or has not been resolved
+Search active and closed issues on github for 'jira'. Chances are your configuration is wrong and someone else has struggled through fixing it in another issue. Please refrain from commenting on closed issues. Github link: https://github.com/capitalone/Hygieia/issues?q=jira
+
 ## Implementation Details:
 
 [TBA]
