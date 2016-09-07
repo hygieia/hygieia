@@ -24,7 +24,7 @@ import java.util.List;
 public class MongoConfig extends AbstractMongoConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoConfig.class);
 
-    @Value("${dbname:dashboarddb}")
+    @Value("${dbname:dashboard}")
     private String databaseName;
     @Value("${dbhost:localhost}")
     private String host;
