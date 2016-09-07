@@ -24,7 +24,7 @@ import java.util.List;
 public class MongoConfig extends AbstractMongoConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoConfig.class);
 
-    @Value("${dbname:dashboarddb}")
+    @Value("${dbname:dashboard}")
     private String databaseName;
     @Value("${dbhost:localhost}")
     private String host;
@@ -32,7 +32,7 @@ public class MongoConfig extends AbstractMongoConfiguration {
     private int port;
     @Value("${dbreplicaset:false}")
     private String dbreplicaset;
-    @Value("#{'${dbhostport}'.split(',')}")
+    @Value("#{'${dbhostport:localhost:27017}'.split(',')}")
     private List<String> hostport;
     @Value("${dbusername:}")
     private String userName;
