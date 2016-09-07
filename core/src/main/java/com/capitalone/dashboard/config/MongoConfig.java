@@ -32,7 +32,7 @@ public class MongoConfig extends AbstractMongoConfiguration {
     private int port;
     @Value("${dbreplicaset:false}")
     private String dbreplicaset;
-    @Value("#{'${dbhostport}'.split(',')}")
+    @Value("#{'${dbhostport:localhost:27017}'.split(',')}")
     private List<String> hostport;
     @Value("${dbusername:}")
     private String userName;
