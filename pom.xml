@@ -1,30 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>${project.groupId}:${project.artifactId}</name>
+  <packaging>pom</packaging>
 
   <groupId>com.capitalone.dashboard</groupId>
   <artifactId>Hygieia</artifactId>
-  <packaging>pom</packaging>
   <version>2.0.2-SNAPSHOT</version>
-  <name>${project.groupId}:${project.artifactId}</name>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.5.RELEASE</version>
-	</parent>
-
-	<properties>
-		<spring-data-releasetrain.version>Gosling-RELEASE</spring-data-releasetrain.version>
-		<mongodb.version>3.0.2</mongodb.version>
-		<mongo>3.0.2</mongo>
-		<spring.version>4.1.7.RELEASE</spring.version>
-		<jackson.version>2.5.0</jackson.version>
-		<guava.version>16.0.1</guava.version>
-		<pmd.version>3.6</pmd.version>
-		<jacoco.version>0.7.6.201602180812</jacoco.version>
-		<joda-time.version>2.7</joda-time.version>
-		<joda-convert.version>1.8.1</joda-convert.version>
-	</properties>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>1.2.5.RELEASE</version>
+  </parent>
 
   <licenses>
     <license>
@@ -41,11 +32,11 @@
       <organizationUrl>http://www.capitalone.com</organizationUrl>
     </developer>
     <developer>
-   <name>Tapabrata Topo Pal</name>
-   <email>tapabrata.pal@capitalone.com</email>
-   <organization>CapitalOne</organization>
-   <organizationUrl>http://www.capitalone.com</organizationUrl>
- </developer>
+      <name>Tapabrata Topo Pal</name>
+      <email>tapabrata.pal@capitalone.com</email>
+      <organization>CapitalOne</organization>
+      <organizationUrl>http://www.capitalone.com</organizationUrl>
+    </developer>
   </developers>
 
   <scm>
@@ -55,7 +46,7 @@
     <tag>HEAD</tag>
   </scm>
 
-	<distributionManagement>
+  <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -66,212 +57,219 @@
     </repository>
   </distributionManagement>
 
+  <properties>
+    <spring-data-releasetrain.version>Gosling-RELEASE</spring-data-releasetrain.version>
+    <mongodb.version>3.0.2</mongodb.version>
+    <mongo>3.0.2</mongo>
+    <spring.version>4.1.7.RELEASE</spring.version>
+    <jackson.version>2.5.0</jackson.version>
+    <guava.version>16.0.1</guava.version>
+    <pmd.version>3.6</pmd.version>
+    <jacoco.version>0.7.6.201602180812</jacoco.version>
+    <joda-time.version>2.7</joda-time.version>
+    <joda-convert.version>1.8.1</joda-convert.version>
+  </properties>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<configuration>
-					<skipDockerBuild>true</skipDockerBuild>
-				</configuration>
-				<executions>
-					<execution>
-<!--
-	Note: Today we make the containers optional, we want these standard we should uncomment this
-						<phase>package</phase>
--->
-						<goals>
-							<goal>build</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>${pmd.version}</version>
-				<configuration>
-					<excludeRoots>
-						<excludeRoot>${project.basedir}/target/generated-sources/java</excludeRoot>
-					</excludeRoots>
-					<rulesets>
-						<ruleset>${project.parent.basedir}/pmd.xml</ruleset>
-					</rulesets>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>validate</phase>
-						<goals>
-							<goal>check</goal>
-							<!-- disabled for now <goal>cpd-check</goal> -->
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>com.spotify</groupId>
-					<artifactId>docker-maven-plugin</artifactId>
-					<version>0.4.10</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-<!--
-					<groupId>org.sonarsource.scanner.maven</groupId>
--->
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.0.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-						<version>3.5.1</version>
-					<configuration>
-						<source>1.8</source>
-						<target>1.8</target>
-					</configuration>
-				</plugin>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <configuration>
+          <skipDockerBuild>true</skipDockerBuild>
+        </configuration>
+        <executions>
+          <execution>
+            <!-- Note: Today we make the containers optional, we want these
+              standard we should uncomment this: -->
+            <!--<phase>package</phase>-->
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>${pmd.version}</version>
+        <configuration>
+          <excludeRoots>
+            <excludeRoot>${project.basedir}/target/generated-sources/java</excludeRoot>
+          </excludeRoots>
+          <rulesets>
+            <ruleset>${project.parent.basedir}/pmd.xml</ruleset>
+          </rulesets>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+              <!-- disabled for now: -->
+              <!--<goal>cpd-check</goal>-->
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.spotify</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>0.4.10</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <!--<groupId>org.sonarsource.scanner.maven</groupId>-->
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>3.0.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.5.1</version>
+          <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>report</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>report</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
-				<plugin>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>${jacoco.version}</version>
-					<executions>
-					    <execution>
-						<goals>
-						    <goal>prepare-agent</goal>
-						</goals>
-					    </execution>
-					    <execution>
-						<id>report</id>
-						<phase>verify</phase>
-						<goals>
-						    <goal>report</goal>
-						</goals>
-					    </execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-
-     <profiles>
-		<profile>
-			<id>defaultBuild</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>core</module>
-				<module>api</module>
-				<module>jenkins-build-collector</module>
-				<module>sonar-codequality-collector</module>
-				<module>subversion-scm-collector</module>
-				<module>github-scm-collector</module>
-				<module>bitbucket-scm-collector</module>
-				<module>versionone-feature-collector</module>
-				<module>udeploy-deployment-collector</module>
-				<module>xldeploy-deployment-collector</module>
-				<module>jira-feature-collector</module>
-				<module>jenkins-cucumber-test-collector</module>
-				<module>chat-ops-collector</module>
-				<module>aws-cloud-collector</module>
-				<module>UI</module>
-			</modules>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-compiler-plugin</artifactId>
-						<version>3.5.1</version>
-							<configuration>
-								<source>1.8</source>
-								<target>1.8</target>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
-
-		<profile>
-			<id>release</id>
-			<modules>
-				<module>core</module>
-				<module>api</module>
-				<module>jenkins-build-collector</module>
-				<module>sonar-codequality-collector</module>
-				<module>subversion-scm-collector</module>
-				<module>github-scm-collector</module>
-				<module>versionone-feature-collector</module>
-				<module>udeploy-deployment-collector</module>
-				<module>jira-feature-collector</module>
-				<module>jenkins-cucumber-test-collector</module>
-				<module>chat-ops-collector</module>
-				<module>aws-cloud-collector</module>
-			</modules>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>3.5.1</version>
-						<configuration>
-							<source>1.8</source>
-							<target>1.8</target>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<version>2.2.1</version>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9.1</version>
-						<configuration>
-					 <additionalparam>-Xdoclint:none</additionalparam>
-				   </configuration>
-						<executions>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.5</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-
-		</profile>
-	</profiles>
+  <profiles>
+    <profile>
+      <id>defaultBuild</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>core</module>
+        <module>api</module>
+        <module>collectors/cloud/aws</module>
+        <module>jenkins-build-collector</module>
+        <module>sonar-codequality-collector</module>
+        <module>subversion-scm-collector</module>
+        <module>github-scm-collector</module>
+        <module>bitbucket-scm-collector</module>
+        <module>versionone-feature-collector</module>
+        <module>udeploy-deployment-collector</module>
+        <module>xldeploy-deployment-collector</module>
+        <module>jira-feature-collector</module>
+        <module>jenkins-cucumber-test-collector</module>
+        <module>chat-ops-collector</module>
+        <module>UI</module>
+      </modules>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>3.5.1</version>
+              <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <id>release</id>
+      <modules>
+        <module>core</module>
+        <module>api</module>
+        <module>collectors/cloud/aws</module>
+        <module>jenkins-build-collector</module>
+        <module>sonar-codequality-collector</module>
+        <module>subversion-scm-collector</module>
+        <module>github-scm-collector</module>
+        <module>versionone-feature-collector</module>
+        <module>udeploy-deployment-collector</module>
+        <module>jira-feature-collector</module>
+        <module>jenkins-cucumber-test-collector</module>
+        <module>chat-ops-collector</module>
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.5.1</version>
+            <configuration>
+              <source>1.8</source>
+              <target>1.8</target>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.2.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.9.1</version>
+            <configuration>
+              <additionalparam>-Xdoclint:none</additionalparam>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
