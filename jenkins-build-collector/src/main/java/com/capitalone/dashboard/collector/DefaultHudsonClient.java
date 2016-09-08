@@ -273,7 +273,7 @@ public class DefaultHudsonClient implements HudsonClient {
         for (Object action : actions) {
             JSONObject jsonAction = (JSONObject) action;
             if (jsonAction.size() > 0) {
-                JSONArray remoteUrls = (JSONArray) ((JSONObject) action).get("remoteUrls");
+                JSONArray remoteUrls = getJsonArray ((JSONObject) action, "remoteUrls");
                 for (Object urlObj : remoteUrls) {
                     String sUrl = (String) urlObj;
                     //remove .git from the urls
