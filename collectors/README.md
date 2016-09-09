@@ -13,6 +13,7 @@ Hygieia collector inventory
   - [uDeploy](deploy/udeploy/README.md)
 - **Feature Collectors:**
   - [Jira](feature/jira/README.md)
+  - [VersionOne](feature/versionone/README.md)
 - **Misc Collectors:**
   - [Chat Ops](misc/chat-ops/README.md)
 - **SCM Collectors:**
