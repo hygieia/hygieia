@@ -11,6 +11,7 @@ Hygieia collector inventory
   - [AWS](cloud/aws/README.md)
 - **Deploy Collectors:**
   - [uDeploy](deploy/udeploy/README.md)
+  - [XLDeploy](deploy/xldeploy/README.md)
 - **Feature Collectors:**
   - [Jira](feature/jira/README.md)
   - [VersionOne](feature/versionone/README.md)
