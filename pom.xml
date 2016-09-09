@@ -167,6 +167,7 @@
       <modules>
         <module>core</module>
         <module>api</module>
+        <module>collectors/build/bamboo</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
@@ -202,6 +203,7 @@
       <modules>
         <module>core</module>
         <module>api</module>
+        <module>collectors/build/bamboo</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
