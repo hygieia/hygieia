@@ -176,7 +176,7 @@
         <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
-        <module>subversion-scm-collector</module>
+        <module>collectors/scm/subversion</module>
         <module>versionone-feature-collector</module>
         <module>udeploy-deployment-collector</module>
         <module>xldeploy-deployment-collector</module>
@@ -212,7 +212,7 @@
         <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
-        <module>subversion-scm-collector</module>
+        <module>collectors/scm/subversion</module>
         <module>versionone-feature-collector</module>
         <module>udeploy-deployment-collector</module>
       </modules>
