@@ -171,10 +171,10 @@
         <module>collectors/cloud/aws</module>
         <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
+        <module>collectors/scm/github</module>
         <module>jenkins-build-collector</module>
         <module>sonar-codequality-collector</module>
         <module>subversion-scm-collector</module>
-        <module>github-scm-collector</module>
         <module>versionone-feature-collector</module>
         <module>udeploy-deployment-collector</module>
         <module>xldeploy-deployment-collector</module>
@@ -207,10 +207,10 @@
         <module>collectors/cloud/aws</module>
         <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
+        <module>collectors/scm/github</module>
         <module>jenkins-build-collector</module>
         <module>sonar-codequality-collector</module>
         <module>subversion-scm-collector</module>
-        <module>github-scm-collector</module>
         <module>versionone-feature-collector</module>
         <module>udeploy-deployment-collector</module>
         <module>jira-feature-collector</module>
