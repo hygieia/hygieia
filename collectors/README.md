@@ -9,6 +9,8 @@ Hygieia collector inventory
   - [Sonar](build/sonar/README.md)
 - **Cloud Collectors:**
   - [AWS](cloud/aws/README.md)
+- **Deploy Collectors:**
+  - [uDeploy](deploy/udeploy/README.md)
 - **Feature Collectors:**
   - [Jira](feature/jira/README.md)
 - **Misc Collectors:**
