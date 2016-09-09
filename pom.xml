@@ -170,12 +170,12 @@
         <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
+        <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/feature/jira</module>
         <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
-        <module>sonar-codequality-collector</module>
         <module>subversion-scm-collector</module>
         <module>versionone-feature-collector</module>
         <module>udeploy-deployment-collector</module>
@@ -206,12 +206,12 @@
         <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
+        <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/feature/jira</module>
         <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
-        <module>sonar-codequality-collector</module>
         <module>subversion-scm-collector</module>
         <module>versionone-feature-collector</module>
         <module>udeploy-deployment-collector</module>

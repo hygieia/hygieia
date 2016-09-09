@@ -6,6 +6,7 @@ Hygieia collector inventory
   - [Bamboo](build/bamboo/README.md)
   - [Jenkins](build/jenkins/README.md)
   - [Jenkins Cucumber](build/jenkins-cucumber/README.md)
+  - [Sonar](build/sonar/README.md)
 - **Cloud Collectors:**
   - [AWS](cloud/aws/README.md)
 - **Feature Collectors:**
