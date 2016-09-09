@@ -16,3 +16,4 @@ Hygieia collector inventory
 - **SCM Collectors:**
   - [Bitbucket](scm/bitbucket/README.md)
   - [Github](scm/github/README.md)
+  - [Subversion](scm/subversion/README.md)
