@@ -168,6 +168,7 @@
         <module>core</module>
         <module>api</module>
         <module>collectors/cloud/aws</module>
+        <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
         <module>jenkins-build-collector</module>
         <module>sonar-codequality-collector</module>
@@ -178,7 +179,6 @@
         <module>xldeploy-deployment-collector</module>
         <module>jira-feature-collector</module>
         <module>jenkins-cucumber-test-collector</module>
-        <module>chat-ops-collector</module>
         <module>UI</module>
       </modules>
       <build>
@@ -203,6 +203,7 @@
         <module>core</module>
         <module>api</module>
         <module>collectors/cloud/aws</module>
+        <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
         <module>jenkins-build-collector</module>
         <module>sonar-codequality-collector</module>
@@ -212,7 +213,6 @@
         <module>udeploy-deployment-collector</module>
         <module>jira-feature-collector</module>
         <module>jenkins-cucumber-test-collector</module>
-        <module>chat-ops-collector</module>
       </modules>
       <build>
         <plugins>
