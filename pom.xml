@@ -168,11 +168,11 @@
         <module>core</module>
         <module>api</module>
         <module>collectors/cloud/aws</module>
+        <module>collectors/scm/bitbucket</module>
         <module>jenkins-build-collector</module>
         <module>sonar-codequality-collector</module>
         <module>subversion-scm-collector</module>
         <module>github-scm-collector</module>
-        <module>bitbucket-scm-collector</module>
         <module>versionone-feature-collector</module>
         <module>udeploy-deployment-collector</module>
         <module>xldeploy-deployment-collector</module>
@@ -203,6 +203,7 @@
         <module>core</module>
         <module>api</module>
         <module>collectors/cloud/aws</module>
+        <module>collectors/scm/bitbucket</module>
         <module>jenkins-build-collector</module>
         <module>sonar-codequality-collector</module>
         <module>subversion-scm-collector</module>
