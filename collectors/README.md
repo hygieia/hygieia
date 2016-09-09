@@ -8,7 +8,9 @@ Hygieia collector inventory
   - [Jenkins Cucumber](build/jenkins-cucumber/README.md)
 - **Cloud Collectors:**
   - [AWS](cloud/aws/README.md)
-- **Misc Collectors**
+- **Feature Collectors:**
+  - [Jira](feature/jira/README.md)
+- **Misc Collectors:**
   - [Chat Ops](misc/chat-ops/README.md)
 - **SCM Collectors:**
   - [Bitbucket](scm/bitbucket/README.md)

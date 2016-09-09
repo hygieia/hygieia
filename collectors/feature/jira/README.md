@@ -1,26 +1,26 @@
-# Jira Feature Collector
+# Hygieia Feature Collectors / Jira
+
 Retrieves feature content data from the source system APIs and places it in a MongoDB for later retrieval and use by the DevOps Dashboard
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
 
 ## Building and Deploying
-Run
 
+To package the collector into an executable JAR file, run:
 ```bash
 mvn install
 ```
 
-to package the collector into an executable JAR file. Copy this file to your server and launch it using :
-
+Copy this file to your server and launch it using:
 ```bash
 java -jar jira-feature-collector.jar
 ```
 
+## application.properties
+
 You will need to provide an **application.properties** file that contains information about how to connect to the Dashboard MongoDB database instance, as well as properties the Jira feature collector requires. See the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files) for information about sourcing this properties file.
 
 ### Sample application.properties file, with minimum overrides
-
---------------------------------------------------------------------------------
 
 ```properties
 # PageSize - Expand contract this value depending on Jira implementation's
@@ -32,6 +32,7 @@ feature.pageSize=100
 feature.deltaStartDate=2016-03-01T00:00:00.000000
 feature.masterStartDate=2016-03-01T00:00:00.000000
 feature.deltaCollectorItemStartDate=2016-03-01T00:00:00.000000
+
 # Chron schedule: S M D M Y [Day of the Week]
 feature.cron=0 * * * * *
 
@@ -95,7 +96,6 @@ feature.jiraEpicIdFieldName=customfield_10002
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
 #############################################################################
 feature.jiraStoryPointsFieldName=customfield_10003
-
 ```
 
 #### Troubleshooting
