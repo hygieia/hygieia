@@ -10,3 +10,4 @@ Hygieia collector inventory
   - [Chat Ops](misc/chat-ops/README.md)
 - **SCM Collectors:**
   - [Bitbucket](scm/bitbucket/README.md)
+  - [Github](scm/github/README.md)
