@@ -1,0 +1,28 @@
+{
+  "actions": [
+    {},
+    {},
+    {
+      "lastBuiltRevision": {
+        "SHA1": "f6617799ff337984df0b80156995ddb87f60c0af",
+        "branch": [
+          {
+            "SHA1": "f6617799ff337984df0b80156995ddb87f60c0af",
+            "name": "origin/master"
+          }
+        ]
+      }
+    }
+  ],
+  "building": false,
+  "duration": 214,
+  "number": 179,
+  "result": "FAILURE",
+  "timestamp": 1473102515400,
+  "url": "http://localhost:8082/job/Hygieia-Common/179/",
+  "changeSet": {
+    "items": [],
+    "kind": null
+  },
+  "culprits": []
+}
