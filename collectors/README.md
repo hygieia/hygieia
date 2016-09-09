@@ -4,6 +4,7 @@ Hygieia collector inventory
 
 - **Build Collectors:**
   - [Bamboo](build/bamboo/README.md)
+  - [Jenkins](build/jenkins/README.md)
 - **Cloud Collectors:**
   - [AWS](cloud/aws/README.md)
 - **Misc Collectors**
