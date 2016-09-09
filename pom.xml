@@ -173,13 +173,13 @@
         <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/deploy/udeploy</module>
+        <module>collectors/deploy/xldeploy</module>
         <module>collectors/feature/jira</module>
         <module>collectors/feature/versionone</module>
         <module>collectors/misc/chat-ops</module>
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
         <module>collectors/scm/subversion</module>
-        <module>xldeploy-deployment-collector</module>
         <module>UI</module>
       </modules>
       <build>
@@ -209,6 +209,7 @@
         <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/deploy/udeploy</module>
+        <module>collectors/deploy/xldeploy</module>
         <module>collectors/feature/jira</module>
         <module>collectors/feature/versionone</module>
         <module>collectors/misc/chat-ops</module>
