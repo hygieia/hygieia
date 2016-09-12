@@ -22,6 +22,9 @@ public class TestConfig {
 	}
 
 	@Bean
+	public Monitor2Service awsStatusService() {return Mockito.mock(Monitor2Service.class); }
+
+	@Bean
 	public BuildService buildService() {
 		return Mockito.mock(BuildService.class);
 	}

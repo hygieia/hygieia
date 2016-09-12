@@ -44,17 +44,22 @@ public class CucumberTestBuilder {
     private void buildTestResults() {
         String directory = publisher.getHygieiaTest().getTestResultsDirectory().trim();
         String filePattern = publisher.getHygieiaTest().getTestFileNamePattern().trim();
-        FilePath rootDirectory = build.getWorkspace().withSuffix(directory);
-        listener.getLogger().println("Hygieia Test Result Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory.getRemote());
+
         List<FilePath> testFiles = null;
         try {
+            EnvVars envVars = new EnvVars();
+            envVars = build.getEnvironment(listener);
+            directory = envVars.expand(directory);
+            FilePath rootDirectory = build.getWorkspace().withSuffix(directory);
+            filePattern = envVars.expand(filePattern);
             testFiles = HygieiaUtils.getArtifactFiles(rootDirectory, filePattern, new ArrayList<FilePath>());
+            listener.getLogger().println("Hygieia Test Result Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory.getRemote());
         } catch (IOException e) {
             e.printStackTrace();
-            listener.getLogger().println("Hygieia Test Result Publisher - IOException on " + rootDirectory);
+            listener.getLogger().println("Hygieia Test Result Publisher" + e.getStackTrace());
         } catch (InterruptedException e) {
             e.printStackTrace();
-            listener.getLogger().println("Hygieia Test Result Publisher - InterruptedException on " + rootDirectory);
+            listener.getLogger().println("Hygieia Test Result Publisher - InterruptedException on " + e.getStackTrace());
         }
         testResult = buildTestResultObject(getCapabilities(testFiles));
     }
