@@ -106,10 +106,10 @@ public abstract class CollectorTask<T extends Collector> implements Runnable {
         String token2 = "";
         String token3;
         if (count == null) {
-            token3 = Strings.padStart(elapsed, 35 - text.length(), ' ');
+            token3 = Strings.padStart(" " + elapsed, 35 - text.length(), ' ');
         } else {
-            token2 = Strings.padStart(count.toString(), 25 - text.length(), ' ');
-            token3 = Strings.padStart(elapsed, 10, ' ');
+            token2 = Strings.padStart(" " + count.toString(), 25 - text.length(), ' ');
+            token3 = Strings.padStart(" " + elapsed, 10, ' ');
         }
         LOGGER.info(text + token2 + token3);
     }

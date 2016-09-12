@@ -20,24 +20,30 @@ The following components are required to run Hygieia℠:
        <code>mongod --dbpath < path to the data directory> </code> <br/>
        for e.g <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongod --dbpath /dev/data/db </code>
       * Run the following commands as shown below at mongodb command prompt
-        <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongo </code>  
-        ```Shell
+        <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongo </code>
+          
+ ```
+       
          $ mongo  
          MongoDB shell version: 3.0.4
          connecting to: test  
-
-         > use dashboard
-         switched to db dashboard
+         
+         > use dashboarddb
+         switched to db dashboarddb
          > db.createUser(
                   {
-                    user: "db",
-                    pwd: "dbpass",
+                    user: "dashboarduser",
+                    pwd: "dbpassword",
                     roles: [
                        {role: "readWrite", db: "dashboard"}
                             ]
                     })
+          
+         
+                    Output similar to below should be seen in your mongo shell
+                    
                 Successfully added user: {
-                  "user" : "dbuser",
+                  "user" : "dashboarduser",
                   "roles" : [
                   {
                     "role" : "readWrite",
@@ -45,35 +51,30 @@ The following components are required to run Hygieia℠:
                   }
                   ]
                 }  
-                ```
+                
 
 
 We recommend that you download  MongoDB clients(RoboMongo etc) to connect to your local
 running Database and make sure that database: dashboard is created and you are successfully able to connect to it.
+
+##### To execute the above via script in an automate fashion, we have provide a script titled mongosrc.js to execute the script just execute the command below
+
+```
+  mongo < mongosrc.js
+
+```
 
 #### API Layer
 Please click on the link below to learn about how to build and run the API layer
 * [API](/api)
 
 #### Tool Collectors
-* In general all the collectors can be run using the following command
+In general all the collectors can be run using the following command
 ```bash
 java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>
 ```
-For each individual collector setup click on the links below
 
-  * **Agile Story Management**
-    * [VersionOne](versionone-feature-collector)
-    * [Jira](jira-feature-collector)
-  * **Source**
-    * [GitHub](github-scm-collector)
-    * [Subversion](subversion-scm-collector)
-  * **Build tools**
-    * [Jenkins/Hudson](jenkins-build-collector)
-  * **Code Quality**
-    * [Sonar](sonar-codequality-collector)
-  * **Deployment**
-    * [uDeploy 6.x from IBM](udeploy-deployment-collector)
+You can view the collector inventory [here](collectors/README.md).
 
 You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.
 
@@ -159,7 +160,7 @@ mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user:
 ```
 
 ## Create a docker-compose.override.yml to configure your environment
-These are the most common entries, the uncommented ones are mandatory if you want the collector to work. 
+These are the most common entries, the uncommented ones are mandatory if you want the collector to work.
 For dev/testing you will find it useful to change the CRON entries to ``"0 * * * * *"``
 ```
 hygieia-github-scm-collector:
@@ -213,7 +214,7 @@ docker port hygieia-ui
 	ote: For this to work you will need to have set your credentials on the ID that the collectors is running under, the best way to do this is first clone the repo to set your credentials.
 
 ###2. Setup Sonar -  by running a test instance of sonar
-	a. docker-compose -f test-servers/sonar/sonar.yml up -d	
+	a. docker-compose -f test-servers/sonar/sonar.yml up -d
 	b. Fill it with data from the Hygieia project
 mvn sonar:sonar -Dsonar.host.url=http://$(docker-machine ip default):9000 -Dsonar.jdbc.url="jdbc:h2:tcp://$(docker-machine ip default)/sonar"
 	c. You can now go in and configure the quality panel in the UI.
