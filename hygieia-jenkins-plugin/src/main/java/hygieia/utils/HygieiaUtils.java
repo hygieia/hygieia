@@ -2,7 +2,11 @@ package hygieia.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import hudson.EnvVars;
 import hudson.FilePath;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import jenkins.plugins.hygieia.CustomObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
@@ -72,5 +76,37 @@ public class HygieiaUtils {
             versionNumber = majorVersion + minorVersion;
         }
         return versionNumber;
+    }
+    
+    public static String getBuildUrl(AbstractBuild<?, ?> build) {
+    	return build.getProject().getAbsoluteUrl() + String.valueOf(build.getNumber()) + "/";
+    }
+    
+    public static String getBuildNumber(AbstractBuild<?, ?> build) {
+    	return String.valueOf(build.getNumber());
+    }
+    
+    public static String getJobUrl(AbstractBuild<?, ?> build) {
+    	return build.getProject().getAbsoluteUrl();
+    }
+    
+    public static String getJobName(AbstractBuild<?, ?> build) {
+    	return build.getProject().getName();
+    }
+    
+    public static String getInstanceUrl(AbstractBuild<?, ?> build, BuildListener listener) {
+        EnvVars env = null;
+        try {
+            env = build.getEnvironment(listener);
+        } catch (IOException | InterruptedException e) {
+            logger.warning("Error getting environment variables");
+        }
+        if (env != null) {
+            return env.get("JENKINS_URL");
+        } else {
+            String jobPath = "/job" + "/" + build.getProject().getName() + "/";
+            int ind = build.getProject().getAbsoluteUrl().indexOf(jobPath);
+            return build.getProject().getAbsoluteUrl().substring(0, ind);
+        }
     }
 }

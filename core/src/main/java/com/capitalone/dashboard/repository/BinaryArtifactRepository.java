@@ -1,7 +1,9 @@
 package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.BinaryArtifact;
+
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface BinaryArtifactRepository extends CrudRepository<BinaryArtifact, ObjectId> {
@@ -16,8 +18,8 @@ public interface BinaryArtifactRepository extends CrudRepository<BinaryArtifact,
 
     Iterable<BinaryArtifact> findByArtifactGroupId(String artifactGroupId);
 
-    Iterable<BinaryArtifact> findByBuildInfoId (ObjectId artifactBuildId);
-
     Iterable<BinaryArtifact> findByArtifactNameAndTimestampGreaterThan(String artifactName, Long timestamp);
-
+    
+    @Query(value="{'metadata.buildUrl' : ?0}")
+    Iterable<BinaryArtifact> findByMetadataBuildUrl(String buildUrl);
 }
