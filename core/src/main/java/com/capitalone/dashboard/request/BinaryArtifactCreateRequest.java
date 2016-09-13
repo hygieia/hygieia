@@ -1,10 +1,9 @@
 package com.capitalone.dashboard.request;
 
-import com.capitalone.dashboard.model.SCM;
-
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BinaryArtifactCreateRequest {
 
@@ -16,13 +15,12 @@ public class BinaryArtifactCreateRequest {
     private String artifactGroup;
     @NotNull
     private String artifactVersion;
-    @NotNull
-    private String buildId;
-
-
+    
     private long timestamp;
+    
+    // See usage of metadata in BinaryArtifactServiceImpl for defined property names
+    private Map<String, Object> metadata = new HashMap<>();
 
-    private List<SCM> sourceChangeSet = new ArrayList<>();
 
     public String getArtifactName() {
         return artifactName;
@@ -55,13 +53,13 @@ public class BinaryArtifactCreateRequest {
     public void setArtifactVersion(String artifactVersion) {
         this.artifactVersion = artifactVersion;
     }
-
-    public String getBuildId() {
-        return buildId;
+    
+    public Map<String, Object> getMetadata() {
+    	return metadata;
     }
-
-    public void setBuildId(String buildId) {
-        this.buildId = buildId;
+    
+    public void setMetadata(Map<String, Object> metadata) {
+    	this.metadata = metadata;
     }
 
     public long getTimestamp() {
@@ -70,9 +68,5 @@ public class BinaryArtifactCreateRequest {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public List<SCM> getSourceChangeSet() {
-        return sourceChangeSet;
     }
 }

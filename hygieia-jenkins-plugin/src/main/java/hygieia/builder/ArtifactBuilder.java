@@ -17,15 +17,15 @@ import java.util.logging.Logger;
 
 public class ArtifactBuilder {
 
-    private static final Logger logger = Logger.getLogger(ArtifactBuilder.class.getName());
-    private AbstractBuild build;
+	private static final Logger logger = Logger.getLogger(ArtifactBuilder.class.getName());
+    private AbstractBuild<?, ?> build;
     private HygieiaPublisher publisher;
     private BuildListener listener;
     private String buildId;
 
     private Set<BinaryArtifactCreateRequest> artifacts = new HashSet<>();
 
-    public ArtifactBuilder(AbstractBuild build, HygieiaPublisher publisher, BuildListener listener, String buildId) {
+    public ArtifactBuilder(AbstractBuild<?, ?> build, HygieiaPublisher publisher, BuildListener listener, String buildId) {
         this.build = build;
         this.publisher = publisher;
         this.buildId = buildId;
@@ -59,7 +59,6 @@ public class ArtifactBuilder {
             for (FilePath f : artifactFiles) {
                 listener.getLogger().println("Hygieia Artifact Publisher: Processing  file: " + f.getRemote());
                 BinaryArtifactCreateRequest bac = new BinaryArtifactCreateRequest();
-                String v = "";
                 bac.setArtifactGroup(group);
                 if ("".equals(version)) {
                     version = HygieiaUtils.guessVersionNumber(f.getName());
@@ -68,9 +67,13 @@ public class ArtifactBuilder {
                 bac.setCanonicalName(f.getName());
                 bac.setArtifactName(HygieiaUtils.getFileNameMinusVersion(f, version));
                 bac.setTimestamp(build.getTimeInMillis());
-                bac.setBuildId(buildId);
-                CommitBuilder commitBuilder = new CommitBuilder(build);
-                bac.getSourceChangeSet().addAll(commitBuilder.getCommits());
+                
+                bac.getMetadata().put("buildUrl", HygieiaUtils.getBuildUrl(build));
+                bac.getMetadata().put("buildNumber", HygieiaUtils.getBuildNumber(build));
+                bac.getMetadata().put("jobUrl", HygieiaUtils.getJobUrl(build));
+                bac.getMetadata().put("jobName", HygieiaUtils.getJobName(build));
+                bac.getMetadata().put("instanceUrl", HygieiaUtils.getInstanceUrl(build, listener));
+                
                 artifacts.add(bac);
             }
         } catch (IOException e) {
