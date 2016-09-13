@@ -273,13 +273,13 @@ public class BambooCollectorTask extends CollectorTask<BambooCollector> {
 
     private List<BambooJob> enabledJobs(BambooCollector collector,
                                         String instanceUrl) {
-        return bambooJobRepository.findEnabledBambooJobs(collector.getId(),
+        return bambooJobRepository.findEnabledJobs(collector.getId(),
                 instanceUrl);
     }
 
     @SuppressWarnings("unused")
 	private BambooJob getExistingJob(BambooCollector collector, BambooJob job) {
-        return bambooJobRepository.findBambooJob(collector.getId(),
+        return bambooJobRepository.findJob(collector.getId(),
                 job.getInstanceUrl(), job.getJobName());
     }
 
