@@ -29,6 +29,10 @@ public class BinaryArtifact extends BaseModel {
 	private static final String METADATA_JOB_NAME = "jobName";
 	private static final String METADATA_INSTANCE_URL = "instanceUrl";
 	
+	private static final String METADATA_SCM_URL = "scmUrl";
+	private static final String METADATA_SCM_BRANCH = "scmBranch";
+	private static final String METADATA_SCM_REVISION_NUMBER = "scmRevisionNumber";
+	
     /**
      * CollectorItemId for the {@link Build} that produced the artifact
      */
@@ -128,6 +132,30 @@ public class BinaryArtifact extends BaseModel {
     
     public void setInstanceUrl(String instanceUrl) {
     	getMetadata().put(METADATA_INSTANCE_URL, instanceUrl);
+    }
+    
+    public String getScmUrl() {
+    	return getMetadata().get(METADATA_SCM_URL);
+    }
+    
+    public void setScmUrl(String scmUrl) {
+    	getMetadata().put(METADATA_SCM_URL, scmUrl);
+    }
+    
+    public String getScmBranch() {
+    	return getMetadata().get(METADATA_SCM_BRANCH);
+    }
+    
+    public void setScmBranch(String scmBranch) {
+    	getMetadata().put(METADATA_SCM_BRANCH, scmBranch);
+    }
+    
+    public String getScmRevisionNumber() {
+    	return getMetadata().get(METADATA_SCM_REVISION_NUMBER);
+    }
+    
+    public void setScmRevisionNumber(String scmRevisionNumber) {
+    	getMetadata().put(METADATA_SCM_REVISION_NUMBER, scmRevisionNumber);
     }
     
     public Map<String, String> getMetadata() {
