@@ -74,6 +74,19 @@ public class ArtifactBuilder {
                 bac.getMetadata().put("jobName", HygieiaUtils.getJobName(build));
                 bac.getMetadata().put("instanceUrl", HygieiaUtils.getInstanceUrl(build, listener));
                 
+                String scmUrl = HygieiaUtils.getScmUrl(build, listener);
+                String scmBranch = HygieiaUtils.getScmBranch(build, listener);
+                String scmRevisionNumber = HygieiaUtils.getScmRevisionNumber(build, listener);
+                
+                if (scmUrl != null) { bac.getMetadata().put("scmUrl", scmUrl); }
+                if (scmBranch != null) { 
+                	if (scmBranch.startsWith("origin/")) {
+                		scmBranch = scmBranch.substring(7);
+                	}
+                	bac.getMetadata().put("scmBranch", scmBranch); 
+                }
+                if (scmRevisionNumber != null) { bac.getMetadata().put("scmRevisionNumber", scmRevisionNumber); }
+                
                 artifacts.add(bac);
             }
         } catch (IOException e) {
