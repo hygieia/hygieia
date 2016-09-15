@@ -96,11 +96,19 @@ public class DefaultBitbucketServerClient implements GitClient {
 					String message = str(jsonObject, "message");
 					String author = str(authorObject, "name");
 					long timestamp = Long.valueOf(str(jsonObject,"authorTimestamp"));
+					JSONArray parents = (JSONArray) jsonObject.get("parents");
+					List<String> parentShas = new ArrayList<>();
+					if (parents != null) {
+						for (Object parentObj : parents) {
+							parentShas.add(str((JSONObject)parentObj, "id"));
+						}
+					}
 					
 					Commit commit = new Commit();
 					commit.setTimestamp(System.currentTimeMillis());
 					commit.setScmUrl(repo.getRepoUrl());
 					commit.setScmRevisionNumber(sha);
+					commit.setScmParentRevisionNumbers(parentShas);
 					commit.setScmAuthor(author);
 					commit.setScmCommitLog(message);
 					commit.setScmCommitTimestamp(timestamp);
