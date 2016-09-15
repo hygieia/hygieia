@@ -95,6 +95,56 @@ public class HygieiaUtils {
     }
     
     public static String getInstanceUrl(AbstractBuild<?, ?> build, BuildListener listener) {
+        String envValue = getEnvironmentVariable(build, listener, "JENKINS_URL");
+        
+        if (envValue != null) {
+            return envValue;
+        } else {
+            String jobPath = "/job" + "/" + build.getProject().getName() + "/";
+            int ind = build.getProject().getAbsoluteUrl().indexOf(jobPath);
+            return build.getProject().getAbsoluteUrl().substring(0, ind);
+        }
+    }
+    
+    public static String getScmUrl(AbstractBuild<?, ?> build, BuildListener listener) {
+    	if (isGitScm(build)) {
+    		return getEnvironmentVariable(build, listener, "GIT_URL");
+    	} else if (isSvnScm(build)) {
+    		return getEnvironmentVariable(build, listener, "SVN_URL");
+    	}
+    	
+    	return null;
+    }
+    
+    public static String getScmBranch(AbstractBuild<?, ?> build, BuildListener listener) {
+    	if (isGitScm(build)) {
+    		return getEnvironmentVariable(build, listener, "GIT_BRANCH");
+    	} else if (isSvnScm(build)) {
+    		return null;
+    	}
+    	
+    	return null;
+    }
+    
+    public static String getScmRevisionNumber(AbstractBuild<?, ?> build, BuildListener listener) {
+    	if (isGitScm(build)) {
+    		return getEnvironmentVariable(build, listener, "GIT_COMMIT");
+    	} else if (isSvnScm(build)) {
+    		return getEnvironmentVariable(build, listener, "SVN_REVISION");
+    	}
+    	
+    	return null;
+    }
+    
+    public static boolean isGitScm(AbstractBuild<?, ?> build) {
+    	return "hudson.plugins.git.GitSCM".equalsIgnoreCase(build.getProject().getScm().getType());
+    }
+    
+    public static boolean isSvnScm(AbstractBuild<?, ?> build) {
+    	return "hudson.scm.SubversionSCM".equalsIgnoreCase(build.getProject().getScm().getType());
+    }
+    
+    public static String getEnvironmentVariable(AbstractBuild<?, ?> build, BuildListener listener, String key) {
         EnvVars env = null;
         try {
             env = build.getEnvironment(listener);
@@ -102,11 +152,9 @@ public class HygieiaUtils {
             logger.warning("Error getting environment variables");
         }
         if (env != null) {
-            return env.get("JENKINS_URL");
+            return env.get(key);
         } else {
-            String jobPath = "/job" + "/" + build.getProject().getName() + "/";
-            int ind = build.getProject().getAbsoluteUrl().indexOf(jobPath);
-            return build.getProject().getAbsoluteUrl().substring(0, ind);
+        	return null;
         }
     }
 }
