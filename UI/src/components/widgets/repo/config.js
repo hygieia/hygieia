@@ -42,16 +42,14 @@
 			ctrl.repoOption=ctrl.repoOptions[myindex];
 		}
 
-
+		ctrl.repoUrl = widgetConfig.options.url;
 		ctrl.gitBranch = widgetConfig.options.branch;
-		ctrl.username = "";
-		ctrl.password = "";
-
+		ctrl.repouser = widgetConfig.options.userID;
+		ctrl.repopass = widgetConfig.options.password;
 
 		// public variables
 		ctrl.submitted = false;
 		ctrl.collectors = [];
-		ctrl.repoUrl = widgetConfig.options.url;
 
 		// public methods
 		ctrl.submit = submitForm;
@@ -68,25 +66,44 @@
 		 * ctrl.collectors.length) {
 		 * createCollectorItem(url).then(processCollectorItemResponse); } }
 		 */
-
-		function submitForm(valid, url, repoType) {
+		function submitForm(form) {
 			ctrl.submitted = true;
-			if (valid && ctrl.collectors.length) {
-				if (repoType == 'GitHub (public)') {
-					createCollectorItem(url, repoType, ctrl.gitBranch).then(
-							processCollectorItemResponse);
-				} else if (repoType == 'GitHub (private)') {
-					var httpReplace = ("http://").concat(ctrl.username).concat(
-							":").concat(ctrl.password).concat("@");
-					var httpsReplace = ("https://").concat(ctrl.username)
-							.concat(":").concat(ctrl.password).concat("@");
-					var url2 = url.replace("http://", httpReplace);
-					var url3 = url2.replace("https://", httpsReplace);
-					createCollectorItem(url3, repoType, ctrl.gitBranch).then(
-							processCollectorItemResponse);
+			if (form.$valid && ctrl.collectors.length) {
+
+				//nothing was changed
+				if (ctrl.repoOption.name === widgetConfig.options.scm.name &&
+					ctrl.repoUrl === widgetConfig.options.url &&
+					ctrl.gitBranch === widgetConfig.options.branch &&
+					ctrl.repouser === widgetConfig.options.userID &&
+					ctrl.repopass === widgetConfig.options.password) {
+					$modalInstance.close();
+					return;
+				}
+
+				if (ctrl.repopass) {
+					if (ctrl.repopass === widgetConfig.options.password) {
+						//password is unchanged in the form so don't encrypt it again
+						try {
+							createCollectorItem().then(processCollectorItemResponse);
+						} catch (e) {
+							console.log(e);
+						}
+					} else {
+						collectorData.encrypt(ctrl.repopass).then(function (response) {
+							if (response === 'ERROR') {
+								form.repopass.$setValidity('errorEncryptingPassword', false);
+								return;
+							}
+							ctrl.repopass = response;
+							try {
+								createCollectorItem().then(processCollectorItemResponse);
+							} catch (e) {
+								console.log(e);
+							}
+						});
+					}
 				} else {
-					createCollectorItem(url, repoType.name, ctrl.gitBranch).then(
-							processCollectorItemResponse);
+					createCollectorItem().then(processCollectorItemResponse);
 				}
 			}
 		}
@@ -99,27 +116,31 @@
 		 * collectorData.createCollectorItem(item); }
 		 */
 
-		function createCollectorItem(url, repoTypeName, branch) {
+		function createCollectorItem() {
 			var item = {};
 
-			if (repoTypeName.indexOf("GitHub") != -1) {
+			if (ctrl.repoOption.name.indexOf("GitHub") != -1) {
 
 				item = {
 					collectorId: _.findWhere(ctrl.collectors, {name: 'GitHub'}).id,
 					options: {
 						scm: 'Github',
-						url: url,
-						branch: branch
+						url: ctrl.repoUrl,
+						branch: ctrl.gitBranch,
+						userID: ctrl.repouser,
+						password: ctrl.repopass
 					}
 				};
-			} else if (repoTypeName.indexOf("Bitbucket") != -1) {
+			} else if (ctrl.repoOption.name.indexOf("Bitbucket") != -1) {
 
 				item = {
 					collectorId: _.findWhere(ctrl.collectors, {name: 'Bitbucket'}).id,
 					options: {
 						scm: 'Bitbucket',
-						url: url,
-						branch: branch
+						url: ctrl.repoUrl,
+						branch: ctrl.gitBranch,
+						userID: ctrl.repouser,
+						password: ctrl.repopass
 					}
 				};
 			}else{
@@ -127,7 +148,9 @@
 					collectorId : _.findWhere(ctrl.collectors, { name: 'Subversion' }).id,
 					options: {
 						scm: 'Subversion',
-						url: url
+						url: ctrl.repoUrl,
+						userID: ctrl.repouser,
+						password: ctrl.repopass
 					}
 				};
 			}
@@ -141,7 +164,9 @@
 					id : widgetConfig.options.id,
 					scm : ctrl.repoOption,
 					url : ctrl.repoUrl,
-					branch : ctrl.gitBranch
+					branch : ctrl.gitBranch,
+					userID : ctrl.repouser,
+					password : ctrl.repopass
 				},
 				componentId : modalData.dashboard.application.components[0].id,
 				collectorItemId : response.data.id
