@@ -1,3 +1,5 @@
+# THIS BRANCH HAVE BEEN ABANDONED AND SHOULD NOT BE USED.
+
 #Rally Feature Collector
 Retrieves Rally feature content data from the source system APIs and places it in a MongoDB for later retrieval and use by the DevOps Dashboard
 
