@@ -1,13 +1,13 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.BinaryArtifact;
-import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.repository.BinaryArtifactRepository;
-import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.BinaryArtifactSearchRequest;
-import org.bson.types.ObjectId;
+
+import java.util.Map;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +15,10 @@ import org.springframework.stereotype.Service;
 public class BinaryArtifactServiceImpl implements BinaryArtifactService {
 
     private final BinaryArtifactRepository artifactRepository;
-    private final BuildRepository buildRepository;
 
     @Autowired
-    public BinaryArtifactServiceImpl(BinaryArtifactRepository artifactRepository, BuildRepository buildRepository) {
+    public BinaryArtifactServiceImpl(BinaryArtifactRepository artifactRepository) {
         this.artifactRepository = artifactRepository;
-        this.buildRepository = buildRepository;
     }
 
     @Override
@@ -44,47 +42,53 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
             return new DataResponse<>(artifactRepository.findByArtifactGroupId(
                     request.getArtifactGroup()), 0);
         }
-
-        if (request.getBuildId() != null) {
-            return new DataResponse<>(artifactRepository.findByBuildInfoId(
-                    request.getBuildId()), 0);
+        
+        if (request.getBuildUrl() != null) {
+        	return new DataResponse<>(artifactRepository.findByMetadataBuildUrl(
+        			request.getBuildUrl()), 0);
         }
+        
         return new DataResponse<>(null, 0);
 
     }
 
-    private Build getBuildById(ObjectId buildId){
-        return buildRepository.findOne(buildId);
-    }
-
-
     @Override
     public String create(BinaryArtifactCreateRequest request) {
-        BinaryArtifact ba = new BinaryArtifact();
-        ba.setArtifactName(request.getArtifactName());
-        ba.setCanonicalName(request.getCanonicalName());
-        ba.setArtifactGroupId(request.getArtifactGroup());
-        ObjectId objId = new ObjectId(request.getBuildId());
-        Build build = getBuildById(objId);
-        ba.setBuildInfo(build);
-        ba.setArtifactVersion(request.getArtifactVersion());
-        ba.setTimestamp(request.getTimestamp());
-        BinaryArtifact existing = existing(ba, objId);
-        if (existing == null) {
-            BinaryArtifact savedArt = artifactRepository.save(ba);
-            if (savedArt == null) return "";
-            return savedArt.getId().toString();
-        }
-        return existing.getId().toString();
-    }
+		BinaryArtifact ba = new BinaryArtifact();
+		ba.setArtifactName(request.getArtifactName());
+		ba.setCanonicalName(request.getCanonicalName());
+		ba.setArtifactGroupId(request.getArtifactGroup());
+
+		Map<String, Object> metadata = request.getMetadata();
+		
+		if (metadata != null) {
+			for (Map.Entry<String, Object> e : metadata.entrySet()) {
+				ba.getMetadata().put(e.getKey(), String.valueOf(e.getValue()));
+			}
+		}
+
+		ba.setArtifactVersion(request.getArtifactVersion());
+		ba.setTimestamp(request.getTimestamp());
+		BinaryArtifact existing = existing(ba);
+		if (existing == null) {
+			BinaryArtifact savedArt = artifactRepository.save(ba);
+			if (savedArt == null)
+				return "";
+			return savedArt.getId().toString();
+		}
+		return existing.getId().toString();
+	}
 
 
-    private BinaryArtifact existing(BinaryArtifact artifact, ObjectId buildId) {
+    private BinaryArtifact existing(BinaryArtifact artifact) {
         Iterable<BinaryArtifact> bas = artifactRepository.findByArtifactGroupIdAndArtifactNameAndArtifactVersion
                 (artifact.getArtifactGroupId(), artifact.getArtifactName(),
                         artifact.getArtifactVersion());
         for (BinaryArtifact ba : bas) {
-            if ((ba.getBuildInfo() != null) && ba.getBuildInfo().getId().equals(buildId)) {
+        	
+        	// could be null due to old documents
+        	if (ba.getMetadata() != null &&
+        			ObjectUtils.equals(artifact.getBuildUrl(), ba.getBuildUrl())) {
                 return ba;
             }
         }
