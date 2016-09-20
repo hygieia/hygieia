@@ -99,7 +99,8 @@ docker run -t -p 8088:80 --link hygieia-api -i hygieia-ui:latest
 ![Image](/media/images/loginpage.png)
 
 ### Encryption for private repos
-1. In module core, run com.capitalone.dashboard.util.Encryption to generate a secret key.
+1. From module core generate a secret key.
+java -jar <path-to-jar>/core-2.0.2-SNAPSHOT.jar com.capitalone.dashboard.util.Encryption
 2. Add this generated key to api.properties
 ### api.properties
 key=<your-generated-key>
