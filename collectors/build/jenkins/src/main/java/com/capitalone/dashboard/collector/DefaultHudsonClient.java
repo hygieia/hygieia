@@ -263,8 +263,8 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     /**
-     * Gathers only repo urls from now. There is no way to figure out which branches were built - as of yet.
-     * The JSON from Jenkins for multi repo and multi branch is quite buggy
+     * Gathers repo urls, and the branch name from the last built revision.
+     * Branch name is simplified, i.e., doesn't contain remotes/origin
      */
 
     private List<RepoBranch> getGitRepoBranch(JSONObject buildJson) {
@@ -274,13 +274,29 @@ public class DefaultHudsonClient implements HudsonClient {
             JSONObject jsonAction = (JSONObject) action;
             if (jsonAction.size() > 0) {
                 JSONArray remoteUrls = getJsonArray ((JSONObject) action, "remoteUrls");
+                
+                
+                String branchName = "";
+                JSONObject lastBuiltRevision = null;
+                JSONArray branches = null;
+                if (!remoteUrls.isEmpty()) {
+                	lastBuiltRevision = (JSONObject) jsonAction.get("lastBuiltRevision");
+                }
+                if (lastBuiltRevision != null) {
+                	branches = getJsonArray ((JSONObject) lastBuiltRevision, "branch");
+                }
+                if (branches != null && !branches.isEmpty()) {
+                	branchName = getString((JSONObject) branches.get(0), "name");
+                	branchName = branchName.lastIndexOf('/') == -1 ? branchName : branchName.substring(branchName.lastIndexOf('/') + 1);
+                }
+                
                 for (Object urlObj : remoteUrls) {
                     String sUrl = (String) urlObj;
                     //remove .git from the urls
                     if (sUrl.endsWith(".git")) {
                         sUrl = sUrl.substring(0, sUrl.lastIndexOf(".git"));
                     }
-                    RepoBranch grb = new RepoBranch(sUrl, "", RepoBranch.RepoType.GIT);
+                    RepoBranch grb = new RepoBranch(sUrl, branchName, RepoBranch.RepoType.GIT);
                     list.add(grb);
                 }
             }
