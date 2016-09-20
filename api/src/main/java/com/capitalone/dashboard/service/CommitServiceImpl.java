@@ -190,10 +190,20 @@ public class CommitServiceImpl implements CommitService {
                 int numberChanges = ((JSONArray) cObj.get("added")).size() +
                         ((JSONArray) cObj.get("removed")).size() +
                         ((JSONArray) cObj.get("modified")).size();
+                
+                JSONArray parents = (JSONArray) jsonObject.get("parents");
+				List<String> parentShas = new ArrayList<>();
+				if (parents != null) {
+					for (Object parentObj : parents) {
+						parentShas.add(str((JSONObject)parentObj, "sha"));
+					}
+				}
+                
                 Commit commit = new Commit();
                 commit.setScmUrl(url);
                 commit.setTimestamp(System.currentTimeMillis()); // this is hygieia timestamp.
                 commit.setScmRevisionNumber(str(cObj, "id"));
+                commit.setScmParentRevisionNumbers(parentShas);
                 commit.setScmAuthor(author);
                 commit.setScmCommitLog(message);
                 commit.setScmCommitTimestamp(timestamp); // actual search timestamp
