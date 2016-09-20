@@ -18,7 +18,7 @@
             itemsByType: itemsByType,
             createCollectorItem: createCollectorItem,
             collectorsByType: collectorsByType,
-            encrypt: encrypt,
+            encrypt: encrypt
         };
 
         function itemsByType(type) {
