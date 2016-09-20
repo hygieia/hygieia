@@ -107,6 +107,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 					Commit commit = new Commit();
 					commit.setTimestamp(System.currentTimeMillis());
 					commit.setScmUrl(repo.getRepoUrl());
+					commit.setScmBranch(repo.getBranch());
 					commit.setScmRevisionNumber(sha);
 					commit.setScmParentRevisionNumbers(parentShas);
 					commit.setScmAuthor(author);
