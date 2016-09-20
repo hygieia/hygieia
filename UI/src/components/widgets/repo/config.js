@@ -70,14 +70,16 @@
 			ctrl.submitted = true;
 			if (form.$valid && ctrl.collectors.length) {
 
-				//nothing was changed
-				if (ctrl.repoOption.name === widgetConfig.options.scm.name &&
-					ctrl.repoUrl === widgetConfig.options.url &&
-					ctrl.gitBranch === widgetConfig.options.branch &&
-					ctrl.repouser === widgetConfig.options.userID &&
-					ctrl.repopass === widgetConfig.options.password) {
-					$modalInstance.close();
-					return;
+				//there is an existing repo and nothing was changed
+				if (widgetConfig.options.scm) {
+					if (ctrl.repoOption.name === widgetConfig.options.scm.name &&
+						ctrl.repoUrl === widgetConfig.options.url &&
+						ctrl.gitBranch === widgetConfig.options.branch &&
+						ctrl.repouser === widgetConfig.options.userID &&
+						ctrl.repopass === widgetConfig.options.password) {
+						$modalInstance.close();
+						return;
+					}
 				}
 
 				if (ctrl.repopass) {
