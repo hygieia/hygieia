@@ -140,11 +140,19 @@ public class DefaultGitHubClient implements GitHubClient {
 					long timestamp = new DateTime(str(authorObject, "date"))
 							.getMillis();
                     JSONArray parents = (JSONArray) jsonObject.get("parents");
+					List<String> parentShas = new ArrayList<>();
+					if (parents != null) {
+						for (Object parentObj : parents) {
+							parentShas.add(str((JSONObject)parentObj, "sha"));
+						}
+					}
+                    
 					Commit commit = new Commit();
 					commit.setTimestamp(System.currentTimeMillis());
 					commit.setScmUrl(repo.getRepoUrl());
                     commit.setScmBranch(repo.getBranch());
 					commit.setScmRevisionNumber(sha);
+					commit.setScmParentRevisionNumbers(parentShas);
 					commit.setScmAuthor(author);
 					commit.setScmCommitLog(message);
 					commit.setScmCommitTimestamp(timestamp);

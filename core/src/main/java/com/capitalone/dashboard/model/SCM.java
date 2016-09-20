@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.model;
 
+import java.util.List;
+
 /**
  * Base class to represent the details of a change in a source code management
  * system.
@@ -10,6 +12,7 @@ public class SCM {
 	protected String scmRevisionNumber;
     protected String scmCommitLog;
     protected String scmAuthor;
+    protected List<String> scmParentRevisionNumbers;
     protected long scmCommitTimestamp;
     protected long numberOfChanges;
     protected CommitType type;
@@ -17,24 +20,26 @@ public class SCM {
     public SCM(){
 
     }
-
-    public SCM(String scmUrl, String scmBranch, String scmRevisionNumber, String scmCommitLog, String scmAuthor, long scmCommitTimestamp, long numberOfChanges) {
-        this.scmUrl = scmUrl;
-        this.scmBranch = scmBranch;
-        this.scmRevisionNumber = scmRevisionNumber;
-        this.scmCommitLog = scmCommitLog;
-        this.scmAuthor = scmAuthor;
-        this.scmCommitTimestamp = scmCommitTimestamp;
-        this.numberOfChanges = numberOfChanges;
-        this.type = CommitType.New;
+    
+    public SCM(SCM scm) {
+        this.scmUrl = scm.scmUrl;
+        this.scmBranch = scm.scmBranch;
+        this.scmRevisionNumber = scm.scmRevisionNumber;
+        this.scmCommitLog = scm.scmCommitLog;
+        this.scmAuthor = scm.scmAuthor;
+        this.scmParentRevisionNumbers = scm.scmParentRevisionNumbers;
+        this.scmCommitTimestamp = scm.scmCommitTimestamp;
+        this.numberOfChanges = scm.numberOfChanges;
+        this.type = scm.type;
     }
 
-    public SCM(String scmUrl, String scmBranch, String scmRevisionNumber, String scmCommitLog, String scmAuthor, long scmCommitTimestamp, long numberOfChanges, CommitType type) {
+    public SCM(String scmUrl, String scmBranch, String scmRevisionNumber, String scmCommitLog, String scmAuthor, List<String> scmParentRevisionNumbers, long scmCommitTimestamp, long numberOfChanges, CommitType type) {
         this.scmUrl = scmUrl;
         this.scmBranch = scmBranch;
         this.scmRevisionNumber = scmRevisionNumber;
         this.scmCommitLog = scmCommitLog;
         this.scmAuthor = scmAuthor;
+        this.scmParentRevisionNumbers = scmParentRevisionNumbers;
         this.scmCommitTimestamp = scmCommitTimestamp;
         this.numberOfChanges = numberOfChanges;
         this.type = type;
@@ -78,6 +83,15 @@ public class SCM {
 
     public void setScmAuthor(String scmAuthor) {
         this.scmAuthor = scmAuthor;
+    }
+    
+    // can return null
+    public List<String> getScmParentRevisionNumbers() {
+    	return scmParentRevisionNumbers;
+    }
+    
+    public void setScmParentRevisionNumbers(List<String> scmParentRevisionNumbers) {
+    	this.scmParentRevisionNumbers = scmParentRevisionNumbers;
     }
 
     public long getScmCommitTimestamp() {
