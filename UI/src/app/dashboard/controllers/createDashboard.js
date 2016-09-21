@@ -14,7 +14,7 @@
         var ctrl = this;
 
         // public variables
-        ctrl.dashboardName = '';
+        ctrl.dashboardTitle = '';
         ctrl.applicationName = '';
         ctrl.availableTemplates = [];
 
@@ -76,14 +76,15 @@
         }
 
         // method implementations
-        function submit(valid) {
+        function submit(form) {
 
+            form.dashboardTitle.$setValidity('createError', true);
             // perform basic validation and send to the api
-            if (valid) {
+            if (form.$valid) {
                 var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
                     submitData = {
                         template: document.cdf.selectedTemplate.value,
-                        title: document.cdf.dashboardName.value,
+                        title: document.cdf.dashboardTitle.value,
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
@@ -92,14 +93,16 @@
 
                 dashboardData
                     .create(submitData)
-                    .then(function (data) {
-                        // TODO: error handling
+                    .success(function (data) {
                         // redirect to the new dashboard
                         $location.path('/dashboard/' + data.id);
+                        // close dialog
+                        $modalInstance.dismiss();
+                    })
+                    .error(function (data) {
+                        // display error message
+                        form.dashboardTitle.$setValidity('createError', false);
                     });
-
-                // close dialog
-                $modalInstance.dismiss();
             }
         }
 
