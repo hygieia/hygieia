@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('CloudTemplateController', CloudTemplateController);
 
-    CapOneTemplateController.$inject = [];
-    function CapOneTemplateController() {
+    CloudTemplateController.$inject = [];
+    function CloudTemplateController() {
         var ctrl = this;
 
         ctrl.tabs = [
@@ -22,9 +22,5 @@
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
         };
 
-        ctrl.hasComponents = function (dashboard) {
-            var hasAllComponents = true;
-            return hasAllComponents;
-        };
     }
 })();
