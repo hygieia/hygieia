@@ -39,6 +39,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -264,7 +266,7 @@ public class DefaultHudsonClient implements HudsonClient {
 
     /**
      * Gathers repo urls, and the branch name from the last built revision.
-     * Branch name is simplified, i.e., doesn't contain remotes/origin
+     * Filters out the qualifiers from the branch name and sets the unqualified branch name
      */
 
     private List<RepoBranch> getGitRepoBranch(JSONObject buildJson) {
@@ -274,8 +276,7 @@ public class DefaultHudsonClient implements HudsonClient {
             JSONObject jsonAction = (JSONObject) action;
             if (jsonAction.size() > 0) {
                 JSONArray remoteUrls = getJsonArray ((JSONObject) action, "remoteUrls");
-                
-                
+                               
                 String branchName = "";
                 JSONObject lastBuiltRevision = null;
                 JSONArray branches = null;
@@ -287,7 +288,7 @@ public class DefaultHudsonClient implements HudsonClient {
                 }
                 if (branches != null && !branches.isEmpty()) {
                 	branchName = getString((JSONObject) branches.get(0), "name");
-                	branchName = branchName.lastIndexOf('/') == -1 ? branchName : branchName.substring(branchName.lastIndexOf('/') + 1);
+                	branchName = getUnqualifiedBranch(branchName);
                 }
                 
                 for (Object urlObj : remoteUrls) {
@@ -426,5 +427,29 @@ public class DefaultHudsonClient implements HudsonClient {
             result.append(p);
         }
         return result.toString();
+    }
+    
+    /**
+     * Gets the unqualified branch name given the qualified one of the following forms:
+     * 1. refs/remotes/<remote name>/<branch name>
+     * 2. remotes/<remote name>/<branch name>
+     * 3. origin/<branch name>
+     * 4. <branch name>
+     * @param qualifiedBranch
+     * @return the unqualified branch name
+     */
+    
+    private String getUnqualifiedBranch(String qualifiedBranch) {
+    	String branchName = qualifiedBranch;
+    	Pattern pattern = Pattern.compile("(refs/)?remotes/[^/]+/(.*)|(origin/)?(.*)");
+    	Matcher matcher = pattern.matcher(branchName);
+        if(matcher.matches()) {
+            if (matcher.group(2) != null) {
+            	branchName = matcher.group(2);
+            } else if (matcher.group(4) != null) {
+            	branchName = matcher.group(4);
+            }
+        }
+        return branchName;
     }
 }
