@@ -23,21 +23,5 @@
         ctrl.toggleView = function (index) {
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
         };
-
-        ctrl.hasComponents = function (dashboard, names) {
-            var hasAllComponents = true;
-
-            try {
-                _(names).forEach(function (name) {
-                    if(!dashboard.application.components[0].collectorItems[name]) {
-                        hasAllComponents = false;
-                    }
-                });
-            } catch(e) {
-                hasAllComponents = false;
-            }
-
-            return hasAllComponents;
-        };
     }
 })();
