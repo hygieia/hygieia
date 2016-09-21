@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.model;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -15,7 +16,11 @@ import java.util.Map;
 @Document(collection="dashboards")
 public class Dashboard extends BaseModel {
     private String template;
+
+    //NOTE Mongodb treats strings as different if they have different case
+    @Indexed(unique=true)
     private String title;
+
     private List<Widget> widgets = new ArrayList<>();
     private String owner;
     private DashboardType type;

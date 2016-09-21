@@ -1,6 +1,15 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Service;
+import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -25,7 +34,9 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -67,7 +78,7 @@ public class DashboardServiceTest {
     }
 
     @Test
-    public void create() {
+    public void create() throws HygieiaException {
         Dashboard expected = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
 
         when(dashboardRepository.save(expected)).thenReturn(expected);
@@ -77,7 +88,33 @@ public class DashboardServiceTest {
     }
 
     @Test
-    public void update() {
+    public void create_dup_name_dash() throws HygieiaException {
+        Dashboard firstDash = makeTeamDashboard("template", "title", "appName", "johns", "comp1", "comp2");
+        when(dashboardRepository.save(firstDash)).thenReturn(firstDash);
+        assertThat(dashboardService.create(firstDash), is(firstDash));
+        verify(componentRepository, times(1)).save(firstDash.getApplication().getComponents());
+
+        Dashboard secondDash = makeTeamDashboard("template", "title", "appName", "johns", "comp1", "comp2");
+
+        Throwable t = new Throwable();
+        RuntimeException excep = new RuntimeException("Failed creating dashboard.", t);
+        when(dashboardRepository.save(secondDash)).thenThrow(excep);
+
+        Iterable<Component> components = secondDash.getApplication().getComponents();
+        when(componentRepository.save(secondDash.getApplication().getComponents())).thenReturn(components);
+
+        try {
+            dashboardService.create(secondDash);
+            fail("Should throw RuntimeException");
+        } catch(Exception e) {
+            assertEquals(excep.getMessage(), e.getMessage());
+        }
+
+        verify(componentRepository).delete(components);
+    }
+
+    @Test
+    public void update() throws HygieiaException {
         Dashboard expected = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
 
         when(dashboardRepository.save(expected)).thenReturn(expected);

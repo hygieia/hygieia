@@ -63,8 +63,11 @@
         // creates a new dashboard
         function create(data) {
             return $http.post(dashboardRoute, data)
-                .then(function (response) {
+                .success(function (response) {
                     return response.data;
+                })
+                .error(function (response) {
+                    return null;
                 });
         }
 
