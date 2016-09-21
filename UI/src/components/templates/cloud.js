@@ -7,15 +7,13 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('CapOneTemplateController', CapOneTemplateController);
+        .controller('CloudTemplateController', CloudTemplateController);
 
-    CapOneTemplateController.$inject = [];
-    function CapOneTemplateController() {
+    CloudTemplateController.$inject = [];
+    function CloudTemplateController() {
         var ctrl = this;
 
         ctrl.tabs = [
-            { name: "Widget"},
-            { name: "Pipeline"},
             { name: "Cloud"}
            ];
 
@@ -23,5 +21,6 @@
         ctrl.toggleView = function (index) {
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
         };
+
     }
 })();
