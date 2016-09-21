@@ -1,4 +1,4 @@
-package com.captialone.dashboard.client.project;
+package com.capitalone.dashboard.client.project;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,36 +29,36 @@ import com.capitalone.dashboard.util.FeatureSettings;
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectDataClientImplTest {
 	private final ObjectId JIRA_COLLECTORID = new ObjectId("ABCDEF0123456789ABCDEF01");
-	
+
 	@Mock FeatureSettings featureSettings;
 	@Mock ScopeRepository projectRepo;
 	@Mock FeatureCollectorRepository featureCollectorRepository;
 	@Mock JiraClient jiraClient;
-	
+
 	ProjectDataClientImpl projectDataClient;
-	
+
 	@Before
 	public final void init() {
 		projectDataClient = new ProjectDataClientImpl(featureSettings, projectRepo, featureCollectorRepository, jiraClient);
-		
+
 		FeatureCollector jira = new FeatureCollector();
 		jira.setId(JIRA_COLLECTORID);
-		
+
 		Mockito.when(featureCollectorRepository.findByName(Mockito.eq(FeatureCollectorConstants.JIRA))).thenReturn(jira);
 	}
-	
+
 	@Test
 	public void testUpdateProjectInformation() {
 		List<BasicProject> jiraResponse = Arrays.asList(
 				new BasicProject(URI.create("http://my.jira.com/rest/api/2/project/100"), "key1", Long.valueOf(100L), "name1"),
 				new BasicProject(URI.create("http://my.jira.com/rest/api/2/project/200"), "key1", Long.valueOf(200L), "name2"));
-				
+
 		Mockito.when(jiraClient.getProjects()).thenReturn(jiraResponse);
 		ArgumentCaptor<Scope> captor = ArgumentCaptor.forClass(Scope.class);
 		int cnt = projectDataClient.updateProjectInformation();
 
 		Mockito.verify(projectRepo, Mockito.times(2)).save(captor.capture());
-		
+
 		assertEquals(2, cnt);
 
 		Scope scope1 = captor.getAllValues().get(0);
@@ -71,7 +71,7 @@ public class ProjectDataClientImplTest {
 		assertEquals("Active", scope1.getAssetState());
 		assertEquals("False", scope1.getIsDeleted());
 		assertNotNull(scope1.getProjectPath());
-		
+
 		Scope scope2 = captor.getAllValues().get(1);
 		assertEquals(JIRA_COLLECTORID, scope2.getCollectorId());
 		assertEquals("200", scope2.getpId());
