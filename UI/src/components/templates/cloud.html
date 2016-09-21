@@ -1,4 +1,4 @@
-<div ng-controller="CapOneTemplateController as template">
+<div ng-controller="CloudTemplateController as template">
     <div id="header">
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
@@ -9,7 +9,7 @@
 
                 <div class="pipeline-toggle btn-group"
 
-                     ng-show="template.hasComponents(ctrl.dashboard, ['SCM'])">
+                     ng-show="template.hasComponents(ctrl.dashboard)">
 
                     <span class="btn" ng-repeat="tab in template.tabs" ng-click="template.toggleView($index)"
                           ng-class="tab.name == template.widgetView ? 'btn-primary' : 'btn-default'">
