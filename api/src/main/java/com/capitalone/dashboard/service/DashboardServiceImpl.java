@@ -1,7 +1,19 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.repository.PipelineRepository;
+import com.capitalone.dashboard.repository.ServiceRepository;
 import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -11,7 +23,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -65,13 +80,18 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public Dashboard create(Dashboard dashboard) {
-        componentRepository.save(dashboard.getApplication().getComponents());
-        return dashboardRepository.save(dashboard);
+    public Dashboard create(Dashboard dashboard) throws HygieiaException {
+        Iterable<Component> components = componentRepository.save(dashboard.getApplication().getComponents());
+        try {
+            return dashboardRepository.save(dashboard);
+        } catch (Exception e) {
+            componentRepository.delete(components);
+            throw new HygieiaException("Failed creating dashboard.", HygieiaException.ERROR_INSERTING_DATA);
+        }
     }
 
     @Override
-    public Dashboard update(Dashboard dashboard) {
+    public Dashboard update(Dashboard dashboard) throws HygieiaException {
         return create(dashboard);
     }
 
@@ -242,9 +262,9 @@ public class DashboardServiceImpl implements DashboardService {
 	}
 
 	@Override
-	public String getDashboardOwner(String dashboardName) {
+	public String getDashboardOwner(String dashboardTitle) {
 
-		String dashboardOwner=dashboardRepository.findByTitle(dashboardName).get(0).getOwner();
+		String dashboardOwner=dashboardRepository.findByTitle(dashboardTitle).get(0).getOwner();
 		
 		return dashboardOwner;
 	}

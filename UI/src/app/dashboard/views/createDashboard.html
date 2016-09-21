@@ -1,5 +1,5 @@
 <widget-modal widget-modal-title="Create a New Dashboard">
-    <form name="cdf" class="form" ng-submit="ctrl.submit(cdf.$valid)" novalidate>
+    <form name="cdf" class="form" ng-submit="ctrl.submit(cdf)" novalidate>
         <form-group input="dashboardType">
             <select name="dashboardType"
                     class="form-control"
@@ -22,13 +22,13 @@
             </select>
         </form-group>
 
-        <form-group input="dashboardName" errors="{required: 'Dashboard title is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters'}">
+        <form-group input="dashboardTitle" errors="{required: 'Dashboard title is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters', createError: 'Error creating dashboard. Change title and try again.'}">
             <input
                 type="text"
-                name="dashboardName"
+                name="dashboardTitle"
                 class="form-control"
                 placeholder="Dashboard title"
-                ng-model="ctrl.dashboardName"
+                ng-model="ctrl.dashboardTitle"
                 required
                 maxlength="50"
                 autocomplete="off"
