@@ -634,7 +634,11 @@ public class DynamicPipelineServiceImpl implements PipelineService {
      * @return			the {@link RepoBranch} that the component uses
      */
 	protected RepoBranch getComponentRepoBranch(Component component) {
-        CollectorItem item = component.getCollectorItems().get(CollectorType.SCM).get(0);
+        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.SCM);
+        if (item == null) {
+        	logger.warn("Error encountered building pipeline: could not find scm collector item for dashboard.");
+        	return new RepoBranch("", "", RepoType.Unknown);
+        }
         
         // TODO find a better way?
         String url = (String)item.getOptions().get("url");
