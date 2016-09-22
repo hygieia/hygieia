@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
@@ -21,6 +22,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitalone.dashboard.model.ArtifactIdentifier;
 import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
@@ -30,6 +32,7 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.EnvironmentStage;
 import com.capitalone.dashboard.model.Pipeline;
 import com.capitalone.dashboard.model.PipelineCommit;
 import com.capitalone.dashboard.model.PipelineResponse;
@@ -39,9 +42,12 @@ import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.RepoBranch.RepoType;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.deploy.DeployableUnit;
+import com.capitalone.dashboard.model.deploy.Environment;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
+import com.capitalone.dashboard.request.BinaryArtifactSearchRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.capitalone.dashboard.request.CommitRequest;
 import com.capitalone.dashboard.request.PipelineSearchRequest;
@@ -61,9 +67,9 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		@Override
 		public int compare(Build o1, Build o2) {
 			int b1Int = o1.getNumber() != null? Integer.valueOf(o1.getNumber()) : 0;
-			int b2Int = o1.getNumber() != null? Integer.valueOf(o1.getNumber()) : 0;
+			int b2Int = o2.getNumber() != null? Integer.valueOf(o2.getNumber()) : 0;
 			
-			return b1Int - b2Int;
+			return b2Int - b1Int;
 		}
     	
     };
@@ -93,13 +99,24 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 	
 	@Override
 	public Iterable<PipelineResponse> search(PipelineSearchRequest searchRequest) {
+        //sets the lower and upper bound for the prod bucket's commits.  uses constant for lower bound limit and today as default for upper bound
+        Long lowerBound = searchRequest.getBeginDate();
+        //if(lowerBound == null){
+        	// TODO get incremental updates working
+            lowerBound = getMinStart();
+        //}
+        Long upperBound = searchRequest.getEndDate() != null ? searchRequest.getEndDate() : new Date().getTime();
+		
         List<PipelineResponse> pipelineResponses = new ArrayList<>();
         for(ObjectId collectorItemId : searchRequest.getCollectorItemId()){
             Pipeline pipeline = getOrCreatePipeline(collectorItemId);
-            pipelineResponses.add(buildPipelineResponse(pipeline, searchRequest.getBeginDate(), searchRequest.getEndDate()));
-            
+            pipeline = buildPipeline(pipeline, lowerBound, upperBound);
+
             // This will make debugging much easier
             pipelineRepository.save(pipeline);
+            
+            pipelineResponses.add(buildPipelineResponse(pipeline, lowerBound, upperBound));
+            
         }
         return pipelineResponses;
 	}
@@ -114,55 +131,12 @@ public class DynamicPipelineServiceImpl implements PipelineService {
         return pipeline;
     }
     
-    private PipelineResponse buildPipelineResponse(Pipeline pipeline, Long beginDate, Long endDate){
-    	// TODO filter builds that do not belong
-    	
-        //sets the lower and upper bound for the prod bucket's commits.  uses constant for lower bound limit and today as default for upper bound
-        Long lowerBound = beginDate;
-        //if(beginDate == null){ // TODO
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(new Date());
-            cal.add(Calendar.DAY_OF_MONTH, PROD_COMMIT_DATE_RANGE_DEFAULT);
-            lowerBound = cal.getTime().getTime();
-        //}
-        Long upperBound = endDate != null ? endDate : new Date().getTime();
-
+    private PipelineResponse buildPipelineResponse(Pipeline pipeline, Long lowerBound, Long upperBound){
         /**
          * get the collector item and dashboard
          */
         CollectorItem dashboardCollectorItem = collectorItemRepository.findOne(pipeline.getCollectorItemId());
         Dashboard dashboard = dashboardRepository.findOne(new ObjectId((String)dashboardCollectorItem.getOptions().get("dashboardId")));
-
-        // First gather information about our dashboard
-        
-        // TODO how should we handle multiple components?
-        Component component = dashboard.getApplication().getComponents().iterator().next();
-        List<BinaryArtifact> artifacts = new ArrayList<>();
-
-        List<Commit> commits = getCommits(component, lowerBound, upperBound);
-        List<Build> builds = getBuilds(component, lowerBound, upperBound);
-    	
-    	// We only want builds that belong to our repo
-    	RepoBranch repo = getComponentRepoBranch(component);
-    	builds = filterBuilds(builds, repo.getUrl(), repo.getBranch());
-    	
-    	// we assume all the builds belong to the same job
-    	Collections.sort(builds, BUILD_NUMBER_COMPATATOR);
-        
-        // Fill in pipeline
-        pipeline.setFailedBuilds(new HashSet<>());
-        pipeline.setStages(new HashMap<>());
-        
-        for(PipelineStageType stage : PipelineStageType.values()){
-        	if (PipelineStageType.Commit.equals(stage)) {
-        		processCommits(pipeline, commits);
-        	} else if (PipelineStageType.Build.equals(stage)) {
-        		processBuilds(pipeline, builds, commits);
-        	} else {
-        		// TODO
-        	}
-        }
-        
         
         PipelineResponse pipelineResponse = new PipelineResponse();
         pipelineResponse.setCollectorItemId(dashboardCollectorItem.getId());
@@ -171,7 +145,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
          * iterate over the pipeline stages (which are ordered as defined in the enum)
          * **/
         for(PipelineStageType stage : PipelineStageType.values()){
-        	
+
             List<PipelineResponseCommit> commitsForStage = findNotPropagatedCommits(dashboard, pipeline, stage);
             pipelineResponse.getStages().put(stage, commitsForStage);
             /**
@@ -188,11 +162,109 @@ public class DynamicPipelineServiceImpl implements PipelineService {
             }
         }
         
+//        // Gather all commits
+//        Map<String, Collection<PipelineCommit>> likeCommits = new HashMap<>();
+//        Map<Integer, PipelineStageType> pipelineCommitStage = new HashMap<>();
+//        for (PipelineStageType stage : PipelineStageType.values()) {
+//        	Map<String, PipelineCommit> commitsForStage = findCommitsForPipelineStageType(dashboard, pipeline, stage);
+//        	
+//        	for (Map.Entry<String, PipelineCommit> e : commitsForStage.entrySet()) {
+//        		if (!likeCommits.containsKey(e.getKey())) {
+//        			likeCommits.put(e.getKey(), new ArrayList<>());
+//        		}
+//        		
+//        		likeCommits.get(e.getKey()).add(e.getValue());
+//        		pipelineCommitStage.put(System.identityHashCode(e.getValue()), stage);
+//        	}
+//        }
+//        
+//        // Build PipelineResponseCommits
+//        Collection<PipelineResponseCommit> responseCommits = new ArrayList<>();
+//        for (Map.Entry<String, Collection<PipelineCommit>> e : likeCommits.entrySet()) {
+//        	PipelineResponseCommit prc = new PipelineResponseCommit(e.getValue().iterator().next());
+//        	
+//        	for (PipelineCommit pc : e.getValue()) {
+//        		PipelineStageType stage = pipelineCommitStage.get(System.identityHashCode(pc));
+//        		
+//        		Long existingTime = prc.getProcessedTimestamps().get(stage.name());
+//        		if (existingTime == null) {
+//        			existingTime = Long.MAX_VALUE;
+//        		}
+//        		
+//        		if (pc.getTimestamp() < existingTime) {
+//        			prc.addNewPipelineProcessedTimestamp(stage.name(), pc.getTimestamp());
+//        		}
+//        	}
+//        	
+//        	responseCommits.add(prc);
+//        }
+//        
+//        // Add PipelineResponseCommits to response
+//        for (PipelineResponseCommit prc : responseCommits) {
+//        	for (Map.Entry<String, Long> e : prc.getProcessedTimestamps().entrySet()) {
+//        		PipelineStageType stage = PipelineStageType.valueOf(e.getKey());
+//        		
+//        		if (PipelineStageType.Prod.equals(stage)
+//        				&& isBetween(e.getValue(), lowerBound, upperBound)) {
+//        			pipelineResponse.addToStage(stage, prc);
+//        		} else {
+//        			pipelineResponse.addToStage(stage, prc);
+//        		}
+//        	}
+//        }
+        
+        pipelineResponse.setUnmappedStages(findUnmappedEnvironments(dashboard));
         return pipelineResponse;
     }
     
-    private void processCommits(Pipeline pipeline, List<Commit> commits) {
+    private Pipeline buildPipeline(Pipeline pipeline, Long lowerBound, Long upperBound) {
+        CollectorItem dashboardCollectorItem = collectorItemRepository.findOne(pipeline.getCollectorItemId());
+        Dashboard dashboard = dashboardRepository.findOne(new ObjectId((String)dashboardCollectorItem.getOptions().get("dashboardId")));
+
+        // First gather information about our dashboard
+        
+        // TODO how should we handle multiple components?
+        Component component = dashboard.getApplication().getComponents().iterator().next();
+
+        // Note - since other items link to commits we always need to pull all of our commit data
+        List<Commit> commits = getCommits(component, getMinStart(), upperBound);
+        List<Build> builds = getBuilds(component, lowerBound, upperBound);
+        List<Environment> environments = getEnvironments(component);
+        Map<Environment, Collection<ArtifactIdentifier>> environmentArtifactIdentifiers = getArtifactIdentifiers(environments);
+        Map<ArtifactIdentifier, Collection<BinaryArtifact>> artifacts = getBinaryArtifacts(
+        		environmentArtifactIdentifiers.values().stream().flatMap( coll -> coll.stream()).collect(Collectors.toList()));
+    	
+    	// We only want builds that belong to our repo
+    	RepoBranch repo = getComponentRepoBranch(component);
+    	builds = filterBuilds(builds, repo.getUrl(), repo.getBranch());
+    	artifacts = filterBinaryArtifacts(artifacts, repo.getUrl(), repo.getBranch());
+    	
+    	// we assume all the builds belong to the same job
+    	Collections.sort(builds, BUILD_NUMBER_COMPATATOR);
+        
+        // recompute pipeline
+        pipeline.setFailedBuilds(new HashSet<>());
+        pipeline.setStages(new HashMap<>());
+        
+        processCommits(pipeline, commits);
+        processBuilds(pipeline, builds, commits);
+        processDeployments(pipeline, environments, environmentArtifactIdentifiers, artifacts, commits);
+        
+        return pipeline;
+    }
+
+	private void processCommits(Pipeline pipeline, List<Commit> commits) {
     	Set<String> seenRevisionNumbers = new HashSet<>();
+    	
+    	if (logger.isDebugEnabled()) {
+    		StringBuilder sb = new StringBuilder();
+    		sb.append("\n===== Commit List =====\n");
+    		for (Commit commit : commits) {
+    			sb.append("    - " + commit.getId() + " (" + commit.getScmRevisionNumber() + ") - " + commit.getScmCommitLog() + "\n");
+    		}
+    		
+    		logger.debug(sb.toString());
+    	}
     	
     	for (Commit commit : commits) {
     		boolean commitNotSeen = seenRevisionNumbers.add(commit.getScmRevisionNumber());
@@ -206,12 +278,34 @@ public class DynamicPipelineServiceImpl implements PipelineService {
     private void processBuilds(Pipeline pipeline, List<Build> builds, List<Commit> commits) {
     	Multimap<ObjectId, Commit> buildCommits = buildBuildToCommitsMap(builds, commits);
     	
-    	/*
-    	 * once there is a success add all commits prior?
-    	 */
-    	
-    	// if failed build has use that timestamp
-    	// if no build has use timestamp of commit?
+    	if (logger.isDebugEnabled()) {
+    		StringBuilder sb = new StringBuilder();
+    		sb.append("\n===== Build Commit Mapping =====\n");
+    		for (Build build : builds) {
+    			sb.append("    - " + build.getBuildUrl() + " -> ");
+    			
+    			Collection<Commit> commitsForBuild = buildCommits.get(build.getId());
+    			
+    			if (commitsForBuild != null && !commitsForBuild.isEmpty()) {
+    				boolean hasPrinted = false;
+    				for (Commit commit : commitsForBuild) {
+    					if (hasPrinted) {
+    						sb.append(", ");
+    					}
+    					
+    					sb.append(commit.getId());
+    					
+    					hasPrinted = true;
+    				}
+    			} else {
+    				sb.append("(NONE) - No commits for build exists/found.");
+    			}
+    			
+    			sb.append("\n");
+    		}
+    		
+    		logger.debug(sb.toString());
+    	}
     	
     	Set<String> seenRevisionNumbers = new HashSet<>();
 		
@@ -266,6 +360,92 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 				}
 			}
 		}
+    }
+    
+    private void processDeployments(Pipeline pipeline, List<Environment> environments,
+			Map<Environment, Collection<ArtifactIdentifier>> environmentArtifactIdentifiers,
+			Map<ArtifactIdentifier, Collection<BinaryArtifact>> artifacts, List<Commit> commits) {
+    	
+    	if (logger.isDebugEnabled()) {
+    		StringBuilder sb = new StringBuilder();
+    		
+    		sb.append("\n===== Environment Artifact Mapping =====\n");
+    		for (Environment env : environments) {
+    			sb.append("    - " + env.getName() + "\n");
+    			
+    			if (env.getUnits() != null && !env.getUnits().isEmpty()) {
+    				for (DeployableUnit du : env.getUnits()) {
+    					ArtifactIdentifier id = new ArtifactIdentifier(null, du.getName(), du.getVersion(), null, null);
+    					sb.append("        - " + id.getGroup() + ":" + id.getName() + ":" + id.getVersion() + " -> ");
+    					
+    					Collection<BinaryArtifact> tmp = artifacts.get(id);
+        				if (tmp != null && !tmp.isEmpty()) {
+        					boolean hasPrinted = false;
+        					for (BinaryArtifact ba : tmp) {
+        						if (hasPrinted) {
+        							sb.append(", ");
+        						}
+        						
+        						sb.append(ba.getId());
+        						
+        						hasPrinted = true;
+        					}
+        				} else {
+        					sb.append("(NONE) - No BinaryArtifacts found!");
+        				}
+        				
+        				sb.append("\n");
+    				}
+    			} else {
+        			sb.append("        - (NONE) - No DeployableUnits found!\n");
+        		}
+    		}
+    		
+    		logger.debug(sb.toString());
+    	}
+    	
+    	// Build commit graph - child : parents
+    	Map<String, Commit> commitsByRevisionNumber = buildRevisionNumberToCommitMap(commits);
+    	Map<String, Collection<String>> commitTree = buildCommitTree(commits);
+
+    	// iterate through this in case other maps ignore missing items
+    	for (Environment env : environments) {
+    		EnvironmentStage stage = new EnvironmentStage();
+    		
+    		BinaryArtifact artifact = null;
+    		DeployableUnit deployableUnit = null;
+    		if (env.getUnits() != null) {
+    			for (DeployableUnit du : env.getUnits()) {
+    				ArtifactIdentifier id = new ArtifactIdentifier(null, du.getName(), du.getVersion(), null, null);
+    				
+    				Collection<BinaryArtifact> tmp = artifacts.get(id);
+    				if (tmp != null && !tmp.isEmpty()) {
+    					artifact = tmp.iterator().next();
+    					deployableUnit = du;
+    					break;
+    				}
+    			}
+    		}
+    		
+    		if (artifact != null) {
+    			// we already filtered out bas that don't correspond to our repo
+    			String revsionNumber = artifact.getScmRevisionNumber();
+    			
+    			List<String> commitRevisionNumbers = condense(commitTree, revsionNumber);
+    			
+    			for (String rev : commitRevisionNumbers) {
+    				Commit commit = commitsByRevisionNumber.get(rev);
+    				
+    				if (commit == null) {
+    					logger.warn("Error encountered building pipeline: commit information missing for revision " + rev);
+    				} else {
+    					stage.addCommit(new PipelineCommit(commit, deployableUnit.getLastUpdated()));
+    				}
+    			}
+    		}
+    		
+    		pipeline.getStages().put(env.getName(), stage);
+    	}
     }
     
     /**
@@ -324,10 +504,56 @@ public class DynamicPipelineServiceImpl implements PipelineService {
     	
     	return rt;
     }
-	
-	private List<BinaryArtifact> getArtifacts(String group, String name, String version) {
-		return null; // TODO
-	}
+    
+    private Map<ArtifactIdentifier, Collection<BinaryArtifact>> filterBinaryArtifacts(Map<ArtifactIdentifier, Collection<BinaryArtifact>> artifactsMap, String url, String branch) {
+    	Map<ArtifactIdentifier, Collection<BinaryArtifact>> rt = new HashMap<>();
+    	String urlNoNull = url != null? url : "";
+    	String branchNoNull = branch != null? branch : "";
+    	
+    	for (Map.Entry<ArtifactIdentifier, Collection<BinaryArtifact>> e : artifactsMap.entrySet()) {
+    		ArtifactIdentifier id = e.getKey();
+    		List<BinaryArtifact> artifacts = new ArrayList<>();
+    		
+    		boolean added = false;
+    		for (BinaryArtifact ba : e.getValue()) {
+    			String baUrl = ba.getScmUrl();
+    			String baBranch = ba.getScmBranch();
+    			
+    			if (HygieiaUtils.smartUrlEquals(urlNoNull, baUrl) && ObjectUtils.equals(branchNoNull, baBranch)) {
+    				artifacts.add(ba);
+    				added = true;
+    				break;
+    			}
+    		}
+    		
+    		if (logger.isDebugEnabled() && !added) {
+    			StringBuilder sb = new StringBuilder();
+    			sb.append("Ignoring artifact identifier " + id.getGroup() + ":" + id.getName() + ":" + id.getVersion()
+    			+ " since it does not correspond to any artifacts that use the component's repository\n");
+    			sb.append("Component repo: (url: " + url + " branch: " + branch + ")\n");
+    			sb.append("Artifacts:\n");
+    			
+    			boolean hasPrinted = false;
+    			for (BinaryArtifact ba : e.getValue()) {
+    				sb.append("    " + ba.getArtifactGroupId() + ":" + ba.getArtifactName() + ":" + ba.getArtifactVersion()
+    					+ " " + "(url: " + ba.getScmUrl() + " branch: " + ba.getScmBranch() + ")\n");
+    				hasPrinted = true;
+    			}
+    			
+    			if (!hasPrinted) {
+    				sb.append("(None)\n");
+    			}
+    			
+    			logger.debug(sb.toString());
+    		}
+    		
+    		if (!artifacts.isEmpty()) {
+        		rt.put(e.getKey(), artifacts);
+    		}
+    	}
+    	
+    	return rt;
+    }
 	
 	private RepoBranch getComponentRepoBranch(Component component) {
         CollectorItem item = component.getCollectorItems().get(CollectorType.SCM).get(0);
@@ -340,7 +566,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 	}
 	
 	private List<Commit> getCommits(Component component, Long startDate, Long endDate) {
-		ArrayList<Commit> rt;
+		List<Commit> rt;
 		
 		CommitRequest request = new CommitRequest();
 		request.setComponentId(component.getId());
@@ -349,13 +575,13 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		
 		DataResponse<Iterable<Commit>> response = commitService.search(request);
 		
-		rt = Lists.newArrayList(response.getResult());
+		rt = response.getResult() != null? Lists.newArrayList(response.getResult()) : Collections.emptyList();
 		
 		return rt;
 	}
 
 	private List<Build> getBuilds(Component component, Long startDate, Long endDate) {
-		ArrayList<Build> rt;
+		List<Build> rt;
 		
 		BuildSearchRequest request = new BuildSearchRequest();
 		request.setComponentId(component.getId());
@@ -364,7 +590,62 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		
 		DataResponse<Iterable<Build>> response = buildService.search(request);
 		
-		rt = Lists.newArrayList(response.getResult());
+		rt = response.getResult() != null? Lists.newArrayList(response.getResult()) : Collections.emptyList();
+		
+		return rt;
+	}
+	
+	private List<Environment> getEnvironments(Component component) {
+		DataResponse<List<Environment>> response = deployService.getDeployStatus(component.getId());
+		
+		return response.getResult() != null? response.getResult() : Collections.emptyList();
+	}
+	
+	// this is here for future expansion
+	private Map<Environment, Collection<ArtifactIdentifier>> getArtifactIdentifiers(List<Environment> environments) {
+		Map<Environment, Collection<ArtifactIdentifier>> rt = new HashMap<>();
+		
+		for (Environment env : environments) {
+			Set<ArtifactIdentifier> ids = new HashSet<>();
+			
+			if (env.getUnits() != null) {
+				for (DeployableUnit du : env.getUnits()) {
+					ArtifactIdentifier id = new ArtifactIdentifier(null, du.getName(), du.getVersion(), null, null);
+					
+					ids.add(id);
+				}
+			}
+			
+			rt.put(env, new ArrayList<>(ids));
+		}
+		
+		return rt;
+	}
+	
+	private Map<ArtifactIdentifier, Collection<BinaryArtifact>> getBinaryArtifacts(List<ArtifactIdentifier> ids) {
+		Map<ArtifactIdentifier, Collection<BinaryArtifact>> rt = new HashMap<>();
+		Set<ArtifactIdentifier> idsDedup = new HashSet<>(ids);
+		
+		for (ArtifactIdentifier id : idsDedup) {
+			List<BinaryArtifact> artifacts = getBinaryArtifacts(id.getGroup(), id.getName(), id.getVersion());
+			
+			rt.put(id, artifacts);
+		}
+		
+		return rt;
+	}
+	
+	private List<BinaryArtifact> getBinaryArtifacts(String group, String name, String version) {
+		List<BinaryArtifact> rt;
+		
+		BinaryArtifactSearchRequest request = new BinaryArtifactSearchRequest();
+		request.setArtifactGroup(group != null && group.length() > 0? group : null);
+		request.setArtifactName(name != null && name.length() > 0? name : null);
+		request.setArtifactVersion(version != null && version.length() > 0? version : null);
+		
+		DataResponse<Iterable<BinaryArtifact>> response = binaryArtifactService.search(request);
+		
+		rt = response.getResult() != null? Lists.newArrayList(response.getResult()) : Collections.emptyList();
 		
 		return rt;
 	}
@@ -429,10 +710,13 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		return rt;
 	}
 	
+	// TODO need to handle SVN
 	private List<String> condense(Map<String, Collection<String>> commitTree, String headRevisionNumber) {
 		List<String> rt = new ArrayList<>();
 		Set<String> seenRevisions = new HashSet<>();
 		
+		seenRevisions.add(headRevisionNumber);
+		rt.add(headRevisionNumber);
 		condense(rt, seenRevisions, commitTree, headRevisionNumber);
 		
 		return rt;
@@ -455,23 +739,12 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	private Long getMinStart() {
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(new Date());
+        cal.add(Calendar.DAY_OF_MONTH, PROD_COMMIT_DATE_RANGE_DEFAULT);
+        return cal.getTime().getTime();
+	}
 	
     /**
      * finds any environments for a dashboard that aren't mapped.
