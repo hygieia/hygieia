@@ -23,6 +23,22 @@ public class HygieiaUtils {
         }.copyProperties(dest, source);
     }
     
+    /**
+     * Determines if two urls are equal accounting for load balancers and variations in schemes.
+     * <p>
+     * Two urls are equal if:
+     * <ul>
+     * <li>the root domain is the same</li>
+     * <li>the path is the same (ignoring .git at the end)</li>
+     * <li>the query is the same</li>
+     * </ul>
+     * <p>
+     * It is assumed that load balancers use a distinct subdomain in a url.
+     * 
+     * @param url1
+     * @param url2
+     * @return		if the two urls are equal ignoring load balancers, url schemes, and path endings.
+     */
     @SuppressWarnings("PMD.NPathComplexity")
     public static boolean smartUrlEquals(String url1, String url2) {
     	String u1 = nullSafe(url1);
