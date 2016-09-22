@@ -56,6 +56,13 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
+/**
+ * An implementation of PipelineService that computes pipelines dynamically.
+ * <p>
+ * For more details see {@link #buildPipeline(Pipeline, Long, Long)}.
+ * 
+ * @author <a href="mailto:MarkRx@users.noreply.github.com">MarkRx</a>
+ */
 @Service("dynamic-pipeline")
 public class DynamicPipelineServiceImpl implements PipelineService {
 	private static final Logger logger = Logger.getLogger(DynamicPipelineServiceImpl.class);
@@ -131,6 +138,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
         return pipeline;
     }
     
+    // Creates the response that is returned to the client
     private PipelineResponse buildPipelineResponse(Pipeline pipeline, Long lowerBound, Long upperBound){
         /**
          * get the collector item and dashboard
@@ -162,62 +170,39 @@ public class DynamicPipelineServiceImpl implements PipelineService {
             }
         }
         
-//        // Gather all commits
-//        Map<String, Collection<PipelineCommit>> likeCommits = new HashMap<>();
-//        Map<Integer, PipelineStageType> pipelineCommitStage = new HashMap<>();
-//        for (PipelineStageType stage : PipelineStageType.values()) {
-//        	Map<String, PipelineCommit> commitsForStage = findCommitsForPipelineStageType(dashboard, pipeline, stage);
-//        	
-//        	for (Map.Entry<String, PipelineCommit> e : commitsForStage.entrySet()) {
-//        		if (!likeCommits.containsKey(e.getKey())) {
-//        			likeCommits.put(e.getKey(), new ArrayList<>());
-//        		}
-//        		
-//        		likeCommits.get(e.getKey()).add(e.getValue());
-//        		pipelineCommitStage.put(System.identityHashCode(e.getValue()), stage);
-//        	}
-//        }
-//        
-//        // Build PipelineResponseCommits
-//        Collection<PipelineResponseCommit> responseCommits = new ArrayList<>();
-//        for (Map.Entry<String, Collection<PipelineCommit>> e : likeCommits.entrySet()) {
-//        	PipelineResponseCommit prc = new PipelineResponseCommit(e.getValue().iterator().next());
-//        	
-//        	for (PipelineCommit pc : e.getValue()) {
-//        		PipelineStageType stage = pipelineCommitStage.get(System.identityHashCode(pc));
-//        		
-//        		Long existingTime = prc.getProcessedTimestamps().get(stage.name());
-//        		if (existingTime == null) {
-//        			existingTime = Long.MAX_VALUE;
-//        		}
-//        		
-//        		if (pc.getTimestamp() < existingTime) {
-//        			prc.addNewPipelineProcessedTimestamp(stage.name(), pc.getTimestamp());
-//        		}
-//        	}
-//        	
-//        	responseCommits.add(prc);
-//        }
-//        
-//        // Add PipelineResponseCommits to response
-//        for (PipelineResponseCommit prc : responseCommits) {
-//        	for (Map.Entry<String, Long> e : prc.getProcessedTimestamps().entrySet()) {
-//        		PipelineStageType stage = PipelineStageType.valueOf(e.getKey());
-//        		
-//        		if (PipelineStageType.Prod.equals(stage)
-//        				&& isBetween(e.getValue(), lowerBound, upperBound)) {
-//        			pipelineResponse.addToStage(stage, prc);
-//        		} else {
-//        			pipelineResponse.addToStage(stage, prc);
-//        		}
-//        	}
-//        }
-        
         pipelineResponse.setUnmappedStages(findUnmappedEnvironments(dashboard));
         return pipelineResponse;
     }
     
-    private Pipeline buildPipeline(Pipeline pipeline, Long lowerBound, Long upperBound) {
+    /**
+     * Dynamically calculates what should be in a Pipeline.
+     * <p>
+     * A pipeline contains 3 section types: commits, builds, and deployments. The deployment
+     * section is further subdivided into environments. This method gathers information
+     * from collectors for the team dashboard that the pipeline corresponds to and makes a reasonable
+     * attempt to correlate it.
+     * <p>
+     * Data is correlated in the following ways:
+     * <ul>
+     * <li><b>Build -&gt; Commit</b>: Builds keep track of the SCM revision numbers as well as the repository
+     * and branch information (though builds with multiple repositories are not 100% accurate). Given a list
+     * of commits for the dashboard we can correlate builds to them using the scm revision number.</li>
+     * <li><b>EnvironmentComponent -&gt; BinaryArtifact</b>: Given a list of {@link Environment}s we can gather
+     * DeploymentUnits and associate them to {@link BinaryArtifact}s by the component name and version number.
+     * In the future this information may be stored in metadata that is retrieved by the deployment collector.
+     * <li><b>BinaryArtifact -&gt; Commit</b>: An artifact will contain information about the HEAD svn revision
+     * number that was used to produce it. Given the scm revision number we can find it in our list of commits
+     * that are tracked for the dashboard and determine it along with all previous commits. For GIT this is done
+     * using a graph buitl from {@link Commit#getScmParentRevisionNumbers()}. For SVN we simply grab all revisions
+     * with a number less than ours.</li>
+     * </ul>
+     * 
+     * @param pipeline		the pipeline to calculate
+     * @param lowerBound	the lower window bound for gathering statistics
+     * @param upperBound	the upper window bound for gathering statistics
+     * @return				the <b>pipeline</b> passed in
+     */
+    protected Pipeline buildPipeline(Pipeline pipeline, Long lowerBound, Long upperBound) {
         CollectorItem dashboardCollectorItem = collectorItemRepository.findOne(pipeline.getCollectorItemId());
         Dashboard dashboard = dashboardRepository.findOne(new ObjectId((String)dashboardCollectorItem.getOptions().get("dashboardId")));
 
@@ -253,7 +238,14 @@ public class DynamicPipelineServiceImpl implements PipelineService {
         return pipeline;
     }
 
-	private void processCommits(Pipeline pipeline, List<Commit> commits) {
+    /**
+     * Computes the commit stage of the pipeline.
+     * 
+     * @param pipeline	
+     * @param commits
+     */
+	protected void processCommits(Pipeline pipeline, List<Commit> commits) {
+		// TODO when processing commits should we only add the commits that are within the time boundaries?
     	Set<String> seenRevisionNumbers = new HashSet<>();
     	
     	if (logger.isDebugEnabled()) {
@@ -275,7 +267,22 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		}
     }
     
-    private void processBuilds(Pipeline pipeline, List<Build> builds, List<Commit> commits) {
+	/**
+	 * Computes the build stage of the pipeline.
+	 * <p>
+	 * Given a list of builds and commits, this method will associate builds to commits and then
+	 * add commits to the build stage of the pipeline. Only commits that are tracked by our dashboard
+	 * are added meaning that if a build builds some other branch the commit information for that branch
+	 * will not be put into the pipeline.
+	 * 
+	 * Note: At present some extraneous builds may be processed due to limitations in the jenkins api
+	 * when there are multiple branches being built by the same job.
+	 * 
+	 * @param pipeline
+	 * @param builds
+	 * @param commits
+	 */
+    protected void processBuilds(Pipeline pipeline, List<Build> builds, List<Commit> commits) {
     	Multimap<ObjectId, Commit> buildCommits = buildBuildToCommitsMap(builds, commits);
     	
     	if (logger.isDebugEnabled()) {
@@ -325,6 +332,13 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 			if (isSuccessful || (lastSuccessfulBuild != null)) {
 				Collection<Commit> commitsForBuild = buildCommits.get(build.getId());
 				
+				/*
+				 * If the build belongs to a branch that has commits we are not tracking or if 
+				 * the commit is greater than 90 days old this will be null as we will not have
+				 * a corresponding commit from our commits collection. This is desired as we don't
+				 * want to track commits outside of our window or commits that belong to different
+				 * branches.
+				 */
 				if (commitsForBuild != null) {
 					for (Commit commit : commitsForBuild) {
 						boolean commitNotSeen = seenRevisionNumbers.add(commit.getScmRevisionNumber());
@@ -362,7 +376,25 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		}
     }
     
-    private void processDeployments(Pipeline pipeline, List<Environment> environments,
+    /**
+     * Computes the build stage of the pipeline.
+     * <p>
+     * Iterates over each environment to determine what commits currently exist in the current deployment.
+     * Given an {@link Environment} this method will iterate over its {@link DeploymentUnit}s until
+     * a unit is found that corresponds to a {@link BinaryArtifact} that exists in the artifacts
+     * collection. DeploymentUnits are artifacts are currently correlated by name and version.
+     * If the artifact is found an attempt is made to find the last {@link Commit} that was used
+     * when producing the artifact. With this information all previous commits can be deduced and
+     * thus added to the pipeline at each environment stage that is processed.
+     * 
+     * @param pipeline
+     * @param environments
+     * @param environmentArtifactIdentifiers
+     * @param artifacts
+     * @param commits
+     * @see #buildPipeline(Pipeline, Long, Long)
+     */
+    protected void processDeployments(Pipeline pipeline, List<Environment> environments,
 			Map<Environment, Collection<ArtifactIdentifier>> environmentArtifactIdentifiers,
 			Map<ArtifactIdentifier, Collection<BinaryArtifact>> artifacts, List<Commit> commits) {
     	
@@ -375,6 +407,14 @@ public class DynamicPipelineServiceImpl implements PipelineService {
     			
     			if (env.getUnits() != null && !env.getUnits().isEmpty()) {
     				for (DeployableUnit du : env.getUnits()) {
+    					/*
+    					 * Note: At present we do not have a way to determine artifact gruop information
+    					 * from deployments. Thus if multiple distinct artifacts have the same name and
+    					 * version information the wrong artifact may be picked. A future enhancement will
+    					 * have to improve artifact correlation by storing deployment artifact information
+    					 * in deployment tools and then using this to find the correct BinaryArtifact in
+    					 * the artifacts collection.
+    					 */
     					ArtifactIdentifier id = new ArtifactIdentifier(null, du.getName(), du.getVersion(), null, null);
     					sb.append("        - " + id.getGroup() + ":" + id.getName() + ":" + id.getVersion() + " -> ");
     					
@@ -406,7 +446,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
     	
     	// Build commit graph - child : parents
     	Map<String, Commit> commitsByRevisionNumber = buildRevisionNumberToCommitMap(commits);
-    	Map<String, Collection<String>> commitTree = buildCommitTree(commits);
+    	Map<String, Collection<String>> commitTree = buildCommitGraph(commits);
 
     	// iterate through this in case other maps ignore missing items
     	for (Environment env : environments) {
@@ -431,7 +471,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
     			// we already filtered out bas that don't correspond to our repo
     			String revsionNumber = artifact.getScmRevisionNumber();
     			
-    			List<String> commitRevisionNumbers = condense(commitTree, revsionNumber);
+    			List<String> commitRevisionNumbers = getCommitHistory(commitTree, revsionNumber);
     			
     			for (String rev : commitRevisionNumbers) {
     				Commit commit = commitsByRevisionNumber.get(rev);
@@ -449,28 +489,50 @@ public class DynamicPipelineServiceImpl implements PipelineService {
     }
     
     /**
+     * Filters out builds from the dashboard's job that used a different repository.
+     * <p>
      * Builds picked up by a jenkins job might refer to different repositories if users
      * changed the job around at one point. We are only interested in the repository
      * that all of our commits come from. This fill filter out builds that do not 
      * correspond to our repository.
+     * <p>
+     * Note that this method may not work 100% due to limitations gathering data from
+     * the jenkins api. See note in code for more information.
      * 
      * @param builds	a list of builds
      * @param url		the url of the repository we are interested in
      * @param branch	the branch of the repository we are interested in
+     * @return 			the filtered list
      */
-    private List<Build> filterBuilds(List<Build> builds, String url, String branch) {
+    protected List<Build> filterBuilds(List<Build> builds, String url, String branch) {
     	List<Build> rt = new ArrayList<Build>();
     	String urlNoNull = url != null? url : "";
-    	String branchNoNull = branch != null? branch : "";
+    	//String branchNoNull = branch != null? branch : "";
     	
     	for (Build build : builds) {
     		boolean added = false;
+    		
+    		// TODO this is not reliable
     		for (RepoBranch repo : build.getCodeRepos()) {
     			String rurl = repo.getUrl() != null? repo.getUrl() : "";
-    			String rbranch = repo.getBranch() != null? repo.getBranch() : "";
+    			//String rbranch = repo.getBranch() != null? repo.getBranch() : "";
     			
+    			/*
+    			 * Note:
+    			 * Based on https://github.com/capitalone/Hygieia/pull/857 and experimentation it seems
+    			 * that branch information on the repo's is not 100% reliable when there are multiple 
+    			 * repositories that participate in the build (at least for jenkins). It appears that jenkins 
+    			 * will spawn of multiple builds but each build will have all of the repositories listed
+    			 * that participated in the first build. This means that we cannot distinguish which particular
+    			 * branch the build used in this case.
+    			 * 
+    			 * As a result the timestamping of commits may be a little off in the build portion of the pipeline.
+    			 * We shouldn't however pick up commits that exist in other branches but not the branch we are tracking
+    			 * because when processBuilds runs those extraneous commits will be dropped since they will not link
+    			 * to a commit that we are tracking.
+    			 */
     			// do not check type since it might not be known
-    			if (HygieiaUtils.smartUrlEquals(urlNoNull, rurl) && ObjectUtils.equals(branchNoNull, rbranch)) {
+    			if (HygieiaUtils.smartUrlEquals(urlNoNull, rurl) /*&& ObjectUtils.equals(branchNoNull, rbranch)*/) {
     				rt.add(build);
     				added = true;
     				break;
@@ -505,7 +567,15 @@ public class DynamicPipelineServiceImpl implements PipelineService {
     	return rt;
     }
     
-    private Map<ArtifactIdentifier, Collection<BinaryArtifact>> filterBinaryArtifacts(Map<ArtifactIdentifier, Collection<BinaryArtifact>> artifactsMap, String url, String branch) {
+    /**
+     * Filters out {@link BinaryArtifact}s that did not come from a specified repository
+     * 
+     * @param artifactsMap	a map of binary artifacts
+     * @param url			the repository url
+     * @param branch		the repository branch
+     * @return				the filtered list
+     */
+    protected Map<ArtifactIdentifier, Collection<BinaryArtifact>> filterBinaryArtifacts(Map<ArtifactIdentifier, Collection<BinaryArtifact>> artifactsMap, String url, String branch) {
     	Map<ArtifactIdentifier, Collection<BinaryArtifact>> rt = new HashMap<>();
     	String urlNoNull = url != null? url : "";
     	String branchNoNull = branch != null? branch : "";
@@ -555,7 +625,15 @@ public class DynamicPipelineServiceImpl implements PipelineService {
     	return rt;
     }
 	
-	private RepoBranch getComponentRepoBranch(Component component) {
+    /**
+     * Determine the SCM url and branch that is set for the component. Information
+     * is gathered with the assumption that the data is stored in options.url and 
+     * options.branch.
+     * 
+     * @param component
+     * @return			the {@link RepoBranch} that the component uses
+     */
+	protected RepoBranch getComponentRepoBranch(Component component) {
         CollectorItem item = component.getCollectorItems().get(CollectorType.SCM).get(0);
         
         // TODO find a better way?
@@ -686,10 +764,23 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		return rt;
 	}
 	
+	/**
+	 * Calculates the commit graph.
+	 * <p>
+	 * Builds a commit graph using information within the list of commits. For GIT this is
+	 * build using {@link Commit#getScmParentRevisionNumbers()}. For SCM this is a sequential
+	 * key:value map of all previous commits.
+	 * 
+	 * @param commits
+	 * @return			a map of revision number : parent revision number(s). This is plural in the
+	 * 					case of merge commits.
+	 */
 	// We assume each commit belongs to the same repo + branch
-	private Map<String, Collection<String>> buildCommitTree(List<Commit> commits) {
+	private Map<String, Collection<String>> buildCommitGraph(List<Commit> commits) {
 		// multimap api doesn't quite fit what we want to do here
 		Map<String, Collection<String>> rt = new HashMap<>();
+		
+		// TODO build graph for svn
 		
 		for (Commit commit : commits) {
 			String revisionNumber = commit.getScmRevisionNumber();
@@ -710,19 +801,26 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		return rt;
 	}
 	
+	/**
+	 * Given a commit graph determines all predecessor commits that came before the specified revision number.
+	 * 
+	 * @param commitTree
+	 * @param headRevisionNumber
+	 * @return						the commit history starting at <b>headRevisionNumber</b>
+	 */
 	// TODO need to handle SVN
-	private List<String> condense(Map<String, Collection<String>> commitTree, String headRevisionNumber) {
+	protected List<String> getCommitHistory(Map<String, Collection<String>> commitTree, String headRevisionNumber) {
 		List<String> rt = new ArrayList<>();
 		Set<String> seenRevisions = new HashSet<>();
 		
 		seenRevisions.add(headRevisionNumber);
 		rt.add(headRevisionNumber);
-		condense(rt, seenRevisions, commitTree, headRevisionNumber);
+		getCommitHistory(rt, seenRevisions, commitTree, headRevisionNumber);
 		
 		return rt;
 	}
 	
-	private void condense(List<String> rt, Set<String> seenRevisions, Map<String, Collection<String>> commitTree, String revisionNumber) {
+	private void getCommitHistory(List<String> rt, Set<String> seenRevisions, Map<String, Collection<String>> commitTree, String revisionNumber) {
 		if (revisionNumber == null) {
 			return;
 		}
@@ -734,7 +832,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		for (String rn : commitTree.get(revisionNumber)) {
 			if (seenRevisions.add(rn)) {
 				rt.add(rn);
-				condense(rt, seenRevisions, commitTree, rn);
+				getCommitHistory(rt, seenRevisions, commitTree, rn);
 			}
 		}
 	}
@@ -751,6 +849,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
      * @param dashboard
      * @return
      */
+	@SuppressWarnings("unchecked")
     private List<PipelineStageType> findUnmappedEnvironments(Dashboard dashboard){
 
 
