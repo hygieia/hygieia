@@ -29,10 +29,7 @@ public class PingController {
 
     @RequestMapping(value = "/appinfo", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getAppInfo() {
-
-
         String appVersion=versionNumber;
-        System.out.println("PingController.getAppInfo"+appVersion);
         return ResponseEntity.status(HttpStatus.OK).body(appVersion);
     }
 }
