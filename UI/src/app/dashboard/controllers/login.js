@@ -16,6 +16,9 @@
         login.username = '';
         login.password = '';
         login.invalidUsernamePassword = false;
+        login.appVersion='';
+
+
         login.doLogin = function () {
             $scope.lg.username.$setValidity('invalidUsernamePassword', true);
             var valid = $scope.lg.$valid;
@@ -46,6 +49,19 @@
             });
         }
         checkApi();
+
+        function getAppVersion(){
+            var url = '/api/appinfo';
+            $http.get(url).success(function (data, status) {
+                console.log("appinfo:"+data);
+                login.appVersion=data;
+            }).error(function(data,status){
+                console.log("appInfo:"+data);
+                login.appVersion="0.0";
+            });
+        }
+        getAppVersion();
+
     }
     app.controller('LoginController', inject.concat([LoginController]));
 })();

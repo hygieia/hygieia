@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.rest;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 public class PingController {
 
+    @Value("${version.number}")
+    private String versionNumber;
+
     public PingController() {
 
     }
@@ -21,5 +25,14 @@ public class PingController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(true);
+    }
+
+    @RequestMapping(value = "/appinfo", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getAppInfo() {
+
+
+        String appVersion=versionNumber;
+        System.out.println("PingController.getAppInfo"+appVersion);
+        return ResponseEntity.status(HttpStatus.OK).body(appVersion);
     }
 }
