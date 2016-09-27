@@ -233,7 +233,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
         
         processCommits(pipeline, commits);
         processBuilds(pipeline, builds, commits);
-        processDeployments(pipeline, environments, environmentArtifactIdentifiers, artifacts, commits);
+        processDeployments(pipeline, environments, artifacts, commits);
         
         return pipeline;
     }
@@ -279,16 +279,19 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 	 * when there are multiple branches being built by the same job.
 	 * 
 	 * @param pipeline
-	 * @param builds
+	 * @param builds	a list of builds sorted descending by build number
 	 * @param commits
 	 */
     protected void processBuilds(Pipeline pipeline, List<Build> builds, List<Commit> commits) {
-    	Multimap<ObjectId, Commit> buildCommits = buildBuildToCommitsMap(builds, commits);
+    	// sort again in case code changes in future to be safe
+    	List<Build> sortedBuilds = new ArrayList<>(builds);
+    	Collections.sort(sortedBuilds, BUILD_NUMBER_COMPATATOR);
+    	Multimap<ObjectId, Commit> buildCommits = buildBuildToCommitsMap(sortedBuilds, commits);
     	
     	if (logger.isDebugEnabled()) {
     		StringBuilder sb = new StringBuilder();
     		sb.append("\n===== Build Commit Mapping =====\n");
-    		for (Build build : builds) {
+    		for (Build build : sortedBuilds) {
     			sb.append("    - " + build.getBuildUrl() + " -> ");
     			
     			Collection<Commit> commitsForBuild = buildCommits.get(build.getId());
@@ -318,7 +321,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		
     	Build latestSuccessfulBuild = null;
     	Build lastSuccessfulBuild = null;
-		for (Build build : builds) {
+		for (Build build : sortedBuilds) {
 			boolean isSuccessful = BuildStatus.Success.equals(build.getBuildStatus());
 			
 			if (isSuccessful) {
@@ -349,7 +352,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 						 * the commit as the build it belongs to.
 						 */
 						if (commitNotSeen) {
-							long timestamp = isSuccessful? build.getTimestamp() : lastSuccessfulBuild.getTimestamp();
+							long timestamp = isSuccessful? build.getStartTime() : lastSuccessfulBuild.getStartTime();
 							pipeline.addCommit(PipelineStageType.Build.name(), new PipelineCommit(commit, timestamp));
 						}
             		}
@@ -370,7 +373,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 						logger.debug("processBuilds adding orphaned build commit " + commit.getScmRevisionNumber());
 					}
 					
-					pipeline.addCommit(PipelineStageType.Build.name(), new PipelineCommit(commit, commit.getTimestamp()));
+					pipeline.addCommit(PipelineStageType.Build.name(), new PipelineCommit(commit, commit.getScmCommitTimestamp()));
 				}
 			}
 		}
@@ -389,13 +392,11 @@ public class DynamicPipelineServiceImpl implements PipelineService {
      * 
      * @param pipeline
      * @param environments
-     * @param environmentArtifactIdentifiers
      * @param artifacts
      * @param commits
      * @see #buildPipeline(Pipeline, Long, Long)
      */
     protected void processDeployments(Pipeline pipeline, List<Environment> environments,
-			Map<Environment, Collection<ArtifactIdentifier>> environmentArtifactIdentifiers,
 			Map<ArtifactIdentifier, Collection<BinaryArtifact>> artifacts, List<Commit> commits) {
     	
     	if (logger.isDebugEnabled()) {
@@ -446,7 +447,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
     	
     	// Build commit graph - child : parents
     	Map<String, Commit> commitsByRevisionNumber = buildRevisionNumberToCommitMap(commits);
-    	Map<String, Collection<String>> commitTree = buildCommitGraph(commits);
+    	Map<String, Collection<String>> commitGraph = buildCommitGraph(commits);
 
     	// iterate through this in case other maps ignore missing items
     	for (Environment env : environments) {
@@ -471,7 +472,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
     			// we already filtered out bas that don't correspond to our repo
     			String revsionNumber = artifact.getScmRevisionNumber();
     			
-    			List<String> commitRevisionNumbers = getCommitHistory(commitTree, revsionNumber);
+    			List<String> commitRevisionNumbers = getCommitHistory(commitGraph, revsionNumber);
     			
     			for (String rev : commitRevisionNumbers) {
     				Commit commit = commitsByRevisionNumber.get(rev);
@@ -743,6 +744,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 				
 				Commit correspondingCommit = revisionNumberToCommitMap.get(revisionNumber);
 				if (correspondingCommit != null) {
+					assert build.getId() != null;
 					rt.put(build.getId(), correspondingCommit);
 				}
 			}
@@ -808,35 +810,35 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 	/**
 	 * Given a commit graph determines all predecessor commits that came before the specified revision number.
 	 * 
-	 * @param commitTree
+	 * @param commitGraph
 	 * @param headRevisionNumber
 	 * @return						the commit history starting at <b>headRevisionNumber</b>
 	 */
 	// TODO need to handle SVN
-	protected List<String> getCommitHistory(Map<String, Collection<String>> commitTree, String headRevisionNumber) {
+	protected List<String> getCommitHistory(Map<String, Collection<String>> commitGraph, String headRevisionNumber) {
 		List<String> rt = new ArrayList<>();
 		Set<String> seenRevisions = new HashSet<>();
 		
 		seenRevisions.add(headRevisionNumber);
 		rt.add(headRevisionNumber);
-		getCommitHistory(rt, seenRevisions, commitTree, headRevisionNumber);
+		getCommitHistory(rt, seenRevisions, commitGraph, headRevisionNumber);
 		
 		return rt;
 	}
 	
-	private void getCommitHistory(List<String> rt, Set<String> seenRevisions, Map<String, Collection<String>> commitTree, String revisionNumber) {
+	private void getCommitHistory(List<String> rt, Set<String> seenRevisions, Map<String, Collection<String>> commitGraph, String revisionNumber) {
 		if (revisionNumber == null) {
 			return;
 		}
 		
-		if (commitTree.get(revisionNumber) == null || commitTree.get(revisionNumber).isEmpty()) {
+		if (commitGraph.get(revisionNumber) == null || commitGraph.get(revisionNumber).isEmpty()) {
 			return;
 		}
 		
-		for (String rn : commitTree.get(revisionNumber)) {
+		for (String rn : commitGraph.get(revisionNumber)) {
 			if (seenRevisions.add(rn)) {
 				rt.add(rn);
-				getCommitHistory(rt, seenRevisions, commitTree, rn);
+				getCommitHistory(rt, seenRevisions, commitGraph, rn);
 			}
 		}
 	}
