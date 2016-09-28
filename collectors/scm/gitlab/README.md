@@ -1,4 +1,4 @@
-# Hygieia SCM Collectors / Gitlab
+# Hygieia SCM Collectors / Gitlab (Community Contribution)
 
 Collect source code details from Gitlab based on URL
 
