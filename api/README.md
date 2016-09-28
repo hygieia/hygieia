@@ -27,6 +27,11 @@ dbusername=[MogoDb Database Username, defaults to empty]
 dbpassword=[MongoDb Database Password, defaults to empty]
 dbhost=[Host on which MongoDb is running, defaults to localhost]
 dbport=[Port on which MongoDb is listening, defaults to 27017]
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+server.contextPath=[Web Context path if any]
+server.port=[Web server port - default is 8080]
+version.number=@application.version.number@
 ```
 
 All the above values are optional. Even without the property file you must be able to run the api (assuming you have mongodb installed with no authorization).
