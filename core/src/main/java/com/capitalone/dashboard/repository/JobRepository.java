@@ -5,9 +5,9 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.JobCollectorItem;
 
-public interface JobRepository<T extends CollectorItem> extends BaseCollectorItemRepository<T> {
+public interface JobRepository<T extends JobCollectorItem> extends BaseCollectorItemRepository<T> {
     @Query(value="{ 'collectorId' : ?0, options.instanceUrl : ?1, options.jobName : ?2}")
     T findJob(ObjectId collectorId, String instanceUrl, String jobName);
 

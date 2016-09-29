@@ -67,6 +67,7 @@ public class BinaryArtifactControllerTest {
         BinaryArtifactCreateRequest artifact = new BinaryArtifactCreateRequest();
         artifact.setArtifactName("MyArtifact");
         artifact.setCanonicalName("MyArtifact-1.1.0.0");
+        artifact.setBuildId("1234");
         artifact.setMetadata(new HashMap<>());
         artifact.setArtifactGroup("Mygroup.com");
         artifact.setArtifactVersion("1.1.0.0");

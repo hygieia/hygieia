@@ -67,6 +67,9 @@ public class ArtifactBuilder {
                 bac.setCanonicalName(f.getName());
                 bac.setArtifactName(HygieiaUtils.getFileNameMinusVersion(f, version));
                 bac.setTimestamp(build.getTimeInMillis());
+                bac.setBuildId(buildId);
+                CommitBuilder commitBuilder = new CommitBuilder(build);
+                bac.getSourceChangeSet().addAll(commitBuilder.getCommits());
                 
                 bac.getMetadata().put("buildUrl", HygieiaUtils.getBuildUrl(build));
                 bac.getMetadata().put("buildNumber", HygieiaUtils.getBuildNumber(build));

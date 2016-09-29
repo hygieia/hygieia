@@ -43,8 +43,18 @@ public class BinaryArtifact extends BaseModel {
     private String canonicalName;
     private String artifactGroupId;
     private String artifactVersion;
+    private Build buildInfo;
     
     private Map<String, String> metadata = new HashMap<>();
+    
+    // Note this can be null 
+    public Build getBuildInfo() {
+    	return buildInfo;
+    }
+    
+    public void setBuildInfo(Build buildInfo) {
+    	this.buildInfo = buildInfo;
+    }
 
     public ObjectId getCollectorItemId() {
         return collectorItemId;
