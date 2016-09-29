@@ -2,9 +2,17 @@ package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
 
+import com.capitalone.dashboard.model.SCM;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * A request to create a BinaryArtifact.
+ *
+ */
 public class BinaryArtifactCreateRequest {
 
     @NotNull
@@ -16,7 +24,14 @@ public class BinaryArtifactCreateRequest {
     @NotNull
     private String artifactVersion;
     
+    // May be null if comes in from rest call outside of jenkins
+    private String buildId;
+    
     private long timestamp;
+    
+    // Used by the jenkins plugin
+	// May be null if comes in from rest call outside of jenkins
+    private List<SCM> sourceChangeSet = new ArrayList<>();
     
     // See usage of metadata in BinaryArtifactServiceImpl for defined property names
     private Map<String, Object> metadata = new HashMap<>();
@@ -54,12 +69,12 @@ public class BinaryArtifactCreateRequest {
         this.artifactVersion = artifactVersion;
     }
     
-    public Map<String, Object> getMetadata() {
-    	return metadata;
+    public String getBuildId() {
+    	return buildId;
     }
     
-    public void setMetadata(Map<String, Object> metadata) {
-    	this.metadata = metadata;
+    public void setBuildId(String buildId) {
+    	this.buildId = buildId;
     }
 
     public long getTimestamp() {
@@ -68,5 +83,17 @@ public class BinaryArtifactCreateRequest {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    public List<SCM> getSourceChangeSet() {
+    	return sourceChangeSet;
+    }
+    
+    public Map<String, Object> getMetadata() {
+    	return metadata;
+    }
+    
+    public void setMetadata(Map<String, Object> metadata) {
+    	this.metadata = metadata;
     }
 }

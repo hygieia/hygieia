@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.request;
 
+import org.bson.types.ObjectId;
+
 public class BinaryArtifactSearchRequest {
 
     private String artifactName;
@@ -7,8 +9,8 @@ public class BinaryArtifactSearchRequest {
     private String artifactGroup;
 
     private String artifactVersion;
-    
-    private String buildUrl;
+
+    private ObjectId buildId;
 
 
     public String getArtifactName() {
@@ -34,12 +36,12 @@ public class BinaryArtifactSearchRequest {
     public void setArtifactVersion(String artifactVersion) {
         this.artifactVersion = artifactVersion;
     }
-    
-    public String getBuildUrl() {
-    	return buildUrl;
+
+    public ObjectId getBuildId() {
+        return buildId;
     }
-    
-    public void setBuildUrl(String buildUrl) {
-    	this.buildUrl = buildUrl;
+
+    public void setBuildId(ObjectId buildId) {
+        this.buildId = buildId;
     }
 }

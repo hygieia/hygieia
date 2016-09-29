@@ -111,54 +111,18 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         		LOGGER.debug("Processing artifact " + artifact.getArtifactGroupId() + ":" + artifact.getArtifactName() + ":" + artifact.getArtifactVersion());
         	}
         	
-        	// this shouldn't be too large
+        	Build build = artifact.getBuildInfo();
         	
-        	// Note: in order to work properly both the artifact and the build must exist when this is run
-        	// This shouldn't be a problem as they would exist by the time the component is deployed so
-        	// long as the collector frequency allowed the information to be picked up
-        	String jobName = null;
-        	String buildNumber = null;
-        	String instanceUrl = null;
-        	
-        	if (artifact.getMetadata() != null) {
-        		jobName = artifact.getJobName();
-        		buildNumber = artifact.getBuildNumber();
-        		instanceUrl = artifact.getInstanceUrl();
+        	if (build == null) {
+        		// Attempt to get the build based on the artifact metadata information if possible
+        		build = getBuildByMetadata(artifact);
         	}
         	
-        	if (jobName == null || buildNumber == null || instanceUrl == null) {
-        		LOGGER.warn("Artifact " + artifact.getId() + " is missing build information. Pipeline may be incomplete.");
-        		continue;
-        	}
-        	
-        	List<Collector> buildCollectors = collectorRepository.findByCollectorType(CollectorType.Build);
-        	List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(buildCollectors, new ToCollectorId()));
-        	
-        	boolean buildFound = false;
-        	// Just in case more build collectors are added in the future that run together...
-        	for (ObjectId buildCollectorId : collectorIds) {
-	        	CollectorItem jobCollectorItem = jobRepository.findJob(buildCollectorId, instanceUrl, jobName);
-	        	
-	        	if (jobCollectorItem == null) {
-	        		continue;
-	        	}
-	        	
-	        	Build build = buildRepository.findByCollectorItemIdAndNumber(jobCollectorItem.getId(), buildNumber);
-	        	if (build == null) {
-	        		continue;
-	        	}
-	        	buildFound = true;
-	        	
-	            for(SCM scm : build.getSourceChangeSet()){
-	                PipelineCommit commit = new PipelineCommit(scm, environmentComponent.getAsOfDate());
-	                pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
-	            }
-        	}
-        	
-        	if (!buildFound) {
-        		LOGGER.warn("Artifact " + artifact.getId() + " references build " + buildNumber + " in '" + instanceUrl + "' but no build with that information was found."
-        				+ " Pipeline may be incomplete.");
-        		continue;
+        	if (build != null) {
+				for (SCM scm : build.getSourceChangeSet()) {
+					PipelineCommit commit = new PipelineCommit(scm, environmentComponent.getAsOfDate());
+					pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
+				}
         	}
         }
 
@@ -169,8 +133,57 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
             BinaryArtifact lastArtifact = sortedArtifacts.get(sortedArtifacts.size() - 1);
             currentStage.setLastArtifact(lastArtifact);
         }
-
-
+    }
+    
+    /**
+     * Attempts to find the build for the artifact based on the artifacts build metadata information.
+     * 
+     * @param artifact
+     * @return
+     */
+    private Build getBuildByMetadata(BinaryArtifact artifact) {
+    	Build build = null;
+    	
+    	// Note: in order to work properly both the artifact and the build must exist when this is run
+    	// This shouldn't be a problem as they would exist by the time the component is deployed so
+    	// long as the collector frequency allowed the information to be picked up
+    	String jobName = null;
+    	String buildNumber = null;
+    	String instanceUrl = null;
+    	
+    	if (artifact.getMetadata() != null) {
+    		jobName = artifact.getJobName();
+    		buildNumber = artifact.getBuildNumber();
+    		instanceUrl = artifact.getInstanceUrl();
+    	}
+    	
+    	if (jobName != null && buildNumber != null && instanceUrl != null) {
+        	List<Collector> buildCollectors = collectorRepository.findByCollectorType(CollectorType.Build);
+        	List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(buildCollectors, new ToCollectorId()));
+        	
+        	// Just in case more build collectors are added in the future that run together...
+        	for (ObjectId buildCollectorId : collectorIds) {
+            	CollectorItem jobCollectorItem = jobRepository.findJob(buildCollectorId, instanceUrl, jobName);
+            	
+            	if (jobCollectorItem == null) {
+            		continue;
+            	}
+            	
+            	build = buildRepository.findByCollectorItemIdAndNumber(jobCollectorItem.getId(), buildNumber);
+            	
+            	if (build != null) {
+            		break;
+            	}
+        	}
+    	} else {
+    		LOGGER.debug("Artifact " + artifact.getId() + " is missing build information.");
+    	}
+    	
+    	if (build == null) {
+    		LOGGER.debug("Artifact " + artifact.getId() + " references build " + buildNumber + " in '" + instanceUrl + "' but no build with that information was found.");
+    	}
+    	
+    	return build;
     }
 
     /**
