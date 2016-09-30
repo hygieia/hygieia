@@ -3,18 +3,21 @@
     {},
     {},
     {
-      "lastBuiltRevision" : {
-        "SHA1" : "385bbf9dd7bc367b9980f58a6c4489ba95cbb9a9",
-        "branch" : [
+      "lastBuiltRevision": {
+        "SHA1": "f6617799ff337984df0b80156995ddb87f60c0af",
+        "branch": [
+          {
+            "SHA1": "f6617799ff337984df0b80156995ddb87f60c0af",
+            "name": "origin/master"
+          },
           {
             "SHA1" : "385bbf9dd7bc367b9980f58a6c4489ba95cbb9a9",
-            "name" : "refs/remotes/origin1/test"
+            "name" : "origin/test"
           }
         ]
       },
-      "remoteUrls" : [
-		"https://github.com/myrepo/Hygieia222.git",
-		"https://github.com/myrepo/Hygieia.git"
+      "remoteUrls": [
+        "https://github.com/myrepo/Hygieia.git"
       ]
     }
   ],
