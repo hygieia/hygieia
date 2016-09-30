@@ -251,7 +251,7 @@ public class DefaultHudsonClientTests {
         assertThat(build.getCodeRepos().get(0).getUrl(), is("https://github.com/myrepo/Hygieia"));
         assertThat(build.getCodeRepos().get(0).getBranch(), is("master"));
     }
-
+    
     @Test
     public void buildDetails_withRepoOriginBranch() throws Exception {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
@@ -310,9 +310,30 @@ public class DefaultHudsonClientTests {
     }
     
     @Test
-    public void buildDetails_withMultipleRepos() throws Exception {
+    public void buildDetails_withRepoMultipleBranches() throws Exception {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
-                .thenReturn(new ResponseEntity<>(getJson("buildDetails_withMultipleRepos.json"), HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(getJson("buildDetails_withRepo-multipleBranches.json"), HttpStatus.OK));
+
+        Build build = hudsonClient.getBuildDetails("http://localhost/job/Hygieia-Common/179/", "http://localhost");
+
+        assertThat(build.getTimestamp(), notNullValue());
+        assertThat(build.getNumber(), is("179"));
+        assertThat(build.getBuildUrl(), is("http://localhost/job/Hygieia-Common/179/"));
+        assertThat(build.getStartTime(), is(1473102515400L));
+        assertThat(build.getBuildStatus(), is(BuildStatus.Failure));
+        assertThat(build.getStartedBy(), is(nullValue()));
+        assertThat(build.getSourceChangeSet().size(), is(0));
+        assertThat(build.getCodeRepos().size(), is(2));
+        assertThat(build.getCodeRepos().get(0).getUrl(), is("https://github.com/myrepo/Hygieia"));
+        assertThat(build.getCodeRepos().get(0).getBranch(), is("master"));
+        assertThat(build.getCodeRepos().get(1).getUrl(), is("https://github.com/myrepo/Hygieia"));
+        assertThat(build.getCodeRepos().get(1).getBranch(), is("test"));
+    }
+    
+    @Test
+    public void buildDetails_withMultipleSCM() throws Exception {
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(getJson("buildDetails_withMultipleSCM.json"), HttpStatus.OK));
 
         Build build = hudsonClient.getBuildDetails("http://localhost/job/Hygieia-Common/179/", "http://localhost");
 
@@ -328,6 +349,28 @@ public class DefaultHudsonClientTests {
         assertThat(build.getCodeRepos().get(0).getBranch(), is("master"));
         assertThat(build.getCodeRepos().get(1).getUrl(), is("https://github.com/myrepo/Hygieia222"));
         assertThat(build.getCodeRepos().get(1).getBranch(), is("test"));
+    }
+    
+    @Test
+    public void buildDetails_withMultipleRepos() throws Exception {
+        when(rest.exchange(eq(URI.create("http://localhost/job/Hygieia-Common/179/api/json?tree=number,url,timestamp,duration,building,result,culprits[fullName],changeSet[items[user,author[fullName],revision,id,msg,timestamp,date,paths[file]],kind,revisions[module,revision]],actions[lastBuiltRevision[SHA1,branch[SHA1,name]],remoteUrls]")),
+        		eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(getJson("buildDetails_withMultipleRepos.json"), HttpStatus.OK));
+        when(rest.exchange(eq(URI.create("http://localhost:8082/job/Hygieia-Common/config.xml")), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+        		.thenReturn(new ResponseEntity<>(getJson("jobConfig.xml"), HttpStatus.OK));
+        
+        Build build = hudsonClient.getBuildDetails("http://localhost/job/Hygieia-Common/179/", "http://localhost");
+
+        assertThat(build.getTimestamp(), notNullValue());
+        assertThat(build.getNumber(), is("179"));
+        assertThat(build.getBuildUrl(), is("http://localhost/job/Hygieia-Common/179/"));
+        assertThat(build.getStartTime(), is(1473102515400L));
+        assertThat(build.getBuildStatus(), is(BuildStatus.Failure));
+        assertThat(build.getStartedBy(), is(nullValue()));
+        assertThat(build.getSourceChangeSet().size(), is(0));
+        assertThat(build.getCodeRepos().size(), is(1));
+        assertThat(build.getCodeRepos().get(0).getUrl(), is("https://github.com/myrepo/Hygieia222"));
+        assertThat(build.getCodeRepos().get(0).getBranch(), is("test"));
     }
 
     @Test
