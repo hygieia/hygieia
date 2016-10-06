@@ -71,12 +71,60 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 jenkins.cron=${JENKINS_CRON:-0 0/5 * * * *}
 
 #Jenkins server (required) - Can provide multiple
-jenkins.servers[0]=${JENKINS_MASTER:-http://jenkins.company.com}
-
+#jenkins.servers[0]=http://jenkins.company.com
 #Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
-jenkins.username=${JENKINS_USERNAME}
-jenkins.apiKey=${JENKINS_API_KEY}
+#jenkins.usernames[0]=user
+#jenkins.apiKeys[0]=12345
 
+EOF
+
+# find how many jenkins urls are configured
+max=-1
+while IFS='=' read -r name value ; do
+	if [[ $name == *'JENKINS_MASTER'* ]]
+	then
+		echo "$name" ${!name}
+		suffix=${name##JENKINS_MASTER}
+		
+		if [ -z $suffix ]
+		then
+			suffix=0
+		fi
+		
+		if [[ $suffix -gt $max ]]
+		then
+			max=$suffix
+		fi
+	fi
+done < <(env)
+
+# loop over and output the url, username and apiKey
+i=0
+while [ $i -le $max ]
+do
+	if [ $i -eq 0 ]
+	then
+		server="JENKINS_MASTER"
+		username="JENKINS_USERNAME"
+		apiKey="JENKINS_API_KEY"
+	else
+		server="JENKINS_MASTER$i"
+		username="JENKINS_USERNAME$i"
+		apiKey="JENKINS_API_KEY$i"
+	fi
+	
+	
+cat >> $PROP_FILE <<EOF
+jenkins.servers[${i}]=${!server}
+jenkins.usernames[${i}]=${!username}
+jenkins.apiKeys[${i}]=${!apiKey}
+
+EOF
+	
+	i=$(($i+1))
+done
+
+cat >> $PROP_FILE <<EOF
 #Determines if build console log is collected - defaults to false
 jenkins.saveLog=${JENKINS_SAVE_LOG:-true}
 
@@ -93,8 +141,8 @@ then
 
 	cat >> $PROP_FILE <<EOF
 #If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
-#jenkins.servers[1]=${JENKINS_OP_CENTER:-http://username:token@jenkins.company.com}
-jenkins.servers[1]=${JENKINS_OP_CENTER}
+#jenkins.servers[${i}]=${JENKINS_OP_CENTER:-http://username:token@jenkins.company.com}
+jenkins.servers[${i}]=${JENKINS_OP_CENTER}
 EOF
 
 fi
