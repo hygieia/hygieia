@@ -24,7 +24,6 @@ fi
 echo "MONGODB_HOST: $MONGODB_HOST"
 echo "MONGODB_PORT: $MONGODB_PORT"
 
-
 cat > $PROP_FILE <<EOF
 #Database Name
 dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
@@ -43,17 +42,31 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
 xldeploy.cron=${XLDEPLOY_CRON:-0 0/5 * * * *}
-
-#XLDeploy server (required) - Can provide multiple
-xldeploy.servers[0]=${XLDEPLOY_URL:-http://xldeploy.company.com}
-
-#XLDeploy user name (required)
-xldeploy.username=${XLDEPLOY_USERNAME:-bobama}
-
-#XLDeploy password (required)
-xldeploy.password=${XLDEPLOY_PASSWORD:-s3cr3t}
-
 EOF
+
+echo -e "\n#XLDeploy server (required) - Can provide multiple" >> $PROP_FILE
+idx=0
+for x in ${!XLDEPLOY_URL*}
+do
+	echo "xldeploy.servers[$idx]=${!x:-http://xldeploy.company.com}" >> $PROP_FILE
+	idx=$((idx+1))
+done
+
+echo -e "\n#XLDeploy user name (required) - Can provide multiple" >> $PROP_FILE
+idx=0
+for x in ${!XLDEPLOY_USERNAME*}
+do
+	echo "xldeploy.usernames[$idx]=${!x:-bobama}" >> $PROP_FILE
+	idx=$((idx+1))
+done
+
+echo -e "\n#XLDeploy password (required) - Can provide multiple" >> $PROP_FILE
+idx=0
+for x in ${!XLDEPLOY_PASSWORD*}
+do
+	echo "xldeploy.passwords[$idx]=${!x:-s3cr3t}" >> $PROP_FILE
+	idx=$((idx+1))
+done
 
 echo "
 
