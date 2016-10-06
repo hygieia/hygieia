@@ -15,6 +15,7 @@ public class XLDeploySettings {
     private List<String> usernames;
     private List<String> passwords;
     private List<String> servers;
+    private List<String> niceNames;
 
     public String getCron() {
         return cron;
@@ -46,5 +47,13 @@ public class XLDeploySettings {
 
     public void setServers(List<String> servers) {
         this.servers = servers;
+    }
+    
+    public List<String> getNiceNames() {
+    	return niceNames;
+    }
+    
+    public void setNiceNames(List<String> niceNames) {
+    	this.niceNames = niceNames;
     }
 }

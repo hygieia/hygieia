@@ -52,6 +52,14 @@ do
 	idx=$((idx+1))
 done
 
+echo -e "\n#XLDeploy server names (Optional) - Can provide multiple" >> $PROP_FILE
+idx=0
+for x in ${!XLDEPLOY_NAME*}
+do
+	echo "xldeploy.niceNames[$idx]=${!x:-XLDeploy}" >> $PROP_FILE
+	idx=$((idx+1))
+done
+
 echo -e "\n#XLDeploy user name (required) - Can provide multiple" >> $PROP_FILE
 idx=0
 for x in ${!XLDEPLOY_USERNAME*}

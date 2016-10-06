@@ -38,7 +38,8 @@
                     }
                     return {
                         value: deploy.id,
-                        name: deploy.options.applicationName
+                        name: ((deploy.niceName != null) && (deploy.niceName != "") ? deploy.niceName + '-' + deploy.options.applicationName : deploy.collector.name + '-' + deploy.options.applicationName),
+                        group: ((deploy.niceName != null) && (deploy.niceName != "") ? deploy.niceName : deploy.collector.name)
                     };
                 }).value();
 
