@@ -79,28 +79,11 @@ jenkins.cron=${JENKINS_CRON:-0 0/5 * * * *}
 EOF
 
 # find how many jenkins urls are configured
-max=-1
-while IFS='=' read -r name value ; do
-	if [[ $name == *'JENKINS_MASTER'* ]]
-	then
-		echo "$name" ${!name}
-		suffix=${name##JENKINS_MASTER}
-		
-		if [ -z $suffix ]
-		then
-			suffix=0
-		fi
-		
-		if [[ $suffix -gt $max ]]
-		then
-			max=$suffix
-		fi
-	fi
-done < <(env)
+max=$(wc -w <<< "${!JENKINS_MASTER*}")
 
 # loop over and output the url, username and apiKey
 i=0
-while [ $i -le $max ]
+while [ $i -lt $max ]
 do
 	if [ $i -eq 0 ]
 	then
@@ -141,8 +124,8 @@ then
 
 	cat >> $PROP_FILE <<EOF
 #If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
-#jenkins.servers[${i}]=${JENKINS_OP_CENTER:-http://username:token@jenkins.company.com}
-jenkins.servers[${i}]=${JENKINS_OP_CENTER}
+#jenkins.servers[${max}]=${JENKINS_OP_CENTER:-http://username:token@jenkins.company.com}
+jenkins.servers[${max}]=${JENKINS_OP_CENTER}
 EOF
 
 fi
