@@ -360,7 +360,8 @@ public class DefaultHudsonClient implements HudsonClient {
                 return BuildStatus.Unknown;
         }
     }
-
+    
+    @SuppressWarnings("PMD")
     protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException, URISyntaxException {
         URI thisuri = URI.create(sUrl);
         String userInfo = thisuri.getUserInfo();
@@ -380,7 +381,8 @@ public class DefaultHudsonClient implements HudsonClient {
 	        					&& getPort(sUrl) == getPort(servers.get(i))) {
 	                		exactMatchFound = true;	
 	        			}
-	        			if (exactMatchFound && (usernames.get(i) != null) && (apiKeys.get(i) != null)) {
+	        			if (exactMatchFound && (i < usernames.size()) && (i < apiKeys.size()) 
+	        					&& (usernames.get(i) != null) && (apiKeys.get(i) != null)) {
 	        				userInfo = usernames.get(i) + ":" + apiKeys.get(i);
         				}
 	        			if (exactMatchFound) {
