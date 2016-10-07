@@ -81,7 +81,7 @@ EOF
 # find how many jenkins urls are configured
 max=$(wc -w <<< "${!JENKINS_MASTER*}")
 
-# loop over and output the url, username and apiKey
+# loop over and output the url, username, apiKey and niceName
 i=0
 while [ $i -lt $max ]
 do
@@ -90,17 +90,19 @@ do
 		server="JENKINS_MASTER"
 		username="JENKINS_USERNAME"
 		apiKey="JENKINS_API_KEY"
+		niceName="JENKINS_NAME"
 	else
 		server="JENKINS_MASTER$i"
 		username="JENKINS_USERNAME$i"
 		apiKey="JENKINS_API_KEY$i"
+		niceName="JENKINS_NAME$i"
 	fi
-	
 	
 cat >> $PROP_FILE <<EOF
 jenkins.servers[${i}]=${!server}
 jenkins.usernames[${i}]=${!username}
 jenkins.apiKeys[${i}]=${!apiKey}
+jenkins.niceNames[${i}]=${!niceName}
 
 EOF
 	
