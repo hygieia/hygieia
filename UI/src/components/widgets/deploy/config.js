@@ -11,19 +11,14 @@
         var ctrl = this;
 
         var widgetConfig = modalData.widgetConfig;
-        var aggregateServers = (widgetConfig.options.aggregateServers) ? widgetConfig.options.aggregateServers : false;
+        var aggregateServers = false; // TODO find a place for this configuration to live
 
         // public variables
         // ctrl.deployJob;
-        /*
-         * Grouped applications by key:value
-         * when not using grouping key is instanceUrl + applicationId (thus unique)
-         */
         ctrl.deployJobs = [ ];
         ctrl.jobDropdownDisabled = true;
         ctrl.jobDropdownPlaceholder = 'Loading...';
         ctrl.submitted = false;
-        ctrl.aggregateServers = aggregateServers;
 
         // public methods
         ctrl.submit = submit;
@@ -115,8 +110,7 @@
                 var postObj = {
                     name: 'deploy',
                     options: {
-                        id: widgetConfig.options.id,
-                        aggregateServers: true
+                        id: widgetConfig.options.id
                     },
                     componentId: modalData.dashboard.application.components[0].id,
                     collectorItemIds: job.value
