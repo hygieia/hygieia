@@ -1,12 +1,18 @@
 package com.capitalone.dashboard.jenkins;
 
+import com.capitalone.dashboard.model.CollectorItem;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by stephengalbraith on 10/10/2016.
  */
-public class JenkinsJob {
+public class JenkinsJob extends CollectorItem {
+
+    private static final String INSTANCE_URL = "jenkinsServer";
+    private static final String PROJECT_NAME = "jobName";
+    private static final String PROJECT_ID = "projectId";
 
     private String jenkinsServer;
 

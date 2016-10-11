@@ -6,7 +6,7 @@ import com.capitalone.dashboard.model.JunitXmlReport;
 import java.util.Set;
 
 /**
- * Created by plv163 on 11/10/2016.
+ * Created by stephengalbraith on 11/10/2016.
  */
 public interface CodeQualityConverter {
   Set<CodeQualityMetric> analyse(JunitXmlReport report);
