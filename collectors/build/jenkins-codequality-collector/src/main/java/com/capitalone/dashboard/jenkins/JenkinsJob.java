@@ -1,12 +1,7 @@
 package com.capitalone.dashboard.jenkins;
 
-import org.bson.codecs.DecoderContext;
-
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Created by stephengalbraith on 10/10/2016.
@@ -16,12 +11,12 @@ public class JenkinsJob {
     private String jenkinsServer;
 
     private String jobName;
-    private List<Artefact> artefacts;
+    private List<Artifact> artifacts;
 
     private JenkinsJob(Builder builder) {
         jenkinsServer = builder.jenkinsServer;
         jobName = builder.jobName;
-        artefacts=builder.artefacts;
+        artifacts = builder.artifacts;
     }
 
     public String getJenkinsServer() {
@@ -36,15 +31,15 @@ public class JenkinsJob {
         return new Builder();
     }
 
-    public List<Artefact> getArtefacts() {
-        return artefacts;
+    public List<Artifact> getArtifacts() {
+        return artifacts;
     }
 
     public static final class Builder{
 
         private String jenkinsServer;
         private String jobName;
-        private List<Artefact> artefacts = new ArrayList<>();
+        private List<Artifact> artifacts = new ArrayList<>();
 
         public Builder jenkinsServer(String jenkinsServer) {
             this.jenkinsServer = jenkinsServer;
@@ -60,8 +55,8 @@ public class JenkinsJob {
             return new JenkinsJob(this);
         }
 
-        public Builder artefact(Artefact artefact) {
-            this.artefacts.add(artefact);
+        public Builder artifact(Artifact artifact) {
+            this.artifacts.add(artifact);
             return this;
         }
     }

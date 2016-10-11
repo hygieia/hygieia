@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Collector;
-import com.sun.org.apache.xpath.internal.operations.String;
 
 import java.util.List;
 

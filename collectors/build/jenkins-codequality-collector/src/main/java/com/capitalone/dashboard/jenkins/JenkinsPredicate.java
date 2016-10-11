@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.jenkins;
 
-import javax.print.attribute.standard.JobName;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -10,9 +9,9 @@ import java.util.regex.Pattern;
  */
 public class JenkinsPredicate {
 
-    public static Predicate<JenkinsJob> artefactContaining(List<Pattern> patterns) {
+  public static Predicate<JenkinsJob> artifactContaining(List<Pattern> patterns) {
         return job ->
-            job.getArtefacts().stream().anyMatch(
+            job.getArtifacts().stream().anyMatch(
                     artefact -> patterns.stream().anyMatch(
                             pattern -> pattern.asPredicate().test(artefact.getName())
                     )
