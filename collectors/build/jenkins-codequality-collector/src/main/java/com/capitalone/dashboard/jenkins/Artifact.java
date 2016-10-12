@@ -5,15 +5,15 @@ package com.capitalone.dashboard.jenkins;
  */
 public class Artifact {
   private String path;
-  private String artefactName;
+  private String artifactName;
 
   private Artifact(Builder builder) {
     this.path = builder.path;
-    this.artefactName = builder.artifactName;
+    this.artifactName = builder.artifactName;
   }
 
   public String getName() {
-    return artefactName;
+    return artifactName;
   }
 
   public String getPath() {

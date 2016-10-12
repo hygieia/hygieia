@@ -85,13 +85,12 @@ public class JenkinsCodeQualityCollectorTaskTest {
     @Test
     public void collectCausesACollectionOfResultsFromConfiguredJobs() throws Exception {
 
-        // expect
+        // expect the collector to deliver its config
         JenkinsCodeQualityCollector mockCollector = mock(JenkinsCodeQualityCollector.class);
         List<String> buildServers = new ArrayList<>();
         buildServers.add("http://buildserver");
         buildServers.add("http://buildserver2");
         when(mockCollector.getBuildServers()).thenAnswer(invocationOnMock -> buildServers);
-
 
         // this returns 3 jobs split over the 2 build servers
         List<JenkinsJob> allJenkinsJobs = getJenkinsJobs();
@@ -130,7 +129,7 @@ public class JenkinsCodeQualityCollectorTaskTest {
         ArgumentCaptor<List> patternListCaptor = ArgumentCaptor.forClass(List.class);
         verify(mockJenkinsHelper).getLatestArtifacts(eq(JunitXmlReport.class), jobCapture.capture(), patternListCaptor.capture());
         JenkinsJob capturedJob = jobCapture.getValue();
-        assertThat(capturedJob).satisfies(job -> "job2".equals(job.getJobName())).satisfies(job -> "http://buildserver".equals(job.getJenkinsServer()));
+        assertThat(capturedJob).hasFieldOrPropertyWithValue("jobName", "job1").hasFieldOrPropertyWithValue("jenkinsServer", "http://buildserver2");
         List<Pattern> capturedPatterns = patternListCaptor.getValue();
         assertThat(capturedPatterns).hasSize(1).allMatch(
                 pattern -> pattern.pattern().equals(".*\\.xml"));
@@ -148,6 +147,10 @@ public class JenkinsCodeQualityCollectorTaskTest {
                         tuple("tests", "14", 14, CodeQualityMetricStatus.Warning, "potentially broken,messageAgain"));
         // the collector name needs adding
         assertThat(capturedCodeQuality.getCollectorItemId()).isSameAs(collectorId);
+        assertThat(capturedCodeQuality.getName()).isEqualTo("job1");
+        // TODO timestamp need sto be found from the test results and added here.
+        assertThat(capturedCodeQuality.getType()).isEqualTo(CodeQualityType.StaticAnalysis);
+        assertThat(capturedCodeQuality.getUrl()).isEqualTo("http://buildserver2");
     }
 
     @Test
@@ -180,9 +183,39 @@ public class JenkinsCodeQualityCollectorTaskTest {
 
 
         ArgumentCaptor<JenkinsCodeQualityJob> deletedJobsCaptor = ArgumentCaptor.forClass(JenkinsCodeQualityJob.class);
-        verify(this.mockJobRepository, times(3)).delete(deletedJobsCaptor.capture());
+        verify(this.mockJobRepository, times(1)).delete(deletedJobsCaptor.capture());
         JenkinsCodeQualityJob capturedValues = deletedJobsCaptor.getValue();
         assertThat(capturedValues.getOptions().get("jenkinsServer")).isEqualTo("http://buildserver0");
+    }
+
+    @Test
+    public void createsNewJobsIfNotFound() {
+        JenkinsCodeQualityCollector mockCollector = mock(JenkinsCodeQualityCollector.class);
+
+        ObjectId collectorId = new ObjectId();
+        when(mockCollector.getId()).thenReturn(collectorId);
+
+        when(mockCollector.getBuildServers()).thenReturn(Arrays.asList("http://myBuildServer"));
+        List<JenkinsJob> jobsWithNewJob = new ArrayList<>();
+        jobsWithNewJob.add(JenkinsJob.newBuilder().jobName("job1").jenkinsServer("http://myBuildServer").artifact(Artifact.newBuilder().artifactName("junit.xml").build()).build());
+        jobsWithNewJob.add(JenkinsJob.newBuilder().jobName("myNewJob").jenkinsServer("http://myBuildServer").artifact(Artifact.newBuilder().artifactName("junit.xml").build()).build());
+        jobsWithNewJob.add(JenkinsJob.newBuilder().jobName("job1").jenkinsServer("http://myBuildServer2").artifact(Artifact.newBuilder().artifactName("junit.xml").build()).build());
+        when(mockJenkinsHelper.getJobs(anyList())).thenReturn(jobsWithNewJob);
+
+        List<JenkinsCodeQualityJob> existingJobs = new ArrayList<>();
+        existingJobs.add(JenkinsCodeQualityJob.newBuilder().jobName("job1").jenkinsServer("http://myBuildServer").build());
+        existingJobs.add(JenkinsCodeQualityJob.newBuilder().jobName("job1").jenkinsServer("http://myBuildServer2").build());
+        when(mockJobRepository.findAllByCollectorId(same(collectorId))).thenReturn(existingJobs);
+
+        // test
+        this.testee.collect(mockCollector);
+
+        //
+        ArgumentCaptor<JenkinsCodeQualityJob> newJobCaptor = ArgumentCaptor.forClass(JenkinsCodeQualityJob.class);
+        verify(this.mockJobRepository, times(1)).save(newJobCaptor.capture());
+        JenkinsCodeQualityJob capturedJob = newJobCaptor.getValue();
+        JenkinsCodeQualityJob expectedNewJob = JenkinsCodeQualityJob.newBuilder().jobName("myNewJob").jenkinsServer("http://myBuildServer").build();
+        assertThat(capturedJob).isEqualToComparingFieldByField(expectedNewJob);
     }
 
     private Set<CodeQualityMetric> getCodeQualityMetrics(List<Tuple> tuples) {
@@ -222,12 +255,16 @@ public class JenkinsCodeQualityCollectorTaskTest {
 
     @Test
     public void jenkinsHelperDoesNotReturnAnyJobsTheCollectShouldReturn() {
-        TestCase.fail();
-    }
+        // expect the collector to deliver its config
+        JenkinsCodeQualityCollector mockCollector = mock(JenkinsCodeQualityCollector.class);
+        List<String> buildServers = new ArrayList<>();
+        buildServers.add("http://buildserver");
+        buildServers.add("http://buildserver2");
+        when(mockCollector.getBuildServers()).thenAnswer(invocationOnMock -> buildServers);
 
-    @Test
-    public void unableToParseArtifactIntoCorrectFormat() {
-        TestCase.fail();
+        when(mockJenkinsHelper.getJobs(argThat(hasItems("http://buildserver", "http://buildserver")))).thenReturn(null);
+
+        this.testee.collect(mockCollector);
     }
 
 }

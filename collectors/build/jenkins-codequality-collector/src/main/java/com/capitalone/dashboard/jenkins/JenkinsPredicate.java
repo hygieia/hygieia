@@ -9,13 +9,16 @@ import java.util.regex.Pattern;
  */
 public class JenkinsPredicate {
 
-  public static Predicate<JenkinsJob> artifactContaining(List<Pattern> patterns) {
+    public static Predicate<JenkinsJob> artifactInJobContaining(List<Pattern> patterns) {
         return job ->
             job.getArtifacts().stream().anyMatch(
-                    artefact -> patterns.stream().anyMatch(
-                            pattern -> pattern.asPredicate().test(artefact.getName())
-                    )
+                    JenkinsPredicate.artifactContaining(patterns)
             ) ;
+    }
+
+    public static Predicate<Artifact> artifactContaining(List<Pattern> patterns) {
+        return artefact -> patterns.stream().anyMatch(
+                pattern -> pattern.asPredicate().test(artefact.getName()));
     }
 
 }

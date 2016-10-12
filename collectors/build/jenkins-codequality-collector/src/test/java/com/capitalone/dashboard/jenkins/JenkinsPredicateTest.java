@@ -24,7 +24,7 @@ public class JenkinsPredicateTest {
 
         List<JenkinsJob> jenkinsJobs = jenkinsJobs();
 
-        List<JenkinsJob> allMatching = jenkinsJobs.stream().filter(JenkinsPredicate.artifactContaining(Collections.singletonList(Pattern.compile(".*\\.xml")))).collect(Collectors.toList());
+        List<JenkinsJob> allMatching = jenkinsJobs.stream().filter(JenkinsPredicate.artifactInJobContaining(Collections.singletonList(Pattern.compile(".*\\.xml")))).collect(Collectors.toList());
 
         assertThat(allMatching).hasSize(1).is(new Condition<JenkinsJob>(jenkinsJob -> jenkinsJob.getJobName().equals("job"), "job nmae is %s", "job"), atIndex(0));
 
@@ -34,7 +34,7 @@ public class JenkinsPredicateTest {
     public void multiplePatternsMatched() throws Exception {
         List<JenkinsJob> jenkinsJobs = jenkinsJobs();
 
-        List<JenkinsJob> allMatching = jenkinsJobs.stream().filter(JenkinsPredicate.artifactContaining(Arrays.asList(Pattern.compile(".*\\.war"), Pattern.compile(".*\\.xml")))).collect(Collectors.toList());
+        List<JenkinsJob> allMatching = jenkinsJobs.stream().filter(JenkinsPredicate.artifactInJobContaining(Arrays.asList(Pattern.compile(".*\\.war"), Pattern.compile(".*\\.xml")))).collect(Collectors.toList());
 
         assertThat(allMatching).hasSize(2);
         assertThat(allMatching.stream().filter(job->"http://jenkins0/".equals(job.getJenkinsServer())).count()).isEqualTo(0);
@@ -48,5 +48,17 @@ public class JenkinsPredicateTest {
         return jenkinsJobs;
     }
 
+    @Test
+    public void multipleArtifactsAreMatched() {
+        List<Artifact> artifacts = new ArrayList<>();
+        artifacts.add(Artifact.newBuilder().artifactName("yName").build());
+        artifacts.add(Artifact.newBuilder().artifactName("yName.xml").build());
+        artifacts.add(Artifact.newBuilder().artifactName("yName.txt").build());
+
+        final List<Artifact> filteredArtifacts = artifacts.stream().filter(JenkinsPredicate.artifactContaining(Arrays.asList(Pattern.compile(".*\\.xml")))).collect(Collectors.toList());
+
+        assertThat(filteredArtifacts).hasSize(1);
+        assertThat(filteredArtifacts.get(0)).hasFieldOrPropertyWithValue("artifactName", "yName.xml");
+    }
 
 }

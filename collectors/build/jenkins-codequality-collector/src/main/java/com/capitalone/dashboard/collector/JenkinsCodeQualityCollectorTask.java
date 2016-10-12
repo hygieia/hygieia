@@ -57,12 +57,17 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
     public void collect(JenkinsCodeQualityCollector collector) {
         final List<String> buildServers = collector.getBuildServers();
         final List<JenkinsJob> jobs = this.jenkinsClient.getJobs(buildServers);
+        if (null == jobs) {
+            return;
+        }
 
         this.cleanupPreviousJobsFromRepo(collector,jobs);
 
         List<Pattern> matchingJobPatterns = Arrays.asList(Pattern.compile(".*\\.xml"));
 
-        List<JenkinsJob> interestingJobs = jobs.stream().filter(JenkinsPredicate.artifactContaining(matchingJobPatterns)).collect(Collectors.toList());
+        List<JenkinsJob> interestingJobs = jobs.stream().filter(JenkinsPredicate.artifactInJobContaining(matchingJobPatterns)).collect(Collectors.toList());
+
+        this.createAnyNewJobs(collector, interestingJobs);
 
         for (JenkinsJob job : interestingJobs) {
             this.log("found an job of interest matching the artifact pattern.");
@@ -71,6 +76,9 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
 
             CodeQuality currentJobQuality = computeMetricsForJob(reportArtifacts);
             currentJobQuality.setCollectorItemId(collector.getId());
+            currentJobQuality.setType(CodeQualityType.StaticAnalysis);
+            currentJobQuality.setUrl(job.getJenkinsServer());
+            currentJobQuality.setName(job.getJobName());
 
             // store the data
             codeQualityRepository.save(currentJobQuality);
@@ -80,12 +88,29 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
 
     private void cleanupPreviousJobsFromRepo(JenkinsCodeQualityCollector collector,List<JenkinsJob> jobs) {
         List<String> configuredServers = jobs.stream().map(job->job.getJenkinsServer()).collect(Collectors.toList());
-        List<JenkinsCodeQualityJob> allRepoJobs = this.jobRepository.findAllByCollectorId(collector.getId());
+        List<JenkinsCodeQualityJob> allRepoJobs = new ArrayList(this.jobRepository.findAllByCollectorId(collector.getId()));
         List<JenkinsCodeQualityJob> jobsToKeep=allRepoJobs.stream().filter(job->configuredServers.contains(job.getJenkinsServer())).collect(Collectors.toList());
         allRepoJobs.removeAll(jobsToKeep);
         allRepoJobs.forEach(job->{
             this.jobRepository.delete(job);
         });
+    }
+
+    private void createAnyNewJobs(JenkinsCodeQualityCollector collector, List<JenkinsJob> buildServerJobs) {
+        List<JenkinsCodeQualityJob> allRepoJobs = new ArrayList<>(this.jobRepository.findAllByCollectorId(collector.getId()));
+
+        List<JenkinsJob> newJobs = new ArrayList<>(buildServerJobs).stream().filter(jenkinsJob ->
+                        allRepoJobs.stream().filter(
+                                repoJob ->
+                                        jenkinsJob.getJobName().equals(repoJob.getJobName()) && jenkinsJob.getJenkinsServer().equals(jenkinsJob.getJenkinsServer())
+                        ).collect(Collectors.toList()).isEmpty()
+        ).collect(Collectors.toList());
+
+        newJobs.forEach(job -> {
+            JenkinsCodeQualityJob newJob = JenkinsCodeQualityJob.newBuilder().jobName(job.getJobName()).jenkinsServer(job.getJenkinsServer()).build();
+            this.jobRepository.save(newJob);
+        });
+
     }
 
     private CodeQuality computeMetricsForJob(List<JunitXmlReport> reportArtifacts) {
