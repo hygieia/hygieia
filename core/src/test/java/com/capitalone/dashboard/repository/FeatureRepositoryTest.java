@@ -452,7 +452,7 @@ public class FeatureRepositoryTest {
 
 		assertEquals(
 				"Expected top ordered sprint story ID did not match actual top ordered sprint story ID",
-				testStoryId, featureRepo.queryByOrderBySStatusDesc(testTeamID, maxDateWinner)
+				testStoryId, featureRepo.findByActiveEndingSprints(testTeamID, maxDateWinner)
 						.get(0).getsId().toString());
 	}
 
@@ -464,7 +464,7 @@ public class FeatureRepositoryTest {
 		String testTeamId = "08374321";
 		String testSprintName = "Test Sprint 2";
 		assertEquals("Expected current sprint detail did not match actual current sprint detail",
-				testSprintName, featureRepo.getCurrentSprintDetail(testTeamId, maxDateWinner)
+				testSprintName, featureRepo.findByActiveEndingSprintsMinimal(testTeamId, maxDateWinner)
 						.get(0).getsSprintName());
 	}
 
@@ -478,7 +478,7 @@ public class FeatureRepositoryTest {
 		assertEquals(
 				"The size of the actual response was not expected",
 				3,
-				featureRepo.getInProgressFeaturesEstimatesByTeamId(mockJiraFeature3.getsTeamID(),
+				featureRepo.findByActiveEndingSprintsMinimal(mockJiraFeature3.getsTeamID(),
 						currentSprintEndDate).size());
 	}
 }
