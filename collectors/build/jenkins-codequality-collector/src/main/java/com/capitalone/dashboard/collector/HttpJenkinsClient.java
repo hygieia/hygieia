@@ -34,12 +34,15 @@ public class HttpJenkinsClient implements JenkinsClient {
 
     @Override
     public <T> List<T> getLatestArtifacts(Class<T> type, JenkinsJob job, List<Pattern> matchingJobPatterns) {
-        List<Artifact> allMatchingArtifacts = job.getArtifacts().stream().filter(JenkinsPredicate.artifactContaining(matchingJobPatterns)).collect(Collectors.toList());
+        List<Artifact> allMatchingArtifacts = job.getArtifacts().stream().filter(JenkinsPredicate.artifactContaining(matchingJobPatterns)).collect(Collectors
+                .toList());
 
+        List<T> xmlReports = new ArrayList<>();
         allMatchingArtifacts.forEach(artifact -> {
             ResponseEntity<T> response = restTemplate.getForEntity(String.format(JENKINS_ARTIFACT_URL, job.getJenkinsServer(), job.getJobName(), artifact.getPath()), type);
+            xmlReports.add(response.getBody());
         });
 
-        return new ArrayList<T>();
+        return xmlReports;
     }
 }
