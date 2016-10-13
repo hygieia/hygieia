@@ -120,7 +120,6 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "testsuite", propOrder = {"properties", "testcase", "systemOut", "systemErr"})
-@XmlSeeAlso({Testsuites.JunitXmlReport.class})
 public class JunitXmlReport {
 
     @XmlElement(required = true)

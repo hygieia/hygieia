@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.tuple;
 public class CodeQualityMetricsConverterTest extends TestCase {
 
     @Test
-    public void testValidCodeQualityMetricsIsCreatedBasedOnJunitXmlReport(){
+    public void testValidCodeQualityMetricsIsCreatedBasedOnJunitXmlReport() {
         CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
         JunitXmlReport xmlReport = new JunitXmlReport();
         xmlReport.setErrors(2);
@@ -24,6 +24,7 @@ public class CodeQualityMetricsConverterTest extends TestCase {
         xmlReport.setTests(14);
         Set<CodeQualityMetric> codeQualityMetrics = testee.analyse(xmlReport);
 
-        assertThat(codeQualityMetrics).extracting("name", "formattedValue").contains(tuple("test_failures","1"),tuple("test_errors","2"),tuple("tests","14"));
+        assertThat(codeQualityMetrics).extracting("name", "formattedValue")
+                                      .contains(tuple("test_failures", "1"), tuple("test_errors", "2"), tuple("tests", "14"), tuple("test_success_density", "11"));
     }
 }
