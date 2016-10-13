@@ -24,6 +24,7 @@ public class Artifact {
     return relativePath;
   }
 
+  @SuppressWarnings("PMD.AccessorClassGeneration")
   public static Builder newBuilder() {
     return new Builder();
   }
@@ -43,6 +44,7 @@ public class Artifact {
       return this;
     }
 
+    @SuppressWarnings("PMD.AccessorClassGeneration")
     public Artifact build() {
       return new Artifact(this);
     }

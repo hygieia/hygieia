@@ -17,6 +17,7 @@ public class JenkinsBuild {
         artifacts = builder.artifacts;
     }
 
+    @SuppressWarnings("PMD.AccessorClassGeneration")
     public static Builder newBuilder() {
         return new Builder();
     }
@@ -37,6 +38,7 @@ public class JenkinsBuild {
             return this;
         }
 
+        @SuppressWarnings("PMD.AccessorClassGeneration")
         public JenkinsBuild build() {
             return new JenkinsBuild(this);
         }

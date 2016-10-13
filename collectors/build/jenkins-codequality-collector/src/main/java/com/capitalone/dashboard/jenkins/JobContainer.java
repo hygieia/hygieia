@@ -15,6 +15,7 @@ public class JobContainer {
         return jobs;
     }
 
+    @SuppressWarnings("PMD.AccessorClassGeneration")
     public static Builder newBuilder() {
         return new Builder();
     }
@@ -31,6 +32,7 @@ public class JobContainer {
             return this;
         }
 
+        @SuppressWarnings("PMD.AccessorClassGeneration")
         public JobContainer build() {
             return new JobContainer(this);
         }

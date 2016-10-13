@@ -56,6 +56,7 @@ public class JenkinsJob extends CollectorItem {
             return this;
         }
 
+        @SuppressWarnings("PMD.AccessorClassGeneration")
         public JenkinsJob build() {
             return new JenkinsJob(this);
         }

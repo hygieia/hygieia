@@ -46,7 +46,7 @@ public class HttpJenkinsClient implements JenkinsClient {
         List<Artifact> allMatchingArtifacts = job.getLastSuccessfulBuild().getArtifacts().stream().filter(JenkinsPredicate.artifactContaining(matchingJobPatterns)).collect(Collectors.toList());
 
         allMatchingArtifacts.forEach(artifact -> {
-            ResponseEntity<T> response = restTemplate.exchange(String.format(JENKINS_ARTIFACT_URL, job.getUrl(), artifact.getRelativePath()), HttpMethod.GET, createSecureRequestEntity(), type);
+            restTemplate.exchange(String.format(JENKINS_ARTIFACT_URL, job.getUrl(), artifact.getRelativePath()), HttpMethod.GET, createSecureRequestEntity(), type);
         });
 
         return new ArrayList();
