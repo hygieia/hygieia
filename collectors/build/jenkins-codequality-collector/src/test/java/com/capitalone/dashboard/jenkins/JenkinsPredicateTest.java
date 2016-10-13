@@ -26,7 +26,7 @@ public class JenkinsPredicateTest {
 
         List<JenkinsJob> allMatching = jenkinsJobs.stream().filter(JenkinsPredicate.artifactInJobContaining(Collections.singletonList(Pattern.compile(".*\\.xml")))).collect(Collectors.toList());
 
-        assertThat(allMatching).hasSize(1).is(new Condition<JenkinsJob>(jenkinsJob -> jenkinsJob.getJobName().equals("job"), "job nmae is %s", "job"), atIndex(0));
+        assertThat(allMatching).hasSize(1).is(new Condition<JenkinsJob>(jenkinsJob -> jenkinsJob.getName().equals("job"), "job nmae is %s", "job"), atIndex(0));
 
     }
 
@@ -37,28 +37,31 @@ public class JenkinsPredicateTest {
         List<JenkinsJob> allMatching = jenkinsJobs.stream().filter(JenkinsPredicate.artifactInJobContaining(Arrays.asList(Pattern.compile(".*\\.war"), Pattern.compile(".*\\.xml")))).collect(Collectors.toList());
 
         assertThat(allMatching).hasSize(2);
-        assertThat(allMatching.stream().filter(job->"http://jenkins0/".equals(job.getJenkinsServer())).count()).isEqualTo(0);
+        assertThat(allMatching.stream().filter(job -> "http://jenkins0/job1".equals(job.getUrl())).count()).isEqualTo(0);
     }
 
     private List<JenkinsJob> jenkinsJobs() {
         List<JenkinsJob> jenkinsJobs = new ArrayList<>();
-        jenkinsJobs.add(JenkinsJob.newBuilder().jenkinsServer("http://jenkins0/").jobName("job").build());
-        jenkinsJobs.add(JenkinsJob.newBuilder().jenkinsServer("http://jenkins1/").jobName("job2").artifact(Artifact.newBuilder().artifactName("someting.war").build()).build());
-        jenkinsJobs.add(JenkinsJob.newBuilder().jenkinsServer("http://jenkins2/").jobName("job").artifact(Artifact.newBuilder().artifactName("someting.xml").build()).build());
+        jenkinsJobs.add(JenkinsJob.newBuilder().url("http://jenkins0/").jobName("job1").build());
+        jenkinsJobs.add(JenkinsJob.newBuilder().url("http://jenkins0/").jobName("job").lastSuccessfulBuild(JenkinsBuild.newBuilder().build()).build());
+        jenkinsJobs.add(JenkinsJob.newBuilder().url("http://jenkins1/").jobName("job2")
+                .lastSuccessfulBuild(JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("someting.war").build()).build()).build());
+        jenkinsJobs.add(JenkinsJob.newBuilder().url("http://jenkins2/").jobName("job")
+                .lastSuccessfulBuild(JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("someting.xml").build()).build()).build());
         return jenkinsJobs;
     }
 
     @Test
     public void multipleArtifactsAreMatched() {
         List<Artifact> artifacts = new ArrayList<>();
-        artifacts.add(Artifact.newBuilder().artifactName("yName").build());
-        artifacts.add(Artifact.newBuilder().artifactName("yName.xml").build());
-        artifacts.add(Artifact.newBuilder().artifactName("yName.txt").build());
+        artifacts.add(Artifact.newBuilder().fileName("yName").build());
+        artifacts.add(Artifact.newBuilder().fileName("yName.xml").build());
+        artifacts.add(Artifact.newBuilder().fileName("yName.txt").build());
 
         final List<Artifact> filteredArtifacts = artifacts.stream().filter(JenkinsPredicate.artifactContaining(Arrays.asList(Pattern.compile(".*\\.xml")))).collect(Collectors.toList());
 
         assertThat(filteredArtifacts).hasSize(1);
-        assertThat(filteredArtifacts.get(0)).hasFieldOrPropertyWithValue("artifactName", "yName.xml");
+        assertThat(filteredArtifacts.get(0)).hasFieldOrPropertyWithValue("fileName", "yName.xml");
     }
 
 }

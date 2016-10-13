@@ -11,14 +11,14 @@ public class JenkinsPredicate {
 
     public static Predicate<JenkinsJob> artifactInJobContaining(List<Pattern> patterns) {
         return job ->
-            job.getArtifacts().stream().anyMatch(
-                    JenkinsPredicate.artifactContaining(patterns)
-            ) ;
+                null != job.getLastSuccessfulBuild() && job.getLastSuccessfulBuild().getArtifacts().stream().anyMatch(
+                        JenkinsPredicate.artifactContaining(patterns)
+                );
     }
 
     public static Predicate<Artifact> artifactContaining(List<Pattern> patterns) {
-        return artefact -> patterns.stream().anyMatch(
-                pattern -> pattern.asPredicate().test(artefact.getName()));
+        return artifact -> patterns.stream().anyMatch(
+                pattern -> pattern.asPredicate().test(artifact.getName()));
     }
 
 }

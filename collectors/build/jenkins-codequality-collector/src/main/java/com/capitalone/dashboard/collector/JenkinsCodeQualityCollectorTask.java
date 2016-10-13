@@ -2,6 +2,7 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.JenkinsPredicate;
+import com.capitalone.dashboard.jenkins.JenkinsSettings;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityCollectorRepository;
@@ -23,17 +24,17 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
 
     private JenkinsCodeQualityCollectorRepository collectorRepository;
     private JenkinsCodeQualityJobRepository jobRepository;
-    private String cronSchedule;
+    private JenkinsSettings settings;
     private JenkinsClient jenkinsClient;
     private CodeQualityConverter codeQualityConverter;
     private CodeQualityRepository codeQualityRepository;
 
     @Autowired
-    public JenkinsCodeQualityCollectorTask(TaskScheduler taskScheduler, JenkinsCodeQualityCollectorRepository repository, JenkinsCodeQualityJobRepository jobRepository,String cronSchedule, JenkinsClient jenkinsClient, CodeQualityConverter codeQualityConverter, CodeQualityRepository codeQualityRepository) {
+    public JenkinsCodeQualityCollectorTask(TaskScheduler taskScheduler, JenkinsCodeQualityCollectorRepository repository, JenkinsCodeQualityJobRepository jobRepository, JenkinsSettings settings, JenkinsClient jenkinsClient, CodeQualityConverter codeQualityConverter, CodeQualityRepository codeQualityRepository) {
         super(taskScheduler,"JenkinsCodeQuality");
         this.collectorRepository = repository;
         this.jobRepository = jobRepository;
-        this.cronSchedule = cronSchedule;
+        this.settings = settings;
         this.jenkinsClient = jenkinsClient;
         this.codeQualityConverter = codeQualityConverter;
         this.codeQualityRepository = codeQualityRepository;
@@ -50,7 +51,7 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
 
     @Override
     public String getCron() {
-        return this.cronSchedule;
+        return this.settings.getCron();
     }
 
     @Override
@@ -77,8 +78,8 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
             CodeQuality currentJobQuality = computeMetricsForJob(reportArtifacts);
             currentJobQuality.setCollectorItemId(collector.getId());
             currentJobQuality.setType(CodeQualityType.StaticAnalysis);
-            currentJobQuality.setUrl(job.getJenkinsServer());
-            currentJobQuality.setName(job.getJobName());
+            currentJobQuality.setUrl(job.getUrl());
+            currentJobQuality.setName(job.getName());
 
             // store the data
             codeQualityRepository.save(currentJobQuality);
@@ -87,7 +88,7 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
     }
 
     private void cleanupPreviousJobsFromRepo(JenkinsCodeQualityCollector collector,List<JenkinsJob> jobs) {
-        List<String> configuredServers = jobs.stream().map(job->job.getJenkinsServer()).collect(Collectors.toList());
+        List<String> configuredServers = jobs.stream().map(job -> job.getUrl()).collect(Collectors.toList());
         List<JenkinsCodeQualityJob> allRepoJobs = new ArrayList(this.jobRepository.findAllByCollectorId(collector.getId()));
         List<JenkinsCodeQualityJob> jobsToKeep=allRepoJobs.stream().filter(job->configuredServers.contains(job.getJenkinsServer())).collect(Collectors.toList());
         allRepoJobs.removeAll(jobsToKeep);
@@ -102,12 +103,12 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
         List<JenkinsJob> newJobs = new ArrayList<>(buildServerJobs).stream().filter(jenkinsJob ->
                         allRepoJobs.stream().filter(
                                 repoJob ->
-                                        jenkinsJob.getJobName().equals(repoJob.getJobName()) && jenkinsJob.getJenkinsServer().equals(jenkinsJob.getJenkinsServer())
+                                        jenkinsJob.getName().equals(repoJob.getJobName()) && jenkinsJob.getUrl().equals(jenkinsJob.getUrl())
                         ).collect(Collectors.toList()).isEmpty()
         ).collect(Collectors.toList());
 
         newJobs.forEach(job -> {
-            JenkinsCodeQualityJob newJob = JenkinsCodeQualityJob.newBuilder().jobName(job.getJobName()).jenkinsServer(job.getJenkinsServer()).build();
+            JenkinsCodeQualityJob newJob = JenkinsCodeQualityJob.newBuilder().jobName(job.getName()).jenkinsServer(job.getUrl()).build();
             this.jobRepository.save(newJob);
         });
 
