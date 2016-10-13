@@ -42,26 +42,47 @@ public class HttpJenkinsClientTest {
     @Test
     public void artifactsReturnedInJunitFormatOnlyForMatchingArtifacts() {
 
-        when(mockRestTemplate.exchange(argThat(is(equalTo("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml"))), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JunitXmlReport.class))).thenReturn(ResponseEntity.ok().body(new JunitXmlReport()));
+        when(mockRestTemplate.exchange(argThat(is(equalTo("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml"))), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JunitXmlReport.class)))
+                .thenReturn(ResponseEntity.ok().body(new JunitXmlReport()));
 
-        JenkinsJob job = JenkinsJob.newBuilder().jobName("myJob").url("http://myBuildServer/myJob").lastSuccessfulBuild(JenkinsBuild.newBuilder()
-                .artifact(Artifact.newBuilder().fileName("TEST-someSuite-test.xml").path("mysubmodule/TEST-someSuite-test.xml").build())
-                .artifact(Artifact.newBuilder().fileName("this_does_not_match").path("mysubmodule/this_does_not_match").build()).build())
-                .build();
+        JenkinsJob job = JenkinsJob.newBuilder()
+                                   .jobName("myJob")
+                                   .url("http://myBuildServer/myJob")
+                                   .lastSuccessfulBuild(JenkinsBuild.newBuilder()
+                                                                    .artifact(Artifact.newBuilder()
+                                                                                      .fileName("TEST-someSuite-test.xml")
+                                                                                      .path("mysubmodule/TEST-someSuite-test.xml")
+                                                                                      .build())
+                                                                    .artifact(Artifact.newBuilder()
+                                                                                      .fileName("this_does_not_match")
+                                                                                      .path("mysubmodule/this_does_not_match")
+                                                                                      .build())
+                                                                    .build()).build();
 
         List<JunitXmlReport> xmlReports = testee.getLatestArtifacts(JunitXmlReport.class, job, Arrays.asList(Pattern.compile("TEST-.*-test\\.xml")));
 
         verify(mockRestTemplate).exchange(argThat(is(equalTo("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml"))), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JunitXmlReport.class));
-        verifyNoMoreInteractions(mockRestTemplate);
-        assertThat(xmlReports).isNotNull();
+        assertThat(xmlReports).size().isEqualTo(1);
     }
 
     @Test
     public void getJobsShouldReturnAListOfJobs() {
-        when(mockRestTemplate.exchange(eq("http://buildserver1/api/json?tree=jobs[name,url,lastSuccessfulBuild[artifacts[*]]]"), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JobContainer.class))).thenReturn(
-                ResponseEntity.ok().body(JobContainer.newBuilder().job(JenkinsJob.newBuilder().jobName("job1").url("http://buildserver1/job1").build()).build()));
-        when(mockRestTemplate.exchange(eq("http://buildserver2/api/json?tree=jobs[name,url,lastSuccessfulBuild[artifacts[*]]]"), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JobContainer.class))).thenReturn(
-                ResponseEntity.ok().body(JobContainer.newBuilder().job(JenkinsJob.newBuilder().jobName("job1").url("http://buildserver2/job1").build()).build()));
+        when(mockRestTemplate.exchange(eq("http://buildserver1/api/json?tree=jobs[name,url,lastSuccessfulBuild[artifacts[*]]]"), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JobContainer.class)))
+                .thenReturn(ResponseEntity.ok()
+                                          .body(JobContainer.newBuilder()
+                                                            .job(JenkinsJob.newBuilder()
+                                                                           .jobName("job1")
+                                                                           .url("http://buildserver1/job1")
+                                                                           .build())
+                                                            .build()));
+        when(mockRestTemplate.exchange(eq("http://buildserver2/api/json?tree=jobs[name,url,lastSuccessfulBuild[artifacts[*]]]"), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JobContainer.class)))
+                .thenReturn(ResponseEntity.ok()
+                                          .body(JobContainer.newBuilder()
+                                                            .job(JenkinsJob.newBuilder()
+                                                                           .jobName("job1")
+                                                                           .url("http://buildserver2/job1")
+                                                                           .build())
+                                                            .build()));
 
         final List<JenkinsJob> jobs = testee.getJobs(Arrays.asList("http://buildserver1", "http://buildserver2"));
 
@@ -69,7 +90,8 @@ public class HttpJenkinsClientTest {
         verify(mockRestTemplate).exchange(eq("http://buildserver2/api/json?tree=jobs[name,url,lastSuccessfulBuild[artifacts[*]]]"), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JobContainer.class));
         assertThat(jobs).isNotNull();
         assertThat(jobs).hasSize(2);
-        assertThat(jobs).extracting("url").containsExactlyInAnyOrder("http://buildserver1/job1", "http://buildserver2/job1");
+        assertThat(jobs).extracting("url")
+                        .containsExactlyInAnyOrder("http://buildserver1/job1", "http://buildserver2/job1");
     }
 
     @Test
@@ -79,19 +101,25 @@ public class HttpJenkinsClientTest {
         settings.setUsername("username");
         HttpJenkinsClient localTestee = new HttpJenkinsClient(mockRestTemplate, settings);
 
-        when(mockRestTemplate.exchange(eq("http://buildserver1/api/json?tree=jobs[name,url,lastSuccessfulBuild[artifacts[*]]]"), eq(HttpMethod.GET), any(HttpEntity.class), eq(JobContainer.class))).thenReturn(
-                ResponseEntity.ok().body(JobContainer.newBuilder().job(JenkinsJob.newBuilder().jobName("job1").url("http://buildserver1/job1").build()).build()));
+        when(mockRestTemplate.exchange(eq("http://buildserver1/api/json?tree=jobs[name,url,lastSuccessfulBuild[artifacts[*]]]"), eq(HttpMethod.GET), any(HttpEntity.class), eq(JobContainer.class)))
+                .thenReturn(ResponseEntity.ok()
+                                          .body(JobContainer.newBuilder()
+                                                            .job(JenkinsJob.newBuilder()
+                                                                           .jobName("job1")
+                                                                           .url("http://buildserver1/job1")
+                                                                           .build())
+                                                            .build()));
 
         //test
         localTestee.getJobs(Arrays.asList("http://buildserver1"));
 
         //verify
         ArgumentCaptor<HttpEntity> entityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
-        verify(mockRestTemplate).exchange(eq("http://buildserver1/api/json?tree=jobs[name,url,lastSuccessfulBuild[artifacts[*]]]"), eq(HttpMethod.GET), entityCaptor.capture(), eq(JobContainer.class));
+        verify(mockRestTemplate).exchange(eq("http://buildserver1/api/json?tree=jobs[name,url,lastSuccessfulBuild[artifacts[*]]]"), eq(HttpMethod.GET), entityCaptor
+                .capture(), eq(JobContainer.class));
 
         HttpEntity capturedEntity = entityCaptor.getValue();
-        byte[] encodedAuth = org.apache.commons.codec.binary.Base64.encodeBase64(
-                "username:api_Key".getBytes(StandardCharsets.US_ASCII));
+        byte[] encodedAuth = org.apache.commons.codec.binary.Base64.encodeBase64("username:api_Key".getBytes(StandardCharsets.US_ASCII));
         String authHeader = "Basic " + new String(encodedAuth);
         assertThat(capturedEntity.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0)).isEqualTo(authHeader);
     }
@@ -103,21 +131,29 @@ public class HttpJenkinsClientTest {
         settings.setUsername("name");
         HttpJenkinsClient localTestee = new HttpJenkinsClient(mockRestTemplate, settings);
 
+        when(mockRestTemplate.exchange(argThat(is(equalTo("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml"))), eq(HttpMethod.GET), any(HttpEntity.class), eq(JobContainer.class)))
+                .thenReturn(ResponseEntity.ok().body( JobContainer.newBuilder().build()));
+
 
         //test
         final JenkinsJob jenkinsJob = JenkinsJob.newBuilder()
-                .url("http://myBuildServer/myJob")
-                .lastSuccessfulBuild(
-                        JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("TEST-someSuite-test.xml").path("mysubmodule/TEST-someSuite-test.xml").build()).build()).build();
+                                                .url("http://myBuildServer/myJob")
+                                                .lastSuccessfulBuild(JenkinsBuild.newBuilder()
+                                                                                 .artifact(Artifact.newBuilder()
+                                                                                                   .fileName("TEST-someSuite-test.xml")
+                                                                                                   .path("mysubmodule/TEST-someSuite-test.xml")
+                                                                                                   .build())
+                                                                                 .build())
+                                                .build();
         localTestee.getLatestArtifacts(JobContainer.class, jenkinsJob, Arrays.asList(Pattern.compile("TEST-.*-test\\.xml")));
 
         //verify
         ArgumentCaptor<HttpEntity> entityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
-        verify(mockRestTemplate).exchange(eq("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml"), eq(HttpMethod.GET), entityCaptor.capture(), eq(JobContainer.class));
+        verify(mockRestTemplate).exchange(eq("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml"), eq(HttpMethod.GET), entityCaptor
+                .capture(), eq(JobContainer.class));
 
         HttpEntity capturedEntity = entityCaptor.getValue();
-        byte[] encodedAuth = org.apache.commons.codec.binary.Base64.encodeBase64(
-                "name:apiKey".getBytes(StandardCharsets.US_ASCII));
+        byte[] encodedAuth = org.apache.commons.codec.binary.Base64.encodeBase64("name:apiKey".getBytes(StandardCharsets.US_ASCII));
         String authHeader = "Basic " + new String(encodedAuth);
         assertThat(capturedEntity.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0)).isEqualTo(authHeader);
     }
