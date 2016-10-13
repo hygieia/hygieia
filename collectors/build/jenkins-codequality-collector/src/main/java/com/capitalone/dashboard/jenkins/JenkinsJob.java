@@ -2,53 +2,52 @@ package com.capitalone.dashboard.jenkins;
 
 import com.capitalone.dashboard.model.CollectorItem;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by stephengalbraith on 10/10/2016.
  */
 public class JenkinsJob extends CollectorItem {
 
-    private static final String INSTANCE_URL = "jenkinsServer";
-    private static final String PROJECT_NAME = "jobName";
-    private static final String PROJECT_ID = "projectId";
+    private String url;
 
-    private String jenkinsServer;
+    private String name;
 
-    private String jobName;
-    private List<Artifact> artifacts;
+    private JenkinsBuild lastSuccessfulBuild;
+
+    private JenkinsJob() {
+        // required for converter
+    }
 
     private JenkinsJob(Builder builder) {
-        jenkinsServer = builder.jenkinsServer;
-        jobName = builder.jobName;
-        artifacts = builder.artifacts;
+        url = builder.url;
+        name = builder.jobName;
+        lastSuccessfulBuild = builder.lastSuccessfulBuild;
     }
 
-    public String getJenkinsServer() {
-        return jenkinsServer;
+    public String getUrl() {
+        return url;
     }
 
-    public String getJobName() {
-        return jobName;
+    public String getName() {
+        return name;
+    }
+
+    public JenkinsBuild getLastSuccessfulBuild() {
+        return lastSuccessfulBuild;
     }
 
     public static Builder newBuilder() {
         return new Builder();
     }
 
-    public List<Artifact> getArtifacts() {
-        return artifacts;
-    }
 
     public static final class Builder{
 
-        private String jenkinsServer;
+        private String url;
         private String jobName;
-        private List<Artifact> artifacts = new ArrayList<>();
+        private JenkinsBuild lastSuccessfulBuild;
 
-        public Builder jenkinsServer(String jenkinsServer) {
-            this.jenkinsServer = jenkinsServer;
+        public Builder url(String url) {
+            this.url = url;
             return this;
         }
 
@@ -61,8 +60,8 @@ public class JenkinsJob extends CollectorItem {
             return new JenkinsJob(this);
         }
 
-        public Builder artifact(Artifact artifact) {
-            this.artifacts.add(artifact);
+        public Builder lastSuccessfulBuild(JenkinsBuild lastSuccessfulBuild) {
+            this.lastSuccessfulBuild = lastSuccessfulBuild;
             return this;
         }
     }
