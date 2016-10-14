@@ -186,13 +186,14 @@ public class StoryDataClient extends BaseClient {
 				// sSprintIsDeleted
 				feature.setsSprintIsDeleted(getJSONString(dataMainObj, "Timebox.IsDeleted"));
 			} else {
-				/*
-				 * For Kanban, associate a generic, never-ending kanban 'sprint'
-				 */
-				feature.setsSprintID(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-				feature.setsSprintName(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-				feature.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
-				feature.setsSprintEndDate(FeatureCollectorConstants.KANBAN_END_DATE);
+				// Issue #678 - leave sprint blank. Not having a sprint does not imply kanban
+				// as a story on a scrum board without a sprint is really on the backlog
+				// Instead the feature service is responsible for deducing if a sprint is part of
+				// kanban - see service for more details
+				feature.setsSprintID("");
+				feature.setsSprintName("");
+				feature.setsSprintBeginDate("");
+				feature.setsSprintEndDate("");
 				feature.setsSprintAssetState(getJSONString(dataMainObj, "Timebox.AssetState"));
 			}
 
