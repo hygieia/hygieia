@@ -17,13 +17,12 @@ public final class FeatureCollectorConstants {
         // not an IP
         public static final String AGENT_VER = "01.00.00.01";
         public static final String AGENT_NAME = "Hygieia Dashboard - VersionOne Feature Collector";
-        public static final String KANBAN_START_DATE = "1900-01-01T00:00:00.0000000";
-        public static final String KANBAN_END_DATE = "9999-12-31T59:59:59.9999999";
-        public static final String KANBAN_SPRINT_ID = "KANBAN";
-		public static final String SCRUM_SPRINT_ID = "SCRUM";
 		
 		public static final String STORY_HOURS_ESTIMATE = "hours";
 		public static final String STORY_POINTS_ESTIMATE = "storypoints";
+		
+		public static final String SPRINT_SCRUM = "scrum";
+		public static final String SPRINT_KANBAN = "kanban";
 
         private FeatureCollectorConstants() {
                 // This class should not be instantiable
