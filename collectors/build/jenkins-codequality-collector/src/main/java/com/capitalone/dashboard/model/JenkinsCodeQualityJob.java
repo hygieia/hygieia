@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.model;
 
 
+import org.bson.types.ObjectId;
+
 /**
  * Created by stephengalbraith on 11/10/2016.
  */
@@ -12,6 +14,8 @@ public class JenkinsCodeQualityJob extends CollectorItem {
     public JenkinsCodeQualityJob(Builder builder) {
         this.getOptions().put(JOB_NAME, builder.jobName);
         this.getOptions().put(JENKINS_SERVER, builder.jenkinsServer);
+        this.setCollectorId(builder.collectorId);
+        this.setNiceName(builder.jobName);
     }
 
     public String getJobName() {
@@ -31,8 +35,9 @@ public class JenkinsCodeQualityJob extends CollectorItem {
     }
 
     public static class Builder {
-        String jobName;
-        String jenkinsServer;
+        private String jobName;
+        private String jenkinsServer;
+        private ObjectId collectorId;
 
         public Builder jobName(String jobName) {
             this.jobName = jobName;
@@ -46,6 +51,11 @@ public class JenkinsCodeQualityJob extends CollectorItem {
 
         public JenkinsCodeQualityJob build() {
             return new JenkinsCodeQualityJob(this);
+        }
+
+        public Builder collectorId(ObjectId collectorId) {
+            this.collectorId = collectorId;
+            return this;
         }
     }
 }

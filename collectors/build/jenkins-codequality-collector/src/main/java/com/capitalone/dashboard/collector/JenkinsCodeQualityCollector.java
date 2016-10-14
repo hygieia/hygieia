@@ -1,7 +1,9 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +12,17 @@ import java.util.List;
 public class JenkinsCodeQualityCollector extends Collector {
 
 
-    private List<String> buildServers;
+    public static JenkinsCodeQualityCollector prototype(List<String> servers) {
+        JenkinsCodeQualityCollector protoType = new JenkinsCodeQualityCollector();
+        protoType.setName("JenkinsCodeQuality");
+        protoType.setCollectorType(CollectorType.CodeQuality);
+        protoType.setOnline(true);
+        protoType.setEnabled(true);
+        protoType.buildServers.addAll(servers);
+        return protoType;
+    }
+
+    private List<String> buildServers = new ArrayList<>();
 
     public List<String> getBuildServers() {
         return buildServers;

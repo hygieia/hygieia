@@ -43,7 +43,7 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
     }
 
     public JenkinsCodeQualityCollector getCollector() {
-        return new JenkinsCodeQualityCollector();
+        return JenkinsCodeQualityCollector.prototype(this.settings.getServers());
     }
 
     @Override
@@ -110,7 +110,8 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
         ).collect(Collectors.toList());
 
         newJobs.forEach(job -> {
-            JenkinsCodeQualityJob newJob = JenkinsCodeQualityJob.newBuilder().jobName(job.getName()).jenkinsServer(job.getUrl()).build();
+            JenkinsCodeQualityJob newJob = JenkinsCodeQualityJob.newBuilder().
+                    collectorId(collector.getId()).jobName(job.getName()).jenkinsServer(job.getUrl()).build();
             this.jobRepository.save(newJob);
         });
 

@@ -55,13 +55,22 @@ public class JenkinsCodeQualityCollectorTaskTest {
         mockJobRepository = mock(JenkinsCodeQualityJobRepository.class);
         JenkinsSettings settings = new JenkinsSettings();
         settings.setCron("0 * * * * *");
+        settings.setServers(Arrays.asList("server1", "server2"));
         this.testee = new JenkinsCodeQualityCollectorTask(mockScheduler, mockRepo, mockJobRepository, settings, mockJenkinsHelper, mockCodeQualityConverter, mockCodeQualityRepository);
     }
 
     @Test
     public void getCollectorReturnsAJenkinsCodeQualityCollector() {
 
-        assertThat(testee.getCollector()).isNotNull().isInstanceOf(JenkinsCodeQualityCollector.class);
+        //test
+        final JenkinsCodeQualityCollector collector = testee.getCollector();
+        // assert
+        assertThat(collector).isNotNull().isInstanceOf(JenkinsCodeQualityCollector.class);
+        assertThat(collector.isEnabled()).isTrue();
+        assertThat(collector.isOnline()).isTrue();
+        assertThat(collector.getBuildServers()).contains("server1", "server2");
+        assertThat(collector.getCollectorType()).isEqualTo(CollectorType.CodeQuality);
+        assertThat(collector.getName()).isEqualTo("JenkinsCodeQuality");
     }
 
     @Test
@@ -220,8 +229,9 @@ public class JenkinsCodeQualityCollectorTaskTest {
         ArgumentCaptor<JenkinsCodeQualityJob> newJobCaptor = ArgumentCaptor.forClass(JenkinsCodeQualityJob.class);
         verify(this.mockJobRepository, times(1)).save(newJobCaptor.capture());
         JenkinsCodeQualityJob capturedJob = newJobCaptor.getValue();
-        JenkinsCodeQualityJob expectedNewJob = JenkinsCodeQualityJob.newBuilder().jobName("myNewJob").jenkinsServer("http://myBuildServer/myNewJob").build();
+        JenkinsCodeQualityJob expectedNewJob = JenkinsCodeQualityJob.newBuilder().collectorId(collectorId).jobName("myNewJob").jenkinsServer("http://myBuildServer/myNewJob").build();
         assertThat(capturedJob).isEqualToComparingFieldByField(expectedNewJob);
+        assertThat(capturedJob.getNiceName()).isEqualTo("myNewJob");
     }
 
     private Set<CodeQualityMetric> getCodeQualityMetrics(List<Tuple> tuples) {

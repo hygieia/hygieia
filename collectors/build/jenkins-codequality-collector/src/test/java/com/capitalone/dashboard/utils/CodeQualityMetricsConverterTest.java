@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.utils;
 
 import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityMetricStatus;
 import com.capitalone.dashboard.model.JunitXmlReport;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -24,7 +25,10 @@ public class CodeQualityMetricsConverterTest extends TestCase {
         xmlReport.setTests(14);
         Set<CodeQualityMetric> codeQualityMetrics = testee.analyse(xmlReport);
 
-        assertThat(codeQualityMetrics).extracting("name", "formattedValue")
-                                      .contains(tuple("test_failures", "1"), tuple("test_errors", "2"), tuple("tests", "14"), tuple("test_success_density", "11"));
+        assertThat(codeQualityMetrics).extracting("name", "formattedValue", "value", "status")
+                .contains(tuple("test_failures", "1", 1, CodeQualityMetricStatus.Warning),
+                        tuple("test_errors", "2", 2, CodeQualityMetricStatus.Alert),
+                        tuple("tests", "14", 14, CodeQualityMetricStatus.Ok),
+                        tuple("test_success_density", "11", 11, CodeQualityMetricStatus.Ok));
     }
 }

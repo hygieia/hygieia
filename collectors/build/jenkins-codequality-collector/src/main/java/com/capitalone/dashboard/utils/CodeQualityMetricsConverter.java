@@ -1,7 +1,9 @@
 package com.capitalone.dashboard.utils;
 
 import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityMetricStatus;
 import com.capitalone.dashboard.model.JunitXmlReport;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -25,23 +27,25 @@ public class CodeQualityMetricsConverter implements CodeQualityConverter{
     public Set<CodeQualityMetric> analyse(JunitXmlReport report) {
         Set<CodeQualityMetric> codeQualityMetrics = new HashSet<>();
 
-        String testsPassed = String.valueOf(report.getTests() - report.getFailures() - report.getErrors());
+        Integer testsPassed = report.getTests() - report.getFailures() - report.getErrors();
 
-        Map<String, String> metricsMap = new HashMap<>();
-        metricsMap.put(TOTAL_NO_OF_TESTS, String.valueOf(report.getTests()));
-        metricsMap.put(TEST_FAILURES, String.valueOf(report.getFailures()));
-        metricsMap.put(TEST_ERRORS, String.valueOf(report.getErrors()));
-        metricsMap.put(TEST_SUCCESS_DENSITY, testsPassed);
+        Map<String, Pair<Integer, CodeQualityMetricStatus>> metricsMap = new HashMap<>();
+        metricsMap.put(TOTAL_NO_OF_TESTS, Pair.of(report.getTests(), CodeQualityMetricStatus.Ok));
+        metricsMap.put(TEST_FAILURES, Pair.of(report.getFailures(), CodeQualityMetricStatus.Warning));
+        metricsMap.put(TEST_ERRORS, Pair.of(report.getErrors(), CodeQualityMetricStatus.Alert));
+        metricsMap.put(TEST_SUCCESS_DENSITY, Pair.of(testsPassed, CodeQualityMetricStatus.Ok));
 
         metricsMap.forEach((key, value) -> {
             CodeQualityMetric codeQualityMetric = new CodeQualityMetric();
             codeQualityMetric.setName(key);
-            codeQualityMetric.setFormattedValue(value);
+            codeQualityMetric.setFormattedValue(String.valueOf(value.getLeft()));
+            codeQualityMetric.setValue(value.getLeft());
+            codeQualityMetric.setStatus(value.getRight());
             codeQualityMetrics.add(codeQualityMetric);
         });
 
 
-
         return codeQualityMetrics;
     }
+
 }
