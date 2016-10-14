@@ -72,19 +72,28 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
 
         this.createAnyNewJobs(collector, interestingJobs);
 
-        for (JenkinsJob job : interestingJobs) {
-            this.log("found an job of interest matching the artifact pattern.");
-            List<JunitXmlReport> reportArtifacts = this.jenkinsClient.getLatestArtifacts(JunitXmlReport.class, job, matchingJobPatterns);
+        List<JenkinsCodeQualityJob> allJobs = this.jobRepository.findAllByCollectorId(collector.getId());
+        if (null != allJobs) {
+            final Map<String, JenkinsCodeQualityJob> jenkinsCodeQualityJobMap = allJobs.stream().collect(Collectors.toMap(JenkinsCodeQualityJob::getJenkinsServer, o -> o));
 
+            for (JenkinsJob job : interestingJobs) {
+                this.log("found an job of interest matching the artifact pattern.");
+                List<JunitXmlReport> reportArtifacts = this.jenkinsClient.getLatestArtifacts(JunitXmlReport.class, job, matchingJobPatterns);
 
-            CodeQuality currentJobQuality = computeMetricsForJob(reportArtifacts);
-            currentJobQuality.setCollectorItemId(collector.getId());
-            currentJobQuality.setType(CodeQualityType.StaticAnalysis);
-            currentJobQuality.setUrl(job.getUrl());
-            currentJobQuality.setName(job.getName());
+                JenkinsCodeQualityJob sourceJob = jenkinsCodeQualityJobMap.get(job.getUrl());
+                if (null != sourceJob) {
+                    CodeQuality currentJobQuality = computeMetricsForJob(reportArtifacts);
 
-            // store the data
-            codeQualityRepository.save(currentJobQuality);
+                    currentJobQuality.setCollectorItemId(sourceJob.getId());
+                    currentJobQuality.setType(CodeQualityType.StaticAnalysis);
+                    currentJobQuality.setUrl(job.getUrl());
+                    currentJobQuality.setName(job.getName());
+                    currentJobQuality.setTimestamp(System.currentTimeMillis());
+
+                    // store the data
+                    codeQualityRepository.save(currentJobQuality);
+                }
+            }
         }
 
     }
@@ -114,7 +123,6 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
                     collectorId(collector.getId()).jobName(job.getName()).jenkinsServer(job.getUrl()).build();
             this.jobRepository.save(newJob);
         });
-
     }
 
     private CodeQuality computeMetricsForJob(List<JunitXmlReport> reportArtifacts) {
