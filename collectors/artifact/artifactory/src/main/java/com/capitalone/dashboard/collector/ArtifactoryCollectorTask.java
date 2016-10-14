@@ -136,6 +136,13 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
         }
     }
     	
+    /**
+     * Add any new {@link ArtifactoryRepo}s.
+     *
+     * @param repos					list of {@link ArtifactoryRepo}s
+     * @param existingRepos			list of existing {@link ArtifactoryRepo}s
+     * @param collector    			the {@link ArtifactoryCollector}
+     */
     private void addNewRepos(List<ArtifactoryRepo> repos, List<ArtifactoryRepo> existingRepos, ArtifactoryCollector collector) {
         long start = System.currentTimeMillis();
         int count = 0;
@@ -162,6 +169,11 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
         log("New repos", start, count);
     }
     
+    /**
+     * Add any new {@link BinaryArtifact}s
+     * 
+     * @param enabledRepos			list of enabled {@link ArtifactoryRepo}s
+     */
     private void addNewArtifacts(List<ArtifactoryRepo> enabledRepos) {
 		long start = System.currentTimeMillis();
 		

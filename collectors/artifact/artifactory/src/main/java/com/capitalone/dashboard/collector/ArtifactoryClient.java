@@ -10,8 +10,23 @@ import com.capitalone.dashboard.model.BinaryArtifact;
  */
 public interface ArtifactoryClient {
 	
+	/**
+	 * Obtain list of repos in the given artifactory
+	 * 	
+	 * @param instanceUrl					server url
+	 * @param artifactoryEndpoint			endpoint of the artifactory in the instance url
+	 * @return
+	 */
 	List<ArtifactoryRepo> getRepos(String instanceUrl, String artifactoryEndpoint);
 	
+	/**
+	 * Obtain all the artifacts in the given artifactory repo
+	 * 
+	 * @param instanceUrl		server url
+	 * @param repoName			repo name
+	 * @param lastUpdated		timestamp when the repo was last updated
+	 * @return
+	 */
 	List<BinaryArtifact> getArtifacts(String instanceUrl, String repoName, long lastUpdated);
 
 }
