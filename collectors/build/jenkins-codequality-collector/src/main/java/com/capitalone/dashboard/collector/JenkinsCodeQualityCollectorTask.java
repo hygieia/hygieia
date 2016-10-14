@@ -10,6 +10,7 @@ import com.capitalone.dashboard.repository.JenkinsCodeQualityJobRepository;
 import com.capitalone.dashboard.utils.CodeQualityConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.Function;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 /**
  * Created by stephengalbraith on 10/10/2016.
  */
+@Component
 public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQualityCollector> {
 
 

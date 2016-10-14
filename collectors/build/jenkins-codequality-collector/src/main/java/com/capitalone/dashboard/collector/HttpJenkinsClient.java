@@ -6,6 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Created by plv163 on 12/10/2016.
  */
+@Component
 public class HttpJenkinsClient implements JenkinsClient {
 
 
