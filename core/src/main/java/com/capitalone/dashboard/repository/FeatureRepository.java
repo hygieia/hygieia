@@ -58,7 +58,7 @@ public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 	 * @param currentISODateTime
 	 * @return
 	 */
-	@Query(	value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintID' : {$ne : ''}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}} , {'sSprintEndDate' : {$lt : '9999-12-31T59:59:59.999999'}} ] }, $orderby: { 'sStatus' :-1 }")
+	@Query(	value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintID' : {$ne : ''}} , {'sSprintAssetState': { $regex: '^active$', $options: 'i' } } , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}} , {'sSprintEndDate' : {$lt : '9999-12-31T59:59:59.999999'}} ] }, $orderby: { 'sStatus' :-1 }")
 	List<Feature> findByActiveEndingSprints(String sTeamId, String currentISODateTime);
 	
 	/**
@@ -67,7 +67,7 @@ public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 	 * @param sTeamId
 	 * @return
 	 */
-	@Query(	value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintID' : {$ne : \"\"}} , { $or : [{'sSprintEndDate' : {$eq : null}} , {'sSprintEndDate' : {$eq : ''}} , {'sSprintEndDate' : {$gte : '9999-12-31T59:59:59.999999'}}] } ] }, $orderby: { 'sStatus' :-1 }")
+	@Query(	value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintID' : {$ne : \"\"}} , {'sSprintAssetState': { $regex: '^active$', $options: 'i' } } , { $or : [{'sSprintEndDate' : {$eq : null}} , {'sSprintEndDate' : {$eq : ''}} , {'sSprintEndDate' : {$gte : '9999-12-31T59:59:59.999999'}}] } ] }, $orderby: { 'sStatus' :-1 }")
 	List<Feature> findByUnendingSprints(String sTeamId);
 	
 	/**
@@ -82,14 +82,14 @@ public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 	/**
 	 * @see #findByActiveEndingSprints(String, String)
 	 */
-	@Query(	value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintID' : {$ne : ''}} , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}} , {'sSprintEndDate' : {$lt : '9999-12-31T59:59:59.999999'}} ] }, $orderby: { 'sStatus' :-1 }",
+	@Query(	value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintID' : {$ne : ''}} , {'sSprintAssetState': { $regex: '^active$', $options: 'i' } } , {'sSprintBeginDate' : {$lte : ?1}} , {'sSprintEndDate' : {$gte : ?1}} , {'sSprintEndDate' : {$lt : '9999-12-31T59:59:59.999999'}} ] }, $orderby: { 'sStatus' :-1 }",
 			fields = "{'sStatus': 1, 'sNumber': 1, 'sSprintID': 1, 'sSprintName': 1, 'sSprintBeginDate': 1, 'sSprintEndDate': 1, 'sEpicID' : 1,'sEpicNumber' : 1, 'sEpicName' : 1, 'sEstimate': 1, 'sEstimateTime': 1}")
 	List<Feature> findByActiveEndingSprintsMinimal(String sTeamId, String currentISODateTime);
 
 	/**
 	 * @see #findByUnendingSprints(String)
 	 */
-	@Query(	value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintID' : {$ne : \"\"}} , { $or : [{'sSprintEndDate' : {$eq : null}} , {'sSprintEndDate' : {$eq : ''}} , {'sSprintEndDate' : {$gte : '9999-12-31T59:59:59.999999'}}] } ] }, $orderby: { 'sStatus' :-1 }",
+	@Query(	value = "{'sTeamID' : ?0 , 'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintID' : {$ne : \"\"}} , {'sSprintAssetState': { $regex: '^active$', $options: 'i' } } , { $or : [{'sSprintEndDate' : {$eq : null}} , {'sSprintEndDate' : {$eq : ''}} , {'sSprintEndDate' : {$gte : '9999-12-31T59:59:59.999999'}}] } ] }, $orderby: { 'sStatus' :-1 }",
 			fields = "{'sStatus': 1, 'sNumber': 1, 'sSprintID': 1, 'sSprintName': 1, 'sSprintBeginDate': 1, 'sSprintEndDate': 1, 'sEpicID' : 1,'sEpicNumber' : 1, 'sEpicName' : 1, 'sEstimate': 1, 'sEstimateTime': 1}")
 	List<Feature> findByUnendingSprintsMinimal(String sTeamId);
 	
