@@ -55,7 +55,7 @@ server.port=8080
 
 For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
 
-###LDAP Authentication
+### LDAP Authentication
 In the case you want to use LDAP authentication instead of Basic/Mongo Authentication, use the following profile when starting the api application
 ```bash
 java -jar api.jar --spring.config.location=dashboard.properties -spring.profiles.active=ldapAuth
