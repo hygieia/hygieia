@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapTemplate;
 
 import com.capitalone.dashboard.config.LdapAuthConfigProperties;
@@ -62,7 +63,7 @@ public class LdapAuthenticationServiceImpl implements AuthenticationService {
 	public boolean authenticate(String username, String password) {
 		LdapTemplate ldapTemplate = getLdapTemplateBuilder()
 											.withUrl(ldapAuthConfigProperties.getUrl())
-											.withDn(prepareDn(ldapAuthConfigProperties.getDn(), username))
+											.withDn(String.format(ldapAuthConfigProperties.getDn(), username))
 											.withPassword(password)
 											.build();
 		if(ldapTemplate == null) {
@@ -70,16 +71,11 @@ public class LdapAuthenticationServiceImpl implements AuthenticationService {
 			return false;
 		}
 		try {
-			ldapTemplate.lookup(prepareDn(ldapAuthConfigProperties.getDn(), username));
+			return ldapTemplate.authenticate(DistinguishedName.EMPTY_PATH, "(uid=" + username + ")", password);
 		} catch(Exception e) {
 			LOGGER.error(e.getMessage());
 			return false;
 		}
-		return true;
-	}
-	
-	private String prepareDn(String dn, Object... args) {
-		return String.format(dn, args);
 	}
 	
 	protected LdapTemplateBuilder getLdapTemplateBuilder() {

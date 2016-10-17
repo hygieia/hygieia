@@ -3,10 +3,9 @@ package com.capitalone.dashboard.service;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import javax.naming.AuthenticationException;
 
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -16,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapTemplate;
 
 import com.capitalone.dashboard.config.LdapAuthConfigProperties;
@@ -52,7 +52,7 @@ public class LdapAuthenticationServiceImplTest {
 		when(ldapTemplateBuilder.withDn(any(String.class))).thenReturn(ldapTemplateBuilder);
 		when(ldapTemplateBuilder.withPassword(any(String.class))).thenReturn(ldapTemplateBuilder);
 		when(ldapTemplateBuilder.build()).thenReturn(ldapTemplate);
-		when(ldapTemplate.lookup(any(String.class))).thenReturn(true);
+		when(ldapTemplate.authenticate(eq(DistinguishedName.EMPTY_PATH), any(String.class), any(String.class))).thenReturn(true);
 	}
 	
 	@Test(expected=UnsupportedOperationException.class)
@@ -93,9 +93,8 @@ public class LdapAuthenticationServiceImplTest {
 	}
 	
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testAuthenticateFail() {
-		when(ldapTemplate.lookup(any(String.class))).thenThrow(AuthenticationException.class);
+		when(ldapTemplate.authenticate(eq(DistinguishedName.EMPTY_PATH), any(String.class), any(String.class))).thenReturn(false);
 		assertFalse(authService.authenticate(USERNAME, PASSWORD));
 		
 		verifyLdapBuilderTemplate();
