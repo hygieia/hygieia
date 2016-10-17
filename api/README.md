@@ -65,8 +65,9 @@ java -jar api.jar --spring.config.location=dashboard.properties -spring.profiles
 LDAP authentication requires two entries in the application.properties file in the following format
 ```properties
 ldap.auth.url=ldap://{ldapHost}:{ldapPort}
-ldap.auth.dn=uid%s,{otherDnSpecifiers}
+ldap.auth.dn=uid=%s[,{otherDnSpecifiers}]
 ```
+**Note:** The uid=%s must be present. The username used to log in to the UI will be injected into the DN, replacing the %s. Other DN specifiers may be used as well, such as company identifiers. 
 
 ## Docker image
 
