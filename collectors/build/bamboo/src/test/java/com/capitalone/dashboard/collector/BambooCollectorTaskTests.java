@@ -79,7 +79,7 @@ public class BambooCollectorTaskTests {
         BambooCollector collector = collectorWithOneServer();
         BambooJob job = bambooJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
         when(bambooClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job));
-        when(bambooJobRepository.findBambooJob(collector.getId(), SERVER1, job.getJobName()))
+        when(bambooJobRepository.findJob(collector.getId(), SERVER1, job.getJobName()))
                 .thenReturn(job);
         when(dbComponentRepository.findAll()).thenReturn(components());
 
@@ -148,7 +148,7 @@ public class BambooCollectorTaskTests {
         Build build = build("JOB1_1", "JOB1_1_URL");
 
         when(bambooClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
-        when(bambooJobRepository.findEnabledBambooJobs(collector.getId(), SERVER1))
+        when(bambooJobRepository.findEnabledJobs(collector.getId(), SERVER1))
                 .thenReturn(Arrays.asList(job));
         when(buildRepository.findByCollectorItemIdAndNumber(job.getId(), build.getNumber())).thenReturn(build);
         when(dbComponentRepository.findAll()).thenReturn(components());
@@ -164,7 +164,7 @@ public class BambooCollectorTaskTests {
         Build build = build("JOB1_1", "JOB1_1_URL");
 
         when(bambooClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
-        when(bambooJobRepository.findEnabledBambooJobs(collector.getId(), SERVER1))
+        when(bambooJobRepository.findEnabledJobs(collector.getId(), SERVER1))
                 .thenReturn(Arrays.asList(job));
         when(buildRepository.findByCollectorItemIdAndNumber(job.getId(), build.getNumber())).thenReturn(null);
         when(bambooClient.getBuildDetails(build.getBuildUrl(), job.getInstanceUrl())).thenReturn(build);
