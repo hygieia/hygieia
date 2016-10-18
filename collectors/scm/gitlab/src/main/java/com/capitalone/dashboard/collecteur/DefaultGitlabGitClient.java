@@ -1,20 +1,5 @@
 package com.capitalone.dashboard.collecteur;
 
-import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.GitlabGitRepo;
-import com.capitalone.dashboard.util.Supplier;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestOperations;
-
-import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,6 +12,29 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestOperations;
+
+import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.GitlabGitRepo;
+import com.capitalone.dashboard.util.Supplier;
 
 /**
  * Created by benathmane on 23/06/16.
@@ -247,7 +255,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
             String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
             repoName = repoName.replace("/", "%2F");
 
-            repoUrl = "https://" + PUBLIC_GITLAB_HOST_NAME + SEGMENT_API + repoName + "/repository/commits/";
+			repoUrl = "https://" + hostName + SEGMENT_API + repoName + "/repository/commits/";
 
         } catch (IOException e) {
             throw new RuntimeException(e);
