@@ -85,6 +85,9 @@ public class DefaultBitbucketServerClientTest {
         assertEquals("215e5a6cbbda3a0cf4271a7e7c799306d3adb9ad", commits.get(0).getScmRevisionNumber());
         assertEquals("billybob", commits.get(0).getScmAuthor());
         assertEquals("Message 1", commits.get(0).getScmCommitLog());
+        assertEquals(2, commits.get(0).getScmParentRevisionNumbers().size());
+        assertEquals("9097aee6916a1883945b9cf9b77d351dc6802307", commits.get(0).getScmParentRevisionNumbers().get(0));
+        assertEquals("30a9559513e471fb8f1deff10bd8823ad74a2fab", commits.get(0).getScmParentRevisionNumbers().get(1));
         assertEquals(1463771960000L, commits.get(0).getScmCommitTimestamp());
         
         assertTrue(0 != commits.get(1).getTimestamp());
@@ -92,6 +95,8 @@ public class DefaultBitbucketServerClientTest {
         assertEquals("30a9559513e471fb8f1deff10bd8823ad74a2fab", commits.get(1).getScmRevisionNumber());
         assertEquals("billybob", commits.get(1).getScmAuthor());
         assertEquals("Message 2", commits.get(1).getScmCommitLog());
+        assertEquals(1, commits.get(1).getScmParentRevisionNumbers().size());
+        assertEquals("9097aee6916a1883945b9cf9b77d351dc6802307", commits.get(1).getScmParentRevisionNumbers().get(0));
         assertEquals(1463771869000L, commits.get(1).getScmCommitTimestamp());
     }
     

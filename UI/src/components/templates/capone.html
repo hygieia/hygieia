@@ -7,9 +7,7 @@
 
                 {{::ctrl.dashboard.title}}
 
-                <div class="pipeline-toggle btn-group"
-
-                     ng-show="template.hasComponents(ctrl.dashboard, ['Deployment'])">
+                <div class="pipeline-toggle btn-group">
 
                     <span class="btn" ng-repeat="tab in template.tabs" ng-click="template.toggleView($index)"
                           ng-class="tab.name == template.widgetView ? 'btn-primary' : 'btn-default'">
