@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class GitlabSettings {
     private String cron;
     private boolean saveLog = false;
-    private String server;
+    private String host;
     private String apiToken;
     private String branche;
 
@@ -36,14 +36,6 @@ public class GitlabSettings {
         this.saveLog = saveLog;
     }
 
-    public String getServer() {
-        return server;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
-    }
-
     public String getApiToken() {
         return apiToken;
     }
@@ -59,4 +51,12 @@ public class GitlabSettings {
     public void setBranche(String branche) {
         this.branche = branche;
     }
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
 }

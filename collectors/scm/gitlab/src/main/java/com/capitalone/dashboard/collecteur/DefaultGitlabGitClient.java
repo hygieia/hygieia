@@ -49,7 +49,8 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 
     private static final String SEGMENT_API = "/api/v3/projects/";
     
-
+    private static final String PUBLIC_GITLAB_HOST_NAME = "gitlab.company.com";
+    
     @Autowired
     public DefaultGitlabGitClient(GitlabSettings gitlabSettings,
                                        Supplier<RestOperations> restOperationsSupplier) {
@@ -71,7 +72,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     @Override
     public List<Commit> getCommits(GitlabGitRepo repo) {
         List<Commit> commits = new ArrayList<>();
-        String repoUrl = this.normalizeUrl(repo);
+        String repoUrl = this.buildApiUrl(repo);
         for(int f = 0; f < 20; f++) {
             String repoUrlwithToken = repoUrl + "?page="+f+"&private_token=" + gitlabSettings.getApiToken();
             String https_url = repoUrlwithToken;
@@ -173,26 +174,32 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
      * repo.getOptions().get("url")  = https://gitlab.company.com/team/reponame.git
      * @return url api format = https://gitlab.company.com/api/v3/projects/team%2Freponame/repository/commits/
      */
-    public String normalizeUrl(GitlabGitRepo repo){
+    public String buildApiUrl(GitlabGitRepo repo){
         String repoUrl = (String) repo.getOptions().get("url");
-        String hostName = "";
-
+        
         if (repoUrl.endsWith(".git")) {
             repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
         }
-        try {
-            URL url = new URL(repoUrl);
-            hostName = url.getHost();
-
-            String hostUrl = "https://" + hostName + "/";
-            String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
-            repoName = repoName.replace("/", "%2F");
-
-			repoUrl = "https://" + hostName + SEGMENT_API + repoName + "/repository/commits/";
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        
+        String repoName = "";
+		try {
+	        URL url = new URL(repoUrl);
+			repoName = url.getFile();
+		} catch (MalformedURLException e) {
+			LOG.error(e.getMessage());
+		}
+        
+		repoName = repoName.substring(1, repoName.length());
+		repoName = repoName.replace("/", "%2F");
+        String providedGitLabHost = gitlabSettings.getHost();
+        String apiHost = PUBLIC_GITLAB_HOST_NAME;
+        
+        if(null != providedGitLabHost) {
+        	apiHost = providedGitLabHost;
         }
+        
+		repoUrl = "https://" + apiHost + SEGMENT_API + repoName + "/repository/commits/";
+
         return repoUrl;
     }
 }
