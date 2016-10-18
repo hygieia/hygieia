@@ -1,25 +1,16 @@
 package com.capitalone.dashboard.collecteur;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -71,77 +62,16 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     public List<Commit> getCommits(GitlabGitRepo repo) {
         List<Commit> commits = new ArrayList<>();
         String repoUrl = this.buildApiUrl(repo);
-        for(int f = 0; f < 20; f++) {
-            String repoUrlwithToken = repoUrl + "?page="+f+"&private_token=" + gitlabSettings.getApiToken();
-            String https_url = repoUrlwithToken;
-            URL url;
-            try {
 
-                // Create a context that doesn't check certificates.
-                SSLContext ssl_ctx = SSLContext.getInstance("TLS");
-                TrustManager[] trust_mgr = get_trust_mgr();
-                ssl_ctx.init(null,                // key manager
-                        trust_mgr,           // trust manager
-                        new SecureRandom()); // random number generator
-                HttpsURLConnection.setDefaultSSLSocketFactory(ssl_ctx.getSocketFactory());
+		String repoUrlwithToken = repoUrl + "?&private_token=" + gitlabSettings.getApiToken();
 
-                url = new URL(https_url);
-                HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+		ResponseEntity<String> response = makeRestCall(repoUrlwithToken, null, null);
+		JSONArray jsonArray = paresAsArray(response);
+		for (Object item : jsonArray) {
+			JSONObject jsonObject = (JSONObject) item;
+			commits.add(buildCommit(jsonObject, repo.getRepoUrl(), repo.getBranch()));
+		}
 
-                // Guard against "bad hostname" errors during handshake.
-                con.setHostnameVerifier(new HostnameVerifier() {
-                    public boolean verify(String host, SSLSession sess) {
-                        if (host.equals("localhost")) return true;
-                        else return false;
-                    }
-                });
-
-                //dumpl all cert info
-                //print_https_cert(con);
-
-                //dump all the content
-                //print_content(con);
-
-                if (con != null) {
-
-                    try {
-
-                        //LOG.info("****** Content of the URL ********");
-                        BufferedReader br =
-                                new BufferedReader(
-                                        new InputStreamReader(con.getInputStream()));
-
-                        String input;
-
-                        while ((input = br.readLine()) != null) {
-                            JSONParser parser = new JSONParser();
-                            try {
-                                Object obj = parser.parse(input);
-                                JSONArray jsonArray = (JSONArray) obj;
-                                for (Object item : jsonArray) {
-                                    JSONObject jsonObject = (JSONObject) item;
-									commits.add(buildCommit(jsonObject, repo.getRepoUrl(), repo.getBranch()));
-                                }
-                            } catch (ParseException e) {
-                                LOG.error(e);
-                            }
-                        }
-                        br.close();
-                    } catch (IOException e) {
-                        LOG.error(e);
-                    }
-                }
-
-            } catch (MalformedURLException e) {
-                LOG.error(e);
-            } catch (IOException e) {
-                LOG.error(e);
-            } catch (NoSuchAlgorithmException e) {
-                LOG.error(e);
-            } catch (KeyManagementException e) {
-                LOG.error(e);
-            }
-        }
         return commits;
     }
 
@@ -205,11 +135,6 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		return commit;
 	}
 
-	private String str(JSONObject json, String key) {
-		Object value = json.get(key);
-		return value == null ? null : value.toString();
-	}
-
 	private ResponseEntity<String> makeRestCall(String url, String userId, String password) {
 		trustSelfSignedSSL();
 		URI uri = null;
@@ -266,18 +191,17 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		return headers;
 	}
 
-	private TrustManager[] get_trust_mgr() {
-		TrustManager[] certs = new TrustManager[] { new X509TrustManager() {
-			public X509Certificate[] getAcceptedIssuers() {
-				return null;
-			}
+	private JSONArray paresAsArray(ResponseEntity<String> response) {
+		try {
+			return (JSONArray) new JSONParser().parse(response.getBody());
+		} catch (ParseException pe) {
+			LOG.error(pe.getMessage());
+		}
+		return new JSONArray();
+	}
 
-			public void checkClientTrusted(X509Certificate[] certs, String t) {
-			}
-
-			public void checkServerTrusted(X509Certificate[] certs, String t) {
-			}
-		} };
-		return certs;
+	private String str(JSONObject json, String key) {
+		Object value = json.get(key);
+		return value == null ? null : value.toString();
 	}
 }
