@@ -8,7 +8,6 @@ import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.List;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -50,7 +48,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     private final RestOperations restOperations;
 
     private static final String SEGMENT_API = "/api/v3/projects/";
-    private static final String PUBLIC_GITLAB_HOST_NAME = "gitlab.company.com";
+    
 
     @Autowired
     public DefaultGitlabGitClient(GitlabSettings gitlabSettings,
@@ -121,7 +119,6 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
                             try {
                                 Object obj = parser.parse(input);
                                 JSONArray jsonArray = (JSONArray) obj;
-                                int i = 0;
                                 for (Object item : jsonArray) {
                                     JSONObject jsonObject = (JSONObject) item;
                                     String author = (String) jsonObject.get("author_name");
@@ -136,8 +133,6 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
                                     commit.setScmCommitLog(message);
                                     commit.setScmCommitTimestamp(timestamp);
                                     commit.setNumberOfChanges(159753);
-                                    i++;
-
                                 /*
                                     LOG.info("getTimestamp " + commit.getTimestamp());
                                     LOG.info("getScmUrl " + commit.getScmUrl());
@@ -171,68 +166,6 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
         return commits;
     }
 
-    private void print_https_cert(HttpsURLConnection con){
-        if(con!=null){
-
-            try {
-
-                LOG.info("Response Code : " + con.getResponseCode());
-                LOG.info("Cipher Suite : " + con.getCipherSuite());
-                LOG.info("\n");
-
-                Certificate[] certs = con.getServerCertificates();
-                for(Certificate cert : certs){
-                    LOG.info("Cert Type : " + cert.getType());
-                    LOG.info("Cert Hash Code : " + cert.hashCode());
-                    LOG.info("Cert Public Key Algorithm : " + cert.getPublicKey().getAlgorithm());
-                    LOG.info("Cert Public Key Format : " + cert.getPublicKey().getFormat());
-                    LOG.info("\n");
-                }
-
-
-            } catch (SSLPeerUnverifiedException e) {
-                LOG.error(e);
-            } catch (IOException e){
-                LOG.error(e);
-            }
-        }
-    }
-
-    private void print_content(HttpsURLConnection con){
-        if(con!=null){
-
-            try {
-
-                LOG.info("****** Content of the URL ********");
-                BufferedReader br =
-                        new BufferedReader(
-                                new InputStreamReader(con.getInputStream()));
-
-                String input;
-
-                while ((input = br.readLine()) != null){
-                    JSONParser parser = new JSONParser();
-                    try {
-                        Object obj = parser.parse(input);
-                        JSONArray jsonArray = (JSONArray) obj;
-                        for (int i = 0; i < jsonArray.size(); i++) {
-                            JSONObject jsonObjectRow = (JSONObject) jsonArray.get(i);
-                            LOG.info(jsonObjectRow.toString());
-                        }
-                    } catch (ParseException e) {
-                        LOG.error(e);
-                    }
-
-                }
-
-                br.close();
-
-            } catch (IOException e) {
-                LOG.error(e);
-            }
-        }
-    }
-
      /**
      * Normalize url
      *
@@ -261,10 +194,5 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
             throw new RuntimeException(e);
         }
         return repoUrl;
-    }
-
-    private String str(JSONObject json, String key) {
-        Object value = json.get(key);
-        return value == null ? null : value.toString();
     }
 }
