@@ -188,8 +188,8 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		} catch (MalformedURLException e) {
 			LOG.error(e.getMessage());
 		}
-        
-		repoName = repoName.substring(1, repoName.length());
+      
+		repoName = repoName.substring(repoName.indexOf("/") + 1, repoName.length());
 		repoName = repoName.replace("/", "%2F");
         String providedGitLabHost = gitlabSettings.getHost();
         String apiHost = PUBLIC_GITLAB_HOST_NAME;
