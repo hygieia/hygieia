@@ -19,6 +19,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -168,12 +169,14 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     }
 
      /**
-     * Normalize url
-     *
-     * @param repo GitlabGitRepo
-     * repo.getOptions().get("url")  = https://gitlab.company.com/team/reponame.git
-     * @return url api format = https://gitlab.company.com/api/v3/projects/team%2Freponame/repository/commits/
-     */
+	 * Build API Url
+	 *
+	 * @param repo
+	 *            GitlabGitRepo repo.getOptions().get("url") =
+	 *            https://gitlab.company.com/team/reponame.git
+	 * @return url api format =
+	 *         https://gitlab.company.com/api/v3/projects/team%2Freponame/repository/commits/
+	 */
     public String buildApiUrl(GitlabGitRepo repo){
         String repoUrl = (String) repo.getOptions().get("url");
         
@@ -191,15 +194,17 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
       
 		repoName = repoName.substring(repoName.indexOf("/") + 1, repoName.length());
 		repoName = repoName.replace("/", "%2F");
+
         String providedGitLabHost = gitlabSettings.getHost();
-        String apiHost = PUBLIC_GITLAB_HOST_NAME;
-        
-        if(null != providedGitLabHost) {
+		String apiHost;
+		if (StringUtils.isBlank(providedGitLabHost)) {
+			apiHost = PUBLIC_GITLAB_HOST_NAME;
+		} else {
         	apiHost = providedGitLabHost;
         }
         
-		repoUrl = "https://" + apiHost + SEGMENT_API + repoName + "/repository/commits/";
+		String apiUrl = "https://" + apiHost + SEGMENT_API + repoName + "/repository/commits/";
 
-        return repoUrl;
+		return apiUrl;
     }
 }
