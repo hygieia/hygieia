@@ -9,13 +9,8 @@ public class PipelineCommit extends SCM{
         this.timestamp = timestamp;
     }
 
-    public PipelineCommit(String scmUrl, String scmBranch, String scmRevisionNumber, String scmCommitLog, String scmAuthor, long scmCommitTimestamp, long numberOfChanges, long timestamp) {
-        super(scmUrl, scmBranch, scmRevisionNumber, scmCommitLog, scmAuthor, scmCommitTimestamp, numberOfChanges);
-        this.timestamp = timestamp;
-    }
-
     public PipelineCommit(SCM scm, long timestamp){
-        super(scm.scmUrl, scm.scmBranch, scm.scmRevisionNumber, scm.scmCommitLog, scm.scmAuthor, scm.scmCommitTimestamp, scm.numberOfChanges);
+        super(scm);
         this.timestamp = timestamp;
     }
     private long timestamp;

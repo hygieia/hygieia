@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Widget;
@@ -32,7 +33,7 @@ public interface DashboardService {
      * @param dashboard new Dashboard to createCollectorItem
      * @return newly created Dashboard
      */
-    Dashboard create(Dashboard dashboard);
+    Dashboard create(Dashboard dashboard) throws HygieiaException;
 
     /**
      * Updates an existing dashboard instance.
@@ -40,7 +41,7 @@ public interface DashboardService {
      * @param dashboard Dashboard to update
      * @return updated Dashboard instance
      */
-    Dashboard update(Dashboard dashboard);
+    Dashboard update(Dashboard dashboard) throws HygieiaException;
 
     /**
      * Deletes an existing Dashboard instance.
@@ -95,13 +96,13 @@ public interface DashboardService {
     List<Dashboard> getOwnedDashboards(String username);
     
     /**
-     * Get owner of dashboard on supplying dashboard Name
-     * @Param dashboardName
+     * Get owner of dashboard on supplying dashboard Title
+     * @Param dashboardTitle
      * @return String username
      * 
      */
     
-    String getDashboardOwner(String dashboardName);
+    String getDashboardOwner(String dashboardTitle);
 }
 
 

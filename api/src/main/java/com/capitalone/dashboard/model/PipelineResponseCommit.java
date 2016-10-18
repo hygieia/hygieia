@@ -6,14 +6,7 @@ import java.util.Map;
 public class PipelineResponseCommit extends SCM {
 
     public PipelineResponseCommit(SCM scm) {
-        this.scmCommitLog = scm.scmCommitLog;
-        this.scmUrl = scm.scmUrl;
-        this.scmBranch = scm.scmBranch;
-        this.scmRevisionNumber = scm.scmRevisionNumber;
-        this.scmCommitLog = scm.scmCommitLog;
-        this.scmAuthor = scm.scmAuthor;
-        this.scmCommitTimestamp = scm.scmCommitTimestamp;
-        this.numberOfChanges = scm.numberOfChanges;
+    	super(scm);
     }
 
     Map<String, Long> processedTimestamps = new HashMap<>();

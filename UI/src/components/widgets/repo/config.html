@@ -1,6 +1,6 @@
 <widget-modal widget-modal-title="Configure Code Repo Widget">
 <form name="configForm"
-	ng-submit="repoConfig.submit(configForm.$valid, repoConfig.repoUrl, repoConfig.repoOption)"
+	ng-submit="repoConfig.submit(configForm)"
 	novalidate="novalidate">
 
 	<form-group input="repoOption"
@@ -31,7 +31,7 @@
 			   required />
 	</form-group>
 
-	<form-group ng-if="repoConfig.repoOption.name == 'GitHub (public)' || repoConfig.repoOption.name == 'GitHub'  || repoConfig.repoOption.name == 'Bitbucket'"
+	<form-group ng-if="repoConfig.repoOption.name == 'GitHub'  || repoConfig.repoOption.name == 'Bitbucket'"
 				errors="{required:'Branch is required'}"
 				input="gitBranch"
 				class="text-center">
@@ -46,6 +46,29 @@
 			placeholder="Enter Branch"
 			required />
 
+	</form-group>
+
+	<form-group input="repouser"
+				errors="{}">
+
+		<label class="modal-label">Credentials (Optional)</label>
+
+		<input type="text"
+			   name="repouser"
+			   class="form-control text-center"
+			   ng-model="repoConfig.repouser"
+			   maxlength="25"
+			   autocomplete="off"
+			   placeholder="Enter your repo username"/>
+	</form-group>
+	<form-group input="repopass"
+				errors="{errorEncryptingPassword: 'Error encrypting password.'}">
+		<input type="password"
+			   name="repopass"
+			   class="form-control text-center"
+			   ng-model="repoConfig.repopass"
+			   maxlength="100"
+			   placeholder="Enter your repo password" />
 	</form-group>
 
 	<div class="button-row row text-center">

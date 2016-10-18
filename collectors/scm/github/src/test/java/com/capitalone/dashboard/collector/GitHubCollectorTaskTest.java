@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,6 +87,7 @@ public class GitHubCollectorTaskTest {
         commit.setScmUrl("http://testcurrenturl");
         commit.setScmBranch("master");
         commit.setScmRevisionNumber("1");
+        commit.setScmParentRevisionNumbers(Collections.singletonList("2"));
         commit.setScmAuthor("author");
         commit.setScmCommitLog("This is a test commit");
         commit.setScmCommitTimestamp(System.currentTimeMillis());
