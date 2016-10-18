@@ -209,7 +209,7 @@
 					id : widgetConfig.options.id,
 					teamName : ctrl.collectorItemId.teamName,
 					teamId : ctrl.collectorItemId.teamId,
-					showStatus : {
+					showStatus : { // starting configuration for what is currently showing. Needs to be mutually exclusive!
 				      kanban: "kanban" === ctrl.sprintType || "scrumkanban" === ctrl.sprintType,
 				      scrum: "scrum" === ctrl.sprintType
 				    },
