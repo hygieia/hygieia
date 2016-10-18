@@ -23,15 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -49,10 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 
 /**
@@ -283,11 +271,10 @@ public class DefaultHudsonClient implements HudsonClient {
      * We assume that all branches are in remotes/origin.
      */
 
+    @SuppressWarnings("PMD")
     private List<RepoBranch> getGitRepoBranch(JSONObject buildJson) {
         List<RepoBranch> list = new ArrayList<>();        
-        List<ArrayList<String>> remoteConfigs = getRemoteConfigs(buildJson);
         
-        int remoteConfigIndex = 0;
         JSONArray actions = getJsonArray(buildJson, "actions");
         for (Object action : actions) {
             JSONObject jsonAction = (JSONObject) action;
@@ -301,119 +288,28 @@ public class DefaultHudsonClient implements HudsonClient {
                 if (lastBuiltRevision != null) {
                 	branches = getJsonArray ((JSONObject) lastBuiltRevision, "branch");
                 }
-                if (branches != null && !branches.isEmpty() && remoteUrls.size() > 1 
-                		&& remoteConfigIndex >= 0 && remoteConfigIndex < remoteConfigs.size()) {     
-                	// As of git plugin 3.0.0, when multiple repos are configured, they are stored unordered in a HashSet.
-                	// So we get remote urls in order from job's config.xml so that we can associate the urls and the corresponding branches
-                	List<String> orderedRemoteUrls = remoteConfigs.get(remoteConfigIndex);
-                	remoteConfigIndex++;
-
-                	for (Object branchObj : branches) {
-                		String branchName = getString((JSONObject) branchObj, "name");
-                		int originNumber = -1;
-                		if (branchName != null) {
-                			originNumber = getOriginNumber(branchName);
-                		}
-                		if (originNumber >= 0 && originNumber < orderedRemoteUrls.size()) {
-                			String unqualifiedBranchName = getUnqualifiedBranch(branchName);
-                			String sUrl = removeGitExtensionFromUrl(orderedRemoteUrls.get(originNumber));
-                			RepoBranch grb = new RepoBranch(sUrl, unqualifiedBranchName, RepoBranch.RepoType.GIT);
-                			list.add(grb);
-                		}
-                	}
-                } else if (branches != null && !branches.isEmpty() && remoteUrls.size() == 1) {
-                	remoteConfigIndex++;
-                	String sUrl = removeGitExtensionFromUrl((String) remoteUrls.get(0));
-                	for (Object branchObj : branches) {
-                		String branchName = getString((JSONObject) branchObj, "name");
-                		if (branchName != null) {
-                			String unqualifiedBranchName = getUnqualifiedBranch(branchName);
-                			RepoBranch grb = new RepoBranch(sUrl, unqualifiedBranchName, RepoBranch.RepoType.GIT);
-                			list.add(grb);
+                // As of git plugin 3.0.0, when multiple repos are configured in the git plugin itself instead of MultiSCM plugin, 
+            	// they are stored unordered in a HashSet. So it's buggy and we cannot associate the correct branch information.
+                // So for now, we loop through all the remoteUrls and associate the built branch(es) with all of them.
+                if (branches != null && !branches.isEmpty()) {
+                	for (Object url : remoteUrls) {
+                		String sUrl = (String) url;
+                		if (sUrl != null && !sUrl.isEmpty()) {
+                			sUrl = removeGitExtensionFromUrl(sUrl);
+		                	for (Object branchObj : branches) {
+		                		String branchName = getString((JSONObject) branchObj, "name");
+		                		if (branchName != null) {
+		                			String unqualifiedBranchName = getUnqualifiedBranch(branchName);
+		                			RepoBranch grb = new RepoBranch(sUrl, unqualifiedBranchName, RepoBranch.RepoType.GIT);
+		                			list.add(grb);
+		                		}
+		                	}
                 		}
                 	}
                 }
             }
         }
         return list;
-    }
-    
-    /**
-     * Gathers the list of urls configured in the Jenkins job, the outer list being segregated by 
-     * Multiple SCM plugin and the inner list being multiple repositories added without Multiple SCM plugin.
-     */
-    
-    private List<ArrayList<String>> getRemoteConfigs(JSONObject buildJson) {
-    	List<ArrayList<String>> remoteConfigs = new ArrayList<ArrayList<String>>();
-        
-        // use the build url to get the job url       
-        String buildUrl = getString((JSONObject) buildJson, "url");
-        if (buildUrl.lastIndexOf("/") == buildUrl.length() - 1) {
-        	buildUrl = buildUrl.substring(0, buildUrl.length() - 1);
-        }
-        // remove the build number at the end to get the job url
-        String jobUrl = buildUrl.substring(0, buildUrl.lastIndexOf("/"));
-        // Get the remote configs (all SCM urls) from the job's config file
-        try {
-        	DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        	InputSource is = new InputSource();
-        	ResponseEntity<String> result = makeRestCall(joinURL(jobUrl, "config.xml"));
-        	is.setCharacterStream(new StringReader(result.getBody()));
-        	Document configXML = db.parse(is);
-        	if (configXML != null) {
-        		parseConfig(configXML.getDocumentElement(), remoteConfigs);
-            }
-        } catch (ParserConfigurationException pcex) {
-            LOG.error("Unable to create the document parser");
-        } catch (SAXException sex) {
-            LOG.error("Error parsing the XML document");
-        } catch (MalformedURLException mfex) {
-        	LOG.error("Invalid config URL");
-        } catch (IOException ioex) {
-        	LOG.error("Unable to parse output");
-        }
-        
-        return remoteConfigs;
-    }
-
-    ////// Helpers
-    
-    /**
-     * Recursive helper method to parse the job's config.xml file
-     * @param root				the root element to parse from
-     * @param remoteConfigs		the SCM urls in the config.xml are stored and returned back through this
-     */
-    
-    private void parseConfig(Element root, List<ArrayList<String>> remoteConfigs) {
-    	if (root != null) {
-        	NodeList nodes = root.getChildNodes();
-        	for (int i = 0; i < nodes.getLength(); i++) {
-                Node node = nodes.item(i);
-                if (node != null && node.getNodeName() != null && node instanceof Element) {
-                	if ("userRemoteConfigs".equals(node.getNodeName())) {
-                		// remote config Multi SCM set encountered
-                		remoteConfigs.add(new ArrayList<String>());
-                		parseConfig((Element)node, remoteConfigs);
-                	} else if ("hudson.plugins.git.UserRemoteConfig".equals(node.getNodeName())) {
-                		NodeList cfgNodes = node.getChildNodes();
-                		for (int j = 0; j < cfgNodes.getLength(); j++) {
-                            Node cfgNode = cfgNodes.item(j);
-                            if (cfgNode != null && cfgNode.getNodeName() != null 
-                            		&& cfgNode instanceof Element && "url".equals(cfgNode.getNodeName())) {
-                            	// git urls encountered
-                        		String content = cfgNode.getLastChild().getTextContent().trim();
-                        		if (content != null) {
-                        			ArrayList<String> repoUrls = remoteConfigs.get(remoteConfigs.size() - 1);
-                        			repoUrls.add(content);
-                        		}
-                            }
-                		}
-                	} else {
-                		parseConfig((Element)node, remoteConfigs);
-                	}
-                }                        	
-        	}
-        }
     }
     
     private String removeGitExtensionFromUrl(String url) {
@@ -423,29 +319,6 @@ public class DefaultHudsonClient implements HudsonClient {
             sUrl = sUrl.substring(0, sUrl.lastIndexOf(".git"));
         }
     	return sUrl;
-    }
-    
-    /**
-     * Gets the origin number given the qualified branch name of the following forms:
-     * 1. refs/remotes/origin<number>/<branch name>
-     * 2. remotes/origin<number>/<branch name>
-     * 3. origin<number>/<branch name>
-     * @param qualifiedBranch
-     * @return the origin number
-     */
-        
-    private int getOriginNumber(String qualifiedBranch) {
-    	int branchNumber = 0;
-    	Pattern pattern = Pattern.compile("(refs/)?(remotes/)?origin([0-9]*)/.*");
-    	Matcher matcher = pattern.matcher(qualifiedBranch);
-    	if(matcher.matches() && matcher.group(3) != null && !(matcher.group(3)).isEmpty()) {
-			try {
-				branchNumber = Integer.parseInt(matcher.group(3));
-			} catch (NumberFormatException e) {
-				LOG.error("Invalid origin number: " + matcher.group(3));
-			}
-    	}
-    	return branchNumber;
     }
     
     /**
