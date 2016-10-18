@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,8 +22,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -61,11 +57,9 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     @Override
     public List<Commit> getCommits(GitlabGitRepo repo) {
         List<Commit> commits = new ArrayList<>();
-        String repoUrl = this.buildApiUrl(repo);
+		String apiUrl = buildApiUrl(repo);
 
-		String repoUrlwithToken = repoUrl + "?&private_token=" + gitlabSettings.getApiToken();
-
-		ResponseEntity<String> response = makeRestCall(repoUrlwithToken, null, null);
+		ResponseEntity<String> response = makeRestCall(apiUrl);
 		JSONArray jsonArray = paresAsArray(response);
 		for (Object item : jsonArray) {
 			JSONObject jsonObject = (JSONObject) item;
@@ -112,7 +106,9 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
         
 		String apiUrl = "https://" + apiHost + SEGMENT_API + repoName + "/repository/commits/";
 
-		return apiUrl;
+		String apiUrlwithToken = apiUrl + "?private_token=" + gitlabSettings.getApiToken();
+
+		return apiUrlwithToken;
     }
 
 	private Commit buildCommit(JSONObject jsonObject, String repoUrl, String repoBranch) {
@@ -135,22 +131,16 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		return commit;
 	}
 
-	private ResponseEntity<String> makeRestCall(String url, String userId, String password) {
+	private ResponseEntity<String> makeRestCall(String url) {
 		trustSelfSignedSSL();
 		URI uri = null;
 		try {
 			uri = new URI(url);
 		} catch (URISyntaxException e) {
-			// e.printStackTrace();
+			LOG.error(e.getMessage());
 		}
-		// Basic Auth only.
-		if (!"".equals(userId) && !"".equals(password)) {
-			return restOperations.exchange(uri, HttpMethod.GET, new HttpEntity<>(createHeaders(userId, password)),
-					String.class);
 
-		} else {
-			return restOperations.exchange(uri, HttpMethod.GET, null, String.class);
-		}
+		return restOperations.exchange(uri, HttpMethod.GET, null, String.class);
 
 	}
 
@@ -179,16 +169,6 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		} catch (final Exception ex) {
 			// ex.printStackTrace();
 		}
-	}
-
-	private HttpHeaders createHeaders(final String userId, final String password) {
-		String auth = userId + ":" + password;
-		byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
-		String authHeader = "Basic " + new String(encodedAuth);
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", authHeader);
-		return headers;
 	}
 
 	private JSONArray paresAsArray(ResponseEntity<String> response) {
