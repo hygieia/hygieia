@@ -75,7 +75,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     }
 
 	private String buildApiUrl(GitlabGitRepo repo, boolean firstRun) {
-        String repoUrl = (String) repo.getOptions().get("url");
+		String repoUrl = repo.getRepoUrl();
         
         if (repoUrl.endsWith(".git")) {
             repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
@@ -149,7 +149,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		commit.setScmAuthor(author);
 		commit.setScmCommitLog(message);
 		commit.setScmCommitTimestamp(timestamp);
-		commit.setNumberOfChanges(159753);
+		commit.setNumberOfChanges(1);
 		// TODO: figure out commit type and parents
 		return commit;
 	}
