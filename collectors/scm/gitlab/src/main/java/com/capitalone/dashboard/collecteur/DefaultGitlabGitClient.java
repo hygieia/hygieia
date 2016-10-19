@@ -104,7 +104,8 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 
 		String date = getDateForCommits(repo, firstRun);
 
-		String apiUrlwithToken = apiUrl + "?since=" + date + "&private_token=" + gitlabSettings.getApiToken();
+		String apiUrlwithToken = apiUrl + "?ref_name=" + repo.getBranch() + "&since=" + date + "&private_token="
+				+ gitlabSettings.getApiToken();
 
 		return apiUrlwithToken;
     }
@@ -143,7 +144,6 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		Commit commit = new Commit();
 		commit.setTimestamp(System.currentTimeMillis());
 		commit.setScmUrl(repoUrl);
-		// TODO: figure out why branch name isn't getting through
 		commit.setScmBranch(repoBranch);
 		commit.setScmRevisionNumber(id);
 		commit.setScmAuthor(author);
