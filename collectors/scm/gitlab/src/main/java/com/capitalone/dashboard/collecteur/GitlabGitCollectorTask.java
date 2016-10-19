@@ -1,16 +1,20 @@
 package com.capitalone.dashboard.collecteur;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.collector.CollectorTask;
 import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitlabGitRepo;
@@ -27,7 +31,6 @@ import com.capitalone.dashboard.repository.GitlabGitCollectorRepository;
  * CollectorTask that fetches Commit information from Gitlab
  */
 @Component
-@SuppressWarnings("PMD")
 public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
     private static final Log LOG = LogFactory.getLog(GitlabGitCollectorTask.class);
 
@@ -93,39 +96,57 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 			repo.removeLastUpdateDate();
 			gitlabGitCollectorRepository.save(repo);
 			for (Commit commit : defaultGitlabGitClient.getCommits(repo, firstRun)) {
-                LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
+				LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
 				if (isNewCommit(repo, commit)) {
 					commit.setCollectorItemId(repo.getId());
 					commitRepository.save(commit);
 					commitCount++;
 				}
-            }
-            repoCount++;
+			}
+			repoCount++;
         }
         log("Repo Count", start, repoCount);
         log("New Commits", start, commitCount);
         log("Finished", start);
     }
 
-    /**
-     * TO DO
-     */
-    private void clean(Collector collector) {
-        List<Commit> all = (List<Commit>) commitRepository.findAll();
-        List<Commit> commits = new ArrayList<>();
-        for (int i = 0; i < all.size(); i++) {
-            if(all.get(i).getNumberOfChanges() == 159753){
-                    commits.add(all.get(i));
-            }
-        }
-        /*for (int i = 0; i < all.size(); i++) {
-            if(all.get(i).getTimestamp() <= collector.getLastExecuted()){
-                    commits.add(all.get(i));
-            }
-        }*/
+	@SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, fixme
+	private void clean(Collector collector) {
+		Set<ObjectId> uniqueIDs = new HashSet<ObjectId>();
+		/**
+		 * Logic: For each component, retrieve the collector item list of the
+		 * type SCM. Store their IDs in a unique set ONLY if their collector IDs
+		 * match with GitHub collectors ID.
+		 */
+		for (com.capitalone.dashboard.model.Component comp : dbComponentRepository.findAll()) {
+			if (comp.getCollectorItems() != null && !comp.getCollectorItems().isEmpty()) {
+				List<CollectorItem> itemList = comp.getCollectorItems().get(CollectorType.SCM);
+				if (itemList != null) {
+					for (CollectorItem ci : itemList) {
+						if (ci != null && ci.getCollectorId().equals(collector.getId())) {
+							uniqueIDs.add(ci.getId());
+						}
+					}
+				}
+			}
+		}
 
-        commitRepository.delete(commits);
-    }
+		/**
+		 * Logic: Get all the collector items from the collector_item collection
+		 * for this collector. If their id is in the unique set (above), keep
+		 * them enabled; else, disable them.
+		 */
+		List<GitlabGitRepo> repoList = new ArrayList<>();
+		Set<ObjectId> gitID = new HashSet<>();
+		gitID.add(collector.getId());
+		for (GitlabGitRepo repo : gitlabGitCollectorRepository.findByCollectorIdIn(gitID)) {
+			if (repo != null) {
+				repo.setEnabled(uniqueIDs.contains(repo.getId()));
+				repoList.add(repo);
+			}
+		}
+		gitlabGitCollectorRepository.save(repoList);
+	}
 
 
 
