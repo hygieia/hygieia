@@ -19,6 +19,7 @@ public class GitlabSettings {
     private String host;
     private String apiToken;
     private String branche;
+	private int firstRunHistoryDays;
 
     public String getCron() {
         return cron;
@@ -59,4 +60,13 @@ public class GitlabSettings {
 	public void setHost(String host) {
 		this.host = host;
 	}
+
+	public int getFirstRunHistoryDays() {
+		return firstRunHistoryDays;
+	}
+
+	public void setFirstRunHistoryDays(int firstRunHistoryDays) {
+		this.firstRunHistoryDays = firstRunHistoryDays;
+	}
+
 }

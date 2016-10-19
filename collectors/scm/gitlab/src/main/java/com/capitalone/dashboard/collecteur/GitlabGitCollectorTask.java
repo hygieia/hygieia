@@ -1,5 +1,14 @@
 package com.capitalone.dashboard.collecteur;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
+
 import com.capitalone.dashboard.collector.CollectorTask;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorType;
@@ -9,14 +18,6 @@ import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitlabGitCollectorRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by benathmane on 23/06/16.
@@ -29,6 +30,7 @@ import java.util.List;
 @SuppressWarnings("PMD")
 public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
     private static final Log LOG = LogFactory.getLog(GitlabGitCollectorTask.class);
+
     private final BaseCollectorRepository<Collector> collectorRepository;
     private final GitlabGitCollectorRepository gitlabGitCollectorRepository;
     private final GitlabSettings gitlabSettings;
@@ -55,6 +57,16 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
         this.dbComponentRepository = dbComponentRepository;
     }
 
+	@Override
+	public Collector getCollector() {
+		Collector protoType = new Collector();
+		protoType.setName("Gitlab");
+		protoType.setCollectorType(CollectorType.SCM);
+		protoType.setOnline(true);
+		protoType.setEnabled(true);
+		return protoType;
+	}
+
     @Override
     public BaseCollectorRepository<Collector> getCollectorRepository() {
         return collectorRepository;
@@ -71,30 +83,28 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
         long start = System.currentTimeMillis();
         int repoCount = 0;
         int commitCount = 0;
+
         clean(collector);
         for (GitlabGitRepo repo : enabledRepos(collector)) {
-            List<Commit> commits  = defaultGitlabGitClient.getCommits(repo);
-            for (Commit commit : commits) {
+			boolean firstRun = false;
+			if (repo.getLastUpdated() == 0)
+				firstRun = true;
+			repo.setLastUpdated(System.currentTimeMillis());
+			repo.removeLastUpdateDate();
+			gitlabGitCollectorRepository.save(repo);
+			for (Commit commit : defaultGitlabGitClient.getCommits(repo, firstRun)) {
                 LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
-                commit.setCollectorItemId(repo.getId());
-                commitRepository.save(commit);
-                commitCount++;
+				if (isNewCommit(repo, commit)) {
+					commit.setCollectorItemId(repo.getId());
+					commitRepository.save(commit);
+					commitCount++;
+				}
             }
             repoCount++;
         }
         log("Repo Count", start, repoCount);
         log("New Commits", start, commitCount);
         log("Finished", start);
-    }
-
-    @Override
-    public Collector getCollector() {
-        Collector protoType = new Collector();
-        protoType.setName("Gitlab");
-        protoType.setCollectorType(CollectorType.SCM);
-        protoType.setOnline(true);
-        protoType.setEnabled(true);
-        return protoType;
     }
 
     /**
@@ -122,4 +132,9 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
     private List<GitlabGitRepo> enabledRepos(Collector collector) {
         return gitlabGitCollectorRepository.findEnabledGitlabRepos(collector.getId());
     }
+
+	private boolean isNewCommit(GitlabGitRepo repo, Commit commit) {
+		return commitRepository.findByCollectorItemIdAndScmRevisionNumber(repo.getId(),
+				commit.getScmRevisionNumber()) == null;
+	}
 }
