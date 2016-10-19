@@ -6,7 +6,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
@@ -46,6 +50,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 
     private static final String SEGMENT_API = "/api/v3/projects/";
     private static final String PUBLIC_GITLAB_HOST_NAME = "gitlab.company.com";
+	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
     
     @Autowired
     public DefaultGitlabGitClient(GitlabSettings gitlabSettings,
@@ -55,9 +60,9 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     }
 
     @Override
-    public List<Commit> getCommits(GitlabGitRepo repo) {
+	public List<Commit> getCommits(GitlabGitRepo repo, boolean firstRun) {
         List<Commit> commits = new ArrayList<>();
-		String apiUrl = buildApiUrl(repo);
+		String apiUrl = buildApiUrl(repo, firstRun);
 
 		ResponseEntity<String> response = makeRestCall(apiUrl);
 		JSONArray jsonArray = paresAsArray(response);
@@ -69,16 +74,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
         return commits;
     }
 
-     /**
-	 * Build API Url
-	 *
-	 * @param repo
-	 *            GitlabGitRepo repo.getOptions().get("url") =
-	 *            https://gitlab.company.com/team/reponame.git
-	 * @return url api format =
-	 *         https://gitlab.company.com/api/v3/projects/team%2Freponame/repository/commits/
-	 */
-	private String buildApiUrl(GitlabGitRepo repo) {
+	private String buildApiUrl(GitlabGitRepo repo, boolean firstRun) {
         String repoUrl = (String) repo.getOptions().get("url");
         
         if (repoUrl.endsWith(".git")) {
@@ -106,10 +102,37 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
         
 		String apiUrl = "https://" + apiHost + SEGMENT_API + repoName + "/repository/commits/";
 
-		String apiUrlwithToken = apiUrl + "?private_token=" + gitlabSettings.getApiToken();
+		String date = getDateForCommits(repo, firstRun);
+
+		String apiUrlwithToken = apiUrl + "?since=" + date + "&private_token=" + gitlabSettings.getApiToken();
 
 		return apiUrlwithToken;
     }
+
+	private String getDateForCommits(GitlabGitRepo repo, boolean firstRun) {
+		Date dt;
+		if (firstRun) {
+			int firstRunDaysHistory = gitlabSettings.getFirstRunHistoryDays();
+			if (firstRunDaysHistory > 0) {
+				dt = getDate(new Date(), -firstRunDaysHistory, 0);
+			} else {
+				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
+			}
+		} else {
+			dt = getDate(new Date(repo.getLastUpdated()), 0, -10);
+		}
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		String thisMoment = df.format(dt);
+		return thisMoment;
+	}
+
+	private Date getDate(Date dateInstance, int offsetDays, int offsetMinutes) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dateInstance);
+		cal.add(Calendar.DATE, offsetDays);
+		cal.add(Calendar.MINUTE, offsetMinutes);
+		return cal.getTime();
+	}
 
 	private Commit buildCommit(JSONObject jsonObject, String repoUrl, String repoBranch) {
 		String author = str(jsonObject, "author_name");
