@@ -37,14 +37,17 @@ dbusername=db
 dbpassword=dbpass
 
 # Collector schedule (required)
-xldeploy.cron=0 0/5 * * * *
+artifactory.cron=0 0/5 * * * *
 
-# XLDeploy server (required) - Can provide multiple
-xldeploy.servers[0]=http://xldeploy.company.com
+# Artifactory server (required) - Can provide multiple
+artifactory.servers[0]=https://www.jfrog.com/artifactory/
 
-# XLDeploy user name (required)
-xldeploy.username=bobama
+# Artifactory user name (required)
+artifactory.username=bobama
 
-# XLDeploy password (required)
-xldeploy.password=s3cr3t
+# Artifactory api key (required)
+artifactory.apiKey=s3cr3t
+
+# The repo to collect artifacts from (required) - Can provide multiple  
+artifactory.repos[0]=prerelease
 ```

@@ -48,9 +48,9 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
         this.restOperations = restOperationsSupplier.get();
 	}
 	
-	public List<ArtifactoryRepo> getRepos(String instanceUrl, String artifactoryEndpoint) {
+	public List<ArtifactoryRepo> getRepos(String instanceUrl) {
 		List<ArtifactoryRepo> result = new ArrayList<>();
-		ResponseEntity<String> responseEntity = makeRestCall(joinUrl(instanceUrl, artifactoryEndpoint, REPOS_URL_SUFFIX));
+		ResponseEntity<String> responseEntity = makeRestCall(joinUrl(instanceUrl, REPOS_URL_SUFFIX));
 		String returnJSON = responseEntity.getBody();
         JSONParser parser = new JSONParser();
 
@@ -81,24 +81,14 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 	
 	public List<BinaryArtifact> getArtifacts(String instanceUrl, String repoName, long lastUpdated) {
 		List<BinaryArtifact> result = new ArrayList<>();
-		String endpoint = null;
-		
-		// find the artifactory endpoint corresponding to this instance url
-		List<String> servers = artifactorySettings.getServers();
-		List<String> artifactoryEndpoints = artifactorySettings.getArtifactoryEndpoints();
-		for (int i = 0; i < servers.size(); i++) {
-			if (servers.get(i) != null && servers.get(i).equals(instanceUrl) && i < artifactoryEndpoints.size()) {
-				endpoint = artifactoryEndpoints.get(i);
-			}
-		}
 		
 		// get the list of artifacts
-		if (instanceUrl != null && endpoint != null && repoName != null) {
+		if (instanceUrl != null && repoName != null) {
 			String body = "items.find({\"modified\" : {\"$gt\" : \"" + FULL_DATE.format(new Date(lastUpdated))
 					+ "\"},\"repo\":{\"$eq\":\"" + repoName
 					+ "\"}}).include(\"repo\", \"name\", \"path\", \"created\", \"modified\", \"property\")";
 			
-			ResponseEntity<String> responseEntity = makeRestPost(joinUrl(instanceUrl, endpoint, AQL_URL_SUFFIX), body);
+			ResponseEntity<String> responseEntity = makeRestPost(joinUrl(instanceUrl, AQL_URL_SUFFIX), body);
 			String returnJSON = responseEntity.getBody();
 	        JSONParser parser = new JSONParser();
 	        
@@ -139,6 +129,22 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 		return result;
 	}
 	
+	/**
+	 * Creates an artifact given its canonical name and path.
+	 * Artifacts can be of the following forms:
+	 * 1. Maven artifacts:
+	 * 		[org]/[module]/[version]/[module]-[version][-classifier].[ext]
+	 * 2. Ivy artifacts:
+	 * 		(a) [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier]).[ext]
+	 * 		(b) [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml
+	 * Using these patterns, we extract the artifact name, version and group id from the canonical name and path.
+	 * 
+	 * @param artifactCanonicalName			artifact's canonical name in artifactory
+	 * @param artifactPath					artifact's path in artifactory
+	 * @param timestamp						the artifact's timestamp
+	 * @param jsonArtifact 					the artifact metadata is extracted from here
+	 * @return
+	 */
 	private BinaryArtifact createArtifact(String artifactCanonicalName, String artifactPath, long timestamp, JSONObject jsonArtifact) {
 		BinaryArtifact result = null;
 		
@@ -147,9 +153,9 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
         if (pathMatcher.matches() && pathMatcher.group("org") != null && pathMatcher.group("module") != null && pathMatcher.group("version") != null) {
         	if (artifactCanonicalName.matches("ivy-" + pathMatcher.group("version") + "(-[^\\.]+)?.xml")) {
         		// ivy artifact in the format [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml
-        		LOGGER.debug("ivy artifact of form [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml found: ");
-        		LOGGER.debug(artifactCanonicalName);
-        		LOGGER.debug(artifactPath);
+        		if (LOGGER.isDebugEnabled()) {
+        			LOGGER.debug("ivy artifact of form [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml found: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
+        		}
         		result = new BinaryArtifact();
         		result.setCanonicalName(artifactCanonicalName);
         		result.setArtifactName("ivy");
@@ -159,9 +165,9 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
         		addMetadataToArtifact(result, jsonArtifact);
         	} else if (artifactCanonicalName.matches(pathMatcher.group("module") + "-" + pathMatcher.group("version") + "(-[^\\.]+)?.[^\\.]+")) {
     			// maven artifact in format [org]/[module]/[version]/[module]-[version][-classifier].[ext]
-    			LOGGER.debug("maven artifact of form [org]/[module]/[version]/[module]-[version][-classifier].[ext] found: ");
-    			LOGGER.debug(artifactCanonicalName);
-        		LOGGER.debug(artifactPath);
+        		if (LOGGER.isDebugEnabled()) {
+        			LOGGER.debug("maven artifact of form [org]/[module]/[version]/[module]-[version][-classifier].[ext] found: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
+        		}
         		result = new BinaryArtifact();
         		result.setCanonicalName(artifactCanonicalName);
         		result.setArtifactName(pathMatcher.group("module"));
@@ -175,9 +181,9 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
         		if (pathMatcher.matches() && pathMatcher.group("org") != null && pathMatcher.group("module") != null && pathMatcher.group("revision") != null && pathMatcher.group("type") != null) {
         			if (artifactCanonicalName.matches(".+-" + pathMatcher.group("revision") + "(-[^\\.]+)?.[^\\.]+")) {
 	        			// ivy artifact in the format [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier]).[ext]
-	            		LOGGER.debug("ivy artifact of form [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier]).[ext] found: ");
-	            		LOGGER.debug(artifactCanonicalName);
-	            		LOGGER.debug(artifactPath);
+        				if (LOGGER.isDebugEnabled()) {
+        					LOGGER.debug("ivy artifact of form [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier]).[ext] found: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
+        				}
         				result = new BinaryArtifact();
                 		result.setCanonicalName(artifactCanonicalName);
                 		result.setArtifactName(artifactCanonicalName.substring(0, artifactCanonicalName.indexOf("-" + pathMatcher.group("revision"))));
@@ -186,20 +192,20 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
                 		result.setTimestamp(timestamp);
                 		addMetadataToArtifact(result, jsonArtifact);
         			} else {
-        				LOGGER.debug("Unsupported artifact name: ");
-                    	LOGGER.debug(artifactCanonicalName);
-                		LOGGER.debug(artifactPath);
+        				if (LOGGER.isDebugEnabled()) {
+        					LOGGER.debug("Unsupported artifact name: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
+        				}
         			}
         		} else {
-                	LOGGER.debug("Unsupported artifact: ");
-                	LOGGER.debug(artifactCanonicalName);
-            		LOGGER.debug(artifactPath);
+        			if (LOGGER.isDebugEnabled()) {
+        				LOGGER.debug("Unsupported artifact: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
+        			}
                 }
         	}
         } else {
-        	LOGGER.debug("Unsupported artifact path: ");
-        	LOGGER.debug(artifactCanonicalName);
-    		LOGGER.debug(artifactPath);
+        	if (LOGGER.isDebugEnabled()) {
+        		LOGGER.debug("Unsupported artifact path: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
+        	}
         }
         
         return result;
@@ -254,6 +260,7 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
             			ba.setScmRevisionNumber(value);
             			break;
             		default:
+            			ba.getMetadata().put(key, value);
             			break;
         		}
         	}

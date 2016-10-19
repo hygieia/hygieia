@@ -43,8 +43,7 @@ public class DefaultArtifactoryClientTest {
     public void init() {
     	when(restOperationsSupplier.get()).thenReturn(rest);
         settings = new ArtifactorySettings();
-        settings.setServers(Collections.singletonList("http://localhost:8081/"));
-        settings.setArtifactoryEndpoints(Collections.singletonList("artifactory/"));
+        settings.setServers(Collections.singletonList("http://localhost:8081/artifactory/"));
         defaultArtifactoryClient = new DefaultArtifactoryClient(settings, restOperationsSupplier);
     }
     
@@ -52,13 +51,12 @@ public class DefaultArtifactoryClientTest {
     public void testGetRepos() throws Exception {
     	String reposJson = getJson("repos.json");
     	
-    	String instanceUrl = "http://localhost:8081/";
-    	String artifactoryEndpoint = "artifactory/";
+    	String instanceUrl = "http://localhost:8081/artifactory/";
     	String reposListUrl = "http://localhost:8081/artifactory/api/repositories";
     	
     	when(rest.exchange(eq(reposListUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
     		.thenReturn(new ResponseEntity<>(reposJson, HttpStatus.OK));
-    	List<ArtifactoryRepo> repos = defaultArtifactoryClient.getRepos(instanceUrl, artifactoryEndpoint);
+    	List<ArtifactoryRepo> repos = defaultArtifactoryClient.getRepos(instanceUrl);
     	assertThat(repos.size(), is(2));
         assertThat(repos.get(0).getRepoName(), is("release"));
         assertThat(repos.get(0).getRepoUrl(), is("http://localhost:8081/artifactory/release"));
@@ -70,7 +68,7 @@ public class DefaultArtifactoryClientTest {
     public void testGetEmptyArtifacts() throws Exception {
     	String emptyArtifactsJson = getJson("emptyArtifacts.json");
     	
-    	String instanceUrl = "http://localhost:8081/";
+    	String instanceUrl = "http://localhost:8081/artifactory/";
     	String aqlUrl = "http://localhost:8081/artifactory/api/search/aql";
     	String repoName = "release";
     	
@@ -84,7 +82,7 @@ public class DefaultArtifactoryClientTest {
     public void testGetMavenArtifacts() throws Exception {
     	String mavenArtifactsJson = getJson("mavenArtifacts.json");
     	
-    	String instanceUrl = "http://localhost:8081/";
+    	String instanceUrl = "http://localhost:8081/artifactory/";
     	String aqlUrl = "http://localhost:8081/artifactory/api/search/aql";
     	String repoName = "release";
     	
@@ -112,7 +110,7 @@ public class DefaultArtifactoryClientTest {
     public void testGetIvyArtifacts() throws Exception {
     	String ivyArtifactsJson = getJson("ivyArtifacts.json");
     	
-    	String instanceUrl = "http://localhost:8081/";
+    	String instanceUrl = "http://localhost:8081/artifactory/";
     	String aqlUrl = "http://localhost:8081/artifactory/api/search/aql";
     	String repoName = "release";
     	

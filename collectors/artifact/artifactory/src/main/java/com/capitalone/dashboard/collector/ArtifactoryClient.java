@@ -17,7 +17,7 @@ public interface ArtifactoryClient {
 	 * @param artifactoryEndpoint			endpoint of the artifactory in the instance url
 	 * @return
 	 */
-	List<ArtifactoryRepo> getRepos(String instanceUrl, String artifactoryEndpoint);
+	List<ArtifactoryRepo> getRepos(String instanceUrl);
 	
 	/**
 	 * Obtain all the artifacts in the given artifactory repo
