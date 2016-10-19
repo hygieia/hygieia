@@ -34,11 +34,12 @@ import com.capitalone.dashboard.util.Supplier;
 @Component
 public class DefaultGitlabGitClient implements  GitlabGitClient {
 
-	private final GitlabUrlUtility gitlabUrlUtility;
-
     private static final Log LOG = LogFactory.getLog(DefaultGitlabGitClient.class);
 
+    private static final int RESULTS_PER_PAGE = 100;
+    
     private final RestOperations restOperations;
+    private final GitlabUrlUtility gitlabUrlUtility;
     
     @Autowired
     public DefaultGitlabGitClient(GitlabUrlUtility gitlabUrlUtility,
@@ -50,19 +51,33 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     @Override
 	public List<Commit> getCommits(GitlabGitRepo repo, boolean firstRun) {
         List<Commit> commits = new ArrayList<>();
-		URI apiUrl = gitlabUrlUtility.buildApiUrl(repo, firstRun);
+		URI apiUrl = gitlabUrlUtility.buildApiUrl(repo, firstRun, RESULTS_PER_PAGE);
 
-		ResponseEntity<String> response = makeRestCall(apiUrl);
-		JSONArray jsonArray = paresAsArray(response);
-		for (Object item : jsonArray) {
-			JSONObject jsonObject = (JSONObject) item;
-			commits.add(buildCommit(jsonObject, repo.getRepoUrl(), repo.getBranch()));
+		boolean lastPage = false;
+		int nextPage = 1;
+		while(!lastPage) {
+			ResponseEntity<String> response = makeRestCall(apiUrl);
+			JSONArray jsonArray = paresAsArray(response);
+			for (Object item : jsonArray) {
+				JSONObject jsonObject = (JSONObject) item;
+				commits.add(buildCommit(jsonObject, repo.getRepoUrl(), repo.getBranch()));
+			}
+			if(isLastPage(jsonArray.size())) 
+				lastPage = true;
+			else {
+				apiUrl = gitlabUrlUtility.updatePage(apiUrl, nextPage);
+				nextPage++;
+			}
 		}
 
         return commits;
     }
 
-	
+	private boolean isLastPage(int resultSize) {
+		if(resultSize < RESULTS_PER_PAGE) 
+			return true;
+		return false;
+	}
 
 	private Commit buildCommit(JSONObject jsonObject, String repoUrl, String repoBranch) {
 		String author = str(jsonObject, "author_name");

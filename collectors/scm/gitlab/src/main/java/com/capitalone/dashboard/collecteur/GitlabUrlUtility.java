@@ -31,6 +31,7 @@ public class GitlabUrlUtility {
 	private static final String PRIVATE_TOKEN_QUERY_PARAM_KEY = "private_token";
 	private static final String DATE_QUERY_PARAM_KEY = "since";
 	private static final String BRANCH_QUERY_PARAM_KEY = "ref_name";
+	private static final String PER_PAGE_QUERY_PARAM_KEY = "per_page";
     private static final String PUBLIC_GITLAB_HOST_NAME = "gitlab.company.com";
 	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
 	
@@ -39,7 +40,7 @@ public class GitlabUrlUtility {
 		this.gitlabSettings = gitlabSettings;
 	}
 	
-	public URI buildApiUrl(GitlabGitRepo repo, boolean firstRun) {
+	public URI buildApiUrl(GitlabGitRepo repo, boolean firstRun, int resultsPerPage) {
 		String repoUrl = repo.getRepoUrl();
         if (repoUrl.endsWith(GIT_EXTENSION)) {
             repoUrl = StringUtils.removeEnd(repoUrl, GIT_EXTENSION);
@@ -57,6 +58,7 @@ public class GitlabUrlUtility {
 				.path(COMMITS_API)
 				.queryParam(BRANCH_QUERY_PARAM_KEY, repo.getBranch())
 				.queryParam(DATE_QUERY_PARAM_KEY, date)
+				.queryParam(PER_PAGE_QUERY_PARAM_KEY, resultsPerPage)
 				.queryParam(PRIVATE_TOKEN_QUERY_PARAM_KEY, gitlabSettings.getApiToken())
 				.build(true).toUri();
 
@@ -110,6 +112,11 @@ public class GitlabUrlUtility {
 		cal.add(Calendar.DATE, offsetDays);
 		cal.add(Calendar.MINUTE, offsetMinutes);
 		return cal.getTime();
+	}
+
+	public URI updatePage(URI uri, int nextPage) {
+		URI updatedUri = UriComponentsBuilder.fromUri(uri).replaceQueryParam("page", nextPage).build(true).toUri();
+		return updatedUri;
 	}
 
 }
