@@ -15,10 +15,8 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "gitlab")
 public class GitlabSettings {
     private String cron;
-    private boolean saveLog = false;
     private String host;
     private String apiToken;
-    private String branche;
 	private int firstRunHistoryDays;
 
     public String getCron() {
@@ -29,28 +27,12 @@ public class GitlabSettings {
         this.cron = cron;
     }
 
-    public boolean isSaveLog() {
-        return saveLog;
-    }
-
-    public void setSaveLog(boolean saveLog) {
-        this.saveLog = saveLog;
-    }
-
     public String getApiToken() {
         return apiToken;
     }
 
     public void setApiToken(String apiToken) {
         this.apiToken = apiToken;
-    }
-
-    public String getBranche() {
-        return branche;
-    }
-
-    public void setBranche(String branche) {
-        this.branche = branche;
     }
 
 	public String getHost() {
