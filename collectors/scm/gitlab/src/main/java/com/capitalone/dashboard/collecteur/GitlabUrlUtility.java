@@ -64,6 +64,11 @@ public class GitlabUrlUtility {
 
 		return uri;
     }
+	
+	public URI updatePage(URI uri, int nextPage) {
+		URI updatedUri = UriComponentsBuilder.fromUri(uri).replaceQueryParam("page", nextPage).build(true).toUri();
+		return updatedUri;
+	}
 
 	private String getRepoHost() {
 		String providedGitLabHost = gitlabSettings.getHost();
@@ -112,11 +117,6 @@ public class GitlabUrlUtility {
 		cal.add(Calendar.DATE, offsetDays);
 		cal.add(Calendar.MINUTE, offsetMinutes);
 		return cal.getTime();
-	}
-
-	public URI updatePage(URI uri, int nextPage) {
-		URI updatedUri = UriComponentsBuilder.fromUri(uri).replaceQueryParam("page", nextPage).build(true).toUri();
-		return updatedUri;
 	}
 
 }
