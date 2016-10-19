@@ -24,6 +24,7 @@ public class GitlabUrlUtility {
 	
 	private GitlabSettings gitlabSettings;
 	
+	private static final String GIT_EXTENSION = ".git";
 	private static final String PROTOCOL = "https";
     private static final String SEGMENT_API = "/api/v3/projects/";
 	private static final String COMMITS_API = "/repository/commits/";
@@ -40,8 +41,8 @@ public class GitlabUrlUtility {
 	
 	public URI buildApiUrl(GitlabGitRepo repo, boolean firstRun) {
 		String repoUrl = repo.getRepoUrl();
-        if (repoUrl.endsWith(".git")) {
-            repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
+        if (repoUrl.endsWith(GIT_EXTENSION)) {
+            repoUrl = StringUtils.removeEnd(repoUrl, GIT_EXTENSION);
         }
         
 		String repoName = getRepoName(repoUrl);
