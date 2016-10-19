@@ -30,6 +30,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitlabGitRepo;
@@ -42,13 +43,19 @@ import com.capitalone.dashboard.util.Supplier;
 @Component
 @SuppressWarnings({"PMD"})
 public class DefaultGitlabGitClient implements  GitlabGitClient {
-    private final GitlabSettings gitlabSettings;
+
+	private final GitlabSettings gitlabSettings;
 
     private static final Log LOG = LogFactory.getLog(DefaultGitlabGitClient.class);
 
     private final RestOperations restOperations;
 
+	private static final String PROTOCOL = "https";
     private static final String SEGMENT_API = "/api/v3/projects/";
+	private static final String COMMITS_API = "/repository/commits/";
+	private static final String PRIVATE_TOKEN_QUERY_PARAM_KEY = "private_token";
+	private static final String DATE_QUERY_PARAM_KEY = "since";
+	private static final String BRANCH_QUERY_PARAM_KEY = "ref_name";
     private static final String PUBLIC_GITLAB_HOST_NAME = "gitlab.company.com";
 	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
     
@@ -76,39 +83,53 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 
 	private String buildApiUrl(GitlabGitRepo repo, boolean firstRun) {
 		String repoUrl = repo.getRepoUrl();
-        
         if (repoUrl.endsWith(".git")) {
             repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
         }
         
-        String repoName = "";
-		try {
-	        URL url = new URL(repoUrl);
-			repoName = url.getFile();
-		} catch (MalformedURLException e) {
-			LOG.error(e.getMessage());
-		}
-      
-		repoName = repoName.substring(repoName.indexOf("/") + 1, repoName.length());
-		repoName = repoName.replace("/", "%2F");
+		String repoName = getRepoName(repoUrl);
+		String host = getRepoHost();
+		String date = getDateForCommits(repo, firstRun);
 
-        String providedGitLabHost = gitlabSettings.getHost();
+		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+		String fullUrl = builder.scheme(PROTOCOL)
+				.host(host)
+				.path(SEGMENT_API)
+				.path(repoName)
+				.path(COMMITS_API)
+				.queryParam(BRANCH_QUERY_PARAM_KEY, repo.getBranch())
+				.queryParam(DATE_QUERY_PARAM_KEY, date)
+				.queryParam(PRIVATE_TOKEN_QUERY_PARAM_KEY, gitlabSettings.getApiToken())
+				.build(true)
+				.toUriString();
+
+		return fullUrl;
+    }
+
+	private String getRepoHost() {
+		String providedGitLabHost = gitlabSettings.getHost();
 		String apiHost;
 		if (StringUtils.isBlank(providedGitLabHost)) {
 			apiHost = PUBLIC_GITLAB_HOST_NAME;
 		} else {
-        	apiHost = providedGitLabHost;
-        }
-        
-		String apiUrl = "https://" + apiHost + SEGMENT_API + repoName + "/repository/commits/";
+			apiHost = providedGitLabHost;
+		}
+		return apiHost;
+	}
 
-		String date = getDateForCommits(repo, firstRun);
+	private String getRepoName(String repoUrl) {
+		String repoName = "";
+		try {
+			URL url = new URL(repoUrl);
+			repoName = url.getFile();
+		} catch (MalformedURLException e) {
+			LOG.error(e.getMessage());
+		}
 
-		String apiUrlwithToken = apiUrl + "?ref_name=" + repo.getBranch() + "&since=" + date + "&private_token="
-				+ gitlabSettings.getApiToken();
-
-		return apiUrlwithToken;
-    }
+		repoName = repoName.substring(repoName.indexOf("/") + 1, repoName.length());
+		repoName = repoName.replace("/", "%2F");
+		return repoName;
+	}
 
 	private String getDateForCommits(GitlabGitRepo repo, boolean firstRun) {
 		Date dt;
