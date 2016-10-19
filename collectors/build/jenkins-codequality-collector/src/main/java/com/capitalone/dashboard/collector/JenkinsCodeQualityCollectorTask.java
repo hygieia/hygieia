@@ -3,17 +3,19 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.JenkinsPredicate;
 import com.capitalone.dashboard.jenkins.JenkinsSettings;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.CodeQualityRepository;
+import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
+import com.capitalone.dashboard.model.JunitXmlReport;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityCollectorRepository;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityJobRepository;
-import com.capitalone.dashboard.utils.CodeQualityConverter;
+import com.capitalone.dashboard.utils.CodeQualityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -28,18 +30,18 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
     private JenkinsCodeQualityJobRepository jobRepository;
     private JenkinsSettings settings;
     private JenkinsClient jenkinsClient;
-    private CodeQualityConverter codeQualityConverter;
-    private CodeQualityRepository codeQualityRepository;
+    private CodeQualityService codeQualityService;
 
     @Autowired
-    public JenkinsCodeQualityCollectorTask(TaskScheduler taskScheduler, JenkinsCodeQualityCollectorRepository repository, JenkinsCodeQualityJobRepository jobRepository, JenkinsSettings settings, JenkinsClient jenkinsClient, CodeQualityConverter codeQualityConverter, CodeQualityRepository codeQualityRepository) {
+    public JenkinsCodeQualityCollectorTask(TaskScheduler taskScheduler, JenkinsCodeQualityCollectorRepository repository,
+                                           JenkinsCodeQualityJobRepository jobRepository, JenkinsSettings settings,
+                                           JenkinsClient jenkinsClient, CodeQualityService codeQualityService) {
         super(taskScheduler,"JenkinsCodeQuality");
         this.collectorRepository = repository;
         this.jobRepository = jobRepository;
         this.settings = settings;
         this.jenkinsClient = jenkinsClient;
-        this.codeQualityConverter = codeQualityConverter;
-        this.codeQualityRepository = codeQualityRepository;
+        this.codeQualityService = codeQualityService;
     }
 
     public JenkinsCodeQualityCollector getCollector() {
@@ -79,20 +81,7 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
             for (JenkinsJob job : interestingJobs) {
                 this.log("found an job of interest matching the artifact pattern.");
                 List<JunitXmlReport> reportArtifacts = this.jenkinsClient.getLatestArtifacts(JunitXmlReport.class, job, matchingJobPatterns);
-
-                JenkinsCodeQualityJob sourceJob = jenkinsCodeQualityJobMap.get(job.getUrl());
-                if (null != sourceJob) {
-                    CodeQuality currentJobQuality = computeMetricsForJob(reportArtifacts);
-
-                    currentJobQuality.setCollectorItemId(sourceJob.getId());
-                    currentJobQuality.setType(CodeQualityType.StaticAnalysis);
-                    currentJobQuality.setUrl(job.getUrl());
-                    currentJobQuality.setName(job.getName());
-                    currentJobQuality.setTimestamp(System.currentTimeMillis());
-
-                    // store the data
-                    codeQualityRepository.save(currentJobQuality);
-                }
+                this.codeQualityService.storeJob(job.getName(), jenkinsCodeQualityJobMap.get(job.getUrl()), reportArtifacts);
             }
         }
 
@@ -112,10 +101,10 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
         List<JenkinsCodeQualityJob> allRepoJobs = new ArrayList<>(this.jobRepository.findAllByCollectorId(collector.getId()));
 
         List<JenkinsJob> newJobs = new ArrayList<>(buildServerJobs).stream().filter(jenkinsJob ->
-                        allRepoJobs.stream().filter(
+                        !allRepoJobs.stream().anyMatch(
                                 repoJob ->
-                                        jenkinsJob.getName().equals(repoJob.getJobName()) && jenkinsJob.getUrl().equals(jenkinsJob.getUrl())
-                        ).collect(Collectors.toList()).isEmpty()
+                                        repoJob.getJenkinsServer().equals(jenkinsJob.getUrl())
+                        )
         ).collect(Collectors.toList());
 
         newJobs.forEach(job -> {
@@ -123,49 +112,5 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
                     collectorId(collector.getId()).jobName(job.getName()).jenkinsServer(job.getUrl()).build();
             this.jobRepository.save(newJob);
         });
-    }
-
-    private CodeQuality computeMetricsForJob(List<JunitXmlReport> reportArtifacts) {
-        CodeQuality qualityForJob = new CodeQuality();
-        Map<String, CodeQualityMetric> currentMetrics = new HashMap<>();
-        for (JunitXmlReport reportArtifact : reportArtifacts) {
-            Set<CodeQualityMetric> codeQualityMetrics = this.codeQualityConverter.analyse(reportArtifact);
-            Map<String, CodeQualityMetric> reportMetricsMap = codeQualityMetrics.stream().collect(Collectors.toMap(CodeQualityMetric::getName, Function.identity()));
-
-            // for all the metrics we have, combine and add where necessary
-            reportMetricsMap.forEach((key, value) -> {
-                CodeQualityMetric currentValue = currentMetrics.get(key);
-                CodeQualityMetric newValue;
-                if (null == currentValue) {
-                    newValue = value;
-                } else {
-                    // do the sum
-                    newValue = new CodeQualityMetric(key);
-                    newValue.setValue((int)currentValue.getValue()+(int)value.getValue());
-                    newValue.setFormattedValue(String.valueOf((int)currentValue.getValue()+ (int)value.getValue()));
-                    int newOrdinal = Math.max(value.getStatus().ordinal(),currentValue.getStatus().ordinal());
-                    newValue.setStatus(CodeQualityMetricStatus.values()[newOrdinal]);
-                    String concatMessage = concatStrings(currentValue.getStatusMessage(),value.getStatusMessage());
-                    newValue.setStatusMessage(concatMessage);
-                }
-                currentMetrics.put(key, newValue);
-            });
-
-        }
-        currentMetrics.forEach((key, value) -> {
-            qualityForJob.addMetric(value);
-        });
-        return qualityForJob;
-    }
-
-    private String concatStrings(String statusMessage, String endMessage) {
-        String result=null;
-        if (statusMessage!=null && !statusMessage.isEmpty()) {
-            result=statusMessage;
-        }
-        if(endMessage!=null && !endMessage.isEmpty()) {
-            result= result!=null?result+","+endMessage:endMessage;
-        }
-        return result;
     }
 }

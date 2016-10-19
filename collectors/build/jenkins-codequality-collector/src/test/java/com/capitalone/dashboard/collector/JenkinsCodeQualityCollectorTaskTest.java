@@ -4,12 +4,12 @@ import com.capitalone.dashboard.jenkins.Artifact;
 import com.capitalone.dashboard.jenkins.JenkinsBuild;
 import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.JenkinsSettings;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.CodeQualityRepository;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
+import com.capitalone.dashboard.model.JunitXmlReport;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityCollectorRepository;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityJobRepository;
-import com.capitalone.dashboard.utils.CodeQualityConverter;
-import org.assertj.core.groups.Tuple;
+import com.capitalone.dashboard.utils.CodeQualityService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,10 +17,13 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 
-import java.util.*;
+import javax.xml.datatype.DatatypeFactory;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
-import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.Matchers.argThat;
@@ -41,22 +44,20 @@ public class JenkinsCodeQualityCollectorTaskTest {
     private TaskScheduler mockScheduler;
     private JenkinsCodeQualityCollectorRepository mockRepo;
     private JenkinsClient mockJenkinsHelper;
-    private CodeQualityConverter mockCodeQualityConverter;
-    private CodeQualityRepository mockCodeQualityRepository;
     private JenkinsCodeQualityJobRepository mockJobRepository;
+    private CodeQualityService mockDataService;
 
     @Before
     public void setup() {
         mockScheduler = mock(TaskScheduler.class);
         mockRepo = mock(JenkinsCodeQualityCollectorRepository.class);
         mockJenkinsHelper = mock(JenkinsClient.class);
-        mockCodeQualityConverter = mock(CodeQualityConverter.class);
-        mockCodeQualityRepository = mock(CodeQualityRepository.class);
         mockJobRepository = mock(JenkinsCodeQualityJobRepository.class);
         JenkinsSettings settings = new JenkinsSettings();
         settings.setCron("0 * * * * *");
         settings.setServers(Arrays.asList("server1", "server2"));
-        this.testee = new JenkinsCodeQualityCollectorTask(mockScheduler, mockRepo, mockJobRepository, settings, mockJenkinsHelper, mockCodeQualityConverter, mockCodeQualityRepository);
+        mockDataService = mock(CodeQualityService.class);
+        this.testee = new JenkinsCodeQualityCollectorTask(mockScheduler, mockRepo, mockJobRepository, settings, mockJenkinsHelper, mockDataService);
     }
 
     @Test
@@ -110,7 +111,9 @@ public class JenkinsCodeQualityCollectorTaskTest {
 
         // return a list of jobs when asked
         JunitXmlReport testXmlReport = new JunitXmlReport();
+        testXmlReport.setTimestamp(DatatypeFactory.newInstance().newXMLGregorianCalendar(1980, 10, 10, 10, 10, 10, 10, 0));
         JunitXmlReport testXmlReport1 = new JunitXmlReport();
+        testXmlReport1.setTimestamp(DatatypeFactory.newInstance().newXMLGregorianCalendar(1990, 11, 11, 11, 11, 11, 11, 0));
         List<JunitXmlReport> testXmlReports = Arrays.asList(testXmlReport, testXmlReport1);
         when(mockJenkinsHelper.getLatestArtifacts(eq(JunitXmlReport.class), any(JenkinsJob.class), anyList())).thenReturn(testXmlReports);
 
@@ -120,21 +123,6 @@ public class JenkinsCodeQualityCollectorTaskTest {
         dbJob.setId(dbJobId);
         when(mockJobRepository.findAllByCollectorId(any(ObjectId.class))).thenReturn(Collections.singletonList(dbJob));
 
-        // report 1 asked for return this set
-        Set<CodeQualityMetric> codeMetrics = getCodeQualityMetrics(Arrays.asList(
-                tuple("test_success_density", "5", 5, CodeQualityMetricStatus.Ok, null),
-                tuple("test_failures", "1", 1, CodeQualityMetricStatus.Alert, "broken"),
-                tuple("test_errors", "2", 2, CodeQualityMetricStatus.Alert, ""),
-                tuple("tests", "8", 8, CodeQualityMetricStatus.Warning, "potentially broken")));
-        when(mockCodeQualityConverter.analyse(same(testXmlReport))).thenReturn(codeMetrics);
-
-        // report 2 asked for return this set
-        Set<CodeQualityMetric> codeMetrics1 = getCodeQualityMetrics(Arrays.asList(
-                tuple("test_success_density", "5", 5, CodeQualityMetricStatus.Ok, "message"),
-                tuple("test_failures", "0", 0, CodeQualityMetricStatus.Ok, null),
-                tuple("test_errors", "1", 1, CodeQualityMetricStatus.Ok, "message"),
-                tuple("tests", "6", 6, CodeQualityMetricStatus.Ok, "messageAgain")));
-        when(mockCodeQualityConverter.analyse(same(testXmlReport1))).thenReturn(codeMetrics1);
 
         ObjectId collectorId = new ObjectId();
         when(mockCollector.getId()).thenReturn(collectorId);
@@ -151,25 +139,9 @@ public class JenkinsCodeQualityCollectorTaskTest {
         List<Pattern> capturedPatterns = patternListCaptor.getValue();
         assertThat(capturedPatterns).hasSize(1).allMatch(
                 pattern -> pattern.pattern().equals(".*\\.xml"));
+        verify(mockDataService).storeJob(eq("job1"), eq(dbJob), eq(testXmlReports));
 
-        verify(mockCodeQualityConverter).analyse(same(testXmlReport));
-        ArgumentCaptor<CodeQuality> argumentCaptor = ArgumentCaptor.forClass(CodeQuality.class);
-        verify(mockCodeQualityRepository).save(argumentCaptor.capture());
-        CodeQuality capturedCodeQuality = argumentCaptor.getValue();
-        assertThat(capturedCodeQuality.getMetrics())
-                .extracting("name", "formattedValue", "value", "status", "statusMessage")
-                .contains(
-                        tuple("test_success_density", "10", 10, CodeQualityMetricStatus.Ok, "message"),
-                        tuple("test_failures", "1", 1, CodeQualityMetricStatus.Alert, "broken"),
-                        tuple("test_errors", "3", 3, CodeQualityMetricStatus.Alert, "message"),
-                        tuple("tests", "14", 14, CodeQualityMetricStatus.Warning, "potentially broken,messageAgain"));
-        // the collector name needs adding
-        assertThat(capturedCodeQuality.getCollectorItemId()).isSameAs(dbJobId);
-        assertThat(capturedCodeQuality.getName()).isEqualTo("job1");
-        // TODO timestamp need sto be found from the test results and added here.
-        assertThat(capturedCodeQuality.getType()).isEqualTo(CodeQualityType.StaticAnalysis);
-        assertThat(capturedCodeQuality.getUrl()).isEqualTo("http://buildserver2/job1");
-        assertThat(capturedCodeQuality.getTimestamp()).isBetween(System.currentTimeMillis() - 5000, System.currentTimeMillis());
+
     }
 
     @Test
@@ -228,23 +200,22 @@ public class JenkinsCodeQualityCollectorTaskTest {
             ObjectId job1Id = new ObjectId();
             job1.setId(job1Id);
             existingJobs.add(job1);
-            JenkinsCodeQualityJob job2 = JenkinsCodeQualityJob.newBuilder().jobName("job1").jenkinsServer("http://myBuildServer2/job2").build();
-            ObjectId job2Id = new ObjectId();
-            job2.setId(job2Id);
-            existingJobs.add(job2);
-            when(mockJobRepository.findAllByCollectorId(same(collectorId))).thenReturn(existingJobs);
-        }
-        {
-            List<JenkinsCodeQualityJob> allJobs = new ArrayList<>();
-            JenkinsCodeQualityJob job1 = JenkinsCodeQualityJob.newBuilder().jobName("job1").jenkinsServer("http://myBuildServe/job1").build();
-            ObjectId job1Id = new ObjectId();
-            job1.setId(job1Id);
-            allJobs.add(job1);
             JenkinsCodeQualityJob job2 = JenkinsCodeQualityJob.newBuilder().jobName("job1").jenkinsServer("http://myBuildServer2/job1").build();
             ObjectId job2Id = new ObjectId();
             job2.setId(job2Id);
-            allJobs.add(job2);
-            when(mockJobRepository.findAllByCollectorId(same(collectorId))).thenReturn(allJobs);
+            existingJobs.add(job2);
+            List<JenkinsCodeQualityJob> allJobsPostCreate = new ArrayList<>();
+            JenkinsCodeQualityJob job1a = JenkinsCodeQualityJob.newBuilder().jobName("job1").jenkinsServer("http://myBuildServer/job1").build();
+            job1a.setId(job1Id);
+            allJobsPostCreate.add(job1a);
+            JenkinsCodeQualityJob job2a = JenkinsCodeQualityJob.newBuilder().jobName("job1").jenkinsServer("http://myBuildServer2/job1").build();
+            job2a.setId(job2Id);
+            allJobsPostCreate.add(job2a);
+            JenkinsCodeQualityJob job3a = JenkinsCodeQualityJob.newBuilder().jobName("myNewJob").jenkinsServer("http://myBuildServer2/myNewJob").build();
+            ObjectId job3Id = new ObjectId();
+            job3a.setId(job3Id);
+            allJobsPostCreate.add(job3a);
+            when(mockJobRepository.findAllByCollectorId(same(collectorId))).thenReturn(existingJobs, existingJobs, allJobsPostCreate);
         }
 
         // test
@@ -259,21 +230,6 @@ public class JenkinsCodeQualityCollectorTaskTest {
         assertThat(capturedJob.getNiceName()).isEqualTo("myNewJob");
     }
 
-    private Set<CodeQualityMetric> getCodeQualityMetrics(List<Tuple> tuples) {
-        Set<CodeQualityMetric> codeMetrics = new HashSet<>();
-        for (Tuple tuple : tuples) {
-            CodeQualityMetric codeQualityMetric = new CodeQualityMetric();
-            Object[] objects = tuple.toArray();
-            codeQualityMetric.setName((String) objects[0]);
-            codeQualityMetric.setFormattedValue((String) objects[1]);
-            codeQualityMetric.setValue(objects[2]);
-            codeQualityMetric.setStatus((CodeQualityMetricStatus) objects[3]);
-            codeQualityMetric.setStatusMessage((String) objects[4]);
-            codeMetrics.add(codeQualityMetric);
-        }
-
-        return codeMetrics;
-    }
 
     private List<JenkinsJob> getJenkinsJobs() {
         List<JenkinsJob> allJenkinsJobs = new ArrayList<>();
