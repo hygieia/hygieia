@@ -45,8 +45,7 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 artifactory.cron=${ARTIFACTORY_CRON:-0 0/5 * * * *}
 
 #Artifactory server (required) - Can provide multiple
-artifactory.servers[0]=${ARTIFACTORY_URL:-https://www.jfrog.com/}
-artifactory.artifactoryEndpoints[0]=${ARTIFACTORY_ENDPOINT:-artifactory/}
+artifactory.servers[0]=${ARTIFACTORY_URL:-https://www.jfrog.com/artifactory/}
 
 #Artifactory user name (required)
 artifactory.username=${ARTIFACTORY_USERNAME:-bobama}
@@ -56,7 +55,7 @@ artifactory.apiKey=${ARTIFACTORY_API_KEY:-s3cr3t}
 
 EOF
 
-echo -e "\n#Artifactory repo (required) - Can provide multiple" >> $PROP_FILE
+echo -e "\n##The repo to collect artifacts from (required) - Can provide multiple" >> $PROP_FILE
 idx=0
 for x in ${!ARTIFACTORY_REPO*}
 do

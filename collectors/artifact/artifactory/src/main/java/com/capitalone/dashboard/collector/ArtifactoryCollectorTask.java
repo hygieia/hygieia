@@ -46,7 +46,7 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
 	
     @Override
     public ArtifactoryCollector getCollector() {
-        return ArtifactoryCollector.prototype(artifactorySettings.getServers(), artifactorySettings.getArtifactoryEndpoints());
+        return ArtifactoryCollector.prototype(artifactorySettings.getServers());
     }
     
     @Override
@@ -71,13 +71,12 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
         clean(collector, existingRepos);
         
         List<String> instanceUrls = collector.getArtifactoryServers();
-        List<String> queryEndpoints = collector.getArtifactoryEndpoints();
-    	for (int i = 0; i < instanceUrls.size(); i++) { 
+        for (int i = 0; i < instanceUrls.size(); i++) { 
     		long start = System.currentTimeMillis();
     		
     		logBanner(instanceUrls.get(i));
     		
-    		List<ArtifactoryRepo> repos = artifactoryClient.getRepos(instanceUrls.get(i), (i < queryEndpoints.size() ? queryEndpoints.get(i) : ""));
+    		List<ArtifactoryRepo> repos = artifactoryClient.getRepos(instanceUrls.get(i));
     		log("Fetched repos", start);
     		activeRepos.addAll(repos);
     		addNewRepos(repos, existingRepos, collector);
