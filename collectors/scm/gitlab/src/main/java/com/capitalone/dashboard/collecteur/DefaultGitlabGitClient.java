@@ -18,6 +18,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -36,21 +38,25 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 
     private static final Log LOG = LogFactory.getLog(DefaultGitlabGitClient.class);
 
+    //Gitlab max results per page. Reduces amount of network calls.
     private static final int RESULTS_PER_PAGE = 100;
     
     private final RestOperations restOperations;
     private final GitlabUrlUtility gitlabUrlUtility;
+    private final GitlabSettings gitlabSettings;
     
     @Autowired
-    public DefaultGitlabGitClient(GitlabUrlUtility gitlabUrlUtility,
+    public DefaultGitlabGitClient(GitlabUrlUtility gitlabUrlUtility, GitlabSettings gitlabSettings,
                                        Supplier<RestOperations> restOperationsSupplier) {
         this.gitlabUrlUtility = gitlabUrlUtility;
+        this.gitlabSettings = gitlabSettings;
         this.restOperations = restOperationsSupplier.get();
     }
 
     @Override
 	public List<Commit> getCommits(GitlabGitRepo repo, boolean firstRun) {
         List<Commit> commits = new ArrayList<>();
+
 		URI apiUrl = gitlabUrlUtility.buildApiUrl(repo, firstRun, RESULTS_PER_PAGE);
 
 		boolean lastPage = false;
@@ -100,8 +106,9 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 
 	private ResponseEntity<String> makeRestCall(URI url) {
 		trustSelfSignedSSL();
-		return restOperations.exchange(url, HttpMethod.GET, null, String.class);
-
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("PRIVATE-TOKEN", gitlabSettings.getApiToken());
+		return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
 	}
 
 	private void trustSelfSignedSSL() {
@@ -110,12 +117,10 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 			final X509TrustManager tm = new X509TrustManager() {
 				public void checkClientTrusted(final X509Certificate[] xcs, final String string)
 						throws CertificateException {
-					// do nothing
 				}
 
 				public void checkServerTrusted(final X509Certificate[] xcs, final String string)
 						throws CertificateException {
-					// do nothing
 				}
 
 				public X509Certificate[] getAcceptedIssuers() {
@@ -127,7 +132,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 			ctx.init(null, new TrustManager[] { tm }, null);
 			SSLContext.setDefault(ctx);
 		} catch (final Exception ex) {
-			// ex.printStackTrace();
+			LOG.error(ex.getMessage());
 		}
 	}
 

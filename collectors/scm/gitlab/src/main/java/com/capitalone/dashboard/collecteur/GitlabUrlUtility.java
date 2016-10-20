@@ -28,7 +28,6 @@ public class GitlabUrlUtility {
 	private static final String PROTOCOL = "https";
     private static final String SEGMENT_API = "/api/v3/projects/";
 	private static final String COMMITS_API = "/repository/commits/";
-	private static final String PRIVATE_TOKEN_QUERY_PARAM_KEY = "private_token";
 	private static final String DATE_QUERY_PARAM_KEY = "since";
 	private static final String BRANCH_QUERY_PARAM_KEY = "ref_name";
 	private static final String PER_PAGE_QUERY_PARAM_KEY = "per_page";
@@ -59,12 +58,11 @@ public class GitlabUrlUtility {
 				.queryParam(BRANCH_QUERY_PARAM_KEY, repo.getBranch())
 				.queryParam(DATE_QUERY_PARAM_KEY, date)
 				.queryParam(PER_PAGE_QUERY_PARAM_KEY, resultsPerPage)
-				.queryParam(PRIVATE_TOKEN_QUERY_PARAM_KEY, gitlabSettings.getApiToken())
 				.build(true).toUri();
 
 		return uri;
     }
-	
+
 	public URI updatePage(URI uri, int nextPage) {
 		URI updatedUri = UriComponentsBuilder.fromUri(uri).replaceQueryParam("page", nextPage).build(true).toUri();
 		return updatedUri;
