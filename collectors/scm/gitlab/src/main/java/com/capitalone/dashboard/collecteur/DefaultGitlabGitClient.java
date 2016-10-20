@@ -80,6 +80,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     }
 
 	private boolean isLastPage(int resultSize) {
+		//Gitlab API is supposed to return context of page you are on, but it currently broken for commits.
 		if(resultSize < RESULTS_PER_PAGE) 
 			return true;
 		return false;
