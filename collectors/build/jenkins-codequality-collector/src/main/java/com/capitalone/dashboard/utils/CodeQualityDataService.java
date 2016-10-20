@@ -29,7 +29,7 @@ public class CodeQualityDataService implements CodeQualityService {
     @Override
     public void storeJob(String jobName, JenkinsCodeQualityJob job, List<JunitXmlReport> xmlReportList) {
 
-        if (null != job) {
+        if (null != job && null != xmlReportList && !xmlReportList.isEmpty()) {
             CodeQuality currentJobQuality = computeMetricsForJob(xmlReportList);
 
             currentJobQuality.setCollectorItemId(job.getId());

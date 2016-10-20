@@ -11,10 +11,7 @@ import org.mockito.ArgumentCaptor;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -133,5 +130,36 @@ public class CodeQualityDataServiceTest {
 
         //asserts
         verify(mockCodeQualityRepository, times(0)).save(any(CodeQuality.class));
+    }
+
+    @Test
+    public void doesNothingIfNoJob() {
+
+        this.testee.storeJob("job1", null, null);
+
+        verifyNoMoreInteractions(mockCodeQualityRepository);
+    }
+
+    @Test
+    public void copesWithNoXMLReports() {
+        JenkinsCodeQualityJob dbJob = JenkinsCodeQualityJob.newBuilder().jenkinsServer("http://buildserver2/job1").build();
+        ObjectId dbJobId = new ObjectId();
+        dbJob.setId(dbJobId);
+
+        this.testee.storeJob("job1", dbJob, null);
+
+        verifyNoMoreInteractions(mockCodeQualityRepository);
+
+    }
+
+    @Test
+    public void copesWithEmptyListOfXmlReports() {
+        JenkinsCodeQualityJob dbJob = JenkinsCodeQualityJob.newBuilder().jenkinsServer("http://buildserver2/job1").build();
+        ObjectId dbJobId = new ObjectId();
+        dbJob.setId(dbJobId);
+
+        this.testee.storeJob("job1", dbJob, new ArrayList<>());
+
+        verifyNoMoreInteractions(mockCodeQualityRepository);
     }
 }
