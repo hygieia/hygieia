@@ -10,6 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -50,7 +52,7 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 	
 	public List<ArtifactoryRepo> getRepos(String instanceUrl) {
 		List<ArtifactoryRepo> result = new ArrayList<>();
-		ResponseEntity<String> responseEntity = makeRestCall(joinUrl(instanceUrl, REPOS_URL_SUFFIX));
+		ResponseEntity<String> responseEntity = makeRestCall(instanceUrl, REPOS_URL_SUFFIX);
 		String returnJSON = responseEntity.getBody();
         JSONParser parser = new JSONParser();
 
@@ -83,12 +85,12 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 		List<BinaryArtifact> result = new ArrayList<>();
 		
 		// get the list of artifacts
-		if (instanceUrl != null && repoName != null) {
+		if (StringUtils.isNotEmpty(instanceUrl) && StringUtils.isNotEmpty(repoName)) {
 			String body = "items.find({\"modified\" : {\"$gt\" : \"" + FULL_DATE.format(new Date(lastUpdated))
 					+ "\"},\"repo\":{\"$eq\":\"" + repoName
 					+ "\"}}).include(\"repo\", \"name\", \"path\", \"created\", \"modified\", \"property\")";
 			
-			ResponseEntity<String> responseEntity = makeRestPost(joinUrl(instanceUrl, AQL_URL_SUFFIX), body);
+			ResponseEntity<String> responseEntity = makeRestPost(instanceUrl, AQL_URL_SUFFIX, body);
 			String returnJSON = responseEntity.getBody();
 	        JSONParser parser = new JSONParser();
 	        
@@ -260,7 +262,25 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
             			ba.setScmRevisionNumber(value);
             			break;
             		default:
-            			ba.getMetadata().put(key, value);
+            			// MongoDB doesn't allow dots in keys. So we handle it by converting 
+            			// the letter following it to uppercase, and ignoring the dot.
+            			if (key.contains(".")) {
+            				StringBuilder newKey = new StringBuilder();
+            				char prevChar = 0;
+            				for (char c : key.toCharArray()) {
+            					if (c != '.') {
+            						if (prevChar == '.') {
+            							c = Character.toUpperCase(c);
+            						}
+            						newKey.append(c);
+            					}
+            					prevChar = c;
+            				}
+            				key = newKey.toString();
+            			}
+            			if (StringUtils.isNotEmpty(key)) {
+            				ba.getMetadata().put(key, value);
+            			}
             			break;
         		}
         	}
@@ -269,29 +289,29 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 	
     // ////// Helpers
 	
-    private ResponseEntity<String> makeRestCall(String url) {
+    private ResponseEntity<String> makeRestCall(String instanceUrl, String suffix) {
     	ResponseEntity<String> response = null;
         try {
-            response = restOperations.exchange(url, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders()), String.class);
+            response = restOperations.exchange(joinUrl(instanceUrl, suffix), HttpMethod.GET,
+                    new HttpEntity<>(createHeaders(instanceUrl)), String.class);
 
         } catch (RestClientException re) {
-            LOGGER.error("Error with REST url: " + url);
+            LOGGER.error("Error with REST url: " + joinUrl(instanceUrl, suffix));
             LOGGER.error(re.getMessage());
         }
         return response;
     }
     
-    private ResponseEntity<String> makeRestPost(String url, Object body) {
+    private ResponseEntity<String> makeRestPost(String instanceUrl, String suffix, Object body) {
         ResponseEntity<String> response = null;
         try {
-        	HttpHeaders headers = createHeaders();
+        	HttpHeaders headers = createHeaders(instanceUrl);
         	headers.setContentType(MediaType.APPLICATION_JSON);
-            response = restOperations.exchange(url, HttpMethod.POST,
+            response = restOperations.exchange(joinUrl(instanceUrl, suffix), HttpMethod.POST,
                     new HttpEntity<>(body, headers), String.class);
 
         } catch (RestClientException re) {
-            LOGGER.error("Error with REST url: " + url);
+            LOGGER.error("Error with REST url: " + joinUrl(instanceUrl, suffix));
             LOGGER.error(re.getMessage());
         }
         return response;
@@ -312,15 +332,23 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
         return result.toString();
     }
     
-    protected HttpHeaders createHeaders() {
+    protected HttpHeaders createHeaders(String instanceUrl) {
     	HttpHeaders headers = new HttpHeaders();
-    	if ((artifactorySettings.getUsername() != null) && (artifactorySettings.getApiKey() != null)) {
-    		String userInfo = artifactorySettings.getUsername() + ":" + artifactorySettings.getApiKey();
-    		byte[] encodedAuth = Base64.encodeBase64(
-                    userInfo.getBytes(StandardCharsets.US_ASCII));
-            String authHeader = "Basic " + new String(encodedAuth);           
-            headers.set(HttpHeaders.AUTHORIZATION, authHeader);            
-        }
+    	List<String> servers = this.artifactorySettings.getServers();
+    	List<String> usernames = this.artifactorySettings.getUsernames();
+    	List<String> apiKeys = this.artifactorySettings.getApiKeys();
+    	if (CollectionUtils.isNotEmpty(servers) && CollectionUtils.isNotEmpty(usernames) && CollectionUtils.isNotEmpty(apiKeys)) {
+    		for (int i = 0; i < servers.size(); i++) {
+        		if (servers.get(i) != null && servers.get(i).equals(instanceUrl) 
+        				&& i < usernames.size() && i < apiKeys.size() && usernames.get(i) != null && apiKeys.get(i) != null) {
+        			String userInfo = usernames.get(i) + ":" + apiKeys.get(i);
+        			byte[] encodedAuth = Base64.encodeBase64(
+                            userInfo.getBytes(StandardCharsets.US_ASCII));
+                    String authHeader = "Basic " + new String(encodedAuth);           
+                    headers.set(HttpHeaders.AUTHORIZATION, authHeader);         
+        		}
+        	}
+    	}
     	return headers;
     }
     

@@ -12,10 +12,10 @@ import java.util.List;
 @ConfigurationProperties(prefix = "artifactory")
 public class ArtifactorySettings {
     private String cron;
-    private String username;
-    private String apiKey;
+    private List<String> usernames;
+    private List<String> apiKeys;
     private List<String> servers;
-    private List<String> repos;
+    private List<String[]> repos;
     
     public String getCron() {
         return cron;
@@ -25,20 +25,20 @@ public class ArtifactorySettings {
         this.cron = cron;
     }
 
-    public String getUsername() {
-        return username;
+    public List<String> getUsernames() {
+        return usernames;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsernames(List<String> usernames) {
+        this.usernames = usernames;
     }
 
-    public String getApiKey() {
-        return apiKey;
+    public List<String> getApiKeys() {
+        return apiKeys;
     }
 
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
+    public void setApiKeys(List<String> apiKeys) {
+        this.apiKeys = apiKeys;
     }
 
     public List<String> getServers() {
@@ -49,11 +49,11 @@ public class ArtifactorySettings {
         this.servers = servers;
     }
     
-    public List<String> getRepos() {
+    public List<String[]> getRepos() {
         return repos;
     }
 
-    public void setRepos(List<String> repos) {
+    public void setRepos(List<String[]> repos) {
         this.repos = repos;
     }
 }

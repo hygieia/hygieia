@@ -2,6 +2,7 @@ package com.capitalone.dashboard.collector;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -95,13 +96,34 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
      * @param collector the {@link ArtifactoryCollector}
      */
     private void clean(ArtifactoryCollector collector, List<ArtifactoryRepo> existingRepos) {
-    	Set<String> repoNamesToBeCollected = new HashSet<>();
-        repoNamesToBeCollected.addAll(artifactorySettings.getRepos());
+    	// find the server url's to collect from
+    	Set<String> serversToBeCollected = new HashSet<>();
+    	serversToBeCollected.addAll(artifactorySettings.getServers());
+    	
+    	// find the repos to collect from each server url above
+    	List<Set<String>> repoNamesToBeCollected = new ArrayList<Set<String>>();
+    	List<String[]> allRepos = artifactorySettings.getRepos();
+        for (int i = 0; i < allRepos.size(); i++) {
+        	Set<String> reposSet = new HashSet<>();
+        	if (allRepos.get(i) != null) { 		
+        		reposSet.addAll(Arrays.asList(allRepos.get(i)));
+        	}
+        	repoNamesToBeCollected.add(reposSet);
+        }
+        
+        assert(serversToBeCollected.size() == repoNamesToBeCollected.size());
+        
         List<ArtifactoryRepo> stateChangeRepoList = new ArrayList<>();
         for (ArtifactoryRepo repo : existingRepos) {
-            if ((repo.isEnabled() && (!collector.getId().equals(repo.getCollectorId()) || !repoNamesToBeCollected.contains(repo.getRepoName()))) ||  // if it was enabled but not to be collected
-                    (!repo.isEnabled() && (collector.getId().equals(repo.getCollectorId()) && repoNamesToBeCollected.contains(repo.getRepoName())))) { // OR it was disabled and now is to be collected
-                repo.setEnabled((collector.getId().equals(repo.getCollectorId()) && repoNamesToBeCollected.contains(repo.getRepoName())));
+            if ((repo.isEnabled() && (!collector.getId().equals(repo.getCollectorId()) 
+            			|| !serversToBeCollected.contains(repo.getInstanceUrl()) 
+            			|| !repoNamesToBeCollected.get(artifactorySettings.getServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName()))) ||  // if it was enabled but not to be collected
+                    (!repo.isEnabled() && (collector.getId().equals(repo.getCollectorId()) 
+                    	&& serversToBeCollected.contains(repo.getInstanceUrl()) 
+                    	&& repoNamesToBeCollected.get(artifactorySettings.getServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName())))) { // OR it was disabled and now is to be collected
+                repo.setEnabled((collector.getId().equals(repo.getCollectorId()) 
+                				&& serversToBeCollected.contains(repo.getInstanceUrl()) 
+                				&& repoNamesToBeCollected.get(artifactorySettings.getServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName())));
                 stateChangeRepoList.add(repo);
             }
         }
