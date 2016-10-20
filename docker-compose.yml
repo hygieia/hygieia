@@ -300,5 +300,5 @@ hygieia-artifactory-artifact-collector:
 # Artifactory API key (required)
 #  - ARTIFACTORY_API_KEY=s3cr3t
 #  - ARTIFACTORY_CRON=0 0/1 * * * *
-#The repo to collect artifacts from (required) - Can provide multiple  
-#  - ARTIFACTORY_REPO=prerelease
+#The repo to collect artifacts from (required) - Can provide multiple (comma separated for each server)
+#  - ARTIFACTORY_REPO=prerelease,release

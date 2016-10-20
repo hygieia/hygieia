@@ -45,22 +45,49 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 artifactory.cron=${ARTIFACTORY_CRON:-0 0/5 * * * *}
 
 #Artifactory server (required) - Can provide multiple
-artifactory.servers[0]=${ARTIFACTORY_URL:-https://www.jfrog.com/artifactory/}
+#artifactory.servers[0]=https://www.jfrog.com/artifactory/
 
 #Artifactory user name (required)
-artifactory.username=${ARTIFACTORY_USERNAME:-bobama}
+#artifactory.usernames[0]=bobama
 
 #Artifactory api key (required)
-artifactory.apiKey=${ARTIFACTORY_API_KEY:-s3cr3t}
+#artifactory.apiKeys[0]=-s3cr3t
+
+#The repos to collect artifacts from (required) - Can provide multiple (comma separated for each server)
+#artifactory.repos[0]=prerelease,release
 
 EOF
 
-echo -e "\n##The repo to collect artifacts from (required) - Can provide multiple" >> $PROP_FILE
-idx=0
-for x in ${!ARTIFACTORY_REPO*}
+# find how many artifactory urls are configured
+max=$(wc -w <<< "${!ARTIFACTORY_URL*}")
+
+# loop over and output the url, username and apiKey
+i=0
+while [ $i -lt $max ]
 do
-       echo "artifactory.repos[$idx]=${!x}" >> $PROP_FILE
-       idx=$((idx+1))
+    if [ $i -eq 0 ]
+    then
+        server="ARTIFACTORY_URL"
+        username="ARTIFACTORY_USERNAME"
+        apiKey="ARTIFACTORY_API_KEY"
+        repos="ARTIFACTORY_REPO"
+    else
+        server="ARTIFACTORY_URL$i"
+        username="ARTIFACTORY_USERNAME$i"
+        apiKey="ARTIFACTORY_API_KEY$i"
+        repos="ARTIFACTORY_REPO$i"
+    fi
+    
+    
+cat >> $PROP_FILE <<EOF
+artifactory.servers[${i}]=${!server}
+artifactory.usernames[${i}]=${!username}
+artifactory.apiKeys[${i}]=${!apiKey}
+artifactory.repos[${i}]=${!repos}
+
+EOF
+    
+    i=$(($i+1))
 done
 
 echo "
