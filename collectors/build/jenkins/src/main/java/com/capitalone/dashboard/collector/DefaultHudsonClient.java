@@ -7,6 +7,7 @@ import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,7 +21,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -426,18 +426,18 @@ public class DefaultHudsonClient implements HudsonClient {
         	List<String> servers = this.settings.getServers();
         	List<String> usernames = this.settings.getUsernames();
         	List<String> apiKeys = this.settings.getApiKeys();
-        	if (servers != null && usernames != null && apiKeys != null) {
+        	if (CollectionUtils.isNotEmpty(servers) && CollectionUtils.isNotEmpty(usernames) && CollectionUtils.isNotEmpty(apiKeys)) {
         		boolean exactMatchFound = false;
 	        	for (int i = 0; i < servers.size(); i++) {
 	        		if ((servers.get(i) != null)) {
 	        			String domain1 = getDomain(sUrl);
 	        			String domain2 = getDomain(servers.get(i));
-	        			if (domain1 != null && domain2 != null && domain1.equals(domain2)
+	        			if (StringUtils.isNotEmpty(domain1) && StringUtils.isNotEmpty(domain2) && domain1.equals(domain2)
 	        					&& getPort(sUrl) == getPort(servers.get(i))) {
 	                		exactMatchFound = true;	
 	        			}
 	        			if (exactMatchFound && (i < usernames.size()) && (i < apiKeys.size()) 
-	        					&& (usernames.get(i) != null) && (apiKeys.get(i) != null)) {
+	        					&& (StringUtils.isNotEmpty(usernames.get(i))) && (StringUtils.isNotEmpty(apiKeys.get(i)))) {
 	        				userInfo = usernames.get(i) + ":" + apiKeys.get(i);
         				}
 	        			if (exactMatchFound) {
@@ -467,7 +467,6 @@ public class DefaultHudsonClient implements HudsonClient {
     private String getDomain(String url) throws URISyntaxException {
         URI uri = new URI(url);
         String domain = uri.getHost();
-        domain = domain.startsWith("www.") ? domain.substring(4) : domain;
         return domain;
     }
     
