@@ -10,6 +10,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -23,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestOperations;
 
 import com.capitalone.dashboard.model.Commit;
@@ -58,22 +60,28 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
         List<Commit> commits = new ArrayList<>();
 
 		URI apiUrl = gitlabUrlUtility.buildApiUrl(repo, firstRun, RESULTS_PER_PAGE);
+		String providedApiToken = repo.getUserId();
+		String apiToken = (StringUtils.isNotBlank(providedApiToken)) ? providedApiToken:gitlabSettings.getApiToken();
 
-		boolean lastPage = false;
-		int nextPage = 1;
-		while(!lastPage) {
-			ResponseEntity<String> response = makeRestCall(apiUrl);
-			JSONArray jsonArray = paresAsArray(response);
-			for (Object item : jsonArray) {
-				JSONObject jsonObject = (JSONObject) item;
-				commits.add(buildCommit(jsonObject, repo.getRepoUrl(), repo.getBranch()));
+		try{
+			boolean lastPage = false;
+			int nextPage = 1;
+			while(!lastPage) {
+				ResponseEntity<String> response = makeRestCall(apiUrl, apiToken);
+				JSONArray jsonArray = paresAsArray(response);
+				for (Object item : jsonArray) {
+					JSONObject jsonObject = (JSONObject) item;
+					commits.add(buildCommit(jsonObject, repo.getRepoUrl(), repo.getBranch()));
+				}
+				if(isLastPage(jsonArray.size())) 
+					lastPage = true;
+				else {
+					apiUrl = gitlabUrlUtility.updatePage(apiUrl, nextPage);
+					nextPage++;
+				}
 			}
-			if(isLastPage(jsonArray.size())) 
-				lastPage = true;
-			else {
-				apiUrl = gitlabUrlUtility.updatePage(apiUrl, nextPage);
-				nextPage++;
-			}
+		} catch (HttpClientErrorException e) {
+			LOG.info("Failed to retrieve data from: " + apiUrl);
 		}
 
         return commits;
@@ -105,10 +113,10 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		return commit;
 	}
 
-	private ResponseEntity<String> makeRestCall(URI url) {
+	private ResponseEntity<String> makeRestCall(URI url, String apiToken) {
 		trustSelfSignedSSL();
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("PRIVATE-TOKEN", gitlabSettings.getApiToken());
+		headers.add("PRIVATE-TOKEN", apiToken);
 		return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
 	}
 
