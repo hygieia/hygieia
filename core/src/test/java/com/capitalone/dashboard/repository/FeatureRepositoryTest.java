@@ -14,19 +14,11 @@ import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.capitalone.dashboard.config.MongoConfig;
 import com.capitalone.dashboard.model.Feature;
 
-@ContextConfiguration(classes = { MongoConfig.class })
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-public class FeatureRepositoryTest {
+public class FeatureRepositoryTest extends FongoBaseRepositoryTest {
 	private static Feature mockV1Feature;
 	private static Feature mockJiraFeature;
 	private static Feature mockJiraFeature2;
