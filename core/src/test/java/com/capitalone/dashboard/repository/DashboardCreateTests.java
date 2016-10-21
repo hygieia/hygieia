@@ -1,7 +1,5 @@
 package com.capitalone.dashboard.repository;
 
-import com.capitalone.dashboard.model.*;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +9,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.capitalone.dashboard.config.MongoConfig;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Widget;
 
 @ContextConfiguration(classes={ MongoConfig.class })
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 public class DashboardCreateTests {
-
-
-    @ClassRule
-    public static final EmbeddedMongoDBRule RULE = new EmbeddedMongoDBRule();
 
     @Autowired
     private DashboardRepository dashboardRepository;
