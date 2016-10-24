@@ -85,9 +85,6 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
     		
     		log("Finished", start);
     	}
-    	
-    	// Delete repos that will be no longer collected
-    	deleteUnwantedRepos(activeRepos, existingRepos, activeServers, collector);
     }
     
     /**
@@ -129,31 +126,6 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
         }
         if (!CollectionUtils.isEmpty(stateChangeRepoList)) {
         	artifactoryRepoRepository.save(stateChangeRepoList);
-        }
-    }
-    
-    private void deleteUnwantedRepos(List<ArtifactoryRepo> activeRepos, List<ArtifactoryRepo> existingRepos, List<String> activeServers, ArtifactoryCollector collector) {
-    	List<ArtifactoryRepo> deleteList = new ArrayList<>();
-    	
-    	for (ArtifactoryRepo repo : existingRepos) {
-            // if we have a collector item for the repo in repository but it's server is not what we collect, remove it.
-            if (!collector.getArtifactoryServers().contains(repo.getInstanceUrl())) {
-            	deleteList.add(repo);
-            }
-
-            //if the collector id of the collector item for the repo does not match with the collector ID, delete it.
-            if (!repo.getCollectorId().equals(collector.getId())) {
-            	deleteList.add(repo);
-            }
-
-            // this is to handle repos that have been deleted from servers. Will get 404 if we don't delete them.
-            if (activeServers.contains(repo.getInstanceUrl()) && !activeRepos.contains(repo)) {
-            	deleteList.add(repo);
-            }
-
-        }
-        if (!CollectionUtils.isEmpty(deleteList)) {
-        	artifactoryRepoRepository.delete(deleteList);
         }
     }
     	
