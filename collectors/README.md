@@ -3,21 +3,22 @@
 Hygieia collector inventory
 
 - **Build Collectors:**
-  - [Bamboo](build/bamboo/README.md)
-  - [Jenkins](build/jenkins/README.md)
-  - [Jenkins Cucumber](build/jenkins-cucumber/README.md)
-  - [Sonar](build/sonar/README.md)
+  - [Bamboo](build/bamboo)
+  - [Jenkins](build/jenkins)
+  - [Jenkins Cucumber](build/jenkins-cucumber)
+  - [Sonar](build/sonar)
 - **Cloud Collectors:**
-  - [AWS](cloud/aws/README.md)
+  - [AWS](cloud/aws)
 - **Deploy Collectors:**
-  - [uDeploy](deploy/udeploy/README.md)
-  - [XLDeploy](deploy/xldeploy/README.md)
+  - [uDeploy](deploy/udeploy)
+  - [XLDeploy](deploy/xldeploy)
 - **Feature Collectors:**
-  - [Jira](feature/jira/README.md)
-  - [VersionOne](feature/versionone/README.md)
+  - [Jira](feature/jira)
+  - [VersionOne](feature/versionone)
 - **Misc Collectors:**
-  - [Chat Ops](misc/chat-ops/README.md)
+  - [Chat Ops](misc/chat-ops)
 - **SCM Collectors:**
-  - [Bitbucket](scm/bitbucket/README.md)
-  - [Github](scm/github/README.md)
-  - [Subversion](scm/subversion/README.md)
+  - [Bitbucket](scm/bitbucket)
+  - [Github](scm/github)
+  - [Gitlab](scm/gitlab)
+  - [Subversion](scm/subversion)
