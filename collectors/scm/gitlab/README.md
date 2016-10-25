@@ -40,14 +40,13 @@ dbpassword=dbpass
 #Collector schedule (required)
 gitlab.cron=0 0/1 * * * *
 
-#Gitlab server (optional)
-gitlab.server=https://gitlab.company.com/
-
-gitlab.branche=master
+#Gitlab host (optional)
+gitlab.host=gitlab.company.com
 
 #set apiKey to use HTTPS Auth
 gitlab.apiToken=
 
-gitlab.saveLog=true
+#Maximum number of days to go back in time when fetching commits
+gitlab.commitThresholdDays=15
 ```
 
