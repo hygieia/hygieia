@@ -88,6 +88,11 @@ public class TestConfig {
 	public PipelineService pipelineService() {
 		return Mockito.mock(PipelineService.class);
 	}
+	
+	@Bean
+	public SystemConfigService systemConfigService() {
+		return Mockito.mock(SystemConfigService.class);
+	}
 
     @Bean
     public CloudInstanceService cloudInstanceService() {
