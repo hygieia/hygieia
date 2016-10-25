@@ -5,13 +5,12 @@
         .module(HygieiaConfig.module)
         .controller('deployConfigController', deployConfigController);
 
-    deployConfigController.$inject = ['modalData', 'collectorData','$modalInstance'];
-    function deployConfigController(modalData, collectorData, $modalInstance) {
+    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$modalInstance', '$q'];
+    function deployConfigController(modalData, collectorData, systemConfigData, $modalInstance, $q) {
         /*jshint validthis:true */
         var ctrl = this;
 
         var widgetConfig = modalData.widgetConfig;
-        var aggregateServers = false; // TODO find a place for this configuration to live
 
         // public variables
         // ctrl.deployJob;
@@ -23,9 +22,14 @@
         // public methods
         ctrl.submit = submit;
 
-        collectorData.itemsByType('deployment').then(processResponse);
+        $q.all([systemConfigData.config(), collectorData.itemsByType('deployment')]).then(processResponse);
 
-        function processResponse(data) {
+        function processResponse(dataA) {
+        	var systemConfig = dataA[0];
+        	var data = dataA[1];
+        	
+        	var aggregateServers = (systemConfig.globalProperties && systemConfig.globalProperties.multipleDeploymentServers) || false;
+        	
             var worker = {
                 getDeploys: getDeploys
             };
