@@ -1,5 +1,5 @@
 {
 	"globalProperties": {
-		"multiDeploymentServers": false
+		"multipleDeploymentServers": false
 	}
 }
