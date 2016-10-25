@@ -292,11 +292,11 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
     private ResponseEntity<String> makeRestCall(String instanceUrl, String suffix) {
     	ResponseEntity<String> response = null;
         try {
-            response = restOperations.exchange(joinUrl(instanceUrl, suffix), HttpMethod.GET,
+            response = restOperations.exchange(joinUrl(instanceUrl, artifactorySettings.getEndpoint(), suffix), HttpMethod.GET,
                     new HttpEntity<>(createHeaders(instanceUrl)), String.class);
 
         } catch (RestClientException re) {
-            LOGGER.error("Error with REST url: " + joinUrl(instanceUrl, suffix));
+            LOGGER.error("Error with REST url: " + joinUrl(instanceUrl, artifactorySettings.getEndpoint(), suffix));
             LOGGER.error(re.getMessage());
         }
         return response;
@@ -307,11 +307,11 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
         try {
         	HttpHeaders headers = createHeaders(instanceUrl);
         	headers.setContentType(MediaType.APPLICATION_JSON);
-            response = restOperations.exchange(joinUrl(instanceUrl, suffix), HttpMethod.POST,
+            response = restOperations.exchange(joinUrl(instanceUrl, artifactorySettings.getEndpoint(), suffix), HttpMethod.POST,
                     new HttpEntity<>(body, headers), String.class);
 
         } catch (RestClientException re) {
-            LOGGER.error("Error with REST url: " + joinUrl(instanceUrl, suffix));
+            LOGGER.error("Error with REST url: " + joinUrl(instanceUrl, artifactorySettings.getEndpoint(), suffix));
             LOGGER.error(re.getMessage());
         }
         return response;
