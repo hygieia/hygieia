@@ -294,11 +294,13 @@ hygieia-artifactory-artifact-collector:
   - hygieia-api
   environment:
 #JFrog Artifactory server (required) - Can provide multiple 
-  - ARTIFACTORY_URL=https://www.jfrog.com/artifactory
+  - ARTIFACTORY_URL=https://www.jfrog.com
 # Artifactory user name (required)
 #  - ARTIFACTORY_USERNAME=bobama
 # Artifactory API key (required)
 #  - ARTIFACTORY_API_KEY=s3cr3t
 #  - ARTIFACTORY_CRON=0 0/1 * * * *
-#The repo to collect artifacts from (required) - Can provide multiple (comma separated for each server)
+# The repo to collect artifacts from (required) - Can provide multiple (comma separated for each server)
 #  - ARTIFACTORY_REPO=prerelease,release
+# Artifactory REST endpoint
+#  - ARTIFACTORY_ENDPOINT=artifactory/

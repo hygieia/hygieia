@@ -45,7 +45,7 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 artifactory.cron=${ARTIFACTORY_CRON:-0 0/5 * * * *}
 
 #Artifactory server (required) - Can provide multiple
-#artifactory.servers[0]=https://www.jfrog.com/artifactory/
+#artifactory.servers[0]=https://www.jfrog.com/
 
 #Artifactory user name (required)
 #artifactory.usernames[0]=bobama
@@ -89,6 +89,11 @@ EOF
     
     i=$(($i+1))
 done
+
+cat >> $PROP_FILE <<EOF
+#Artifactory REST endpoint
+artifactory.endpoint=${ARTIFACTORY_ENDPOINT:-artifactory/}
+EOF
 
 echo "
 

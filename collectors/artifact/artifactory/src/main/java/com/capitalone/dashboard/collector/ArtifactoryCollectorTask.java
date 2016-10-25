@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,8 @@ import com.google.common.collect.Iterables;
 
 @Component
 public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector>{
+	private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactoryCollectorTask.class);
+	
 	private final ArtifactoryCollectorRepository artifactoryCollectorRepository;
 	private final ArtifactoryRepoRepository artifactoryRepoRepository;
 	private final ArtifactoryClient artifactoryClient;
@@ -72,18 +76,20 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
         clean(collector, existingRepos);
         
         List<String> instanceUrls = collector.getArtifactoryServers();
-        for (int i = 0; i < instanceUrls.size(); i++) { 
-    		long start = System.currentTimeMillis();
-    		
-    		logBanner(instanceUrls.get(i));
-    		
-    		List<ArtifactoryRepo> repos = artifactoryClient.getRepos(instanceUrls.get(i));
-    		log("Fetched repos", start);
-    		activeRepos.addAll(repos);
-    		addNewRepos(repos, existingRepos, collector);
-    		addNewArtifacts(enabledRepos(collector, instanceUrls.get(i)));
-    		
-    		log("Finished", start);
+        for (int i = 0; i < instanceUrls.size(); i++) {
+        	String instanceUrl = instanceUrls.get(i);
+        	long start = System.currentTimeMillis();  		
+    		logBanner(instanceUrl);
+        	if (instanceUrl.lastIndexOf('/') == instanceUrl.length()-1) {	    		
+	    		List<ArtifactoryRepo> repos = artifactoryClient.getRepos(instanceUrl);
+	    		log("Fetched repos", start);
+	    		activeRepos.addAll(repos);
+	    		addNewRepos(repos, existingRepos, collector);
+	    		addNewArtifacts(enabledRepos(collector, instanceUrl));	    		
+        	} else {
+        		LOGGER.error("Error with artifactory url: " + instanceUrl + ". Url does not end with '/'");
+        	}
+        	log("Finished", start);
     	}
     }
     
@@ -95,7 +101,7 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
     private void clean(ArtifactoryCollector collector, List<ArtifactoryRepo> existingRepos) {
     	// find the server url's to collect from
     	Set<String> serversToBeCollected = new HashSet<>();
-    	serversToBeCollected.addAll(artifactorySettings.getServers());
+    	serversToBeCollected.addAll(collector.getArtifactoryServers());
     	
     	// find the repos to collect from each server url above
     	List<Set<String>> repoNamesToBeCollected = new ArrayList<Set<String>>();
@@ -114,13 +120,13 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
         for (ArtifactoryRepo repo : existingRepos) {
             if ((repo.isEnabled() && (!collector.getId().equals(repo.getCollectorId()) 
             			|| !serversToBeCollected.contains(repo.getInstanceUrl()) 
-            			|| !repoNamesToBeCollected.get(artifactorySettings.getServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName()))) ||  // if it was enabled but not to be collected
+            			|| !repoNamesToBeCollected.get(collector.getArtifactoryServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName()))) ||  // if it was enabled but not to be collected
                     (!repo.isEnabled() && (collector.getId().equals(repo.getCollectorId()) 
                     	&& serversToBeCollected.contains(repo.getInstanceUrl()) 
-                    	&& repoNamesToBeCollected.get(artifactorySettings.getServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName())))) { // OR it was disabled and now is to be collected
+                    	&& repoNamesToBeCollected.get(collector.getArtifactoryServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName())))) { // OR it was disabled and now is to be collected
                 repo.setEnabled((collector.getId().equals(repo.getCollectorId()) 
                 				&& serversToBeCollected.contains(repo.getInstanceUrl()) 
-                				&& repoNamesToBeCollected.get(artifactorySettings.getServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName())));
+                				&& repoNamesToBeCollected.get(collector.getArtifactoryServers().indexOf(repo.getInstanceUrl())).contains(repo.getRepoName())));
                 stateChangeRepoList.add(repo);
             }
         }

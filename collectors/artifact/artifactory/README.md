@@ -50,4 +50,7 @@ artifactory.apiKey=s3cr3t
 
 # The repo to collect artifacts from (required) - Can provide multiple (comma separated for each server) 
 artifactory.repos[0]=prerelease,release
+
+# Artifactory REST endpoint
+artifactory.endpoint=artifactory/
 ```

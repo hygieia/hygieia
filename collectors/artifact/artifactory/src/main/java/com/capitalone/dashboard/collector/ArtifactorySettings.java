@@ -16,6 +16,7 @@ public class ArtifactorySettings {
     private List<String> apiKeys;
     private List<String> servers;
     private List<String[]> repos;
+    private String endpoint;
     
     public String getCron() {
         return cron;
@@ -55,5 +56,13 @@ public class ArtifactorySettings {
 
     public void setRepos(List<String[]> repos) {
         this.repos = repos;
+    }
+    
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 }
