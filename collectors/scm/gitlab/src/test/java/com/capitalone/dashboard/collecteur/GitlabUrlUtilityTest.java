@@ -74,6 +74,38 @@ public class GitlabUrlUtilityTest {
 	}
 	
 	@Test
+	public void shouldBuildApiUrlForFirstRunProvidedHistoryDays() {
+		when(gitlabRepo.getRepoUrl()).thenReturn("https://domain.org/namespace/Hygieia");
+		when(gitlabRepo.getBranch()).thenReturn("master");
+		when(gitlabSettings.getFirstRunHistoryDays()).thenReturn(10);
+		
+		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
+		
+		assertEquals("https", result.getScheme());
+		assertEquals("gitlab.company.com", result.getHost());
+		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertTrue(result.getQuery().contains("ref_name=master"));
+		assertTrue(result.getQuery().contains("per_page=100"));
+		assertTrue(result.getQuery().contains("since="));
+	}
+	
+	@Test
+	public void shouldBuildApiUrlForNonFirstRun() {
+		when(gitlabRepo.getRepoUrl()).thenReturn("https://domain.org/namespace/Hygieia");
+		when(gitlabRepo.getBranch()).thenReturn("master");
+		when(gitlabRepo.getLastUpdated()).thenReturn(1477513100920L);
+		
+		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, false, 100);
+		
+		assertEquals("https", result.getScheme());
+		assertEquals("gitlab.company.com", result.getHost());
+		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertTrue(result.getQuery().contains("ref_name=master"));
+		assertTrue(result.getQuery().contains("per_page=100"));
+		assertTrue(result.getQuery().contains("since=2016-10-26T13:08:20Z"));
+	}
+	
+	@Test
 	public void shouldUpdatePage() throws URISyntaxException {
 		URI uri = new URI("http://fakeurl.com");
 		URI result  = gitlabUrlUtility.updatePage(uri, 2);
