@@ -3,13 +3,17 @@ package com.capitalone.dashboard.collecteur;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -20,6 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitlabGitRepo;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
@@ -49,6 +54,12 @@ public class GitlabGitCollectorTaskTest {
 	
 	@Mock
 	private Collector collector;
+	
+	@Mock
+	private GitlabGitRepo gitlabGitRepo;
+	
+	@Mock
+	private Commit commit;
 	
 	@InjectMocks
 	private GitlabGitCollectorTask gitlabGitCollectorTask;
@@ -83,8 +94,67 @@ public class GitlabGitCollectorTaskTest {
 		
 		gitlabGitCollectorTask.collect(collector);
 		
-		verify(gitlabGitCollectorRepository, never()).save(isA(GitlabGitRepo.class));
+		verify(gitlabGitCollectorRepository, never()).save(isA(GitlabGitRepo.class));	
+	}
+	
+	@Test
+	public void shouldFindNoCommits() {
+		when(componentRepository.findAll()).thenReturn(new ArrayList<>());
+		when(gitlabGitCollectorRepository.findByCollectorIdIn(anyCollection())).thenReturn(new ArrayList<>());
+		when(collector.getId()).thenReturn(new ObjectId());
+		List<GitlabGitRepo> enabledRepos = new ArrayList<>();
+		enabledRepos.add(gitlabGitRepo);
+		when(gitlabGitCollectorRepository.findEnabledGitlabRepos(isA(ObjectId.class))).thenReturn(enabledRepos);
+		when(gitlabGitRepo.getLastUpdated()).thenReturn(0L);
 		
+		gitlabGitCollectorTask.collect(collector);
+		
+		verify(gitlabGitCollectorRepository, times(1)).save(gitlabGitRepo);
+		verify(commitRepository, never()).save(isA(Commit.class));
+	}
+	
+	@Test
+	public void shouldFindOneExistingCommit() {
+		when(componentRepository.findAll()).thenReturn(new ArrayList<>());
+		when(gitlabGitCollectorRepository.findByCollectorIdIn(anyCollection())).thenReturn(new ArrayList<>());
+		when(collector.getId()).thenReturn(new ObjectId());
+		List<GitlabGitRepo> enabledRepos = new ArrayList<>();
+		enabledRepos.add(gitlabGitRepo);
+		when(gitlabGitCollectorRepository.findEnabledGitlabRepos(isA(ObjectId.class))).thenReturn(enabledRepos);
+		when(gitlabGitRepo.getLastUpdated()).thenReturn(1477513100920L);
+		ArrayList<Commit> commits = new ArrayList<>();
+		commits.add(commit);
+		when(defaultGitlabGitClient.getCommits(isA(GitlabGitRepo.class), anyBoolean())).thenReturn(commits);
+		when(gitlabGitRepo.getId()).thenReturn(new ObjectId());
+		when(commit.getScmRevisionNumber()).thenReturn("12");
+		when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(isA(ObjectId.class), anyString())).thenReturn(new Commit());
+		
+		gitlabGitCollectorTask.collect(collector);
+		
+		verify(gitlabGitCollectorRepository, times(1)).save(gitlabGitRepo);
+		verify(commitRepository, never()).save(isA(Commit.class));
+	}
+	
+	@Test
+	public void shouldFindOneNewCommit() {
+		when(componentRepository.findAll()).thenReturn(new ArrayList<>());
+		when(gitlabGitCollectorRepository.findByCollectorIdIn(anyCollection())).thenReturn(new ArrayList<>());
+		when(collector.getId()).thenReturn(new ObjectId());
+		List<GitlabGitRepo> enabledRepos = new ArrayList<>();
+		enabledRepos.add(gitlabGitRepo);
+		when(gitlabGitCollectorRepository.findEnabledGitlabRepos(isA(ObjectId.class))).thenReturn(enabledRepos);
+		when(gitlabGitRepo.getLastUpdated()).thenReturn(1477513100920L);
+		ArrayList<Commit> commits = new ArrayList<>();
+		commits.add(commit);
+		when(defaultGitlabGitClient.getCommits(isA(GitlabGitRepo.class), anyBoolean())).thenReturn(commits);
+		when(gitlabGitRepo.getId()).thenReturn(new ObjectId());
+		when(commit.getScmRevisionNumber()).thenReturn("12");
+		when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(isA(ObjectId.class), anyString())).thenReturn(null);
+		
+		gitlabGitCollectorTask.collect(collector);
+		
+		verify(gitlabGitCollectorRepository, times(1)).save(gitlabGitRepo);
+		verify(commitRepository, times(1)).save(commit);
 	}
 
 }
