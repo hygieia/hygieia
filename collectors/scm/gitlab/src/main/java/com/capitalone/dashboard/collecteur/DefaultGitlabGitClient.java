@@ -69,8 +69,9 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 				ResponseEntity<String> response = makeRestCall(apiUrl, apiToken);
 				List<Commit> pageOfCommits = responseMapper.mapResponse(response.getBody(), repo.getRepoUrl(), repo.getBranch());
 				commits.addAll(pageOfCommits);
-				if(isLastPage(pageOfCommits.size())) 
+				if(pageOfCommits.size() < RESULTS_PER_PAGE) {
 					lastPage = true;
+				}
 				else {
 					apiUrl = gitlabUrlUtility.updatePage(apiUrl, nextPage);
 					nextPage++;
@@ -82,13 +83,6 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 
         return commits;
     }
-
-	private boolean isLastPage(int resultSize) {
-		//Gitlab API is supposed to return context of page you are on, but it currently broken for commits.
-		if(resultSize < RESULTS_PER_PAGE) 
-			return true;
-		return false;
-	}
 
 	private ResponseEntity<String> makeRestCall(URI url, String apiToken) {
 		trustSelfSignedSSL();
