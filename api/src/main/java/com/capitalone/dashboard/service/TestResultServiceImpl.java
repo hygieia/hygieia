@@ -76,7 +76,7 @@ public class TestResultServiceImpl implements TestResultService {
 
             validateTestCapabilities(request, testResult, builder);
 
-
+            // add all test result repos
             addAllTestResultRepositories(request, result, testResult, builder);
         }
     }
