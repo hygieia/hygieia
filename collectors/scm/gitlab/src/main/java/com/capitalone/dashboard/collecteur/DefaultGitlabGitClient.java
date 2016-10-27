@@ -41,13 +41,13 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     private final RestOperations restOperations;
     private final GitlabUrlUtility gitlabUrlUtility;
     private final GitlabSettings gitlabSettings;
-    private final GitlabResponseMapper responseMapper;
+    private final GitlabCommitsResponseMapper responseMapper;
     
     @Autowired
     public DefaultGitlabGitClient(GitlabUrlUtility gitlabUrlUtility, 
     								   GitlabSettings gitlabSettings,
                                        Supplier<RestOperations> restOperationsSupplier, 
-                                       GitlabResponseMapper responseMapper) {
+                                       GitlabCommitsResponseMapper responseMapper) {
         this.gitlabUrlUtility = gitlabUrlUtility;
         this.gitlabSettings = gitlabSettings;
         this.restOperations = restOperationsSupplier.get();
@@ -62,20 +62,19 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		String providedApiToken = repo.getUserId();
 		String apiToken = (StringUtils.isNotBlank(providedApiToken)) ? providedApiToken:gitlabSettings.getApiToken();
 
-		try{
-			boolean lastPage = false;
+		try {
+			boolean hasMorePages = true;
 			int nextPage = 1;
-			while(!lastPage) {
+			while (hasMorePages) {
 				ResponseEntity<String> response = makeRestCall(apiUrl, apiToken);
-				List<Commit> pageOfCommits = responseMapper.mapResponse(response.getBody(), repo.getRepoUrl(), repo.getBranch());
+				List<Commit> pageOfCommits = responseMapper.map(response.getBody(), repo.getRepoUrl(), repo.getBranch());
 				commits.addAll(pageOfCommits);
-				if(pageOfCommits.size() < RESULTS_PER_PAGE) {
-					lastPage = true;
+				if (pageOfCommits.size() < RESULTS_PER_PAGE) {
+					hasMorePages = false;
+					continue;
 				}
-				else {
-					apiUrl = gitlabUrlUtility.updatePage(apiUrl, nextPage);
-					nextPage++;
-				}
+				apiUrl = gitlabUrlUtility.updatePage(apiUrl, nextPage);
+				nextPage++;
 			}
 		} catch (HttpClientErrorException e) {
 			LOG.info("Failed to retrieve data from: " + apiUrl);

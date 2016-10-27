@@ -11,13 +11,13 @@ import org.junit.Test;
 
 import com.capitalone.dashboard.model.Commit;
 
-public class GitlabResponseMapperTest {
+public class GitlabCommitsResponseMapperTest {
 	
-	private GitlabResponseMapper gitlabResponseMapper;
+	private GitlabCommitsResponseMapper gitlabResponseMapper;
 	
 	@Before
 	public void setup() {
-		gitlabResponseMapper = new GitlabResponseMapper();
+		gitlabResponseMapper = new GitlabCommitsResponseMapper();
 	}
 
 	@Test
@@ -26,7 +26,7 @@ public class GitlabResponseMapperTest {
 		String repoUrl = "http://domain.com";
 		String repoBranch = "master";
 		long timestamp = new DateTime("2016-10-25T07:33:47.000-07:00").getMillis();
-		List<Commit> commits = gitlabResponseMapper.mapResponse(jsonString, repoUrl, repoBranch);
+		List<Commit> commits = gitlabResponseMapper.map(jsonString, repoUrl, repoBranch);
 		Commit commit = commits.get(0);
 		
 		assertEquals(repoUrl, commit.getScmUrl());
@@ -41,7 +41,7 @@ public class GitlabResponseMapperTest {
 	@Test
 	public void shouldHaveNullValuesIfNothingForKey() {
 		String jsonString = "[{\"short_id\":\"fake\",\"title\":\"corrected docker run command for versionOne\",\"author_name\":\"fake author\",\"author_email\":\"fake.author@fake.com\",\"created_at\":\"2016-10-25T07:33:47.000-07:00\",\"message\":\"message\"}]";
-		List<Commit> commits = gitlabResponseMapper.mapResponse(jsonString, null, null);
+		List<Commit> commits = gitlabResponseMapper.map(jsonString, null, null);
 		Commit commit = commits.get(0);
 		
 		assertNull(commit.getScmRevisionNumber());
@@ -50,7 +50,7 @@ public class GitlabResponseMapperTest {
 	@Test
 	public void shouldReturnEmptyJsonArrayWhenBadJsonString() {
 		String jsonString = "[\"short_id\":\"fake\",\"title\":\"corrected docker run command for versionOne\",\"author_name\":\"fake author\",\"author_email\":\"fake.author@fake.com\",\"created_at\":\"2016-10-25T07:33:47.000-07:00\",\"message\":\"message\"}]";
-		List<Commit> commits = gitlabResponseMapper.mapResponse(jsonString, null, null);
+		List<Commit> commits = gitlabResponseMapper.map(jsonString, null, null);
 		
 		assertEquals(0, commits.size());
 	}

@@ -56,7 +56,7 @@ public class DefaultGitlabGitClientTest {
 	private ResponseEntity<String> response;
 	
 	@Mock
-	private GitlabResponseMapper responseMapper;
+	private GitlabCommitsResponseMapper responseMapper;
 	
 	private URI apiUrl;
 	
@@ -84,7 +84,7 @@ public class DefaultGitlabGitClientTest {
 		when(restOperations.exchange(isA(URI.class), eq(HttpMethod.GET), isA(HttpEntity.class), eq(String.class))).thenReturn(response);
 		List<Commit> pageOfCommits = new ArrayList<Commit>();
 		pageOfCommits.add(new Commit());
-		when(responseMapper.mapResponse(eq(response.getBody()), anyString(), anyString())).thenReturn(pageOfCommits);
+		when(responseMapper.map(eq(response.getBody()), anyString(), anyString())).thenReturn(pageOfCommits);
 		
 		List<Commit> commits = gitlabClient.getCommits(repo, true);
 		
@@ -103,7 +103,7 @@ public class DefaultGitlabGitClientTest {
 		}
 		ArrayList<Commit> secondPageOfCommits = new ArrayList<>();
 		secondPageOfCommits.add(new Commit());
-		when(responseMapper.mapResponse(eq(response.getBody()), anyString(), anyString())).thenReturn(firstPageOfCommits).thenReturn(secondPageOfCommits);
+		when(responseMapper.map(eq(response.getBody()), anyString(), anyString())).thenReturn(firstPageOfCommits).thenReturn(secondPageOfCommits);
 		
 		List<Commit> commits = gitlabClient.getCommits(repo, true);
 		
@@ -119,7 +119,7 @@ public class DefaultGitlabGitClientTest {
 		
 		gitlabClient.getCommits(repo, true);
 		
-		verify(responseMapper, never()).mapResponse(anyString(), anyString(), anyString());
+		verify(responseMapper, never()).map(anyString(), anyString(), anyString());
 	}
 	
 	@Test

@@ -64,8 +64,7 @@ public class GitlabUrlUtility {
     }
 
 	public URI updatePage(URI uri, int nextPage) {
-		URI updatedUri = UriComponentsBuilder.fromUri(uri).replaceQueryParam("page", nextPage).build(true).toUri();
-		return updatedUri;
+		return UriComponentsBuilder.fromUri(uri).replaceQueryParam("page", nextPage).build(true).toUri();
 	}
 
 	private String getRepoHost() {

@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 import com.capitalone.dashboard.model.Commit;
 
 @Component
-public class GitlabResponseMapper {
+public class GitlabCommitsResponseMapper {
 	
-	private static final Log LOG = LogFactory.getLog(GitlabResponseMapper.class);
+	private static final Log LOG = LogFactory.getLog(GitlabCommitsResponseMapper.class);
 	
-	public List<Commit> mapResponse(String jsonResponse, String repoUrl, String branch) {
+	public List<Commit> map(String jsonResponse, String repoUrl, String branch) {
 		List<Commit> commits = new ArrayList<>();
 		JSONArray jsonArray = paresAsArray(jsonResponse);
 		for (Object item : jsonArray) {

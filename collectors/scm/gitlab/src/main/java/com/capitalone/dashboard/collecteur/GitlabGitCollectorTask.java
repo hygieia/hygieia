@@ -95,20 +95,26 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 			repo.setLastUpdated(System.currentTimeMillis());
 			repo.removeLastUpdateDate();
 			gitlabGitCollectorRepository.save(repo);
-			for (Commit commit : defaultGitlabGitClient.getCommits(repo, firstRun)) {
-				LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
-				if (isNewCommit(repo, commit)) {
-					commit.setCollectorItemId(repo.getId());
-					commitRepository.save(commit);
-					commitCount++;
-				}
-			}
+			List<Commit> commits = defaultGitlabGitClient.getCommits(repo, firstRun);
+			commitCount = saveNewCommits(commitCount, repo, commits);
 			repoCount++;
         }
         log("Repo Count", start, repoCount);
         log("New Commits", start, commitCount);
         log("Finished", start);
     }
+
+	private int saveNewCommits(int commitCount, GitlabGitRepo repo, List<Commit> commits) {
+		for (Commit commit : commits) {
+			LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
+			if (isNewCommit(repo, commit)) {
+				commit.setCollectorItemId(repo.getId());
+				commitRepository.save(commit);
+				commitCount++;
+			}
+		}
+		return commitCount;
+	}
 
 	@SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, fixme
 	private void clean(Collector collector) {
