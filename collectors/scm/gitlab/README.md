@@ -22,10 +22,9 @@ You will need to provide an **application.properties** file that contains inform
 
 ### Sample application.properties file
 
-
-```#Database Name 
-# Database Name
-dbname=dashboard
+```properties
+#Database Name 
+database=dashboard
 
 # Database HostName - default is localhost
 dbhost=localhost
