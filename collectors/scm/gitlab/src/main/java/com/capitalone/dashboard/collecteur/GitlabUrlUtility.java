@@ -31,7 +31,7 @@ public class GitlabUrlUtility {
 	private static final String DATE_QUERY_PARAM_KEY = "since";
 	private static final String BRANCH_QUERY_PARAM_KEY = "ref_name";
 	private static final String PER_PAGE_QUERY_PARAM_KEY = "per_page";
-    private static final String PUBLIC_GITLAB_HOST_NAME = "gitlab.company.com";
+    private static final String PUBLIC_GITLAB_HOST_NAME = "gitlab.com";
 	private static final int FIRST_RUN_HISTORY_DEFAULT = 14;
 	
 	@Autowired
