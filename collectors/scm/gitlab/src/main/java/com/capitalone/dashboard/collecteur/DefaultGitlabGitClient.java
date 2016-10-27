@@ -84,7 +84,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     }
 
 	private ResponseEntity<String> makeRestCall(URI url, String apiToken) {
-		if(gitlabSettings.isSelfSigned()) {
+		if(gitlabSettings.isSelfSignedCertificate()) {
 			trustSelfSignedSSL();
 		}
 		HttpHeaders headers = new HttpHeaders();
