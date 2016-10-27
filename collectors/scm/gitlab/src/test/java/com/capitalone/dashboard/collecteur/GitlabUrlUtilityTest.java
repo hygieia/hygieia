@@ -35,7 +35,7 @@ public class GitlabUrlUtilityTest {
 		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
 		
 		assertEquals("https", result.getScheme());
-		assertEquals("gitlab.company.com", result.getHost());
+		assertEquals("gitlab.com", result.getHost());
 		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
@@ -50,7 +50,7 @@ public class GitlabUrlUtilityTest {
 		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
 		
 		assertEquals("https", result.getScheme());
-		assertEquals("gitlab.company.com", result.getHost());
+		assertEquals("gitlab.com", result.getHost());
 		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
@@ -82,7 +82,7 @@ public class GitlabUrlUtilityTest {
 		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
 		
 		assertEquals("https", result.getScheme());
-		assertEquals("gitlab.company.com", result.getHost());
+		assertEquals("gitlab.com", result.getHost());
 		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
@@ -98,7 +98,7 @@ public class GitlabUrlUtilityTest {
 		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, false, 100);
 		
 		assertEquals("https", result.getScheme());
-		assertEquals("gitlab.company.com", result.getHost());
+		assertEquals("gitlab.com", result.getHost());
 		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));

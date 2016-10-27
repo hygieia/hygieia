@@ -105,15 +105,16 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
     }
 
 	private int saveNewCommits(int commitCount, GitlabGitRepo repo, List<Commit> commits) {
+		int totalCommitCount = commitCount;
 		for (Commit commit : commits) {
 			LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
 			if (isNewCommit(repo, commit)) {
 				commit.setCollectorItemId(repo.getId());
 				commitRepository.save(commit);
-				commitCount++;
+				totalCommitCount++;
 			}
 		}
-		return commitCount;
+		return totalCommitCount;
 	}
 
 	@SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts") // agreed, fixme
