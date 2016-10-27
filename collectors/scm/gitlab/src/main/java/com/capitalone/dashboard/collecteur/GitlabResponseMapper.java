@@ -44,7 +44,6 @@ public class GitlabResponseMapper {
 		commit.setScmCommitLog(message);
 		commit.setScmCommitTimestamp(timestamp);
 		commit.setNumberOfChanges(1);
-		// TODO: figure out commit type and parents
 		return commit;
 	}
 	
