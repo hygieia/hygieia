@@ -44,6 +44,9 @@ gitlab.cron=0 0/1 * * * *
 #Gitlab host (optional)
 gitlab.host=gitlab.company.com
 
+#If your instance of Gitlab is using a self signed certificate, set to true, default is false
+gitlab.selfSigned=false
+
 #set apiKey to use HTTPS Auth
 gitlab.apiToken=
 

@@ -85,7 +85,9 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     }
 
 	private ResponseEntity<String> makeRestCall(URI url, String apiToken) {
-		trustSelfSignedSSL();
+		if(gitlabSettings.isSelfSigned()) {
+			trustSelfSignedSSL();
+		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("PRIVATE-TOKEN", apiToken);
 		return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);

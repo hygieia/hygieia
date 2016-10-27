@@ -18,6 +18,7 @@ public class GitlabSettings {
     private String host;
     private String apiToken;
 	private int firstRunHistoryDays;
+	private boolean selfSigned;
 
     public String getCron() {
         return cron;
@@ -49,6 +50,14 @@ public class GitlabSettings {
 
 	public void setFirstRunHistoryDays(int firstRunHistoryDays) {
 		this.firstRunHistoryDays = firstRunHistoryDays;
+	}
+
+	public boolean isSelfSigned() {
+		return selfSigned;
+	}
+	
+	public void setSelfSigned(boolean selfSigned) {
+		this.selfSigned = selfSigned;
 	}
 
 }
