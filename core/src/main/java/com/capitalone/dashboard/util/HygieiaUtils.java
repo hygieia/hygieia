@@ -5,8 +5,7 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 import org.jboss.logging.Logger;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 
 public class HygieiaUtils {
 	private static final Logger LOGGER = Logger.getLogger(HygieiaUtils.class);
@@ -53,12 +52,13 @@ public class HygieiaUtils {
     	String u2Query = null;
     	try {
     		if (u1.length() > 0) {
-    			URL url = new URL(u1);
-    			u1Host = url.getHost();
-    			u1Path = url.getPath();
-    			u1Query = url.getQuery();
+    			// use URI since java URL doesn't understand some protocols like ssh
+    			URI uri = URI.create(u1);
+    			u1Host = uri.getHost();
+    			u1Path = uri.getPath();
+    			u1Query = uri.getQuery();
     		}
-    	} catch (MalformedURLException e) {
+    	} catch (IllegalArgumentException e) {
     		LOGGER.warn("Invalid Url " + e.getMessage(), e);
     	}
     	u1Host = nullSafe(u1Host);
@@ -67,12 +67,12 @@ public class HygieiaUtils {
     	
     	try {
     		if (u2.length() > 0) {
-    			URL url = new URL(u2);
-    			u2Host = url.getHost();
-    			u2Path = url.getPath();
-    			u2Query = url.getQuery();
+    			URI uri = URI.create(u2);
+    			u2Host = uri.getHost();
+    			u2Path = uri.getPath();
+    			u2Query = uri.getQuery();
     		}
-    	} catch (MalformedURLException e) {
+    	} catch (IllegalArgumentException e) {
     		LOGGER.warn("Invalid Url " + e.getMessage(), e);
     	}
     	
@@ -98,7 +98,7 @@ public class HygieiaUtils {
     		idx = u1Host.lastIndexOf('.', idx - 1);
     	}
     	if (idx >= 0) {
-    		u1PrimaryDomain = u1Host.substring(idx);
+    		u1PrimaryDomain = u1Host.substring(idx + 1);
     	}
     	
     	idx = u2Host.lastIndexOf('.');
@@ -106,7 +106,7 @@ public class HygieiaUtils {
     		idx = u2Host.lastIndexOf('.', idx - 1);
     	}
     	if (idx >= 0) {
-    		u2PrimaryDomain = u2Host.substring(idx);
+    		u2PrimaryDomain = u2Host.substring(idx + 1);
     	}
     	
     	return safeEquals(u1PrimaryDomain, u2PrimaryDomain)
