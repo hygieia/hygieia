@@ -170,22 +170,23 @@ Plugin / Webhook
 
     <pre code>
       ...
-      <proxies>
+      &lt;proxies&gt;
              ...
-             <proxy>
-                     <id>your-proxy-id</id>
-                     <active>true</active>
-                     <protocol>http</protocol>
-                     <host>your.proxy.domain.name</host>
-                     <port>8080</port>
-                     <!-- For authenticated proxy, please set the following, as well -->
-                     <username>companyId999</username>
-                     <password>yourPassword</password>
-                     <nonProxyHosts>*.local</nonProxyHosts>
-             </proxy>
+             &lt;proxy&gt;
+                     &lt;id&gt;your-proxy-id&lt;/id&gt;
+                     &lt;active&gt;true&lt;/active&gt;
+                     &lt;protocol&gt;http&lt;/protocol&gt;
+                     &lt;host&gt;your.proxy.domain.name&lt;/host&gt;
+                     &lt;port&gt;8080&lt;/port&gt;
+                     &lt;!-- For authenticated proxy, please set the following, as well --&gt;
+                     &lt;username&gt;companyId999&lt;/username&gt;
+                     &lt;password&gt;yourPassword&lt;/password&gt;
+                     &lt;nonProxyHosts&gt;*.local&lt;/nonProxyHosts&gt;
+             &lt;/proxy&gt;
              ...
-       </proxies>
-      ...</pre code>
+       &lt;/proxies&gt;
+       ...
+    </pre code>
 
     <p>Additionally, set the following export variables:</p>
 
