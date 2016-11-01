@@ -44,7 +44,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
                                 ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
                                 FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings)
             throws HygieiaException {
-        super(taskScheduler, FeatureCollectorConstants.VERSIONONE);
+        super(taskScheduler, FeatureCollectorConstants.GITLAB);
         this.featureCollectorRepository = featureCollectorRepository;
         this.teamRepository = teamRepository;
         this.projectRepository = projectRepository;
