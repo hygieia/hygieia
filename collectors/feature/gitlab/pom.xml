@@ -96,11 +96,6 @@
       <artifactId>json-simple</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.versionone</groupId>
-      <artifactId>VersionOne.SDK.Java.APIClient</artifactId>
-      <version>15.0.0</version>
-    </dependency>
-    <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>1.9</version>
