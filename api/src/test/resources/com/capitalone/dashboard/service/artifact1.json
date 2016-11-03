@@ -1,0 +1,15 @@
+{
+	"artifactName": "Helloworld",
+	"canonicalName": "Helloworld",
+	"artifactGroup": "com.capitalone.helloworld",
+	"artifactVersion": "1.0.0",
+	"timestamp": 1473776278638,
+    "metadata" : {
+        "jobName" : "job_helloworld",
+        "buildUrl" : "http://myjenkins:8080/job/job_helloworld/1/",
+        "jobUrl" : "http://myjenkins:8080/job/job_helloworld/",
+        "buildNumber" : 1,
+        "instanceUrl" : "http://myjenkins:8080/",
+		"foo": "bar"
+    }
+}
