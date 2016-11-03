@@ -27,6 +27,11 @@ dbusername=[MogoDb Database Username, defaults to empty]
 dbpassword=[MongoDb Database Password, defaults to empty]
 dbhost=[Host on which MongoDb is running, defaults to localhost]
 dbport=[Port on which MongoDb is listening, defaults to 27017]
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+server.contextPath=[Web Context path if any]
+server.port=[Web server port - default is 8080]
+version.number=@application.version.number@
 ```
 
 All the above values are optional. Even without the property file you must be able to run the api (assuming you have mongodb installed with no authorization).
@@ -109,3 +114,43 @@ docker ps
 ### API Access
 
 Take the port mapping and the IP for your docker-machine <env> ip and verify by http://<docker-machine env ip>:<docker port for hygieia_api>/api/dashboard
+
+### Troubleshooting
+If the api module fails to launch with the following error, then follow the 2 steps listed below to fix the problem
+``Error creating bean with name 'dashboardRepository': Invocation of init method failed; nested exception is
+org.springframework.dao.DuplicateKeyException: Write failed with error code 11000 and error message 'null'``
+
+Step 1 : save the lines below to a file called fixdups.js
+```
+var dupsExist = false;
+db.dashboards.aggregate([
+  { $group: {
+    _id: { firstField: "$title"},
+    uniqueIds: { $addToSet: "$_id" },
+    count: { $sum: 1 }
+  }},
+  { $match: {
+    count: { $gt: 1 }
+  }}
+]).forEach(
+	function(myDoc) {
+		dupsExist = true;
+		print(myDoc.count + " dashboards have the same title " + myDoc._id.firstField);
+		var arr = myDoc.uniqueIds;
+		for(i=0; i<arr.length; i++) {
+			var oneDash = db.dashboards.findOne({_id: arr[i]});
+			var newTitle = oneDash.title + "_" + oneDash.owner + "_" + i;
+			print("Rename " + oneDash.title + " to " + newTitle);
+			db.dashboards.update({_id: arr[i]},{$set:{title: newTitle}});
+		}
+	}
+);
+
+if (!dupsExist) {
+	print("No duplicate title dashboards found.");
+}
+```
+Step 2 : run the following on the command line
+```bash
+mongo <dbhost>:<dbport>/<dbname> fixdups.js
+```
