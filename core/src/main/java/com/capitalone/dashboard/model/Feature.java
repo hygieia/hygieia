@@ -40,6 +40,8 @@ public class Feature extends BaseModel {
 	private String sId;
 	private String sNumber;
 	private String sName;
+	private String sTypeId;
+	private String sTypeName;
 	private String sStatus;
 	private String sState;
 	private String sEstimate; // estimate in story points
@@ -138,6 +140,22 @@ public class Feature extends BaseModel {
 
 	public void setsName(String sName) {
 		this.sName = sName;
+	}
+	
+	public String getsTypeId() {
+		return sTypeId;
+	}
+
+	public void setsTypeId(String sTypeId) {
+		this.sTypeId = sTypeId;
+	}
+
+	public String getsTypeName() {
+		return sTypeName;
+	}
+
+	public void setsTypeName(String sTypeName) {
+		this.sTypeName = sTypeName;
 	}
 
 	public String getsStatus() {

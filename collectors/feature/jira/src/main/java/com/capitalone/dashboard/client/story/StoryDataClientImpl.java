@@ -191,7 +191,11 @@ public class StoryDataClientImpl implements StoryDataClient {
 			
 			Map<String, String> issueEpics = new HashMap<>();
 			ObjectId jiraFeatureId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
-			String issueTypeName = featureSettings.getJiraIssueTypeId();
+			Set<String> issueTypeNames = new HashSet<>();
+			for (String issueTypeName : featureSettings.getJiraIssueTypeNames()) {
+				issueTypeNames.add(issueTypeName.toLowerCase(Locale.getDefault()));
+			}
+			
 			
 			for (Issue issue : currentPagedJiraRs) {
 				String issueId = TOOLS.sanitizeResponse(issue.getId());
@@ -207,7 +211,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 				IssueField epic = fields.get(featureSettings.getJiraEpicIdFieldName());
 				IssueField sprint = fields.get(featureSettings.getJiraSprintDataFieldName());
 				
-				if (TOOLS.sanitizeResponse(issueType.getName()).equalsIgnoreCase(issueTypeName)) {
+				if (issueTypeNames.contains(TOOLS.sanitizeResponse(issueType.getName()).toLowerCase(Locale.getDefault()))) {
 					if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug(String.format("[%-12s] %s", 
 								TOOLS.sanitizeResponse(issue.getKey()),
@@ -219,6 +223,10 @@ public class StoryDataClientImpl implements StoryDataClient {
 					
 					// ID
 					feature.setsId(TOOLS.sanitizeResponse(issue.getId()));
+					
+					// Type
+					feature.setsTypeId(issueType.getId().toString());
+					feature.setsTypeName(TOOLS.sanitizeResponse(issueType.getName()));
 
 					processFeatureData(feature, issue, fields);
 					

@@ -79,7 +79,7 @@ public class StoryDataClientImplTests {
 		coreFeatureSettings.setDoingStatuses(Arrays.asList("IN PROGRESS"));
 		coreFeatureSettings.setDoneStatuses(Arrays.asList("CLOSED"));
 		
-		featureSettings.setJiraIssueTypeId("Story");
+		featureSettings.setJiraIssueTypeNames(new String[] {"Story"});
 		featureSettings.setJiraSprintDataFieldName("custom_sprint");
 		featureSettings.setJiraEpicIdFieldName("custom_epic");
 		featureSettings.setJiraStoryPointsFieldName("custom_storypoints");
