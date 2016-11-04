@@ -1,0 +1,35 @@
+{
+  "actions": [
+    {},
+    {},
+    {
+      "lastBuiltRevision": {
+        "SHA1": "f6617799ff337984df0b80156995ddb87f60c0af",
+        "branch": [
+          {
+            "SHA1": "f6617799ff337984df0b80156995ddb87f60c0af",
+            "name": "origin/master"
+          },
+          {
+            "SHA1" : "385bbf9dd7bc367b9980f58a6c4489ba95cbb9a9",
+            "name" : "origin/test"
+          }
+        ]
+      },
+      "remoteUrls": [
+        "https://github.com/myrepo/Hygieia.git"
+      ]
+    }
+  ],
+  "building": false,
+  "duration": 214,
+  "number": 179,
+  "result": "FAILURE",
+  "timestamp": 1473102515400,
+  "url": "http://localhost:8082/job/Hygieia-Common/179/",
+  "changeSet": {
+    "items": [],
+    "kind": null
+  },
+  "culprits": []
+}
