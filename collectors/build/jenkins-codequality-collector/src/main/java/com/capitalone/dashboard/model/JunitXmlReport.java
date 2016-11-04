@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.model;
 
+import com.capitalone.dashboard.utils.CodeQualityVisitor;
+
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -120,7 +122,7 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "testsuite", propOrder = {"properties", "testcase", "systemOut", "systemErr"})
-public class JunitXmlReport {
+public class JunitXmlReport implements CodeQualityVisitee {
 
     @XmlElement(required = true)
     protected JunitXmlReport.Properties properties;
@@ -353,6 +355,11 @@ public class JunitXmlReport {
      */
     public void setTime(BigDecimal value) {
         this.time = value;
+    }
+
+    @Override
+    public void accept(CodeQualityVisitor visitor) {
+        visitor.visit(this);
     }
 
     /**

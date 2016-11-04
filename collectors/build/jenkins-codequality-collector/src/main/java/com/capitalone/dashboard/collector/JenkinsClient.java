@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  */
 public interface JenkinsClient {
 
-    List<JenkinsJob> getJobs(Iterable<String> servers);
+    List<JenkinsJob> getJobs(List<String> servers);
 
     <T> List<T> getLatestArtifacts(Class<T> type, JenkinsJob job, List<Pattern> matchingJobPatterns);
 

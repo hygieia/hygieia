@@ -1,10 +1,12 @@
 package com.capitalone.dashboard.jenkins;
 
+import com.capitalone.dashboard.model.ArtifactType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by plv163 on 13/10/2016.
@@ -14,7 +16,7 @@ import java.util.List;
 public class JenkinsSettings {
     private String cron;
     private List<String> servers;
-    private List<String> artifactRegex = new ArrayList<>();
+    private Map<ArtifactType, List<String>> artifactRegex = new HashMap<>();
     private String username;
     private String apiKey;
     private String dockerLocalHostIP;
@@ -35,12 +37,12 @@ public class JenkinsSettings {
         this.servers = servers;
     }
 
-    public List<String> getArtifactRegex() {
+    public Map<ArtifactType, List<String>> getArtifactRegex() {
         return artifactRegex;
     }
 
-    public void setArtifactRegex(List<String> artifactRegex) {
-        this.artifactRegex = artifactRegex;
+    public void setArtifactRegex(ArtifactType type, List<String> artifactRegex) {
+        this.artifactRegex.put(type, artifactRegex);
     }
 
     public String getUsername() {

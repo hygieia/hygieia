@@ -4,9 +4,7 @@ import com.capitalone.dashboard.jenkins.Artifact;
 import com.capitalone.dashboard.jenkins.JenkinsBuild;
 import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.JenkinsSettings;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
-import com.capitalone.dashboard.model.JunitXmlReport;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityCollectorRepository;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityJobRepository;
 import com.capitalone.dashboard.utils.CodeQualityService;
@@ -25,12 +23,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.*;
 
 
@@ -53,10 +47,12 @@ public class JenkinsCodeQualityCollectorTaskTest {
         mockRepo = mock(JenkinsCodeQualityCollectorRepository.class);
         mockJenkinsHelper = mock(JenkinsClient.class);
         mockJobRepository = mock(JenkinsCodeQualityJobRepository.class);
+        mockDataService = mock(CodeQualityService.class);
+
         JenkinsSettings settings = new JenkinsSettings();
         settings.setCron("0 * * * * *");
         settings.setServers(Arrays.asList("server1", "server2"));
-        mockDataService = mock(CodeQualityService.class);
+        settings.setArtifactRegex(ArtifactType.junit, Arrays.asList(".*\\.xml"));
         this.testee = new JenkinsCodeQualityCollectorTask(mockScheduler, mockRepo, mockJobRepository, settings, mockJenkinsHelper, mockDataService);
     }
 
@@ -73,6 +69,7 @@ public class JenkinsCodeQualityCollectorTaskTest {
         assertThat(collector.getCollectorType()).isEqualTo(CollectorType.CodeQuality);
         assertThat(collector.getName()).isEqualTo("JenkinsCodeQuality");
     }
+
 
     @Test
     public void getCollectorRepositoryReturnsTheRepository() {
@@ -107,7 +104,7 @@ public class JenkinsCodeQualityCollectorTaskTest {
 
         // this returns 3 jobs split over the 2 build servers
         List<JenkinsJob> allJenkinsJobs = getJenkinsJobs();
-        when(mockJenkinsHelper.getJobs(argThat(hasItems("http://buildserver", "http://buildserver")))).thenReturn(allJenkinsJobs);
+        when(mockJenkinsHelper.getJobs(anyList())).thenReturn(allJenkinsJobs);
 
         // return a list of jobs when asked
         JunitXmlReport testXmlReport = new JunitXmlReport();
@@ -259,9 +256,53 @@ public class JenkinsCodeQualityCollectorTaskTest {
         buildServers.add("http://buildserver2");
         when(mockCollector.getBuildServers()).thenAnswer(invocationOnMock -> buildServers);
 
-        when(mockJenkinsHelper.getJobs(argThat(hasItems("http://buildserver", "http://buildserver")))).thenReturn(null);
+        when(mockJenkinsHelper.getJobs(anyList())).thenReturn((List) null);
 
         this.testee.collect(mockCollector);
+    }
+
+    @Test
+    public void configuredToCollectJunitAndFindbugs() {
+        JenkinsSettings settings = new JenkinsSettings();
+        settings.setCron("0 * * * * *");
+        settings.setServers(Arrays.asList("server1", "server2"));
+        settings.setArtifactRegex(ArtifactType.junit, Arrays.asList("junit.xml"));
+        settings.setArtifactRegex(ArtifactType.findbugs, Arrays.asList("findbugs.xml"));
+        this.testee = new JenkinsCodeQualityCollectorTask(mockScheduler, mockRepo, mockJobRepository, settings, mockJenkinsHelper, mockDataService);
+
+
+        JenkinsCodeQualityCollector mockCollector = mock(JenkinsCodeQualityCollector.class);
+        List<String> buildServers = new ArrayList<>();
+        buildServers.add("http://buildserver");
+        buildServers.add("http://buildserver2");
+        when(mockCollector.getBuildServers()).thenAnswer(invocationOnMock -> buildServers);
+
+        List<JenkinsJob> allJobs = Collections.singletonList(
+                JenkinsJob.newBuilder().url("http://buildserver2/job1").jobName("job1").lastSuccessfulBuild(
+                        JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("junit.xml").build()).artifact(Artifact.newBuilder().fileName("findbugs.xml").build()).build()
+                ).build());
+
+        when(mockJenkinsHelper.getJobs(anyList())).thenReturn(allJobs);
+        List<JunitXmlReport> junitList = new ArrayList<>();
+        junitList.add(new JunitXmlReport());
+        when(mockJenkinsHelper.getLatestArtifacts(same(JunitXmlReport.class), any(JenkinsJob.class), any(List.class))).thenReturn(junitList);
+        List<FindBubsXmlReport> findBugsList = new ArrayList<>();
+        findBugsList.add(new FindBubsXmlReport());
+        when(mockJenkinsHelper.getLatestArtifacts(same(FindBubsXmlReport.class), any(JenkinsJob.class), any(List.class))).thenReturn(findBugsList);
+
+        JenkinsCodeQualityJob dbJob = JenkinsCodeQualityJob.newBuilder().jenkinsServer("http://buildserver2/job1").jobName("job1").build();
+        ObjectId dbJobId = new ObjectId();
+        dbJob.setId(dbJobId);
+
+        ObjectId collectorId = new ObjectId();
+        when(mockCollector.getId()).thenReturn(collectorId);
+        when(this.mockJobRepository.findAllByCollectorId(eq(collectorId))).thenReturn(Arrays.asList(dbJob));
+
+        this.testee.collect(mockCollector);
+
+        ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(this.mockDataService).storeJob(eq("job1"), eq(dbJob), captor.capture());
+        assertThat(captor.getValue()).hasSize(2);
     }
 
 }

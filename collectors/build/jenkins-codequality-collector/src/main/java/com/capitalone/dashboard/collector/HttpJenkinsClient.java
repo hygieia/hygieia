@@ -34,7 +34,7 @@ public class HttpJenkinsClient implements JenkinsClient {
     }
 
     @Override
-    public List<JenkinsJob> getJobs(Iterable<String> servers) {
+    public List<JenkinsJob> getJobs(List<String> servers) {
         List<JenkinsJob> jobs = new ArrayList<>();
         servers.forEach(server -> {
             final ResponseEntity<JobContainer> jobsOnServer = restTemplate.exchange(String.format(JENKINS_JOB_URL, server), HttpMethod.GET, createSecureRequestEntity(), JobContainer.class);

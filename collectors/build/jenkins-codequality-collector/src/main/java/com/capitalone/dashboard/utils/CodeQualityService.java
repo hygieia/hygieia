@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.utils;
 
+import com.capitalone.dashboard.model.CodeQualityVisitee;
 import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
-import com.capitalone.dashboard.model.JunitXmlReport;
 
 import java.util.List;
 
@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface CodeQualityService {
 
-    void storeJob(String jobUrl, JenkinsCodeQualityJob job, List<JunitXmlReport> xmlReportList);
+    void storeJob(String jobUrl, JenkinsCodeQualityJob job, List<? extends CodeQualityVisitee> report);
 
 }

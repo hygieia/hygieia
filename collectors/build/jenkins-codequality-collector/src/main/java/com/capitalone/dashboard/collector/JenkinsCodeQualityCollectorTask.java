@@ -3,8 +3,7 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.JenkinsPredicate;
 import com.capitalone.dashboard.jenkins.JenkinsSettings;
-import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
-import com.capitalone.dashboard.model.JunitXmlReport;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityCollectorRepository;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityJobRepository;
 import com.capitalone.dashboard.utils.CodeQualityService;
@@ -13,9 +12,10 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -36,7 +36,7 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
     public JenkinsCodeQualityCollectorTask(TaskScheduler taskScheduler, JenkinsCodeQualityCollectorRepository repository,
                                            JenkinsCodeQualityJobRepository jobRepository, JenkinsSettings settings,
                                            JenkinsClient jenkinsClient, CodeQualityService codeQualityService) {
-        super(taskScheduler,"JenkinsCodeQuality");
+        super(taskScheduler, "JenkinsCodeQuality");
         this.collectorRepository = repository;
         this.jobRepository = jobRepository;
         this.settings = settings;
@@ -50,7 +50,7 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
 
     @Override
     public JenkinsCodeQualityCollectorRepository getCollectorRepository() {
-         return this.collectorRepository;
+        return this.collectorRepository;
     }
 
     @Override
@@ -66,9 +66,20 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
             return;
         }
 
-        this.cleanupPreviousJobsFromRepo(collector,jobs);
+        this.cleanupPreviousJobsFromRepo(collector, jobs);
 
-        List<Pattern> matchingJobPatterns = Arrays.asList(Pattern.compile(".*\\.xml"));
+
+        List<Pattern> matchingJobPatterns = new ArrayList<>();
+        Map<ArtifactType, Pattern> artifactTypePatternMap = new HashMap<>();
+        this.settings.getArtifactRegex().forEach(
+                (key, uncompiledPatternList) -> uncompiledPatternList.stream().forEach(
+                        unCompiledPattern -> {
+                            Pattern compiledPattern = Pattern.compile(unCompiledPattern);
+                            matchingJobPatterns.add(compiledPattern);
+                            artifactTypePatternMap.put(key, compiledPattern);
+                        }
+                )
+        );
 
         List<JenkinsJob> interestingJobs = jobs.stream().filter(JenkinsPredicate.artifactInJobContaining(matchingJobPatterns)).collect(Collectors.toList());
 
@@ -76,23 +87,33 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
 
         List<JenkinsCodeQualityJob> allJobs = this.jobRepository.findAllByCollectorId(collector.getId());
         if (null != allJobs) {
-            final Map<String, JenkinsCodeQualityJob> jenkinsCodeQualityJobMap = allJobs.stream().collect(Collectors.toMap(JenkinsCodeQualityJob::getJenkinsServer, o -> o));
+            final Map<String, JenkinsCodeQualityJob> jenkinsCodeQualityJobMap = allJobs.stream().collect(Collectors.toMap(JenkinsCodeQualityJob::getJenkinsServer, Function.identity()));
 
             for (JenkinsJob job : interestingJobs) {
                 this.log("found an job of interest matching the artifact pattern.");
-                List<JunitXmlReport> reportArtifacts = this.jenkinsClient.getLatestArtifacts(JunitXmlReport.class, job, matchingJobPatterns);
-                this.codeQualityService.storeJob(job.getName(), jenkinsCodeQualityJobMap.get(job.getUrl()), reportArtifacts);
+                List<CodeQualityVisitee> allTypes = new ArrayList<>();
+                artifactTypePatternMap.forEach((type, pattern) -> {
+                    switch (type) {
+                        case junit:
+                            allTypes.addAll(this.jenkinsClient.getLatestArtifacts(JunitXmlReport.class, job, matchingJobPatterns));
+                            break;
+                        case findbugs:
+                            allTypes.addAll(this.jenkinsClient.getLatestArtifacts(FindBubsXmlReport.class, job, matchingJobPatterns));
+                            break;
+                    }
+                });
+                this.codeQualityService.storeJob(job.getName(), jenkinsCodeQualityJobMap.get(job.getUrl()), allTypes);
             }
         }
 
     }
 
-    private void cleanupPreviousJobsFromRepo(JenkinsCodeQualityCollector collector,List<JenkinsJob> jobs) {
+    private void cleanupPreviousJobsFromRepo(JenkinsCodeQualityCollector collector, List<JenkinsJob> jobs) {
         List<String> configuredServers = jobs.stream().map(job -> job.getUrl()).collect(Collectors.toList());
         List<JenkinsCodeQualityJob> allRepoJobs = new ArrayList(this.jobRepository.findAllByCollectorId(collector.getId()));
-        List<JenkinsCodeQualityJob> jobsToKeep=allRepoJobs.stream().filter(job->configuredServers.contains(job.getJenkinsServer())).collect(Collectors.toList());
+        List<JenkinsCodeQualityJob> jobsToKeep = allRepoJobs.stream().filter(job -> configuredServers.contains(job.getJenkinsServer())).collect(Collectors.toList());
         allRepoJobs.removeAll(jobsToKeep);
-        allRepoJobs.forEach(job->{
+        allRepoJobs.forEach(job -> {
             this.jobRepository.delete(job);
         });
     }
