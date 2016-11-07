@@ -49,38 +49,7 @@ public class TestResultServiceImpl implements TestResultService {
             return new DataResponse<>(null, 0L);
         }
         List<TestResult> result = new ArrayList<>();
-
-
-        for (CollectorItem item : component.getCollectorItems().get(CollectorType.Test)) {
-
-            QTestResult testResult = new QTestResult("testResult");
-            BooleanBuilder builder = new BooleanBuilder();
-
-            builder.and(testResult.collectorItemId.eq(item.getId()));
-
-            if (request.validStartDateRange()) {
-                builder.and(testResult.startTime.between(request.getStartDateBegins(), request.getStartDateEnds()));
-            }
-            if (request.validEndDateRange()) {
-                builder.and(testResult.endTime.between(request.getEndDateBegins(), request.getEndDateEnds()));
-            }
-
-            if (request.validDurationRange()) {
-                builder.and(testResult.duration.between(request.getDurationGreaterThan(), request.getDurationLessThan()));
-            }
-
-            if (!request.getTypes().isEmpty()) {
-                builder.and(testResult.testCapabilities.any().type.in(request.getTypes()));
-            }
-
-
-            if (request.getMax() == null) {
-                result.addAll(Lists.newArrayList(testResultRepository.findAll(builder.getValue(), testResult.timestamp.desc())));
-            } else {
-                PageRequest pageRequest = new PageRequest(0, request.getMax(), Sort.Direction.DESC, "timestamp");
-                result.addAll(Lists.newArrayList(testResultRepository.findAll(builder.getValue(), pageRequest).getContent()));
-            }
-        }
+        validateAllCollectorItems(request, component, result);
         //One collector per Type. get(0) is hardcoded.
         if (!CollectionUtils.isEmpty(component.getCollectorItems().get(CollectorType.Test)) && (component.getCollectorItems().get(CollectorType.Test).get(0) != null)) {
             Collector collector = collectorRepository.findOne(component.getCollectorItems().get(CollectorType.Test).get(0).getCollectorId());
@@ -90,6 +59,59 @@ public class TestResultServiceImpl implements TestResultService {
         }
 
         return new DataResponse<>(null, 0L);
+    }
+
+    private void validateAllCollectorItems(TestResultRequest request, Component component, List<TestResult> result) {
+        for (CollectorItem item : component.getCollectorItems().get(CollectorType.Test)) {
+
+            QTestResult testResult = new QTestResult("testResult");
+            BooleanBuilder builder = new BooleanBuilder();
+
+            builder.and(testResult.collectorItemId.eq(item.getId()));
+
+            validateStartDateRange(request, testResult, builder);
+            validateEndDateRange(request, testResult, builder);
+
+            validateDurationRange(request, testResult, builder);
+
+            validateTestCapabilities(request, testResult, builder);
+
+            // add all test result repos
+            addAllTestResultRepositories(request, result, testResult, builder);
+        }
+    }
+
+    private void addAllTestResultRepositories(TestResultRequest request, List<TestResult> result, QTestResult testResult, BooleanBuilder builder) {
+        if (request.getMax() == null) {
+            result.addAll(Lists.newArrayList(testResultRepository.findAll(builder.getValue(), testResult.timestamp.desc())));
+        } else {
+            PageRequest pageRequest = new PageRequest(0, request.getMax(), Sort.Direction.DESC, "timestamp");
+            result.addAll(Lists.newArrayList(testResultRepository.findAll(builder.getValue(), pageRequest).getContent()));
+        }
+    }
+
+    private void validateTestCapabilities(TestResultRequest request, QTestResult testResult, BooleanBuilder builder) {
+        if (!request.getTypes().isEmpty()) {
+            builder.and(testResult.testCapabilities.any().type.in(request.getTypes()));
+        }
+    }
+
+    private void validateDurationRange(TestResultRequest request, QTestResult testResult, BooleanBuilder builder) {
+        if (request.validDurationRange()) {
+            builder.and(testResult.duration.between(request.getDurationGreaterThan(), request.getDurationLessThan()));
+        }
+    }
+
+    private void validateEndDateRange(TestResultRequest request, QTestResult testResult, BooleanBuilder builder) {
+        if (request.validEndDateRange()) {
+            builder.and(testResult.endTime.between(request.getEndDateBegins(), request.getEndDateEnds()));
+        }
+    }
+
+    private void validateStartDateRange(TestResultRequest request, QTestResult testResult, BooleanBuilder builder) {
+        if (request.validStartDateRange()) {
+            builder.and(testResult.startTime.between(request.getStartDateBegins(), request.getStartDateEnds()));
+        }
     }
 
     private Iterable<TestResult> pruneToDepth(List<TestResult> results, Integer depth) {
