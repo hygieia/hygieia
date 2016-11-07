@@ -182,6 +182,50 @@ public class FeatureServiceImpl implements FeatureService {
 
 		// Get teamId first from available collector item, based on component
 		List<Feature> relevantFeatureEstimates = new ArrayList<Feature>();
+		relevantFeatureEstimates = getRelevantFeaturesEstimates(teamId, agileType);
+		// epicID : epic information (in the form of a Feature object)
+		Map<String, Feature> epicIDToEpicFeatureMap = new HashMap<>();
+
+		setFeatureEstimates(estimateMetricType, relevantFeatureEstimates, epicIDToEpicFeatureMap);
+
+		if (isEstimateTime(estimateMetricType)) {
+			// time estimate is in minutes but we want to return in hours
+			for (Feature f : epicIDToEpicFeatureMap.values()) {
+				f.setsEstimate(String.valueOf(Integer.valueOf(f.getsEstimate()) / 60));
+			}
+		}
+		
+		Collector collector = collectorRepository.findOne(item.getCollectorId());
+		return new DataResponse<>(new ArrayList<>(epicIDToEpicFeatureMap.values()), collector.getLastExecuted());
+	}
+
+	private void setFeatureEstimates(Optional<String> estimateMetricType, List<Feature> relevantFeatureEstimates, Map<String, Feature> epicIDToEpicFeatureMap) {
+		for (Feature tempRs : relevantFeatureEstimates) {
+			String epicID = tempRs.getsEpicID();
+
+			if (StringUtils.isEmpty(epicID))
+				continue;
+
+			Feature feature = epicIDToEpicFeatureMap.get(epicID);
+			if (feature == null) {
+				feature = new Feature();
+				feature.setId(null);
+				feature.setsEpicID(epicID);
+				feature.setsEpicNumber(tempRs.getsEpicNumber());
+				feature.setsEpicName(tempRs.getsEpicName());
+				feature.setsEstimate("0");
+				epicIDToEpicFeatureMap.put(epicID, feature);
+			}
+
+			// if estimateMetricType is hours accumulate time estimate in minutes for better precision ... divide by 60 later
+			int estimate = getEstimate(tempRs, estimateMetricType);
+
+			feature.setsEstimate(String.valueOf(Integer.valueOf(feature.getsEstimate()) + estimate));
+		}
+	}
+
+	private List<Feature> getRelevantFeaturesEstimates(String teamId, Optional<String> agileType) {
+		List<Feature> relevantFeatureEstimates;
 		if (agileType.isPresent()
 				&& FeatureCollectorConstants.KANBAN_SPRINT_ID.equalsIgnoreCase(agileType.get())) {
 			// Kanban
@@ -197,41 +241,7 @@ public class FeatureServiceImpl implements FeatureService {
 			relevantFeatureEstimates = featureRepository
 					.getInProgressFeaturesEstimatesByTeamId(teamId, getCurrentISODateTime());
 		}
-		// epicID : epic information (in the form of a Feature object)
-		Map<String, Feature> epicIDToEpicFeatureMap = new HashMap<>();
-		
-		for (Feature tempRs : relevantFeatureEstimates) {
-			String epicID = tempRs.getsEpicID();
-			
-			if (StringUtils.isEmpty(epicID))
-				continue;
-			
-			Feature feature = epicIDToEpicFeatureMap.get(epicID);
-			if (feature == null) {
-				feature = new Feature();
-				feature.setId(null);
-				feature.setsEpicID(epicID);
-				feature.setsEpicNumber(tempRs.getsEpicNumber());
-				feature.setsEpicName(tempRs.getsEpicName());
-				feature.setsEstimate("0");
-				epicIDToEpicFeatureMap.put(epicID, feature);
-			}
-			
-			// if estimateMetricType is hours accumulate time estimate in minutes for better precision ... divide by 60 later
-			int estimate = getEstimate(tempRs, estimateMetricType);
-			
-			feature.setsEstimate(String.valueOf(Integer.valueOf(feature.getsEstimate()) + estimate));
-		}
-		
-		if (isEstimateTime(estimateMetricType)) {
-			// time estimate is in minutes but we want to return in hours
-			for (Feature f : epicIDToEpicFeatureMap.values()) {
-				f.setsEstimate(String.valueOf(Integer.valueOf(f.getsEstimate()) / 60));
-			}
-		}
-		
-		Collector collector = collectorRepository.findOne(item.getCollectorId());
-		return new DataResponse<>(new ArrayList<>(epicIDToEpicFeatureMap.values()), collector.getLastExecuted());
+		return relevantFeatureEstimates;
 	}
 
 	private DataResponse<List<Feature>> getEstimate(ObjectId componentId, String teamId,
@@ -254,59 +264,17 @@ public class FeatureServiceImpl implements FeatureService {
 		List<Feature> storyEstimates;
 		switch (status) {
 		case TOTAL:
-			if (agileType.isPresent() && FeatureCollectorConstants.KANBAN_SPRINT_ID
-					.equalsIgnoreCase(agileType.get())) {
-				// Kanban
-				storyEstimates = featureRepository.getSprintBacklogTotal(teamId,
-						getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			} else if (agileType.isPresent() && FeatureCollectorConstants.SCRUM_SPRINT_ID
-					.equalsIgnoreCase(agileType.get())) {
-				// Scrum
-				storyEstimates = featureRepository.getSprintBacklogTotal(teamId,
-						getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			} else {
-				// Legacy
-				storyEstimates = featureRepository.getSprintBacklogTotal(teamId,
-						getCurrentISODateTime());
-			}
+			storyEstimates = getFeaturesForTotal(teamId, agileType);
 
 			break;
 
 		case DONE:
-			if (agileType.isPresent() && FeatureCollectorConstants.KANBAN_SPRINT_ID
-					.equalsIgnoreCase(agileType.get())) {
-				// Kanban
-				storyEstimates = featureRepository.getSprintBacklogDone(teamId,
-						getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			} else if (agileType.isPresent() && FeatureCollectorConstants.SCRUM_SPRINT_ID
-					.equalsIgnoreCase(agileType.get())) {
-				// Scrum
-				storyEstimates = featureRepository.getSprintBacklogDone(teamId,
-						getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			} else {
-				// Legacy
-				storyEstimates = featureRepository.getSprintBacklogDone(teamId,
-						getCurrentISODateTime());
-			}
+			storyEstimates = getFeaturesForDone(teamId, agileType);
 
 			break;
 
 		case InProgress:
-			if (agileType.isPresent() && FeatureCollectorConstants.KANBAN_SPRINT_ID
-					.equalsIgnoreCase(agileType.get())) {
-				// Kanban
-				storyEstimates = featureRepository.getSprintBacklogInProgress(teamId,
-						getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			} else if (agileType.isPresent() && FeatureCollectorConstants.SCRUM_SPRINT_ID
-					.equalsIgnoreCase(agileType.get())) {
-				// Scrum
-				storyEstimates = featureRepository.getSprintBacklogInProgress(teamId,
-						getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			} else {
-				// Legacy
-				storyEstimates = featureRepository.getSprintBacklogInProgress(teamId,
-						getCurrentISODateTime());
-			}
+			storyEstimates = getFeaturesForInProgress(teamId, agileType);
 			break;
 
 		default:
@@ -317,20 +285,90 @@ public class FeatureServiceImpl implements FeatureService {
 		List<Feature> cumulativeEstimate = new ArrayList<>();
 		Feature f = new Feature();
 		int lineTotalEstimate = 0;
-		for (Feature tempRs : storyEstimates) {
-			// if estimateMetricType is hours accumulate time estimate in minutes for better precision ... divide by 60 later
-			lineTotalEstimate += getEstimate(tempRs, estimateMetricType);
-		}
-		
-		if (isEstimateTime(estimateMetricType)) {
-			// time estimate is in minutes but we want to return in hours
-			lineTotalEstimate /= 60;
-		}
-		
+		lineTotalEstimate = getLineTotalEstimate(estimateMetricType, storyEstimates, lineTotalEstimate);
+
+		lineTotalEstimate = getLineTotalEstimateInHours(estimateMetricType, lineTotalEstimate);
+
 		f.setsEstimate(Integer.toString(lineTotalEstimate));
 		cumulativeEstimate.add(f);
 		Collector collector = collectorRepository.findOne(item.getCollectorId());
 		return new DataResponse<>(cumulativeEstimate, collector.getLastExecuted());
+	}
+
+	private int getLineTotalEstimateInHours(Optional<String> estimateMetricType, int lineTotalEstimate) {
+		if (isEstimateTime(estimateMetricType)) {
+			// time estimate is in minutes but we want to return in hours
+			lineTotalEstimate /= 60;
+		}
+		return lineTotalEstimate;
+	}
+
+	private int getLineTotalEstimate(Optional<String> estimateMetricType, List<Feature> storyEstimates, int lineTotalEstimate) {
+		for (Feature tempRs : storyEstimates) {
+			// if estimateMetricType is hours accumulate time estimate in minutes for better precision ... divide by 60 later
+			lineTotalEstimate += getEstimate(tempRs, estimateMetricType);
+		}
+		return lineTotalEstimate;
+	}
+
+	private List<Feature> getFeaturesForInProgress(String teamId, Optional<String> agileType) {
+		List<Feature> storyEstimates;
+		if (agileType.isPresent() && FeatureCollectorConstants.KANBAN_SPRINT_ID
+                .equalsIgnoreCase(agileType.get())) {
+            // Kanban
+            storyEstimates = featureRepository.getSprintBacklogInProgress(teamId,
+                    getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
+        } else if (agileType.isPresent() && FeatureCollectorConstants.SCRUM_SPRINT_ID
+                .equalsIgnoreCase(agileType.get())) {
+            // Scrum
+            storyEstimates = featureRepository.getSprintBacklogInProgress(teamId,
+                    getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
+        } else {
+            // Legacy
+            storyEstimates = featureRepository.getSprintBacklogInProgress(teamId,
+                    getCurrentISODateTime());
+        }
+		return storyEstimates;
+	}
+
+	private List<Feature> getFeaturesForDone(String teamId, Optional<String> agileType) {
+		List<Feature> storyEstimates;
+		if (agileType.isPresent() && FeatureCollectorConstants.KANBAN_SPRINT_ID
+                .equalsIgnoreCase(agileType.get())) {
+            // Kanban
+            storyEstimates = featureRepository.getSprintBacklogDone(teamId,
+                    getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
+        } else if (agileType.isPresent() && FeatureCollectorConstants.SCRUM_SPRINT_ID
+                .equalsIgnoreCase(agileType.get())) {
+            // Scrum
+            storyEstimates = featureRepository.getSprintBacklogDone(teamId,
+                    getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
+        } else {
+            // Legacy
+            storyEstimates = featureRepository.getSprintBacklogDone(teamId,
+                    getCurrentISODateTime());
+        }
+		return storyEstimates;
+	}
+
+	private List<Feature> getFeaturesForTotal(String teamId, Optional<String> agileType) {
+		List<Feature> storyEstimates;
+		if (agileType.isPresent() && FeatureCollectorConstants.KANBAN_SPRINT_ID
+                .equalsIgnoreCase(agileType.get())) {
+            // Kanban
+            storyEstimates = featureRepository.getSprintBacklogTotal(teamId,
+                    getCurrentISODateTime(), EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
+        } else if (agileType.isPresent() && FeatureCollectorConstants.SCRUM_SPRINT_ID
+                .equalsIgnoreCase(agileType.get())) {
+            // Scrum
+            storyEstimates = featureRepository.getSprintBacklogTotal(teamId,
+                    getCurrentISODateTime(), NOT_EQUAL, FeatureCollectorConstants.KANBAN_SPRINT_ID);
+        } else {
+            // Legacy
+            storyEstimates = featureRepository.getSprintBacklogTotal(teamId,
+                    getCurrentISODateTime());
+        }
+		return storyEstimates;
 	}
 
 	/**
