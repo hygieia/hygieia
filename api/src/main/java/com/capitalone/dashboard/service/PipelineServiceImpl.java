@@ -103,7 +103,10 @@ public class PipelineServiceImpl implements PipelineService {
         Map<String, String> environmentMappings= new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for(Widget widget : dashboard.getWidgets()) {
             if (widget.getName().equalsIgnoreCase("pipeline")) {
-                environmentMappings.putAll((Map<String,String>)widget.getOptions().get("mappings"));
+                HashMap<?,?> gh = (HashMap<?,?>) widget.getOptions().get("mappings");
+                for (Map.Entry<?, ?> entry : gh.entrySet()) {
+                    environmentMappings.put((String) entry.getKey(), (String) entry.getValue());
+                }
             }
         }
 

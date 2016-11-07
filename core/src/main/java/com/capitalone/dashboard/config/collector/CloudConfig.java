@@ -135,5 +135,11 @@ public class CloudConfig extends CollectorItem {
         return getCloudProvider().equals(that.getCloudProvider()) && allTagsMatch(that.getTags());
     }
 
+    @Override
+    public int hashCode(){
+        int result =  getCloudProvider().hashCode();
+        result = 31 * result + getId().hashCode();
+        return result;
+    }
 
 }
