@@ -102,7 +102,7 @@ public class GitlabUrlUtilityTest {
 		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
-		assertTrue(result.getQuery().contains("since=2016-10-26T13:08:20Z"));
+		assertTrue(result.getQuery().contains("since="));
 	}
 	
 	@Test
