@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.collector;
 
-import org.json.simple.JSONArray;
+import com.capitalone.dashboard.model.GitlabTeam;
 
 public interface GitlabClient {
 	
-	JSONArray getTeams();
+	GitlabTeam[] getTeams();
 
 }

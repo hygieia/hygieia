@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-import org.json.simple.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
+import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
@@ -81,9 +81,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         LOGGER.info("Starting Feature collection...");
 
         	
-        	//Update Team Info
-        JSONArray jsonTeams = gitlabClient.getTeams();
-        //convert to scope owner objects
+        //Update Team Info
+        GitlabTeam[] teams = gitlabClient.getTeams();
         featureDataClient.updateTeams(teams);
         	
         	//Update Project Info
