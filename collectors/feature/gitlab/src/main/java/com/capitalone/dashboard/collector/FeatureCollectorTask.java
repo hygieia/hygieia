@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import org.json.simple.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,6 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.FeatureRepository;
-import com.capitalone.dashboard.repository.ScopeOwnerRepository;
-import com.capitalone.dashboard.repository.ScopeRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 
 /**
@@ -22,10 +20,9 @@ import com.capitalone.dashboard.util.FeatureCollectorConstants;
 public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 
-    private final FeatureRepository featureRepository;
-    private final ScopeOwnerRepository teamRepository;
-    private final ScopeRepository projectRepository;
     private final FeatureCollectorRepository featureCollectorRepository;
+    private final GitlabClient gitlabClient;
+    private final FeatureDataClient featureDataClient;
     private final FeatureSettings featureSettings;
 
     /**
@@ -39,18 +36,16 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      *                        system
      * @throws HygieiaException
      */
-    @Autowired
-    public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureRepository featureRepository,
-                                ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
-                                FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings)
-            throws HygieiaException {
-        super(taskScheduler, FeatureCollectorConstants.GITLAB);
-        this.featureCollectorRepository = featureCollectorRepository;
-        this.teamRepository = teamRepository;
-        this.projectRepository = projectRepository;
-        this.featureRepository = featureRepository;
-        this.featureSettings = featureSettings;
-    }
+	@Autowired
+	public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureCollectorRepository featureCollectorRepository,
+			GitlabClient gitlabClient, FeatureDataClient featureDataClient, FeatureSettings featureSettings)
+			throws HygieiaException {
+		super(taskScheduler, FeatureCollectorConstants.GITLAB);
+		this.featureCollectorRepository = featureCollectorRepository;
+		this.gitlabClient = gitlabClient;
+		this.featureDataClient = featureDataClient;
+		this.featureSettings = featureSettings;
+	}
 
     /**
      * Accessor method for the collector prototype object
@@ -87,6 +82,9 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
         	
         	//Update Team Info
+        JSONArray jsonTeams = gitlabClient.getTeams();
+        //convert to scope owner objects
+        featureDataClient.updateTeams(teams);
         	
         	//Update Project Info
         	
