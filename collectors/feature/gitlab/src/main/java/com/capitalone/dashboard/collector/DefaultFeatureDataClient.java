@@ -1,8 +1,10 @@
 package com.capitalone.dashboard.collector;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,7 @@ import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
+import com.google.common.collect.Lists;
 
 @Component
 public class DefaultFeatureDataClient implements FeatureDataClient {
@@ -28,6 +31,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		this.teamRepo = teamRepo;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void updateTeams(GitlabTeam[] gitlabTeams) {
 		ObjectId gitlabFeatureCollectorId = featureRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
@@ -48,7 +52,13 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 			currentTeams.add(team);
 		}
 		
-		teamRepo.save(currentTeams);
+		List<ScopeOwnerCollectorItem> savedTeams = teamRepo.findByCollectorIdIn(Lists.newArrayList(gitlabFeatureCollectorId));
+		
+		Collection<ScopeOwnerCollectorItem> teamsToDelete = CollectionUtils.subtract(savedTeams, currentTeams);
+		Collection<ScopeOwnerCollectorItem> teamsToAdd = CollectionUtils.subtract(currentTeams, savedTeams);
+		
+		teamRepo.save(teamsToAdd);
+		teamRepo.delete(teamsToDelete);
 		
 	}
 
