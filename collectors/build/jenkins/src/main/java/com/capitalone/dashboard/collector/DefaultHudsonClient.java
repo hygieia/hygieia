@@ -39,6 +39,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -107,6 +109,7 @@ public class DefaultHudsonClient implements HudsonClient {
                     final String jobURL = getString(jsonJob, "url");
                     LOG.debug("Job:" + jobName);
                     LOG.debug("jobURL: " + jobURL);
+                    
                     HudsonJob hudsonJob = new HudsonJob();
                     hudsonJob.setInstanceUrl(instanceUrl);
                     hudsonJob.setJobName(jobName);
@@ -263,32 +266,84 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     /**
-     * Gathers only repo urls from now. There is no way to figure out which branches were built - as of yet.
-     * The JSON from Jenkins for multi repo and multi branch is quite buggy
+     * Gathers repo urls, and the branch name from the last built revision.
+     * Filters out the qualifiers from the branch name and sets the unqualified branch name.
+     * We assume that all branches are in remotes/origin.
      */
 
+    @SuppressWarnings("PMD")
     private List<RepoBranch> getGitRepoBranch(JSONObject buildJson) {
-        List<RepoBranch> list = new ArrayList<>();
+        List<RepoBranch> list = new ArrayList<>();        
+        
         JSONArray actions = getJsonArray(buildJson, "actions");
         for (Object action : actions) {
             JSONObject jsonAction = (JSONObject) action;
             if (jsonAction.size() > 0) {
-                JSONArray remoteUrls = getJsonArray ((JSONObject) action, "remoteUrls");
-                for (Object urlObj : remoteUrls) {
-                    String sUrl = (String) urlObj;
-                    //remove .git from the urls
-                    if (sUrl.endsWith(".git")) {
-                        sUrl = sUrl.substring(0, sUrl.lastIndexOf(".git"));
-                    }
-                    RepoBranch grb = new RepoBranch(sUrl, "", RepoBranch.RepoType.GIT);
-                    list.add(grb);
+                JSONObject lastBuiltRevision = null;
+                JSONArray branches = null;
+                JSONArray remoteUrls = getJsonArray ((JSONObject) action, "remoteUrls");       
+                if (!remoteUrls.isEmpty()) {
+                	lastBuiltRevision = (JSONObject) jsonAction.get("lastBuiltRevision");
+                }
+                if (lastBuiltRevision != null) {
+                	branches = getJsonArray ((JSONObject) lastBuiltRevision, "branch");
+                }
+                // As of git plugin 3.0.0, when multiple repos are configured in the git plugin itself instead of MultiSCM plugin, 
+            	// they are stored unordered in a HashSet. So it's buggy and we cannot associate the correct branch information.
+                // So for now, we loop through all the remoteUrls and associate the built branch(es) with all of them.
+                if (branches != null && !branches.isEmpty()) {
+                	for (Object url : remoteUrls) {
+                		String sUrl = (String) url;
+                		if (sUrl != null && !sUrl.isEmpty()) {
+                			sUrl = removeGitExtensionFromUrl(sUrl);
+		                	for (Object branchObj : branches) {
+		                		String branchName = getString((JSONObject) branchObj, "name");
+		                		if (branchName != null) {
+		                			String unqualifiedBranchName = getUnqualifiedBranch(branchName);
+		                			RepoBranch grb = new RepoBranch(sUrl, unqualifiedBranchName, RepoBranch.RepoType.GIT);
+		                			list.add(grb);
+		                		}
+		                	}
+                		}
+                	}
                 }
             }
         }
         return list;
     }
-
-    ////// Helpers
+    
+    private String removeGitExtensionFromUrl(String url) {
+    	String sUrl = url;
+    	//remove .git from the urls
+    	if (sUrl.endsWith(".git")) {
+            sUrl = sUrl.substring(0, sUrl.lastIndexOf(".git"));
+        }
+    	return sUrl;
+    }
+    
+    /**
+     * Gets the unqualified branch name given the qualified one of the following forms:
+     * 1. refs/remotes/<remote name>/<branch name>
+     * 2. remotes/<remote name>/<branch name>
+     * 3. origin/<branch name>
+     * 4. <branch name>
+     * @param qualifiedBranch
+     * @return the unqualified branch name
+     */
+        
+    private String getUnqualifiedBranch(String qualifiedBranch) {
+    	String branchName = qualifiedBranch;
+    	Pattern pattern = Pattern.compile("(refs/)?remotes/[^/]+/(.*)|(origin[0-9]*/)?(.*)");
+    	Matcher matcher = pattern.matcher(branchName);
+    	if(matcher.matches()) {
+    		if (matcher.group(2) != null) {
+    			branchName = matcher.group(2);
+    		} else if (matcher.group(4) != null) {
+    			branchName = matcher.group(4);
+    		}
+    	}
+    	return branchName;
+    }
 
     private long getCommitTimestamp(JSONObject jsonItem) {
         if (jsonItem.get("timestamp") != null) {
