@@ -6,6 +6,8 @@ import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.Test;
 
 import javax.xml.datatype.DatatypeFactory;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,5 +94,106 @@ public class CodeQualityMetricsConverterTest {
         AssertionsForClassTypes.assertThat(calculatedCodeQuality.getTimestamp()).isEqualTo(DatatypeFactory.newInstance().newXMLGregorianCalendar(1990, 11, 11, 11, 11, 11, 11, 0).toGregorianCalendar().getTimeInMillis());
         AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getType()).isEqualTo(CodeQualityType.StaticAnalysis);
 
+    }
+
+    @Test
+    public void handlesFindbugsFiles() throws Exception {
+
+        //set up 2 files each with 2 bugs of different priorties
+        FindBubsXmlReport findBubsXmlReport = produceFindbugsReport();
+
+
+        // do the test... dispatch vistor to both reports
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        findBubsXmlReport.accept(testee);
+
+        CodeQuality calculatedCodeQuality = testee.produceResult();
+        AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
+                .extracting("name", "formattedValue", "value", "status")
+                .contains(
+                        tuple("blocker_violations", "2", 2, CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations", "1", 1, CodeQualityMetricStatus.Alert),
+                        tuple("major_violations", "1", 1, CodeQualityMetricStatus.Warning),
+                        tuple("violations", "1", 1, CodeQualityMetricStatus.Warning));
+
+    }
+
+    private FindBubsXmlReport produceFindbugsReport() {
+        FindBubsXmlReport findBubsXmlReport = new FindBubsXmlReport();
+        List<FindBubsXmlReport.BugFile> files = new ArrayList<>();
+        FindBubsXmlReport.BugFile bugFile = new FindBubsXmlReport.BugFile();
+        List<FindBubsXmlReport.BugInstance> bugCollection = new ArrayList<FindBubsXmlReport.BugInstance>();
+
+        FindBubsXmlReport.BugInstance bugInstance = createBugInstance(FindBubsXmlReport.BugPriority.Normal);
+        FindBubsXmlReport.BugInstance bugInstance2 = createBugInstance(FindBubsXmlReport.BugPriority.Blocker);
+        bugCollection.add(bugInstance);
+        bugCollection.add(bugInstance2);
+        bugFile.setBugCollection(bugCollection);
+        files.add(bugFile);
+
+        FindBubsXmlReport.BugFile bugFile2 = new FindBubsXmlReport.BugFile();
+        List<FindBubsXmlReport.BugInstance> bugCollection2 = new ArrayList<FindBubsXmlReport.BugInstance>();
+
+        FindBubsXmlReport.BugInstance bugInstance3 = createBugInstance(FindBubsXmlReport.BugPriority.Low);
+        FindBubsXmlReport.BugInstance bugInstance4 = createBugInstance(FindBubsXmlReport.BugPriority.Blocker);
+        FindBubsXmlReport.BugInstance bugInstance5 = createBugInstance(FindBubsXmlReport.BugPriority.Critical);
+        bugCollection2.add(bugInstance3);
+        bugCollection2.add(bugInstance4);
+        bugCollection2.add(bugInstance5);
+        bugFile2.setBugCollection(bugCollection2);
+        files.add(bugFile2);
+
+        findBubsXmlReport.setFiles(files);
+        return findBubsXmlReport;
+    }
+
+    @Test
+    public void findBugsReportAllOkayIfNoViolations() {
+        FindBubsXmlReport findBubsXmlReport = new FindBubsXmlReport();
+
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        findBubsXmlReport.accept(testee);
+
+        CodeQuality calculatedCodeQuality = testee.produceResult();
+        AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
+                .extracting("name", "formattedValue", "value", "status")
+                .contains(
+                        tuple("blocker_violations", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("critical_violations", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("major_violations", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("violations", "0", 0, CodeQualityMetricStatus.Ok));
+    }
+
+    @Test
+    public void sumsFindbugsOverMultipleFiles() {
+        //set up 2 files each with 2 bugs of different priorties
+        FindBubsXmlReport findBubsXmlReport = produceFindbugsReport();
+        FindBubsXmlReport findBubsXmlReport2 = produceFindbugsReport();
+
+
+        // do the test... dispatch vistor to both reports
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        findBubsXmlReport.accept(testee);
+        findBubsXmlReport2.accept(testee);
+
+        CodeQuality calculatedCodeQuality = testee.produceResult();
+
+        AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
+                .extracting("name", "formattedValue", "value", "status")
+                .contains(
+                        tuple("blocker_violations", "4", 4, CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations", "2", 2, CodeQualityMetricStatus.Alert),
+                        tuple("major_violations", "2", 2, CodeQualityMetricStatus.Warning),
+                        tuple("violations", "2", 2, CodeQualityMetricStatus.Warning));
+    }
+
+    private FindBubsXmlReport.BugInstance createBugInstance(FindBubsXmlReport.BugPriority priority) {
+        FindBubsXmlReport.BugInstance bugInstance = new FindBubsXmlReport.BugInstance();
+        bugInstance.setCategory(FindBubsXmlReport.BugCategory.BAD_PRACTICE);
+        bugInstance.setLineNumber(12);
+        bugInstance.setMessage("this is slow");
+        bugInstance.setPriority(priority);
+        bugInstance.setType("somthing");
+        return bugInstance;
     }
 }
