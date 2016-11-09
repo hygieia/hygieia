@@ -33,9 +33,22 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void updateTeams(GitlabTeam[] gitlabTeams) {
+	public void updateTeams(List<GitlabTeam> gitlabTeams) {
 		ObjectId gitlabFeatureCollectorId = featureRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		
+		List<ScopeOwnerCollectorItem> currentTeams = convertToCollectorItem(gitlabTeams, gitlabFeatureCollectorId);
+		List<ScopeOwnerCollectorItem> savedTeams = teamRepo.findByCollectorIdIn(Lists.newArrayList(gitlabFeatureCollectorId));
+		
+		Collection<ScopeOwnerCollectorItem> teamsToAdd = CollectionUtils.subtract(currentTeams, savedTeams);
+		teamRepo.save(teamsToAdd);
+		LOGGER.info("Added {} new teams.", teamsToAdd.size());
+		
+		Collection<ScopeOwnerCollectorItem> teamsToDelete = CollectionUtils.subtract(savedTeams, currentTeams);
+		teamRepo.delete(teamsToDelete);
+        LOGGER.info("Deleted {} teams.", teamsToDelete.size());
+	}
+
+	private List<ScopeOwnerCollectorItem> convertToCollectorItem(List<GitlabTeam> gitlabTeams, ObjectId gitlabFeatureCollectorId) {
 		List<ScopeOwnerCollectorItem> currentTeams = new ArrayList<>();
 		for(GitlabTeam gitlabTeam : gitlabTeams) {
 			String teamId = String.valueOf(gitlabTeam.getId());
@@ -51,15 +64,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 			
 			currentTeams.add(team);
 		}
-		
-		List<ScopeOwnerCollectorItem> savedTeams = teamRepo.findByCollectorIdIn(Lists.newArrayList(gitlabFeatureCollectorId));
-		
-		Collection<ScopeOwnerCollectorItem> teamsToDelete = CollectionUtils.subtract(savedTeams, currentTeams);
-		Collection<ScopeOwnerCollectorItem> teamsToAdd = CollectionUtils.subtract(currentTeams, savedTeams);
-		
-		teamRepo.save(teamsToAdd);
-		teamRepo.delete(teamsToDelete);
-		
+		return currentTeams;
 	}
 
 	private ScopeOwnerCollectorItem findExistingTeam(String teamId) {
