@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.collector;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,10 +82,10 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     @Override
     public void collect(FeatureCollector collector) {
         LOGGER.info("Starting Feature collection...");
-
-        	
+       	Long startTime = System.currentTimeMillis();
+       	
         //Update Team Info
-        GitlabTeam[] teams = gitlabClient.getTeams();
+        List<GitlabTeam> teams = gitlabClient.getTeams();
         featureDataClient.updateTeams(teams);
         	
         	//Update Project Info
@@ -90,8 +93,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         	//Update Story Info
 
 
-
-        LOGGER.info("Feature Data Collection Finished");
+        Long elapsedTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
+        LOGGER.info("Feature data collection finished in {} seconds.", elapsedTime);
 
     }
 
