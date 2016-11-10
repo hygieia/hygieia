@@ -6,6 +6,6 @@ import com.capitalone.dashboard.model.FeatureCollector;
 /**
  * Repository for {@link FeatureCollector}.
  */
-public interface FeatureCollectorRepository extends
-		BaseCollectorRepository<FeatureCollector> {
+public interface FeatureCollectorRepository extends BaseCollectorRepository<FeatureCollector> {
+	
 }

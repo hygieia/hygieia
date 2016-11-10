@@ -12,7 +12,9 @@ import org.springframework.stereotype.Component;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.GitlabTeam;
+import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
+import com.capitalone.dashboard.repository.TeamItemRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 
@@ -24,6 +26,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 
     private final FeatureCollectorRepository featureCollectorRepository;
+    private final TeamItemRepository teamItemRepository;
     private final GitlabClient gitlabClient;
     private final FeatureDataClient featureDataClient;
     private final FeatureSettings featureSettings;
@@ -41,13 +44,14 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      */
 	@Autowired
 	public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureCollectorRepository featureCollectorRepository,
-			GitlabClient gitlabClient, FeatureDataClient featureDataClient, FeatureSettings featureSettings)
+			GitlabClient gitlabClient, FeatureDataClient featureDataClient, FeatureSettings featureSettings, TeamItemRepository teamItemRepository)
 			throws HygieiaException {
 		super(taskScheduler, FeatureCollectorConstants.GITLAB);
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.gitlabClient = gitlabClient;
 		this.featureDataClient = featureDataClient;
 		this.featureSettings = featureSettings;
+		this.teamItemRepository  = teamItemRepository;
 	}
 
     /**
@@ -84,13 +88,17 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         LOGGER.info("Starting Feature collection...");
        	Long startTime = System.currentTimeMillis();
        	
-        //Update Team Info
+        //Update Teams for select drop down
         List<GitlabTeam> teams = gitlabClient.getTeams();
         featureDataClient.updateTeams(teams);
         	
-        	//Update Project Info
+        //Update Project info for enabled teams
+        //Get enabled teams
+        List<ScopeOwnerCollectorItem> enabledTeams = teamItemRepository.findEnabledTeams(collector.getId());
+        //update projects
         	
-        	//Update Story Info
+        //Update Story Info
+        
 
 
         Long elapsedTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
