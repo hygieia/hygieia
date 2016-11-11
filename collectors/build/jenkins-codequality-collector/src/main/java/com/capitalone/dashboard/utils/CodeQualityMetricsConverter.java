@@ -42,8 +42,10 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
         metricsMap.put(TEST_ERRORS, Pair.of(report.getErrors(), report.getErrors() > 0 ? CodeQualityMetricStatus.Alert : CodeQualityMetricStatus.Ok));
         metricsMap.put(TEST_SUCCESS_DENSITY, Pair.of(testsPassed, CodeQualityMetricStatus.Ok));
 
-        long timestamp = Math.max(quality.getTimestamp(), report.getTimestamp().toGregorianCalendar().getTimeInMillis());
-        quality.setTimestamp(timestamp);
+        if (null != report.getTimestamp()) {
+            long timestamp = Math.max(quality.getTimestamp(), report.getTimestamp().toGregorianCalendar().getTimeInMillis());
+            quality.setTimestamp(timestamp);
+        }
         quality.setType(CodeQualityType.StaticAnalysis);
 
         Set<CodeQualityMetric> existingMetrics = quality.getMetrics();

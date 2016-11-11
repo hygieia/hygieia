@@ -97,6 +97,23 @@ public class CodeQualityMetricsConverterTest {
     }
 
     @Test
+    public void ignoresEmptyJunitReportFile() {
+        JunitXmlReport testXmlReport = new JunitXmlReport();
+
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        testXmlReport.accept(testee);
+        CodeQuality calculatedCodeQuality = testee.produceResult();
+
+        AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
+                .extracting("name", "formattedValue", "value", "status")
+                .contains(
+                        tuple("test_success_density", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("test_failures", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("test_errors", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("tests", "0", 0, CodeQualityMetricStatus.Ok));
+    }
+
+    @Test
     public void handlesFindbugsFiles() throws Exception {
 
         //set up 2 files each with 2 bugs of different priorties

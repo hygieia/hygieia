@@ -93,15 +93,13 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
                 this.log("found an job of interest matching the artifact pattern.");
                 List<CodeQualityVisitee> allTypes = new ArrayList<>();
                 artifactTypePatternMap.forEach((type, pattern) -> {
-                    switch (type) {
-                        case junit:
-                            allTypes.addAll(this.jenkinsClient.getLatestArtifacts(JunitXmlReport.class, job, matchingJobPatterns));
-                            break;
-                        case findbugs:
-                            allTypes.addAll(this.jenkinsClient.getLatestArtifacts(FindBubsXmlReport.class, job, matchingJobPatterns));
-                            break;
-                    }
-                });
+                            if (ArtifactType.junit == type) {
+                                allTypes.addAll(this.jenkinsClient.getLatestArtifacts(JunitXmlReport.class, job, pattern));
+                            } else if (ArtifactType.findbugs == type) {
+                                allTypes.addAll(this.jenkinsClient.getLatestArtifacts(FindBubsXmlReport.class, job, pattern));
+                            }
+                        }
+                );
                 this.codeQualityService.storeJob(job.getName(), jenkinsCodeQualityJobMap.get(job.getUrl()), allTypes);
             }
         }

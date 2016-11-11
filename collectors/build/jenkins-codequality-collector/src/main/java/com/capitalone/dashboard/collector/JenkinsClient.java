@@ -12,6 +12,6 @@ public interface JenkinsClient {
 
     List<JenkinsJob> getJobs(List<String> servers);
 
-    <T> List<T> getLatestArtifacts(Class<T> type, JenkinsJob job, List<Pattern> matchingJobPatterns);
+    <T> List<T> getLatestArtifacts(Class<T> type, JenkinsJob job, Pattern matchingJobPatterns);
 
 }

@@ -44,7 +44,7 @@ public class HttpJenkinsClient implements JenkinsClient {
     }
 
     @Override
-    public <T> List<T> getLatestArtifacts(Class<T> type, JenkinsJob job, List<Pattern> matchingJobPatterns) {
+    public <T> List<T> getLatestArtifacts(Class<T> type, JenkinsJob job, Pattern matchingJobPatterns) {
 
         List<Artifact> allMatchingArtifacts = job.getLastSuccessfulBuild().getArtifacts().stream().filter(JenkinsPredicate.artifactContaining(matchingJobPatterns)).collect(Collectors.toList());
 

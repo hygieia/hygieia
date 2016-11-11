@@ -5,18 +5,22 @@ import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.model.CodeQualityVisitee;
 import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * Created by plv163 on 19/10/2016.
  */
+@Component
 public class CodeQualityDataService implements CodeQualityService {
 
 
     private CodeQualityRepository codeQualityRepository;
     private CodeQualityConverter codeQualityConverter;
 
+    @Autowired
     public CodeQualityDataService(CodeQualityRepository codeQualityRepository, CodeQualityConverter codeQualityConverter) {
 
         this.codeQualityRepository = codeQualityRepository;

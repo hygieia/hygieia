@@ -59,7 +59,7 @@ public class HttpJenkinsClientTest {
                                                                                       .build())
                                                                     .build()).build();
 
-        List<JunitXmlReport> xmlReports = testee.getLatestArtifacts(JunitXmlReport.class, job, Arrays.asList(Pattern.compile("TEST-.*-test\\.xml")));
+        List<JunitXmlReport> xmlReports = testee.getLatestArtifacts(JunitXmlReport.class, job, Pattern.compile("TEST-.*-test\\.xml"));
 
         verify(mockRestTemplate).exchange(argThat(is(equalTo("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml"))), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JunitXmlReport.class));
         assertThat(xmlReports).size().isEqualTo(1);
@@ -145,7 +145,7 @@ public class HttpJenkinsClientTest {
                                                                                                    .build())
                                                                                  .build())
                                                 .build();
-        localTestee.getLatestArtifacts(JobContainer.class, jenkinsJob, Arrays.asList(Pattern.compile("TEST-.*-test\\.xml")));
+        localTestee.getLatestArtifacts(JobContainer.class, jenkinsJob, Pattern.compile("TEST-.*-test\\.xml"));
 
         //verify
         ArgumentCaptor<HttpEntity> entityCaptor = ArgumentCaptor.forClass(HttpEntity.class);

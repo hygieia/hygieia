@@ -64,4 +64,17 @@ public class JenkinsPredicateTest {
         assertThat(filteredArtifacts.get(0)).hasFieldOrPropertyWithValue("fileName", "yName.xml");
     }
 
+    @Test
+    public void singleArtefactMatched() {
+        List<Artifact> artifacts = new ArrayList<>();
+        artifacts.add(Artifact.newBuilder().fileName("yName").build());
+        artifacts.add(Artifact.newBuilder().fileName("yName.xml").build());
+        artifacts.add(Artifact.newBuilder().fileName("yName.txt").build());
+
+        final List<Artifact> filteredArtifacts = artifacts.stream().filter(JenkinsPredicate.artifactContaining(Pattern.compile(".*\\.xml"))).collect(Collectors.toList());
+
+        assertThat(filteredArtifacts).hasSize(1);
+        assertThat(filteredArtifacts.get(0)).hasFieldOrPropertyWithValue("fileName", "yName.xml");
+    }
+
 }

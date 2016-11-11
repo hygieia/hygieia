@@ -112,7 +112,7 @@ public class JenkinsCodeQualityCollectorTaskTest {
         JunitXmlReport testXmlReport1 = new JunitXmlReport();
         testXmlReport1.setTimestamp(DatatypeFactory.newInstance().newXMLGregorianCalendar(1990, 11, 11, 11, 11, 11, 11, 0));
         List<JunitXmlReport> testXmlReports = Arrays.asList(testXmlReport, testXmlReport1);
-        when(mockJenkinsHelper.getLatestArtifacts(eq(JunitXmlReport.class), any(JenkinsJob.class), anyList())).thenReturn(testXmlReports);
+        when(mockJenkinsHelper.getLatestArtifacts(eq(JunitXmlReport.class), any(JenkinsJob.class), any(Pattern.class))).thenReturn(testXmlReports);
 
         //
         JenkinsCodeQualityJob dbJob = JenkinsCodeQualityJob.newBuilder().jenkinsServer("http://buildserver2/job1").build();
@@ -129,13 +129,12 @@ public class JenkinsCodeQualityCollectorTaskTest {
 
         // verify
         ArgumentCaptor<JenkinsJob> jobCapture = ArgumentCaptor.forClass(JenkinsJob.class);
-        ArgumentCaptor<List> patternListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(mockJenkinsHelper).getLatestArtifacts(eq(JunitXmlReport.class), jobCapture.capture(), patternListCaptor.capture());
+        ArgumentCaptor<Pattern> patternCaptor = ArgumentCaptor.forClass(Pattern.class);
+        verify(mockJenkinsHelper).getLatestArtifacts(eq(JunitXmlReport.class), jobCapture.capture(), patternCaptor.capture());
         JenkinsJob capturedJob = jobCapture.getValue();
         assertThat(capturedJob).hasFieldOrPropertyWithValue("name", "job1").hasFieldOrPropertyWithValue("url", "http://buildserver2/job1");
-        List<Pattern> capturedPatterns = patternListCaptor.getValue();
-        assertThat(capturedPatterns).hasSize(1).allMatch(
-                pattern -> pattern.pattern().equals(".*\\.xml"));
+        Pattern capturedPattern = patternCaptor.getValue();
+        assertThat(capturedPattern.pattern().equals(".*\\.xml"));
         verify(mockDataService).storeJob(eq("job1"), eq(dbJob), eq(testXmlReports));
 
 
@@ -285,10 +284,10 @@ public class JenkinsCodeQualityCollectorTaskTest {
         when(mockJenkinsHelper.getJobs(anyList())).thenReturn(allJobs);
         List<JunitXmlReport> junitList = new ArrayList<>();
         junitList.add(new JunitXmlReport());
-        when(mockJenkinsHelper.getLatestArtifacts(same(JunitXmlReport.class), any(JenkinsJob.class), any(List.class))).thenReturn(junitList);
+        when(mockJenkinsHelper.getLatestArtifacts(same(JunitXmlReport.class), any(JenkinsJob.class), any(Pattern.class))).thenReturn(junitList);
         List<FindBubsXmlReport> findBugsList = new ArrayList<>();
         findBugsList.add(new FindBubsXmlReport());
-        when(mockJenkinsHelper.getLatestArtifacts(same(FindBubsXmlReport.class), any(JenkinsJob.class), any(List.class))).thenReturn(findBugsList);
+        when(mockJenkinsHelper.getLatestArtifacts(same(FindBubsXmlReport.class), any(JenkinsJob.class), any(Pattern.class))).thenReturn(findBugsList);
 
         JenkinsCodeQualityJob dbJob = JenkinsCodeQualityJob.newBuilder().jenkinsServer("http://buildserver2/job1").jobName("job1").build();
         ObjectId dbJobId = new ObjectId();

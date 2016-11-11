@@ -21,4 +21,8 @@ public class JenkinsPredicate {
                 pattern -> pattern.asPredicate().test(artifact.getName()));
     }
 
+    public static Predicate<Artifact> artifactContaining(Pattern pattern) {
+        return artifact -> pattern.asPredicate().test(artifact.getName());
+    }
+
 }

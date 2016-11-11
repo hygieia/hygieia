@@ -24,6 +24,8 @@ public class FindBubsXmlReport implements CodeQualityVisitee {
         this.files = files;
     }
 
+
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class BugFile {
         @XmlElement(name = "BugInstance")
         private List<BugInstance> bugCollection;
@@ -37,7 +39,7 @@ public class FindBubsXmlReport implements CodeQualityVisitee {
         }
     }
 
-    @XmlRootElement
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class BugInstance {
 
         @XmlAttribute
