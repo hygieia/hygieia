@@ -14,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
+import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
+import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.utilities.GitlabUrlUtility;
 
 @Component
@@ -49,6 +51,25 @@ public class DefaultGitlabClient implements GitlabClient {
 		}
 		
 		return allTeams;
+	}
+	
+	@Override
+	public List<GitlabProject> getProjects(ScopeOwnerCollectorItem team) {
+		HttpEntity<String> headersEntity = buildAuthenticationHeader();
+		
+		List<GitlabProject> projects = new ArrayList<>();
+		boolean hasNextPage = true;
+		while (hasNextPage) {
+			URI gitlabProjectUri = urlUtility.buildProjectsUrl(settings.getHost(), team.getTeamId());
+			ResponseEntity<GitlabProject[]> response = restOperations.exchange(gitlabProjectUri, HttpMethod.GET, headersEntity, GitlabProject[].class);
+			CollectionUtils.addAll(projects, response.getBody());
+			
+			if (hasNextPage = hasNextPage(response.getHeaders())) {
+				gitlabProjectUri = urlUtility.updatePage(gitlabProjectUri, response.getHeaders().get("X-Next-Page").get(0));
+			}
+		}
+		
+		return projects;
 	}
 	
 	private HttpEntity<String> buildAuthenticationHeader() {

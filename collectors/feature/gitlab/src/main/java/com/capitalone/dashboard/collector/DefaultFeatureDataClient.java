@@ -11,9 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
+import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
+import com.capitalone.dashboard.repository.ProjectItemRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.google.common.collect.Lists;
@@ -24,11 +27,13 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	
 	private final FeatureCollectorRepository featureRepo;
 	private final ScopeOwnerRepository teamRepo;
+	private final ProjectItemRepository projectRepo;
 	
 	@Autowired
-	public DefaultFeatureDataClient(FeatureCollectorRepository featureRepo, ScopeOwnerRepository teamRepo) {
+	public DefaultFeatureDataClient(FeatureCollectorRepository featureRepo, ScopeOwnerRepository teamRepo, ProjectItemRepository scopeRepo) {
 		this.featureRepo = featureRepo;
 		this.teamRepo = teamRepo;
+		this.projectRepo = scopeRepo;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,6 +51,47 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		Collection<ScopeOwnerCollectorItem> teamsToDelete = CollectionUtils.subtract(savedTeams, currentTeams);
 		teamRepo.delete(teamsToDelete);
         LOGGER.info("Deleted {} teams.", teamsToDelete.size());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void updateProjects(List<GitlabProject> projects) {
+		ObjectId gitlabFeatureCollectorId = featureRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
+		
+		List<Scope> currentProjects = convertToScopeItems(projects, gitlabFeatureCollectorId);
+		List<Scope> savedProjects = projectRepo.findScopeByCollectorId(gitlabFeatureCollectorId);
+		
+		Collection<Scope> projectsToAdd = CollectionUtils.subtract(currentProjects, savedProjects);
+		projectRepo.save(projectsToAdd);
+		LOGGER.info("Added {} new projects.", projectsToAdd.size());
+		
+		Collection<Scope> projectsToDelete = CollectionUtils.subtract(savedProjects, currentProjects);
+		projectRepo.delete(projectsToDelete);
+		LOGGER.info("Deleted {} projects.", projectsToDelete.size());
+	}
+
+	private List<Scope> convertToScopeItems(List<GitlabProject> gitlabProjects, ObjectId gitlabFeatureCollectorId) {
+		List<Scope> currentProjects = new ArrayList<>();
+		
+		for(GitlabProject gitlabProject : gitlabProjects) {
+			String projectId = String.valueOf(gitlabProject.getId());
+			
+			Scope project = findExistingProject(projectId);
+			
+			project.setCollectorId(gitlabFeatureCollectorId);
+			project.setpId(projectId);
+			project.setName(gitlabProject.getName());
+			project.setBeginDate("");
+			project.setEndDate("");
+			project.setChangeDate("");
+			project.setAssetState("Active");
+			project.setIsDeleted("False");
+			project.setProjectPath(gitlabProject.getPath());
+			
+			currentProjects.add(project);
+		}
+		
+		return currentProjects;
 	}
 
 	private List<ScopeOwnerCollectorItem> convertToCollectorItem(List<GitlabTeam> gitlabTeams, ObjectId gitlabFeatureCollectorId) {
@@ -80,6 +126,20 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		}
 
 		return new ScopeOwnerCollectorItem();
+	}
+	
+	private Scope findExistingProject(String projectId) {
+		List<Scope> existingProjects = projectRepo.getScopeById(projectId);
+		
+		if(existingProjects.size() > 1) {
+			LOGGER.warn("More than one collector item found for projectId " + projectId);
+		}
+		
+		if(!existingProjects.isEmpty()) {
+			return existingProjects.get(0);
+		}
+		
+		return new Scope();
 	}
 
 }
