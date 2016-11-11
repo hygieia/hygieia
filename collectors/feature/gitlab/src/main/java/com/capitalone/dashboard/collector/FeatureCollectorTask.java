@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -11,11 +12,12 @@ import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
+import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
-import com.capitalone.dashboard.repository.TeamItemRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
+import com.capitalone.dashboard.repository.TeamItemRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 
 /**
@@ -93,10 +95,12 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         featureDataClient.updateTeams(teams);
         	
         //Update Project info for enabled teams
-        //Get enabled teams
         List<ScopeOwnerCollectorItem> enabledTeams = teamItemRepository.findEnabledTeams(collector.getId());
-        //update projects
-        	
+        List<GitlabProject> projects = new ArrayList<>();
+        for(ScopeOwnerCollectorItem enabledTeam : enabledTeams) {
+        	projects.addAll(gitlabClient.getProjects(enabledTeam));
+        }
+        featureDataClient.updateProjects(projects);
         //Update Story Info
         
 
