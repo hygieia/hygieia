@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
+import com.capitalone.dashboard.model.GitlabBoard;
+import com.capitalone.dashboard.model.GitlabIssue;
+import com.capitalone.dashboard.model.GitlabList;
 import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
@@ -72,6 +75,50 @@ public class DefaultGitlabClient implements GitlabClient {
 		return projects;
 	}
 	
+	@Override
+	public List<GitlabIssue> getIssues(GitlabProject project) {
+		List<String> labels = new ArrayList<>();		
+		List<GitlabBoard> boards = getBoardsForProject(String.valueOf(project.getId()));	
+		for (GitlabBoard board : boards) {
+			 labels.addAll(getLabelsForInProgressIssues(board));
+		}
+		
+		List<GitlabIssue> allIssues = getIssuesForLabels(labels);
+		
+		return allIssues;
+	}
+	
+	private List<GitlabIssue> getIssuesForLabels(List<String> labels) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private List<String> getLabelsForInProgressIssues(GitlabBoard board) {
+		List<String> labels = new ArrayList<>();
+		for (GitlabList list : board.getLists()) {
+			labels.add(list.getLabel().getName());
+		}
+		return labels;
+	}
+
+	private List<GitlabBoard> getBoardsForProject(String projectId) {
+		HttpEntity<String> headersEntity = buildAuthenticationHeader();
+		
+		List<GitlabBoard> boards = new ArrayList<>();
+		boolean hasNextPage = true;
+		while (hasNextPage) {
+			URI gitlabBoardsUri = urlUtility.buildBoardsUrl(settings.getHost(), projectId);
+			ResponseEntity<GitlabBoard[]> response = restOperations.exchange(gitlabBoardsUri, HttpMethod.GET, headersEntity, GitlabBoard[].class);
+			CollectionUtils.addAll(boards, response.getBody());
+			
+			if (hasNextPage = hasNextPage(response.getHeaders())) {
+				gitlabBoardsUri = urlUtility.updatePage(gitlabBoardsUri, response.getHeaders().get("X-Next-Page").get(0));
+			}
+		}
+		
+		return boards;
+	}
+
 	private HttpEntity<String> buildAuthenticationHeader() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("PRIVATE-TOKEN", settings.getApiToken());
@@ -80,7 +127,12 @@ public class DefaultGitlabClient implements GitlabClient {
 	}
 	
 	private boolean hasNextPage(HttpHeaders headers) {
-		String nextPage = headers.get("X-Next-Page").get(0);
+		String nextPage;
+		try {
+			nextPage = headers.get("X-Next-Page").get(0);
+		} catch (NullPointerException e) {
+			return false;
+		}
 		return StringUtils.isNotBlank(nextPage);
 	}
 

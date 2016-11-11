@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.model.GitlabIssue;
 import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.model.Scope;
@@ -68,6 +69,12 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		Collection<Scope> projectsToDelete = CollectionUtils.subtract(savedProjects, currentProjects);
 		projectRepo.delete(projectsToDelete);
 		LOGGER.info("Deleted {} projects.", projectsToDelete.size());
+	}
+	
+	@Override
+	public void updateIssues(List<GitlabIssue> issues) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private List<Scope> convertToScopeItems(List<GitlabProject> gitlabProjects, ObjectId gitlabFeatureCollectorId) {

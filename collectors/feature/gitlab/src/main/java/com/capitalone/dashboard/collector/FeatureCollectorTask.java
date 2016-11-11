@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
+import com.capitalone.dashboard.model.GitlabIssue;
 import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
@@ -101,10 +102,14 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         	projects.addAll(gitlabClient.getProjects(enabledTeam));
         }
         featureDataClient.updateProjects(projects);
-        //Update Story Info
         
-
-
+        //Update Story Info
+        List<GitlabIssue> issues = new ArrayList<>();
+        for(GitlabProject project : projects) {
+        	issues.addAll(gitlabClient.getIssues(project));
+        }
+        featureDataClient.updateIssues(issues);
+        
         Long elapsedTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
         LOGGER.info("Feature data collection finished in {} seconds.", elapsedTime);
 
