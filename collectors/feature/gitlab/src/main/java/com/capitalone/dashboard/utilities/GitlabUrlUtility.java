@@ -27,6 +27,12 @@ public class GitlabUrlUtility {
 		URI uri = builder.path("groups/").path(teamId).path("/projects").build(true).toUri();
 		return uri;
 	}
+	
+	public URI buildBoardsUrl(String host, String projectId) {
+		UriComponentsBuilder builder = buildApiUri(host);
+		URI uri = builder.path("projects/").path(projectId).path("/boards").build(true).toUri();
+		return uri;
+	}
 
 	private UriComponentsBuilder buildApiUri(String host) {
 		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
