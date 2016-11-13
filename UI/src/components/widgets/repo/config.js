@@ -22,6 +22,9 @@
 		},{
 			name: 'Bitbucket',
 			value: 'Bitbucket'
+		}, {
+			name: 'Gitlab',
+			value: 'Gitlab'
 		}];
 
 //console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
@@ -145,11 +148,21 @@
 						password: ctrl.repopass
 					}
 				};
-			}else{
+			} else if  (ctrl.repoOption.name.indexOf("Subversion") != -1) {
 				item = {
 					collectorId : _.findWhere(ctrl.collectors, { name: 'Subversion' }).id,
 					options: {
 						scm: 'Subversion',
+						url: ctrl.repoUrl,
+						userID: ctrl.repouser,
+						password: ctrl.repopass
+					}
+				};
+			} else if (ctrl.repoOption.name.indexOf("Gitlab") != -1) {
+				item = {
+					collectorId : _.findWhere(ctrl.collectors, { name: 'Gitlab' }).id,
+					options: {
+						scm: 'Gitlab',
 						url: ctrl.repoUrl,
 						userID: ctrl.repouser,
 						password: ctrl.repopass
