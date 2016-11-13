@@ -93,32 +93,97 @@ public class CloudSubnetServiceImpl implements CloudSubnetService {
         return subnet;
     }
 
+
     private CloudSubNetwork updateSubnetworkObject(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
-        if (request.getAccountNumber() != null) existing.setAccountNumber(request.getAccountNumber());
-        if (request.getAvailableIPCount() != null)
-            existing.setAvailableIPCount(Integer.parseInt(request.getAvailableIPCount()));
-        if (request.getDefaultForZone() != null)
-            existing.setDefaultForZone(Boolean.parseBoolean(request.getDefaultForZone()));
-        if (request.getState() != null) existing.setState(request.getState());
-        if (request.getVirtualNetworkId() != null) existing.setVirtualNetworkId(request.getVirtualNetworkId());
-        if (request.getZone() != null) existing.setZone(request.getZone());
-        if (request.getCidrBlock() != null) existing.setCidrBlock(request.getCidrBlock());
-        if (request.getCidrCount() != null) existing.setCidrCount(Integer.parseInt(request.getCidrCount()));
-        if (request.getCreationDate() != null) existing.setCreationDate(Long.parseLong(request.getCreationDate()));
-        if (request.getLastUpdateDate() != null)
-            existing.setLastUpdateDate(Long.parseLong(request.getLastUpdateDate()));
-        if (request.getSubnetId() != null) existing.setSubnetId(request.getSubnetId());
-        if (request.getUsedIPCount() != null) existing.setUsedIPCount(Integer.parseInt(request.getUsedIPCount()));
-        if (request.getIpUsage() != null) existing.setIpUsage(request.getIpUsage());
-        if (request.getSubscribedIPCount() != null) existing.setSubscribedIPCount(Integer.parseInt(request.getSubscribedIPCount()));
-        if (request.getSubscribedIPUsage() != null) existing.setSubscribedIPUsage(request.getSubscribedIPUsage());
+        setAccountNumber(request, existing);
+        setAvailableIPCount(request, existing);
+        setDefaultForZone(request, existing);
+        setState(request, existing);
+        setVirtualNetworkId(request, existing);
+        setZone(request, existing);
+        setCidrBlock(request, existing);
+        setCidrCount(request, existing);
+        setCreationDate(request, existing);
+        setLastUpdateDate(request, existing);
+        setSubnetId(request, existing);
+        setUsedIPCount(request, existing);
+        setIpUsage(request, existing);
+        setSubscribedIPCount(request, existing);
+        setSubscribedIPUsage(request, existing);
+        setTags(request, existing);
+
+        return existing;
+    }
+
+    private void setTags(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
         if (!CollectionUtils.isEmpty(request.getTags())) {
             existing.getTags().clear();
             existing.getTags().addAll(request.getTags());
         }
         existing.getTags().addAll(request.getTags());
+    }
 
-        return existing;
+    private void setSubscribedIPUsage(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getSubscribedIPUsage() != null) existing.setSubscribedIPUsage(request.getSubscribedIPUsage());
+    }
+
+    private void setSubscribedIPCount(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getSubscribedIPCount() != null) existing.setSubscribedIPCount(Integer.parseInt(request.getSubscribedIPCount()));
+    }
+
+    private void setIpUsage(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getIpUsage() != null) existing.setIpUsage(request.getIpUsage());
+    }
+
+    private void setUsedIPCount(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getUsedIPCount() != null) existing.setUsedIPCount(Integer.parseInt(request.getUsedIPCount()));
+    }
+
+    private void setSubnetId(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getSubnetId() != null) existing.setSubnetId(request.getSubnetId());
+    }
+
+    private void setLastUpdateDate(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getLastUpdateDate() != null)
+            existing.setLastUpdateDate(Long.parseLong(request.getLastUpdateDate()));
+    }
+
+    private void setCreationDate(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getCreationDate() != null) existing.setCreationDate(Long.parseLong(request.getCreationDate()));
+    }
+
+    private void setCidrCount(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getCidrCount() != null) existing.setCidrCount(Integer.parseInt(request.getCidrCount()));
+    }
+
+    private void setCidrBlock(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getCidrBlock() != null) existing.setCidrBlock(request.getCidrBlock());
+    }
+
+    private void setZone(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getZone() != null) existing.setZone(request.getZone());
+    }
+
+    private void setVirtualNetworkId(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getVirtualNetworkId() != null) existing.setVirtualNetworkId(request.getVirtualNetworkId());
+    }
+
+    private void setState(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getState() != null) existing.setState(request.getState());
+    }
+
+    private void setDefaultForZone(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getDefaultForZone() != null)
+            existing.setDefaultForZone(Boolean.parseBoolean(request.getDefaultForZone()));
+    }
+
+    private void setAvailableIPCount(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getAvailableIPCount() != null)
+            existing.setAvailableIPCount(Integer.parseInt(request.getAvailableIPCount()));
+    }
+
+    private void setAccountNumber(CloudSubnetCreateRequest request, CloudSubNetwork existing) {
+        if (request.getAccountNumber() != null) existing.setAccountNumber(request.getAccountNumber());
     }
 
     @Override
