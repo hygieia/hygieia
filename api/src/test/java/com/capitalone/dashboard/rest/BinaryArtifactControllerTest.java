@@ -21,10 +21,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.HashMap;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
 @WebAppConfiguration
-public class ArtifactControllerTest {
+public class BinaryArtifactControllerTest {
 
     private MockMvc mockMvc;
 
@@ -66,6 +68,7 @@ public class ArtifactControllerTest {
         artifact.setArtifactName("MyArtifact");
         artifact.setCanonicalName("MyArtifact-1.1.0.0");
         artifact.setBuildId("1234");
+        artifact.setMetadata(new HashMap<>());
         artifact.setArtifactGroup("Mygroup.com");
         artifact.setArtifactVersion("1.1.0.0");
         return artifact;

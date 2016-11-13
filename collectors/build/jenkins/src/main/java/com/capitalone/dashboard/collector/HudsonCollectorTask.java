@@ -262,13 +262,13 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
     private List<HudsonJob> enabledJobs(HudsonCollector collector,
                                         String instanceUrl) {
-        return hudsonJobRepository.findEnabledHudsonJobs(collector.getId(),
+        return hudsonJobRepository.findEnabledJobs(collector.getId(),
                 instanceUrl);
     }
 
     @SuppressWarnings("unused")
 	private HudsonJob getExistingJob(HudsonCollector collector, HudsonJob job) {
-        return hudsonJobRepository.findHudsonJob(collector.getId(),
+        return hudsonJobRepository.findJob(collector.getId(),
                 job.getInstanceUrl(), job.getJobName());
     }
 
