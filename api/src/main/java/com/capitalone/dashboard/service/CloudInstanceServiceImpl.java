@@ -112,7 +112,6 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
     }
 
 
-
     private CloudInstance upsertCloudInstanceObject(CloudInstanceCreateRequest request, CloudInstance existing) throws HygieiaException {
 
         CloudInstance instance = (existing == null) ? new CloudInstance() : existing;
@@ -124,43 +123,143 @@ public class CloudInstanceServiceImpl implements CloudInstanceService {
         instance.setInstanceId(request.getInstanceId());
 
         //Anything null or resulting in parsing error will be thrown back to caller.
-        if (request.getRootDeviceName() != null) instance.setRootDeviceName(request.getRootDeviceName());
-        if (request.getCpuUtilization() != null)
-            instance.setCpuUtilization(Double.parseDouble(request.getCpuUtilization()));
-        if (request.getVirtualNetworkId() != null) instance.setVirtualNetworkId(request.getVirtualNetworkId());
-        if (request.getSubnetId() != null) instance.setSubnetId(request.getSubnetId());
-        if (request.getStatus() != null) instance.setStatus(request.getStatus());
-        if (request.getAge() != null) instance.setAge(Integer.parseInt(request.getAge()));
-        if (request.getDiskRead() != null) instance.setDiskRead(Double.parseDouble(request.getDiskRead()));
-        if (request.getDiskWrite() != null) instance.setDiskWrite(Double.parseDouble(request.getDiskWrite()));
-        if (request.getImageApproved() != null)
-            instance.setImageApproved(Boolean.parseBoolean(request.getImageApproved()));
-        if (request.getImageId() != null) instance.setImageId(request.getImageId());
-        if (request.getImageExpirationDate() != null)
-            instance.setImageExpirationDate(Long.parseLong(request.getImageExpirationDate()));
+        setRootDeviceName(request, instance);
+        setCpuUtilization(request, instance);
+        setVirtualNetworkId(request, instance);
+        setSubnetId(request, instance);
+        setStatus(request, instance);
+        setAge(request, instance);
+        setDiskRead(request, instance);
+        setDiskWrite(request, instance);
+        setImageApproved(request, instance);
+        setImageId(request, instance);
+        setImageExpirationDate(request, instance);
 
-        if (request.getInstanceOwner() != null) instance.setInstanceOwner(request.getInstanceOwner());
-        if (request.getInstanceType() != null) instance.setInstanceType(request.getInstanceType());
-        if (request.getLastAction() != null) instance.setLastAction(request.getLastAction());
-        if (request.getIsMonitored() != null) instance.setIsMonitored(Boolean.parseBoolean(request.getIsMonitored()));
-        if (request.getNetworkIn() != null) instance.setNetworkIn(Double.parseDouble(request.getNetworkIn()));
-        if (request.getNetworkOut() != null) instance.setNetworkOut(Double.parseDouble(request.getNetworkOut()));
-        if (request.getLastUpdatedDate() != null)
-            instance.setLastUpdatedDate(Long.parseLong(request.getLastUpdatedDate()));
-        if (request.getPrivateDns() != null) instance.setPrivateDns(request.getPrivateDns());
-        if (request.getPublicIp() != null) instance.setPublicIp(request.getPublicIp());
-        if (request.getIsStopped() != null) instance.setIsStopped(Boolean.parseBoolean(request.getIsStopped()));
-        if (request.getIsTagged() != null) instance.setIsTagged(Boolean.parseBoolean(request.getIsTagged()));
-        if (request.getAutoScaleName() != null) instance.setAutoScaleName(request.getAutoScaleName());
-        if (!CollectionUtils.isEmpty(request.getTags())) {
-            instance.getTags().clear();
-            instance.getTags().addAll(request.getTags());
-        }
+        setInstanceOwner(request, instance);
+        setInstanceType(request, instance);
+        setLastAction(request, instance);
+        setIsMonitored(request, instance);
+        setNetworkIn(request, instance);
+        setNetworkOut(request, instance);
+        setLastUpdatedDate(request, instance);
+        setPrivateDns(request, instance);
+        setPublicIp(request, instance);
+        setIsStopped(request, instance);
+        setIsTagged(request, instance);
+        setAutoScaleName(request, instance);
+        setTags(request, instance);
+        setSecurityGroups(request, instance);
+        return instance;
+    }
+
+    private void setSecurityGroups(CloudInstanceCreateRequest request, CloudInstance instance) {
         if (!CollectionUtils.isEmpty(request.getSecurityGroups())) {
             instance.getSecurityGroups().clear();
             instance.getSecurityGroups().addAll(request.getSecurityGroups());
         }
-        return instance;
+    }
+
+    private void setTags(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (!CollectionUtils.isEmpty(request.getTags())) {
+            instance.getTags().clear();
+            instance.getTags().addAll(request.getTags());
+        }
+    }
+
+    private void setAutoScaleName(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getAutoScaleName() != null) instance.setAutoScaleName(request.getAutoScaleName());
+    }
+
+    private void setIsTagged(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getIsTagged() != null) instance.setIsTagged(Boolean.parseBoolean(request.getIsTagged()));
+    }
+
+    private void setIsStopped(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getIsStopped() != null) instance.setIsStopped(Boolean.parseBoolean(request.getIsStopped()));
+    }
+
+    private void setPublicIp(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getPublicIp() != null) instance.setPublicIp(request.getPublicIp());
+    }
+
+    private void setPrivateDns(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getPrivateDns() != null) instance.setPrivateDns(request.getPrivateDns());
+    }
+
+    private void setLastUpdatedDate(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getLastUpdatedDate() != null)
+            instance.setLastUpdatedDate(Long.parseLong(request.getLastUpdatedDate()));
+    }
+
+    private void setNetworkOut(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getNetworkOut() != null) instance.setNetworkOut(Double.parseDouble(request.getNetworkOut()));
+    }
+
+    private void setNetworkIn(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getNetworkIn() != null) instance.setNetworkIn(Double.parseDouble(request.getNetworkIn()));
+    }
+
+    private void setIsMonitored(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getIsMonitored() != null) instance.setIsMonitored(Boolean.parseBoolean(request.getIsMonitored()));
+    }
+
+    private void setLastAction(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getLastAction() != null) instance.setLastAction(request.getLastAction());
+    }
+
+    private void setInstanceType(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getInstanceType() != null) instance.setInstanceType(request.getInstanceType());
+    }
+
+    private void setInstanceOwner(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getInstanceOwner() != null) instance.setInstanceOwner(request.getInstanceOwner());
+    }
+
+    private void setImageExpirationDate(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getImageExpirationDate() != null)
+            instance.setImageExpirationDate(Long.parseLong(request.getImageExpirationDate()));
+    }
+
+    private void setImageId(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getImageId() != null) instance.setImageId(request.getImageId());
+    }
+
+    private void setImageApproved(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getImageApproved() != null)
+            instance.setImageApproved(Boolean.parseBoolean(request.getImageApproved()));
+    }
+
+    private void setDiskWrite(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getDiskWrite() != null) instance.setDiskWrite(Double.parseDouble(request.getDiskWrite()));
+    }
+
+    private void setDiskRead(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getDiskRead() != null) instance.setDiskRead(Double.parseDouble(request.getDiskRead()));
+    }
+
+    private void setAge(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getAge() != null) instance.setAge(Integer.parseInt(request.getAge()));
+    }
+
+    private void setStatus(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getStatus() != null) instance.setStatus(request.getStatus());
+    }
+
+    private void setSubnetId(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getSubnetId() != null) instance.setSubnetId(request.getSubnetId());
+    }
+
+    private void setVirtualNetworkId(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getVirtualNetworkId() != null) instance.setVirtualNetworkId(request.getVirtualNetworkId());
+    }
+
+    private void setCpuUtilization(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getCpuUtilization() != null)
+            instance.setCpuUtilization(Double.parseDouble(request.getCpuUtilization()));
+    }
+
+    private void setRootDeviceName(CloudInstanceCreateRequest request, CloudInstance instance) {
+        if (request.getRootDeviceName() != null) instance.setRootDeviceName(request.getRootDeviceName());
     }
 
 
