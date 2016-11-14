@@ -38,7 +38,7 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
                     (request.getArtifactGroup(), request.getArtifactName(), request.getArtifactVersion()), 0);
         }
 
-        if ((request.getArtifactGroup() != null) && (request.getArtifactName() != null)) {
+        if ((request.getArtifactName() != null) && (request.getArtifactVersion() != null)) {
             return new DataResponse<>(artifactRepository.findByArtifactNameAndArtifactVersion(
                     request.getArtifactName(), request.getArtifactVersion()), 0);
         }
