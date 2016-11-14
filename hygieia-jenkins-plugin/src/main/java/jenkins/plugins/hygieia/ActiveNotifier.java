@@ -7,7 +7,6 @@ import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
-import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.plugins.git.GitSCM;
@@ -17,6 +16,8 @@ import hygieia.builder.CommitBuilder;
 import hygieia.builder.CucumberTestBuilder;
 import hygieia.builder.DeployBuilder;
 import hygieia.builder.SonarBuilder;
+import hygieia.utils.HygieiaUtils;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.jenkinsci.plugins.multiplescms.MultiSCM;
@@ -164,23 +165,11 @@ public class ActiveNotifier implements FineGrainedNotifier {
     private BuildDataCreateRequest getBuildData(AbstractBuild r, boolean isComplete) {
         BuildDataCreateRequest request = new BuildDataCreateRequest();
         request.setNiceName(publisher.getDescriptor().getHygieiaJenkinsName());
-        request.setJobName(r.getProject().getName());
-        request.setBuildUrl(r.getProject().getAbsoluteUrl() + String.valueOf(r.getNumber()) + "/");
-        request.setJobUrl(r.getProject().getAbsoluteUrl());
-        EnvVars env = null;
-        try {
-            env = r.getEnvironment(listener);
-        } catch (IOException | InterruptedException e) {
-            logger.warning("Error getting environment variables");
-        }
-        if (env != null) {
-            request.setInstanceUrl(env.get("JENKINS_URL"));
-        } else {
-            String jobPath = "/job" + "/" + r.getProject().getName() + "/";
-            int ind = r.getProject().getAbsoluteUrl().indexOf(jobPath);
-            request.setInstanceUrl(r.getProject().getAbsoluteUrl().substring(0, ind));
-        }
-        request.setNumber(String.valueOf(r.getNumber()));
+        request.setJobName(HygieiaUtils.getJobName(r));
+        request.setBuildUrl(HygieiaUtils.getBuildUrl(r));
+        request.setJobUrl(HygieiaUtils.getJobUrl(r));
+        request.setInstanceUrl(HygieiaUtils.getInstanceUrl(r, listener));
+        request.setNumber(HygieiaUtils.getBuildNumber(r));
         request.setStartTime(r.getStartTimeInMillis());
         request.setCodeRepos(getRepoBranch(r));
         request.setSourceChangeSet(getCommitList(r));
