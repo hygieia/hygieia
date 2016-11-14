@@ -284,3 +284,23 @@ hygieia-udeploy-collector:
   - UDEPLOY_PASSWORD:-s3cr3t
 #Collector schedule (required)
 #  - UDEPLOY_CRON:-0 0/5 * * * *
+
+hygieia-artifactory-artifact-collector:
+  image: hygieia-artifactory-artifact-collector:latest
+  container_name: hygieia-artifactory
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - hygieia-api
+  environment:
+#JFrog Artifactory server (required) - Can provide multiple 
+  - ARTIFACTORY_URL=https://www.jfrog.com
+# Artifactory user name (required)
+#  - ARTIFACTORY_USERNAME=bobama
+# Artifactory API key (required)
+#  - ARTIFACTORY_API_KEY=s3cr3t
+#  - ARTIFACTORY_CRON=0 0/1 * * * *
+# The repo to collect artifacts from (required) - Can provide multiple (comma separated for each server)
+#  - ARTIFACTORY_REPO=prerelease,release
+# Artifactory REST endpoint
+#  - ARTIFACTORY_ENDPOINT=artifactory/
