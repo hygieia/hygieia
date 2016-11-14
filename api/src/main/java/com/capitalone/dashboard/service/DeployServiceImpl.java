@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -59,9 +60,13 @@ public class DeployServiceImpl implements DeployService {
     @Override
     public DataResponse<List<Environment>> getDeployStatus(ObjectId componentId) {
         Component component = componentRepository.findOne(componentId);
-        CollectorItem item = component.getCollectorItems()
-                .get(CollectorType.Deployment).get(0);
+        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.Deployment);
+        if (item == null) {
+            List<Environment> results = new ArrayList<>();
+            return new DataResponse<>(results, new Date().getTime());
+        }
         ObjectId collectorItemId = item.getId();
+        
 
         List<EnvironmentComponent> components = environmentComponentRepository
                 .findByCollectorItemId(collectorItemId);
