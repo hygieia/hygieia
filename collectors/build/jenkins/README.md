@@ -48,8 +48,8 @@ jenkins.servers[1]=http://username:token@jenkins.company.com
 
 # Another option: If using same username/password Jenkins auth,
 #   set username/apiKey to use HTTP Basic Auth (blank=no auth)
-jenkins.username=
-jenkins.apiKey=
+jenkins.usernames[0]=
+jenkins.apiKeys[0]=
 
 # Determines if build console log is collected - defaults to false
 jenkins.saveLog=true
