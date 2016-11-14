@@ -253,7 +253,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
         List<String> niceNames = collector.getNiceNames();
         if (CollectionUtils.isEmpty(niceNames)) return "";
         for (int i = 0; i < servers.size(); i++) {
-            if (servers.get(i).equalsIgnoreCase(job.getInstanceUrl()) && (niceNames.size() > (i + 1))) {
+            if (servers.get(i).equalsIgnoreCase(job.getInstanceUrl()) && (niceNames.size() > i)) {
                 return niceNames.get(i);
             }
         }
