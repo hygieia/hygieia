@@ -16,11 +16,24 @@
 
 package com.capitalone.dashboard.config;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.repository.PipelineRepository;
+import com.capitalone.dashboard.service.BinaryArtifactService;
+import com.capitalone.dashboard.service.BuildService;
+import com.capitalone.dashboard.service.CommitService;
+import com.capitalone.dashboard.service.DeployService;
+import com.capitalone.dashboard.service.PipelineService;
+import com.capitalone.dashboard.service.DynamicPipelineServiceImpl;
+import com.capitalone.dashboard.service.PipelineServiceImpl;
 
 @Order(1)
 @Configuration
@@ -32,4 +45,25 @@ import org.springframework.web.bind.annotation.RestController;
         basePackages = "com.capitalone.dashboard"
 )
 public class RestApiAppConfig {
+	
+	@Value("${feature.dynamicPipeline:disabled}")
+    private String featureDynamicPipeline;
+	
+	@Bean PipelineService pipelineService(PipelineRepository pipelineRepository, DashboardRepository dashboardRepository,
+			CollectorItemRepository collectorItemRepository, BinaryArtifactService binaryArtifactService,
+			BuildService buildService, CommitService commitService, DeployService deployService) {
+		if (featureEnabled(featureDynamicPipeline)) {
+			return new DynamicPipelineServiceImpl(pipelineRepository, dashboardRepository,
+					collectorItemRepository, binaryArtifactService,
+					buildService, commitService, deployService);
+		} else {
+			return new PipelineServiceImpl(pipelineRepository, dashboardRepository, collectorItemRepository);
+		}
+	}
+	
+	private boolean featureEnabled(String featureValue) {
+		return "enable".equalsIgnoreCase(featureValue)
+				|| "enabled".equalsIgnoreCase(featureValue)
+				|| "true".equalsIgnoreCase(featureValue);
+	}
 }
