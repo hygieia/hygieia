@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -52,7 +53,11 @@ public class CommitServiceImpl implements CommitService {
         BooleanBuilder builder = new BooleanBuilder();
 
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getCollectorItems().get(CollectorType.SCM).get(0);
+        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.SCM);
+        if (item == null) {
+        	Iterable<Commit> results = new ArrayList<>();
+            return new DataResponse<>(results, new Date().getTime());
+        }
         builder.and(commit.collectorItemId.eq(item.getId()));
 
         if (request.getNumberOfDays() != null) {
