@@ -1,0 +1,11 @@
+[ {
+  "key" : "release",
+  "description" : "Release Candidate and/or Production artifacts.\nAfter production-certification, items from prerelease are deployed here.",
+  "type" : "LOCAL",
+  "url" : "http://localhost:8081/artifactory/release"
+}, {
+  "key" : "xldeploy",
+  "description" : "XLDeploy Artifacts",
+  "type" : "LOCAL",
+  "url" : "http://localhost:8081/artifactory/xldeploy"
+} ]
