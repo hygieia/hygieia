@@ -42,9 +42,9 @@ xldeploy.cron=0 0/5 * * * *
 # XLDeploy server (required) - Can provide multiple
 xldeploy.servers[0]=http://xldeploy.company.com
 
-# XLDeploy user name (required)
-xldeploy.username=bobama
+# XLDeploy user name (required) - Can provide multiple
+xldeploy.usernames[0]=bobama 
 
-# XLDeploy password (required)
-xldeploy.password=s3cr3t
+# XLDeploy password (required) - Can provide multiple
+xldeploy.passwords[0]=s3cr3t
 ```

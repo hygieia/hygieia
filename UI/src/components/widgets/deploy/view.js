@@ -38,6 +38,9 @@
                     },
                     collectorName: function () {
                         return $scope.dashboard.application.components[0].collectorItems.Deployment[0].collector.name;
+                    },
+                    collectorNiceName: function () {
+                        return $scope.dashboard.application.components[0].collectorItems.Deployment[0].niceName;
                     }
                 }
             });
