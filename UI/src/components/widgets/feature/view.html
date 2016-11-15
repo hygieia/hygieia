@@ -10,8 +10,8 @@
 
 			<div class="widget-heading">
 				<div class="iteration-change-btn text-standard-sm">Iteration:
-					<button id="next-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.intervalOff === 2" ng-click="ctrl.animateAgileView(true)">>></button>
-					<button id="pause-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.intervalOff === 2" ng-click="ctrl.pauseAgileView()" ng-model="ctrl.pausePlaySymbol">{{ctrl.pausePlaySymbol}}</button>
+					<button id="next-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.animateAgileView(true)">>></button>
+					<button id="pause-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.pauseAgileView()" ng-model="ctrl.pausePlaySymbol">{{ctrl.pausePlaySymbol}}</button>
 				</div>
 				<div ng-repeat="iteration in ctrl.iterations">
 					<div class="col-xs-2.5 text-lg pull-right">
@@ -71,8 +71,8 @@
 
 			<div class="widget-heading">
 				<div class="iteration-change-btn text-standard-sm">Iteration:
-					<button id="next-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.intervalOff === 2" ng-click="ctrl.animateAgileView(true)">>></button>
-					<button id="pause-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.intervalOff === 2" ng-click="ctrl.pauseAgileView()" ng-model="ctrl.pausePlaySymbol">{{ctrl.pausePlaySymbol}}</button>
+					<button id="next-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.animateAgileView(true)">>></button>
+					<button id="pause-btn" class="pull-right btn-default btn-xm active" ng-show="ctrl.numberOfSprintTypes === 2" ng-click="ctrl.pauseAgileView()" ng-model="ctrl.pausePlaySymbol">{{ctrl.pausePlaySymbol}}</button>
 				</div>
 				<div ng-repeat="iteration in ctrl.iterationsKanban">
 					<div class="col-xs-2.5 text-lg pull-right">
