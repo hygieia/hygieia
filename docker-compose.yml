@@ -285,6 +285,24 @@ hygieia-udeploy-collector:
 #Collector schedule (required)
 #  - UDEPLOY_CRON:-0 0/5 * * * *
 
+hygieia-xldeploy-collector:
+  image: hygieia-xldeploy-collector:latest
+  container_name: hygieia-xldeploy
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+  environment:
+#XLDeploy server (required) - Can provide multiple
+  - XLDEPLOY_URL:-http://xldeploy.company.com
+#XLDeploy user name (required)
+  - XLDEPLOY_USERNAME:-bobama
+#XLDeploy password (required)
+  - XLDEPLOY_PASSWORD:-s3cr3t
+#Collector schedule (required)
+#  - XLDEPLOY_CRON:-0 0/5 * * * *
+
 hygieia-artifactory-artifact-collector:
   image: hygieia-artifactory-artifact-collector:latest
   container_name: hygieia-artifactory
@@ -304,3 +322,5 @@ hygieia-artifactory-artifact-collector:
 #  - ARTIFACTORY_REPO=prerelease,release
 # Artifactory REST endpoint
 #  - ARTIFACTORY_ENDPOINT=artifactory/
+
+
