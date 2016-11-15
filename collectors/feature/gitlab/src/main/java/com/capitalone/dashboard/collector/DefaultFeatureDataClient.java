@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,13 +146,28 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 			issue.setsEpicIsDeleted("False");
 			
 			//Sprint data
-			issue.setsSprintID(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			issue.setsSprintName(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			issue.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
-			issue.setsSprintEndDate(FeatureCollectorConstants.KANBAN_END_DATE);
-			issue.setsSprintAssetState("Active");
-			issue.setsSprintChangeDate("");
-			issue.setsSprintIsDeleted("False");
+			if (gitlabIssue.getMilestone() != null) {
+				issue.setsSprintID(String.valueOf(gitlabIssue.getMilestone().getId()));
+				issue.setsSprintName(gitlabIssue.getMilestone().getTitle());
+				issue.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
+				issue.setsSprintEndDate(gitlabIssue.getMilestone().getDue_date());
+				if(StringUtils.isBlank(issue.getsSprintEndDate())) {
+					issue.setsSprintEndDate("9999-10-14T09:47:38.354-05:00");
+				}
+				//TODO: map to actual states
+				issue.setsSprintAssetState("Active");
+				issue.setsSprintChangeDate(gitlabIssue.getMilestone().getUpdated_at());
+				issue.setsSprintIsDeleted("False");
+			} 
+			else {
+				issue.setsSprintID(FeatureCollectorConstants.KANBAN_SPRINT_ID);
+				issue.setsSprintName(FeatureCollectorConstants.KANBAN_SPRINT_ID);
+				issue.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
+				issue.setsSprintEndDate(FeatureCollectorConstants.KANBAN_END_DATE);
+				issue.setsSprintAssetState("Active");
+				issue.setsSprintChangeDate("");
+				issue.setsSprintIsDeleted("False");
+			}
 			
 			
 			issues.add(issue);

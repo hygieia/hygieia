@@ -7,6 +7,7 @@ public class GitlabIssue {
 	private Long project_id;
 	private String title;
 	private String description;
+	private GitlabMilestone milestone;
 	private GitlabProject project;
 
 	public Long getId() {
@@ -47,6 +48,14 @@ public class GitlabIssue {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public GitlabMilestone getMilestone() {
+		return milestone;
+	}
+
+	public void setMilestone(GitlabMilestone milestone) {
+		this.milestone = milestone;
 	}
 
 	public GitlabProject getProject() {
