@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.model.Feature;
-import com.capitalone.dashboard.model.FeatureStatus;
 import com.capitalone.dashboard.model.GitlabIssue;
+import com.capitalone.dashboard.model.GitlabLabel;
 import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.model.Scope;
@@ -80,15 +80,19 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	}
 	
 	@Override
-	public void updateIssuesInProgress(List<GitlabIssue> issues) {
+	public void updateIssues(List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
 		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
+		List<String> inProgressLabels = new ArrayList<>();
+		for(GitlabLabel label : inProgressLabelsForProject) {
+			inProgressLabels.add(label.getName());
+		}
 		
-		List<Feature> currentIssues = convertToFeatureItems(issues, gitlabFeatureCollectorId);
+		List<Feature> currentIssues = convertToFeatureItems(issues, gitlabFeatureCollectorId, inProgressLabels);
 		featureRepo.save(currentIssues);
 		
 	}
 
-	private List<Feature> convertToFeatureItems(List<GitlabIssue> gitlabIssues, ObjectId gitlabFeatureCollectorId) {
+	private List<Feature> convertToFeatureItems(List<GitlabIssue> gitlabIssues, ObjectId gitlabFeatureCollectorId, List<String> inProgressLabelsForProject) {
 		List<Feature> issues = new ArrayList<>();
 		
 		for(GitlabIssue gitlabIssue : gitlabIssues) {
@@ -103,7 +107,8 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 			issue.setCollectorId(gitlabFeatureCollectorId);
 			issue.setIsDeleted("False");
 			issue.setsName(gitlabIssue.getTitle());
-			issue.setsStatus(FeatureStatus.IN_PROGRESS.getStatus());
+			
+			issue.setsStatus(determineStoryStatus(gitlabIssue, inProgressLabelsForProject));
 			issue.setsState("Active");
 			issue.setIsDeleted("False");
 			
@@ -174,6 +179,17 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		}
 		
 		return issues;
+	}
+
+	private String determineStoryStatus(GitlabIssue issue, List<String> inProgressLabelsForProject) {
+		if("closed".equals(issue.getState())) {
+			return "Done";
+		}
+		else if (CollectionUtils.containsAny(inProgressLabelsForProject, issue.getLabels())) {
+			return "In Progress";
+		}
+		
+		return "";
 	}
 
 	private List<Scope> convertToScopeItems(List<GitlabProject> gitlabProjects, ObjectId gitlabFeatureCollectorId) {

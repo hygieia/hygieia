@@ -16,6 +16,7 @@ import org.springframework.web.client.RestOperations;
 
 import com.capitalone.dashboard.model.GitlabBoard;
 import com.capitalone.dashboard.model.GitlabIssue;
+import com.capitalone.dashboard.model.GitlabLabel;
 import com.capitalone.dashboard.model.GitlabList;
 import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
@@ -49,20 +50,24 @@ public class DefaultGitlabClient implements GitlabClient {
 	}
 	
 	@Override
-	public List<GitlabIssue> getIssuesInProgress(GitlabProject project) {
-		String projectId = String.valueOf(project.getId());
-		
-		List<String> labels = new ArrayList<>();		
-		List<GitlabBoard> boards = getBoardsForProject(projectId);	
+	public List<GitlabLabel> getInProgressLabelsForProject(Long projectId) {
+		List<GitlabLabel> labels = new ArrayList<>();		
+		List<GitlabBoard> boards = getBoardsForProject(String.valueOf(projectId));	
 		for (GitlabBoard board : boards) {
 			 labels.addAll(getLabelsForInProgressIssues(board));
 		}
 		
-		if(CollectionUtils.isNotEmpty(labels)) {
-			return getIssuesForLabels(project, labels);
+		return labels;
+	}
+	
+	@Override
+	public List<GitlabIssue> getIssuesForProject(GitlabProject project) {
+		URI uri = urlUtility.buildIssuesForProjectUrl(settings.getHost(), String.valueOf(project.getId()));
+		List<GitlabIssue> issues = makePaginatedGitlabRequest(uri, GitlabIssue[].class);
+		for(GitlabIssue issue : issues) {
+			issue.setProject(project);
 		}
-		
-		return new ArrayList<>();
+		return issues;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -82,20 +87,11 @@ public class DefaultGitlabClient implements GitlabClient {
 		
 		return body;
 	}
-	
-	private List<GitlabIssue> getIssuesForLabels(GitlabProject project, List<String> labels) {
-		URI uri = urlUtility.buildIssuesForLabelsUrl(settings.getHost(), String.valueOf(project.getId()), labels);
-		List<GitlabIssue> issues = makePaginatedGitlabRequest(uri, GitlabIssue[].class);
-		for(GitlabIssue issue : issues) {
-			issue.setProject(project);
-		}
-		return issues;
-	}
 
-	private List<String> getLabelsForInProgressIssues(GitlabBoard board) {
-		List<String> labels = new ArrayList<>();
+	private List<GitlabLabel> getLabelsForInProgressIssues(GitlabBoard board) {
+		List<GitlabLabel> labels = new ArrayList<>();
 		for (GitlabList list : board.getLists()) {
-			labels.add(list.getLabel().getName());
+			labels.add(list.getLabel());
 		}
 		return labels;
 	}
