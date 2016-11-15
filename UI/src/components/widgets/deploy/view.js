@@ -5,26 +5,37 @@
         .module(HygieiaConfig.module)
         .controller('deployViewController', deployViewController);
 
-    deployViewController.$inject = ['$scope', 'DashStatus', 'deployData', 'DisplayState', '$q', '$modal'];
-    function deployViewController($scope, DashStatus, deployData, DisplayState, $q, $modal) {
+    deployViewController.$inject = ['$scope', 'DashStatus', 'deployData', 'systemConfigData', 'DisplayState', '$q', '$modal'];
+    function deployViewController($scope, DashStatus, deployData, systemConfigData, DisplayState, $q, $modal) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // public variables
         ctrl.environments = [];
         ctrl.statuses = DashStatus;
+        ctrl.ignoreEnvironmentFailuresRegex=/^$/;
 
         ctrl.load = load;
         ctrl.showDetail = showDetail;
 
         function load() {
-            var deferred = $q.defer();
-            deployData.details($scope.widgetConfig.componentId).then(function(data) {
-                processResponse(data.result);
-                deferred.resolve(data.lastUpdated);
-            });
-            return deferred.promise;
-        }
+        	var deferred = $q.defer();
+        	
+        	$q.all([systemConfigData.config(), deployData.details($scope.widgetConfig.componentId)])
+        		.then(function(dataA) {
+        			
+        			var systemConfig = dataA[0];
+        			
+        			if (systemConfig.globalProperties && systemConfig.globalProperties.ignoreEnvironmentFailuresRegex) {
+        				ctrl.ignoreEnvironmentFailuresRegex=new RegExp(systemConfig.globalProperties.ignoreEnvironmentFailuresRegex.replace(/^"(.*)"$/, '$1'));
+        			}
+        			
+        			processResponse(dataA[1].result);
+                    deferred.resolve(dataA[1].lastUpdated);
+        		});
+        	
+        	return deferred.promise;
+        };
 
         function showDetail(environment) {
             $modal.open({
@@ -51,13 +62,20 @@
                 getEnvironments: getEnvironments,
                 getIsDefaultState: getIsDefaultState
             };
+            
+            var ignoreEnvironmentFailuresRegex = ctrl.ignoreEnvironmentFailuresRegex;
+            
+            function ignoreEnvironmentFailures(environment) {
+            	return ignoreEnvironmentFailuresRegex.test(environment.name);
+            }
 
             function getIsDefaultState(data, cb) {
                 var isDefaultState = true;
                 _(data).forEach(function (environment) {
                     var offlineUnits = _(environment.units).where({'deployed': false}).value().length;
 
-                    if(environment.units && environment.units.length == offlineUnits) {
+                    if(environment.units && environment.units.length == offlineUnits
+                    		&& !ignoreEnvironmentFailures(environment)) {
                         isDefaultState = false;
                     }
                 });
@@ -75,6 +93,7 @@
                         serverUpCount: getServerOnlineCount(item.units, true),
                         serverDownCount: getServerOnlineCount(item.units, false),
                         failedComponents: getFailedComponentCount(item.units),
+                        ignoreFailure: ignoreEnvironmentFailures(item),
                         lastUpdated: getLatestUpdate(item.units)
                     };
 

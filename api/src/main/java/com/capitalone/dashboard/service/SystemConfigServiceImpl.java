@@ -24,6 +24,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 		
 		Map<String, Object> globalProperties = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		globalProperties.put("multipleDeploymentServers", apiSettings.isMultipleDeploymentServers());
+		globalProperties.put("ignoreEnvironmentFailuresRegex", apiSettings.getIgnoreEnvironmentFailuresRegex());
 		
 		response.setGlobalProperties(globalProperties);
 		

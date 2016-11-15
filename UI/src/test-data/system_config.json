@@ -1,5 +1,6 @@
 {
 	"globalProperties": {
-		"multipleDeploymentServers": false
+		"multipleDeploymentServers": false,
+		"ignoreEnvironmentFailuresRegex": "ignoreme"
 	}
 }
