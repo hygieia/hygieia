@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('deployConfigController', deployConfigController);
 
-    deployConfigController.$inject = ['modalData', 'collectorData','$modalInstance'];
-    function deployConfigController(modalData, collectorData, $modalInstance) {
+    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$modalInstance', '$q'];
+    function deployConfigController(modalData, collectorData, systemConfigData, $modalInstance, $q) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -14,7 +14,7 @@
 
         // public variables
         // ctrl.deployJob;
-        ctrl.deployJobs = [];
+        ctrl.deployJobs = [ ];
         ctrl.jobDropdownDisabled = true;
         ctrl.jobDropdownPlaceholder = 'Loading...';
         ctrl.submitted = false;
@@ -22,23 +22,59 @@
         // public methods
         ctrl.submit = submit;
 
-        collectorData.itemsByType('deployment').then(processResponse);
+        $q.all([systemConfigData.config(), collectorData.itemsByType('deployment')]).then(processResponse);
 
-        function processResponse(data) {
+        function processResponse(dataA) {
+        	var systemConfig = dataA[0];
+        	var data = dataA[1];
+        	
+        	var aggregateServers = (systemConfig.globalProperties && systemConfig.globalProperties.multipleDeploymentServers) || false;
+        	
             var worker = {
                 getDeploys: getDeploys
             };
 
-            function getDeploys(data, currentCollectorId, cb) {
+            
+            function getDeploys(data, currentCollectorItemIds, cb) {
                 var selectedIndex = null;
-
-                var deploys = _(data).map(function(deploy, idx) {
-                    if(deploy.id == currentCollectorId) {
-                        selectedIndex = idx;
+                
+                // If true we ignore instanceUrls and treat applications with the same id spread across 
+                // multiple servers as equivalent. This allows us to fully track an application across
+                // all environments in the case that servers are split by function (prod deployment servers
+                // vs nonprod deployment servers)
+                var multiServerEquality = aggregateServers;
+                var dataGrouped = dataGrouped = _(data)
+                	.groupBy(function(d) { return (!multiServerEquality ? d.options.instanceUrl + "#" : "" ) + d.options.applicationId; })
+                	.map(function(d) { return d; });
+                
+                var deploys = _(dataGrouped).map(function(deploys, idx) {
+                	var firstDeploy = deploys[0];
+                	
+                	var name = "";
+                	var group = "";
+                	var ids = new Array(deploys.length);
+                	for (var i = 0; i < deploys.length; ++i) {
+                		var deploy = deploys[i];
+                		
+                		ids[i] = deploy.id;
+                		
+                		if (_.contains(currentCollectorItemIds, deploy.id)) {
+                            selectedIndex = idx;
+                        }
+                		
+                		if (i > 0) {
+                			name += ', ';
+                		}
+                		name += ((deploy.niceName != null) && (deploy.niceName != "") ? deploy.niceName : deploy.collector.name);
                     }
+                	
+                	group = name;
+                	name += '-' + firstDeploy.options.applicationName;
+                	
                     return {
-                        value: deploy.id,
-                        name: deploy.options.applicationName
+                        value: ids,
+                        name: name,
+                        group: group
                     };
                 }).value();
 
@@ -48,9 +84,13 @@
                 });
             }
 
-            var deployCollector = modalData.dashboard.application.components[0].collectorItems.Deployment;
-            var deployCollectorId = deployCollector ? deployCollector[0].id : null;
-            worker.getDeploys(data, deployCollectorId, getDeploysCallback);
+            var deployCollectorItems = modalData.dashboard.application.components[0].collectorItems.Deployment;
+            var selectedIds = [];
+            if (deployCollectorItems) {
+            	selectedIds = _.map(deployCollectorItems, function(ci) { return ci.id } )
+            }
+            
+            worker.getDeploys(data, selectedIds, getDeploysCallback);
         }
 
         function getDeploysCallback(data) {
@@ -77,7 +117,7 @@
                         id: widgetConfig.options.id
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: job.value
+                    collectorItemIds: job.value
                 };
 
                 $modalInstance.close(postObj);
