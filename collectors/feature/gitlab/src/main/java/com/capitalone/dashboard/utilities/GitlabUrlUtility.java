@@ -1,7 +1,9 @@
 package com.capitalone.dashboard.utilities;
 
 import java.net.URI;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -31,6 +33,13 @@ public class GitlabUrlUtility {
 	public URI buildBoardsUrl(String host, String projectId) {
 		UriComponentsBuilder builder = buildApiUri(host);
 		URI uri = builder.path("projects/").path(projectId).path("/boards").build(true).toUri();
+		return uri;
+	}
+	
+	public URI buildIssuesForLabelsUrl(String host, String projectId, List<String> labels) {
+		UriComponentsBuilder builder = buildApiUri(host);
+		String labelsParam = StringUtils.join(labels, ',');
+		URI uri = builder.path("projects/").path(projectId).path("/issues").queryParam("labels", labelsParam).build().toUri();
 		return uri;
 	}
 

@@ -91,6 +91,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         LOGGER.info("Starting Feature collection...");
        	Long startTime = System.currentTimeMillis();
        	
+       	
         //Update Teams for select drop down
         List<GitlabTeam> teams = gitlabClient.getTeams();
         featureDataClient.updateTeams(teams);
@@ -106,13 +107,12 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         //Update Story Info
         List<GitlabIssue> issues = new ArrayList<>();
         for(GitlabProject project : projects) {
-        	issues.addAll(gitlabClient.getIssues(project));
+        	issues.addAll(gitlabClient.getIssuesInProgress(project));
         }
-        featureDataClient.updateIssues(issues);
+        featureDataClient.updateIssuesInProgress(issues);
         
         Long elapsedTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
         LOGGER.info("Feature data collection finished in {} seconds.", elapsedTime);
-
     }
 
 }
