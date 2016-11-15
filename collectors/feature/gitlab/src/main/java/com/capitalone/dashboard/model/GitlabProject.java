@@ -6,6 +6,7 @@ public class GitlabProject {
 	private String name;
 	private String path;
 	private String last_activity_at;
+	private GitlabNamespace namespace;
 	
 	public Long getId() {
 		return id;
@@ -37,6 +38,14 @@ public class GitlabProject {
 
 	public void setLast_activity_at(String last_activity_at) {
 		this.last_activity_at = last_activity_at;
+	}
+
+	public GitlabNamespace getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(GitlabNamespace namespace) {
+		this.namespace = namespace;
 	}
 
 }

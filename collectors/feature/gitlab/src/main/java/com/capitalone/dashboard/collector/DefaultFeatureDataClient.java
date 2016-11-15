@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.collector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,12 +12,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.FeatureStatus;
 import com.capitalone.dashboard.model.GitlabIssue;
 import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
+import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ProjectItemRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
@@ -26,21 +30,24 @@ import com.google.common.collect.Lists;
 public class DefaultFeatureDataClient implements FeatureDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultFeatureDataClient.class);
 	
-	private final FeatureCollectorRepository featureRepo;
+	private final FeatureCollectorRepository featureCollectorRepo;
 	private final ScopeOwnerRepository teamRepo;
 	private final ProjectItemRepository projectRepo;
+	private final FeatureRepository featureRepo;
 	
 	@Autowired
-	public DefaultFeatureDataClient(FeatureCollectorRepository featureRepo, ScopeOwnerRepository teamRepo, ProjectItemRepository scopeRepo) {
-		this.featureRepo = featureRepo;
+	public DefaultFeatureDataClient(FeatureCollectorRepository featureCollectorRepo, ScopeOwnerRepository teamRepo, 
+			ProjectItemRepository scopeRepo, FeatureRepository featureRepo) {
+		this.featureCollectorRepo = featureCollectorRepo;
 		this.teamRepo = teamRepo;
 		this.projectRepo = scopeRepo;
+		this.featureRepo = featureRepo;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void updateTeams(List<GitlabTeam> gitlabTeams) {
-		ObjectId gitlabFeatureCollectorId = featureRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
+		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		
 		List<ScopeOwnerCollectorItem> currentTeams = convertToCollectorItem(gitlabTeams, gitlabFeatureCollectorId);
 		List<ScopeOwnerCollectorItem> savedTeams = teamRepo.findByCollectorIdIn(Lists.newArrayList(gitlabFeatureCollectorId));
@@ -57,7 +64,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void updateProjects(List<GitlabProject> projects) {
-		ObjectId gitlabFeatureCollectorId = featureRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
+		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		
 		List<Scope> currentProjects = convertToScopeItems(projects, gitlabFeatureCollectorId);
 		List<Scope> savedProjects = projectRepo.findScopeByCollectorId(gitlabFeatureCollectorId);
@@ -72,9 +79,85 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	}
 	
 	@Override
-	public void updateIssues(List<GitlabIssue> issues) {
-		// TODO Auto-generated method stub
+	public void updateIssuesInProgress(List<GitlabIssue> issues) {
+		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		
+		List<Feature> currentIssues = convertToFeatureItems(issues, gitlabFeatureCollectorId);
+		featureRepo.save(currentIssues);
+		
+	}
+
+	private List<Feature> convertToFeatureItems(List<GitlabIssue> gitlabIssues, ObjectId gitlabFeatureCollectorId) {
+		List<Feature> issues = new ArrayList<>();
+		
+		for(GitlabIssue gitlabIssue : gitlabIssues) {
+			String issueId = String.valueOf(gitlabIssue.getId());
+			String storyNumber = String.valueOf(gitlabIssue.getIid());
+			String projectId = String.valueOf(gitlabIssue.getProject_id());
+			String teamId = String.valueOf(gitlabIssue.getProject().getNamespace().getId());
+			
+			Feature issue = findExistingIssue(issueId);
+			issue.setsNumber(storyNumber);
+			issue.setsId(issueId);
+			issue.setCollectorId(gitlabFeatureCollectorId);
+			issue.setIsDeleted("False");
+			issue.setsName(gitlabIssue.getTitle());
+			issue.setsStatus(FeatureStatus.IN_PROGRESS.getStatus());
+			issue.setsState("Active");
+			issue.setIsDeleted("False");
+			
+			//Made up stuff
+			issue.setsEstimate("1");
+			issue.setChangeDate("");
+			
+			//Project Data
+			issue.setsProjectID(projectId);
+			issue.setsProjectName("");
+			issue.setsProjectBeginDate("");
+			issue.setsProjectEndDate("");
+			issue.setsProjectChangeDate("");
+			issue.setsProjectState("");
+			issue.setsProjectIsDeleted("False");
+			issue.setsProjectPath("");
+			
+			//Team Data
+			issue.setsTeamID(teamId);
+			issue.setsTeamAssetState("");
+			issue.setsTeamName(gitlabIssue.getProject().getNamespace().getName());
+			issue.setsTeamChangeDate("");
+			issue.setsTeamIsDeleted("False");
+			
+			//Owner Data
+			issue.setsOwnersChangeDate(new ArrayList<String>());
+			issue.setsOwnersState(Arrays.asList("Active"));
+			issue.setsOwnersIsDeleted(new ArrayList<String>());
+			
+			
+			//Epic Data
+			issue.setsEpicID(issueId);
+			issue.setsEpicNumber(storyNumber);
+			issue.setsEpicName(gitlabIssue.getTitle());
+			issue.setsEpicBeginDate("");
+			issue.setsEpicEndDate("");
+			issue.setsEpicType("");
+			issue.setsEpicAssetState("");
+			issue.setsEpicChangeDate("");
+			issue.setsEpicIsDeleted("False");
+			
+			//Sprint data
+			issue.setsSprintID(FeatureCollectorConstants.KANBAN_SPRINT_ID);
+			issue.setsSprintName(FeatureCollectorConstants.KANBAN_SPRINT_ID);
+			issue.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
+			issue.setsSprintEndDate(FeatureCollectorConstants.KANBAN_END_DATE);
+			issue.setsSprintAssetState("Active");
+			issue.setsSprintChangeDate("");
+			issue.setsSprintIsDeleted("False");
+			
+			
+			issues.add(issue);
+		}
+		
+		return issues;
 	}
 
 	private List<Scope> convertToScopeItems(List<GitlabProject> gitlabProjects, ObjectId gitlabFeatureCollectorId) {
@@ -147,6 +230,20 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		}
 		
 		return new Scope();
+	}
+	
+	private Feature findExistingIssue(String id) {
+		List<Feature> existing = featureRepo.getFeatureIdById(id);
+		
+		if(existing.size() > 1) {
+			LOGGER.warn("More than one collector item found for featureId " + id);
+		}
+		
+		if(!existing.isEmpty()) {
+			return existing.get(0);
+		}
+		
+		return new Feature();
 	}
 
 }

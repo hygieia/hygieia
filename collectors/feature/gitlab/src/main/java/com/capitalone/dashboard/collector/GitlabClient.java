@@ -13,6 +13,6 @@ public interface GitlabClient {
 
 	List<GitlabProject> getProjects(ScopeOwnerCollectorItem team);
 
-	List<GitlabIssue> getIssues(GitlabProject project);
+	List<GitlabIssue> getIssuesInProgress(GitlabProject project);
 
 }

@@ -12,6 +12,6 @@ public interface FeatureDataClient {
 
 	void updateProjects(List<GitlabProject> projects);
 
-	void updateIssues(List<GitlabIssue> issues);
+	void updateIssuesInProgress(List<GitlabIssue> issues);
 	
 }
