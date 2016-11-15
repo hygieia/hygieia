@@ -16,7 +16,7 @@
                        ng-disabled="deployConfig.jobDropdownDisabled" required>
                 <ui-select-match placeholder={{deployConfig.jobDropdownPlaceholder}}>{{$select.selected.name}}
                 </ui-select-match>
-                <ui-select-choices
+                <ui-select-choices group-by="'group'"
                         repeat="job in (deployConfig.deployJobs| orderBy: 'name' | filter: $select.search) track by job.value">
                     <div ng-bind-html="job.name | highlight: $select.search"></div>
                 </ui-select-choices>
@@ -24,8 +24,8 @@
                     No teams were found
                 </ui-select-no-choice>
             </ui-select>
-
-
+            
+            
         </form-group>
 
         <hr/>
