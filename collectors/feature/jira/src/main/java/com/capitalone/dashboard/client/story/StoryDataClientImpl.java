@@ -225,7 +225,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 					feature.setsId(TOOLS.sanitizeResponse(issue.getId()));
 					
 					// Type
-					feature.setsTypeId(issueType.getId().toString());
+					feature.setsTypeId(TOOLS.sanitizeResponse(issueType.getId()));
 					feature.setsTypeName(TOOLS.sanitizeResponse(issueType.getName()));
 
 					processFeatureData(feature, issue, fields);

@@ -84,6 +84,12 @@ public class StoryDataClient extends BaseClient {
 
 			// sState
 			feature.setsState(getJSONString(dataMainObj, "AssetState"));
+			
+			// sTypeID
+			feature.setsTypeId("");
+			
+			// sTypeName
+			feature.setsTypeName(getJSONString(dataMainObj, "AssetType"));
 
 			// sEstimate
 			feature.setsEstimate(getJSONString(dataMainObj, "Estimate"));
