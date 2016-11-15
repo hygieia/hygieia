@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.model;
 
+import java.util.List;
+
 public class GitlabIssue {
 
 	private Long id;
@@ -7,6 +9,8 @@ public class GitlabIssue {
 	private Long project_id;
 	private String title;
 	private String description;
+	private String state;
+	private List<String> labels;
 	private GitlabMilestone milestone;
 	private GitlabProject project;
 
@@ -48,6 +52,22 @@ public class GitlabIssue {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public List<String> getLabels() {
+		return labels;
+	}
+
+	public void setLabels(List<String> labels) {
+		this.labels = labels;
 	}
 
 	public GitlabMilestone getMilestone() {

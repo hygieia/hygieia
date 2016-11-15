@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import java.util.List;
 
 import com.capitalone.dashboard.model.GitlabIssue;
+import com.capitalone.dashboard.model.GitlabLabel;
 import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
 
@@ -12,6 +13,6 @@ public interface FeatureDataClient {
 
 	void updateProjects(List<GitlabProject> projects);
 
-	void updateIssuesInProgress(List<GitlabIssue> issues);
+	void updateIssues(List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject);
 	
 }
