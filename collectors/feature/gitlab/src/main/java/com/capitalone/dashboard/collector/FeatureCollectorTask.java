@@ -2,6 +2,7 @@ package com.capitalone.dashboard.collector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -12,14 +13,9 @@ import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
-import com.capitalone.dashboard.model.GitlabIssue;
-import com.capitalone.dashboard.model.GitlabLabel;
 import com.capitalone.dashboard.model.GitlabProject;
-import com.capitalone.dashboard.model.GitlabTeam;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.TeamItemRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 
 /**
@@ -30,10 +26,8 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 
     private final FeatureCollectorRepository featureCollectorRepository;
-    private final TeamItemRepository teamItemRepository;
-    private final GitlabClient gitlabClient;
-    private final FeatureDataClient featureDataClient;
     private final FeatureSettings featureSettings;
+    private final FeatureUpdateService featureUpdateService;
 
     /**
      * Default constructor for the collector task. This will construct this
@@ -48,14 +42,11 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      */
 	@Autowired
 	public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureCollectorRepository featureCollectorRepository,
-			GitlabClient gitlabClient, FeatureDataClient featureDataClient, FeatureSettings featureSettings, TeamItemRepository teamItemRepository)
-			throws HygieiaException {
+			FeatureSettings featureSettings, FeatureUpdateService featureUpdateService) throws HygieiaException {
 		super(taskScheduler, FeatureCollectorConstants.GITLAB);
 		this.featureCollectorRepository = featureCollectorRepository;
-		this.gitlabClient = gitlabClient;
-		this.featureDataClient = featureDataClient;
 		this.featureSettings = featureSettings;
-		this.teamItemRepository  = teamItemRepository;
+		this.featureUpdateService = featureUpdateService;
 	}
 
     /**
@@ -92,28 +83,37 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         LOGGER.info("Starting Feature collection...");
        	Long startTime = System.currentTimeMillis();
        	
-       	
-        //Update Teams for select drop down
-        List<GitlabTeam> teams = gitlabClient.getTeams();
-        featureDataClient.updateTeams(teams);
+        featureUpdateService.updateSelectableTeams();
         	
         //Update Project info for enabled teams
-        List<ScopeOwnerCollectorItem> enabledTeams = teamItemRepository.findEnabledTeams(collector.getId());
-        List<GitlabProject> projects = new ArrayList<>();
-        for(ScopeOwnerCollectorItem enabledTeam : enabledTeams) {
-        	projects.addAll(gitlabClient.getProjects(enabledTeam));
-        }
-        featureDataClient.updateProjects(projects);
+        List<GitlabProject> projects = featureUpdateService.updateProjectsForEnabledTeams(collector.getId());
         
-        //Update Story Info
+        //Update Issues
+        List<Future<String>> futures = new ArrayList<>();
         for(GitlabProject project : projects) {
-        	List<GitlabLabel> inProgressLabelsForProject = gitlabClient.getInProgressLabelsForProject(project.getId());
-        	List<GitlabIssue> issues = gitlabClient.getIssuesForProject(project);
-        	featureDataClient.updateIssues(issues, inProgressLabelsForProject);
+        	futures.add(featureUpdateService.updateIssuesForProject(project));
         }
+        waitForCompletion(futures);
         
         Long elapsedTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
         LOGGER.info("Feature data collection finished in {} seconds.", elapsedTime);
     }
+
+	private void waitForCompletion(List<Future<String>> futures) {
+		boolean isDone = false;
+        while (!isDone) {
+        	for(Future<String> future : futures) {
+        		if(!future.isDone()) {
+        			try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						LOGGER.error(e.getMessage());;
+					}
+        			break;
+        		}
+        		isDone = true;
+        	}
+        }
+	}
 
 }
