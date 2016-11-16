@@ -22,6 +22,37 @@ You will need to provide an **application.properties** file that contains inform
 
 ```properties
 # ...
+# Database Name
+dbname=dashboard
+
+# Database HostName - default is localhost
+dbhost=localhost
+
+# Database Port - default is 27017
+dbport=9999
+
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+
+# Database Username - default is blank
+dbusername=db
+
+# Database Password - default is blank
+dbpassword=dbpass
+
+#Collector schedule (required)
+jenkins-cucumber.cron=0 0/5 * * * *
+
+#Jenkins server (required) - Can provide multiple
+jenkins-cucumber.servers[0]=
+
+#pattern to find cucubmer reports
+jenkins-cucumber.cucumberJsonRegex=${JENKINS_CUCUMBER_JSON_FILENAME:-cucumber.json}
+
+#Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
+jenkins-cucumber.username=
+jenkins-cucumber.apiKey=
 ```
 
 ## Jenkins Job with Cucumber
