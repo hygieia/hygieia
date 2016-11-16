@@ -2,13 +2,16 @@ package com.capitalone.dashboard;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * Application configuration and bootstrap
  *
  */
 @SpringBootApplication
-public class Application {
+@EnableAsync
+public class Application extends AsyncConfigurerSupport {
 	/**
 	 * Main thread of operation that runs the Spring Boot collector application.
 	 *

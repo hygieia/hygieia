@@ -23,7 +23,7 @@ import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ProjectItemRepository;
-import com.capitalone.dashboard.repository.ScopeOwnerRepository;
+import com.capitalone.dashboard.repository.TeamItemRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.google.common.collect.Lists;
 
@@ -32,12 +32,12 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultFeatureDataClient.class);
 	
 	private final FeatureCollectorRepository featureCollectorRepo;
-	private final ScopeOwnerRepository teamRepo;
+	private final TeamItemRepository teamRepo;
 	private final ProjectItemRepository projectRepo;
 	private final FeatureRepository featureRepo;
 	
 	@Autowired
-	public DefaultFeatureDataClient(FeatureCollectorRepository featureCollectorRepo, ScopeOwnerRepository teamRepo, 
+	public DefaultFeatureDataClient(FeatureCollectorRepository featureCollectorRepo, TeamItemRepository teamRepo, 
 			ProjectItemRepository scopeRepo, FeatureRepository featureRepo) {
 		this.featureCollectorRepo = featureCollectorRepo;
 		this.teamRepo = teamRepo;
@@ -90,6 +90,11 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		List<Feature> currentIssues = convertToFeatureItems(issues, gitlabFeatureCollectorId, inProgressLabels);
 		featureRepo.save(currentIssues);
 		
+	}
+	
+	@Override
+	public List<ScopeOwnerCollectorItem> findEnabledTeams(ObjectId collectorId) {
+		return teamRepo.findEnabledTeams(collectorId);
 	}
 
 	private List<Feature> convertToFeatureItems(List<GitlabIssue> gitlabIssues, ObjectId gitlabFeatureCollectorId, List<String> inProgressLabelsForProject) {
