@@ -1,0 +1,39 @@
+{
+"results" : [ {
+  "repo" : "release",
+  "path" : "com.mycompany.myapp/helloworld/4.8.5.20160909-091018I",
+  "name" : "helloworld-4.8.5.20160909-091018I.jar",
+  "created" : "2016-09-09T09:10:37.956-04:00",
+  "modified" : "2016-09-09T09:10:37.945-04:00",
+  "properties" : [ {
+    "key" : "build.url",
+    "value" : "http://localhost:8080/job/myname_helloworld/1/"
+  }, {
+    "key" : "build.number",
+    "value" : "1"
+  }, {
+    "key" : "vcs_revision",
+    "value" : "943a7c299ec551d985356e5ad52766b38c52e893"
+  }, {
+    "key" : "vcs_branch",
+    "value" : "origin/master"
+  }, {
+    "key" : "vcs_url",
+    "value" : "https://github.com/~myname/helloworld.git"
+  }, {
+    "key" : "jobName",
+    "value" : "myname_helloworld"
+  }, {
+    "key" : "jobUrl",
+    "value" : "http://localhost:8080/job/myname_helloworld"
+  }, {
+    "key" : "instanceUrl",
+    "value" : "http://localhost:8080/"
+  } ]
+} ],
+"range" : {
+  "start_pos" : 0,
+  "end_pos" : 1,
+  "total" : 1
+}
+}
