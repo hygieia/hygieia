@@ -2,6 +2,7 @@ package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.SprintEstimate;
 import com.capitalone.dashboard.service.FeatureService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,13 +95,30 @@ public class FeatureController {
 	 *         sprint and team
 	 */
 	@RequestMapping(value = "/feature/estimates/super/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
-	public DataResponse<List<Feature>> featureEstimates(
+	public DataResponse<List<Feature>> featureEpics(
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
 			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
 		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getFeatureEstimates(componentId, teamId, agileType, estimateMetricType);
+		return this.featureService.getFeatureEpicEstimates(componentId, teamId, agileType, estimateMetricType);
+	}
+	
+	/**
+	 * REST endpoint for retrieving the current sprint estimates for a team
+	 *
+	 * @param teamId
+	 *            A given scope-owner's source-system ID
+	 * @return 
+	 */
+	@RequestMapping(value = "/feature/estimates/aggregatedsprints/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
+	public DataResponse<SprintEstimate> featureAggregatedSprintEstimates (
+			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
+			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
+			@RequestParam(value = "component", required = true) String cId,
+			@PathVariable String teamId) {
+		ObjectId componentId = new ObjectId(cId);
+		return this.featureService.getAggregatedSprintEstimates(componentId, teamId, agileType, estimateMetricType);
 	}
 
 	/**
@@ -113,6 +131,7 @@ public class FeatureController {
 	 *         current features
 	 */
 	@RequestMapping(value = "/feature/estimates/total/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
+	@Deprecated
 	public DataResponse<List<Feature>> featureTotalEstimate(
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
 			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
@@ -132,6 +151,7 @@ public class FeatureController {
 	 *         estimate of current features
 	 */
 	@RequestMapping(value = "/feature/estimates/wip/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
+	@Deprecated
 	public DataResponse<List<Feature>> featureInProgressEstimate(
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
 			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
@@ -151,6 +171,7 @@ public class FeatureController {
 	 *         current features
 	 */
 	@RequestMapping(value = "/feature/estimates/done/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
+	@Deprecated
 	public DataResponse<List<Feature>> featureDoneEstimate(
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
 			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
