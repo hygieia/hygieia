@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.repository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,27 +10,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.capitalone.dashboard.config.MongoConfig;
-import com.capitalone.dashboard.model.Feature;
-
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.capitalone.dashboard.model.Feature;
 
-@ContextConfiguration(classes = { MongoConfig.class })
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-public class FeatureRepositoryTest {
+public class FeatureRepositoryTest extends FongoBaseRepositoryTest {
 	private static Feature mockV1Feature;
 	private static Feature mockJiraFeature;
 	private static Feature mockJiraFeature2;
@@ -43,9 +34,6 @@ public class FeatureRepositoryTest {
 	private static String currentSprintEndDate = new String();
 	private static final ObjectId jiraCollectorId = new ObjectId();
 //	private static final ObjectId v1CollectorId = new ObjectId();
-
-	@ClassRule
-	public static final EmbeddedMongoDBRule RULE = new EmbeddedMongoDBRule();
 
 	@Autowired
 	private FeatureRepository featureRepo;
@@ -452,7 +440,7 @@ public class FeatureRepositoryTest {
 
 		assertEquals(
 				"Expected top ordered sprint story ID did not match actual top ordered sprint story ID",
-				testStoryId, featureRepo.queryByOrderBySStatusDesc(testTeamID, maxDateWinner)
+				testStoryId, featureRepo.findByActiveEndingSprints(testTeamID, maxDateWinner)
 						.get(0).getsId().toString());
 	}
 
@@ -464,7 +452,7 @@ public class FeatureRepositoryTest {
 		String testTeamId = "08374321";
 		String testSprintName = "Test Sprint 2";
 		assertEquals("Expected current sprint detail did not match actual current sprint detail",
-				testSprintName, featureRepo.getCurrentSprintDetail(testTeamId, maxDateWinner)
+				testSprintName, featureRepo.findByActiveEndingSprintsMinimal(testTeamId, maxDateWinner)
 						.get(0).getsSprintName());
 	}
 
@@ -478,7 +466,7 @@ public class FeatureRepositoryTest {
 		assertEquals(
 				"The size of the actual response was not expected",
 				3,
-				featureRepo.getInProgressFeaturesEstimatesByTeamId(mockJiraFeature3.getsTeamID(),
+				featureRepo.findByActiveEndingSprintsMinimal(mockJiraFeature3.getsTeamID(),
 						currentSprintEndDate).size());
 	}
 }
