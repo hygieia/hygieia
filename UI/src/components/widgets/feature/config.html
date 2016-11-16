@@ -78,6 +78,19 @@
 				ng-if="configForm.estimateMetricType.$error.required">Please select
 				a valid estimate metric</p>
 		</div>
+		
+		<div ng-hide="ctrl.hideSprintTypeDropDown" class="col-sm-push-2 col-sm-8">
+			<label class="modal-label">Sprint Type:</label> <select
+				name="sprintType" class="form-control"
+				ng-model="ctrl.sprintType"
+				ng-options="item.type as item.value for item in ctrl.sprintTypes"
+				required>
+			</select>
+
+			<p class="help-block"
+				ng-if="configForm.estimateMetricType.$error.required">Please select
+				a valid sprint type</p>
+		</div>
 	</div>
 
 	<div class="button-row row text-center">
