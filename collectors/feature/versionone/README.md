@@ -23,6 +23,28 @@ You will need to provide an **application.properties** file that contains inform
 ### Sample application.properties file
 
 ```properties
+# Database Name
+dbname=dashboard
+
+# Database HostName - default is localhost
+dbhost=localhost
+
+# Database Port - default is 27017
+dbport=27017
+
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+
+# Database Username - default is blank
+dbusername=db
+
+# Database Password - default is blank
+dbpassword=dbpass
+
+# Logging File location
+logging.file=./logs/versionone.log
+
 # PageSize - Expand contract this value depending on VersionOne implementation's
 # default server timeout setting (You will likely receive a SocketTimeoutException)
 feature.pageSize=2000
