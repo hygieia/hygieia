@@ -2,6 +2,7 @@ package com.capitalone.dashboard.collector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +28,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
     private final FeatureCollectorRepository featureCollectorRepository;
     private final FeatureSettings featureSettings;
-    private final FeatureUpdateService featureUpdateService;
+    private final FeatureService featureService;
 
     /**
      * Default constructor for the collector task. This will construct this
@@ -42,11 +43,11 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      */
 	@Autowired
 	public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings, FeatureUpdateService featureUpdateService) throws HygieiaException {
+			FeatureSettings featureSettings, FeatureService featureService) throws HygieiaException {
 		super(taskScheduler, FeatureCollectorConstants.GITLAB);
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.featureSettings = featureSettings;
-		this.featureUpdateService = featureUpdateService;
+		this.featureService = featureService;
 	}
 
     /**
@@ -83,15 +84,13 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         LOGGER.info("Starting Feature collection...");
        	Long startTime = System.currentTimeMillis();
        	
-        featureUpdateService.updateSelectableTeams();
-        	
-        //Update Project info for enabled teams
-        List<GitlabProject> projects = featureUpdateService.updateProjectsForEnabledTeams(collector.getId());
-        
-        //Update Issues
-        List<Future<String>> futures = new ArrayList<>();
+        List<GitlabProject> projects = featureService.getProjectsForEnabledTeams(collector.getId());
+       	
+        List<Future<Void>> futures = new ArrayList<>();
+        futures.add(featureService.updateSelectableTeams());
+        futures.add(featureService.updateProjects(projects));
         for(GitlabProject project : projects) {
-        	futures.add(featureUpdateService.updateIssuesForProject(project));
+        	futures.add(featureService.updateIssuesForProject(project));
         }
         waitForCompletion(futures);
         
@@ -99,21 +98,14 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         LOGGER.info("Feature data collection finished in {} seconds.", elapsedTime);
     }
 
-	private void waitForCompletion(List<Future<String>> futures) {
-		boolean isDone = false;
-        while (!isDone) {
-        	for(Future<String> future : futures) {
-        		if(!future.isDone()) {
-        			try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						LOGGER.error(e.getMessage());;
-					}
-        			break;
-        		}
-        		isDone = true;
-        	}
-        }
+	private void waitForCompletion(List<Future<Void>> futures) {
+		futures.forEach(future -> {
+			try {
+				future.get();
+			} catch (InterruptedException | ExecutionException e) {
+				LOGGER.error(e.getMessage());
+			}
+		});
 	}
 
 }
