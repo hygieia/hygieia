@@ -22,19 +22,26 @@ You will need to provide an **application.properties** file that contains inform
 
 ```properties
 # Database Name
-spring.data.mongodb.dbname=dashboard
+dbname=dashboard
 
 # Database HostName - default is localhost
-spring.data.mongodb.host=10.0.1.1
+dbhost=localhost
 
 # Database Port - default is 27017
-spring.data.mongodb.port=9999
+dbport=27017
+
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
 
 # Database Username - default is blank
-spring.data.mongodb.username=db
+dbusername=db
 
 # Database Password - default is blank
-spring.data.mongodb.password=dbpass
+dbpassword=dbpass
+
+# Logging File location
+logging.file=./logs/subversion.log
 
 # Collector schedule (required)
 subversion.cron=0 0/5 * * * *
