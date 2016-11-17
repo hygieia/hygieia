@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "gitlab")
 public class GitlabSettings {
     private String cron;
-    private boolean saveLog = false;
-    private String server;
+    private String host;
     private String apiToken;
-    private String branche;
+	private int firstRunHistoryDays;
+	private boolean selfSignedCertificate;
 
     public String getCron() {
         return cron;
@@ -26,22 +26,6 @@ public class GitlabSettings {
 
     public void setCron(String cron) {
         this.cron = cron;
-    }
-
-    public boolean isSaveLog() {
-        return saveLog;
-    }
-
-    public void setSaveLog(boolean saveLog) {
-        this.saveLog = saveLog;
-    }
-
-    public String getServer() {
-        return server;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
     }
 
     public String getApiToken() {
@@ -52,11 +36,28 @@ public class GitlabSettings {
         this.apiToken = apiToken;
     }
 
-    public String getBranche() {
-        return branche;
-    }
+	public String getHost() {
+		return host;
+	}
 
-    public void setBranche(String branche) {
-        this.branche = branche;
-    }
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public int getFirstRunHistoryDays() {
+		return firstRunHistoryDays;
+	}
+
+	public void setFirstRunHistoryDays(int firstRunHistoryDays) {
+		this.firstRunHistoryDays = firstRunHistoryDays;
+	}
+
+	public boolean isSelfSignedCertificate() {
+		return selfSignedCertificate;
+	}
+	
+	public void setSelfSignedCertificate(boolean selfSigned) {
+		this.selfSignedCertificate = selfSigned;
+	}
+
 }
