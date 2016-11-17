@@ -17,10 +17,8 @@
                     <option value="" disabled>{{caWidget.caToolsDropdownPlaceholder}}</option>
                 </select>-->
 
-                <ui-select ng-model="caWidget.caCollectorItem" theme="bootstrap"
-                           ng-disabled="caWidget.caJobs.length === 0">
-                    <ui-select-match placeholder="Select your CodeAnalysis job">{{$select.selected.description}}
-                    </ui-select-match>
+                <ui-select ng-model="caWidget.caCollectorItem" theme="bootstrap" ng-disabled="caWidget.caLoading">
+                    <ui-select-match placeholder="{{ caWidget.caToolsDropdownPlaceholder }}">{{$select.selected.description}}</ui-select-match>
                     <ui-select-choices
                             repeat="item in (caWidget.caJobs | orderBy:['collector.name','description'] | filter: $select.search) track by item.id"
                             refresh="refreshPatients($select.search)"
