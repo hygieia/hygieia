@@ -48,14 +48,16 @@ logging.file=./logs/gitlab.log
 #Collector schedule (required)
 gitlab.cron=0 0/1 * * * *
 
-#Gitlab server (optional)
-gitlab.server=https://gitlab.company.com/
+#Gitlab host (optional)
+gitlab.host=gitlab.company.com
 
-gitlab.branche=master
+#If your instance of Gitlab is using a self signed certificate, set to true, default is false
+gitlab.selfSignedCertificate=false
 
 #set apiKey to use HTTPS Auth
 gitlab.apiToken=
 
-gitlab.saveLog=true
+#Maximum number of days to go back in time when fetching commits
+gitlab.commitThresholdDays=15
 ```
 

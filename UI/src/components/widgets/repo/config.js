@@ -164,6 +164,7 @@
 					options: {
 						scm: 'Gitlab',
 						url: ctrl.repoUrl,
+						branch: ctrl.gitBranch,
 						userID: ctrl.repouser,
 						password: ctrl.repopass
 					}
