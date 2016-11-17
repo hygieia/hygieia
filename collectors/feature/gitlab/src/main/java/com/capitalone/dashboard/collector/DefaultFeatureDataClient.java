@@ -20,6 +20,7 @@ import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.UpdateResult;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.IssueItemRepository;
 import com.capitalone.dashboard.repository.ProjectItemRepository;
@@ -47,7 +48,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void updateTeams(List<GitlabTeam> gitlabTeams) {
+	public UpdateResult updateTeams(List<GitlabTeam> gitlabTeams) {
 		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		
 		List<ScopeOwnerCollectorItem> currentTeams = convertToCollectorItem(gitlabTeams, gitlabFeatureCollectorId);
@@ -55,16 +56,16 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		
 		Collection<ScopeOwnerCollectorItem> teamsToAdd = CollectionUtils.subtract(currentTeams, savedTeams);
 		teamRepo.save(teamsToAdd);
-		LOGGER.info("Added {} new teams.", teamsToAdd.size());
 		
 		Collection<ScopeOwnerCollectorItem> teamsToDelete = CollectionUtils.subtract(savedTeams, currentTeams);
 		teamRepo.delete(teamsToDelete);
-        LOGGER.info("Deleted {} teams.", teamsToDelete.size());
+        
+        return new UpdateResult(teamsToAdd.size(), teamsToDelete.size());
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public void updateProjects(List<GitlabProject> projects) {
+	public UpdateResult updateProjects(List<GitlabProject> projects) {
 		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		
 		List<Scope> currentProjects = convertToScopeItems(projects, gitlabFeatureCollectorId);
@@ -72,16 +73,16 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		
 		Collection<Scope> projectsToAdd = CollectionUtils.subtract(currentProjects, savedProjects);
 		projectRepo.save(projectsToAdd);
-		LOGGER.info("Added {} new projects.", projectsToAdd.size());
 		
 		Collection<Scope> projectsToDelete = CollectionUtils.subtract(savedProjects, currentProjects);
 		projectRepo.delete(projectsToDelete);
-		LOGGER.info("Deleted {} projects.", projectsToDelete.size());
+		
+		return new UpdateResult(projectsToAdd.size(), projectsToDelete.size());
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public void updateIssues(String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
+	public UpdateResult updateIssues(String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
 		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		List<String> inProgressLabels = new ArrayList<>();
 		for(GitlabLabel label : inProgressLabelsForProject) {
@@ -91,12 +92,13 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		List<Feature> savedIssues = featureRepo.getFeaturesByCollectorAndProjectId(gitlabFeatureCollectorId, projectId);
 		List<Feature> currentIssues = convertToFeatureItems(issues, gitlabFeatureCollectorId, inProgressLabels);
 	
-		Collection<Feature> featuresToDelete = CollectionUtils.subtract(savedIssues, currentIssues);
+		Collection<Feature> issuesToDelete = CollectionUtils.subtract(savedIssues, currentIssues);
 		
 		
-		featureRepo.delete(featuresToDelete);
+		featureRepo.delete(issuesToDelete);
 		featureRepo.save(currentIssues);
 		
+		return new UpdateResult(currentIssues.size(), issuesToDelete.size());
 	}
 	
 	@Override

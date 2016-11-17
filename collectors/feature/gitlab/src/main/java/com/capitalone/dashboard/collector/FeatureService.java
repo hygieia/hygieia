@@ -16,6 +16,7 @@ import com.capitalone.dashboard.model.GitlabLabel;
 import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.UpdateResult;
 
 @Service
 public class FeatureService {
@@ -43,26 +44,28 @@ public class FeatureService {
 	@Async
 	public Future<Void> updateSelectableTeams() {
 		List<GitlabTeam> teams = gitlabClient.getTeams();
-        featureDataClient.updateTeams(teams);
+        UpdateResult result = featureDataClient.updateTeams(teams);
         
+        LOGGER.info("Added {} new team(s) and deleted {} team(s).", result.getItemsAdded(), result.getItemsDeleted());
         return null;
 	}
 	
 	@Async
 	public Future<Void> updateProjects(List<GitlabProject> projects) {
-		featureDataClient.updateProjects(projects);
+		UpdateResult result = featureDataClient.updateProjects(projects);
 		
+		LOGGER.info("Added {} new project(s) and deleted {} projects(s).", result.getItemsAdded(), result.getItemsDeleted());
 		return null;
 	}
 	
     @Async
 	public Future<Void> updateIssuesForProject(GitlabProject project) {
     	String projectId = String.valueOf(project.getId());
-    	LOGGER.info("Updating issues for {}", project.getName());
 		List<GitlabLabel> inProgressLabelsForProject = gitlabClient.getInProgressLabelsForProject(project.getId());
 		List<GitlabIssue> issues = gitlabClient.getIssuesForProject(project);
-		featureDataClient.updateIssues(projectId, issues, inProgressLabelsForProject);
+		UpdateResult result = featureDataClient.updateIssues(projectId, issues, inProgressLabelsForProject);
 		
+		LOGGER.info("{}: Updated {} issues and deleted {} issues", project.getName(), result.getItemsAdded(), result.getItemsDeleted());
 		return null;
 	}
     
