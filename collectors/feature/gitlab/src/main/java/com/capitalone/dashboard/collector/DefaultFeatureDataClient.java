@@ -21,7 +21,7 @@ import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.FeatureRepository;
+import com.capitalone.dashboard.repository.IssueItemRepository;
 import com.capitalone.dashboard.repository.ProjectItemRepository;
 import com.capitalone.dashboard.repository.TeamItemRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
@@ -34,11 +34,11 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	private final FeatureCollectorRepository featureCollectorRepo;
 	private final TeamItemRepository teamRepo;
 	private final ProjectItemRepository projectRepo;
-	private final FeatureRepository featureRepo;
+	private final IssueItemRepository featureRepo;
 	
 	@Autowired
 	public DefaultFeatureDataClient(FeatureCollectorRepository featureCollectorRepo, TeamItemRepository teamRepo, 
-			ProjectItemRepository scopeRepo, FeatureRepository featureRepo) {
+			ProjectItemRepository scopeRepo, IssueItemRepository featureRepo) {
 		this.featureCollectorRepo = featureCollectorRepo;
 		this.teamRepo = teamRepo;
 		this.projectRepo = scopeRepo;
@@ -79,15 +79,22 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		LOGGER.info("Deleted {} projects.", projectsToDelete.size());
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public void updateIssues(List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
+	public void updateIssues(String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
 		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		List<String> inProgressLabels = new ArrayList<>();
 		for(GitlabLabel label : inProgressLabelsForProject) {
 			inProgressLabels.add(label.getName());
 		}
 		
+		List<Feature> savedIssues = featureRepo.getFeaturesByCollectorAndProjectId(gitlabFeatureCollectorId, projectId);
 		List<Feature> currentIssues = convertToFeatureItems(issues, gitlabFeatureCollectorId, inProgressLabels);
+	
+		Collection<Feature> featuresToDelete = CollectionUtils.subtract(savedIssues, currentIssues);
+		
+		
+		featureRepo.delete(featuresToDelete);
 		featureRepo.save(currentIssues);
 		
 	}

@@ -16,7 +16,7 @@ public interface FeatureDataClient {
 
 	void updateProjects(List<GitlabProject> projects);
 
-	void updateIssues(List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject);
+	void updateIssues(String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject);
 
 	List<ScopeOwnerCollectorItem> findEnabledTeams(ObjectId collectorId);
 	

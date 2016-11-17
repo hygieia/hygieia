@@ -57,10 +57,11 @@ public class FeatureService {
 	
     @Async
 	public Future<Void> updateIssuesForProject(GitlabProject project) {
+    	String projectId = String.valueOf(project.getId());
     	LOGGER.info("Updating issues for {}", project.getName());
 		List<GitlabLabel> inProgressLabelsForProject = gitlabClient.getInProgressLabelsForProject(project.getId());
 		List<GitlabIssue> issues = gitlabClient.getIssuesForProject(project);
-		featureDataClient.updateIssues(issues, inProgressLabelsForProject);
+		featureDataClient.updateIssues(projectId, issues, inProgressLabelsForProject);
 		
 		return null;
 	}
