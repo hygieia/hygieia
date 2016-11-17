@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
-import com.capitalone.dashboard.model.GitlabProject;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;

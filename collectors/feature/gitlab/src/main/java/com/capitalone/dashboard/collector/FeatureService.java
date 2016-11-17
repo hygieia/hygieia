@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.capitalone.dashboard.model.GitlabIssue;
-import com.capitalone.dashboard.model.GitlabLabel;
-import com.capitalone.dashboard.model.GitlabProject;
-import com.capitalone.dashboard.model.GitlabTeam;
+import com.capitalone.dashboard.data.FeatureDataClient;
+import com.capitalone.dashboard.gitlab.GitlabClient;
+import com.capitalone.dashboard.gitlab.model.GitlabIssue;
+import com.capitalone.dashboard.gitlab.model.GitlabLabel;
+import com.capitalone.dashboard.gitlab.model.GitlabProject;
+import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.model.UpdateResult;
 

@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.utilities;
+package com.capitalone.dashboard.gitlab;
 
 import java.net.URI;
 

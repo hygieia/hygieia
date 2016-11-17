@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collector;
+package com.capitalone.dashboard.gitlab;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -14,14 +14,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
-import com.capitalone.dashboard.model.GitlabBoard;
-import com.capitalone.dashboard.model.GitlabIssue;
-import com.capitalone.dashboard.model.GitlabLabel;
-import com.capitalone.dashboard.model.GitlabList;
-import com.capitalone.dashboard.model.GitlabProject;
-import com.capitalone.dashboard.model.GitlabTeam;
+import com.capitalone.dashboard.collector.FeatureSettings;
+import com.capitalone.dashboard.gitlab.model.GitlabBoard;
+import com.capitalone.dashboard.gitlab.model.GitlabIssue;
+import com.capitalone.dashboard.gitlab.model.GitlabLabel;
+import com.capitalone.dashboard.gitlab.model.GitlabList;
+import com.capitalone.dashboard.gitlab.model.GitlabProject;
+import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
-import com.capitalone.dashboard.utilities.GitlabUrlUtility;
 
 @Component
 public class DefaultGitlabClient implements GitlabClient {
