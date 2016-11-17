@@ -482,15 +482,13 @@ public class StoryDataClientImpl implements StoryDataClient {
 				LOGGER.error("Failed to obtain sprint data from " + sValue, e);
 			}
 		} else {
-			/*
-			 * For Kanban, associate a generic, never-ending
-			 * kanban 'sprint'
-			 */
-			feature.setsSprintID(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			feature.setsSprintName(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			feature.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
-			feature.setsSprintEndDate(FeatureCollectorConstants.KANBAN_END_DATE);
-			feature.setsSprintAssetState("Active");
+			// Issue #678 - leave sprint blank. Not having a sprint does not imply kanban
+			// as a story on a scrum board without a sprint is really on the backlog
+			feature.setsSprintID("");
+			feature.setsSprintName("");
+			feature.setsSprintBeginDate("");
+			feature.setsSprintEndDate("");
+			feature.setsSprintAssetState("");
 		}
 
 		// sSprintChangeDate - does not exist in Jira
