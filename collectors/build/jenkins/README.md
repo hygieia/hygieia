@@ -30,6 +30,10 @@ dbhost=localhost
 # Database Port - default is 27017
 dbport=9999
 
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+
 # Database Username - default is blank
 dbusername=db
 

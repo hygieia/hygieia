@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.collecteur;
 
+import java.util.List;
+
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitlabGitRepo;
-
-import java.util.List;
 
 /**
  * Created by benathmane on 23/06/16.
@@ -21,5 +21,5 @@ public interface GitlabGitClient {
      * @return all commits in repo
      */
 
-    List<Commit> getCommits(GitlabGitRepo repo);
+	List<Commit> getCommits(GitlabGitRepo repo, boolean firstRun);
 }

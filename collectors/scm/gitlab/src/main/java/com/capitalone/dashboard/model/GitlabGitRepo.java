@@ -2,6 +2,9 @@ package com.capitalone.dashboard.model;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Created by benathmane on 20/06/16.
  */
@@ -62,23 +65,35 @@ public class GitlabGitRepo extends  CollectorItem {
     public void removeLastUpdateDate() {
         getOptions().remove(LAST_UPDATE_TIME);
     }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        GitlabGitRepo gitlabRepo = (GitlabGitRepo) o;
-
-        return getRepoUrl().equals(gitlabRepo.getRepoUrl()) & getBranch().equals(gitlabRepo.getBranch());
-    }
+    
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != getClass()) {
+			return false;
+		}
+		GitlabGitRepo rhs = (GitlabGitRepo) obj;
+		return new EqualsBuilder()
+				.append(getRepoUrl(), rhs.getRepoUrl())
+				.append(getBranch(), rhs.getBranch())
+				.append(getUserId(), rhs.getUserId())
+				.append(getPassword(), rhs.getPassword())
+				.isEquals();
+	}
 
     @Override
     public int hashCode() {
-        return getRepoUrl().hashCode();
+        return new HashCodeBuilder(11, 17)
+        		.append(getRepoUrl())
+        		.append(getBranch())
+        		.append(getUserId())
+        		.append(getPassword())
+        		.toHashCode();
     }
 
 }
