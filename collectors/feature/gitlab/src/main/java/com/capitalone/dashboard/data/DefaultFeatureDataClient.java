@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collector;
+package com.capitalone.dashboard.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,11 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.gitlab.model.GitlabIssue;
+import com.capitalone.dashboard.gitlab.model.GitlabLabel;
+import com.capitalone.dashboard.gitlab.model.GitlabProject;
+import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.Feature;
-import com.capitalone.dashboard.model.GitlabIssue;
-import com.capitalone.dashboard.model.GitlabLabel;
-import com.capitalone.dashboard.model.GitlabProject;
-import com.capitalone.dashboard.model.GitlabTeam;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.model.UpdateResult;

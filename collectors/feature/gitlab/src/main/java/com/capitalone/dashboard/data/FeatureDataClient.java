@@ -1,13 +1,13 @@
-package com.capitalone.dashboard.collector;
+package com.capitalone.dashboard.data;
 
 import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import com.capitalone.dashboard.model.GitlabIssue;
-import com.capitalone.dashboard.model.GitlabLabel;
-import com.capitalone.dashboard.model.GitlabProject;
-import com.capitalone.dashboard.model.GitlabTeam;
+import com.capitalone.dashboard.gitlab.model.GitlabIssue;
+import com.capitalone.dashboard.gitlab.model.GitlabLabel;
+import com.capitalone.dashboard.gitlab.model.GitlabProject;
+import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.model.UpdateResult;
 

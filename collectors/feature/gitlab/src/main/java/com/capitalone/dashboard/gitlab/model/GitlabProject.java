@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.model;
+package com.capitalone.dashboard.gitlab.model;
 
 public class GitlabProject {
 	
