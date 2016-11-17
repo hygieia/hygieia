@@ -24,19 +24,26 @@ You will need to provide an **application.properties** file that contains inform
 
 ```properties
 # Database Name
-spring.data.mongodb.dbname=dashboarddb
+dbname=dashboard
 
 # Database HostName - default is localhost
-spring.data.mongodb.host=
+dbhost=localhost
 
 # Database Port - default is 27017
-spring.data.mongodb.port=
+dbport=27017
+
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
 
 # Database Username - default is blank
-spring.data.mongodb.username=
+dbusername=db
 
 # Database Password - default is blank
-spring.data.mongodb.password=
+dbpassword=dbpass
+
+# Logging File location
+logging.file=./logs/bitbucket.log
 
 # Collector schedule (required)
 git.cron=0 0/5 * * * *

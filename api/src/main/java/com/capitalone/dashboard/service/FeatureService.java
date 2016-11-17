@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.SprintEstimate;
 import com.capitalone.dashboard.model.DataResponse;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public interface FeatureService {
 	 *         features plus their sub features' estimates associated to the
 	 *         current sprint and team
 	 */
-	DataResponse<List<Feature>> getFeatureEstimates(ObjectId componentId,
+	DataResponse<List<Feature>> getFeatureEpicEstimates(ObjectId componentId,
 			String teamId, Optional<String> agileType, Optional<String> estimateMetricType);
 	
 	/**
@@ -79,6 +80,7 @@ public interface FeatureService {
 	 * @return A data response list of type Feature containing the total
 	 *         estimate number for all features
 	 */
+	@Deprecated
 	DataResponse<List<Feature>> getTotalEstimate(ObjectId componentId,
 			String teamId, Optional<String> agileType, Optional<String> estimateMetricType);
 	
@@ -99,6 +101,7 @@ public interface FeatureService {
 	 * @return A data response list of type Feature containing the in-progress
 	 *         estimate number for all features
 	 */
+	@Deprecated
 	DataResponse<List<Feature>> getInProgressEstimate(ObjectId componentId,
 			String teamId, Optional<String> agileType, Optional<String> estimateMetricType);
 
@@ -119,9 +122,29 @@ public interface FeatureService {
 	 * @return A data response list of type Feature containing the done estimate
 	 *         number for all features
 	 */
+	@Deprecated
 	DataResponse<List<Feature>> getDoneEstimate(ObjectId componentId,
 			String teamId, Optional<String> agileType, Optional<String> estimateMetricType);
 
+	/**
+	 * Retrieves estimate done of all features in the current sprint(s) for the current team
+	 * 
+	 * @param componentId
+	 *            The ID of the related UI component that will reference
+	 *            collector item content from this collector
+	 * @param teamId
+	 *            A given scope-owner's source-system ID
+	 * @param agileType
+	 * 			  Agile type to be retrieved (e.g., kanban | scrum)
+	 * @param estimateMetricType
+	 * 			  The reporting metric (hours | storypoints)
+	 * 
+	 * @return A data response list of type Feature containing the done estimate
+	 *         number for all features
+	 */
+	DataResponse<SprintEstimate> getAggregatedSprintEstimates(ObjectId componentId,
+			String teamId, Optional<String> agileType, Optional<String> estimateMetricType);
+	
 	/**
 	 * Retrieves the current sprint's detail for a given team.
 	 * 
