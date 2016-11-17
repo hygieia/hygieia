@@ -30,12 +30,28 @@ I have tested this with Enterprise Hipchat version, It is not tested against pub
 ## ChatOps Collector properties file
 
 ```properties
-dbname=Your Mongodb Name
-dbusername=your mongodb username
-dbpassword=your mongodb password
-dbhost=your mongodb host
-dbport=your mongodb port
+# Database Name
+dbname=dashboard
+
+# Database HostName - default is localhost
+dbhost=localhost
+
+# Database Port - default is 27017
+dbport=27017
+
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+
+# Database Username - default is blank
+dbusername=db
+
+# Database Password - default is blank
+dbpassword=dbpass
+
+# Logging File location
 logging.file=./logs/chatops.log
+
 chatops.cron=5 * * * * *
 ```
 
