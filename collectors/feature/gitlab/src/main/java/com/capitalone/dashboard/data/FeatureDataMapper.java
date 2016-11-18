@@ -66,12 +66,8 @@ public class FeatureDataMapper {
 		issue.setCollectorId(gitlabCollectorId);
 		issue.setIsDeleted("False");
 		issue.setsName(gitlabIssue.getTitle());
-		
 		issue.setsStatus(determineStoryStatus(gitlabIssue, inProgressLabelsForProject));
 		issue.setsState("Active");
-		issue.setIsDeleted("False");
-		
-		//Made up stuff
 		issue.setsEstimate("1");
 		issue.setChangeDate(gitlabIssue.getUpdated_at());
 		
@@ -91,14 +87,22 @@ public class FeatureDataMapper {
 		issue.setsTeamName(gitlabIssue.getProject().getNamespace().getName());
 		issue.setsTeamChangeDate("");
 		issue.setsTeamIsDeleted("False");
-		
-		//Owner Data
+
+		//Set Owners Data
 		issue.setsOwnersChangeDate(new ArrayList<String>());
 		issue.setsOwnersState(Arrays.asList("Active"));
 		issue.setsOwnersIsDeleted(new ArrayList<String>());
 		
+		setEpicData(gitlabIssue, issue);
+		setSprintData(gitlabIssue, issue);
 		
-		//Epic Data
+		return issue;
+	}
+
+	private void setEpicData(GitlabIssue gitlabIssue, Feature issue) {
+		String issueId = String.valueOf(gitlabIssue.getId());
+		String storyNumber = String.valueOf(gitlabIssue.getIid());
+		
 		issue.setsEpicID(issueId);
 		issue.setsEpicNumber(storyNumber);
 		issue.setsEpicName(gitlabIssue.getTitle());
@@ -108,17 +112,14 @@ public class FeatureDataMapper {
 		issue.setsEpicAssetState("");
 		issue.setsEpicChangeDate("");
 		issue.setsEpicIsDeleted("False");
-		
-		//Sprint data
+	}
+
+	private void setSprintData(GitlabIssue gitlabIssue, Feature issue) {
 		if (gitlabIssue.getMilestone() != null && StringUtils.isNotBlank(gitlabIssue.getMilestone().getDue_date())) {
 			issue.setsSprintID(String.valueOf(gitlabIssue.getMilestone().getId()));
 			issue.setsSprintName(gitlabIssue.getMilestone().getTitle());
 			issue.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
 			issue.setsSprintEndDate(gitlabIssue.getMilestone().getDue_date());
-			if(StringUtils.isBlank(issue.getsSprintEndDate())) {
-				issue.setsSprintEndDate("9999-10-14T09:47:38.354-05:00");
-			}
-			//TODO: map to actual states
 			issue.setsSprintAssetState("Active");
 			issue.setsSprintChangeDate(gitlabIssue.getMilestone().getUpdated_at());
 			issue.setsSprintIsDeleted("False");
@@ -132,9 +133,6 @@ public class FeatureDataMapper {
 			issue.setsSprintChangeDate("");
 			issue.setsSprintIsDeleted("False");
 		}
-		
-		
-		return issue;
 	}
 	
 	private String determineStoryStatus(GitlabIssue issue, List<String> inProgressLabelsForProject) {
