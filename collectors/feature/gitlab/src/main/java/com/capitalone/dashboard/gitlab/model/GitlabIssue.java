@@ -10,6 +10,7 @@ public class GitlabIssue {
 	private String title;
 	private String description;
 	private String state;
+	private String updated_at;
 	private List<String> labels;
 	private GitlabMilestone milestone;
 	private GitlabProject project;
@@ -60,6 +61,14 @@ public class GitlabIssue {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+
+	public String getUpdated_at() {
+		return updated_at;
+	}
+
+	public void setUpdated_at(String updated_at) {
+		this.updated_at = updated_at;
 	}
 
 	public List<String> getLabels() {

@@ -84,7 +84,14 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         LOGGER.info("Starting Feature collection...");
        	Long startTime = System.currentTimeMillis();
        	
-        List<GitlabProject> projects = featureService.getProjectsForEnabledTeams(collector.getId());
+        updateFeatures(collector);
+        
+        Long elapsedTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
+        LOGGER.info("Feature data collection finished in {} seconds.", elapsedTime);
+    }
+
+	private void updateFeatures(FeatureCollector collector) {
+		List<GitlabProject> projects = featureService.getProjectsForEnabledTeams(collector.getId());
        	
         List<Future<Void>> futures = new ArrayList<>();
         futures.add(featureService.updateSelectableTeams());
@@ -93,10 +100,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
         	futures.add(featureService.updateIssuesForProject(project));
         }
         waitForCompletion(futures);
-        
-        Long elapsedTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
-        LOGGER.info("Feature data collection finished in {} seconds.", elapsedTime);
-    }
+	}
 
 	private void waitForCompletion(List<Future<Void>> futures) {
 		futures.forEach(future -> {
