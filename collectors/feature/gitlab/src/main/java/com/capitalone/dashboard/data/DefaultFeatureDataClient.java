@@ -3,13 +3,11 @@ package com.capitalone.dashboard.data;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,14 +38,16 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	private final TeamItemRepository teamRepo;
 	private final ProjectItemRepository projectRepo;
 	private final IssueItemRepository featureRepo;
+	private final FeatureDataMapper featureDataMapper;
 	
 	@Autowired
 	public DefaultFeatureDataClient(FeatureCollectorRepository featureCollectorRepo, TeamItemRepository teamRepo, 
-			ProjectItemRepository scopeRepo, IssueItemRepository featureRepo) {
+			ProjectItemRepository scopeRepo, IssueItemRepository featureRepo, FeatureDataMapper featureDataMapper) {
 		this.featureCollectorRepo = featureCollectorRepo;
 		this.teamRepo = teamRepo;
 		this.projectRepo = scopeRepo;
 		this.featureRepo = featureRepo;
+		this.featureDataMapper = featureDataMapper;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -55,7 +55,13 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	public UpdateResult updateTeams(List<GitlabTeam> gitlabTeams) {
 		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		
-		List<ScopeOwnerCollectorItem> currentTeams = convertToCollectorItem(gitlabTeams, gitlabFeatureCollectorId);
+		List<ScopeOwnerCollectorItem> currentTeams = new ArrayList<>();
+		for(GitlabTeam team : gitlabTeams) {
+			String teamId = String.valueOf(team.getId());
+			ScopeOwnerCollectorItem scopeOwnerCollectorItem = featureDataMapper.mapToScopeOwnerCollectorItem(team, findExistingTeamId(teamId), gitlabFeatureCollectorId);
+			currentTeams.add(scopeOwnerCollectorItem);
+		}
+		
 		List<ScopeOwnerCollectorItem> savedTeams = teamRepo.findByCollectorIdIn(Lists.newArrayList(gitlabFeatureCollectorId));
 		
 		Collection<ScopeOwnerCollectorItem> teamsToAdd = CollectionUtils.subtract(currentTeams, savedTeams);
@@ -66,13 +72,18 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
         
         return new UpdateResult(teamsToAdd.size(), teamsToDelete.size());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public UpdateResult updateProjects(List<GitlabProject> projects) {
 		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		
-		List<Scope> currentProjects = convertToScopeItems(projects, gitlabFeatureCollectorId);
+		List<Scope> currentProjects = new ArrayList<>();
+		for(GitlabProject project : projects) {
+			String projectId = String.valueOf(project.getId());
+			Scope scope = featureDataMapper.mapToScopeItem(project, findExistingProjectId(projectId), gitlabFeatureCollectorId);
+			currentProjects.add(scope);
+		}
 		List<Scope> savedProjects = projectRepo.findScopeByCollectorId(gitlabFeatureCollectorId);
 		
 		Collection<Scope> projectsToAdd = CollectionUtils.subtract(currentProjects, savedProjects);
@@ -83,7 +94,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		
 		return new UpdateResult(projectsToAdd.size(), projectsToDelete.size());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public UpdateResult updateIssues(String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
@@ -99,7 +110,12 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		Collection<GitlabIssue> issuesToUpdate = filterByUpdatedDate(gitlabCollector.getLastExecuted(), currentIssues);
 		issuesToUpdate.addAll(newIssues);
 		
-		Collection<Feature> updatedFeatures = convertToFeatureItems(issuesToUpdate, gitlabCollector.getId(), inProgressLabels);
+		Collection<Feature> updatedFeatures = new ArrayList<>();
+		for(GitlabIssue issue : issuesToUpdate) {
+			String issueId = String.valueOf(issue.getId());
+			Feature feature = featureDataMapper.mapToFeatureItem(issue, inProgressLabels, findExistingIssueId(issueId), gitlabCollector.getId());
+			updatedFeatures.add(feature);
+		}
 		Collection<Feature> deletedFeatures = findDeletedFeatures(savedFeatures, issues);
 		
 		featureRepo.save(updatedFeatures);
@@ -107,7 +123,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		
 		return new UpdateResult(updatedFeatures.size(), deletedFeatures.size());
 	}
-	
+
 	private List<Feature> findDeletedFeatures(List<Feature> savedFeatures, List<GitlabIssue> issues) {
 		List<Feature> deletedFeatures = new ArrayList<>();
 		for(Feature feature : savedFeatures) {
@@ -166,150 +182,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		return teamRepo.findEnabledTeams(collectorId);
 	}
 
-	private List<Feature> convertToFeatureItems(Collection<GitlabIssue> gitlabIssues, ObjectId gitlabFeatureCollectorId, List<String> inProgressLabelsForProject) {
-		List<Feature> issues = new ArrayList<>();
-		
-		for(GitlabIssue gitlabIssue : gitlabIssues) {
-			String issueId = String.valueOf(gitlabIssue.getId());
-			String storyNumber = String.valueOf(gitlabIssue.getIid());
-			String projectId = String.valueOf(gitlabIssue.getProject_id());
-			String teamId = String.valueOf(gitlabIssue.getProject().getNamespace().getId());
-			
-			Feature issue = findExistingIssue(issueId);
-			issue.setsNumber(storyNumber);
-			issue.setsId(issueId);
-			issue.setCollectorId(gitlabFeatureCollectorId);
-			issue.setIsDeleted("False");
-			issue.setsName(gitlabIssue.getTitle());
-			
-			issue.setsStatus(determineStoryStatus(gitlabIssue, inProgressLabelsForProject));
-			issue.setsState("Active");
-			issue.setIsDeleted("False");
-			
-			//Made up stuff
-			issue.setsEstimate("1");
-			issue.setChangeDate(gitlabIssue.getUpdated_at());
-			
-			//Project Data
-			issue.setsProjectID(projectId);
-			issue.setsProjectName("");
-			issue.setsProjectBeginDate("");
-			issue.setsProjectEndDate("");
-			issue.setsProjectChangeDate("");
-			issue.setsProjectState("");
-			issue.setsProjectIsDeleted("False");
-			issue.setsProjectPath("");
-			
-			//Team Data
-			issue.setsTeamID(teamId);
-			issue.setsTeamAssetState("");
-			issue.setsTeamName(gitlabIssue.getProject().getNamespace().getName());
-			issue.setsTeamChangeDate("");
-			issue.setsTeamIsDeleted("False");
-			
-			//Owner Data
-			issue.setsOwnersChangeDate(new ArrayList<String>());
-			issue.setsOwnersState(Arrays.asList("Active"));
-			issue.setsOwnersIsDeleted(new ArrayList<String>());
-			
-			
-			//Epic Data
-			issue.setsEpicID(issueId);
-			issue.setsEpicNumber(storyNumber);
-			issue.setsEpicName(gitlabIssue.getTitle());
-			issue.setsEpicBeginDate("");
-			issue.setsEpicEndDate("");
-			issue.setsEpicType("");
-			issue.setsEpicAssetState("");
-			issue.setsEpicChangeDate("");
-			issue.setsEpicIsDeleted("False");
-			
-			//Sprint data
-			if (gitlabIssue.getMilestone() != null) {
-				issue.setsSprintID(String.valueOf(gitlabIssue.getMilestone().getId()));
-				issue.setsSprintName(gitlabIssue.getMilestone().getTitle());
-				issue.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
-				issue.setsSprintEndDate(gitlabIssue.getMilestone().getDue_date());
-				if(StringUtils.isBlank(issue.getsSprintEndDate())) {
-					issue.setsSprintEndDate("9999-10-14T09:47:38.354-05:00");
-				}
-				//TODO: map to actual states
-				issue.setsSprintAssetState("Active");
-				issue.setsSprintChangeDate(gitlabIssue.getMilestone().getUpdated_at());
-				issue.setsSprintIsDeleted("False");
-			} 
-			else {
-				issue.setsSprintID(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-				issue.setsSprintName(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-				issue.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
-				issue.setsSprintEndDate(FeatureCollectorConstants.KANBAN_END_DATE);
-				issue.setsSprintAssetState("Active");
-				issue.setsSprintChangeDate("");
-				issue.setsSprintIsDeleted("False");
-			}
-			
-			
-			issues.add(issue);
-		}
-		
-		return issues;
-	}
-
-	private String determineStoryStatus(GitlabIssue issue, List<String> inProgressLabelsForProject) {
-		if("closed".equals(issue.getState())) {
-			return "Done";
-		}
-		else if (CollectionUtils.containsAny(inProgressLabelsForProject, issue.getLabels())) {
-			return "In Progress";
-		}
-		
-		return "";
-	}
-
-	private List<Scope> convertToScopeItems(List<GitlabProject> gitlabProjects, ObjectId gitlabFeatureCollectorId) {
-		List<Scope> currentProjects = new ArrayList<>();
-		
-		for(GitlabProject gitlabProject : gitlabProjects) {
-			String projectId = String.valueOf(gitlabProject.getId());
-			
-			Scope project = findExistingProject(projectId);
-			
-			project.setCollectorId(gitlabFeatureCollectorId);
-			project.setpId(projectId);
-			project.setName(gitlabProject.getName());
-			project.setBeginDate("");
-			project.setEndDate("");
-			project.setChangeDate("");
-			project.setAssetState("Active");
-			project.setIsDeleted("False");
-			project.setProjectPath(gitlabProject.getPath());
-			
-			currentProjects.add(project);
-		}
-		
-		return currentProjects;
-	}
-
-	private List<ScopeOwnerCollectorItem> convertToCollectorItem(List<GitlabTeam> gitlabTeams, ObjectId gitlabFeatureCollectorId) {
-		List<ScopeOwnerCollectorItem> currentTeams = new ArrayList<>();
-		for(GitlabTeam gitlabTeam : gitlabTeams) {
-			String teamId = String.valueOf(gitlabTeam.getId());
-			
-			ScopeOwnerCollectorItem team = findExistingTeam(teamId);
-			
-			team.setCollectorId(gitlabFeatureCollectorId);
-			team.setTeamId(teamId);
-			team.setName(gitlabTeam.getName());
-			team.setChangeDate("");
-			team.setAssetState("Active");
-			team.setIsDeleted("False");
-			
-			currentTeams.add(team);
-		}
-		return currentTeams;
-	}
-
-	private ScopeOwnerCollectorItem findExistingTeam(String teamId) {
+	private ObjectId findExistingTeamId(String teamId) {
 		List<ScopeOwnerCollectorItem> savedTeams = teamRepo.getTeamIdById(teamId);
 
 		// Not sure of the state of the data
@@ -318,13 +191,13 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		}
 
 		if (!savedTeams.isEmpty()) {
-			return savedTeams.get(0);
+			return savedTeams.get(0).getId();
 		}
 
-		return new ScopeOwnerCollectorItem();
+		return null;
 	}
 	
-	private Scope findExistingProject(String projectId) {
+	private ObjectId findExistingProjectId(String projectId) {
 		List<Scope> existingProjects = projectRepo.getScopeById(projectId);
 		
 		if(existingProjects.size() > 1) {
@@ -332,13 +205,13 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		}
 		
 		if(!existingProjects.isEmpty()) {
-			return existingProjects.get(0);
+			return existingProjects.get(0).getId();
 		}
 		
-		return new Scope();
+		return null;
 	}
 	
-	private Feature findExistingIssue(String id) {
+	private ObjectId findExistingIssueId(String id) {
 		List<Feature> existing = featureRepo.getFeatureIdById(id);
 		
 		if(existing.size() > 1) {
@@ -346,10 +219,10 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		}
 		
 		if(!existing.isEmpty()) {
-			return existing.get(0);
+			return existing.get(0).getId();
 		}
 		
-		return new Feature();
+		return null;
 	}
 
 }
