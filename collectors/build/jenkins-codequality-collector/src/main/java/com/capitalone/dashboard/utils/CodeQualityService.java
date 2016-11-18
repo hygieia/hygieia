@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.utils;
 
+import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.model.CodeQualityVisitee;
 import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
 
@@ -10,6 +11,6 @@ import java.util.List;
  */
 public interface CodeQualityService {
 
-    void storeJob(String jobUrl, JenkinsCodeQualityJob job, List<? extends CodeQualityVisitee> report);
+    void storeJob(JenkinsJob job, JenkinsCodeQualityJob codeQualityJob, List<? extends CodeQualityVisitee> report);
 
 }

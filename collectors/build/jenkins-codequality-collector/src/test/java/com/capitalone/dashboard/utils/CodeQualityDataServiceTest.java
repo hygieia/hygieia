@@ -1,15 +1,19 @@
 package com.capitalone.dashboard.utils;
 
+import com.capitalone.dashboard.jenkins.JenkinsBuild;
+import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
 
@@ -28,7 +32,6 @@ public class CodeQualityDataServiceTest {
         this.mockCodeQualityConverter = mock(CodeQualityConverter.class);
         this.testee = new CodeQualityDataService(mockCodeQualityRepository, mockCodeQualityConverter);
     }
-
 
 
     @Test
@@ -50,12 +53,13 @@ public class CodeQualityDataServiceTest {
         CodeQualityVisitor mockVisitor = mock(CodeQualityVisitor.class);
         when(mockCodeQualityConverter.produceVisitor()).thenReturn(mockVisitor);
         CodeQuality fakeQuality = new CodeQuality();
-        fakeQuality.setTimestamp(10L);
         when(mockVisitor.produceResult()).thenReturn(fakeQuality);
 
+        JenkinsJob job = JenkinsJob.newBuilder().jobName("job1").lastSuccessfulBuild(
+                JenkinsBuild.newBuilder().timestamp(10L).build()).build();
 
         //test
-        this.testee.storeJob("job1", dbJob, testXmlReports);
+        this.testee.storeJob(job, dbJob, testXmlReports);
 
         //asserts
         verify(mockCodeQualityRepository, times(0)).save(any(CodeQuality.class));
@@ -63,8 +67,8 @@ public class CodeQualityDataServiceTest {
 
     @Test
     public void doesNothingIfNoJob() {
-
-        this.testee.storeJob("job1", null, null);
+        JenkinsJob job = JenkinsJob.newBuilder().jobName("job1").build();
+        this.testee.storeJob(job, null, null);
 
         verifyNoMoreInteractions(mockCodeQualityRepository);
     }
@@ -75,7 +79,8 @@ public class CodeQualityDataServiceTest {
         ObjectId dbJobId = new ObjectId();
         dbJob.setId(dbJobId);
 
-        this.testee.storeJob("job1", dbJob, null);
+        JenkinsJob job = JenkinsJob.newBuilder().jobName("job1").build();
+        this.testee.storeJob(job, dbJob, null);
 
         verifyNoMoreInteractions(mockCodeQualityRepository);
 
@@ -87,7 +92,8 @@ public class CodeQualityDataServiceTest {
         ObjectId dbJobId = new ObjectId();
         dbJob.setId(dbJobId);
 
-        this.testee.storeJob("job1", dbJob, new ArrayList<>());
+        JenkinsJob job = JenkinsJob.newBuilder().jobName("job1").build();
+        this.testee.storeJob(job, dbJob, new ArrayList<>());
 
         verifyNoMoreInteractions(mockCodeQualityRepository);
     }
@@ -115,11 +121,20 @@ public class CodeQualityDataServiceTest {
         CodeQuality fakeReturn = new CodeQuality();
         when(mockVistor.produceResult()).thenReturn(fakeReturn);
 
-        this.testee.storeJob("job1", dbJob, reportList);
+        JenkinsJob job = JenkinsJob.newBuilder().jobName("job1").lastSuccessfulBuild(JenkinsBuild.newBuilder().timestamp(14000).build()).build();
+        this.testee.storeJob(job, dbJob, reportList);
 
         verify(mockVistor).visit(same(testXmlReport));
         verify(mockVistor).visit(same(testXmlReport));
 
-        verify(mockCodeQualityRepository).save(fakeReturn);
+        ArgumentCaptor<CodeQuality> captor = ArgumentCaptor.forClass(CodeQuality.class);
+        verify(mockCodeQualityRepository).save(captor.capture());
+        CodeQuality capturedValue = captor.getValue();
+        assertThat(capturedValue.getName()).isEqualTo("job1");
+        assertThat(capturedValue.getTimestamp()).isEqualTo(14000);
+        assertThat(capturedValue.getType()).isEqualTo(CodeQualityType.StaticAnalysis);
+        assertThat(capturedValue.getUrl()).isEqualTo("http://buildserver2/job1");
+        assertThat(capturedValue.getCollectorItemId()).isSameAs(dbJobId);
     }
+
 }

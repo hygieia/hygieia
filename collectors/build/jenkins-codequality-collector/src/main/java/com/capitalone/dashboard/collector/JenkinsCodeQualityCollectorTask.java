@@ -100,7 +100,7 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
                             }
                         }
                 );
-                this.codeQualityService.storeJob(job.getName(), jenkinsCodeQualityJobMap.get(job.getUrl()), allTypes);
+                this.codeQualityService.storeJob(job, jenkinsCodeQualityJobMap.get(job.getUrl()), allTypes);
             }
         }
 

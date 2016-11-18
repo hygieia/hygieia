@@ -135,7 +135,7 @@ public class JenkinsCodeQualityCollectorTaskTest {
         assertThat(capturedJob).hasFieldOrPropertyWithValue("name", "job1").hasFieldOrPropertyWithValue("url", "http://buildserver2/job1");
         Pattern capturedPattern = patternCaptor.getValue();
         assertThat(capturedPattern.pattern().equals(".*\\.xml"));
-        verify(mockDataService).storeJob(eq("job1"), eq(dbJob), eq(testXmlReports));
+        verify(mockDataService).storeJob(same(allJenkinsJobs.get(0)), eq(dbJob), eq(testXmlReports));
 
 
     }
@@ -276,10 +276,9 @@ public class JenkinsCodeQualityCollectorTaskTest {
         buildServers.add("http://buildserver2");
         when(mockCollector.getBuildServers()).thenAnswer(invocationOnMock -> buildServers);
 
-        List<JenkinsJob> allJobs = Collections.singletonList(
-                JenkinsJob.newBuilder().url("http://buildserver2/job1").jobName("job1").lastSuccessfulBuild(
-                        JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("junit.xml").build()).artifact(Artifact.newBuilder().fileName("findbugs.xml").build()).build()
-                ).build());
+        JenkinsJob job1 = JenkinsJob.newBuilder().url("http://buildserver2/job1").jobName("job1").lastSuccessfulBuild(
+                JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("junit.xml").build()).artifact(Artifact.newBuilder().fileName("findbugs.xml").build()).build()).build();
+        List<JenkinsJob> allJobs = Collections.singletonList(job1);
 
         when(mockJenkinsHelper.getJobs(anyList())).thenReturn(allJobs);
         List<JunitXmlReport> junitList = new ArrayList<>();
@@ -300,7 +299,7 @@ public class JenkinsCodeQualityCollectorTaskTest {
         this.testee.collect(mockCollector);
 
         ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-        verify(this.mockDataService).storeJob(eq("job1"), eq(dbJob), captor.capture());
+        verify(this.mockDataService).storeJob(same(job1), eq(dbJob), captor.capture());
         assertThat(captor.getValue()).hasSize(2);
     }
 

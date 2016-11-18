@@ -24,7 +24,7 @@ public class HttpJenkinsClient implements JenkinsClient {
 
     private RestTemplate restTemplate;
     private JenkinsSettings settings;
-    private static final String JENKINS_JOB_URL = "%s/api/json?tree=jobs[name,url,lastSuccessfulBuild[artifacts[*]]]";
+    private static final String JENKINS_JOB_URL = "%s/api/json?tree=jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]]";
     private static final String JENKINS_ARTIFACT_URL = "%s/lastSuccessfulBuild/artifact/%s";
 
     @Autowired
