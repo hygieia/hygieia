@@ -1,8 +1,11 @@
 package com.capitalone.dashboard.data;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -18,6 +21,7 @@ import com.capitalone.dashboard.gitlab.model.GitlabLabel;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.model.UpdateResult;
@@ -83,30 +87,86 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	@SuppressWarnings("unchecked")
 	@Override
 	public UpdateResult updateIssues(String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
-		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
+		FeatureCollector gitlabCollector = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB);
 		List<String> inProgressLabels = new ArrayList<>();
 		for(GitlabLabel label : inProgressLabelsForProject) {
 			inProgressLabels.add(label.getName());
 		}
 		
-		List<Feature> savedIssues = featureRepo.getFeaturesByCollectorAndProjectId(gitlabFeatureCollectorId, projectId);
-		List<Feature> currentIssues = convertToFeatureItems(issues, gitlabFeatureCollectorId, inProgressLabels);
-	
-		Collection<Feature> issuesToDelete = CollectionUtils.subtract(savedIssues, currentIssues);
+		List<Feature> savedFeatures = featureRepo.getFeaturesByCollectorAndProjectId(gitlabCollector.getId(), projectId);
+		Collection<GitlabIssue> newIssues = findNewIssues(issues, savedFeatures);
+		Collection<GitlabIssue> currentIssues = CollectionUtils.subtract(issues, newIssues);
+		Collection<GitlabIssue> issuesToUpdate = filterByUpdatedDate(gitlabCollector.getLastExecuted(), currentIssues);
+		issuesToUpdate.addAll(newIssues);
 		
+		Collection<Feature> updatedFeatures = convertToFeatureItems(issuesToUpdate, gitlabCollector.getId(), inProgressLabels);
+		Collection<Feature> deletedFeatures = findDeletedFeatures(savedFeatures, issues);
 		
-		featureRepo.delete(issuesToDelete);
-		featureRepo.save(currentIssues);
+		featureRepo.save(updatedFeatures);
+		featureRepo.delete(deletedFeatures);
 		
-		return new UpdateResult(currentIssues.size(), issuesToDelete.size());
+		return new UpdateResult(updatedFeatures.size(), deletedFeatures.size());
 	}
 	
+	private List<Feature> findDeletedFeatures(List<Feature> savedFeatures, List<GitlabIssue> issues) {
+		List<Feature> deletedFeatures = new ArrayList<>();
+		for(Feature feature : savedFeatures) {
+			if(isNotPresent(feature.getsId(), issues)) {
+				deletedFeatures.add(feature);
+			}
+		}
+		return deletedFeatures;
+	}
+
+	private boolean isNotPresent(String featureId, List<GitlabIssue> issues) {
+		for(GitlabIssue issue : issues) {
+			String issueId = String.valueOf(issue.getId());
+			if(featureId.equals(issueId)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private List<GitlabIssue> findNewIssues(List<GitlabIssue> issues, List<Feature> savedIssues) {
+		List<GitlabIssue> newIssues = new ArrayList<>();
+		for(GitlabIssue issue : issues) {
+			if(issueIsNew(savedIssues, String.valueOf(issue.getId()))) {
+				newIssues.add(issue);
+			}
+			
+		}
+		return newIssues;
+	}
+
+	private boolean issueIsNew(List<Feature> savedIssues, String issueId) {
+		for(Feature feature : savedIssues) {
+			if(issueId.equals(feature.getsId())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private List<GitlabIssue> filterByUpdatedDate(long lastExecuted, Collection<GitlabIssue> issues) {
+		Date lastCollectionDate = new Date(lastExecuted);
+		OffsetDateTime lastCollection = OffsetDateTime.ofInstant(lastCollectionDate.toInstant(), ZoneId.systemDefault());
+		List<GitlabIssue> filteredIssues = new ArrayList<>();
+		for(GitlabIssue issue : issues) {
+			OffsetDateTime lastUpdated = OffsetDateTime.parse(issue.getUpdated_at());
+			if(lastCollection.isBefore(lastUpdated)) {
+				filteredIssues.add(issue);
+			}
+		}
+		return filteredIssues;
+	}
+
 	@Override
 	public List<ScopeOwnerCollectorItem> findEnabledTeams(ObjectId collectorId) {
 		return teamRepo.findEnabledTeams(collectorId);
 	}
 
-	private List<Feature> convertToFeatureItems(List<GitlabIssue> gitlabIssues, ObjectId gitlabFeatureCollectorId, List<String> inProgressLabelsForProject) {
+	private List<Feature> convertToFeatureItems(Collection<GitlabIssue> gitlabIssues, ObjectId gitlabFeatureCollectorId, List<String> inProgressLabelsForProject) {
 		List<Feature> issues = new ArrayList<>();
 		
 		for(GitlabIssue gitlabIssue : gitlabIssues) {
@@ -128,7 +188,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 			
 			//Made up stuff
 			issue.setsEstimate("1");
-			issue.setChangeDate("");
+			issue.setChangeDate(gitlabIssue.getUpdated_at());
 			
 			//Project Data
 			issue.setsProjectID(projectId);

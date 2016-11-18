@@ -67,7 +67,7 @@ public class FeatureService {
 		List<GitlabIssue> issues = gitlabClient.getIssuesForProject(project);
 		UpdateResult result = featureDataClient.updateIssues(projectId, issues, inProgressLabelsForProject);
 		
-		LOGGER.info("{}: Updated {} issues and deleted {} issues", project.getName(), result.getItemsAdded(), result.getItemsDeleted());
+		LOGGER.info("{}: Added/Updated {} issues and deleted {} issues", project.getName(), result.getItemsAdded(), result.getItemsDeleted());
 		return null;
 	}
     
