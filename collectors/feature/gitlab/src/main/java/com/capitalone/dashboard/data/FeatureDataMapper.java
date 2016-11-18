@@ -110,7 +110,7 @@ public class FeatureDataMapper {
 		issue.setsEpicIsDeleted("False");
 		
 		//Sprint data
-		if (gitlabIssue.getMilestone() != null) {
+		if (gitlabIssue.getMilestone() != null && StringUtils.isNotBlank(gitlabIssue.getMilestone().getDue_date())) {
 			issue.setsSprintID(String.valueOf(gitlabIssue.getMilestone().getId()));
 			issue.setsSprintName(gitlabIssue.getMilestone().getTitle());
 			issue.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
