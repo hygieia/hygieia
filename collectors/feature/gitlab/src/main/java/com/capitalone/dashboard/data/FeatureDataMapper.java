@@ -118,17 +118,17 @@ public class FeatureDataMapper {
 		if (gitlabIssue.getMilestone() != null && StringUtils.isNotBlank(gitlabIssue.getMilestone().getDue_date())) {
 			issue.setsSprintID(String.valueOf(gitlabIssue.getMilestone().getId()));
 			issue.setsSprintName(gitlabIssue.getMilestone().getTitle());
-			issue.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
+			issue.setsSprintBeginDate(gitlabIssue.getMilestone().getCreated_at());
 			issue.setsSprintEndDate(gitlabIssue.getMilestone().getDue_date());
 			issue.setsSprintAssetState("Active");
 			issue.setsSprintChangeDate(gitlabIssue.getMilestone().getUpdated_at());
 			issue.setsSprintIsDeleted("False");
 		} 
 		else {
-			issue.setsSprintID(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			issue.setsSprintName(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			issue.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
-			issue.setsSprintEndDate(FeatureCollectorConstants.KANBAN_END_DATE);
+			issue.setsSprintID(FeatureCollectorConstants.SPRINT_KANBAN);
+			issue.setsSprintName(FeatureCollectorConstants.SPRINT_KANBAN);
+			issue.setsSprintBeginDate("");
+			issue.setsSprintEndDate("");
 			issue.setsSprintAssetState("Active");
 			issue.setsSprintChangeDate("");
 			issue.setsSprintIsDeleted("False");
