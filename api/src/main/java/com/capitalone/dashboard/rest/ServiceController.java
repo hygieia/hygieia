@@ -57,10 +57,10 @@ public class ServiceController {
 
     @RequestMapping(value = "/dashboard/{id}/service", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Service> createService(@PathVariable ObjectId id, @NotNull @RequestBody String name) {
+    public ResponseEntity<Service> createService(@PathVariable ObjectId id, @NotNull @RequestBody ServiceRequest serviceRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(serviceService.create(id, name));
+                .body(serviceService.create(id, serviceRequest.getName(), serviceRequest.getUrl()));
     }
 
     @RequestMapping(value = "/dashboard/{id}/service/{serviceId}", method = PUT,
@@ -72,6 +72,13 @@ public class ServiceController {
                 .ok()
                 .body(serviceService.update(id, request.update(serviceService.get(serviceId))));
     }
+
+    @RequestMapping(value = "/dashboard/{id}/service/{serviceId}", method = GET)
+    public ResponseEntity<Void> refreshService(@PathVariable ObjectId id, @PathVariable ObjectId serviceId) {
+        serviceService.refreshService(id, serviceId);
+        return ResponseEntity.noContent().build();
+    }
+
 
     @RequestMapping(value = "/dashboard/{id}/service/{serviceId}", method = DELETE)
     public ResponseEntity<Void> deleteService(@PathVariable ObjectId id, @PathVariable ObjectId serviceId) {
@@ -91,5 +98,15 @@ public class ServiceController {
     public ResponseEntity<Void> deleteDependentService(@PathVariable ObjectId id, @PathVariable ObjectId serviceId) {
         serviceService.deleteDependentService(id, serviceId);
         return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/dashboard/{id}/service/{serviceId}", method = GET,
+            consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Service> refreshService(@PathVariable ObjectId id,
+                                                  @PathVariable ObjectId serviceId,
+                                                  @RequestBody ServiceRequest request) {
+        return ResponseEntity
+                .ok()
+                .body(serviceService.update(id, request.refresh(serviceService.get(serviceId))));
     }
 }
