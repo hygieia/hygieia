@@ -56,24 +56,51 @@ public class DashboardController {
         }
     }
 
+
     @RequestMapping(value = "/dashboard/{id}", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public Dashboard getDashboard(@PathVariable ObjectId id) {
         return dashboardService.get(id);
     }
 
+
+
+
+
     @RequestMapping(value = "/dashboard/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateDashboard(@PathVariable ObjectId id,
                                                   @RequestBody DashboardRequest request) {
-        try {
-            dashboardService.update(request.copyTo(dashboardService.get(id)));
-            return ResponseEntity.ok("Updated");
-        } catch (HygieiaException he) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+
+        Dashboard dashboard=getDashboard(id);
+        if(dashboard.getTitle().equals(request.getTitle())) {
+
+            try {
+                dashboardService.update(request.copyTo(dashboardService.get(id)));
+                return ResponseEntity.ok("Updated");
+            } catch (HygieiaException he) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(null);
+            }
+        }
+        else
+        {
+         dashboard.setTitle(request.getTitle());
+
+            try {
+                dashboardService.update(dashboard);
+                return ResponseEntity.ok("Updated");
+            } catch (HygieiaException he) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(null);
+            }
         }
     }
+
+
+
+
 
     @RequestMapping(value = "/dashboard/{id}", method = DELETE)
     public ResponseEntity<Void> deleteDashboard(@PathVariable ObjectId id) {

@@ -28,6 +28,7 @@
             detail: detail,
             create: create,
             delete: deleteDashboard,
+            rename: renameDashboard,
             upsertWidget: upsertWidget,
             types: types
         };
@@ -68,6 +69,19 @@
                 })
                 .error(function (response) {
                     return null;
+                });
+        }
+
+
+        // renames a dashboard
+
+        function renameDashboard(id,newDashboardName){
+            var postData= {
+                title: newDashboardName
+             }
+            return $http.put(dashboardRoute+"/"+id, JSON.stringify(postData))
+                .then(function (response) {
+                    return response.data;
                 });
         }
 
