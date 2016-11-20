@@ -9,11 +9,9 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$cookies', '$cookieStore', '$location'];
-    function AdminController(dashboardData, $cookies, $cookieStore, $location) {
+    AdminController.$inject = ['dashboardData', '$cookies', '$cookieStore', '$location','$modal'];
+    function AdminController(dashboardData, $cookies, $cookieStore, $location,$modal) {
         var ctrl = this;
-
-        console.log("I am in admin page run scope");
         if ($cookies.username == 'admin') {
             console.log("I am admin");
             $location.path('/admin');
@@ -28,6 +26,7 @@
         ctrl.templateUrl = "app/dashboard/views/navheader.html";
         ctrl.username = $cookies.username;
         ctrl.logout = logout;
+        ctrl.renameDashboard=renameDashboard;
 
         // list of available themes. Must be updated manually
         ctrl.themes = [
@@ -85,6 +84,27 @@
                 _.remove(ctrl.dashboards, {id: id});
             });
         }
+
+        function renameDashboard(item)
+        {
+            console.log("Rename Dashboard in Admin");
+
+            $modal.open({
+                templateUrl: 'app/dashboard/views/renameDashboard.html',
+                controller: 'RenameDashboardController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    dashboardId: function() {
+                        return item.id;
+                    },
+                    dashboardName: function() {
+                        return item.name;
+                    }
+                }
+            });
+
+        }
+
 
         function processResponse(data) {
             ctrl.dashboards = [];
