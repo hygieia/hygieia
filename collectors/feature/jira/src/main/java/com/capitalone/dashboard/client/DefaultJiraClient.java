@@ -58,6 +58,8 @@ import com.google.common.collect.Lists;
 public class DefaultJiraClient implements JiraClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultJiraClient.class);
 	
+	private static final String TEMPO_TEAMS_REST_SUFFIX = "rest/tempo-teams/1/team";
+	
 	private final DateFormat QUERY_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	private static final Set<String> DEFAULT_FIELDS = new HashSet<>();
@@ -145,6 +147,71 @@ public class DefaultJiraClient implements JiraClient {
 		}
 		
 		return rt;
+	}
+	
+	@Override
+	public JSONArray getTeams() {
+		JSONArray result = null;
+		
+		try {			
+			URL url = new URL(featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/")? "" : "/") 
+						+ TEMPO_TEAMS_REST_SUFFIX);
+			URLConnection connection = null;
+			
+			if (featureSettings.getJiraProxyUrl() != null && !featureSettings.getJiraProxyUrl().isEmpty() && (featureSettings.getJiraProxyPort() != null)) {
+				String fullProxyUrl = featureSettings.getJiraProxyUrl() + ":" + featureSettings.getJiraProxyPort();
+				URL proxyUrl = new URL(fullProxyUrl);
+				URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(),
+					proxyUrl.getHost(), proxyUrl.getPort(), proxyUrl.getPath(), proxyUrl.getQuery(), null);
+				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUri.getHost(), proxyUri.getPort()));
+				connection = url.openConnection(proxy);
+
+				if (!StringUtils.isEmpty(featureSettings.getJiraCredentials())) {
+					String[] creds = (new String(Base64.decodeBase64(featureSettings.getJiraCredentials()))).split(":");
+					final String uname = creds[0];
+					final String pword = creds.length > 1? creds[1] : null;
+					Authenticator.setDefault(new Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(uname, pword.toCharArray());
+						}
+					});
+					connection.setRequestProperty("Proxy-Authorization", "Basic " + featureSettings.getJiraCredentials());
+				}
+			} else {
+				connection = url.openConnection();
+			}
+
+			HttpURLConnection request = (HttpURLConnection) connection;
+			request.setRequestProperty("Authorization" , "Basic " + featureSettings.getJiraCredentials());
+			request.connect();
+			
+			InputStream in = (InputStream) request.getContent();
+			BufferedReader inReader = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
+			StringBuilder sb = new StringBuilder();
+		    
+			int cp;
+		    while ((cp = inReader.read()) != -1) {
+				sb.append((char) cp);		      
+		    } 
+            JSONParser parser = new JSONParser();
+
+            try {
+                result = (JSONArray) parser.parse(sb.toString());
+            } catch (ParseException pe) {
+                LOGGER.error("Parser exception when parsing teams", pe);
+            } 
+        } catch (org.springframework.web.client.RestClientException rce) {
+            LOGGER.error("Client exception when loading teams", rce);
+            throw rce;
+        }  catch (MalformedURLException mfe) {
+            LOGGER.error("Malformed url for loading teams", mfe);
+        } catch (IOException ioe) {
+			LOGGER.error("IOException", ioe);
+		} catch (URISyntaxException urie) {
+			LOGGER.error("URISyntaxException for Jira connection", urie);
+		}
+		
+		return result;
 	}
 
 	@Override

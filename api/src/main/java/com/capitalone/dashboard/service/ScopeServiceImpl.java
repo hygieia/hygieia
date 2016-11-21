@@ -49,22 +49,17 @@ public class ScopeServiceImpl implements ScopeService {
 	 * @return A data response list of type Scope containing all unique scopes
 	 */
 	@Override
-	public DataResponse<List<Scope>> getAllScopes(ObjectId componentId) {
-		Component component = componentRepository.findOne(componentId);
-		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.ScopeOwner).get(0);
-		QScopeOwner team = new QScopeOwner("team");
-		BooleanBuilder builder = new BooleanBuilder();
-
-		builder.and(team.collectorItemId.eq(item.getId()));
-
+	public List<Scope> getAllScopes() {
 		// Get all available scopes
-		List<Scope> scope = scopeRepository.findByOrderByProjectPathDesc();
+		List<Scope> scopes = scopeRepository.findByOrderByProjectPathDesc();
 
-		Collector collector = collectorRepository
-				.findOne(item.getCollectorId());
+		for (Scope scope : scopes) {
+		    Collector collector = collectorRepository
+				.findOne(scope.getCollectorId());
+		    scope.setCollector(collector);
+		}
 
-		return new DataResponse<>(scope, collector.getLastExecuted());
+		return scopes;
 	}
 
 	/**
