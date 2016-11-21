@@ -20,6 +20,7 @@ import java.util.List;
 
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceServiceImpl.class);
     private final ServiceRepository serviceRepository;
     private final DashboardRepository dashboardRepository;
