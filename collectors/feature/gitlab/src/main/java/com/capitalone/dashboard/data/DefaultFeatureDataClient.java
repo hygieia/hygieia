@@ -1,10 +1,7 @@
 package com.capitalone.dashboard.data;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -105,19 +102,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		
 		List<Feature> savedFeatures = featureRepo.getFeaturesByCollectorAndProjectId(gitlabCollector.getId(), projectId);
 		
-		UpdateResult updateResult;
-		if(shouldUpdateAll(gitlabCollector)) {
-			updateResult = updateAll(issues, gitlabCollector, inProgressLabels, savedFeatures);
-		}
-		else {
-			updateResult = updateChanged(issues, gitlabCollector, inProgressLabels, savedFeatures);
-		}
-		
-		return updateResult;
-	}
-
-	private boolean shouldUpdateAll(FeatureCollector gitlabCollector) {
-		return true;
+		return updateAll(issues, gitlabCollector, inProgressLabels, savedFeatures);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -138,83 +123,6 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		UpdateResult updateResult = new UpdateResult(updatedFeatures.size(), deletedFeatures.size());
 				
 		return updateResult;
-	}
-
-	@SuppressWarnings("unchecked")
-	private UpdateResult updateChanged(List<GitlabIssue> issues, FeatureCollector gitlabCollector,
-			List<String> inProgressLabels, List<Feature> savedFeatures) {
-		Collection<GitlabIssue> newIssues = findNewIssues(issues, savedFeatures);
-		Collection<GitlabIssue> currentIssues = CollectionUtils.subtract(issues, newIssues);
-		Collection<GitlabIssue> issuesToUpdate = filterByUpdatedDate(gitlabCollector.getLastExecuted(), currentIssues);
-		issuesToUpdate.addAll(newIssues);
-		
-		Collection<Feature> updatedFeatures = new ArrayList<>();
-		for(GitlabIssue issue : issuesToUpdate) {
-			String issueId = String.valueOf(issue.getId());
-			Feature feature = featureDataMapper.mapToFeatureItem(issue, inProgressLabels, findExistingIssueId(issueId), gitlabCollector.getId());
-			updatedFeatures.add(feature);
-		}
-		Collection<Feature> deletedFeatures = findDeletedFeatures(savedFeatures, issues);
-		
-		featureRepo.save(updatedFeatures);
-		featureRepo.delete(deletedFeatures);
-
-		UpdateResult updateResult = new UpdateResult(updatedFeatures.size(), deletedFeatures.size());
-		
-		return updateResult;
-	}
-
-	private List<Feature> findDeletedFeatures(List<Feature> savedFeatures, List<GitlabIssue> issues) {
-		List<Feature> deletedFeatures = new ArrayList<>();
-		for(Feature feature : savedFeatures) {
-			if(isNotPresent(feature.getsId(), issues)) {
-				deletedFeatures.add(feature);
-			}
-		}
-		return deletedFeatures;
-	}
-
-	private boolean isNotPresent(String featureId, List<GitlabIssue> issues) {
-		for(GitlabIssue issue : issues) {
-			String issueId = String.valueOf(issue.getId());
-			if(featureId.equals(issueId)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private List<GitlabIssue> findNewIssues(List<GitlabIssue> issues, List<Feature> savedIssues) {
-		List<GitlabIssue> newIssues = new ArrayList<>();
-		for(GitlabIssue issue : issues) {
-			if(issueIsNew(savedIssues, String.valueOf(issue.getId()))) {
-				newIssues.add(issue);
-			}
-			
-		}
-		return newIssues;
-	}
-
-	private boolean issueIsNew(List<Feature> savedIssues, String issueId) {
-		for(Feature feature : savedIssues) {
-			if(issueId.equals(feature.getsId())) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private List<GitlabIssue> filterByUpdatedDate(long lastExecuted, Collection<GitlabIssue> issues) {
-		Date lastCollectionDate = new Date(lastExecuted);
-		OffsetDateTime lastCollection = OffsetDateTime.ofInstant(lastCollectionDate.toInstant(), ZoneId.systemDefault());
-		List<GitlabIssue> filteredIssues = new ArrayList<>();
-		for(GitlabIssue issue : issues) {
-			OffsetDateTime lastUpdated = OffsetDateTime.parse(issue.getUpdated_at());
-			if(lastCollection.isBefore(lastUpdated)) {
-				filteredIssues.add(issue);
-			}
-		}
-		return filteredIssues;
 	}
 
 	@Override
