@@ -5,19 +5,17 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-public interface BinaryArtifactRepository extends CrudRepository<BinaryArtifact, ObjectId> {
+public interface BinaryArtifactRepository extends CrudRepository<BinaryArtifact, ObjectId>, BinaryArtifactRepositoryCustom {
 
     Iterable<BinaryArtifact> findByCollectorItemId(ObjectId collectorItemId);
     
-    Iterable<BinaryArtifact> findByCollectorItemIdAndArtifactGroupIdAndArtifactNameAndArtifactVersion(ObjectId collectorItemId, String artifactGroupId, String artifactName, String artifactVersion);
-
-    Iterable<BinaryArtifact> findByArtifactGroupIdAndArtifactNameAndArtifactVersion(String artifactGroupId, String artifactName, String artifactVersion);
+    @Query("{ 'collectorItemId': ?0, 'artifactGroupId' : ?1, 'artifactModule' : ?2, 'artifactVersion' : ?3, 'artifactName' : ?4, 'artifactClassifier' : ?5, 'artifactExtension' : ?6 }")
+    Iterable<BinaryArtifact> findByAttributes(Object collectorItemId, String artifactGroupId, String artifactModule, String artifactVersion, String artifactName, String artifactClassifier, String artifactExtension);
+    
+    @Query("{ 'artifactGroupId' : ?0, 'artifactModule' : ?1, 'artifactVersion' : ?2, 'artifactName' : ?3, 'artifactClassifier' : ?4, 'artifactExtension' : ?5 }")
+    Iterable<BinaryArtifact> findByAttributes(String artifactGroupId, String artifactModule, String artifactVersion, String artifactName, String artifactClassifier, String artifactExtension);
 
     Iterable<BinaryArtifact> findByArtifactName(String artifactName);
-
-    Iterable<BinaryArtifact> findByArtifactNameAndArtifactVersion(String artifactName, String artifactVersion);
-
-    Iterable<BinaryArtifact> findByArtifactGroupId(String artifactGroupId);
 
     Iterable<BinaryArtifact> findByBuildInfoId (ObjectId artifactBuildId);
 

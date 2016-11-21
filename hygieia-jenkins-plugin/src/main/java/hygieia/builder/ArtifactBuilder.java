@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FilenameUtils;
+
 public class ArtifactBuilder {
 
 	private static final Logger logger = Logger.getLogger(ArtifactBuilder.class.getName());
@@ -63,9 +65,13 @@ public class ArtifactBuilder {
                 if ("".equals(version)) {
                     version = HygieiaUtils.guessVersionNumber(f.getName());
                 }
+                String artifactName = HygieiaUtils.getFileNameMinusVersion(f, version);
+                
                 bac.setArtifactVersion(version);
                 bac.setCanonicalName(f.getName());
-                bac.setArtifactName(HygieiaUtils.getFileNameMinusVersion(f, version));
+                bac.setArtifactName(artifactName);
+                bac.setArtifactModule(artifactName); // for now assume maven artifact
+                bac.setArtifactExtension(FilenameUtils.getExtension(f.getName()));
                 bac.setTimestamp(build.getTimeInMillis());
                 bac.setBuildId(buildId);
                 CommitBuilder commitBuilder = new CommitBuilder(build);

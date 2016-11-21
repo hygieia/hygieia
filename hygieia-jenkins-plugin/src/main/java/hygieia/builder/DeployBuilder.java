@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FilenameUtils;
+
 public class DeployBuilder {
 
     private static final Logger logger = Logger.getLogger(DeployBuilder.class.getName());
@@ -66,8 +68,10 @@ public class DeployBuilder {
                 if ("".equals(version)) {
                     version = HygieiaUtils.guessVersionNumber(f.getName());
                 }
+                String artifactName = HygieiaUtils.getFileNameMinusVersion(f, version);
+                
                 bac.setArtifactVersion(version);
-                bac.setArtifactName(HygieiaUtils.getFileNameMinusVersion(f, version));
+                bac.setArtifactName(artifactName);
                 bac.setDeployStatus(build.getResult().toString());
                 bac.setDuration(build.getDuration());
                 bac.setEndTime(build.getStartTimeInMillis() + build.getDuration());
