@@ -158,6 +158,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		
 		featureRepo.save(updatedFeatures);
 		featureRepo.delete(deletedFeatures);
+
 		UpdateResult updateResult = new UpdateResult(updatedFeatures.size(), deletedFeatures.size());
 		
 		return updateResult;

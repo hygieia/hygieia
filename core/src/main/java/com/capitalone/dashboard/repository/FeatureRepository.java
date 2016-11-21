@@ -86,6 +86,7 @@ public interface FeatureRepository extends CrudRepository<Feature, ObjectId>,
 			fields = "{'sStatus': 1, 'sNumber': 1, 'sSprintID': 1, 'sSprintName': 1, 'sSprintBeginDate': 1, 'sSprintEndDate': 1, 'sEpicID' : 1,'sEpicNumber' : 1, 'sEpicName' : 1, 'sEstimate': 1, 'sEstimateTime': 1}")
 	List<Feature> findByActiveEndingSprintsMinimal(String sTeamId, String currentISODateTime);
 
+
 	/**
 	 * @see #findByUnendingSprints(String)
 	 */
