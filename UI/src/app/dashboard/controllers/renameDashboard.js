@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('RenameDashboardController', RenameDashboardController);
 
-    RenameDashboardController.$inject = ['$location', '$modalInstance', 'dashboardData', 'dashboardId','dashboardName','$route'];
-    function RenameDashboardController($location, $modalInstance, dashboardData, dashboardId,dashboardName,$route) {
+    RenameDashboardController.$inject = ['$modalInstance', 'dashboardData', 'dashboardId','dashboardName'];
+    function RenameDashboardController($modalInstance, dashboardData, dashboardId,dashboardName) {
 
         var ctrl = this;
 
@@ -26,13 +26,18 @@
             form.dashboardTitle.$setValidity('createError', true);
 
             if (form.$valid) {
-                dashboardData.rename(dashboardId, document.cdf.dashboardTitle.value);
-                // close dialog
-                $modalInstance.close();
+                dashboardData
+                    .rename(dashboardId, document.cdf.dashboardTitle.value)
+                    .success(function (data) {
+                        $modalInstance.close();
+                })
+                    .error(function(data){
+                    form.dashboardTitle.$setValidity('createError', false);
+                });
             }
             else
             {
-                form.dashboardTitle.$setValidity('creatError', false);
+                form.dashboardTitle.$setValidity('createError', false);
             }
 
         }
