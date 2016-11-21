@@ -9,28 +9,25 @@ import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 public class DashboardController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
     private final DashboardService dashboardService;
+
 
     @Autowired
     public DashboardController(DashboardService dashboardService) {
@@ -64,42 +61,57 @@ public class DashboardController {
     }
 
 
-
-
-
     @RequestMapping(value = "/dashboard/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateDashboard(@PathVariable ObjectId id,
                                                   @RequestBody DashboardRequest request) {
-
-        Dashboard dashboard=getDashboard(id);
-        if(dashboard.getTitle().equals(request.getTitle())) {
-
-            try {
-                dashboardService.update(request.copyTo(dashboardService.get(id)));
-                return ResponseEntity.ok("Updated");
-            } catch (HygieiaException he) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(null);
-            }
-        }
-        else
-        {
-         dashboard.setTitle(request.getTitle());
-
-            try {
-                dashboardService.update(dashboard);
-                return ResponseEntity.ok("Updated");
-            } catch (HygieiaException he) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(null);
-            }
+        try {
+            dashboardService.update(request.copyTo(dashboardService.get(id)));
+            return ResponseEntity.ok("Updated");
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(null);
         }
     }
 
 
+    @RequestMapping(value = "/dashboard/rename/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> renameDashboard(@PathVariable ObjectId id,
+                                                  @RequestBody DashboardRequest request) {
 
+
+        Dashboard dashboard = getDashboard(id);
+        Iterable<Dashboard> allDashboard = dashboards();
+        LOGGER.info(allDashboard.iterator().toString());
+        boolean titleExist = false;
+
+        for(Dashboard l :allDashboard)
+        {
+            if(l.getTitle().equals(request.getTitle()))
+            {
+                titleExist=true;
+            }
+        }
+
+        LOGGER.info("Existing Title:" + titleExist);
+        //check if any other dashboard has the same title
+
+        if (!titleExist) {
+            try {
+                dashboard.setTitle(request.getTitle());
+                dashboardService.update(dashboard);
+                return ResponseEntity.ok("Renamed");
+            } catch (HygieiaException he) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(null);
+            }
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
+    }
 
 
     @RequestMapping(value = "/dashboard/{id}", method = DELETE)

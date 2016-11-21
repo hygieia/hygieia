@@ -76,13 +76,18 @@
         // renames a dashboard
 
         function renameDashboard(id,newDashboardName){
+            console.log("In data renaming dashboard");
             var postData= {
                 title: newDashboardName
              }
-            return $http.put(dashboardRoute+"/"+id, JSON.stringify(postData))
+            return $http.put(dashboardRoute+"/rename/"+id, postData)
                 .then(function (response) {
                     return response.data;
                 });
+
+
+
+
         }
 
         // deletes a dashboard

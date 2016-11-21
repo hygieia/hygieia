@@ -96,7 +96,7 @@
         {
             console.log("Rename Dashboard");
 
-            $modal.open({
+            var mymodalInstance=$modal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',
@@ -109,6 +109,11 @@
                     }
                 }
             });
+
+            mymodalInstance.result.then(function(condition) {
+                window.location.reload(false);
+            });
+
 
         }
 
@@ -129,7 +134,7 @@
                 };
 
                 if(board.isProduct) {
-                    console.log(board);
+                    //console.log(board);
                 }
                 dashboards.push(board);
             }

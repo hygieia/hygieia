@@ -13,7 +13,6 @@
     function AdminController(dashboardData, $cookies, $cookieStore, $location,$modal) {
         var ctrl = this;
         if ($cookies.username == 'admin') {
-            console.log("I am admin");
             $location.path('/admin');
 
         }
@@ -89,7 +88,7 @@
         {
             console.log("Rename Dashboard in Admin");
 
-            $modal.open({
+            var mymodalInstance=$modal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',
@@ -101,6 +100,10 @@
                         return item.name;
                     }
                 }
+            });
+
+            mymodalInstance.result.then(function(condition) {
+                window.location.reload(false);
             });
 
         }
