@@ -6,13 +6,13 @@
 
     angular
         .module(HygieiaConfig.module + '.core')
-        .directive('dashTrash', function () {
+        .directive('dashEdit', function () {
             return {
                 transclude: true,
                 template: '<span class="clickable fa fa-stack">' +
-                    '<span class="fa-circle-thin fa-stack-2x text-danger"></span>' +
-                    '<span class="fa-trash fa-stack-1x text-danger"></span>' +
-                    '</span>'
+                '<span class="fa-circle-thin fa-stack-2x text-success"></span>' +
+                '<span class="fa-pencil-square-o fa-stack-1x text-success"></span>' +
+                '</span>'
             };
         });
 })();

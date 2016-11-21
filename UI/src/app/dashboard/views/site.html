@@ -57,6 +57,12 @@
                             <ul class="list-animate list-group text-left">
                                 <li class="list-group-item" ng-repeat="myitem in mydashboards = (ctrl.mydash | filter:ctrl.filterDashboards | orderBy: 'name')">
                                     <span class="pull-right">
+
+
+                                       <a href ng-click="ctrl.renameDashboard(myitem)">
+                                           <span class="fa fa-lg fa-pencil-square-o text-success"></span>
+                                       </a>
+
                                        <a href ng-click="ctrl.deleteDashboard(myitem)">
                                            <span class="fa fa-lg fa-trash text-danger"></span>
                                        </a>
