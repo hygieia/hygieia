@@ -43,7 +43,7 @@ public interface ServiceService {
      * @param name Name of new Service
      * @return Service
      */
-    Service create(ObjectId dashboardId, String name);
+    Service create(ObjectId dashboardId, String name, String url);
 
     /**
      * Update an existing Service.
@@ -78,4 +78,12 @@ public interface ServiceService {
      * @param serviceId id of Service
      */
     void deleteDependentService(ObjectId dashboardId, ObjectId serviceId);
+
+    /**
+     * Updates a Service with the latest Status retrieved from Http Handshake
+     *
+     * @param dashboardId id of Dashboard
+     * @param serviceId   id of Service
+     */
+    void refreshService(ObjectId dashboardId, ObjectId serviceId);
 }

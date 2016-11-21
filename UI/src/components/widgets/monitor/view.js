@@ -6,8 +6,8 @@
         .controller('monitorViewController', monitorViewController)
         .controller('monitorStatusController', monitorStatusController);
 
-    monitorViewController.$inject = ['$scope', 'monitorData', 'DashStatus', '$modal', '$q'];
-    function monitorViewController($scope, monitorData, DashStatus, $modal, $q) {
+    monitorViewController.$inject = ['$scope', 'monitorData', 'DashStatus', '$modal', '$q', '$interval'];
+    function monitorViewController($scope, monitorData, DashStatus, $modal, $q, $interval) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -29,6 +29,15 @@
             });
             return deferred.promise;
         };
+
+        $interval(function () {
+           ctrl.load();
+            for (var i = 0; i < ctrl.services.length; i++) {
+                monitorData.refreshService($scope.dashboard.id, ctrl.services[i]);
+              }
+
+        }, 60000);
+
 
 
         // method implementations
@@ -52,7 +61,9 @@
                     service: function () {
                         return {
                             id: service.id,
+                            name: service.name,
                             status: service.status,
+                            url: service.url,
                             message: service.message
                         };
                     }
@@ -117,6 +128,7 @@
                     return {
                         id: item.id,
                         name: name,
+                        url: item.url,
                         status: item.status,
                         message: item.message
                     };
