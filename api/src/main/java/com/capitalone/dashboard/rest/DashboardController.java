@@ -82,7 +82,6 @@ public class DashboardController {
 
         Dashboard dashboard = getDashboard(id);
         Iterable<Dashboard> allDashboard = dashboards();
-        LOGGER.info(allDashboard.iterator().toString());
         boolean titleExist = false;
 
         for(Dashboard l :allDashboard)

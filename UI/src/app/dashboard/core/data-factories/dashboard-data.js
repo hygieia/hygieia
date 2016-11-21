@@ -81,13 +81,14 @@
                 title: newDashboardName
              }
             return $http.put(dashboardRoute+"/rename/"+id, postData)
-                .then(function (response) {
+                .success(
+                    function (response) {
+                    return response.data;
+                })
+                .error (function (response) {
+                    console.log("Error Occured while renaming Dashboard in Data layer:"+JSON.stringify(response));
                     return response.data;
                 });
-
-
-
-
         }
 
         // deletes a dashboard
