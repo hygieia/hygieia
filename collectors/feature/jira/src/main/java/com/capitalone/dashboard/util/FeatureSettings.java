@@ -87,6 +87,8 @@ public class FeatureSettings {
 	private String jiraEpicIdFieldName;
 	
 	private String jiraStoryPointsFieldName;
+	
+	private String jiraTeamFieldName;
 
 	public String getCron() {
 		return this.cron;
@@ -318,5 +320,13 @@ public class FeatureSettings {
 
 	public void setJiraStoryPointsFieldName(String jiraStoryPointsFieldName) {
 		this.jiraStoryPointsFieldName = jiraStoryPointsFieldName;
+	}
+	
+	public String getJiraTeamFieldName() {
+		return jiraTeamFieldName;
+	}
+
+	public void setJiraTeamFieldName(String jiraTeamFieldName) {
+		this.jiraTeamFieldName = jiraTeamFieldName;
 	}
 }

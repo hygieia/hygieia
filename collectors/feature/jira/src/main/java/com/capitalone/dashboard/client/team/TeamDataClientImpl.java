@@ -8,10 +8,13 @@ import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 /**
@@ -56,16 +59,72 @@ public class TeamDataClientImpl implements TeamDataClient {
 	public int updateTeamInformation() {
 		int count = 0;
 		
-		List<BasicProject> projects = jiraClient.getProjects();
+		JSONArray teams = jiraClient.getTeams();
 		
-		if (projects != null && !projects.isEmpty()) {
-			updateMongoInfo(projects);
-			count += projects.size();
+		if (CollectionUtils.isNotEmpty(teams)) {
+			updateMongoInfoJSON(teams);
+			count += teams.size();
+		} else {
+			List<BasicProject> projects = jiraClient.getProjects();
+			
+			if (CollectionUtils.isNotEmpty(projects)) {
+				updateMongoInfo(projects);
+				count += projects.size();
+			}
 		}
 		
 		return count;
 	}
 
+	/**
+	 * Updates the MongoDB with a JSONArray received from the source system
+	 * back-end with story-based data.
+	 * 
+	 * @param teamDetailArray
+	 *            A list response of Jira teams from the source system
+	 */
+	private void updateMongoInfoJSON(JSONArray teamDetailArray) {	
+		ObjectId jiraCollectorId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
+		
+		for (Object obj : teamDetailArray) {
+			String teamId = TOOLS.sanitizeResponse(((JSONObject) obj).get("id"));
+			
+			/*
+			 * Initialize DOMs
+			 */
+			ScopeOwnerCollectorItem team = findOneScopeOwnerCollectorItem(teamId);
+			
+			if (team == null) {
+				team = new ScopeOwnerCollectorItem();
+			}
+
+			// collectorId
+			team.setCollectorId(jiraCollectorId);
+
+			// teamId
+			team.setTeamId(teamId);
+
+			// name
+			team.setName(TOOLS.sanitizeResponse(getJSONString((JSONObject) obj, "name")));
+
+			// changeDate - does not exist for jira
+			team.setChangeDate("");
+
+			// assetState - does not exist for jira
+			team.setAssetState("Active");
+
+			// isDeleted - does not exist for jira
+			team.setIsDeleted("False");
+
+			// Saving back to MongoDB
+			teamRepo.save(team);
+		}
+	}
+
+	private String getJSONString(JSONObject obj, String field) {
+        return ((String) obj.get(field));
+    }
+	
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.

@@ -25,8 +25,10 @@ import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.client.Sprint;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureStatus;
+import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
+import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
@@ -34,6 +36,7 @@ import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +91,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 	private final FeatureSettings featureSettings;
 	private final FeatureRepository featureRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
+	private final ScopeOwnerRepository teamRepository;
 	private final JiraClient jiraClient;
 	
 	// epicId : list of epics
@@ -100,7 +104,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 	 * Extends the constructor from the super class.
 	 */
 	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings, FeatureSettings featureSettings, 
-			FeatureRepository featureRepository, FeatureCollectorRepository featureCollectorRepository,
+			FeatureRepository featureRepository, FeatureCollectorRepository featureCollectorRepository, ScopeOwnerRepository teamRepository,
 			JiraClient jiraClient) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
@@ -109,6 +113,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		this.featureSettings = featureSettings;
 		this.featureRepo = featureRepository;
 		this.featureCollectorRepository = featureCollectorRepository;
+		this.teamRepository = teamRepository;
 		this.jiraClient = jiraClient;
 		
 		this.epicCache = new HashMap<>();
@@ -260,6 +265,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		}
 	}
 	
+	@SuppressWarnings("PMD.ExcessiveMethodLength")
 	private void processFeatureData(Feature feature, Issue issue, Map<String, IssueField> fields) {
 		BasicProject project = issue.getProject();
 		String status = this.toCanonicalFeatureStatus(issue.getStatus().getName());
@@ -306,7 +312,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		feature.setIsDeleted("False");
 
 		// sProjectID
-		feature.setsProjectID(TOOLS.sanitizeResponse(project.getKey()));
+		feature.setsProjectID(TOOLS.sanitizeResponse(project.getId()));
 
 		// sProjectName
 		feature.setsProjectName(TOOLS.sanitizeResponse(project.getName()));
@@ -329,11 +335,20 @@ public class StoryDataClientImpl implements StoryDataClient {
 		// sProjectPath - does not exist in Jira
 		feature.setsProjectPath("");
 		
-		// sTeamID
-		feature.setsTeamID(TOOLS.sanitizeResponse(project.getId()));
 
-		// sTeamName
-		feature.setsTeamName(TOOLS.sanitizeResponse(project.getName()));
+		IssueField team = fields.get(featureSettings.getJiraTeamFieldName());
+		if (team != null && team.getValue() != null && !TOOLS.sanitizeResponse(team.getValue()).isEmpty()) {
+			String teamID = TOOLS.sanitizeResponse(team.getValue());
+			
+			ObjectId jiraFeatureId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
+			ScopeOwnerCollectorItem scopeOwner = teamRepository.findTeamCollector(jiraFeatureId, teamID);
+			if (scopeOwner != null && StringUtils.isNotEmpty(scopeOwner.getName())) {
+			    // sTeamID
+			    feature.setsTeamID(teamID);
+			    // sTeamName
+				feature.setsTeamName(TOOLS.sanitizeResponse(scopeOwner.getName()));
+			}
+		}
 		
 		// sTeamChangeDate - not able to retrieve at this asset level from Jira
 		feature.setsTeamChangeDate("");

@@ -11,8 +11,10 @@
     var ctrl = this;
     var today = new Date(_.now());
     var filterTeamId = $scope.widgetConfig.options.teamId;
+    var filterProjectId = $scope.widgetConfig.options.projectId;
     var estimateMetricType = $scope.widgetConfig.options.estimateMetricType;
     ctrl.teamName = $scope.widgetConfig.options.teamName;
+    ctrl.projectName = $scope.widgetConfig.options.projectName
     // Scrum
     ctrl.iterations = [];
     ctrl.totalStoryPoints = null;
@@ -49,15 +51,15 @@
     ctrl.load = function() {
       var deferred = $q.all([
         // Scrum
-        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, estimateMetricType, "scrum").then(processSprintEstimateResponse),
-        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, estimateMetricType, "scrum").then(processFeatureWipResponse),
-        featureData.sprint($scope.widgetConfig.componentId, filterTeamId, "scrum")
+        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, filterProjectId, estimateMetricType, "scrum").then(processSprintEstimateResponse),
+        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, filterProjectId, estimateMetricType, "scrum").then(processFeatureWipResponse),
+        featureData.sprint($scope.widgetConfig.componentId, filterTeamId, filterProjectId, "scrum")
           .then(function(data) { processSprintResponse(data, false) }),
 
         // Kanban
-        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, estimateMetricType, "kanban").then(processSprintEstimateKanbanResponse),
-        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, estimateMetricType, "kanban").then(processFeatureWipKanbanResponse),
-        featureData.sprint($scope.widgetConfig.componentId, filterTeamId, "kanban")
+        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, filterProjectId, estimateMetricType, "kanban").then(processSprintEstimateKanbanResponse),
+        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, filterProjectId, estimateMetricType, "kanban").then(processFeatureWipKanbanResponse),
+        featureData.sprint($scope.widgetConfig.componentId, filterTeamId, filterProjectId, "kanban")
           .then(function(data) { processSprintResponse(data, true) })
       ]);
 
