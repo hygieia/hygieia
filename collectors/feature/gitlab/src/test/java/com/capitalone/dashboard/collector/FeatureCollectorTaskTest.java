@@ -1,0 +1,103 @@
+package com.capitalone.dashboard.collector;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import org.bson.types.ObjectId;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import com.capitalone.dashboard.gitlab.model.GitlabProject;
+import com.capitalone.dashboard.model.FeatureCollector;
+import com.capitalone.dashboard.repository.FeatureCollectorRepository;
+
+@RunWith(MockitoJUnitRunner.class)
+public class FeatureCollectorTaskTest {
+
+	@Mock
+	private FeatureCollectorRepository featureRepo;
+	
+	@Mock
+	private FeatureSettings settings;
+	
+	@Mock 
+	private FeatureService featureService;
+	
+	@Mock
+	private Future<Void> future;
+	
+	@InjectMocks
+	private FeatureCollectorTask featureCollectorTask;
+	
+	@Test
+	public void shouldGetCollector() {
+		FeatureCollector collector = featureCollectorTask.getCollector();
+		assertNotNull(collector);
+		assertTrue(FeatureCollector.class == collector.getClass());
+	}
+	
+	@Test
+	public void shouldGetCollectorRepo() {
+		assertSame(featureRepo, featureCollectorTask.getCollectorRepository());
+	}
+	
+	@Test
+	public void shouldGetCron() {
+		String cron = "cron";
+		when(settings.getCron()).thenReturn(cron);
+		assertSame(cron, featureCollectorTask.getCron());
+	}
+	
+	@Test
+	public void shouldCollect() throws InterruptedException, ExecutionException {
+		ObjectId id = new ObjectId();
+		FeatureCollector collector = new FeatureCollector();
+		collector.setId(id);
+		List<GitlabProject> projects = new ArrayList<>();
+		projects.add(new GitlabProject());
+		when(featureService.getProjectsForEnabledTeams(id)).thenReturn(projects);
+		when(featureService.updateSelectableTeams()).thenReturn(future);
+		when(featureService.updateProjects(projects)).thenReturn(future);
+		when(featureService.updateIssuesForProject(isA(GitlabProject.class))).thenReturn(future);
+		when(future.get()).thenReturn(null);
+		
+		featureCollectorTask.collect(collector);
+		
+		verify(featureService).updateSelectableTeams();
+		verify(featureService).updateProjects(projects);
+		verify(featureService).updateIssuesForProject(projects.get(0));
+	}
+	
+	@Test
+	public void shouldLogException() throws InterruptedException, ExecutionException {
+		ObjectId id = new ObjectId();
+		FeatureCollector collector = new FeatureCollector();
+		collector.setId(id);
+		List<GitlabProject> projects = new ArrayList<>();
+		projects.add(new GitlabProject());
+		when(featureService.getProjectsForEnabledTeams(id)).thenReturn(projects);
+		when(featureService.updateSelectableTeams()).thenReturn(future);
+		when(featureService.updateProjects(projects)).thenReturn(future);
+		when(featureService.updateIssuesForProject(isA(GitlabProject.class))).thenReturn(future);
+		when(future.get()).thenThrow(new InterruptedException());
+		
+		featureCollectorTask.collect(collector);
+		
+		verify(featureService).updateSelectableTeams();
+		verify(featureService).updateProjects(projects);
+		verify(featureService).updateIssuesForProject(projects.get(0));
+	}
+
+}
