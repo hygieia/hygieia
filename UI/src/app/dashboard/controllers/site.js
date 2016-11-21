@@ -29,6 +29,7 @@
         ctrl.setType = setType;
         ctrl.filterNotOwnedList = filterNotOwnedList;
         ctrl.filterDashboards = filterDashboards;
+        ctrl.renameDashboard = renameDashboard;
 
         if (ctrl.username === 'admin') {
             ctrl.myadmin = true;
@@ -91,6 +92,32 @@
             });
         }
 
+        function renameDashboard(item)
+        {
+            console.log("Rename Dashboard");
+
+            var mymodalInstance=$modal.open({
+                templateUrl: 'app/dashboard/views/renameDashboard.html',
+                controller: 'RenameDashboardController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    dashboardId: function() {
+                        return item.id;
+                    },
+                    dashboardName: function() {
+                        return item.name;
+                    }
+                }
+            });
+
+            mymodalInstance.result.then(function(condition) {
+                window.location.reload(false);
+            });
+
+
+        }
+
+
         function open(dashboardId) {
             $location.path('/dashboard/' + dashboardId);
         }
@@ -107,7 +134,7 @@
                 };
 
                 if(board.isProduct) {
-                    console.log(board);
+                    //console.log(board);
                 }
                 dashboards.push(board);
             }
@@ -140,6 +167,8 @@
         function processMyDashboardError(data) {
             ctrl.mydash = [];
         }
+
+
 
 
         function deleteDashboard(item) {
