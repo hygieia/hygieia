@@ -95,7 +95,6 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		return new UpdateResult(projectsToAdd.size(), projectsToDelete.size());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public UpdateResult updateIssues(String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
 		FeatureCollector gitlabCollector = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB);
@@ -105,6 +104,45 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		}
 		
 		List<Feature> savedFeatures = featureRepo.getFeaturesByCollectorAndProjectId(gitlabCollector.getId(), projectId);
+		
+		UpdateResult updateResult;
+		if(shouldUpdateAll(gitlabCollector)) {
+			updateResult = updateAll(issues, gitlabCollector, inProgressLabels, savedFeatures);
+		}
+		else {
+			updateResult = updateChanged(issues, gitlabCollector, inProgressLabels, savedFeatures);
+		}
+		
+		return updateResult;
+	}
+
+	private boolean shouldUpdateAll(FeatureCollector gitlabCollector) {
+		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	private UpdateResult updateAll(List<GitlabIssue> gitlabIssues, FeatureCollector gitlabCollector,
+			List<String> inProgressLabels, List<Feature> savedFeatures) {
+		
+		List<Feature> updatedFeatures = new ArrayList<>();
+		for(GitlabIssue issue : gitlabIssues) {
+			String issueId = String.valueOf(issue.getId());
+			Feature feature = featureDataMapper.mapToFeatureItem(issue, inProgressLabels, findExistingIssueId(issueId), gitlabCollector.getId());
+			updatedFeatures.add(feature);
+		}
+		
+		Collection<Feature> deletedFeatures = CollectionUtils.subtract(savedFeatures, updatedFeatures);
+		
+		featureRepo.save(updatedFeatures);
+		featureRepo.delete(deletedFeatures);
+		UpdateResult updateResult = new UpdateResult(updatedFeatures.size(), deletedFeatures.size());
+				
+		return updateResult;
+	}
+
+	@SuppressWarnings("unchecked")
+	private UpdateResult updateChanged(List<GitlabIssue> issues, FeatureCollector gitlabCollector,
+			List<String> inProgressLabels, List<Feature> savedFeatures) {
 		Collection<GitlabIssue> newIssues = findNewIssues(issues, savedFeatures);
 		Collection<GitlabIssue> currentIssues = CollectionUtils.subtract(issues, newIssues);
 		Collection<GitlabIssue> issuesToUpdate = filterByUpdatedDate(gitlabCollector.getLastExecuted(), currentIssues);
@@ -120,8 +158,9 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		
 		featureRepo.save(updatedFeatures);
 		featureRepo.delete(deletedFeatures);
+		UpdateResult updateResult = new UpdateResult(updatedFeatures.size(), deletedFeatures.size());
 		
-		return new UpdateResult(updatedFeatures.size(), deletedFeatures.size());
+		return updateResult;
 	}
 
 	private List<Feature> findDeletedFeatures(List<Feature> savedFeatures, List<GitlabIssue> issues) {
