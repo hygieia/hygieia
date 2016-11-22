@@ -26,6 +26,8 @@ import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 @Component
 public class DefaultGitlabClient implements GitlabClient {
 	
+	private static final String PRIVATE_TOKEN_HEADER_KEY = "PRIVATE-TOKEN";
+	private static final String PAGINATION_HEADER = "X-Next-Page";
 	private final RestOperations restOperations;
 	private final FeatureSettings settings;
 	private final GitlabUrlUtility urlUtility;
@@ -81,7 +83,7 @@ public class DefaultGitlabClient implements GitlabClient {
 			CollectionUtils.addAll(body, response.getBody());
 			
 			if(hasNextPage = hasNextPage(response.getHeaders())) {
-				uri = urlUtility.updatePage(uri, response.getHeaders().get("X-Next-Page").get(0));
+				uri = urlUtility.updatePage(uri, response.getHeaders().get(PAGINATION_HEADER).get(0));
 			}
 		}
 		
@@ -103,7 +105,7 @@ public class DefaultGitlabClient implements GitlabClient {
 
 	private HttpEntity<String> buildAuthenticationHeader() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("PRIVATE-TOKEN", settings.getApiToken());
+		headers.set(PRIVATE_TOKEN_HEADER_KEY, settings.getApiToken());
 		HttpEntity<String> headersEntity = new HttpEntity<>(headers);
 		return headersEntity;
 	}
@@ -111,7 +113,7 @@ public class DefaultGitlabClient implements GitlabClient {
 	private boolean hasNextPage(HttpHeaders headers) {
 		String nextPage;
 		try {
-			nextPage = headers.get("X-Next-Page").get(0);
+			nextPage = headers.get(PAGINATION_HEADER).get(0);
 		} catch (NullPointerException e) {
 			return false;
 		}
