@@ -58,6 +58,22 @@ public final class DateUtil {
 	}
 
 	/**
+	 *
+	 * @param dateStr Input string format 2008-01-07 21:30:15.000
+	 * @param fromPattern "yyyy-MM-dd HH:mm:ss.S";
+	 * @return Date
+	 */
+	public static Date convertIntoDate(String dateStr, String fromPattern) {
+		Date retDate = null;
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat(fromPattern);
+			return new Date(sdf.parse(dateStr).getTime());
+		} catch (ParseException e) {
+			return retDate;
+		}
+	}
+
+	/**
 	 * Evaluates whether a sprint length appears to be kanban or scrum
 	 * 
 	 * @param startDate
@@ -71,25 +87,22 @@ public final class DateUtil {
 		Calendar startCalendar = Calendar.getInstance();
 		Calendar endCalendar = Calendar.getInstance();
 
-		if ((!StringUtils.isAnyEmpty(startDate) && !StringUtils.isAnyEmpty(endDate))
-				&& (this.isInteger(startDate.substring(0, 4), 10)
-						&& this.isInteger(endDate.substring(0, 4), 10)
-						&& this.isInteger(startDate.substring(8, 10), 10)
-						&& this.isInteger(endDate.substring(8, 10), 10)
-						&& this.isInteger(startDate.substring(8, 10), 10)
-						&& this.isInteger(endDate.substring(8, 10), 10))) {
-			startCalendar.set(Integer.valueOf(startDate.substring(0, 4)),
-					Integer.valueOf(startDate.substring(5, 7)),
-					Integer.valueOf(startDate.substring(8, 10)));
-			endCalendar.set(Integer.valueOf(endDate.substring(0, 4)),
-					Integer.valueOf(endDate.substring(5, 7)),
-					Integer.valueOf(endDate.substring(8, 10)));
-			long diffMill = endCalendar.getTimeInMillis() - startCalendar.getTimeInMillis();
-			long diffDays = TimeUnit.DAYS.convert(diffMill, TimeUnit.MILLISECONDS);
+		if (!StringUtils.isAnyEmpty(startDate) && !StringUtils.isAnyEmpty(endDate)) {
 
-			if (diffDays <= maxKanbanIterationLength) {
-				// Scrum-enough
-				sprintIndicator = true;
+			Date strDt = convertIntoDate(startDate.substring(0, 4) + "-" + startDate.substring(5, 7) + "-" + startDate.substring(8, 10), "yyyy-MM-dd" );
+			Date endDt = convertIntoDate(endDate.substring(0, 4) + "-" + endDate.substring(5, 7) + "-" + endDate.substring(8, 10), "yyyy-MM-dd");
+
+			if (strDt != null && endDate != null) {
+				startCalendar.setTime(strDt);
+				endCalendar.setTime(endDt);
+
+				long diffMill = endCalendar.getTimeInMillis() - startCalendar.getTimeInMillis();
+				long diffDays = TimeUnit.DAYS.convert(diffMill, TimeUnit.MILLISECONDS);
+
+				if (diffDays <= maxKanbanIterationLength) {
+					// Scrum-enough
+					sprintIndicator = true;
+				}
 			}
 		} else {
 			// Default to kanban
