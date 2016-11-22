@@ -15,6 +15,7 @@ import com.capitalone.dashboard.gitlab.model.GitlabIssue;
 import com.capitalone.dashboard.gitlab.model.GitlabLabel;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.gitlab.model.GitlabTeam;
+import com.capitalone.dashboard.model.BaseModel;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.Scope;
@@ -55,7 +56,8 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		List<ScopeOwnerCollectorItem> currentTeams = new ArrayList<>();
 		for(GitlabTeam team : gitlabTeams) {
 			String teamId = String.valueOf(team.getId());
-			ScopeOwnerCollectorItem scopeOwnerCollectorItem = featureDataMapper.mapToScopeOwnerCollectorItem(team, findExistingTeamId(teamId), gitlabFeatureCollectorId);
+			ObjectId existingId = getExistingId(teamRepo.getTeamIdById(teamId));
+			ScopeOwnerCollectorItem scopeOwnerCollectorItem = featureDataMapper.mapToScopeOwnerCollectorItem(team, existingId, gitlabFeatureCollectorId);
 			currentTeams.add(scopeOwnerCollectorItem);
 		}
 		
@@ -78,7 +80,8 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		List<Scope> currentProjects = new ArrayList<>();
 		for(GitlabProject project : projects) {
 			String projectId = String.valueOf(project.getId());
-			Scope scope = featureDataMapper.mapToScopeItem(project, findExistingProjectId(projectId), gitlabFeatureCollectorId);
+			ObjectId existingId = getExistingId(projectRepo.getScopeIdById(projectId));
+			Scope scope = featureDataMapper.mapToScopeItem(project, existingId, gitlabFeatureCollectorId);
 			currentProjects.add(scope);
 		}
 		List<Scope> savedProjects = projectRepo.findScopeByCollectorId(gitlabFeatureCollectorId);
@@ -112,7 +115,8 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		List<Feature> updatedFeatures = new ArrayList<>();
 		for(GitlabIssue issue : gitlabIssues) {
 			String issueId = String.valueOf(issue.getId());
-			Feature feature = featureDataMapper.mapToFeatureItem(issue, inProgressLabels, findExistingIssueId(issueId), gitlabCollector.getId());
+			ObjectId existingId = getExistingId(featureRepo.getFeatureIdById(issueId));
+			Feature feature = featureDataMapper.mapToFeatureItem(issue, inProgressLabels, existingId, gitlabCollector.getId());
 			updatedFeatures.add(feature);
 		}
 		
@@ -129,45 +133,14 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	public List<ScopeOwnerCollectorItem> findEnabledTeams(ObjectId collectorId) {
 		return teamRepo.findEnabledTeams(collectorId);
 	}
-
-	private ObjectId findExistingTeamId(String teamId) {
-		List<ScopeOwnerCollectorItem> savedTeams = teamRepo.getTeamIdById(teamId);
-
-		// Not sure of the state of the data
-		if (savedTeams.size() > 1) {
-			LOGGER.warn("More than one collector item found for teamId " + teamId);
-		}
-
-		if (!savedTeams.isEmpty()) {
-			return savedTeams.get(0).getId();
-		}
-
-		return null;
-	}
 	
-	private ObjectId findExistingProjectId(String projectId) {
-		List<Scope> existingProjects = projectRepo.getScopeById(projectId);
-		
-		if(existingProjects.size() > 1) {
-			LOGGER.warn("More than one collector item found for projectId " + projectId);
+	private ObjectId getExistingId(List<? extends BaseModel> list) {
+		if(list.size() > 1) {
+			LOGGER.warn("More than one collector item found for the given Id");
 		}
 		
-		if(!existingProjects.isEmpty()) {
-			return existingProjects.get(0).getId();
-		}
-		
-		return null;
-	}
-	
-	private ObjectId findExistingIssueId(String id) {
-		List<Feature> existing = featureRepo.getFeatureIdById(id);
-		
-		if(existing.size() > 1) {
-			LOGGER.warn("More than one collector item found for featureId " + id);
-		}
-		
-		if(!existing.isEmpty()) {
-			return existing.get(0).getId();
+		if(!list.isEmpty()) {
+			return list.get(0).getId();
 		}
 		
 		return null;
