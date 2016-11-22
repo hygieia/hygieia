@@ -6,11 +6,11 @@ import java.net.URI;
 
 import org.junit.Test;
 
-public class GitlabUrlUtilityTest {
+public class GitlabUriUtilityTest {
 	
 	private static final String host = "company.com";
 	
-	private GitlabUrlUtility urlUtility = new GitlabUrlUtility();
+	private GitlabUriUtility urlUtility = new GitlabUriUtility();
 
 	@Test
 	public void shouldBuildProjectsUri() {

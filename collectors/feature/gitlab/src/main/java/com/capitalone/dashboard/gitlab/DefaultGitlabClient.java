@@ -30,10 +30,10 @@ public class DefaultGitlabClient implements GitlabClient {
 	private static final String PAGINATION_HEADER = "X-Next-Page";
 	private final RestOperations restOperations;
 	private final FeatureSettings settings;
-	private final GitlabUrlUtility urlUtility;
+	private final GitlabUriUtility urlUtility;
 	
 	@Autowired
-	public DefaultGitlabClient(RestOperations restOperations, FeatureSettings settings, GitlabUrlUtility urlUtility) {
+	public DefaultGitlabClient(RestOperations restOperations, FeatureSettings settings, GitlabUriUtility urlUtility) {
 		this.restOperations = restOperations;
 		this.settings = settings;
 		this.urlUtility = urlUtility;

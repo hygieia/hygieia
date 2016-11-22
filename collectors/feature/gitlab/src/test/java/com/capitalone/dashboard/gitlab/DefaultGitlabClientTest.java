@@ -44,7 +44,7 @@ public class DefaultGitlabClientTest {
 	private FeatureSettings settings;
 	
 	@Mock
-	private GitlabUrlUtility gitlabUrlUtility;
+	private GitlabUriUtility gitlabUrlUtility;
 	
 	@Mock
 	private ResponseEntity<GitlabTeam[]> teamResponse;

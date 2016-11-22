@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
-public class GitlabUrlUtility {
+public class GitlabUriUtility {
 	
 	private static final String SCHEME = "https";
 	private static final String API_PATH_SEGMENT = "api";
