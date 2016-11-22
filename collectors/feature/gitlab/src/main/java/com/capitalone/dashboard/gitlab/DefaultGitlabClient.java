@@ -41,13 +41,13 @@ public class DefaultGitlabClient implements GitlabClient {
 
 	@Override
 	public List<GitlabTeam> getTeams() {
-		URI gitlabTeamUri = urlUtility.buildTeamUri(settings.getHost());
+		URI gitlabTeamUri = urlUtility.buildTeamsUri(settings.getHost());
 		return makePaginatedGitlabRequest(gitlabTeamUri, GitlabTeam[].class);
 	}
 	
 	@Override
 	public List<GitlabProject> getProjects(ScopeOwnerCollectorItem team) {
-		URI uri = urlUtility.buildProjectsUrl(settings.getHost(), team.getTeamId());
+		URI uri = urlUtility.buildProjectsUri(settings.getHost(), team.getTeamId());
 		return makePaginatedGitlabRequest(uri, GitlabProject[].class);
 	}
 	
@@ -64,7 +64,7 @@ public class DefaultGitlabClient implements GitlabClient {
 	
 	@Override
 	public List<GitlabIssue> getIssuesForProject(GitlabProject project) {
-		URI uri = urlUtility.buildIssuesForProjectUrl(settings.getHost(), String.valueOf(project.getId()));
+		URI uri = urlUtility.buildIssuesForProjectUri(settings.getHost(), String.valueOf(project.getId()));
 		List<GitlabIssue> issues = makePaginatedGitlabRequest(uri, GitlabIssue[].class);
 		for(GitlabIssue issue : issues) {
 			issue.setProject(project);
@@ -99,7 +99,7 @@ public class DefaultGitlabClient implements GitlabClient {
 	}
 
 	private List<GitlabBoard> getBoardsForProject(String projectId) {
-		URI gitlabBoardsUrl = urlUtility.buildBoardsUrl(settings.getHost(), projectId);
+		URI gitlabBoardsUrl = urlUtility.buildBoardsUri(settings.getHost(), projectId);
 		return makePaginatedGitlabRequest(gitlabBoardsUrl, GitlabBoard[].class);
 	}
 
