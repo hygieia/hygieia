@@ -86,8 +86,9 @@ feature.jiraOauthExpiretime=
 # the lowest level of Issues (e.g., "user story") specific to your Jira
 # instance.  Note:  You can retrieve your instance's IssueType Name
 # listings via the following URI:  https://[your-jira-domain-name]/rest/api/2/issuetype/
+# Multiple comma-separated values can be specified.
 #############################################################################
-feature.jiraIssueTypeId=Story
+feature.jiraIssueTypeNames=Story
 
 #############################################################################
 # In Jira, your instance will have its own custom field created for "sprint" or "timebox" details,

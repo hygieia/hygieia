@@ -92,7 +92,7 @@ public class DefaultJiraClient implements JiraClient {
 				String startDateStr = QUERY_DATE_FORMAT.format(new Date(startTime));
 				
 				String query = featureWidgetQueries.getStoryQuery(startDateStr,
-						featureSettings.getJiraIssueTypeId(), featureSettings.getStoryQuery());
+						featureSettings.getJiraIssueTypeNames(), featureSettings.getStoryQuery());
 				
 				Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(
 						query, featureSettings.getPageSize(), pageStart, DEFAULT_FIELDS);

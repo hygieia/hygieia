@@ -37,7 +37,7 @@ public class FeatureRepositoryImpl implements FeatureRepositoryCustom {
         BasicQuery query = null;
         if (minimal) {
             query = new BasicQuery(queryStr,
-                    "{'sStatus': 1, 'sNumber': 1, 'sName': 1, 'changeDate': 1, 'sSprintID': 1, 'sSprintName': 1, 'sSprintBeginDate': 1, 'sSprintEndDate': 1, 'sEpicID' : 1,'sEpicNumber' : 1, 'sEpicName' : 1, 'sEstimate': 1, 'sEstimateTime': 1}");
+                    "{'sStatus': 1, 'sNumber': 1, 'sName': 1, 'changeDate': 1, 'sUrl': 1, 'sSprintID': 1, 'sSprintName': 1, 'sSprintUrl': 1, 'sSprintBeginDate': 1, 'sSprintEndDate': 1, 'sEpicID' : 1,'sEpicNumber' : 1, 'sEpicName' : 1, 'sEpicUrl' : 1, 'sEstimate': 1, 'sEstimateTime': 1}");
         } else {
             query = new BasicQuery(queryStr);
         }
@@ -59,7 +59,7 @@ public class FeatureRepositoryImpl implements FeatureRepositoryCustom {
         BasicQuery query = null;
         if (minimal) {
             query = new BasicQuery("{'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintID' : {$ne : \"\"}} , {'sSprintAssetState': { $regex: '^active$', $options: 'i' } } , { $or : [{'sSprintEndDate' : {$eq : null}} , {'sSprintEndDate' : {$eq : ''}} , {'sSprintEndDate' : {$gte : '9999-12-31T59:59:59.999999'}}] } ] }, $orderby: { 'sStatus' :-1 }",
-                    "{'sStatus': 1, 'sNumber': 1, 'sName': 1, 'changeDate': 1, 'sSprintID': 1, 'sSprintName': 1, 'sSprintBeginDate': 1, 'sSprintEndDate': 1, 'sEpicID' : 1,'sEpicNumber' : 1, 'sEpicName' : 1, 'sEstimate': 1, 'sEstimateTime': 1}");
+                    "{'sStatus': 1, 'sNumber': 1, 'sName': 1, 'changeDate': 1, 'sUrl': 1, 'sSprintID': 1, 'sSprintName': 1, 'sSprintUrl': 1, 'sSprintBeginDate': 1, 'sSprintEndDate': 1, 'sEpicID' : 1,'sEpicNumber' : 1, 'sEpicName' : 1, 'sEpicUrl' : 1, 'sEstimate': 1, 'sEstimateTime': 1}");
         } else {
             query = new BasicQuery("{'isDeleted' : 'False', $and : [{'sSprintID' : {$ne : null}} , {'sSprintID' : {$ne : \"\"}} , {'sSprintAssetState': { $regex: '^active$', $options: 'i' } } , { $or : [{'sSprintEndDate' : {$eq : null}} , {'sSprintEndDate' : {$eq : ''}} , {'sSprintEndDate' : {$gte : '9999-12-31T59:59:59.999999'}}] } ] }, $orderby: { 'sStatus' :-1 }");
         }
@@ -78,7 +78,7 @@ public class FeatureRepositoryImpl implements FeatureRepositoryCustom {
         BasicQuery query = null;
         if (minimal) {
             query = new BasicQuery("{'isDeleted' : 'False', $or : [{'sSprintID' : {$eq : null}}, {'sSprintID' : {$eq : \"\"}}] }, $orderby: { 'sStatus' :-1 }",
-                    "{'sStatus': 1, 'sNumber': 1, 'sName': 1, 'changeDate': 1, 'sSprintID': 1, 'sSprintName': 1, 'sSprintBeginDate': 1, 'sSprintEndDate': 1, 'sEpicID' : 1,'sEpicNumber' : 1, 'sEpicName' : 1, 'sEstimate': 1, 'sEstimateTime': 1}");
+                    "{'sStatus': 1, 'sNumber': 1, 'sName': 1, 'changeDate': 1, 'sUrl': 1, 'sSprintID': 1, 'sSprintName': 1, 'sSprintUrl': 1, 'sSprintBeginDate': 1, 'sSprintEndDate': 1, 'sEpicID' : 1,'sEpicNumber' : 1, 'sEpicName' : 1, 'sEpicUrl' : 1, 'sEstimate': 1, 'sEstimateTime': 1}");
         } else {
             query = new BasicQuery("{'isDeleted' : 'False', $or : [{'sSprintID' : {$eq : null}}, {'sSprintID' : {$eq : \"\"}}] }, $orderby: { 'sStatus' :-1 }");
         }

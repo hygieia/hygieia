@@ -9,6 +9,7 @@ import com.atlassian.jira.rest.client.api.IdentifiableEntity;
  */
 public class Sprint implements IdentifiableEntity<Long> {
 	private Long id;
+	private Long rapidViewId;
 	private String state;
 	private String name;
 	private String startDateStr;
@@ -27,6 +28,18 @@ public class Sprint implements IdentifiableEntity<Long> {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	/**
+     * @return the rapidViewId
+     */
+    public Long getRapidViewId() {
+        return rapidViewId;
+    }
+    /**
+     * @param rapidViewId the rapidViewId to set
+     */
+    public void setRapidViewId(Long rapidViewId) {
+        this.rapidViewId = rapidViewId;
+    }
 	/**
 	 * @return the state
 	 */

@@ -4,6 +4,7 @@ select:
  - Name
  - Status.Name
  - AssetState
+ - AssetType
  - Estimate
  - IsDeleted
  - ChangeDate

@@ -196,7 +196,11 @@ public class StoryDataClientImpl implements StoryDataClient {
 			
 			Map<String, String> issueEpics = new HashMap<>();
 			ObjectId jiraFeatureId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
-			String issueTypeName = featureSettings.getJiraIssueTypeId();
+			Set<String> issueTypeNames = new HashSet<>();
+			for (String issueTypeName : featureSettings.getJiraIssueTypeNames()) {
+				issueTypeNames.add(issueTypeName.toLowerCase(Locale.getDefault()));
+			}
+			
 			
 			for (Issue issue : currentPagedJiraRs) {
 				String issueId = TOOLS.sanitizeResponse(issue.getId());
@@ -212,7 +216,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 				IssueField epic = fields.get(featureSettings.getJiraEpicIdFieldName());
 				IssueField sprint = fields.get(featureSettings.getJiraSprintDataFieldName());
 				
-				if (TOOLS.sanitizeResponse(issueType.getName()).equalsIgnoreCase(issueTypeName)) {
+				if (issueTypeNames.contains(TOOLS.sanitizeResponse(issueType.getName()).toLowerCase(Locale.getDefault()))) {
 					if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug(String.format("[%-12s] %s", 
 								TOOLS.sanitizeResponse(issue.getKey()),
@@ -224,6 +228,10 @@ public class StoryDataClientImpl implements StoryDataClient {
 					
 					// ID
 					feature.setsId(TOOLS.sanitizeResponse(issue.getId()));
+					
+					// Type
+					feature.setsTypeId(TOOLS.sanitizeResponse(issueType.getId()));
+					feature.setsTypeName(TOOLS.sanitizeResponse(issueType.getName()));
 
 					processFeatureData(feature, issue, fields);
 					
@@ -265,7 +273,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		}
 	}
 	
-	@SuppressWarnings("PMD.ExcessiveMethodLength")
+	@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"})
 	private void processFeatureData(Feature feature, Issue issue, Map<String, IssueField> fields) {
 		BasicProject project = issue.getProject();
 		String status = this.toCanonicalFeatureStatus(issue.getStatus().getName());
@@ -282,6 +290,11 @@ public class StoryDataClientImpl implements StoryDataClient {
 
 		// sState
 		feature.setsState(TOOLS.sanitizeResponse(status));
+		
+		// sUrl (Example: 'http://my.jira.com/browse/KEY-1001')
+        feature.setsUrl(featureSettings.getJiraBaseUrl() 
+                + (featureSettings.getJiraBaseUrl().substring(featureSettings.getJiraBaseUrl().length()-1).equals("/") ? "" : "/")
+                + "browse/" + TOOLS.sanitizeResponse(issue.getKey()));
 		
 		int originalEstimate = 0;
 		
@@ -387,6 +400,11 @@ public class StoryDataClientImpl implements StoryDataClient {
 	
 				// sEpicName
 				feature.setsEpicName(TOOLS.sanitizeResponse(epicName));
+				
+				// sEpicUrl (Example: 'http://my.jira.com/browse/KEY-1001')
+		        feature.setsEpicUrl(featureSettings.getJiraBaseUrl() 
+		                + (featureSettings.getJiraBaseUrl().substring(featureSettings.getJiraBaseUrl().length()-1).equals("/") ? "" : "/")
+		                + "browse/" + TOOLS.sanitizeResponse(epicNumber));
 	
 				// sEpicBeginDate - mapped to create date
 				if ((epicBeginDate != null) && !(epicBeginDate.isEmpty())) {
@@ -441,6 +459,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		feature.setsEpicIsDeleted("False");
 	}
 	
+	@SuppressWarnings("PMD.NPathComplexity")
 	private void processSprintData(Feature feature, IssueField sprintField) {
 		if (sprintField != null && sprintField.getValue() != null && !"".equals(sprintField.getValue())) {
 			Object sValue = sprintField.getValue();
@@ -468,6 +487,14 @@ public class StoryDataClientImpl implements StoryDataClient {
 						feature.setsSprintName(sprint.getName());
 					} else {
 						feature.setsSprintName("");
+					}
+					
+					// sSprintUrl (Example: 'http://my.jira.com/secure/RapidBoard.jspa?rapidView=123&view=reporting&chart=sprintRetrospective&sprint=1597' where sprintID = 1597 and rapidViewID = 123)
+					if (StringUtils.isNotEmpty(feature.getsSprintID()) && sprint.getRapidViewId() != null) {
+    			        feature.setsSprintUrl(featureSettings.getJiraBaseUrl() 
+    			                + (featureSettings.getJiraBaseUrl().substring(featureSettings.getJiraBaseUrl().length()-1).equals("/") ? "" : "/")
+    			                + "secure/RapidBoard.jspa?rapidView=" + sprint.getRapidViewId()
+    			                + "&view=reporting&chart=sprintRetrospective&sprint=" + feature.getsSprintID());
 					}
 	
 					// sSprintBeginDate
