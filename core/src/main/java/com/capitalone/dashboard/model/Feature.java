@@ -40,10 +40,13 @@ public class Feature extends BaseModel {
 	private String sId;
 	private String sNumber;
 	private String sName;
+	private String sTypeId;
+	private String sTypeName;
 	private String sStatus;
 	private String sState;
 	private String sEstimate; // estimate in story points
 	private Integer sEstimateTime; // estimate in minutes
+	private String sUrl;
 	@Indexed
 	private String changeDate;
 	private String isDeleted;
@@ -82,6 +85,7 @@ public class Feature extends BaseModel {
 	private String sSprintName;
 	@Indexed
 	private String sSprintID;
+	private String sSprintUrl;
 
 	/*
 	 * Epic data
@@ -93,6 +97,7 @@ public class Feature extends BaseModel {
 	private String sEpicEndDate;
 	private String sEpicBeginDate;
 	private String sEpicName;
+	private String sEpicUrl;
 	private String sEpicNumber;
 	private String sEpicID;
 
@@ -139,6 +144,22 @@ public class Feature extends BaseModel {
 	public void setsName(String sName) {
 		this.sName = sName;
 	}
+	
+	public String getsTypeId() {
+		return sTypeId;
+	}
+
+	public void setsTypeId(String sTypeId) {
+		this.sTypeId = sTypeId;
+	}
+
+	public String getsTypeName() {
+		return sTypeName;
+	}
+
+	public void setsTypeName(String sTypeName) {
+		this.sTypeName = sTypeName;
+	}
 
 	public String getsStatus() {
 		return sStatus;
@@ -171,6 +192,14 @@ public class Feature extends BaseModel {
 	public void setsEstimateTime(Integer sEstimateTime) {
 		this.sEstimateTime = sEstimateTime;
 	}
+	
+	public void setsUrl(String sUrl) {
+        this.sUrl = sUrl;
+    }
+
+    public String getsUrl() {
+        return sUrl;
+    }
 
 	public String getsProjectID() {
 		return sProjectID;
@@ -195,7 +224,15 @@ public class Feature extends BaseModel {
 	public void setsSprintID(String sSprintID) {
 		this.sSprintID = sSprintID;
 	}
+	
+    public void setsSprintUrl(String sSprintUrl) {
+        this.sSprintUrl = sSprintUrl;
+    }
 
+    public String getsSprintUrl() {
+        return sSprintUrl;
+    }
+    
 	public String getsTeamID() {
 		return sTeamID;
 	}
@@ -299,6 +336,14 @@ public class Feature extends BaseModel {
 	public String getsEpicName() {
 		return this.sEpicName;
 	}
+	
+	public void setsEpicUrl(String sEpicUrl) {
+        this.sEpicUrl = sEpicUrl;
+    }
+
+    public String getsEpicUrl() {
+        return sEpicUrl;
+    }
 
 	public void setsEpicBeginDate(String sEpicBeginDate) {
 		this.sEpicBeginDate = sEpicBeginDate;

@@ -32,8 +32,18 @@
   .story-done {
     color: @dash-status-pass;
   }
+
   .issue-done {
     text-decoration: line-through;
+  }
+  
+  .feature-link {
+    a {
+        color: @dash-dashboard-text;
+        &:hover {
+            color: @dash-dashboard-text-hover;
+        }
+    }
   }
 	// Handles Feature Widget agile view transition switching
   .animate-show.ng-hide-remove {

@@ -137,6 +137,7 @@
        */
       var sprintID = null;
       var sprintName = null;
+      var sprintUrl = null;
       var daysTilEnd = null;
       var iteration = null;
       var issue = null;
@@ -157,6 +158,7 @@
             issue = {
               sNumber: data.result[i].sNumber,
               sName: data.result[i].sName,
+              sUrl: data.result[i].sUrl,
               changeDate: data.result[i].changeDate,
               sEstimate: data.result[i].sEstimate,
               sEstimateTime: data.result[i].sEstimateTime !== null ? (parseInt(data.result[i].sEstimateTime)/60).toString() : null,
@@ -168,9 +170,11 @@
         if (data.result[i].sSprintID === undefined) {
           sprintID = "[No Sprint Available]";
           sprintName = "[No Sprint Available]";
+          sprintUrl = null;
         } else {
           sprintID = data.result[i].sSprintID;
           sprintName = data.result[i].sSprintName;
+          sprintUrl = data.result[i].sSprintUrl;
         }
         
         if (isKanban && (sprintID == null || sprintID === "" )) {
@@ -200,6 +204,7 @@
           iteration = {
             id: sprintID,
             name: sprintName,
+            url: sprintUrl,
             tilEnd: daysTilEnd
           };
           iterations.push(iteration);
