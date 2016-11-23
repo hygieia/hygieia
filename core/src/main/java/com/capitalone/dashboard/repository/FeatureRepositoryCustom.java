@@ -2,6 +2,8 @@ package com.capitalone.dashboard.repository;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.capitalone.dashboard.model.Feature;
 
 /**
@@ -18,7 +20,7 @@ public interface FeatureRepositoryCustom {
      * @param minimal
      * @return
      */
-    List<Feature> findByActiveEndingSprints(String sTeamId, String sProjectId, String currentISODateTime, boolean minimal);
+    List<Feature> findByActiveEndingSprints(String sTeamId, String sProjectId, ObjectId collectorId, String currentISODateTime, boolean minimal);
 
     /**
      * Find all features that have sprints set but without an end date (or an end date >= 9999-12-31 EOD)
@@ -28,7 +30,7 @@ public interface FeatureRepositoryCustom {
      * @param minimal
      * @return
      */
-    List<Feature> findByUnendingSprints(String sTeamId, String sProjectId, boolean minimal);
+    List<Feature> findByUnendingSprints(String sTeamId, String sProjectId, ObjectId collectorId, boolean minimal);
     
     /**
      * Find all features without sprints set
@@ -38,6 +40,6 @@ public interface FeatureRepositoryCustom {
      * @param minimal
      * @return
      */
-    List<Feature> findByNullSprints(String sTeamId, String sProjectId, boolean minimal);
+    List<Feature> findByNullSprints(String sTeamId, String sProjectId, ObjectId collectorId, boolean minimal);
     
 }

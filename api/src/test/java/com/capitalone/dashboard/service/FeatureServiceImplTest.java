@@ -219,7 +219,7 @@ public class FeatureServiceImplTest {
 	public void testGetFeatureEstimates_ManySameSuperFeatures_OneSuperFeatureRs() {
 		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
 		when(collectorRepository.findOne(mockItem2.getCollectorId())).thenReturn(mockJiraCollector);
-		when(featureRepository.findByActiveEndingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
+		when(featureRepository.findByActiveEndingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyString(), Mockito.anyBoolean()))
 		        .thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
 
 		DataResponse<List<Feature>> result = featureService.getFeatureEpicEstimates(mockComponentId,
@@ -236,7 +236,7 @@ public class FeatureServiceImplTest {
 	public void testGetFeatureEstimates_ManySameSuperFeatures_OneSuperFeatureRs_Hours() {
 		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
 		when(collectorRepository.findOne(mockItem2.getCollectorId())).thenReturn(mockJiraCollector);
-		when(featureRepository.findByActiveEndingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
+		when(featureRepository.findByActiveEndingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyString(), Mockito.anyBoolean()))
 		        .thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
 
 		DataResponse<List<Feature>> result = featureService.getFeatureEpicEstimates(mockComponentId,
@@ -253,7 +253,7 @@ public class FeatureServiceImplTest {
 	public void testGetCurrentSprintDetail_ValidKanbanTeam_ShowKanban() {
 		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
 		when(collectorRepository.findOne(mockItem3.getCollectorId())).thenReturn(mockJiraCollector);
-		when(featureRepository.findByUnendingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean()))
+		when(featureRepository.findByUnendingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyBoolean()))
 				.thenReturn(Arrays.asList(mockJiraFeature3_oldkanban));
 
 		DataResponse<List<Feature>> result = featureService.getCurrentSprintDetail(mockComponentId,
@@ -270,8 +270,8 @@ public class FeatureServiceImplTest {
 	public void testGetRelevantStories_Kanban() {
 		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
 		when(collectorRepository.findOne(mockItem3.getCollectorId())).thenReturn(mockJiraCollector);
-		when(featureRepository.findByUnendingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature3_oldkanban, mockJiraFeature4_sprintkanban));
-		when(featureRepository.findByNullSprints(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature5_nullkanban));
+		when(featureRepository.findByUnendingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature3_oldkanban, mockJiraFeature4_sprintkanban));
+		when(featureRepository.findByNullSprints(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature5_nullkanban));
 		
 		DataResponse<List<Feature>> result = featureService.getRelevantStories(mockComponentId,
 				mockJiraFeature3_oldkanban.getsTeamID(), mockJiraFeature3_oldkanban.getsProjectID(), Optional.of("kanban"));
@@ -283,7 +283,7 @@ public class FeatureServiceImplTest {
 	public void testGetRelevantStories_Scrum() {
 		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
 		when(collectorRepository.findOne(mockItem3.getCollectorId())).thenReturn(mockJiraCollector);
-		when(featureRepository.findByActiveEndingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
+		when(featureRepository.findByActiveEndingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
 		
 		DataResponse<List<Feature>> result = featureService.getRelevantStories(mockComponentId,
 				mockJiraFeature3_oldkanban.getsTeamID(), mockJiraFeature3_oldkanban.getsProjectID(), Optional.of("scrum"));
@@ -295,7 +295,7 @@ public class FeatureServiceImplTest {
 	public void testGetAggregatedSprintEstimates_Scrum() {
 		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
 		when(collectorRepository.findOne(mockItem3.getCollectorId())).thenReturn(mockJiraCollector);
-		when(featureRepository.findByActiveEndingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
+		when(featureRepository.findByActiveEndingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature, mockJiraFeature2));
 		
 		DataResponse<SprintEstimate> result = featureService.getAggregatedSprintEstimates(mockComponentId, mockJiraFeature3_oldkanban.getsTeamID(), mockJiraFeature3_oldkanban.getsProjectID(), Optional.of("scrum"), Optional.of("storypoints"));
 		
@@ -309,8 +309,8 @@ public class FeatureServiceImplTest {
 	public void testGetAggregatedSprintEstimates_Kanban() {
 		when(componentRepository.findOne(mockComponentId)).thenReturn(mockComponent);
 		when(collectorRepository.findOne(mockItem3.getCollectorId())).thenReturn(mockJiraCollector);
-		when(featureRepository.findByUnendingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature3_oldkanban, mockJiraFeature4_sprintkanban));
-		when(featureRepository.findByNullSprints(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature5_nullkanban));
+		when(featureRepository.findByUnendingSprints(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature3_oldkanban, mockJiraFeature4_sprintkanban));
+		when(featureRepository.findByNullSprints(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenReturn(Arrays.asList(mockJiraFeature5_nullkanban));
 		
 		DataResponse<SprintEstimate> result = featureService.getAggregatedSprintEstimates(mockComponentId, mockJiraFeature3_oldkanban.getsTeamID(), mockJiraFeature3_oldkanban.getsProjectID(), Optional.of("kanban"), Optional.of("storypoints"));
 		
