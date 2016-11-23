@@ -29,10 +29,10 @@
 			<div class="widget-body" fit-text=".build-summary-count > span" fit-text-max="40">
 				<div class="row">
 					<div class="col-xs-4">
-						<div class="story-summary-count story-total">
-							<span>{{ctrl.totalStoryPoints}}</span>
+						<div class="story-summary-count story-open">
+							<span>{{ctrl.openStoryPoints}}</span>
 						</div>
-						<div class="story-summary-type">Total</div>
+						<div class="story-summary-type">Open</div>
 					</div>
 					<div class="col-xs-4">
 						<div class="story-summary-count story-wip">
@@ -51,15 +51,27 @@
 		</div>
 
 		<div class="widget">
-			<div class="widget-body">
-				<div class="widget-heading">Features in Progress
+			<div class="widget-body" ng-if="ctrl.listType === 'epics'">
+				<div class="widget-heading">Epics in Progress
 					<button class="pull-right btn-default btn-xm active" ng-show="ctrl.showFeatureLimitButton" ng-click="ctrl.setFeatureLimit()" ng-init="ctrl.featureLimit=4">+/-</button>
 				</div>
-				<div class="dash-row" ng-repeat="feature in ctrl.epicStoryPoints | limitTo:ctrl.featureLimit">
-					<div class="pull-right">{{feature.sEstimate}}</div>
-					<div class="dash-overflow">{{feature.sEpicName}}</div>
+				<div class="dash-row" ng-repeat="epic in ctrl.epicStoryPoints | limitTo:ctrl.featureLimit">
+					<div class="pull-right">{{epic.sEstimate}}</div>
+					<div class="dash-overflow">{{epic.sEpicName}}</div>
 				</div>
 			</div>
+			
+			<div class="widget-body" ng-if="ctrl.listType === 'issues'">
+                <div class="widget-heading">Issues in Progress
+                    <button class="pull-right btn-default btn-xm active" ng-show="ctrl.showFeatureLimitButton" ng-click="ctrl.setFeatureLimit()" ng-init="ctrl.featureLimit=4">+/-</button>
+                </div>
+                <div class="dash-row" ng-repeat="issue in ctrl.issueStoryPoints | limitTo:ctrl.featureLimit">
+                    <div class="pull-right" ng-if="ctrl.estimateMetricType === 'storypoints'">{{issue.sEstimate}}</div>
+                    <div class="pull-right" ng-if="ctrl.estimateMetricType === 'hours'">{{issue.sEstimateTime}}</div>
+                    <div class="dash-overflow" ng-if="issue.sStatus !== 'done' && issue.sStatus !== 'accepted'">{{issue.sName}}</div>
+                    <div class="dash-overflow issue-done" ng-if="issue.sStatus === 'done' || issue.sStatus === 'accepted'">{{issue.sName}}</div>
+                </div>
+            </div>
 		</div>
 	</div>
 
@@ -93,10 +105,10 @@
 			<div class="widget-body" fit-text=".build-summary-count > span" fit-text-max="40">
 				<div class="row">
 					<div class="col-xs-6">
-						<div class="story-summary-count story-total">
-							<span>{{ctrl.totalStoryPointsKanban}}</span>
+						<div class="story-summary-count story-open">
+							<span>{{ctrl.openStoryPointsKanban}}</span>
 						</div>
-						<div class="story-summary-type">Total</div>
+						<div class="story-summary-type">Open</div>
 					</div>
 					<div class="col-xs-6">
 						<div class="story-summary-count story-wip">
@@ -109,15 +121,27 @@
 		</div>
 
 		<div class="widget">
-			<div class="widget-body">
-				<div class="widget-heading">Features in Progress
+			<div class="widget-body" ng-if="ctrl.listType === 'epics'">
+				<div class="widget-heading">Epics in Progress
 					<button class="pull-right btn-default btn-xm active" ng-show="ctrl.showFeatureLimitButton" ng-click="ctrl.setFeatureLimit()" ng-init="ctrl.featureLimit=4">+/-</button>
 				</div>
-				<div class="dash-row" ng-repeat="feature in ctrl.epicStoryPointsKanban | limitTo:ctrl.featureLimit">
-					<div class="pull-right">{{feature.sEstimate}}</div>
-					<div class="dash-overflow">{{feature.sEpicName}}</div>
+				<div class="dash-row" ng-repeat="epic in ctrl.epicStoryPointsKanban | limitTo:ctrl.featureLimit">
+					<div class="pull-right">{{epic.sEstimate}}</div>
+					<div class="dash-overflow">{{epic.sEpicName}}</div>
 				</div>
 			</div>
+			
+			<div class="widget-body" ng-if="ctrl.listType === 'issues'">
+                <div class="widget-heading">Issues in Progress
+                    <button class="pull-right btn-default btn-xm active" ng-show="ctrl.showFeatureLimitButton" ng-click="ctrl.setFeatureLimit()" ng-init="ctrl.featureLimit=4">+/-</button>
+                </div>
+                <div class="dash-row" ng-repeat="issue in ctrl.issueStoryPointsKanban | limitTo:ctrl.featureLimit">
+                    <div class="pull-right" ng-if="ctrl.estimateMetricType === 'storypoints'">{{issue.sEstimate}}</div>
+                    <div class="pull-right" ng-if="ctrl.estimateMetricType === 'hours'">{{issue.sEstimateTime}}</div>
+                    <div class="dash-overflow" ng-if="issue.sStatus !== 'done' && issue.sStatus !== 'accepted'">{{issue.sName}}</div>
+                    <div class="dash-overflow issue-done" ng-if="issue.sStatus === 'done' || issue.sStatus === 'accepted'">{{issue.sName}}</div>
+                </div>
+            </div>
 		</div>
 	</div>
 

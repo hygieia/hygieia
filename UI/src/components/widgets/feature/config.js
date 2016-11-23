@@ -23,6 +23,9 @@
 		ctrl.submitted = false;
 		ctrl.hideScopeOwnerDropDown = true;
 		ctrl.hideProjectDropDown = true;
+		ctrl.hideEstimateMetricDropDown = true;
+		ctrl.hideSprintTypeDropDown = true;
+        ctrl.hideListTypeDropDown = true;
 		ctrl.evaluateTypeSelection = evaluateTypeSelection;
 
 		// public variables
@@ -45,6 +48,8 @@
 		ctrl.estimateMetrics = [{type: "hours", value: "Hours"}, {type: "storypoints", value: "Story Points" }];
 		ctrl.sprintType = "";
 		ctrl.sprintTypes = [{type: "scrum", value: "Scrum"}, {type: "kanban", value: "Kanban"}, {type: "scrumkanban", value:"Both"}];
+		ctrl.listType = "";
+		ctrl.listTypes = [{type: "epics", value: "Epics"}, {type: "issues", value: "Issues"}];
 
 
 		// Request collectors
@@ -61,6 +66,7 @@
 		
 		initEstimateMetricType(widgetConfig);
 		initSprintType(widgetConfig);
+		initListType(widgetConfig);
 
 		function processProjectsResponse(data) {
 			var projects = [];
@@ -247,12 +253,19 @@
 					ctrl.hideScopeOwnerDropDown = true;
 					ctrl.hideProjectDropDown = true;
 					ctrl.hideSprintTypeDropDown = true;
+					ctrl.hideListTypeDropDown = true;
 				} else {
 					ctrl.valid = true;
 					ctrl.collectorId = ctrl.featureTypeOptions[ctrl.selectedTypeIndex];
+					if (ctrl.collectorId.value === 'Jira') {
+	                    ctrl.hideEstimateMetricDropDown = false;
+	                } else {
+	                    ctrl.hideEstimateMetricDropDown = true;
+	                }
 					ctrl.hideScopeOwnerDropDown = false;
 					ctrl.hideProjectDropDown = false;
 					ctrl.hideSprintTypeDropDown = false;
+					ctrl.hideListTypeDropDown = false;
 				}
 			}
 		}
@@ -272,6 +285,14 @@
 				ctrl.sprintType = 'kanban';
 			}
 		}
+		
+		function initListType(widgetConfig) {
+            if (widgetConfig && widgetConfig.options && widgetConfig.options.listType) {
+                ctrl.listType = widgetConfig.options.listType;
+            } else {
+                ctrl.listType = 'epics';
+            }
+        }
 
 		function evaluateTypeSelection() {
 			var tempTypeOptions = [];
@@ -304,6 +325,7 @@
 				ctrl.hideProjectDropDown = true;
 				ctrl.hideEstimateMetricDropDown = true;
 				ctrl.hideSprintTypeDropDown = true;
+                ctrl.hideListTypeDropDown = true;
 			} else {
 				if (ctrl.collectorId.value === 'Jira') {
 					ctrl.hideEstimateMetricDropDown = false;
@@ -313,6 +335,7 @@
 				ctrl.hideScopeOwnerDropDown = false;
 				ctrl.hideProjectDropDown = false;
 				ctrl.hideSprintTypeDropDown = false;
+                ctrl.hideListTypeDropDown = false;
 			}
 		}
 
@@ -339,7 +362,8 @@
     				      scrum: "scrum" === ctrl.sprintType
     				    },
     					estimateMetricType : ctrl.estimateMetricType,
-    					sprintType: ctrl.sprintType
+    					sprintType: ctrl.sprintType,
+    					listType: ctrl.listType
     				},
     				componentId : modalData.dashboard.application.components[0].id
     			};
@@ -357,7 +381,8 @@
                           scrum: "scrum" === ctrl.sprintType
                         },
                         estimateMetricType : ctrl.estimateMetricType,
-                        sprintType: ctrl.sprintType
+                        sprintType: ctrl.sprintType,
+                        listType: ctrl.listType
                     },
                     componentId : modalData.dashboard.application.components[0].id,
                     collectorItemId : ctrl.collectorItemId.value

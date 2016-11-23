@@ -423,7 +423,6 @@ public class FeatureServiceImpl implements FeatureService {
 	 * @param minimal		if the resulting list of Features should be minimally populated (see queries for fields)
 	 * @return
 	 */
-	@SuppressWarnings("PMD")
 	private List<Feature> getFeaturesForCurrentSprints(String teamId, String projectId, String agileType, boolean minimal) {
 		List<Feature> rt = new ArrayList<Feature>();
 		
@@ -436,15 +435,6 @@ public class FeatureServiceImpl implements FeatureService {
 			 *   - the feature has a sprint set that does not have an end date
 			 *   - the feature has a sprint set that has an end date >= EOT (9999-12-31T59:59:59.999999)
 			 */
-		    /*
-			if (minimal) {
-				rt.addAll(featureRepository.findByNullSprintsMinimal(teamId));
-				rt.addAll(featureRepository.findByUnendingSprintsMinimal(teamId));
-			} else {
-				rt.addAll(featureRepository.findByNullSprints(teamId));
-				rt.addAll(featureRepository.findByUnendingSprints(teamId));
-			}
-			*/
 		    rt.addAll(featureRepository.findByNullSprints(teamId, projectId, minimal));
 		    rt.addAll(featureRepository.findByUnendingSprints(teamId, projectId, minimal));
 		} else {
@@ -453,13 +443,6 @@ public class FeatureServiceImpl implements FeatureService {
 			 * A feature is part of a scrum sprint if any of the following are true:
 			 *   - the feature has a sprint set that has start <= now <= end and end < EOT (9999-12-31T59:59:59.999999)
 			 */
-		    /*
-			if (minimal) {
-				rt.addAll(featureRepository.findByActiveEndingSprintsMinimal(teamId, now));
-			} else {
-				rt.addAll(featureRepository.findByActiveEndingSprints(teamId, now));   
-			}
-			*/
 		    rt.addAll(featureRepository.findByActiveEndingSprints(teamId, projectId, now, minimal));
 		}
 		
