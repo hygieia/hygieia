@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.when;
@@ -116,7 +117,7 @@ public class DefaultGitlabClientTest {
 		ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
 		team.setTeamId(teamId);
 		when(gitlabUrlUtility.buildProjectsUri(host, teamId)).thenReturn(uri);
-		when(gitlabUrlUtility.updatePage(uri, "2")).thenReturn(uri);
+		when(gitlabUrlUtility.updatePage(isA(URI.class), anyString())).thenReturn(uri);
 		when(restOperations.exchange(eq(uri), eq(HttpMethod.GET), isA(HttpEntity.class), eq(GitlabProject[].class))).thenReturn(projectResponse);
 		when(projectResponse.getHeaders()).thenReturn(headers);
 		when(headers.get("X-Next-Page")).thenReturn(Lists.newArrayList("2")).thenReturn(Lists.newArrayList("2")).thenReturn(Lists.newArrayList(""));

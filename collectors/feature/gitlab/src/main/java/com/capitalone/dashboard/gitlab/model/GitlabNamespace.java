@@ -1,13 +1,17 @@
 package com.capitalone.dashboard.gitlab.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GitlabNamespace {
 
 	private Long id;
 	private String name;
 	private String path;
-	private String updated_at;
+	@JsonProperty("updated_at")
+	private String updatedAt;
 	private String description;
-	private Long owner_id;
+	@JsonProperty("owner_id")
+	private Long ownerId;
 
 	public Long getId() {
 		return id;
@@ -33,12 +37,12 @@ public class GitlabNamespace {
 		this.path = path;
 	}
 
-	public String getUpdated_at() {
-		return updated_at;
+	public String getUpdatedAt() {
+		return updatedAt;
 	}
 
-	public void setUpdated_at(String updated_at) {
-		this.updated_at = updated_at;
+	public void setUpdatedAt(String updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 	public String getDescription() {
@@ -49,12 +53,12 @@ public class GitlabNamespace {
 		this.description = description;
 	}
 
-	public Long getOwner_id() {
-		return owner_id;
+	public Long getOwnerId() {
+		return ownerId;
 	}
 
-	public void setOwner_id(Long owner_id) {
-		this.owner_id = owner_id;
+	public void setOwnerId(Long ownerId) {
+		this.ownerId = ownerId;
 	}
 
 }

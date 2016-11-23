@@ -1,11 +1,14 @@
 package com.capitalone.dashboard.gitlab.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GitlabProject {
 	
 	private Long id;
 	private String name;
 	private String path;
-	private String last_activity_at;
+	@JsonProperty("last_activity_at")
+	private String lastActivityAt;
 	private GitlabNamespace namespace;
 	
 	public Long getId() {
@@ -32,12 +35,12 @@ public class GitlabProject {
 		this.path = path;
 	}
 
-	public String getLast_activity_at() {
-		return last_activity_at;
+	public String getLastActivityAt() {
+		return lastActivityAt;
 	}
 
-	public void setLast_activity_at(String last_activity_at) {
-		this.last_activity_at = last_activity_at;
+	public void setLastActivityAt(String lastActivityAt) {
+		this.lastActivityAt = lastActivityAt;
 	}
 
 	public GitlabNamespace getNamespace() {

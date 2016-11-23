@@ -74,16 +74,17 @@ public class DefaultGitlabClient implements GitlabClient {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <T> List<T> makePaginatedGitlabRequest(URI uri, Class gitlabResponseType) {
+		URI restUri = uri;
 		HttpEntity<String> headersEntity = buildAuthenticationHeader();
 		
 		List<T> body =  new ArrayList<>();
 		boolean hasNextPage = true;
 		while (hasNextPage) {
-			ResponseEntity<T[]> response = restOperations.exchange(uri, HttpMethod.GET, headersEntity, gitlabResponseType);
+			ResponseEntity<T[]> response = restOperations.exchange(restUri, HttpMethod.GET, headersEntity, gitlabResponseType);
 			CollectionUtils.addAll(body, response.getBody());
 			
 			if(hasNextPage = hasNextPage(response.getHeaders())) {
-				uri = urlUtility.updatePage(uri, response.getHeaders().get(PAGINATION_HEADER).get(0));
+				restUri = urlUtility.updatePage(restUri, response.getHeaders().get(PAGINATION_HEADER).get(0));
 			}
 		}
 		
@@ -111,12 +112,10 @@ public class DefaultGitlabClient implements GitlabClient {
 	}
 	
 	private boolean hasNextPage(HttpHeaders headers) {
-		String nextPage;
-		try {
-			nextPage = headers.get(PAGINATION_HEADER).get(0);
-		} catch (NullPointerException e) {
+		if (null == headers || CollectionUtils.isEmpty(headers.get(PAGINATION_HEADER))) {
 			return false;
 		}
+		String nextPage = headers.get(PAGINATION_HEADER).get(0);
 		return StringUtils.isNotBlank(nextPage);
 	}
 

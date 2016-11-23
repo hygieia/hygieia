@@ -97,7 +97,7 @@ public class FeatureDataMapperTest {
 		project.setNamespace(namespace);
 		GitlabMilestone milestone = new GitlabMilestone();
 		milestone.setId(23L);
-		milestone.setDue_date("date");
+		milestone.setDueDate("date");
 		GitlabIssue issue = new GitlabIssue();
 		issue.setState("closed");
 		issue.setLabels(labels);

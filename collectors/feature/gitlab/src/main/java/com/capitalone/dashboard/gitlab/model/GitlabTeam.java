@@ -1,11 +1,14 @@
 package com.capitalone.dashboard.gitlab.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GitlabTeam {
 
 	private Long id;
 	private String name;
 	private String description;
-	private String web_url;
+	@JsonProperty("web_url")
+	private String webUrl;
 
 	public Long getId() {
 		return id;
@@ -31,12 +34,12 @@ public class GitlabTeam {
 		this.description = description;
 	}
 
-	public String getWeb_url() {
-		return web_url;
+	public String getWebUrl() {
+		return webUrl;
 	}
 
-	public void setWeb_url(String web_url) {
-		this.web_url = web_url;
+	public void setWebUrl(String webUrl) {
+		this.webUrl = webUrl;
 	}
 
 }

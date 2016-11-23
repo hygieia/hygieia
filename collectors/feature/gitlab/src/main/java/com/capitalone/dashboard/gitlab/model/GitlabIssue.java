@@ -2,15 +2,19 @@ package com.capitalone.dashboard.gitlab.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GitlabIssue {
 
 	private Long id;
 	private Long iid;
-	private Long project_id;
+	@JsonProperty("project_id")
+	private Long projectId;
 	private String title;
 	private String description;
 	private String state;
-	private String updated_at;
+	@JsonProperty("updated_at")
+	private String updatedAt;
 	private List<String> labels;
 	private GitlabMilestone milestone;
 	private GitlabProject project;
@@ -31,12 +35,12 @@ public class GitlabIssue {
 		this.iid = iid;
 	}
 
-	public Long getProject_id() {
-		return project_id;
+	public Long getProjectId() {
+		return projectId;
 	}
 
-	public void setProject_id(Long project_id) {
-		this.project_id = project_id;
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
 	}
 
 	public String getTitle() {
@@ -63,12 +67,12 @@ public class GitlabIssue {
 		this.state = state;
 	}
 
-	public String getUpdated_at() {
-		return updated_at;
+	public String getUpdatedAt() {
+		return updatedAt;
 	}
 
-	public void setUpdated_at(String updated_at) {
-		this.updated_at = updated_at;
+	public void setUpdatedAt(String updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 	public List<String> getLabels() {

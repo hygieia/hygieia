@@ -63,7 +63,7 @@ public class FeatureDataMapper {
 	public Feature mapToFeatureItem(GitlabIssue gitlabIssue, List<String> inProgressLabelsForProject, ObjectId existingIssueId, ObjectId gitlabCollectorId) {
 		String issueId = String.valueOf(gitlabIssue.getId());
 		String storyNumber = String.valueOf(gitlabIssue.getIid());
-		String projectId = String.valueOf(gitlabIssue.getProject_id());
+		String projectId = String.valueOf(gitlabIssue.getProjectId());
 		String teamId = String.valueOf(gitlabIssue.getProject().getNamespace().getId());
 		
 		Feature issue = new Feature();
@@ -76,7 +76,7 @@ public class FeatureDataMapper {
 		issue.setsStatus(determineStoryStatus(gitlabIssue, inProgressLabelsForProject));
 		issue.setsState(ACTIVE_ASSET_STATE);
 		issue.setsEstimate("1");
-		issue.setChangeDate(gitlabIssue.getUpdated_at());
+		issue.setChangeDate(gitlabIssue.getUpdatedAt());
 		
 		//Project Data
 		issue.setsProjectID(projectId);
@@ -122,13 +122,13 @@ public class FeatureDataMapper {
 	}
 
 	private void setSprintData(GitlabIssue gitlabIssue, Feature issue) {
-		if (gitlabIssue.getMilestone() != null && StringUtils.isNotBlank(gitlabIssue.getMilestone().getDue_date())) {
+		if (gitlabIssue.getMilestone() != null && StringUtils.isNotBlank(gitlabIssue.getMilestone().getDueDate())) {
 			issue.setsSprintID(String.valueOf(gitlabIssue.getMilestone().getId()));
 			issue.setsSprintName(gitlabIssue.getMilestone().getTitle());
-			issue.setsSprintBeginDate(gitlabIssue.getMilestone().getCreated_at());
-			issue.setsSprintEndDate(gitlabIssue.getMilestone().getDue_date());
+			issue.setsSprintBeginDate(gitlabIssue.getMilestone().getCreatedAt());
+			issue.setsSprintEndDate(gitlabIssue.getMilestone().getDueDate());
 			issue.setsSprintAssetState(ACTIVE_ASSET_STATE);
-			issue.setsSprintChangeDate(gitlabIssue.getMilestone().getUpdated_at());
+			issue.setsSprintChangeDate(gitlabIssue.getMilestone().getUpdatedAt());
 			issue.setsSprintIsDeleted(FALSE_DELETED_STATE);
 		} 
 		else {

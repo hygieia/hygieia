@@ -1,16 +1,22 @@
 package com.capitalone.dashboard.gitlab.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GitlabMilestone {
 
 	private Long id;
-	private Long project_id;
+	@JsonProperty("project_id")
+	private Long projectId;
 	private String title;
 	private String description;
 	private String state;
-	private String due_date;
+	@JsonProperty("due_date")
+	private String dueDate;
 	private String iid;
-	private String created_at;
-	private String updated_at;
+	@JsonProperty("created_at")
+	private String createdAt;
+	@JsonProperty("updated_at")
+	private String updatedAt;
 
 	public Long getId() {
 		return id;
@@ -20,12 +26,12 @@ public class GitlabMilestone {
 		this.id = id;
 	}
 
-	public Long getProject_id() {
-		return project_id;
+	public Long getProjectId() {
+		return projectId;
 	}
 
-	public void setProject_id(Long project_id) {
-		this.project_id = project_id;
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
 	}
 
 	public String getTitle() {
@@ -52,12 +58,12 @@ public class GitlabMilestone {
 		this.state = state;
 	}
 
-	public String getDue_date() {
-		return due_date;
+	public String getDueDate() {
+		return dueDate;
 	}
 
-	public void setDue_date(String due_date) {
-		this.due_date = due_date;
+	public void setDueDate(String dueDate) {
+		this.dueDate = dueDate;
 	}
 
 	public String getIid() {
@@ -68,20 +74,20 @@ public class GitlabMilestone {
 		this.iid = iid;
 	}
 
-	public String getCreated_at() {
-		return created_at;
+	public String getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setCreated_at(String created_at) {
-		this.created_at = created_at;
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
 	}
 
-	public String getUpdated_at() {
-		return updated_at;
+	public String getUpdatedAt() {
+		return updatedAt;
 	}
 
-	public void setUpdated_at(String updated_at) {
-		this.updated_at = updated_at;
+	public void setUpdatedAt(String updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 }
