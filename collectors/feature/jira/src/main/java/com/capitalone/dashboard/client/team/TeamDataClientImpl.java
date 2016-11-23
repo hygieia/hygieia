@@ -3,6 +3,7 @@ package com.capitalone.dashboard.client.team;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
@@ -11,8 +12,6 @@ import com.capitalone.dashboard.util.FeatureSettings;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
@@ -59,16 +58,16 @@ public class TeamDataClientImpl implements TeamDataClient {
 	public int updateTeamInformation() {
 		int count = 0;
 		
-		JSONArray teams = jiraClient.getTeams();
+		List<Team> teams = jiraClient.getTeams();
 		
 		if (CollectionUtils.isNotEmpty(teams)) {
-			updateMongoInfoJSON(teams);
+			updateMongoInfo(teams);
 			count += teams.size();
 		} else {
 			List<BasicProject> projects = jiraClient.getProjects();
 			
 			if (CollectionUtils.isNotEmpty(projects)) {
-				updateMongoInfo(projects);
+				updateMongoInfoLegacy(projects);
 				count += projects.size();
 			}
 		}
@@ -83,11 +82,11 @@ public class TeamDataClientImpl implements TeamDataClient {
 	 * @param teamDetailArray
 	 *            A list response of Jira teams from the source system
 	 */
-	private void updateMongoInfoJSON(JSONArray teamDetailArray) {	
+	private void updateMongoInfo(List<Team> jiraTeams) {	
 		ObjectId jiraCollectorId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
 		
-		for (Object obj : teamDetailArray) {
-			String teamId = TOOLS.sanitizeResponse(((JSONObject) obj).get("id"));
+		for (Team jiraTeam : jiraTeams) {
+			String teamId = jiraTeam.getId();
 			
 			/*
 			 * Initialize DOMs
@@ -105,7 +104,7 @@ public class TeamDataClientImpl implements TeamDataClient {
 			team.setTeamId(teamId);
 
 			// name
-			team.setName(TOOLS.sanitizeResponse(getJSONString((JSONObject) obj, "name")));
+			team.setName(jiraTeam.getName());
 
 			// changeDate - does not exist for jira
 			team.setChangeDate("");
@@ -120,10 +119,6 @@ public class TeamDataClientImpl implements TeamDataClient {
 			teamRepo.save(team);
 		}
 	}
-
-	private String getJSONString(JSONObject obj, String field) {
-        return ((String) obj.get(field));
-    }
 	
 	/**
 	 * Updates the MongoDB with a JSONArray received from the source system
@@ -132,7 +127,8 @@ public class TeamDataClientImpl implements TeamDataClient {
 	 * @param currentPagedJiraRs
 	 *            A list response of Jira issues from the source system
 	 */
-	private void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
+	@Deprecated
+	private void updateMongoInfoLegacy(List<BasicProject> currentPagedJiraRs) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
 		}

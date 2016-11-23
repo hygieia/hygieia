@@ -41,6 +41,8 @@ import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.util.concurrent.Promise;
+import com.capitalone.dashboard.model.Team;
+import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import com.google.common.collect.Lists;
@@ -57,6 +59,7 @@ import com.google.common.collect.Lists;
 @Component
 public class DefaultJiraClient implements JiraClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultJiraClient.class);
+	private static final ClientUtil TOOLS = ClientUtil.getInstance();
 	
 	private static final String TEMPO_TEAMS_REST_SUFFIX = "rest/tempo-teams/1/team";
 	
@@ -150,8 +153,9 @@ public class DefaultJiraClient implements JiraClient {
 	}
 	
 	@Override
-	public JSONArray getTeams() {
-		JSONArray result = null;
+	@SuppressWarnings("PMD.NPathComplexity")
+	public List<Team> getTeams() {
+	    List<Team> result = new ArrayList<>();
 		
 		try {			
 			URL url = new URL(featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/")? "" : "/") 
@@ -185,21 +189,29 @@ public class DefaultJiraClient implements JiraClient {
 			request.setRequestProperty("Authorization" , "Basic " + featureSettings.getJiraCredentials());
 			request.connect();
 			
-			InputStream in = (InputStream) request.getContent();
-			BufferedReader inReader = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
-			StringBuilder sb = new StringBuilder();
-		    
-			int cp;
-		    while ((cp = inReader.read()) != -1) {
-				sb.append((char) cp);		      
-		    } 
-            JSONParser parser = new JSONParser();
-
-            try {
-                result = (JSONArray) parser.parse(sb.toString());
-            } catch (ParseException pe) {
-                LOGGER.error("Parser exception when parsing teams", pe);
-            } 
+			try (InputStreamReader streamReader = new InputStreamReader((InputStream) request.getContent(), Charset.forName("UTF-8"));
+			        BufferedReader inReader = new BufferedReader(streamReader)) {
+			    StringBuilder sb = new StringBuilder();	    
+    			int cp;
+    		    while ((cp = inReader.read()) != -1) {
+    				sb.append((char) cp);		      
+    		    }
+    		    
+                JSONParser parser = new JSONParser();
+                try {
+                    JSONArray teamsJson = (JSONArray) parser.parse(sb.toString());
+                    
+                    if (teamsJson != null) {
+                        for (Object obj : teamsJson) {
+                            String teamId = TOOLS.sanitizeResponse(((JSONObject) obj).get("id"));
+                            String teamName = TOOLS.sanitizeResponse(getJSONString((JSONObject) obj, "name"));
+                            result.add(new Team(teamId, teamName));
+                        }
+                    }
+                } catch (ParseException pe) {
+                    LOGGER.error("Parser exception when parsing teams", pe);
+                }
+			}
         } catch (org.springframework.web.client.RestClientException rce) {
             LOGGER.error("Client exception when loading teams", rce);
             throw rce;
@@ -213,6 +225,10 @@ public class DefaultJiraClient implements JiraClient {
 		
 		return result;
 	}
+	
+	private String getJSONString(JSONObject obj, String field) {
+        return ((String) obj.get(field));
+    }
 
 	@Override
 	public Issue getEpic(String epicKey) {
