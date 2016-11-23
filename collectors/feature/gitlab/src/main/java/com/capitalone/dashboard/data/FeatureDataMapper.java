@@ -20,6 +20,13 @@ import com.capitalone.dashboard.util.FeatureCollectorConstants;
 @Component
 public class FeatureDataMapper {
 	
+	private static final String EMPTY_STRING = "";
+	private static final String FALSE_DELETED_STATE = "False";
+	private static final String ACTIVE_ASSET_STATE = "Active";
+	private static final String FEATURE_IN_PROGRESS_STATUS = "In Progress";
+	private static final String FEATURE_DONE_STATUS = "Done";
+	private static final String GITLAB_DONE_STATUS = "closed";
+
 	public ScopeOwnerCollectorItem mapToScopeOwnerCollectorItem(GitlabTeam gitlabTeam, ObjectId existingTeamId, ObjectId gitlabFeatureCollectorId) {
 		String teamId = String.valueOf(gitlabTeam.getId());
 		
@@ -28,9 +35,9 @@ public class FeatureDataMapper {
 		team.setCollectorId(gitlabFeatureCollectorId);
 		team.setTeamId(teamId);
 		team.setName(gitlabTeam.getName());
-		team.setChangeDate("");
-		team.setAssetState("Active");
-		team.setIsDeleted("False");
+		team.setChangeDate(EMPTY_STRING);
+		team.setAssetState(ACTIVE_ASSET_STATE);
+		team.setIsDeleted(FALSE_DELETED_STATE);
 		
 		return team;
 	}
@@ -43,11 +50,11 @@ public class FeatureDataMapper {
 		project.setCollectorId(gitlabFeatureCollectorId);
 		project.setpId(projectId);
 		project.setName(gitlabProject.getName());
-		project.setBeginDate("");
-		project.setEndDate("");
-		project.setChangeDate("");
-		project.setAssetState("Active");
-		project.setIsDeleted("False");
+		project.setBeginDate(EMPTY_STRING);
+		project.setEndDate(EMPTY_STRING);
+		project.setChangeDate(EMPTY_STRING);
+		project.setAssetState(ACTIVE_ASSET_STATE);
+		project.setIsDeleted(FALSE_DELETED_STATE);
 		project.setProjectPath(gitlabProject.getPath());
 		
 		return project;
@@ -64,33 +71,33 @@ public class FeatureDataMapper {
 		issue.setsNumber(storyNumber);
 		issue.setsId(issueId);
 		issue.setCollectorId(gitlabCollectorId);
-		issue.setIsDeleted("False");
+		issue.setIsDeleted(FALSE_DELETED_STATE);
 		issue.setsName(gitlabIssue.getTitle());
 		issue.setsStatus(determineStoryStatus(gitlabIssue, inProgressLabelsForProject));
-		issue.setsState("Active");
+		issue.setsState(ACTIVE_ASSET_STATE);
 		issue.setsEstimate("1");
 		issue.setChangeDate(gitlabIssue.getUpdated_at());
 		
 		//Project Data
 		issue.setsProjectID(projectId);
-		issue.setsProjectName("");
-		issue.setsProjectBeginDate("");
-		issue.setsProjectEndDate("");
-		issue.setsProjectChangeDate("");
-		issue.setsProjectState("");
-		issue.setsProjectIsDeleted("False");
-		issue.setsProjectPath("");
+		issue.setsProjectName(EMPTY_STRING);
+		issue.setsProjectBeginDate(EMPTY_STRING);
+		issue.setsProjectEndDate(EMPTY_STRING);
+		issue.setsProjectChangeDate(EMPTY_STRING);
+		issue.setsProjectState(EMPTY_STRING);
+		issue.setsProjectIsDeleted(FALSE_DELETED_STATE);
+		issue.setsProjectPath(EMPTY_STRING);
 		
 		//Team Data
 		issue.setsTeamID(teamId);
-		issue.setsTeamAssetState("");
+		issue.setsTeamAssetState(EMPTY_STRING);
 		issue.setsTeamName(gitlabIssue.getProject().getNamespace().getName());
-		issue.setsTeamChangeDate("");
-		issue.setsTeamIsDeleted("False");
+		issue.setsTeamChangeDate(EMPTY_STRING);
+		issue.setsTeamIsDeleted(FALSE_DELETED_STATE);
 
 		//Set Owners Data
 		issue.setsOwnersChangeDate(new ArrayList<String>());
-		issue.setsOwnersState(Arrays.asList("Active"));
+		issue.setsOwnersState(Arrays.asList(ACTIVE_ASSET_STATE));
 		issue.setsOwnersIsDeleted(new ArrayList<String>());
 		
 		setEpicData(gitlabIssue, issue);
@@ -106,12 +113,12 @@ public class FeatureDataMapper {
 		issue.setsEpicID(issueId);
 		issue.setsEpicNumber(storyNumber);
 		issue.setsEpicName(gitlabIssue.getTitle());
-		issue.setsEpicBeginDate("");
-		issue.setsEpicEndDate("");
-		issue.setsEpicType("");
-		issue.setsEpicAssetState("");
-		issue.setsEpicChangeDate("");
-		issue.setsEpicIsDeleted("False");
+		issue.setsEpicBeginDate(EMPTY_STRING);
+		issue.setsEpicEndDate(EMPTY_STRING);
+		issue.setsEpicType(EMPTY_STRING);
+		issue.setsEpicAssetState(EMPTY_STRING);
+		issue.setsEpicChangeDate(EMPTY_STRING);
+		issue.setsEpicIsDeleted(FALSE_DELETED_STATE);
 	}
 
 	private void setSprintData(GitlabIssue gitlabIssue, Feature issue) {
@@ -120,30 +127,30 @@ public class FeatureDataMapper {
 			issue.setsSprintName(gitlabIssue.getMilestone().getTitle());
 			issue.setsSprintBeginDate(gitlabIssue.getMilestone().getCreated_at());
 			issue.setsSprintEndDate(gitlabIssue.getMilestone().getDue_date());
-			issue.setsSprintAssetState("Active");
+			issue.setsSprintAssetState(ACTIVE_ASSET_STATE);
 			issue.setsSprintChangeDate(gitlabIssue.getMilestone().getUpdated_at());
-			issue.setsSprintIsDeleted("False");
+			issue.setsSprintIsDeleted(FALSE_DELETED_STATE);
 		} 
 		else {
 			issue.setsSprintID(FeatureCollectorConstants.SPRINT_KANBAN);
 			issue.setsSprintName(FeatureCollectorConstants.SPRINT_KANBAN);
-			issue.setsSprintBeginDate("");
-			issue.setsSprintEndDate("");
-			issue.setsSprintAssetState("Active");
-			issue.setsSprintChangeDate("");
-			issue.setsSprintIsDeleted("False");
+			issue.setsSprintBeginDate(EMPTY_STRING);
+			issue.setsSprintEndDate(EMPTY_STRING);
+			issue.setsSprintAssetState(ACTIVE_ASSET_STATE);
+			issue.setsSprintChangeDate(EMPTY_STRING);
+			issue.setsSprintIsDeleted(FALSE_DELETED_STATE);
 		}
 	}
 	
 	private String determineStoryStatus(GitlabIssue issue, List<String> inProgressLabelsForProject) {
-		if("closed".equals(issue.getState())) {
-			return "Done";
+		if(GITLAB_DONE_STATUS.equals(issue.getState())) {
+			return FEATURE_DONE_STATUS;
 		}
 		else if (CollectionUtils.containsAny(inProgressLabelsForProject, issue.getLabels())) {
-			return "In Progress";
+			return FEATURE_IN_PROGRESS_STATUS;
 		}
 		
-		return "";
+		return EMPTY_STRING;
 	}
 
 }
