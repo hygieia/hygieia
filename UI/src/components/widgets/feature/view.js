@@ -12,7 +12,6 @@
     var today = new Date(_.now());
     var filterTeamId = $scope.widgetConfig.options.teamId;
     var filterProjectId = $scope.widgetConfig.options.projectId;
-    var estimateMetricType = $scope.widgetConfig.options.estimateMetricType;
     ctrl.teamName = $scope.widgetConfig.options.teamName;
     ctrl.projectName = $scope.widgetConfig.options.projectName
     // Scrum
@@ -22,6 +21,7 @@
     ctrl.wipStoryPoints = null;
     ctrl.doneStoryPoints = null;
     ctrl.epicStoryPoints = null;
+    ctrl.issueStoryPoints = [];
     // Kanban
     ctrl.iterationsKanban = [];
     ctrl.totalStoryPointsKanban = null;
@@ -29,12 +29,15 @@
     ctrl.wipStoryPointsKanban = null;
     ctrl.doneStoryPointsKanban = null;
     ctrl.epicStoryPointsKanban = null;
+    ctrl.issueStoryPointsKanban = [];
 
     // Public Evaluators
     ctrl.setFeatureLimit = setFeatureLimit;
     ctrl.showStatus = $scope.widgetConfig.options.showStatus;
     ctrl.animateAgileView = animateAgileView;
     ctrl.numberOfSprintTypes = $scope.widgetConfig.options.sprintType === "scrumkanban" ? 2 : 1;
+    ctrl.listType = $scope.widgetConfig.options.listType === undefined ? "epics" : $scope.widgetConfig.options.listType;
+    ctrl.estimateMetricType = $scope.widgetConfig.options.estimateMetricType === undefined ? "storypoints" : $scope.widgetConfig.options.estimateMetricType;
     
     var timeoutPromise = null;
     ctrl.changeDetect = null;
@@ -51,14 +54,14 @@
     ctrl.load = function() {
       var deferred = $q.all([
         // Scrum
-        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, filterProjectId, estimateMetricType, "scrum").then(processSprintEstimateResponse),
-        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, filterProjectId, estimateMetricType, "scrum").then(processFeatureWipResponse),
+        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "scrum").then(processSprintEstimateResponse),
+        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "scrum").then(processFeatureWipResponse),
         featureData.sprint($scope.widgetConfig.componentId, filterTeamId, filterProjectId, "scrum")
           .then(function(data) { processSprintResponse(data, false) }),
 
         // Kanban
-        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, filterProjectId, estimateMetricType, "kanban").then(processSprintEstimateKanbanResponse),
-        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, filterProjectId, estimateMetricType, "kanban").then(processFeatureWipKanbanResponse),
+        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "kanban").then(processSprintEstimateKanbanResponse),
+        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "kanban").then(processFeatureWipKanbanResponse),
         featureData.sprint($scope.widgetConfig.componentId, filterTeamId, filterProjectId, "kanban")
           .then(function(data) { processSprintResponse(data, true) })
       ]);
@@ -92,16 +95,14 @@
       var epicCollection = [];
 
       for (var i = 0; i < data.result.length; i++) {
-        epicCollection.push(data.result[i]);
+          epicCollection.push(data.result[i]);
       }
 
-      if (data.result.length <= 4) {
-        ctrl.showFeatureLimitButton = false;
-      } else {
-        ctrl.showFeatureLimitButton = true;
+      if (ctrl.listType === 'epics') {
+        ctrl.showFeatureLimitButton = data.result.length <= 4 ? false : true;
       }
 
-      ctrl.epicStoryPoints = epicCollection.sort(compare).reverse();
+      ctrl.epicStoryPoints = epicCollection.sort(compareEpics).reverse();
     }
 
     /**
@@ -115,16 +116,14 @@
       var epicCollection = [];
 
       for (var i = 0; i < data.result.length; i++) {
-        epicCollection.push(data.result[i]);
+          epicCollection.push(data.result[i]);
       }
 
-      if (data.result.length <= 4) {
-        ctrl.showFeatureLimitButton = false;
-      } else {
-        ctrl.showFeatureLimitButton = true;
+      if (ctrl.listType === 'epics') {
+        ctrl.showFeatureLimitButton = data.result.length <= 4 ? false : true;
       }
 
-      ctrl.epicStoryPointsKanban = epicCollection.sort(compare).reverse();
+      ctrl.epicStoryPointsKanban = epicCollection.sort(compareEpics).reverse();
     }
 
     /**
@@ -140,13 +139,32 @@
       var sprintName = null;
       var daysTilEnd = null;
       var iteration = null;
+      var issue = null;
       var dupes = true;
       // Reset on every processing
       ctrl.showStatus = $scope.widgetConfig.options.showStatus;
 
       var iterations = isKanban? ctrl.iterationsKanban : ctrl.iterations;
-
-      for (var i = 0; i < data.result.length; i++) {
+      var issueCollection = isKanban? ctrl.issueStoryPointsKanban : ctrl.issueStoryPoints;
+      
+      if (ctrl.listType === 'issues') {
+          ctrl.showFeatureLimitButton = data.result.length <= 4 ? false : true;
+      }
+      
+      for (var i = 0; i < data.result.length; i++) {          
+        // Add features only if there are no duplicates
+        if (isInIssuesArray(data.result[i].sNumber, issueCollection) === false) {
+            issue = {
+              sNumber: data.result[i].sNumber,
+              sName: data.result[i].sName,
+              changeDate: data.result[i].changeDate,
+              sEstimate: data.result[i].sEstimate,
+              sEstimateTime: data.result[i].sEstimateTime !== null ? (parseInt(data.result[i].sEstimateTime)/60).toString() : null,
+              sStatus: data.result[i].sStatus !== null ? data.result[i].sStatus.toLowerCase() : null
+            };
+            issueCollection.push(issue);
+        }
+          
         if (data.result[i].sSprintID === undefined) {
           sprintID = "[No Sprint Available]";
           sprintName = "[No Sprint Available]";
@@ -193,6 +211,8 @@
         daysTilEnd = null;
         iteration = null;
       }
+      
+      issueCollection.sort(compareIssues).reverse()
     }
     
     /*
@@ -203,6 +223,21 @@
 
       iterations.forEach(function(timebox) {
         if (timebox.id === sprintID) {
+          dupe = true;
+        }
+      });
+
+      return dupe;
+    }
+    
+    /*
+     * Checks features array for existing elements
+     */
+    function isInIssuesArray(issueID, issues) {
+      var dupe = false;
+
+      issues.forEach(function(issue) {
+        if (issue.sNumber === issueID) {
           dupe = true;
         }
       });
@@ -220,12 +255,30 @@
      * @param b
      *            Object containing sEstimate string value
      */
-    function compare(a, b) {
-      if (parseInt(a.sEstimate) < parseInt(b.sEstimate))
+    function compareEpics(a, b) {
+      if (parseInt(a.sEstimate) < parseInt(b.sEstimate)) {
         return -1;
-      if (parseInt(a.sEstimate) > parseInt(b.sEstimate))
+      } else if (parseInt(a.sEstimate) > parseInt(b.sEstimate)) {
         return 1;
+      } else if (a.sEpicID < b.sEpicID) {
+        return -1;
+      } else if (a.sEpicID > b.sEpicID) {
+        return 1;
+      }
       return 0;
+    }
+    
+    function compareIssues(a, b) {
+        if (a.changeDate < b.changeDate) {
+          return -1;
+        } else if (a.changeDate > b.changeDate) {
+          return 1;
+        } else if (a.sNumber < b.sNumber) {
+          return -1;
+        } else if (a.sNumber > b.sNumber) {
+          return 1;
+        }
+        return 0;
     }
 
     /**
