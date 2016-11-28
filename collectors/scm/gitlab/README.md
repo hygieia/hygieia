@@ -48,13 +48,19 @@ logging.file=./logs/gitlab.log
 #Collector schedule (required)
 gitlab.cron=0 0/1 * * * *
 
-#Gitlab host (optional)
+#Gitlab host (optional, defaults to "gitlab.com")
 gitlab.host=gitlab.company.com
+
+#Gitlab protocol (optional, defaults to "http")
+gitlab.protocol=http
+
+#Gitlab port (optional, defaults to protocol default port)
+gitlab.port=80
 
 #If your instance of Gitlab is using a self signed certificate, set to true, default is false
 gitlab.selfSignedCertificate=false
 
-#set apiKey to use HTTPS Auth
+#Gitlab API Token (required, token of user the collector will use by default, can be overriden on a per repo basis from the UI. API token provided by Gitlab)
 gitlab.apiToken=
 
 #Maximum number of days to go back in time when fetching commits
