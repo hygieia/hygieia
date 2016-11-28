@@ -67,20 +67,17 @@ public class DefaultGitlabClientTest {
 
 	private URI uri;
 
-	private String host;
-	
 	@Before
 	public void setup() throws URISyntaxException {
-		host = "host";
 		uri = new URI("http://google.com");
-		when(settings.getHost()).thenReturn(host);
+		when(gitlabUrlUtility.buildAuthenticationHeader()).thenReturn(new HttpEntity<String>("body"));
 	}
 
 	@Test
 	public void shouldGetOnePageOfTeamsNoHeader() {
 		GitlabTeam team = new GitlabTeam();
 		GitlabTeam[] teams = {team};
-		when(gitlabUrlUtility.buildTeamsUri(host)).thenReturn(uri);
+		when(gitlabUrlUtility.buildTeamsUri()).thenReturn(uri);
 		when(restOperations.exchange(eq(uri), eq(HttpMethod.GET), isA(HttpEntity.class), eq(GitlabTeam[].class))).thenReturn(teamResponse);
 		when(teamResponse.getBody()).thenReturn(teams);
 		
@@ -97,7 +94,7 @@ public class DefaultGitlabClientTest {
 		String teamId = "teamId";
 		ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
 		team.setTeamId(teamId);
-		when(gitlabUrlUtility.buildProjectsUri(host, teamId)).thenReturn(uri);
+		when(gitlabUrlUtility.buildProjectsUri(teamId)).thenReturn(uri);
 		when(restOperations.exchange(eq(uri), eq(HttpMethod.GET), isA(HttpEntity.class), eq(GitlabProject[].class))).thenReturn(projectResponse);
 		when(projectResponse.getHeaders()).thenReturn(headers);
 		when(headers.get("X-Next-Page")).thenReturn(Lists.newArrayList(""));
@@ -116,7 +113,7 @@ public class DefaultGitlabClientTest {
 		String teamId = "teamId";
 		ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
 		team.setTeamId(teamId);
-		when(gitlabUrlUtility.buildProjectsUri(host, teamId)).thenReturn(uri);
+		when(gitlabUrlUtility.buildProjectsUri(teamId)).thenReturn(uri);
 		when(gitlabUrlUtility.updatePage(isA(URI.class), anyString())).thenReturn(uri);
 		when(restOperations.exchange(eq(uri), eq(HttpMethod.GET), isA(HttpEntity.class), eq(GitlabProject[].class))).thenReturn(projectResponse);
 		when(projectResponse.getHeaders()).thenReturn(headers);
@@ -139,7 +136,7 @@ public class DefaultGitlabClientTest {
 		gitlabList.setLabel(label);
 		board.setLists(Lists.newArrayList(gitlabList));
 		GitlabBoard[] boards = {board};
-		when(gitlabUrlUtility.buildBoardsUri(host, "23")).thenReturn(uri);
+		when(gitlabUrlUtility.buildBoardsUri("23")).thenReturn(uri);
 		when(restOperations.exchange(eq(uri), eq(HttpMethod.GET), isA(HttpEntity.class), eq(GitlabBoard[].class))).thenReturn(boardResponse);
 		when(boardResponse.getBody()).thenReturn(boards);
 		
@@ -156,7 +153,7 @@ public class DefaultGitlabClientTest {
 		project.setId(projectId);
 		GitlabIssue gitlabIssue = new GitlabIssue();
 		GitlabIssue[] issues = {gitlabIssue};
-		when(gitlabUrlUtility.buildIssuesForProjectUri(host, "1")).thenReturn(uri);
+		when(gitlabUrlUtility.buildIssuesForProjectUri("1")).thenReturn(uri);
 		when(restOperations.exchange(eq(uri), eq(HttpMethod.GET), isA(HttpEntity.class), eq(GitlabIssue[].class))).thenReturn(issueResponse);
 		when(issueResponse.getBody()).thenReturn(issues);
 		
