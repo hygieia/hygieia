@@ -27,6 +27,18 @@
             
             
         </form-group>
+        
+        <form-group input="ignoreRegex" errors="{validregex:'Please enter a valid Regular Expression'}">
+	
+	        <label class="modal-label">Ignore environment failures regex</label>
+	        <input type="text"
+	               name="ignoreRegex"
+	               class="form-control text-center"
+	               ng-model="deployConfig.ignoreRegex"
+	               placeholder="Enter Regex"
+	               autocomplete="on"
+	               validregex />
+	    </form-group>
 
         <hr/>
 

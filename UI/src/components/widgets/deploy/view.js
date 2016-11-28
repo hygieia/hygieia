@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('deployViewController', deployViewController);
 
-    deployViewController.$inject = ['$scope', 'DashStatus', 'deployData', 'systemConfigData', 'DisplayState', '$q', '$modal'];
-    function deployViewController($scope, DashStatus, deployData, systemConfigData, DisplayState, $q, $modal) {
+    deployViewController.$inject = ['$scope', 'DashStatus', 'deployData', 'DisplayState', '$q', '$modal'];
+    function deployViewController($scope, DashStatus, deployData, DisplayState, $q, $modal) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -14,6 +14,9 @@
         ctrl.environments = [];
         ctrl.statuses = DashStatus;
         ctrl.ignoreEnvironmentFailuresRegex=/^$/;
+        if ($scope.widgetConfig.options.ignoreRegex !== undefined && $scope.widgetConfig.options.ignoreRegex !== null && $scope.widgetConfig.options.ignoreRegex !== '') {
+            ctrl.ignoreEnvironmentFailuresRegex=new RegExp($scope.widgetConfig.options.ignoreRegex.replace(/^"(.*)"$/, '$1'));
+        }
 
         ctrl.load = load;
         ctrl.showDetail = showDetail;
@@ -21,17 +24,10 @@
         function load() {
         	var deferred = $q.defer();
         	
-        	$q.all([systemConfigData.config(), deployData.details($scope.widgetConfig.componentId)])
+        	$q.all([deployData.details($scope.widgetConfig.componentId)])
         		.then(function(dataA) {
-        			
-        			var systemConfig = dataA[0];
-        			
-        			if (systemConfig.globalProperties && systemConfig.globalProperties.ignoreEnvironmentFailuresRegex) {
-        				ctrl.ignoreEnvironmentFailuresRegex=new RegExp(systemConfig.globalProperties.ignoreEnvironmentFailuresRegex.replace(/^"(.*)"$/, '$1'));
-        			}
-        			
-        			processResponse(dataA[1].result);
-                    deferred.resolve(dataA[1].lastUpdated);
+        		    processResponse(dataA[0].result);
+                    deferred.resolve(dataA[0].lastUpdated);
         		});
         	
         	return deferred.promise;

@@ -18,6 +18,7 @@
         ctrl.jobDropdownDisabled = true;
         ctrl.jobDropdownPlaceholder = 'Loading...';
         ctrl.submitted = false;
+        ctrl.ignoreRegex = null;
 
         // public methods
         ctrl.submit = submit;
@@ -29,6 +30,12 @@
         	var data = dataA[1];
         	
         	var aggregateServers = (systemConfig.globalProperties && systemConfig.globalProperties.multipleDeploymentServers) || false;
+        	
+        	if (widgetConfig.options.ignoreRegex !== undefined && widgetConfig.options.ignoreRegex !== null) {
+                ctrl.ignoreRegex=widgetConfig.options.ignoreRegex;
+            } else if (systemConfig.globalProperties && systemConfig.globalProperties.ignoreEnvironmentFailuresRegex) {
+                ctrl.ignoreRegex=systemConfig.globalProperties.ignoreEnvironmentFailuresRegex;
+            }
         	
             var worker = {
                 getDeploys: getDeploys
@@ -114,7 +121,8 @@
                 var postObj = {
                     name: 'deploy',
                     options: {
-                        id: widgetConfig.options.id
+                        id: widgetConfig.options.id,
+                        ignoreRegex: ctrl.ignoreRegex
                     },
                     componentId: modalData.dashboard.application.components[0].id,
                     collectorItemIds: job.value
