@@ -30,5 +30,4 @@ public class BinaryArtifactRepositoryImpl implements BinaryArtifactRepositoryCus
 		
 		return template.find(new Query(c), BinaryArtifact.class);
 	}
-
 }

@@ -51,6 +51,28 @@ public class HygieiaUtils {
         }
         return results;
     }
+    
+    /**
+     * Determine the artifact's name. The name excludes the version string and the file extension.
+     * 
+     * Does not currently support classifiers
+     * 
+     * @param file
+     * @param version
+     * @return
+     */
+    public static String determineArtifactName(FilePath file, String version) {
+    	String fileName = file.getBaseName();
+    	
+        if ("".equals(version)) return fileName;
+
+        int vIndex = fileName.indexOf(version);
+        if (vIndex <= 0) return fileName;
+        if ((fileName.charAt(vIndex - 1) == '-') || (fileName.charAt(vIndex - 1) == '_')) {
+            vIndex = vIndex - 1;
+        }
+        return fileName.substring(0, vIndex);
+    }
 
     public static String getFileNameMinusVersion(FilePath file, String version) {
         String ext = FilenameUtils.getExtension(file.getName());

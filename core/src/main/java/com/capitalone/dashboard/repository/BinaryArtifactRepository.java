@@ -15,11 +15,10 @@ public interface BinaryArtifactRepository extends CrudRepository<BinaryArtifact,
     @Query("{ 'artifactGroupId' : ?0, 'artifactModule' : ?1, 'artifactVersion' : ?2, 'artifactName' : ?3, 'artifactClassifier' : ?4, 'artifactExtension' : ?5 }")
     Iterable<BinaryArtifact> findByAttributes(String artifactGroupId, String artifactModule, String artifactVersion, String artifactName, String artifactClassifier, String artifactExtension);
 
-    Iterable<BinaryArtifact> findByArtifactName(String artifactName);
-
     Iterable<BinaryArtifact> findByBuildInfoId (ObjectId artifactBuildId);
 
     Iterable<BinaryArtifact> findByArtifactNameAndTimestampGreaterThan(String artifactName, Long timestamp);
+    Iterable<BinaryArtifact> findByArtifactNameAndArtifactExtensionAndTimestampGreaterThan(String artifactName, String artifactExtension, Long timestamp);
 
     @Query(value="{'metadata.buildUrl' : ?0}")
     Iterable<BinaryArtifact> findByMetadataBuildUrl(String buildUrl);

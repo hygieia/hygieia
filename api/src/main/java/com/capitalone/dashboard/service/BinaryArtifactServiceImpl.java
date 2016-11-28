@@ -2,7 +2,6 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.JobCollectorItem;
 import com.capitalone.dashboard.repository.BinaryArtifactRepository;
