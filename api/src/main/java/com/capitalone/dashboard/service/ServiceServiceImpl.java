@@ -20,6 +20,7 @@ import java.util.List;
 
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceServiceImpl.class);
     private final ServiceRepository serviceRepository;
     private final DashboardRepository dashboardRepository;
@@ -105,7 +106,7 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public void refreshService(ObjectId dashboardId, ObjectId serviceId) {
         Service service = get(serviceId);
-        LOGGER.info("URL is :" + service.getUrl());
+        LOGGER.debug("URL is :" + service.getUrl());
         ServiceStatus status = getServiceStatusBasedOnHttpReturnCode(getHttpCode(service.getUrl()));
         service.setDashboardId(dashboardId);
         service.setStatus(status);
