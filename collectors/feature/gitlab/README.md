@@ -1,6 +1,10 @@
-# Hygieia Feature Collector / Gitlab (Community Contribution)
+# Hygieia Feature Collectors / Gitlab (Community Contribution)
 
-Collect features/issues from Gitlab issue boards to display on the dashboard.
+Collect features/issues from Gitlab issue boards to display on the dashboard. Issue boards were introuduced to Gitlab in version 8.11, so you must be on this version of Gitlab or later to take advantage of this functionality.  
+
+This collector will retrieve all the issues for you project, and classify them based on your issue board(s).  (Gitlab Enterprise Edition allows you to have multiple boards for a project.) By default, Gitlab provides you with two columns on your board, "Backlog", and "Done", you can then customize the columns in between.  The collector works by finding the "lists" you have created for the board, and finding all the issues you have that belong to those lists, and classifying them as "In Progress".  Any issues which are "Closed" are classified as "Done".
+
+Hygieia's UI has two different ways of displaying issue boards, Kanban or Scrum.  The collector determines whether an issue is Kanban or Scrum based on Gitlab's Milestones.  If an issue is associated with a Milestone, and the Milestone also has an end date, the issue will be shown as Scrum, otherwise it will be displayed as Kanban.  The reason for this is that Scrum has set deadlines, which we are using Milestones with deadlines to represent.  Kanban on the other hand is just a backlog organized by priority with no end date.    
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
 
@@ -48,15 +52,16 @@ logging.file=./logs/gitlab.log
 #Collector schedule (required)
 gitlab.cron=0 0/1 * * * *
 
-#Gitlab host (optional)
+#Gitlab host (optional, defaults to "gitlab.com")
 gitlab.host=gitlab.company.com
 
-#If your instance of Gitlab is using a self signed certificate, set to true, default is false
-gitlab.selfSignedCertificate=false
+#Gitlab protocol (optional, defaults to "http")
+gitlab.protocol=http
 
-#set apiKey to use HTTPS Auth
+#Gitlab port (optional, defaults to protocol default port)
+gitlab.port=80
+  
+#Gitlab API Token (required, must be an admin account to retrieve all teams for the instance of gitlab.  If not admin, will only retrieve teams the user belongs to)
 gitlab.apiToken=
 
-#Maximum number of days to go back in time when fetching commits
-gitlab.commitThresholdDays=15
 ```
