@@ -16,6 +16,7 @@
 
 package com.capitalone.dashboard.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -122,12 +123,13 @@ public class Scope extends BaseModel {
         if (obj == null || getClass() != obj.getClass()) return false;
 
         Scope that = (Scope) obj;
-        return pId.equals(that.getpId()); 
+        EqualsBuilder builder = new EqualsBuilder();
+        return builder.append(pId, that.pId).append(collectorId, that.collectorId).build();
 	}
 	
 	@Override
     public int hashCode() {
-    	return new HashCodeBuilder(17, 37).append(pId).toHashCode();
+    	return new HashCodeBuilder(17, 37).append(pId).append(collectorId).toHashCode();
     }
 
 }

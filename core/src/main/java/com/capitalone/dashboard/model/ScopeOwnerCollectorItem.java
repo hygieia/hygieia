@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.data.mongodb.core.index.Indexed;
 
@@ -62,11 +63,12 @@ public class ScopeOwnerCollectorItem extends CollectorItem {
         if (o == null || getClass() != o.getClass()) return false;
 
         ScopeOwnerCollectorItem that = (ScopeOwnerCollectorItem) o;
-        return getTeamId().equals(that.getTeamId());
+        EqualsBuilder builder = new EqualsBuilder();
+        return builder.append(getTeamId(), that.getTeamId()).append(getCollectorId(), that.getCollectorId()).build();
     }
 
     @Override
     public int hashCode() {
-    	return new HashCodeBuilder(17, 37).append(getTeamId()).toHashCode();
+    	return new HashCodeBuilder(17, 37).append(getTeamId()).append(getCollectorId()).toHashCode();
     }
 }
