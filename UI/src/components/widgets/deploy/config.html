@@ -37,7 +37,8 @@
 	               ng-model="deployConfig.ignoreRegex"
 	               placeholder="Enter Regex"
 	               autocomplete="on"
-	               validregex />
+	               validregex
+	               ng-disabled="deployConfig.ignoreRegexInputDisabled" />
 	    </form-group>
 
         <hr/>
