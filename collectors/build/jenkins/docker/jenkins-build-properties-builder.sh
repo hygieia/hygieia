@@ -121,7 +121,7 @@ jenkins.dockerLocalHostIP=${DOCKER_LOCALHOST}
 
 EOF
 
-if ( "$JENKINS_OP_CENTER" != "" )
+if [ "$JENKINS_OP_CENTER" != "" ]
 then
 
 	cat >> $PROP_FILE <<EOF
