@@ -15,7 +15,6 @@ hs_err_pid*
 *.iml
 *.ipr
 out
-build
 .gradle
 gradle.properties
 .idea
