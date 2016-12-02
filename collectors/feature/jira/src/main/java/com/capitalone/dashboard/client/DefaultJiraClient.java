@@ -1,12 +1,35 @@
 package com.capitalone.dashboard.client;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.net.Authenticator;
+import java.net.InetSocketAddress;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -202,5 +225,86 @@ public class DefaultJiraClient implements JiraClient {
 	@Override
 	public int getPageSize() {
 		return featureSettings.getPageSize();
+	}
+	
+	@SuppressWarnings({"PMD.NPathComplexity"})
+	@Override
+	public Map<String, String> getStatusMapping() {
+		Map<String, String> statusMap = new HashMap<>();
+		
+		try {			
+			URL url = new URL(featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/")? "" : "/") 
+					+ featureSettings.getJiraQueryEndpoint() + (featureSettings.getJiraQueryEndpoint().endsWith("/")? "" : "/") + "status/");
+			URLConnection connection = null;
+			
+			if (featureSettings.getJiraProxyUrl() != null && !featureSettings.getJiraProxyUrl().isEmpty() && (featureSettings.getJiraProxyPort() != null)) {
+				String fullProxyUrl = featureSettings.getJiraProxyUrl() + ":" + featureSettings.getJiraProxyPort();
+				URL proxyUrl = new URL(fullProxyUrl);
+				URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(),
+					proxyUrl.getHost(), proxyUrl.getPort(), proxyUrl.getPath(), proxyUrl.getQuery(), null);
+				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUri.getHost(), proxyUri.getPort()));
+				connection = url.openConnection(proxy);
+
+				if (!StringUtils.isEmpty(featureSettings.getJiraCredentials())) {
+					String[] creds = (new String(Base64.decodeBase64(featureSettings.getJiraCredentials()))).split(":");
+					final String uname = creds[0];
+					final String pword = creds.length > 1? creds[1] : null;
+					Authenticator.setDefault(new Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(uname, pword.toCharArray());
+						}
+					});
+					connection.setRequestProperty("Proxy-Authorization", "Basic " + featureSettings.getJiraCredentials());
+				}
+			} else {
+				connection = url.openConnection();
+			}
+
+			HttpURLConnection request = (HttpURLConnection) connection;
+			request.setRequestProperty("Authorization" , "Basic " + featureSettings.getJiraCredentials());
+			request.connect();
+			
+			InputStream in = (InputStream) request.getContent();
+			BufferedReader inReader = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
+			StringBuilder sb = new StringBuilder();
+		    
+			int cp;
+		    while ((cp = inReader.read()) != -1) {
+				sb.append((char) cp);		      
+		    } 
+            JSONParser parser = new JSONParser();
+
+            try {
+                JSONArray statuses = (JSONArray) parser.parse(sb.toString());
+
+                for (Object status : statuses) {
+                    JSONObject jsonStatus = (JSONObject) status;
+                    String statusName = (String) jsonStatus.get("name");
+                    
+                    Object statusCategory = jsonStatus.get("statusCategory");
+                    JSONObject jsonStatusCategory = (JSONObject) statusCategory;
+                    String statusCategoryName = (String) jsonStatusCategory.get("name");
+					if (statusCategoryName == null) {
+						LOGGER.warn("No statusCategory for status : " + statusName);
+						continue;
+					}
+					
+					statusMap.put(statusName, statusCategoryName);					
+                }
+            } catch (ParseException pe) {
+                LOGGER.error("Parser exception when parsing statuses", pe);
+            } 
+        } catch (org.springframework.web.client.RestClientException rce) {
+            LOGGER.error("Client exception when loading statuses", rce);
+            throw rce;
+        }  catch (MalformedURLException mfe) {
+            LOGGER.error("Malformed url for loading statuses", mfe);
+        } catch (IOException ioe) {
+			LOGGER.error("IOException", ioe);
+		} catch (URISyntaxException urie) {
+			LOGGER.error("URISyntaxException for Jira connection", urie);
+		}
+		
+		return statusMap;
 	}
 }

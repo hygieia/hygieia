@@ -101,6 +101,9 @@
                     },
                     collectorName: function () {
                         return $scope.dashboard.application.components[0].collectorItems.Build[0].collector.name;
+                    },
+                    collectorNiceName: function () {
+                        return $scope.dashboard.application.components[0].collectorItems.Build[0].niceName;
                     }
                 }
             });

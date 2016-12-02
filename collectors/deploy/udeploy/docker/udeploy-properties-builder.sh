@@ -27,7 +27,7 @@ echo "MONGODB_PORT: $MONGODB_PORT"
 
 cat > $PROP_FILE <<EOF
 #Database Name
-database=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
+dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
 
 #Database HostName - default is localhost
 dbhost=${MONGODB_HOST:-10.0.1.1}
@@ -46,6 +46,7 @@ udeploy.cron=${UDEPLOY_CRON:-0 0/5 * * * *}
 
 #UDeploy server (required) - Can provide multiple
 udeploy.servers[0]=${UDEPLOY_URL:-http://udeploy.company.com}
+udeploy.niceNames[0]=${UDEPLOY_NAME:-UDeploy}
 
 #UDeploy user name (required)
 udeploy.username=${UDEPLOY_USERNAME:-bobama}

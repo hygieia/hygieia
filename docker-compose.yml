@@ -93,7 +93,7 @@ hygieia-jira-feature-collector:
 # the lowest level of Issues (e.g., "user story") specific to your Jira
 # instance.  Note:  You can retrieve your instance's IssueType ID
 # listings via the following URI:  https://[your-jira-domain-name]/rest/api/2/issuetype/
-#  - JIRA_ISSUE_TYPE_ID=7
+#  - JIRA_ISSUE_TYPE_ID=Story
 
 # In Jira, your instance will have its own custom field created for "sprint" or "timebox" details,
 # which includes a list of information.  This field allows you to specify that data field for your
@@ -284,3 +284,43 @@ hygieia-udeploy-collector:
   - UDEPLOY_PASSWORD:-s3cr3t
 #Collector schedule (required)
 #  - UDEPLOY_CRON:-0 0/5 * * * *
+
+hygieia-xldeploy-collector:
+  image: hygieia-xldeploy-collector:latest
+  container_name: hygieia-xldeploy
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+  environment:
+#XLDeploy server (required) - Can provide multiple
+  - XLDEPLOY_URL:-http://xldeploy.company.com
+#XLDeploy user name (required)
+  - XLDEPLOY_USERNAME:-bobama
+#XLDeploy password (required)
+  - XLDEPLOY_PASSWORD:-s3cr3t
+#Collector schedule (required)
+#  - XLDEPLOY_CRON:-0 0/5 * * * *
+
+hygieia-artifactory-artifact-collector:
+  image: hygieia-artifactory-artifact-collector:latest
+  container_name: hygieia-artifactory
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - hygieia-api
+  environment:
+#JFrog Artifactory server (required) - Can provide multiple 
+  - ARTIFACTORY_URL=https://www.jfrog.com
+# Artifactory user name (required)
+#  - ARTIFACTORY_USERNAME=bobama
+# Artifactory API key (required)
+#  - ARTIFACTORY_API_KEY=s3cr3t
+#  - ARTIFACTORY_CRON=0 0/1 * * * *
+# The repo to collect artifacts from (required) - Can provide multiple (comma separated for each server)
+#  - ARTIFACTORY_REPO=prerelease,release
+# Artifactory REST endpoint
+#  - ARTIFACTORY_ENDPOINT=artifactory/
+
+

@@ -44,7 +44,7 @@ public class ServiceControllerTest {
 
     @Test
     public void services() throws Exception {
-        Service s = makeService("serviceName", "message", ServiceStatus.Ok);
+        Service s = makeService("serviceName", "http://abc123456.com", "message", ServiceStatus.Ok);
         when(serviceService.all()).thenReturn(Arrays.asList(s));
 
         mockMvc.perform(get("/service"))
@@ -55,6 +55,7 @@ public class ServiceControllerTest {
                 .andExpect(jsonPath("$[0].lastUpdated", is(s.getLastUpdated())))
                 .andExpect(jsonPath("$[0].applicationName", is(s.getApplicationName())))
                 .andExpect(jsonPath("$[0].name", is(s.getName())))
+                .andExpect(jsonPath("$[0].url", is(s.getUrl())))
                 .andExpect(jsonPath("$[0].message", is(s.getMessage())))
                 .andExpect(jsonPath("$[0].status", is(s.getStatus().toString())));
     }
@@ -62,8 +63,8 @@ public class ServiceControllerTest {
     @Test
     public void dashboardServices() throws Exception {
         ObjectId dashboardId = ObjectId.get();
-        Service s = makeService("serviceName", "message", ServiceStatus.Warning);
-        Service dep = makeService("depServiceName", "depMessage", ServiceStatus.Alert);
+        Service s = makeService("serviceName", "http://abc123456.com", "message", ServiceStatus.Warning);
+        Service dep = makeService("depServiceName", "http://abc123456.com", "depMessage", ServiceStatus.Alert);
 
         when(serviceService.dashboardServices(dashboardId)).thenReturn(Arrays.asList(s));
         when(serviceService.dashboardDependentServices(dashboardId)).thenReturn(Arrays.asList(dep));
@@ -93,10 +94,10 @@ public class ServiceControllerTest {
         ObjectId dashboardId = ObjectId.get();
         mockMvc.perform(post("/dashboard/" + dashboardId.toString() + "/service")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content("\"Service Name\""))
+                .content("{\"name\":\"Service Name\",\"url\":\"https://abc123456.com\"}"))
                 .andExpect(status().isCreated());
 
-        verify(serviceService).create(dashboardId, "Service Name");
+        verify(serviceService).create(dashboardId, "Service Name", "https://abc123456.com");
     }
 
     @Test
@@ -151,7 +152,7 @@ public class ServiceControllerTest {
         verify(serviceService).deleteDependentService(dashboardId, serviceId);
     }
 
-    private Service makeService(String name, String message, ServiceStatus status) {
+    private Service makeService(String name, String url, String message, ServiceStatus status) {
         Service s = new Service();
         s.setId(ObjectId.get());
         s.setDashboardId(ObjectId.get());
@@ -160,6 +161,7 @@ public class ServiceControllerTest {
         s.setName(name);
         s.setMessage(message);
         s.setStatus(status);
+        s.setUrl(url);
         return s;
     }
 

@@ -2,7 +2,11 @@ package hygieia.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import hudson.EnvVars;
 import hudson.FilePath;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import jenkins.plugins.hygieia.CustomObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
@@ -29,24 +33,6 @@ public class HygieiaUtils {
         ObjectMapper mapper = new CustomObjectMapper();
         return mapper.readValue(json, thisClass);
     }
-
-//    public static List<File> getArtifactFiles(File rootDirectory, String pattern, List<File> results) {
-//        FileFilter filter = new WildcardFileFilter(pattern.replace("**", "*"), IOCase.SYSTEM);
-//        File[] temp = rootDirectory.listFiles(filter);
-//        if ((temp != null) && (temp.length > 0)) {
-//            results.addAll(Arrays.asList(temp));
-//        }
-//
-//        temp = rootDirectory.listFiles();
-//        if ((temp != null) && (temp.length > 0))
-//            for (File currentItem : rootDirectory.listFiles()) {
-//                if (currentItem.isDirectory()) {
-//                    getArtifactFiles(currentItem, pattern, results);
-//                }
-//            }
-//
-//        return results;
-//    }
 
     public static List<FilePath> getArtifactFiles(FilePath rootDirectory, String pattern, List<FilePath> results) throws IOException, InterruptedException {
         FileFilter filter = new WildcardFileFilter(pattern.replace("**", "*"), IOCase.SYSTEM);
@@ -91,7 +77,84 @@ public class HygieiaUtils {
         }
         return versionNumber;
     }
-//    public static List<File> getArtifactFiles(String rootDirectoryString, String pattern, List<File> results) {
-//        return getArtifactFiles(new File(rootDirectoryString), pattern, results);
-//    }
+    
+    public static String getBuildUrl(AbstractBuild<?, ?> build) {
+    	return build.getProject().getAbsoluteUrl() + String.valueOf(build.getNumber()) + "/";
+    }
+    
+    public static String getBuildNumber(AbstractBuild<?, ?> build) {
+    	return String.valueOf(build.getNumber());
+    }
+    
+    public static String getJobUrl(AbstractBuild<?, ?> build) {
+    	return build.getProject().getAbsoluteUrl();
+    }
+    
+    public static String getJobName(AbstractBuild<?, ?> build) {
+    	return build.getProject().getName();
+    }
+    
+    public static String getInstanceUrl(AbstractBuild<?, ?> build, BuildListener listener) {
+        String envValue = getEnvironmentVariable(build, listener, "JENKINS_URL");
+        
+        if (envValue != null) {
+            return envValue;
+        } else {
+            String jobPath = "/job" + "/" + build.getProject().getName() + "/";
+            int ind = build.getProject().getAbsoluteUrl().indexOf(jobPath);
+            return build.getProject().getAbsoluteUrl().substring(0, ind);
+        }
+    }
+    
+    public static String getScmUrl(AbstractBuild<?, ?> build, BuildListener listener) {
+    	if (isGitScm(build)) {
+    		return getEnvironmentVariable(build, listener, "GIT_URL");
+    	} else if (isSvnScm(build)) {
+    		return getEnvironmentVariable(build, listener, "SVN_URL");
+    	}
+    	
+    	return null;
+    }
+    
+    public static String getScmBranch(AbstractBuild<?, ?> build, BuildListener listener) {
+    	if (isGitScm(build)) {
+    		return getEnvironmentVariable(build, listener, "GIT_BRANCH");
+    	} else if (isSvnScm(build)) {
+    		return null;
+    	}
+    	
+    	return null;
+    }
+    
+    public static String getScmRevisionNumber(AbstractBuild<?, ?> build, BuildListener listener) {
+    	if (isGitScm(build)) {
+    		return getEnvironmentVariable(build, listener, "GIT_COMMIT");
+    	} else if (isSvnScm(build)) {
+    		return getEnvironmentVariable(build, listener, "SVN_REVISION");
+    	}
+    	
+    	return null;
+    }
+    
+    public static boolean isGitScm(AbstractBuild<?, ?> build) {
+    	return "hudson.plugins.git.GitSCM".equalsIgnoreCase(build.getProject().getScm().getType());
+    }
+    
+    public static boolean isSvnScm(AbstractBuild<?, ?> build) {
+    	return "hudson.scm.SubversionSCM".equalsIgnoreCase(build.getProject().getScm().getType());
+    }
+    
+    public static String getEnvironmentVariable(AbstractBuild<?, ?> build, BuildListener listener, String key) {
+        EnvVars env = null;
+        try {
+            env = build.getEnvironment(listener);
+        } catch (IOException | InterruptedException e) {
+            logger.warning("Error getting environment variables");
+        }
+        if (env != null) {
+            return env.get(key);
+        } else {
+        	return null;
+        }
+    }
 }

@@ -1,28 +1,50 @@
-# Jira Feature Collector
+# Hygieia Feature Collectors / Jira
+
 Retrieves feature content data from the source system APIs and places it in a MongoDB for later retrieval and use by the DevOps Dashboard
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
 
 ## Building and Deploying
-Run
 
+To package the collector into an executable JAR file, run:
 ```bash
 mvn install
 ```
 
-to package the collector into an executable JAR file. Copy this file to your server and launch it using :
-
+Copy this file to your server and launch it using:
 ```bash
 java -jar jira-feature-collector.jar
 ```
+
+## application.properties
 
 You will need to provide an **application.properties** file that contains information about how to connect to the Dashboard MongoDB database instance, as well as properties the Jira feature collector requires. See the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files) for information about sourcing this properties file.
 
 ### Sample application.properties file, with minimum overrides
 
---------------------------------------------------------------------------------
-
 ```properties
+# Database Name
+dbname=dashboard
+
+# Database HostName - default is localhost
+dbhost=localhost
+
+# Database Port - default is 27017
+dbport=27017
+
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+
+# Database Username - default is blank
+dbusername=db
+
+# Database Password - default is blank
+dbpassword=dbpass
+
+# Logging File location
+logging.file=./logs/jira.log
+
 # PageSize - Expand contract this value depending on Jira implementation's
 # default server timeout setting (You will likely receive a SocketTimeoutException)
 feature.pageSize=100
@@ -32,6 +54,7 @@ feature.pageSize=100
 feature.deltaStartDate=2016-03-01T00:00:00.000000
 feature.masterStartDate=2016-03-01T00:00:00.000000
 feature.deltaCollectorItemStartDate=2016-03-01T00:00:00.000000
+
 # Chron schedule: S M D M Y [Day of the Week]
 feature.cron=0 * * * * *
 
@@ -95,37 +118,36 @@ feature.jiraEpicIdFieldName=customfield_10002
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
 #############################################################################
 feature.jiraStoryPointsFieldName=customfield_10003
-
-#############################################################################
-# Internal Status Mappings - THESE SHOULD BE FILLED OUT FOR EVERY CUSTOM STATUS VALUE
-# IN YOUR JIRA INSTANCE
-# 
-# Use the following API call to get all of your status mappings:  http://jira.your.instance.com/rest/api/2/status/
-#############################################################################
-feature.todoStatuses[0]=
-feature.doingStatuses[0]=
-feature.doneStatuses[0]=
-
-# Status mappings, E.g.:
-#
-# feature.todoStatuses[0]=Open
-# feature.todoStatuses[1]=Groom
-# feature.todoStatuses[2]=Selected for Development
-# feature.todoStatuses[3]=Backlog
-# feature.todoStatuses[4]=Grooming
-# feature.todoStatuses[5]=ToDo
-# feature.todoStatuses[6]=To Do
-# feature.todoStatuses[6]=Backlog1
-# feature.doingStatuses[0]=Validation
-# feature.doingStatuses[1]=Test
-# feature.doingStatuses[2]=In Process
-# feature.doingStatuses[3]=In Progress
-# feature.doingStatuses[4]=Awaiting Approval - 2
-# feature.doingStatuses[5]=Change Request - 2
-# feature.doneStatuses[0]=Awaiting Approval
-# feature.doneStatuses[1]=Done
-# feature.doneStatuses[2]=Resolved
 ```
+
+#### Troubleshooting
+##### The jira collector log does not pull data in for XXXX
+Verify the jira collector configuration for the custom fields is setup correctly. Hit the rest API outlined in the sample application properties above to see what data is being pulled in. A healthy log will look something like this:
+```
+2016-09-01 07:27:00,006 INFO c.c.d.collector.CollectorTask - Running Collector: Jira
+2016-09-01 07:27:00,010 INFO c.c.d.collector.CollectorTask - -----------------------------------
+2016-09-01 07:27:00,011 INFO c.c.d.collector.CollectorTask - https://my.jira.com/
+2016-09-01 07:27:00,011 INFO c.c.d.collector.CollectorTask - -----------------------------------
+2016-09-01 07:27:02,571 INFO c.c.d.collector.CollectorTask - Team Data 15 2s
+2016-09-01 07:27:03,050 INFO c.c.d.collector.CollectorTask - Project Data 15 1s
+2016-09-01 07:27:03,752 INFO c.c.d.collector.CollectorTask - Story Data 36 1s
+2016-09-01 07:27:03,752 INFO c.c.d.collector.CollectorTask - Finished 4s
+```
+
+##### My jira widget dropdown does not show any teams
+Verify your jira collector configuration. Verify that the jira collector is pulling in data by observing the logs. Connect to the mongo database using a tool such as RoboMongo and check that the 'feature' collection has data. Verify your API container is configured to hit the correct database.
+
+##### My jira widget shows all 0's for estimates
+Verify your jira collector configuration. Verify that the jira collector is pulling in data by observing the logs. Connect to the mongo database using a tool such as RoboMongo and check that the 'feature' collection has data. Check that features associated to an active sprint have the sEstimate (sEstimateTime for hours) field populated.
+
+##### My jira widget only shows kanban sprints
+In order to show scrum sprints there must exist stories with sprints attached to them that are active and have a recent start date. You can verify that this information is being pulled by either hitting the rest API or looking into the mongo database in the feature collection.
+
+##### ERROR c.c.d.client.DefaultJiraClient - No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:RestClientException{statusCode=Optional.of(403), errorCollections=[]}
+This may happen if you have had too many failed login attempts and a CAPTCHA guard has been triggered. Try logging in to jira with a browser successfully to remove the CAPTCHA guard. Verify that the jira credentials are correct.
+
+##### My issue is not listed or has not been resolved
+Search active and closed issues on github for 'jira'. Chances are your configuration is wrong and someone else has struggled through fixing it in another issue. Please refrain from commenting on closed issues. Github link: https://github.com/capitalone/Hygieia/issues?q=jira
 
 ## Implementation Details:
 

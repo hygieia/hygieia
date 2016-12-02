@@ -9,12 +9,13 @@
     <parent>
         <groupId>com.capitalone.dashboard</groupId>
         <artifactId>Hygieia</artifactId>
-        <version>2.0.2-SNAPSHOT</version>
+        <version>2.0.4-SNAPSHOT</version>
     </parent>
 
     <properties>
         <jackson.version>2.5.0</jackson.version>
         <guava.version>16.0.1</guava.version>
+        <application.version.number>${version}</application.version.number>
     </properties>
 
 
@@ -31,6 +32,22 @@
 
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/version.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/version.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <finalName>api</finalName>
         <plugins>
             <plugin>

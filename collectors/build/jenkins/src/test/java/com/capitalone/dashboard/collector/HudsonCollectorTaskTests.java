@@ -80,7 +80,7 @@ public class HudsonCollectorTaskTests {
         HudsonCollector collector = collectorWithOneServer();
         HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job));
-        when(hudsonJobRepository.findHudsonJob(collector.getId(), SERVER1, job.getJobName()))
+        when(hudsonJobRepository.findJob(collector.getId(), SERVER1, job.getJobName()))
                 .thenReturn(job);
         when(dbComponentRepository.findAll()).thenReturn(components());
 
@@ -148,7 +148,7 @@ public class HudsonCollectorTaskTests {
         Build build = build("JOB1_1", "JOB1_1_URL");
 
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
-        when(hudsonJobRepository.findEnabledHudsonJobs(collector.getId(), SERVER1))
+        when(hudsonJobRepository.findEnabledJobs(collector.getId(), SERVER1))
                 .thenReturn(Arrays.asList(job));
         when(buildRepository.findByCollectorItemIdAndNumber(job.getId(), build.getNumber())).thenReturn(build);
         when(dbComponentRepository.findAll()).thenReturn(components());
@@ -164,7 +164,7 @@ public class HudsonCollectorTaskTests {
         Build build = build("JOB1_1", "JOB1_1_URL");
 
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
-        when(hudsonJobRepository.findEnabledHudsonJobs(collector.getId(), SERVER1))
+        when(hudsonJobRepository.findEnabledJobs(collector.getId(), SERVER1))
                 .thenReturn(Arrays.asList(job));
         when(buildRepository.findByCollectorItemIdAndNumber(job.getId(), build.getNumber())).thenReturn(null);
         when(hudsonClient.getBuildDetails(build.getBuildUrl(), job.getInstanceUrl())).thenReturn(build);

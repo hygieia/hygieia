@@ -16,6 +16,7 @@ var browserSync = require('browser-sync'),
     less = require('gulp-less'),
     minifyHtml = require('gulp-htmlmin'),
     minifyCss = require('gulp-clean-css'),
+    order = require('gulp-order'),
     rename = require('gulp-rename'),
     replace = require('gulp-replace'),
     httpProxy = require('http-proxy'),
@@ -135,7 +136,7 @@ gulp.task('serve', ['build'], function() {
     });
 
     gulp.watch(jsFiles).on('change', function() {
-        runSequence('js', browserSync.reload);
+        runSequence(['js','html'], browserSync.reload);
     });
 
     // watch the less files in addition to the themes
@@ -261,7 +262,10 @@ gulp.task('html', function() {
         .pipe(gulp.dest(hygieia.dist))
 
         // replace inject:js with script references to all the files in the following sources
-        .pipe(inject(gulp.src(!!argv.prod ? ['src/app/app.js'] : jsFiles), { name: 'hygieia', ignorePath: 'src', addRootSlash: false }))
+        .pipe(inject(gulp.src(
+    		!!argv.prod ? ['src/app/app.js'] : jsFiles)
+    		.pipe(order(['app/app.js', 'app/dashboard/core/module.js', 'app/**/*.js', 'components/**/*.js'])), 
+    		{ name: 'hygieia', ignorePath: 'src', addRootSlash: false }))
 
         // replace custom placeholders with our configured values
         .pipe(replace('[config]', JSON.stringify(config)))

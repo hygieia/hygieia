@@ -1,10 +1,16 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.WidgetResponse;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +25,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 public class DashboardController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
     private final DashboardService dashboardService;
+
 
     @Autowired
     public DashboardController(DashboardService dashboardService) {
@@ -34,10 +42,17 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Dashboard> createDashboard(@Valid @RequestBody DashboardRequest request) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(dashboardService.create(request.toDashboard()));
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(dashboardService.create(request.toDashboard()));
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
     }
+
 
     @RequestMapping(value = "/dashboard/{id}", method = GET,
             produces = APPLICATION_JSON_VALUE)
@@ -45,12 +60,58 @@ public class DashboardController {
         return dashboardService.get(id);
     }
 
+
     @RequestMapping(value = "/dashboard/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateDashboard(@PathVariable ObjectId id,
                                                   @RequestBody DashboardRequest request) {
-        dashboardService.update(request.copyTo(dashboardService.get(id)));
-        return ResponseEntity.ok("Updated");
+        try {
+            dashboardService.update(request.copyTo(dashboardService.get(id)));
+            return ResponseEntity.ok("Updated");
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
     }
+
+
+    @RequestMapping(value = "/dashboard/rename/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> renameDashboard(@PathVariable ObjectId id,
+                                                  @RequestBody DashboardRequest request) {
+
+
+        Dashboard dashboard = getDashboard(id);
+        Iterable<Dashboard> allDashboard = dashboards();
+        boolean titleExist = false;
+
+        for(Dashboard l :allDashboard)
+        {
+            if(l.getTitle().equals(request.getTitle()))
+            {
+                titleExist=true;
+            }
+        }
+
+        LOGGER.info("Existing Title:" + titleExist);
+        //check if any other dashboard has the same title
+
+        if (!titleExist) {
+            try {
+                dashboard.setTitle(request.getTitle());
+                dashboardService.update(dashboard);
+                return ResponseEntity.ok("Renamed");
+            } catch (HygieiaException he) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(null);
+            }
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
+    }
+
 
     @RequestMapping(value = "/dashboard/{id}", method = DELETE)
     public ResponseEntity<Void> deleteDashboard(@PathVariable ObjectId id) {

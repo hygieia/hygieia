@@ -10,8 +10,8 @@ import java.util.List;
 public interface HudsonJobRepository extends BaseCollectorItemRepository<HudsonJob> {
 
     @Query(value="{ 'collectorId' : ?0, options.instanceUrl : ?1, options.jobName : ?2}")
-    HudsonJob findHudsonJob(ObjectId collectorId, String instanceUrl, String jobName);
+    HudsonJob findJob(ObjectId collectorId, String instanceUrl, String jobName);
 
     @Query(value="{ 'collectorId' : ?0, options.instanceUrl : ?1, enabled: true}")
-    List<HudsonJob> findEnabledHudsonJobs(ObjectId collectorId, String instanceUrl);
+    List<HudsonJob> findEnabledJobs(ObjectId collectorId, String instanceUrl);
 }

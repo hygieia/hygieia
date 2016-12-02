@@ -65,6 +65,9 @@ import java.util.Set;
 public class StoryDataClientImpl implements StoryDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StoryDataClientImpl.class);
 	private static final ClientUtil TOOLS = ClientUtil.getInstance();
+	private static final String TO_DO = "To Do";
+	private static final String IN_PROGRESS = "In Progress";
+	private static final String DONE = "Done";
 	
 	private static final Comparator<Sprint> SPRINT_COMPARATOR = new Comparator<Sprint>() {
 		@Override
@@ -140,7 +143,9 @@ public class StoryDataClientImpl implements StoryDataClient {
 		}
 		
 		int pageSize = jiraClient.getPageSize();
-		
+				
+		updateStatuses();
+
 		boolean hasMore = true;
 		for (int i = 0; hasMore; i += pageSize) {
 			if (LOGGER.isDebugEnabled()) {
@@ -477,15 +482,13 @@ public class StoryDataClientImpl implements StoryDataClient {
 				LOGGER.error("Failed to obtain sprint data from " + sValue, e);
 			}
 		} else {
-			/*
-			 * For Kanban, associate a generic, never-ending
-			 * kanban 'sprint'
-			 */
-			feature.setsSprintID(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			feature.setsSprintName(FeatureCollectorConstants.KANBAN_SPRINT_ID);
-			feature.setsSprintBeginDate(FeatureCollectorConstants.KANBAN_START_DATE);
-			feature.setsSprintEndDate(FeatureCollectorConstants.KANBAN_END_DATE);
-			feature.setsSprintAssetState("Active");
+			// Issue #678 - leave sprint blank. Not having a sprint does not imply kanban
+			// as a story on a scrum board without a sprint is really on the backlog
+			feature.setsSprintID("");
+			feature.setsSprintName("");
+			feature.setsSprintBeginDate("");
+			feature.setsSprintEndDate("");
+			feature.setsSprintAssetState("");
 		}
 
 		// sSprintChangeDate - does not exist in Jira
@@ -675,5 +678,19 @@ public class StoryDataClientImpl implements StoryDataClient {
 		}
 		
 		return rt;
+	}
+	
+	private void updateStatuses() {
+		Map<String, String> statusMap = jiraClient.getStatusMapping();
+		for (String status : statusMap.keySet()) {
+			String statusCategory = statusMap.get(status);
+			if (TO_DO.equals(statusCategory)) {
+				todoCache.add(status.toLowerCase(Locale.getDefault()));
+			} else if (IN_PROGRESS.equals(statusCategory)) {
+				inProgressCache.add(status.toLowerCase(Locale.getDefault()));
+			} else if (DONE.equals(statusCategory)) {
+				doneCache.add(status.toLowerCase(Locale.getDefault()));
+			}
+		}
 	}
 }

@@ -1,82 +1,75 @@
 <div id="auth">
     <ng-include src="login.templateUrl"></ng-include>
     <div class="col-md-8 col-md-push-2">
-        <div class="auth-modal-heading">
-            Please Login
-        </div>
+        <div class="auth-modal-heading">Please Login</div>
         <div class="auth-modal-body">
             <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2"
-                  id="lg"
-                  name="lg"
-                  class="form"
-                  ng-submit="login.doLogin(lg.$valid)"
-                  ng-init="login.doCheckState()"
-                  role="form"
-                  novalidate>
-
-                <form-group input="id" errors="{required: 'Username is required', invalidUsernamePassword: 'Incorrect username and password'}">
-                    <input
-                        type="text"
-                        name="id"
+                id="lg"
+                name="lg"
+                class="form"
+                ng-submit="login.doLogin(lg.$valid)"
+                role="form"
+                novalidate>
+                <form-group input="username"
+                    errors="{required: 'Username is required', invalidUsernamePassword: 'Incorrect username and password'}">
+                    <input type="text"
+                        name="username"
                         class="form-control text-center"
-                        ng-model="login.id"
+                        ng-model="login.username"
                         required
                         minlength="4"
                         autocomplete="off"
                         placeholder="Enter your username"/>
                 </form-group>
-
-                <form-group input="password" errors="{required:'Password is required'}">
-                    <input
-                        type="password"
+                <form-group input="password"
+                    errors="{required:'Password is required'}">
+                    <input type="password"
                         name="password"
                         class="form-control text-center"
                         ng-model="login.password"
                         required
                         placeholder="Enter your password" />
                 </form-group>
-
-
                 <div class="text-center">
-
-                    <Button type="submit" class="btn btn-default btn-wide">
+                    <button type="submit" class="btn btn-default btn-wide">
                         <i class="fa fa-lg fa fa-thumbs-o-up"></i>
                         Log in
-                    </Button>
-
+                    </button>
                 </div>
-
                 <div class="gap text-center">
                     <p>Don't have an account?</p>
-                    <div class="btn btn-link btn-wide" ng-click="login.doSignup()">
+                    <div class="btn btn-link btn-wide"
+                        ng-click="login.doSignup()">
                         <span class="fa fa-lg fa-key"></span>
                         Sign up
                     </div>
                 </div>
-
             </form>
-
-
         </div>
         <div class="clearfix"></div>
         <div class="auth-modal-footer">
             <div class="col-md-8 col-md-push-2 top-buffer">
-                <div class="col-md-4  col-md-push-3">
+                <div class="col-md-4  col-md-push-1">
                     <div class="animate-hide">
                         <span class="text-center">API Connectivity</span>
                     </div>
                 </div>
-                <div class="col-md-2 col-md-push-2">
+                <div class="col-md-2 col-md-push-1">
                     <div class="animate-hide">
-                        <span class="fa fa-2x" ng-class="login.apiup ? 'fa-check-circle text-success' : 'fa-times-circle text-danger'"></span>
+                        <i class="fa fa-2x fa-check-circle text-success"
+                            ng-if="login.apiup"></i>
+                        <i class="fa fa-2x fa-times-circle text-danger"
+                            ng-if="!login.apiup"></i>
                     </div>
-
                 </div>
 
+                <div class="col-md-4 col-md-push-1">
+                    <div class="animate-hide">
+                    <span class="text-center">{{login.appVersion}}</span>
+                        </div>
+                </div>
 
             </div>
         </div>
     </div>
 </div>
-
-

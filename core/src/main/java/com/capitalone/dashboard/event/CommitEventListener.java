@@ -5,6 +5,7 @@ import com.capitalone.dashboard.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Component
@@ -36,10 +37,12 @@ public class CommitEventListener extends HygieiaMongoEventListener<Commit> {
                 .stream()
                 .filter(this::dashboardHasBuildCollector)
                 .forEach(teamDashboard -> {
-                    PipelineCommit pipelineCommit = new PipelineCommit(commit, commit.getScmCommitTimestamp());
-                    Pipeline pipeline = getOrCreatePipeline(teamDashboard);
-                    pipeline.addCommit(PipelineStageType.Commit.name(), pipelineCommit);
-                    pipelineRepository.save(pipeline);
+                    if (CommitType.New.equals(commit.getType())) {
+                        PipelineCommit pipelineCommit = new PipelineCommit(commit, commit.getScmCommitTimestamp());
+                        Pipeline pipeline = getOrCreatePipeline(teamDashboard);
+                        pipeline.addCommit(PipelineStageType.Commit.name(), pipelineCommit);
+                        pipelineRepository.save(pipeline);
+                    }
                 });
     }
 
@@ -49,6 +52,7 @@ public class CommitEventListener extends HygieiaMongoEventListener<Commit> {
      * @return
      */
     private List<Dashboard> findAllDashboardsForCommit(Commit commit){
+        if (commit.getCollectorItemId() == null) return new ArrayList<>();
         CollectorItem commitCollectorItem = collectorItemRepository.findOne(commit.getCollectorItemId());
         List<Component> components = componentRepository.findBySCMCollectorItemId(commitCollectorItem.getId());
         return dashboardRepository.findByApplicationComponentsIn(components);
