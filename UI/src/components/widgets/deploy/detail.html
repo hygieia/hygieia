@@ -43,7 +43,12 @@
                 <tbody ng-repeat="unit in detail.environment.units | orderBy:['deployed', 'name'] track by $index">
                     <tr ng-repeat="server in unit.servers | orderBy:['online', 'name'] track by $index">
                         <td dash-status="{{unit.deployed}}"></td>
-                        <td>{{::unit.name}}</td>
+                        <td ng-if="unit.jobUrl">
+                            <a ng-href="{{::unit.jobUrl}}" target="_blank">
+                                {{::unit.name}} <span class="fa fa-angle-right"></span>
+                            </a>
+                        </td>
+                        <td ng-if="!unit.jobUrl">{{::unit.name}}</td>
                         <td>{{::unit.lastUpdated | date:'MMM d, HH:mm:ss'}}</td>
                         <td>{{::unit.version}}</td>
                         <td>{{::server.name}}</td>
@@ -52,7 +57,12 @@
                     </tr>
                     <tr ng-if="!unit.servers || unit.servers.length === 0">
                         <td dash-status="{{unit.deployed}}"></td>
-                        <td>{{::unit.name}}</td>
+                        <td ng-if="unit.jobUrl">
+                            <a ng-href="{{::unit.jobUrl}}" target="_blank">
+                                {{::unit.name}} <span class="fa fa-angle-right"></span>
+                            </a>
+                        </td>
+                        <td ng-if="!unit.jobUrl">{{::unit.name}}</td>
                         <td>{{::unit.lastUpdated | date:'MMM d, HH:mm:ss'}}</td>
                         <td>{{::unit.version}}</td>
                         <td colspan="2">N/A</td>
