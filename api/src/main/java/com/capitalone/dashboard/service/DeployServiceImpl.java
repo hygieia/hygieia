@@ -3,7 +3,7 @@ package com.capitalone.dashboard.service;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -109,13 +109,13 @@ public class DeployServiceImpl implements DeployService {
 
     private Map<Environment, List<EnvironmentComponent>> groupByEnvironment(
             List<EnvironmentComponent> components) {
-        Map<Environment, Map<String, EnvironmentComponent>> trackingMap = new HashMap<>();
+        Map<Environment, Map<String, EnvironmentComponent>> trackingMap = new LinkedHashMap<>();
         for (EnvironmentComponent component : components) {
             Environment env = new Environment(component.getEnvironmentName(),
                     component.getEnvironmentUrl());
             
             if (!trackingMap.containsKey(env)) {
-                trackingMap.put(env, new HashMap<>());
+                trackingMap.put(env, new LinkedHashMap<>());
             }
             //two conditions to overwrite the value for the specific component
             if (trackingMap.get(env).get(component.getComponentName()) == null ||
