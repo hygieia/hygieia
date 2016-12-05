@@ -28,6 +28,7 @@
             detail: detail,
             create: create,
             delete: deleteDashboard,
+            rename: renameDashboard,
             upsertWidget: upsertWidget,
             types: types
         };
@@ -68,6 +69,25 @@
                 })
                 .error(function (response) {
                     return null;
+                });
+        }
+
+
+        // renames a dashboard
+
+        function renameDashboard(id,newDashboardName){
+            console.log("In data renaming dashboard");
+            var postData= {
+                title: newDashboardName
+             }
+            return $http.put(dashboardRoute+"/rename/"+id, postData)
+                .success(
+                    function (response) {
+                    return response.data;
+                })
+                .error (function (response) {
+                    console.log("Error Occured while renaming Dashboard in Data layer:"+JSON.stringify(response));
+                    return response.data;
                 });
         }
 

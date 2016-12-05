@@ -12,12 +12,21 @@ import java.util.Set;
 @Document(collection="services")
 public class Service extends BaseModel {
     private String name;
+    private String url;
     private String applicationName;
     private ObjectId dashboardId;
     private ServiceStatus status;
     private String message;
     private long lastUpdated;
     private Set<ObjectId> dependedBy = new HashSet<>();
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public String getName() {
         return name;
