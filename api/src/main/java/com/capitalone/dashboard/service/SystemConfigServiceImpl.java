@@ -27,6 +27,8 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 		
 		response.setGlobalProperties(globalProperties);
 		
+		response.setSystemStages(apiSettings.getSystemStages());
+		
 		return response;
 	}
 	

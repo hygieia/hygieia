@@ -34,6 +34,8 @@ public class PipelineCommit extends SCM{
 
     @Override
     public int hashCode() {
-        return (int) (timestamp ^ (timestamp >>> 32));
+    	int result = scmRevisionNumber.hashCode();
+        result = 31 * result + scmRevisionNumber.hashCode();
+        return result;
     }
 }
