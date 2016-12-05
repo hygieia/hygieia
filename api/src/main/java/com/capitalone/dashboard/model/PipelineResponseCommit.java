@@ -11,8 +11,12 @@ public class PipelineResponseCommit extends SCM {
 
     Map<String, Long> processedTimestamps = new HashMap<>();
 
-    public void addNewPipelineProcessedTimestamp(String pipelineStageType, Long timestamp) {
-        getProcessedTimestamps().put(pipelineStageType, timestamp);
+    public void addNewPipelineProcessedTimestamp(PipelineStage stage, Long timestamp) {
+    	addNewPipelineProcessedTimestamp(stage.getName(), timestamp);
+    }
+    
+    public void addNewPipelineProcessedTimestamp(String stageName, Long timestamp) {
+        getProcessedTimestamps().put(stageName, timestamp);
     }
 
     public Map<String, Long> getProcessedTimestamps() {

@@ -5,35 +5,37 @@
         .module(HygieiaConfig.module)
         .controller('pipelineConfigController', pipelineConfigController);
 
-    pipelineConfigController.$inject = ['modalData', 'deployData', '$modalInstance'];
-    function pipelineConfigController(modalData, deployData, $modalInstance) {
+    pipelineConfigController.$inject = ['modalData', 'deployData', 'systemConfigData', '$modalInstance', '$q'];
+    function pipelineConfigController(modalData, deployData, systemConfigData, $modalInstance, $q) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // make sure mappings property is available
         ctrl.environmentsDropdownDisabled = true;
-        ctrl.environmentMappings = [
-            { key: 'dev', value: null },
-            { key: 'qa', value: null },
-            { key: 'int', value: null },
-            { key: 'perf', value: null },
-            { key: 'prod', value: null }
-        ];
-
-        if(modalData.widgetConfig.options.mappings) {
-            _(ctrl.environmentMappings).forEach(function(env) {
-                if(modalData.widgetConfig.options.mappings[env.key]) {
-                    env.value = modalData.widgetConfig.options.mappings[env.key];
-                }
-            });
-        }
+        ctrl.environmentMappings = [ ];
 
         ctrl.save = save;
 
-        deployData.details(modalData.dashboard.application.components[0].id).then(processResponse);
+        $q.all([systemConfigData.config(), deployData.details(modalData.dashboard.application.components[0].id)]).then(processResponse);
 
-
-        function processResponse(data) {
+        function processResponse(dataA) {
+        	var systemConfig = dataA[0];
+        	var data = dataA[1];
+        	
+        	ctrl.environmentMappings = _(systemConfig.systemStages)
+        		.filter(function (stage) { return stage.type == 'DEPLOY' })
+	        	.map(function (stage) {
+	        		return { key: stage.name.toLowerCase(), value: null }
+	        	}).value();
+        	
+            if(modalData.widgetConfig.options.mappings) {
+                _(ctrl.environmentMappings).forEach(function(env) {
+                    if(modalData.widgetConfig.options.mappings[env.key]) {
+                        env.value = modalData.widgetConfig.options.mappings[env.key];
+                    }
+                });
+            }
+        	
             ctrl.environments = _(data.result).map(function (env) {
                 return {
                     name: env.name,

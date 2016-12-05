@@ -5,18 +5,40 @@
         .module(HygieiaConfig.module)
         .controller('pipelineViewController', pipelineViewController);
 
-    pipelineViewController.$inject = ['$scope', 'deployData', 'WidgetState', '$q'];
-    function pipelineViewController($scope, deployData, WidgetState, $q) {
+    pipelineViewController.$inject = ['$scope', 'deployData', 'systemConfigData', 'WidgetState', '$q'];
+    function pipelineViewController($scope, deployData, systemConfigData, WidgetState, $q) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // placeholder for environments that are not deployed or have a server down
         var currentDownEnvironments = [];
 
-        // list of valid environments to validate and build data
-        var validMappings = ['dev', 'qa', 'int', 'perf', 'prod'];
-
         ctrl.load = function() {
+        	systemConfigData.config().then(processLoad);
+        };
+        
+        function processLoad(systemConfig) {
+        	// list of valid environments to validate and build data
+        	var validMappings = _(systemConfig.systemStages)
+	    		.filter(function (stage) { return stage.type == 'DEPLOY' })
+	        	.map(function (stage) { return stage.name.toLowerCase() } )
+	        	.value();
+            
+	        // a list of environments used to loop environments in the view
+	        ctrl.environmentKeys = [];
+	
+	        // build up the environment keys array
+	        _(validMappings).forEach(function (key) {
+	            if($scope.widgetConfig.options.mappings[key]) {
+	                ctrl.environmentKeys.push(key);
+	            }
+	        });
+	
+	        // a grid width class to use based on the number of environments displayed.
+	        // values are captured by index of the displayed environment length
+	        var gridSizes = [12, 12, 6, 4, 3, 'fifths', 2, 'sevenths', 'eigths', 'ninths'];
+	        ctrl.colGridSize = gridSizes[ctrl.environmentKeys.length];
+        	
             // verify that a valid mapping exists
             var configLength = (function(map) {
                 var length = 0;
@@ -41,22 +63,7 @@
 
                 return deferred.promise;
             }
-        };
-
-        // a list of environments used to loop environments in the view
-        ctrl.environmentKeys = [];
-
-        // build up the environment keys array
-        _(validMappings).forEach(function (key) {
-            if($scope.widgetConfig.options.mappings[key]) {
-                ctrl.environmentKeys.push(key);
-            }
-        });
-
-        // a grid width class to use based on the number of environments displayed.
-        // values are captured by index of the displayed environment length
-        var gridSizes = [12, 12, 6, 4, 3, 'fifths', 2];
-        ctrl.colGridSize = gridSizes[ctrl.environmentKeys.length];
+        }
 
         // method to determine if environment is down and should display red marking
         ctrl.isDown = isDown;

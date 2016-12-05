@@ -29,4 +29,5 @@ dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 feature.dynamicPipeline=${FEATURE_DYNAMIC_PIPELINE:-disabled}
 systemConfig.multipleDeploymentServers=${CONFIG_GLOBAL_MULTIPLE_DEPLOYMENT_SERVERS:-false}
+systemConfig.systemStages=${CONFIG_GLOBAL_SYSTEM_STAGES:-Commit,Build,DEV,QA,INT,PERF,PROD}
 EOF
