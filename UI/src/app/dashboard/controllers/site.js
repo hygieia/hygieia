@@ -31,9 +31,10 @@
         ctrl.filterDashboards = filterDashboards;
         ctrl.renameDashboard = renameDashboard;
 
-        if (ctrl.username === 'admin') {
+         if (ctrl.username === 'admin') {
             ctrl.myadmin = true;
         }
+        checkPassThrough();
 
         (function() {
             // set up the different types of dashboards with a custom icon
@@ -68,6 +69,14 @@
             }
 
             return matchesSearch;
+        }
+
+        function checkPassThrough(){
+            if(angular.isUndefined(ctrl.username) || angular.isUndefined(ctrl.showAuthentication) || ctrl.showAuthentication == false){
+                console.log('Authentication failed, redirecting to login page');
+                $location.path('/login');
+            }
+
         }
 
         function admin() {
