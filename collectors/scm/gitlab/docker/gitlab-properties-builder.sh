@@ -53,7 +53,7 @@ gitlab.protocol=${GITLAB_PROTOCOL:-}
 #Gitlab port (optional, defaults to protocol default port)
 gitlab.port=${GITLAB_PORT:-}
   
-#Gitlab API Token (required, must be an admin account to retrieve all teams for the instance of gitlab.  If not admin, will only retrieve teams the user belongs to)
+#Gitlab API Token (required, access token can be retrieved through gitlab, collector will have the permissions of the user associated to the token)
 gitlab.apiToken=${GITLAB_API_TOKEN:-}
 
 #Maximum number of days to go back in time when fetching commits
