@@ -95,8 +95,8 @@
         function renameDashboard(item)
         {
             console.log("Rename Dashboard");
-
-            var mymodalInstance=$modal.open({
+            // open modal for renaming dashboard
+            $modal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',
@@ -109,12 +109,6 @@
                     }
                 }
             });
-
-            mymodalInstance.result.then(function(condition) {
-                window.location.reload(false);
-            });
-
-
         }
 
 
