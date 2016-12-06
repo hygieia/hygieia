@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -18,9 +17,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.model.FeatureCollector;
+import com.capitalone.dashboard.model.UpdateResult;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,7 +37,7 @@ public class FeatureCollectorTaskTest {
 	private FeatureService featureService;
 	
 	@Mock
-	private Future<Void> future;
+	private ListenableFuture<UpdateResult> future;
 	
 	@InjectMocks
 	private FeatureCollectorTask featureCollectorTask;
@@ -71,7 +72,7 @@ public class FeatureCollectorTaskTest {
 		when(featureService.updateSelectableTeams()).thenReturn(future);
 		when(featureService.updateProjects(projects)).thenReturn(future);
 		when(featureService.updateIssuesForProject(isA(GitlabProject.class))).thenReturn(future);
-		when(future.get()).thenReturn(null);
+		when(future.get()).thenReturn(new UpdateResult(1, 1));
 		
 		featureCollectorTask.collect(collector);
 		

@@ -2,14 +2,15 @@ package com.capitalone.dashboard.collector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import com.capitalone.dashboard.data.FeatureDataClient;
 import com.capitalone.dashboard.gitlab.GitlabClient;
@@ -22,6 +23,7 @@ import com.capitalone.dashboard.model.UpdateResult;
 
 @Service
 public class FeatureService {
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureService.class);
 	
 	private final GitlabClient gitlabClient;
@@ -44,31 +46,29 @@ public class FeatureService {
 	}
 	
 	@Async
-	public Future<Void> updateSelectableTeams() {
+	public ListenableFuture<UpdateResult> updateSelectableTeams() {
 		List<GitlabTeam> teams = gitlabClient.getTeams();
-        UpdateResult result = featureDataClient.updateTeams(teams);
+        UpdateResult updateResult = featureDataClient.updateTeams(teams);
         
-        LOGGER.info("Added {} new team(s) and deleted {} team(s).", result.getItemsAdded(), result.getItemsDeleted());
-        return null;
+		return new AsyncResult<>(updateResult);
 	}
 	
 	@Async
-	public Future<Void> updateProjects(List<GitlabProject> projects) {
+	public ListenableFuture<UpdateResult> updateProjects(List<GitlabProject> projects) {
 		UpdateResult result = featureDataClient.updateProjects(projects);
 		
-		LOGGER.info("Added {} new project(s) and deleted {} projects(s).", result.getItemsAdded(), result.getItemsDeleted());
-		return null;
+		return new AsyncResult<>(result);
 	}
 	
     @Async
-	public Future<Void> updateIssuesForProject(GitlabProject project) {
+	public ListenableFuture<UpdateResult> updateIssuesForProject(GitlabProject project) {
     	String projectId = String.valueOf(project.getId());
 		List<GitlabLabel> inProgressLabelsForProject = gitlabClient.getInProgressLabelsForProject(project.getId());
 		List<GitlabIssue> issues = gitlabClient.getIssuesForProject(project);
 		UpdateResult result = featureDataClient.updateIssues(projectId, issues, inProgressLabelsForProject);
 		
-		LOGGER.info("{}: Added/Updated {} issues and deleted {} issues", project.getName(), result.getItemsAdded(), result.getItemsDeleted());
-		return null;
+		LOGGER.debug("{}: Added/Updated {} issues and deleted {} issues", project.getName(), result.getItemsAdded(), result.getItemsDeleted());
+		return new AsyncResult<>(result);
 	}
     
 }

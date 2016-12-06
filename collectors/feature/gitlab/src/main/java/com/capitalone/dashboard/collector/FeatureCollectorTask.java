@@ -4,17 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
+import com.capitalone.dashboard.model.UpdateResult;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
@@ -81,35 +83,52 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      */
     @Override
     public void collect(FeatureCollector collector) {
-        LOGGER.info("Starting Feature collection...");
-       	Long startTime = System.currentTimeMillis();
-       	
-        updateFeatures(collector);
-        
-        Long elapsedTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
-        LOGGER.info("Feature data collection finished in {} seconds.", elapsedTime);
-    }
-
-	private void updateFeatures(FeatureCollector collector) {
+    	logBanner("Starting...");
+		Long startTime = System.currentTimeMillis();
 		List<GitlabProject> projects = featureService.getProjectsForEnabledTeams(collector.getId());
        	
-        List<Future<Void>> futures = new ArrayList<>();
-        futures.add(featureService.updateSelectableTeams());
-        futures.add(featureService.updateProjects(projects));
+        ListenableFuture<UpdateResult> updateTeamsFuture = featureService.updateSelectableTeams();
+        updateTeamsFuture.addCallback(createCallback("Teams Added", "Teams Deleted", startTime));
+        
+        ListenableFuture<UpdateResult> updateProjectsFuture = featureService.updateProjects(projects);
+        updateProjectsFuture.addCallback(createCallback("Projects Added", "Projects Deleted", startTime));
+        
+        List<Future<UpdateResult>> updateIssuesFutures = new ArrayList<>();
         for(GitlabProject project : projects) {
-        	futures.add(featureService.updateIssuesForProject(project));
+        	updateIssuesFutures.add(featureService.updateIssuesForProject(project));
         }
-        waitForCompletion(futures);
+        logResults(updateIssuesFutures, startTime);
+    }
+
+	private ListenableFutureCallback<UpdateResult> createCallback(String addedText, String deletedText, Long startTime) {
+		return new ListenableFutureCallback<UpdateResult>() {
+
+			@Override
+			public void onSuccess(UpdateResult result) {
+				log(addedText, startTime, result.getItemsAdded());
+		        log(deletedText, startTime, result.getItemsDeleted());
+			}
+
+			@Override
+			public void onFailure(Throwable ex) {
+				log(ex.getMessage());
+			}
+        	
+		};
 	}
 
-	private void waitForCompletion(List<Future<Void>> futures) {
+	private void logResults(List<Future<UpdateResult>> futures, long startTime) {
+		UpdateResult result = new UpdateResult(0, 0);
 		futures.forEach(future -> {
 			try {
-				future.get();
+				result.add(future.get());
 			} catch (InterruptedException | ExecutionException e) {
 				LOGGER.error(e.getMessage());
 			}
 		});
+		
+		log("Issues Added/Updated", startTime, result.getItemsAdded());
+	    log("Issues Deleted", startTime, result.getItemsDeleted());
 	}
 
 }

@@ -2,12 +2,19 @@ package com.capitalone.dashboard.model;
 
 public class UpdateResult {
 
-	private final int itemsAdded;
-	private final int itemsDeleted;
+	private int itemsAdded;
+	private int itemsDeleted;
 	
 	public UpdateResult(int itemsAdded, int itemsDeleted) {
 		this.itemsAdded = itemsAdded;
 		this.itemsDeleted = itemsDeleted;
+	}
+	
+	public UpdateResult add(UpdateResult result) {
+		this.itemsAdded += result.getItemsAdded();
+		this.itemsDeleted += result.getItemsDeleted();
+		
+		return this;
 	}
 
 	public int getItemsAdded() {

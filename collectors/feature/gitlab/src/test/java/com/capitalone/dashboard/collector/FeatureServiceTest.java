@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.collector;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,7 +70,7 @@ public class FeatureServiceTest {
 		when(gitlabClient.getTeams()).thenReturn(teams);
 		when(dataClient.updateTeams(teams)).thenReturn(new UpdateResult(2, 1));
 		
-		assertNull(service.updateSelectableTeams());
+		assertNotNull(service.updateSelectableTeams());
 		
 		verify(gitlabClient).getTeams();
 		verify(dataClient).updateTeams(teams);
@@ -81,7 +81,7 @@ public class FeatureServiceTest {
 		List<GitlabProject> projects = new ArrayList<>();
 		when(dataClient.updateProjects(projects)).thenReturn(new UpdateResult(2, 1));
 		
-		assertNull(service.updateProjects(projects));
+		assertNotNull(service.updateProjects(projects));
 		
 		verify(dataClient).updateProjects(projects);
 	}
@@ -97,7 +97,7 @@ public class FeatureServiceTest {
 		when(gitlabClient.getIssuesForProject(project)).thenReturn(issues);
 		when(dataClient.updateIssues(String.valueOf(projectId), issues, labels)).thenReturn(new UpdateResult(2, 1));
 		
-		assertNull(service.updateIssuesForProject(project));
+		assertNotNull(service.updateIssuesForProject(project));
 		
 		verify(dataClient).updateIssues(String.valueOf(projectId), issues, labels);
 	}
