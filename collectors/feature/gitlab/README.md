@@ -53,7 +53,7 @@ logging.file=./logs/gitlab.log
 gitlab.cron=0 0/1 * * * *
 
 #Gitlab host (optional, defaults to "gitlab.com")
-gitlab.host=gitlab.company.com
+gitlab.host=gitlab.com
 
 #Gitlab protocol (optional, defaults to "http")
 gitlab.protocol=http
@@ -61,7 +61,10 @@ gitlab.protocol=http
 #Gitlab port (optional, defaults to protocol default port)
 gitlab.port=80
   
-#Gitlab API Token (required, must be an admin account to retrieve all teams for the instance of gitlab.  If not admin, will only retrieve teams the user belongs to)
+#Gitlab API Token (required, collector will have permission of user associated to the token)
+#If token is from admin account, will be able to view all teams, and can collect all issues
+#If token is from standard user, will show only teams that user is apart of, and can only collect issues that user could view
+#We recommend creating a Gitlab account for the collector, using it's Access Token, and adding that user to teams you want to see issues for
 gitlab.apiToken=
 
 ```
