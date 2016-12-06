@@ -3,6 +3,7 @@ package com.capitalone.dashboard.service;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -222,7 +223,10 @@ public class DeployServiceImpl implements DeployService {
         tempCi.setPushed(true);
         tempCi.setLastUpdated(System.currentTimeMillis());
         tempCi.setNiceName(request.getNiceName());
-        tempCi.getOptions().put("applicationName", request.getAppName());
+        Map<String, Object> option = new HashMap<>();
+        option.put("applicationName", request.getAppName());
+        option.put("instanceUrl", request.getInstanceUrl());
+        tempCi.getOptions().putAll(option);
 
         CollectorItem collectorItem = collectorService.createCollectorItem(tempCi);
         return collectorItem;

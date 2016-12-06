@@ -84,13 +84,13 @@ public class EnvironmentComponent extends BaseModel {
 
     public String getJobUrl() {
 		return jobUrl;
-	}
+    }
 
-	public void setJobUrl(String jobUrl) {
-		this.jobUrl = jobUrl;
-	}
+    public void setJobUrl(String jobUrl) {
+        this.jobUrl = jobUrl;
+    }
 
-	public boolean isDeployed() {
+    public boolean isDeployed() {
         return deployed;
     }
 

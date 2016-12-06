@@ -32,10 +32,10 @@ public class DeployableUnit {
     }
 
     public String getJobUrl() {
-		return jobUrl;
-	}
+        return jobUrl;
+    }
 
-	public boolean isDeployed() {
+    public boolean isDeployed() {
         return deployed;
     }
 
