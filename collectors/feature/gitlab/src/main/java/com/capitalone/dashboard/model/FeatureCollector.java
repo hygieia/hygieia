@@ -19,7 +19,7 @@ public class FeatureCollector extends Collector {
 		FeatureCollector protoType = new FeatureCollector();
 		protoType.setName(FeatureCollectorConstants.GITLAB);
 		protoType.setOnline(true);
-        protoType.setEnabled(true);
+		protoType.setEnabled(true);
 		protoType.setCollectorType(CollectorType.ScopeOwner);
 		protoType.setLastExecuted(System.currentTimeMillis());
 

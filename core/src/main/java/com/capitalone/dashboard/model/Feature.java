@@ -479,17 +479,19 @@ public class Feature extends BaseModel {
 	}
 	
 	@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 
-        Feature that = (Feature) o;
-        EqualsBuilder builder = new EqualsBuilder();
-        return builder.append(collectorId, that.collectorId).append(sId, that.sId).build();
-    }
+		Feature that = (Feature) o;
+		EqualsBuilder builder = new EqualsBuilder();
+		return builder.append(collectorId, that.collectorId).append(sId, that.sId).build();
+	}
 
-    @Override
-    public int hashCode() {
-    	return new HashCodeBuilder(17, 37).append(collectorId).append(sId).toHashCode();
-    }
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(17, 37).append(collectorId).append(sId).toHashCode();
+	}
 }

@@ -119,17 +119,19 @@ public class Scope extends BaseModel {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
 
-        Scope that = (Scope) obj;
-        EqualsBuilder builder = new EqualsBuilder();
-        return builder.append(pId, that.pId).append(collectorId, that.collectorId).build();
+		Scope that = (Scope) obj;
+		EqualsBuilder builder = new EqualsBuilder();
+		return builder.append(pId, that.pId).append(collectorId, that.collectorId).build();
 	}
-	
+
 	@Override
-    public int hashCode() {
-    	return new HashCodeBuilder(17, 37).append(pId).append(collectorId).toHashCode();
-    }
+	public int hashCode() {
+		return new HashCodeBuilder(17, 37).append(pId).append(collectorId).toHashCode();
+	}
 
 }
