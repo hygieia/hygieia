@@ -26,23 +26,26 @@ import com.capitalone.dashboard.util.FeatureCollectorConstants;
  */
 @Component
 public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 
-    private final FeatureCollectorRepository featureCollectorRepository;
-    private final FeatureSettings featureSettings;
-    private final FeatureService featureService;
+	private final FeatureCollectorRepository featureCollectorRepository;
+	private final FeatureSettings featureSettings;
+	private final FeatureService featureService;
 
-    /**
-     * Default constructor for the collector task. This will construct this
-     * collector task with all repository, scheduling, and settings
-     * configurations custom to this collector.
-     *
-     * @param taskScheduler   A task scheduler artifact
-     * @param teamRepository  The repository being use for feature collection
-     * @param featureSettings The settings being used for feature collection from the source
-     *                        system
-     * @throws HygieiaException
-     */
+	/**
+	 * Default constructor for the collector task. This will construct this
+	 * collector task with all repository, scheduling, and settings
+	 * configurations custom to this collector.
+	 *
+	 * @param taskScheduler
+	 *            A task scheduler artifact
+	 * @param teamRepository
+	 *            The repository being use for feature collection
+	 * @param featureSettings
+	 *            The settings being used for feature collection from the source
+	 *            system
+	 * @throws HygieiaException
+	 */
 	@Autowired
 	public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureCollectorRepository featureCollectorRepository,
 			FeatureSettings featureSettings, FeatureService featureService) throws HygieiaException {
@@ -52,68 +55,69 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 		this.featureService = featureService;
 	}
 
-    /**
-     * Accessor method for the collector prototype object
-     */
-    @Override
-    public FeatureCollector getCollector() {
-        return FeatureCollector.prototype();
-    }
+	/**
+	 * Accessor method for the collector prototype object
+	 */
+	@Override
+	public FeatureCollector getCollector() {
+		return FeatureCollector.prototype();
+	}
 
-    /**
-     * Accessor method for the collector repository
-     */
-    @Override
-    public BaseCollectorRepository<FeatureCollector> getCollectorRepository() {
-        return featureCollectorRepository;
-    }
+	/**
+	 * Accessor method for the collector repository
+	 */
+	@Override
+	public BaseCollectorRepository<FeatureCollector> getCollectorRepository() {
+		return featureCollectorRepository;
+	}
 
-    /**
-     * Accessor method for the current chronology setting, for the scheduler
-     */
-    @Override
-    public String getCron() {
-        return featureSettings.getCron();
-    }
+	/**
+	 * Accessor method for the current chronology setting, for the scheduler
+	 */
+	@Override
+	public String getCron() {
+		return featureSettings.getCron();
+	}
 
-    /**
-     * The collection action. This is the task which will run on a schedule to
-     * gather data from the feature content source system and update the
-     * repository with retrieved data.
-     */
-    @Override
-    public void collect(FeatureCollector collector) {
-    	logBanner("Starting...");
+	/**
+	 * The collection action. This is the task which will run on a schedule to
+	 * gather data from the feature content source system and update the
+	 * repository with retrieved data.
+	 */
+	@Override
+	public void collect(FeatureCollector collector) {
+		logBanner("Starting...");
 		Long startTime = System.currentTimeMillis();
 		List<GitlabProject> projects = featureService.getProjectsForEnabledTeams(collector.getId());
-       	
-        ListenableFuture<UpdateResult> updateTeamsFuture = featureService.updateSelectableTeams();
-        updateTeamsFuture.addCallback(createCallback("Teams Added", "Teams Deleted", startTime));
-        
-        ListenableFuture<UpdateResult> updateProjectsFuture = featureService.updateProjects(projects);
-        updateProjectsFuture.addCallback(createCallback("Projects Added", "Projects Deleted", startTime));
-        
-        List<Future<UpdateResult>> updateIssuesFutures = new ArrayList<>();
-        for(GitlabProject project : projects) {
-        	updateIssuesFutures.add(featureService.updateIssuesForProject(project));
-        }
-        logResults(updateIssuesFutures, startTime);
-    }
 
-	private ListenableFutureCallback<UpdateResult> createCallback(String addedText, String deletedText, Long startTime) {
+		ListenableFuture<UpdateResult> updateTeamsFuture = featureService.updateSelectableTeams();
+		updateTeamsFuture.addCallback(createCallback("Teams Added", "Teams Deleted", startTime));
+
+		ListenableFuture<UpdateResult> updateProjectsFuture = featureService.updateProjects(projects);
+		updateProjectsFuture.addCallback(createCallback("Projects Added", "Projects Deleted", startTime));
+
+		List<Future<UpdateResult>> updateIssuesFutures = new ArrayList<>();
+		for (GitlabProject project : projects) {
+			updateIssuesFutures.add(featureService.updateIssuesForProject(project));
+		}
+		logResults(updateIssuesFutures, startTime);
+	}
+
+	private ListenableFutureCallback<UpdateResult> createCallback(String addedText, String deletedText,
+			Long startTime) {
 		return new ListenableFutureCallback<UpdateResult>() {
 
 			@Override
 			public void onSuccess(UpdateResult result) {
 				log(addedText, startTime, result.getItemsAdded());
-		        log(deletedText, startTime, result.getItemsDeleted());
+				log(deletedText, startTime, result.getItemsDeleted());
 			}
 
 			@Override
 			public void onFailure(Throwable ex) {
 				log(ex.getMessage());
 			}
-        	
+
 		};
 	}
 
@@ -126,9 +130,9 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 				LOGGER.error(e.getMessage());
 			}
 		});
-		
+
 		log("Issues Added/Updated", startTime, result.getItemsAdded());
-	    log("Issues Deleted", startTime, result.getItemsDeleted());
+		log("Issues Deleted", startTime, result.getItemsDeleted());
 	}
 
 }
