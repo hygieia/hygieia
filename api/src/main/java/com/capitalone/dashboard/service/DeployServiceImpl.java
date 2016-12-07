@@ -1,5 +1,9 @@
 package com.capitalone.dashboard.service;
 
+import static com.capitalone.dashboard.service.DeployServiceImpl.RundeckXMLParser.getAttributeValue;
+import static com.capitalone.dashboard.service.DeployServiceImpl.RundeckXMLParser.getChildNodeAttribute;
+import static com.capitalone.dashboard.service.DeployServiceImpl.RundeckXMLParser.getChildNodeValue;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+//import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,7 +46,6 @@ import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
 import com.capitalone.dashboard.repository.EnvironmentStatusRepository;
 import com.capitalone.dashboard.request.CollectorRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
@@ -166,7 +171,7 @@ public class DeployServiceImpl implements DeployService {
         }
     }
 
-    private class ToServer implements Function<EnvironmentStatus, Server> {
+    private class ToServer implements com.google.common.base.Function<EnvironmentStatus, Server> {
         @Override
         public Server apply(EnvironmentStatus status) {
             return new Server(status.getResourceName(), status.isOnline());
@@ -267,21 +272,21 @@ public class DeployServiceImpl implements DeployService {
     public String createRundeckBuild(Document doc, String executionId, String status) throws HygieiaException {
         Node executionNode = doc.getElementsByTagName("execution").item(0);
         Node jobNode = executionNode.getFirstChild();
-        NodeList nodes = doc.getElementsByTagName("option");
+        RundeckXMLParser p = new RundeckXMLParser(doc);
         DeployDataCreateRequest request = new DeployDataCreateRequest();
         request.setExecutionId(executionId);
         request.setDeployStatus(status.toUpperCase());
         request.setAppName(getAttributeValue(executionNode, "project"));
-        request.setArtifactGroup(findMatchingOption(nodes, "artifactGroup", "group", "hygieiaArtifactGroup"));
-        request.setArtifactName(findMatchingOption(nodes, "artifactId", "artifactName"));
-        request.setArtifactVersion(findMatchingOption(nodes, "version", "artifactVersion"));
-        request.setEnvName(findMatchingOption(nodes, "environment", "env", "executionEnvironment", "hygieiaEnv"));
-        request.setNiceName(findMatchingOption(nodes, "niceName", "hygieiaNiceName"));
+        request.setArtifactGroup(p.findMatchingOption("artifactGroup", "group", "hygieiaArtifactGroup"));
+        request.setArtifactName(p.findMatchingOption("artifactId", "artifactName"));
+        request.setArtifactVersion(p.findMatchingOption("version", "artifactVersion"));
+        request.setEnvName(p.findMatchingOption("environment", "env", "executionEnvironment", "hygieiaEnv"));
+        request.setNiceName(p.findMatchingOption("niceName", "hygieiaNiceName"));
         request.setStartedBy(getChildNodeValue(executionNode, "user"));
         request.setStartTime(Long.valueOf(getChildNodeAttribute(executionNode, "date-started", "unixtime")));
         request.setEndTime(Long.valueOf(getChildNodeAttribute(executionNode, "date-ended", "unixtime")));
         request.setDuration(request.getEndTime() - request.getStartTime());
-        request.setJobName(getAttributeValue(executionNode, "href"));
+        request.setJobName(RundeckXMLParser.getAttributeValue(executionNode, "href"));
         Matcher matcher = INSTANCE_URL_PATTERN.matcher(request.getJobName());
         if (matcher.find()) {
             request.setInstanceUrl(matcher.group());
@@ -290,49 +295,60 @@ public class DeployServiceImpl implements DeployService {
         return create(request);
     }
     
-    private String getAttributeValue(Node node, String attributeName) {
-        if (node == null) {
-            return null;
-        }
-        Node attributeNode = node.getAttributes().getNamedItem(attributeName);
-        if (attributeNode == null) {
-            return null;
-        } else {
-            return attributeNode.getNodeValue();
-        }
-    }
-    
-    private String getChildNodeAttribute(Node node, String childNodeName, String attributeName) {
-        return actOnChildNode(node, childNodeName, n -> getAttributeValue(n, attributeName));
-    }
-    
-    private String getChildNodeValue(Node node, String childNodeName) {
-        return actOnChildNode(node, childNodeName, n -> n.getNodeValue());
-    }
-    
-    private String actOnChildNode(Node node, String childNodeName, Function<Node, String> valueSupplier) {
-        Optional<Node> childNode = getNamedChild(node, childNodeName);
-        if (childNode.isPresent()) {
-            return valueSupplier.apply(childNode.get());
-        } else {
-            return null;
-        }
-    }
-    
-    private Optional<Node> getNamedChild(Node node, String childNodeName) {
-        NodeList nodes = node.getChildNodes();
-        return IntStream.range(0, nodes.getLength())
-            .filter(i -> childNodeName.equals(nodes.item(i).getNodeName()))
-            .mapToObj(i -> nodes.item(i))
-            .findFirst();
-    }
-    
-    private String findMatchingOption(NodeList nodes, String... optionNames) {
-        List<String> options = Arrays.asList(optionNames);
-        return IntStream.range(0, nodes.getLength())
-                .filter(i -> options.contains(getAttributeValue(nodes.item(i), "name")))
+    static class RundeckXMLParser {
+        
+        private NodeList nodes;
+        private final Map<String, Node> optionNameNode;
+        
+        public RundeckXMLParser(Document doc) {
+            nodes = doc.getElementsByTagName("option");
+            optionNameNode = IntStream.range(0, nodes.getLength())
                 .mapToObj(i -> nodes.item(i))
-                .findFirst().map(n -> getAttributeValue(n, "value")).orElse(null);
-
+                .collect(Collectors.toMap(n -> getAttributeValue(n, "name"), n -> n));
+        }
+        
+        public static String getAttributeValue(Node node, String attributeName) {
+            if (node == null) {
+                return null;
+            }
+            Node attributeNode = node.getAttributes().getNamedItem(attributeName);
+            if (attributeNode == null) {
+                return null;
+            } else {
+                return attributeNode.getNodeValue();
+            }
+        }
+        
+        public static String getChildNodeAttribute(Node node, String childNodeName, String attributeName) {
+            return actOnChildNode(node, childNodeName, n -> getAttributeValue(n, attributeName));
+        }
+        
+        public static String getChildNodeValue(Node node, String childNodeName) {
+            return actOnChildNode(node, childNodeName, n -> n.getNodeValue());
+        }
+        
+        public static String actOnChildNode(Node node, String childNodeName, Function<Node, String> valueSupplier) {
+            Optional<Node> childNode = getNamedChild(node, childNodeName);
+            if (childNode.isPresent()) {
+                return valueSupplier.apply(childNode.get());
+            } else {
+                return null;
+            }
+        }
+        
+        public static Optional<Node> getNamedChild(Node node, String childNodeName) {
+            NodeList nodes = node.getChildNodes();
+            return IntStream.range(0, nodes.getLength())
+                .filter(i -> childNodeName.equals(nodes.item(i).getNodeName()))
+                .mapToObj(i -> nodes.item(i))
+                .findFirst();
+        }
+        
+        public String findMatchingOption(String... optionNames) {
+            List<String> options = Arrays.asList(optionNames);
+            return options.stream().filter(opt -> optionNameNode.keySet().contains(opt))
+                .findFirst()
+                .map(opt -> getAttributeValue(optionNameNode.get(opt), "value")).orElse(null);    
+        }
     }
 }

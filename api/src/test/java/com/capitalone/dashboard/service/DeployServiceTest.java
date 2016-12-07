@@ -1,6 +1,33 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.bson.types.ObjectId;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.EnvironmentComponent;
+import com.capitalone.dashboard.model.EnvironmentStatus;
 import com.capitalone.dashboard.model.deploy.DeployableUnit;
 import com.capitalone.dashboard.model.deploy.Environment;
 import com.capitalone.dashboard.model.deploy.Server;
@@ -8,20 +35,6 @@ import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
 import com.capitalone.dashboard.repository.EnvironmentStatusRepository;
-import org.bson.types.ObjectId;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeployServiceTest {
@@ -31,6 +44,17 @@ public class DeployServiceTest {
     @Mock EnvironmentStatusRepository environmentStatusRepository;
     @Mock private CollectorRepository collectorRepository;
     @InjectMocks DeployServiceImpl deployService;
+    
+    @org.junit.Test
+    public void rundeckDocumentCreatesValidDeployRequest() throws Exception {
+        InputStream body = DeployServiceTest.class.getResourceAsStream("rundeck_request.xml");
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new InputSource(body));
+        String executionId = "22";
+        String status = "success";
+        deployService.createRundeckBuild(doc, executionId, status);
+    }
 
     @org.junit.Test
     public void getDeployStatus() {
