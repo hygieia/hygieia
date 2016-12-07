@@ -25,7 +25,7 @@ public class GitlabUrlUtility {
 	private GitlabSettings gitlabSettings;
 	
 	private static final String GIT_EXTENSION = ".git";
-	private static final String PROTOCOL = "https";
+	private static final String DEFAULT_PROTOCOL = "http";
     private static final String SEGMENT_API = "/api/v3/projects/";
 	private static final String COMMITS_API = "/repository/commits/";
 	private static final String DATE_QUERY_PARAM_KEY = "since";
@@ -45,13 +45,15 @@ public class GitlabUrlUtility {
             repoUrl = StringUtils.removeEnd(repoUrl, GIT_EXTENSION);
         }
         
+        String protocol = StringUtils.isBlank(gitlabSettings.getProtocol()) ? DEFAULT_PROTOCOL : gitlabSettings.getProtocol();
 		String repoName = getRepoName(repoUrl);
 		String host = getRepoHost();
 		String date = getDateForCommits(repo, firstRun);
 
 		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-		URI uri = builder.scheme(PROTOCOL)
+		URI uri = builder.scheme(protocol)
 				.host(host)
+				.port(gitlabSettings.getPort())
 				.path(SEGMENT_API)
 				.path(repoName)
 				.path(COMMITS_API)
