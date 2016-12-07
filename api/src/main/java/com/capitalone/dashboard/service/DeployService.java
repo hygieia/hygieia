@@ -24,5 +24,5 @@ public interface DeployService {
 
     DataResponse<List<Environment>> getDeployStatus(String applicationName);
 
-    String createRundeckBuild(Document ret, String executionId, String status);
+    String createRundeckBuild(Document doc, String executionId, String status) throws HygieiaException;
 }

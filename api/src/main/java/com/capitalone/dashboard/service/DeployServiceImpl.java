@@ -2,18 +2,25 @@ package com.capitalone.dashboard.service;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
@@ -39,6 +46,8 @@ import com.google.common.collect.Iterables;
 
 @Service
 public class DeployServiceImpl implements DeployService {
+    
+    private static final Pattern INSTANCE_URL_PATTERN = Pattern.compile("https?:\\/\\/[^\\/]*");
 
     private final ComponentRepository componentRepository;
     private final EnvironmentComponentRepository environmentComponentRepository;
@@ -255,8 +264,75 @@ public class DeployServiceImpl implements DeployService {
     }
 
     @Override
-    public String createRundeckBuild(Document ret, String executionId, String status) {
-        // TODO Auto-generated method stub
-        return null;
+    public String createRundeckBuild(Document doc, String executionId, String status) throws HygieiaException {
+        Node executionNode = doc.getElementsByTagName("execution").item(0);
+        Node jobNode = executionNode.getFirstChild();
+        NodeList nodes = doc.getElementsByTagName("option");
+        DeployDataCreateRequest request = new DeployDataCreateRequest();
+        request.setExecutionId(executionId);
+        request.setDeployStatus(status.toUpperCase());
+        request.setAppName(getAttributeValue(executionNode, "project"));
+        request.setArtifactGroup(findMatchingOption(nodes, "artifactGroup", "group", "hygieiaArtifactGroup"));
+        request.setArtifactName(findMatchingOption(nodes, "artifactId", "artifactName"));
+        request.setArtifactVersion(findMatchingOption(nodes, "version", "artifactVersion"));
+        request.setEnvName(findMatchingOption(nodes, "environment", "env", "executionEnvironment", "hygieiaEnv"));
+        request.setNiceName(findMatchingOption(nodes, "niceName", "hygieiaNiceName"));
+        request.setStartedBy(getChildNodeValue(executionNode, "user"));
+        request.setStartTime(Long.valueOf(getChildNodeAttribute(executionNode, "date-started", "unixtime")));
+        request.setEndTime(Long.valueOf(getChildNodeAttribute(executionNode, "date-ended", "unixtime")));
+        request.setDuration(request.getEndTime() - request.getStartTime());
+        request.setJobName(getAttributeValue(executionNode, "href"));
+        Matcher matcher = INSTANCE_URL_PATTERN.matcher(request.getJobName());
+        if (matcher.find()) {
+            request.setInstanceUrl(matcher.group());
+        }
+        request.setJobName(getChildNodeValue(jobNode, "name"));
+        return create(request);
+    }
+    
+    private String getAttributeValue(Node node, String attributeName) {
+        if (node == null) {
+            return null;
+        }
+        Node attributeNode = node.getAttributes().getNamedItem(attributeName);
+        if (attributeNode == null) {
+            return null;
+        } else {
+            return attributeNode.getNodeValue();
+        }
+    }
+    
+    private String getChildNodeAttribute(Node node, String childNodeName, String attributeName) {
+        return actOnChildNode(node, childNodeName, n -> getAttributeValue(n, attributeName));
+    }
+    
+    private String getChildNodeValue(Node node, String childNodeName) {
+        return actOnChildNode(node, childNodeName, n -> n.getNodeValue());
+    }
+    
+    private String actOnChildNode(Node node, String childNodeName, Function<Node, String> valueSupplier) {
+        Optional<Node> childNode = getNamedChild(node, childNodeName);
+        if (childNode.isPresent()) {
+            return valueSupplier.apply(childNode.get());
+        } else {
+            return null;
+        }
+    }
+    
+    private Optional<Node> getNamedChild(Node node, String childNodeName) {
+        NodeList nodes = node.getChildNodes();
+        return IntStream.range(0, nodes.getLength())
+            .filter(i -> childNodeName.equals(nodes.item(i).getNodeName()))
+            .mapToObj(i -> nodes.item(i))
+            .findFirst();
+    }
+    
+    private String findMatchingOption(NodeList nodes, String... optionNames) {
+        List<String> options = Arrays.asList(optionNames);
+        return IntStream.range(0, nodes.getLength())
+                .filter(i -> options.contains(getAttributeValue(nodes.item(i), "name")))
+                .mapToObj(i -> nodes.item(i))
+                .findFirst().map(n -> getAttributeValue(n, "value")).orElse(null);
+
     }
 }
