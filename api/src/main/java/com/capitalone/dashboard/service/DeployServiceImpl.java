@@ -291,8 +291,8 @@ public class DeployServiceImpl implements DeployService {
         request.setStartTime(Long.valueOf(getChildNodeAttribute(executionNode, "date-started", "unixtime")));
         request.setEndTime(Long.valueOf(getChildNodeAttribute(executionNode, "date-ended", "unixtime")));
         request.setDuration(request.getEndTime() - request.getStartTime());
-        request.setJobName(RundeckXMLParser.getAttributeValue(executionNode, "href"));
-        Matcher matcher = INSTANCE_URL_PATTERN.matcher(request.getJobName());
+        request.setJobUrl(getAttributeValue(executionNode, "href"));
+        Matcher matcher = INSTANCE_URL_PATTERN.matcher(request.getJobUrl());
         if (matcher.find()) {
             request.setInstanceUrl(matcher.group());
         }

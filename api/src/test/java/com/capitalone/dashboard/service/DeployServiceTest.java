@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -58,17 +57,6 @@ public class DeployServiceTest {
     @Mock private CollectorRepository collectorRepository;
     @InjectMocks DeployServiceImpl deployService;
     
-    @org.junit.Test
-    public void rundeckDocumentCreatesValidDeployRequest() throws Exception {
-        InputStream body = DeployServiceTest.class.getResourceAsStream("rundeck_request.xml");
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(new InputSource(body));
-        String executionId = "22";
-        String status = "success";
-        deployService.createRundeckBuild(doc, executionId, status);
-    }
-
     @Test
     public void getDeployStatus() {
         ObjectId compId = ObjectId.get();
@@ -288,17 +276,8 @@ public class DeployServiceTest {
     @Test
     public void collectorIsCreatedFromCollectorNamePropertyIfPresent() throws HygieiaException {
         DeployDataCreateRequest request = makeDataCreateRequest();
-        Collector expectedCollector = makeCollector();
-        when(collectorService.createCollector(any())).thenReturn(expectedCollector);
-        CollectorItem expectedItem = makeCollectorItem();
-        when(collectorService.createCollectorItem(any())).thenReturn(expectedItem);
-        when(environmentComponentRepository.findByUniqueKey(any(), any(), any(), anyLong()))
-            .thenReturn(null);
-        EnvironmentComponent co = new EnvironmentComponent();
         ObjectId id = new ObjectId();
-        co.setId(id);
-        when(environmentComponentRepository.save((EnvironmentComponent)any()))
-            .thenReturn(co);
+        setUpCollector(id);
         String output = deployService.create(request);
         ArgumentCaptor<Collector> collectorCaptor = ArgumentCaptor.forClass(Collector.class);
         verify(collectorService, times(1)).createCollector(collectorCaptor.capture());
@@ -330,6 +309,37 @@ public class DeployServiceTest {
         assertThat(envs.getResult().isEmpty(), is(true));
     }
 
+    @Test
+    public void rundeckDocumentCreatesValidDeployRequest() throws Exception {
+        InputStream body = DeployServiceTest.class.getResourceAsStream("rundeck_request.xml");
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new InputSource(body));
+        String executionId = "22";
+        String status = "success";
+        ObjectId id = new ObjectId();
+        setUpCollector(id);
+        ArgumentCaptor<EnvironmentComponent> captor = ArgumentCaptor.forClass(EnvironmentComponent.class);
+        String output = deployService.createRundeckBuild(doc, executionId, status);
+        assertEquals(id.toString(), output);
+        verify(environmentComponentRepository, times(1)).save(captor.capture());
+        EnvironmentComponent value = captor.getValue();
+        assertEquals(true, value.isDeployed());
+        assertEquals("http://localhost:4440/project/Test/execution/follow/22", value.getJobUrl());
+        assertEquals(1481001727759L, value.getDeployTime());
+    }
+
+    private void setUpCollector(ObjectId id) {
+        Collector expectedCollector = makeCollector();
+        when(collectorService.createCollector(any())).thenReturn(expectedCollector);
+        CollectorItem expectedItem = makeCollectorItem();
+        when(collectorService.createCollectorItem(any())).thenReturn(expectedItem);
+        EnvironmentComponent co = new EnvironmentComponent();
+        co.setId(id);
+        when(environmentComponentRepository.save((EnvironmentComponent)any()))
+            .thenReturn(co);        
+    }
+    
     private EnvironmentComponent makeEnvComponent(String envName, String name, String version, boolean deployed) {
         EnvironmentComponent comp = new EnvironmentComponent();
         comp.setEnvironmentName(envName);
