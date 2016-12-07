@@ -5,6 +5,7 @@ import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.deploy.Environment;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import org.bson.types.ObjectId;
+import org.w3c.dom.Document;
 
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface DeployService {
     String create(DeployDataCreateRequest request) throws HygieiaException;
 
     DataResponse<List<Environment>> getDeployStatus(String applicationName);
+
+    String createRundeckBuild(Document ret, String executionId, String status);
 }

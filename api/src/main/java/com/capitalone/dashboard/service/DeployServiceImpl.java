@@ -13,6 +13,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.w3c.dom.Document;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
@@ -251,5 +252,11 @@ public class DeployServiceImpl implements DeployService {
         deploy.setDeployed("SUCCESS".equalsIgnoreCase(request.getDeployStatus()));
 
         return environmentComponentRepository.save(deploy); // Save = Update (if ID present) or Insert (if ID not there)
+    }
+
+    @Override
+    public String createRundeckBuild(Document ret, String executionId, String status) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
