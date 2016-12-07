@@ -2,11 +2,17 @@ package com.capitalone.dashboard.service;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,13 +20,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.bson.types.ObjectId;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -31,14 +40,18 @@ import com.capitalone.dashboard.model.EnvironmentStatus;
 import com.capitalone.dashboard.model.deploy.DeployableUnit;
 import com.capitalone.dashboard.model.deploy.Environment;
 import com.capitalone.dashboard.model.deploy.Server;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.EnvironmentComponentRepository;
 import com.capitalone.dashboard.repository.EnvironmentStatusRepository;
+import com.capitalone.dashboard.request.DeployDataCreateRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeployServiceTest {
 
+    @Mock CollectorService collectorService;
+    @Mock CollectorItemRepository collectorItemRepository;
     @Mock ComponentRepository componentRepository;
     @Mock EnvironmentComponentRepository environmentComponentRepository;
     @Mock EnvironmentStatusRepository environmentStatusRepository;
@@ -56,7 +69,7 @@ public class DeployServiceTest {
         deployService.createRundeckBuild(doc, executionId, status);
     }
 
-    @org.junit.Test
+    @Test
     public void getDeployStatus() {
         ObjectId compId = ObjectId.get();
         Component component = new Component();
@@ -160,7 +173,7 @@ public class DeployServiceTest {
     }
     
     // Functions split across multiple servers (prod server, non-prod server) but applications are the same
-    @org.junit.Test
+    @Test
     public void testGetDeployStatus_MultipleServers() {
         ObjectId compId = ObjectId.get();
         Component component = new Component();
@@ -271,6 +284,51 @@ public class DeployServiceTest {
         assertThat(server.getName(), is("s8"));
         assertThat(server.isOnline(), is(true));
     }
+    
+    @Test
+    public void collectorIsCreatedFromCollectorNamePropertyIfPresent() throws HygieiaException {
+        DeployDataCreateRequest request = makeDataCreateRequest();
+        Collector expectedCollector = makeCollector();
+        when(collectorService.createCollector(any())).thenReturn(expectedCollector);
+        CollectorItem expectedItem = makeCollectorItem();
+        when(collectorService.createCollectorItem(any())).thenReturn(expectedItem);
+        when(environmentComponentRepository.findByUniqueKey(any(), any(), any(), anyLong()))
+            .thenReturn(null);
+        EnvironmentComponent co = new EnvironmentComponent();
+        ObjectId id = new ObjectId();
+        co.setId(id);
+        when(environmentComponentRepository.save((EnvironmentComponent)any()))
+            .thenReturn(co);
+        String output = deployService.create(request);
+        ArgumentCaptor<Collector> collectorCaptor = ArgumentCaptor.forClass(Collector.class);
+        verify(collectorService, times(1)).createCollector(collectorCaptor.capture());
+        assertEquals("customCollector", collectorCaptor.getValue().getName());
+        assertEquals(id.toString(), output);
+    }
+
+    @Test
+    public void getDeployStatusSearchesAllPossibleCollectorNamesForMatches() {
+        List<Collector> colls = Arrays.asList(makeCollector(), makeCollector());
+        ObjectId id1 = new ObjectId();
+        colls.get(0).setId(id1);
+        ObjectId id2 = new ObjectId();
+        colls.get(1).setId(id2);
+        when(collectorRepository.findByCollectorType(CollectorType.Deployment))
+            .thenReturn(colls);
+        when(collectorItemRepository.findByOptionsAndDeployedApplicationName(id1, "appName"))
+            .thenReturn(Collections.emptyList());
+        when(collectorItemRepository.findByOptionsAndDeployedApplicationName(id2, "appName"))
+            .thenReturn(Arrays.asList(makeCollectorItem()));
+        when(environmentComponentRepository.findByCollectorItemId(any()))
+            .thenReturn(Collections.emptyList());
+        Collector collector = makeCollector();
+        collector.setLastExecuted(234234L);
+        when(collectorRepository.findOne(any()))
+            .thenReturn(collector);
+        DataResponse<List<Environment>> envs = deployService.getDeployStatus("appName");
+        assertEquals(234234L,envs.getLastUpdated());
+        assertThat(envs.getResult().isEmpty(), is(true));
+    }
 
     private EnvironmentComponent makeEnvComponent(String envName, String name, String version, boolean deployed) {
         EnvironmentComponent comp = new EnvironmentComponent();
@@ -288,5 +346,23 @@ public class DeployServiceTest {
         status.setResourceName(server);
         status.setOnline(online);
         return status;
+    }
+    
+    private DeployDataCreateRequest makeDataCreateRequest() {
+        DeployDataCreateRequest deployDataCreateRequest = new DeployDataCreateRequest();
+        deployDataCreateRequest.setCollectorName("customCollector");
+        return deployDataCreateRequest;
+    }
+    
+    private Collector makeCollector() {
+        Collector coll = new Collector();
+        coll.setId(new ObjectId());
+        return coll;
+    }
+  
+    private CollectorItem makeCollectorItem() {
+        CollectorItem item = new CollectorItem();
+        item.setId(new ObjectId());
+        return item;
     }
 }

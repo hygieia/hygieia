@@ -20,10 +20,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -53,6 +53,7 @@ import com.google.common.collect.Iterables;
 public class DeployServiceImpl implements DeployService {
     
     private static final Pattern INSTANCE_URL_PATTERN = Pattern.compile("https?:\\/\\/[^\\/]*");
+    private static final String DEFAULT_COLLECTOR_NAME = "Jenkins";
 
     private final ComponentRepository componentRepository;
     private final EnvironmentComponentRepository environmentComponentRepository;
@@ -186,7 +187,7 @@ public class DeployServiceImpl implements DeployService {
          * Step 2: create Collector item if not there
          * Step 3: Insert build data if new. If existing, update it.
          */
-        Collector collector = createCollector();
+        Collector collector = createCollector(request);
 
         if (collector == null) {
             throw new HygieiaException("Failed creating Deploy collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
@@ -210,19 +211,23 @@ public class DeployServiceImpl implements DeployService {
 
     @Override
     public DataResponse<List<Environment>> getDeployStatus(String applicationName) {
-        //FIXME: Remove hardcoding of Jenkins.
-        List<Collector> collectorList = collectorRepository.findByCollectorTypeAndName(CollectorType.Deployment, "Jenkins");
-        if (CollectionUtils.isEmpty(collectorList)) return new DataResponse<>(null, 0);
-
-        Collector collector = collectorList.get(0);
-        List<CollectorItem> cis = collectorItemRepository.findByOptionsAndDeployedApplicationName(collector.getId(), applicationName);
-
-        return getDeployStatus(cis);
+        List<Collector> collectorList = collectorRepository.findByCollectorType(CollectorType.Deployment);
+        for (Collector collector : collectorList) {
+            List<CollectorItem> cis = collectorItemRepository.findByOptionsAndDeployedApplicationName(collector.getId(), applicationName);
+            if (!cis.isEmpty()) {
+                return getDeployStatus(cis);
+            }
+        }
+        return new DataResponse<>(null,0);
     }
 
-    private Collector createCollector() {
+    private Collector createCollector(DeployDataCreateRequest request) {
         CollectorRequest collectorReq = new CollectorRequest();
-        collectorReq.setName("Jenkins");  //for now hardcode it.
+        String collectorName = request.getCollectorName();
+        if (StringUtils.isBlank(collectorName)) {
+            collectorName = DEFAULT_COLLECTOR_NAME;
+        }
+        collectorReq.setName(collectorName);
         collectorReq.setCollectorType(CollectorType.Deployment);
         Collector col = collectorReq.toCollector();
         col.setEnabled(true);
