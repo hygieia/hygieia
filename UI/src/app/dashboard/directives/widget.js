@@ -122,7 +122,7 @@
             {
 
                 $scope.owner=data;
-                if ($scope.owner == $cookies.username || $cookies.username == 'admin')
+                if ($scope.owner == $cookies.get('username') || $cookies.get('username') == 'admin')
                 {
                     configModal();
                 }

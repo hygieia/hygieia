@@ -15,8 +15,8 @@
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
-        ctrl.username = $cookies.username;
-        ctrl.showAuthentication = $cookies.authenticated;
+        ctrl.username = $cookies.get('username');
+        ctrl.showAuthentication = $cookies.get('authenticated');
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
