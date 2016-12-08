@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('BuildWidgetDetailController', BuildWidgetDetailController);
 
-    BuildWidgetDetailController.$inject = ['$scope', '$modalInstance', 'build', 'collectorName', 'collectorNiceName'];
-    function BuildWidgetDetailController($scope, $modalInstance, build, collectorName, collectorNiceName) {
+    BuildWidgetDetailController.$inject = ['$scope', '$uibModalInstance', 'build', 'collectorName', 'collectorNiceName'];
+    function BuildWidgetDetailController($scope, $uibModalInstance, build, collectorName, collectorNiceName) {
         var ctrl = this;
 
         ctrl.build = build;
@@ -39,7 +39,7 @@
         }
 
         function close() {
-            $modalInstance.dismiss('close');
+            $uibModalInstance.dismiss('close');
         }
     }
 })();
