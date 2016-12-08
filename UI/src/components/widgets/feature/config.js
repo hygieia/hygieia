@@ -4,10 +4,10 @@
 	angular.module(HygieiaConfig.module).controller('featureConfigController',
 			featureConfigController);
 
-	featureConfigController.$inject = [ 'modalData', '$modalInstance',
+	featureConfigController.$inject = [ 'modalData', '$uibModalInstance',
 			'collectorData' ];
 
-	function featureConfigController(modalData, $modalInstance, collectorData) {
+	function featureConfigController(modalData, $uibModalInstance, collectorData) {
 		/* jshint validthis:true */
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
@@ -220,7 +220,7 @@
 				collectorItemId : ctrl.collectorItemId.value
 			};
 			// pass this new config to the modal closing so it's saved
-			$modalInstance.close(postObj);
+			$uibModalInstance.close(postObj);
 		}
 	}
 })();

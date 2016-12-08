@@ -10,7 +10,7 @@
         .controller('SubnetDetailController', SubnetDetailController);
 
     SubnetDetailController.$inject = ['$scope', '$uibModalInstance', 'subnet', '$uibModal'];
-    function SubnetDetailController($scope, $modalInstance, subnet, $uibModal) {
+    function SubnetDetailController($scope, $uibModalInstance, subnet, $uibModal) {
 
         var ctrl = this;
         ctrl.subnet = subnet;
