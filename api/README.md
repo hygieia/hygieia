@@ -175,18 +175,18 @@ For a couple examples, to set the `artifactName` based on the `deploymentUnit` o
 If these values are not provided, it will first query the job to see if it has an option that matches the name of the field.  If not, it will look through the following possibilities:
 
 * `appName`
-** `hygieiaAppName`
+    * `hygieiaAppName`
 * `envName`
-** `environment`
-** `env`
-** `hygieiaEnvName`
+    * `environment`
+    * `env`
+    * `hygieiaEnvName`
 * `artifactName`
-** `artifactId`
-** `hygieiaArtifactName`
+    * `artifactId`
+    * `hygieiaArtifactName`
 * `artfactGroup`
-** `group`
-** `hygieiaArtifactGroup`
+    * `group`
+    * `hygieiaArtifactGroup`
 * `niceName`
-** `hygieiaNiceName`
+    * `hygieiaNiceName`
 
 For the required fields, if the methods to locate values have been exhausted, the webhook endpoint will fail and no deployment will be registered.  An exception will appear in the Hygieia API log with the field name that is missing from the job.  If `appName` is not set, it will be set based on the Rundeck project name.
