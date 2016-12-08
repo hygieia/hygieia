@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.w3c.dom.Document;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DeployService {
 
@@ -24,5 +25,5 @@ public interface DeployService {
 
     DataResponse<List<Environment>> getDeployStatus(String applicationName);
 
-    String createRundeckBuild(Document doc, String executionId, String status) throws HygieiaException;
+    String createRundeckBuild(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException;
 }

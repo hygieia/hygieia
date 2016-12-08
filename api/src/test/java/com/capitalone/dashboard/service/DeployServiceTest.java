@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -320,7 +321,7 @@ public class DeployServiceTest {
         ObjectId id = new ObjectId();
         setUpCollector(id);
         ArgumentCaptor<EnvironmentComponent> captor = ArgumentCaptor.forClass(EnvironmentComponent.class);
-        String output = deployService.createRundeckBuild(doc, executionId, status);
+        String output = deployService.createRundeckBuild(doc, new HashMap<>(), executionId, status);
         assertEquals(id.toString(), output);
         verify(environmentComponentRepository, times(1)).save(captor.capture());
         EnvironmentComponent value = captor.getValue();

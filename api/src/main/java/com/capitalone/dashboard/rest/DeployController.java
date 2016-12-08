@@ -76,7 +76,7 @@ public class DeployController {
         } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new HygieiaException(e);
         }        
-        String response = deployService.createRundeckBuild(doc, executionId, status);
+        String response = deployService.createRundeckBuild(doc, request.getParameterMap(), executionId, status);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);        

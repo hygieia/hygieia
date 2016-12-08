@@ -54,7 +54,8 @@ public class DeployServiceImpl implements DeployService {
     
     private static final Pattern INSTANCE_URL_PATTERN = Pattern.compile("https?:\\/\\/[^\\/]*");
     private static final String DEFAULT_COLLECTOR_NAME = "Jenkins";
-
+    private static final String PARAM = "Param";
+    
     private final ComponentRepository componentRepository;
     private final EnvironmentComponentRepository environmentComponentRepository;
     private final EnvironmentStatusRepository environmentStatusRepository;
@@ -274,19 +275,24 @@ public class DeployServiceImpl implements DeployService {
     }
 
     @Override
-    public String createRundeckBuild(Document doc, String executionId, String status) throws HygieiaException {
+    public String createRundeckBuild(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException {
         Node executionNode = doc.getElementsByTagName("execution").item(0);
         Node jobNode = executionNode.getFirstChild();
         RundeckXMLParser p = new RundeckXMLParser(doc);
         DeployDataCreateRequest request = new DeployDataCreateRequest();
         request.setExecutionId(executionId);
         request.setDeployStatus(status.toUpperCase());
-        request.setAppName(getAttributeValue(executionNode, "project"));
-        request.setArtifactGroup(p.findMatchingOption("artifactGroup", "group", "hygieiaArtifactGroup"));
-        request.setArtifactName(p.findMatchingOption("artifactId", "artifactName"));
-        request.setArtifactVersion(p.findMatchingOption("version", "artifactVersion"));
-        request.setEnvName(p.findMatchingOption("environment", "env", "executionEnvironment", "hygieiaEnv"));
-        request.setNiceName(p.findMatchingOption("niceName", "hygieiaNiceName"));
+        String appNameOption = evaluateParametersOrDefault(parameters, p, "appName", false, "appName", "hygieiaAppName"); 
+        if (appNameOption == null) {
+            appNameOption = getAttributeValue(executionNode, "project");
+        }
+        request.setAppName(appNameOption);
+        request.setEnvName(evaluateParametersOrDefault(parameters, p, "envName", true, "environment", "envName", 
+                "env", "hygieiaEnvName"));
+        request.setArtifactName(evaluateParametersOrDefault(parameters, p, "artifactName", true,"artifactId", "artifactName", "hygieiaArtifactName"));
+        request.setArtifactGroup(evaluateParametersOrDefault(parameters, p, "artifactGroup", false,"artifactGroup", "group", "hygieiaArtifactGroup"));
+        request.setArtifactVersion(evaluateParametersOrDefault(parameters, p, "artifactVersion", false,"version", "artifactVersion"));
+        request.setNiceName(evaluateParametersOrDefault(parameters, p, "niceName", false,"niceName", "hygieiaNiceName"));
         request.setStartedBy(getChildNodeValue(executionNode, "user"));
         request.setStartTime(Long.valueOf(getChildNodeAttribute(executionNode, "date-started", "unixtime")));
         request.setEndTime(Long.valueOf(getChildNodeAttribute(executionNode, "date-ended", "unixtime")));
@@ -298,6 +304,23 @@ public class DeployServiceImpl implements DeployService {
         }
         request.setJobName(getChildNodeValue(jobNode, "name"));
         return create(request);
+    }
+    
+    private String evaluateParametersOrDefault(Map<String, String[]> params, 
+            RundeckXMLParser p, String name, boolean required, String... defaultOptions) throws HygieiaException {
+        String output = null;
+        if (params.containsKey(name)) {
+            output = params.get(name)[0];
+        } else if (params.containsKey(name + PARAM)) {
+            output = p.findMatchingOption(params.get(name + PARAM));
+        } else {
+            output =  p.findMatchingOption(defaultOptions);
+        }
+        if (required && output == null) {
+            throw new HygieiaException(name + " option is required and not available.  "+
+                    "Please check the documentation and provide the option value.", 500);
+        }
+        return output;
     }
     
     static class RundeckXMLParser {

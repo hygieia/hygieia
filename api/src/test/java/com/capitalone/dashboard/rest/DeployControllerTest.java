@@ -98,7 +98,7 @@ public class DeployControllerTest {
     
     @Test
     public void rundeckPostEndpointParsesXmlIntoDocument() throws Exception {
-        when(deployService.createRundeckBuild(any(Document.class), eq("test"), eq("success")))
+        when(deployService.createRundeckBuild(any(Document.class), any(), eq("test"), eq("success")))
             .thenReturn("8675309");
         mockMvc.perform(post("/deploy/rundeck")
                 .content("<valid></valid>")
