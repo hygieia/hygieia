@@ -89,7 +89,7 @@
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
-                        owner: $cookies.username
+                        owner: $cookies.get('username')
                     };
 
                 dashboardData
