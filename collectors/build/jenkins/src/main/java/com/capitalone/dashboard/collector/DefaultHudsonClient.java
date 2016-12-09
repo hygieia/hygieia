@@ -1,11 +1,23 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.HudsonJob;
-import com.capitalone.dashboard.model.RepoBranch;
-import com.capitalone.dashboard.model.SCM;
-import com.capitalone.dashboard.util.Supplier;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,23 +36,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.HudsonJob;
+import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.util.Supplier;
 
 
 /**
@@ -232,6 +233,7 @@ public class DefaultHudsonClient implements HudsonClient {
      */
     private void addChangeSets(Build build, JSONObject buildJson) {
         JSONObject changeSet = (JSONObject) buildJson.get("changeSet");
+        if(changeSet == null) { return; }
         String scmType = getString(changeSet, "kind");
         Map<String, RepoBranch> revisionToUrl = new HashMap<>();
 

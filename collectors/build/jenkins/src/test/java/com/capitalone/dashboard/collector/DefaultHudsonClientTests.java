@@ -1,10 +1,25 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.HudsonJob;
-import com.capitalone.dashboard.model.SCM;
-import com.capitalone.dashboard.util.Supplier;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,24 +34,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.HudsonJob;
+import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.util.Supplier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultHudsonClientTests {
@@ -418,6 +420,24 @@ public class DefaultHudsonClientTests {
         assertThat(build.getStartedBy(), is(nullValue()));
         assertThat(build.getSourceChangeSet().size(), is(0));
         assertThat(build.getCodeRepos().size(), is(0));
+    }
+    
+    @Test
+    public void buildDetails_noChangeSet() throws Exception {
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(getJson("buildDetails_noChangeSet.json"), HttpStatus.OK));
+
+        Build build = hudsonClient.getBuildDetails("http://server/job/job2/2/", "http://server");
+
+        assertThat(build.getTimestamp(), notNullValue());
+        assertThat(build.getNumber(), is("483"));
+        assertThat(build.getBuildUrl(), is(URL_TEST));
+        assertThat(build.getStartTime(), is(5671281415000L));
+        assertThat(build.getEndTime(), is(5671286423495L));
+        assertThat(build.getDuration(), is(5008495L));
+        assertThat(build.getBuildStatus(), is(BuildStatus.Failure));
+        assertThat(build.getStartedBy(), nullValue());
+        assertThat(build.getSourceChangeSet(), hasSize(0));
     }
 
     private void assertBuild(Build build, String number, String url) {
