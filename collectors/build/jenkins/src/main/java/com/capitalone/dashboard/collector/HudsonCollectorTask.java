@@ -59,7 +59,25 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
     @Override
     public HudsonCollector getCollector() {
-        return HudsonCollector.prototype(hudsonSettings.getServers(), hudsonSettings.getNiceNames());
+        //combine application.properties defined build servers with build servers added to collector in mongo
+        List<String> combinedBuildServers = hudsonSettings.getServers();
+        List<String> combinedNickNames = hudsonSettings.getNiceNames();
+        HudsonCollector currentCollector = hudsonCollectorRepository.findByName("Hudson");
+        if (currentCollector != null) {
+            for (String buildServer : currentCollector.getBuildServers()) {
+                if (combinedBuildServers.contains(buildServer)) {
+                    continue;
+                }
+                combinedBuildServers.add(buildServer);
+                int index = currentCollector.getBuildServers().indexOf(buildServer);
+                if (index < currentCollector.getNiceNames().size() && index != -1) {
+                    combinedNickNames.add(currentCollector.getNiceNames().get(index));
+                }
+            }
+        } else {
+            log("No collector with name 'Hudson' found");
+        }
+        return HudsonCollector.prototype(combinedBuildServers, combinedNickNames);
     }
 
     @Override

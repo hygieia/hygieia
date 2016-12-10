@@ -7,6 +7,7 @@ import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
+import com.capitalone.dashboard.request.BuildServerWatchRequest;
 import com.capitalone.dashboard.service.BuildService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,4 +52,11 @@ public class BuildController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+    @RequestMapping(value = "/build/server", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> watchProject(@Valid @RequestBody BuildServerWatchRequest request) throws HygieiaException {
+        return buildService.watch(request);
+    }
+
 }

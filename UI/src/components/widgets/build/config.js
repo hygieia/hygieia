@@ -3,15 +3,13 @@
  */
 (function () {
     'use strict';
-
     angular
         .module(HygieiaConfig.module)
         .controller('BuildWidgetConfigController', BuildWidgetConfigController);
-
-    BuildWidgetConfigController.$inject = ['modalData', '$scope', 'collectorData', '$modalInstance'];
-    function BuildWidgetConfigController(modalData, $scope, collectorData, $modalInstance) {
-        var ctrl = this;
-        var widgetConfig = modalData.widgetConfig;
+    BuildWidgetConfigController.$inject = ['modalData', '$scope', 'collectorData', '$modalInstance', '$http'];
+    function BuildWidgetConfigController(modalData, $scope, collectorData, $modalInstance, $http) {
+      var ctrl = this;
+      var widgetConfig = modalData.widgetConfig;
 
         // public variables
         ctrl.toolsDropdownPlaceholder = 'Loading Build Jobs...';
@@ -19,6 +17,9 @@
 
         ctrl.buildDurationThreshold = 3;
         ctrl.buildConsecutiveFailureThreshold = 5;
+        ctrl.formType = "list";
+        $scope.jobs = ctrl.buildJobs;
+        $scope.sortBy = "name";
 
         ctrl.oridata = null;
         ctrl.loading = true;
@@ -32,7 +33,6 @@
             if (widgetConfig.options.buildDurationThreshold) {
                 ctrl.buildDurationThreshold = widgetConfig.options.buildDurationThreshold;
             }
-
             if (widgetConfig.options.consecutiveFailureThreshold) {
                 ctrl.buildConsecutiveFailureThreshold = widgetConfig.options.consecutiveFailureThreshold;
             }
@@ -40,12 +40,13 @@
 
         // public methods
         ctrl.submit = submitForm;
-        ctrl.fetch = paginationFetch;
+        ctrl.submitUrl = submitJobUrl;
 
         // request all the build collector items
         collectorData.itemsByType('build').then(processResponse);
 
         // method implementations
+
         function processResponse(data) {
             var worker = {
                 getBuildJobs: getBuildJobs
@@ -57,10 +58,14 @@
 
                 for (var x = 0; x < data.length; x++) {
                     var obj = data[x];
+                    var url = obj.options.instanceUrl;
+                    var index = url.search("job");
+
                     var item = {
                         value: obj.id,
-                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description : obj.collector.name + '-' + obj.description),
-                        group: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName : obj.collector.name)
+                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description :  obj.description),
+                        collector: obj.collector.name,
+                        location: url.substring(index + 4, url.length)
                     };
                     builds.push(item);
 
@@ -143,6 +148,7 @@
             console.log("Collector" + JSON.stringify(collector));
             if (valid) {
                 var form = document.buildConfigForm;
+                // console.log(form);
                 var postObj = {
                     name: 'build',
                     options: {
@@ -151,7 +157,7 @@
                         consecutiveFailureThreshold: parseFloat(form.buildConsecutiveFailureThreshold.value)
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: collector.value
+                    collectorItemId: ctrl.collectorItemId
                 };
 
 
@@ -160,6 +166,35 @@
                 // pass this new config to the modal closing so it's saved
                 $modalInstance.close(postObj);
             }
+        }
+
+        function submitJobUrl(valid) {
+         if (valid) {
+            var form = document.buildConfigFormURL;
+            var postObj = {
+               collectorName: 'Hudson',
+               buildServerUrl: form.buildServerUrl.value
+            };
+         // post object to server list
+            console.log(postObj);
+            $modalInstance.dismiss(
+               $http({
+                  method: 'POST',
+                  url: '/api/build/server',
+                  data: postObj
+               }).then(alert("Your job folder was added to the collection list. It can take up to five minutes for the list to update. Please check the build list drop down in a few minutes, and then select the build you wish to monitor."))
+            );
+         }
+        }
+
+        $scope.setItem = function(item){
+          ctrl.selectedItem = item;
+          ctrl.collectorItemId = item.value;
+          ctrl.itemName = item.name;
+        }
+        $scope.setSelectedItem = function(item){
+          if(item == ctrl.selectedItem)
+            return {"background-color": "rgba(51,185,28,.5)"};
         }
     }
 })();

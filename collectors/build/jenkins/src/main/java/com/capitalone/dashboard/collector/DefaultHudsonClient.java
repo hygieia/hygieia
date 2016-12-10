@@ -95,11 +95,11 @@ public class DefaultHudsonClient implements HudsonClient {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
         try {
             String url = joinURL(instanceUrl, JOBS_URL_SUFFIX);
-            ResponseEntity<String> responseEntity = makeRestCall(url);
-            String returnJSON = responseEntity.getBody();
-            JSONParser parser = new JSONParser();
 
             try {
+                ResponseEntity<String> responseEntity = makeRestCall(url);
+                String returnJSON = responseEntity.getBody();
+                JSONParser parser = new JSONParser();
                 JSONObject object = (JSONObject) parser.parse(returnJSON);
 
                 for (Object job : getJsonArray(object, "jobs")) {
@@ -109,7 +109,7 @@ public class DefaultHudsonClient implements HudsonClient {
                     final String jobURL = getString(jsonJob, "url");
                     LOG.debug("Job:" + jobName);
                     LOG.debug("jobURL: " + jobURL);
-                    
+
                     HudsonJob hudsonJob = new HudsonJob();
                     hudsonJob.setInstanceUrl(instanceUrl);
                     hudsonJob.setJobName(jobName);
@@ -150,9 +150,12 @@ public class DefaultHudsonClient implements HudsonClient {
             throw rce;
         } catch (MalformedURLException mfe) {
             LOG.error("malformed url for loading jobs", mfe);
+        } catch (IllegalArgumentException ie) {
+            LOG.error("illegal argument", ie);
         } catch (URISyntaxException e1) {
         	LOG.error("wrong syntax url for loading jobs", e1);
-		}
+	      }
+
         return result;
     }
 
@@ -275,22 +278,22 @@ public class DefaultHudsonClient implements HudsonClient {
 
     @SuppressWarnings("PMD")
     private List<RepoBranch> getGitRepoBranch(JSONObject buildJson) {
-        List<RepoBranch> list = new ArrayList<>();        
-        
+        List<RepoBranch> list = new ArrayList<>();
+
         JSONArray actions = getJsonArray(buildJson, "actions");
         for (Object action : actions) {
             JSONObject jsonAction = (JSONObject) action;
             if (jsonAction.size() > 0) {
                 JSONObject lastBuiltRevision = null;
                 JSONArray branches = null;
-                JSONArray remoteUrls = getJsonArray ((JSONObject) action, "remoteUrls");       
+                JSONArray remoteUrls = getJsonArray ((JSONObject) action, "remoteUrls");
                 if (!remoteUrls.isEmpty()) {
                 	lastBuiltRevision = (JSONObject) jsonAction.get("lastBuiltRevision");
                 }
                 if (lastBuiltRevision != null) {
                 	branches = getJsonArray ((JSONObject) lastBuiltRevision, "branch");
                 }
-                // As of git plugin 3.0.0, when multiple repos are configured in the git plugin itself instead of MultiSCM plugin, 
+                // As of git plugin 3.0.0, when multiple repos are configured in the git plugin itself instead of MultiSCM plugin,
             	// they are stored unordered in a HashSet. So it's buggy and we cannot associate the correct branch information.
                 // So for now, we loop through all the remoteUrls and associate the built branch(es) with all of them.
                 if (branches != null && !branches.isEmpty()) {
@@ -313,7 +316,7 @@ public class DefaultHudsonClient implements HudsonClient {
         }
         return list;
     }
-    
+
     private String removeGitExtensionFromUrl(String url) {
     	String sUrl = url;
     	//remove .git from the urls
@@ -322,7 +325,7 @@ public class DefaultHudsonClient implements HudsonClient {
         }
     	return sUrl;
     }
-    
+
     /**
      * Gets the unqualified branch name given the qualified one of the following forms:
      * 1. refs/remotes/<remote name>/<branch name>
@@ -332,7 +335,7 @@ public class DefaultHudsonClient implements HudsonClient {
      * @param qualifiedBranch
      * @return the unqualified branch name
      */
-        
+
     private String getUnqualifiedBranch(String qualifiedBranch) {
     	String branchName = qualifiedBranch;
     	Pattern pattern = Pattern.compile("(refs/)?remotes/[^/]+/(.*)|(origin[0-9]*/)?(.*)");
@@ -415,7 +418,7 @@ public class DefaultHudsonClient implements HudsonClient {
                 return BuildStatus.Unknown;
         }
     }
-    
+
     @SuppressWarnings("PMD")
     protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException, URISyntaxException {
         URI thisuri = URI.create(sUrl);
@@ -434,9 +437,9 @@ public class DefaultHudsonClient implements HudsonClient {
 	        			String domain2 = getDomain(servers.get(i));
 	        			if (StringUtils.isNotEmpty(domain1) && StringUtils.isNotEmpty(domain2) && domain1.equals(domain2)
 	        					&& getPort(sUrl) == getPort(servers.get(i))) {
-	                		exactMatchFound = true;	
+	                		exactMatchFound = true;
 	        			}
-	        			if (exactMatchFound && (i < usernames.size()) && (i < apiKeys.size()) 
+	        			if (exactMatchFound && (i < usernames.size()) && (i < apiKeys.size())
 	        					&& (StringUtils.isNotEmpty(usernames.get(i))) && (StringUtils.isNotEmpty(apiKeys.get(i)))) {
 	        				userInfo = usernames.get(i) + ":" + apiKeys.get(i);
         				}
@@ -444,7 +447,7 @@ public class DefaultHudsonClient implements HudsonClient {
 	        				break;
 	        			}
 	        		}
-	        	}	        	
+	        	}
         		if (!exactMatchFound) {
         			LOG.warn("Credentials for the following url was not found. This could happen if the domain/subdomain/IP address "
         					+ "in the build url returned by Jenkins and the Jenkins instance url in your Hygieia configuration do not match: "
@@ -463,13 +466,13 @@ public class DefaultHudsonClient implements HudsonClient {
         }
 
     }
-    
+
     private String getDomain(String url) throws URISyntaxException {
         URI uri = new URI(url);
         String domain = uri.getHost();
         return domain;
     }
-    
+
     private int getPort(String url) throws URISyntaxException {
         URI uri = new URI(url);
         return uri.getPort();

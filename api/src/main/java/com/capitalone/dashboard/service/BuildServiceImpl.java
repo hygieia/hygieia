@@ -7,13 +7,17 @@ import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.BuildSearchRequest;
+import com.capitalone.dashboard.request.BuildServerWatchRequest;
 import com.capitalone.dashboard.request.CollectorRequest;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -82,6 +86,46 @@ public class BuildServiceImpl implements BuildService {
         }
 
         return new DataResponse<>(result, collector.getLastExecuted());
+    }
+
+    @Override
+    public ResponseEntity watch(BuildServerWatchRequest request) {
+        if (request.getCollectorName().compareTo("Hudson") == 0) {
+            HudsonCollector hudsonCollector = (HudsonCollector) collectorRepository.findByName(request.getCollectorName());
+            if (hudsonCollector == null) {
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Jenkins Collector not found");
+            }
+
+            String[] schemes = {"http","https"};
+            UrlValidator urlValidator = new UrlValidator(schemes);
+            if (!urlValidator.isValid(request.getBuildServerUrl())) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("invalid url");
+            }
+
+
+            List<String> currentBuildServerUrls = hudsonCollector.getBuildServers();
+            if (!currentBuildServerUrls.contains(request.getBuildServerUrl())) {
+                currentBuildServerUrls.add(request.getBuildServerUrl());
+                hudsonCollector.setBuildServers(currentBuildServerUrls);
+                if (collectorRepository.save(hudsonCollector) == null) {
+                    return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("failed to update collector with new build server url");
+                }
+            }
+            //returns ok because the server was added or already being watched
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("successfully added build server to watch list for " + request.getCollectorName());
+        }
+        //else selected collector name is not supported
+        return ResponseEntity
+                .status(HttpStatus.NOT_IMPLEMENTED)
+                .body("build collector name is not supported");
     }
 
     @Override

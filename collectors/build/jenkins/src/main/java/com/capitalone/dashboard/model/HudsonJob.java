@@ -3,7 +3,34 @@ package com.capitalone.dashboard.model;
 /**
  * CollectorItem extension to store the instance, build job and build url.
  */
-public class HudsonJob extends JobCollectorItem {
+public class HudsonJob extends CollectorItem {
+    private static final String INSTANCE_URL = "instanceUrl";
+    private static final String JOB_NAME = "jobName";
+    private static final String JOB_URL = "jobUrl";
+
+    public String getInstanceUrl() {
+        return (String) getOptions().get(INSTANCE_URL);
+    }
+
+    public void setInstanceUrl(String instanceUrl) {
+        getOptions().put(INSTANCE_URL, instanceUrl);
+    }
+
+    public String getJobName() {
+        return (String) getOptions().get(JOB_NAME);
+    }
+
+    public void setJobName(String jobName) {
+        getOptions().put(JOB_NAME, jobName);
+    }
+
+    public String getJobUrl() {
+        return (String) getOptions().get(JOB_URL);
+    }
+
+    public void setJobUrl(String jobUrl) {
+        getOptions().put(JOB_URL, jobUrl);
+    }
 
     @Override
     public boolean equals(Object o) {
