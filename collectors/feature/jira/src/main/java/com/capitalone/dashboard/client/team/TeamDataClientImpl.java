@@ -3,15 +3,17 @@ package com.capitalone.dashboard.client.team;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 /**
@@ -56,11 +58,18 @@ public class TeamDataClientImpl implements TeamDataClient {
 	public int updateTeamInformation() {
 		int count = 0;
 		
-		List<BasicProject> projects = jiraClient.getProjects();
+		List<Team> teams = jiraClient.getTeams();
 		
-		if (projects != null && !projects.isEmpty()) {
-			updateMongoInfo(projects);
-			count += projects.size();
+		if (CollectionUtils.isNotEmpty(teams)) {
+			updateMongoInfo(teams);
+			count += teams.size();
+		} else {
+			List<BasicProject> projects = jiraClient.getProjects();
+			
+			if (CollectionUtils.isNotEmpty(projects)) {
+				updateMongoInfoLegacy(projects);
+				count += projects.size();
+			}
 		}
 		
 		return count;
@@ -70,10 +79,56 @@ public class TeamDataClientImpl implements TeamDataClient {
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
 	 * 
+	 * @param teamDetailArray
+	 *            A list response of Jira teams from the source system
+	 */
+	private void updateMongoInfo(List<Team> jiraTeams) {	
+		ObjectId jiraCollectorId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
+		
+		for (Team jiraTeam : jiraTeams) {
+			String teamId = jiraTeam.getId();
+			
+			/*
+			 * Initialize DOMs
+			 */
+			ScopeOwnerCollectorItem team = findOneScopeOwnerCollectorItem(teamId);
+			
+			if (team == null) {
+				team = new ScopeOwnerCollectorItem();
+			}
+
+			// collectorId
+			team.setCollectorId(jiraCollectorId);
+
+			// teamId
+			team.setTeamId(teamId);
+
+			// name
+			team.setName(jiraTeam.getName());
+
+			// changeDate - does not exist for jira
+			team.setChangeDate("");
+
+			// assetState - does not exist for jira
+			team.setAssetState("Active");
+
+			// isDeleted - does not exist for jira
+			team.setIsDeleted("False");
+
+			// Saving back to MongoDB
+			teamRepo.save(team);
+		}
+	}
+	
+	/**
+	 * Updates the MongoDB with a JSONArray received from the source system
+	 * back-end with story-based data.
+	 * 
 	 * @param currentPagedJiraRs
 	 *            A list response of Jira issues from the source system
 	 */
-	private void updateMongoInfo(List<BasicProject> currentPagedJiraRs) {
+	@Deprecated
+	private void updateMongoInfoLegacy(List<BasicProject> currentPagedJiraRs) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
 		}
