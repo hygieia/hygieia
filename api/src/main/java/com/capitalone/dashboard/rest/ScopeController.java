@@ -57,9 +57,7 @@ public class ScopeController {
 	 *         the given team and current sprint
 	 */
 	@RequestMapping(value = "/scope", method = GET, produces = APPLICATION_JSON_VALUE)
-	public DataResponse<List<Scope>> allScopes(
-			@RequestParam(value = "component", required = true) String cId) {
-		ObjectId componentId = new ObjectId(cId);
-		return this.scopeService.getAllScopes(componentId);
+	public List<Scope> allScopes() {
+		return this.scopeService.getAllScopes();
 	}
 }
