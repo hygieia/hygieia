@@ -34,7 +34,7 @@ public class GitlabUrlUtilityTest {
 		
 		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
 		
-		assertEquals("https", result.getScheme());
+		assertEquals("http", result.getScheme());
 		assertEquals("gitlab.com", result.getHost());
 		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
@@ -46,6 +46,22 @@ public class GitlabUrlUtilityTest {
 	public void shouldBuildApiUrlWithGitExtension() {
 		when(gitlabRepo.getRepoUrl()).thenReturn("https://domain.org/namespace/Hygieia.git");
 		when(gitlabRepo.getBranch()).thenReturn("master");
+		
+		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
+		
+		assertEquals("http", result.getScheme());
+		assertEquals("gitlab.com", result.getHost());
+		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertTrue(result.getQuery().contains("ref_name=master"));
+		assertTrue(result.getQuery().contains("per_page=100"));
+		assertTrue(result.getQuery().contains("since="));
+	}
+	
+	@Test
+	public void shouldBuildApiUrlWithCustomProtocol() {
+		when(gitlabRepo.getRepoUrl()).thenReturn("https://domain.org/namespace/Hygieia");
+		when(gitlabRepo.getBranch()).thenReturn("master");
+		when(gitlabSettings.getProtocol()).thenReturn("https");
 		
 		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
 		
@@ -65,9 +81,27 @@ public class GitlabUrlUtilityTest {
 		
 		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
 		
-		assertEquals("https", result.getScheme());
+		assertEquals("http", result.getScheme());
 		assertEquals("customhost.com", result.getHost());
 		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertTrue(result.getQuery().contains("ref_name=master"));
+		assertTrue(result.getQuery().contains("per_page=100"));
+		assertTrue(result.getQuery().contains("since="));
+	}
+	
+	@Test
+	public void shouldBuildApiUrlWithCustomPort() {
+		when(gitlabRepo.getRepoUrl()).thenReturn("https://domain.org/namespace/Hygieia");
+		when(gitlabRepo.getBranch()).thenReturn("master");
+		when(gitlabSettings.getHost()).thenReturn("customhost.com");
+		when(gitlabSettings.getPort()).thenReturn("443");
+		
+		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
+		
+		assertEquals("http", result.getScheme());
+		assertEquals("customhost.com", result.getHost());
+		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertEquals(443, result.getPort());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
 		assertTrue(result.getQuery().contains("since="));
@@ -81,7 +115,7 @@ public class GitlabUrlUtilityTest {
 		
 		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
 		
-		assertEquals("https", result.getScheme());
+		assertEquals("http", result.getScheme());
 		assertEquals("gitlab.com", result.getHost());
 		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
@@ -97,7 +131,7 @@ public class GitlabUrlUtilityTest {
 		
 		URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, false, 100);
 		
-		assertEquals("https", result.getScheme());
+		assertEquals("http", result.getScheme());
 		assertEquals("gitlab.com", result.getHost());
 		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));

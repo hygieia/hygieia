@@ -13,6 +13,7 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.mysema.query.BooleanBuilder;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -118,7 +119,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         the given team and current sprint
 	 */
 	@Override
-	public DataResponse<List<Feature>> getRelevantStories(ObjectId componentId, String teamId,
+	public DataResponse<List<Feature>> getRelevantStories(ObjectId componentId, String teamId, String projectId,
 			Optional<String> agileType) {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
@@ -135,7 +136,7 @@ public class FeatureServiceImpl implements FeatureService {
 		builder.and(team.collectorItemId.eq(item.getId()));
 
 		// Get teamId first from available collector item, based on component
-		List<Feature> relevantStories = getFeaturesForCurrentSprints(teamId, agileType.isPresent()? agileType.get() : null, false);
+		List<Feature> relevantStories = getFeaturesForCurrentSprints(teamId, projectId, item.getCollectorId(), agileType.isPresent()? agileType.get() : null, false);
 
 		Collector collector = collectorRepository.findOne(item.getCollectorId());
 
@@ -156,7 +157,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         current sprint and team
 	 */
 	@Override
-	public DataResponse<List<Feature>> getFeatureEpicEstimates(ObjectId componentId, String teamId,
+	public DataResponse<List<Feature>> getFeatureEpicEstimates(ObjectId componentId, String teamId, String projectId,
 			Optional<String> agileType, Optional<String> estimateMetricType) {
 		Component component = componentRepository.findOne(componentId);
 
@@ -169,7 +170,7 @@ public class FeatureServiceImpl implements FeatureService {
 
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		
-		List<Feature> relevantFeatureEstimates = getFeaturesForCurrentSprints(teamId, agileType.isPresent()? agileType.get() : null, true);
+		List<Feature> relevantFeatureEstimates = getFeaturesForCurrentSprints(teamId, projectId, item.getCollectorId(), agileType.isPresent()? agileType.get() : null, true);
 		
 		// epicID : epic information (in the form of a Feature object)
 		Map<String, Feature> epicIDToEpicFeatureMap = new HashMap<>();
@@ -186,6 +187,7 @@ public class FeatureServiceImpl implements FeatureService {
 				feature.setId(null);
 				feature.setsEpicID(epicID);
 				feature.setsEpicNumber(tempRs.getsEpicNumber());
+				feature.setsEpicUrl(tempRs.getsEpicUrl());
 				feature.setsEpicName(tempRs.getsEpicName());
 				feature.setsEstimate("0");
 				epicIDToEpicFeatureMap.put(epicID, feature);
@@ -210,7 +212,7 @@ public class FeatureServiceImpl implements FeatureService {
 	
 	@Override
 	public DataResponse<SprintEstimate> getAggregatedSprintEstimates(ObjectId componentId,
-			String teamId, Optional<String> agileType, Optional<String> estimateMetricType) {
+			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType) {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
@@ -222,7 +224,7 @@ public class FeatureServiceImpl implements FeatureService {
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		Collector collector = collectorRepository.findOne(item.getCollectorId());
 		
-		SprintEstimate estimate = getSprintEstimates(teamId, agileType, estimateMetricType);
+		SprintEstimate estimate = getSprintEstimates(teamId, projectId, item.getCollectorId(), agileType, estimateMetricType);
 		return new DataResponse<>(estimate, collector.getLastExecuted());
 	}
 
@@ -253,7 +255,7 @@ public class FeatureServiceImpl implements FeatureService {
 
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		
-		SprintEstimate estimate = getSprintEstimates(teamId, agileType, estimateMetricType);
+		SprintEstimate estimate = getSprintEstimates(teamId, FeatureCollectorConstants.PROJECT_ID_ANY, item.getCollectorId(), agileType, estimateMetricType);
 		
 		List<Feature> list = Collections.singletonList(new Feature());
 		list.get(0).setsEstimate(Integer.toString(estimate.getTotalEstimate()));
@@ -289,7 +291,7 @@ public class FeatureServiceImpl implements FeatureService {
 
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		
-		SprintEstimate estimate = getSprintEstimates(teamId, agileType, estimateMetricType);
+		SprintEstimate estimate = getSprintEstimates(teamId, FeatureCollectorConstants.PROJECT_ID_ANY, item.getCollectorId(), agileType, estimateMetricType);
 		
 		List<Feature> list = Collections.singletonList(new Feature());
 		list.get(0).setsEstimate(Integer.toString(estimate.getInProgressEstimate()));
@@ -325,7 +327,7 @@ public class FeatureServiceImpl implements FeatureService {
 
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		
-		SprintEstimate estimate = getSprintEstimates(teamId, agileType, estimateMetricType);
+		SprintEstimate estimate = getSprintEstimates(teamId, FeatureCollectorConstants.PROJECT_ID_ANY, item.getCollectorId(), agileType, estimateMetricType);
 		
 		List<Feature> list = Collections.singletonList(new Feature());
 		list.get(0).setsEstimate(Integer.toString(estimate.getCompleteEstimate()));
@@ -346,7 +348,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         sprint fields for the current team's sprint
 	 */
 	@Override
-	public DataResponse<List<Feature>> getCurrentSprintDetail(ObjectId componentId, String teamId,
+	public DataResponse<List<Feature>> getCurrentSprintDetail(ObjectId componentId, String teamId, String projectId,
 			Optional<String> agileType) {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
@@ -359,14 +361,15 @@ public class FeatureServiceImpl implements FeatureService {
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 
 		// Get teamId first from available collector item, based on component
-		List<Feature> sprintResponse = getFeaturesForCurrentSprints(teamId, agileType.isPresent()? agileType.get() : null, true);
+		List<Feature> sprintResponse = getFeaturesForCurrentSprints(teamId, projectId, item.getCollectorId(), agileType.isPresent()? agileType.get() : null, true);
 
 		Collector collector = collectorRepository.findOne(item.getCollectorId());
 		return new DataResponse<>(sprintResponse, collector.getLastExecuted());
 	}
 	
-	private SprintEstimate getSprintEstimates(String teamId, Optional<String> agileType, Optional<String> estimateMetricType) {
-		List<Feature> storyEstimates = getFeaturesForCurrentSprints(teamId, agileType.isPresent()? agileType.get() : null, true);
+	@SuppressWarnings("PMD.NPathComplexity")
+	private SprintEstimate getSprintEstimates(String teamId, String projectId, ObjectId collectorId, Optional<String> agileType, Optional<String> estimateMetricType) {
+		List<Feature> storyEstimates = getFeaturesForCurrentSprints(teamId, projectId, collectorId, agileType.isPresent()? agileType.get() : null, true);
 
 		int totalEstimate = 0;
 		int wipEstimate = 0;
@@ -422,7 +425,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 * @param minimal		if the resulting list of Features should be minimally populated (see queries for fields)
 	 * @return
 	 */
-	private List<Feature> getFeaturesForCurrentSprints(String teamId, String agileType, boolean minimal) {
+	private List<Feature> getFeaturesForCurrentSprints(String teamId, String projectId, ObjectId collectorId, String agileType, boolean minimal) {
 		List<Feature> rt = new ArrayList<Feature>();
 		
 		String now = getCurrentISODateTime();
@@ -434,24 +437,15 @@ public class FeatureServiceImpl implements FeatureService {
 			 *   - the feature has a sprint set that does not have an end date
 			 *   - the feature has a sprint set that has an end date >= EOT (9999-12-31T59:59:59.999999)
 			 */
-			if (minimal) {
-				rt.addAll(featureRepository.findByNullSprintsMinimal(teamId));
-				rt.addAll(featureRepository.findByUnendingSprintsMinimal(teamId));
-			} else {
-				rt.addAll(featureRepository.findByNullSprints(teamId));
-				rt.addAll(featureRepository.findByUnendingSprints(teamId));
-			}
+		    rt.addAll(featureRepository.findByNullSprints(teamId, projectId, collectorId, minimal));
+		    rt.addAll(featureRepository.findByUnendingSprints(teamId, projectId, collectorId, minimal));
 		} else {
 			// default to scrum
 			/*
 			 * A feature is part of a scrum sprint if any of the following are true:
 			 *   - the feature has a sprint set that has start <= now <= end and end < EOT (9999-12-31T59:59:59.999999)
 			 */
-			if (minimal) {
-				rt.addAll(featureRepository.findByActiveEndingSprintsMinimal(teamId, now));
-			} else {
-				rt.addAll(featureRepository.findByActiveEndingSprints(teamId, now));
-			}
+		    rt.addAll(featureRepository.findByActiveEndingSprints(teamId, projectId, collectorId, now, minimal));
 		}
 		
 		return rt;
