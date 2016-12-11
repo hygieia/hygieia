@@ -115,7 +115,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	
 			long storyDataStart = System.currentTimeMillis();
 			StoryDataClientImpl storyData = new StoryDataClientImpl(this.coreFeatureSettings,
-					this.featureSettings, this.featureRepository, this.featureCollectorRepository, jiraClient);
+					this.featureSettings, this.featureRepository, this.featureCollectorRepository, this.teamRepository, jiraClient);
 			count = storyData.updateStoryInformation();
 			
 			log("Story Data", storyDataStart, count);

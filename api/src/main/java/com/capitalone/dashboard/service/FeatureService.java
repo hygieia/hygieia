@@ -26,7 +26,7 @@ public interface FeatureService {
 	 *         the given team and current sprint
 	 */
 	DataResponse<List<Feature>> getRelevantStories(ObjectId componentId,
-			String teamId, Optional<String> agileType);
+			String teamId, String projectId, Optional<String> agileType);
 
 	/**
 	 * Retrieves a single story based on a back-end story number
@@ -61,7 +61,7 @@ public interface FeatureService {
 	 *         current sprint and team
 	 */
 	DataResponse<List<Feature>> getFeatureEpicEstimates(ObjectId componentId,
-			String teamId, Optional<String> agileType, Optional<String> estimateMetricType);
+			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType);
 	
 	/**
 	 * Retrieves estimate total of all features in the current sprint and for
@@ -143,7 +143,7 @@ public interface FeatureService {
 	 *         number for all features
 	 */
 	DataResponse<SprintEstimate> getAggregatedSprintEstimates(ObjectId componentId,
-			String teamId, Optional<String> agileType, Optional<String> estimateMetricType);
+			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType);
 	
 	/**
 	 * Retrieves the current sprint's detail for a given team.
@@ -160,5 +160,5 @@ public interface FeatureService {
 	 *         sprint fields for the current team's sprint
 	 */
 	DataResponse<List<Feature>> getCurrentSprintDetail(ObjectId componentId,
-			String teamId, Optional<String> agileType);
+			String teamId, String projectId, Optional<String> agileType);
 }
