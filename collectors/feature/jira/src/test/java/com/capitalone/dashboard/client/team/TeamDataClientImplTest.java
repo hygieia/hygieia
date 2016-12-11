@@ -3,7 +3,6 @@ package com.capitalone.dashboard.client.team;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,10 +15,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
@@ -48,11 +47,11 @@ public class TeamDataClientImplTest {
 	
 	@Test
 	public void testUpdateProjectInformation() {
-		List<BasicProject> jiraResponse = Arrays.asList(
-				new BasicProject(URI.create("http://my.jira.com/rest/api/2/project/100"), "key1", Long.valueOf(100L), "name1"),
-				new BasicProject(URI.create("http://my.jira.com/rest/api/2/project/200"), "key1", Long.valueOf(200L), "name2"));
+		List<Team> jiraResponse = Arrays.asList(
+				new Team(String.valueOf(100L), "name1"),
+				new Team(String.valueOf(200L), "name2"));
 				
-		Mockito.when(jiraClient.getProjects()).thenReturn(jiraResponse);
+		Mockito.when(jiraClient.getTeams()).thenReturn(jiraResponse);
 		ArgumentCaptor<ScopeOwnerCollectorItem> captor = ArgumentCaptor.forClass(ScopeOwnerCollectorItem.class);
 		int cnt = teamDataClient.updateTeamInformation();
 

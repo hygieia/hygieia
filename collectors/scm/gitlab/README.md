@@ -18,11 +18,11 @@ java -JAR gitlab-collector.jar
 
 ## application.properties
 
-You will need to provide an **application.properties** file that contains information about how to connect to the Dashboard MongoDB database instance, as well as properties the Github collector requires. See the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files) for information about sourcing this properties file.
+You will need to provide an **application.properties** file that contains information about how to connect to the Dashboard MongoDB database instance, as well as properties the Gitlab collector requires. See the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files) for information about sourcing this properties file.
 
 ### Sample application.properties file
 
-```#Database Name 
+``` 
 # Database Name
 dbname=dashboard
 
@@ -48,13 +48,19 @@ logging.file=./logs/gitlab.log
 #Collector schedule (required)
 gitlab.cron=0 0/1 * * * *
 
-#Gitlab host (optional)
+#Gitlab host (optional, defaults to "gitlab.com")
 gitlab.host=gitlab.company.com
+
+#Gitlab protocol (optional, defaults to "http")
+gitlab.protocol=http
+
+#Gitlab port (optional, defaults to protocol default port)
+gitlab.port=80
 
 #If your instance of Gitlab is using a self signed certificate, set to true, default is false
 gitlab.selfSignedCertificate=false
 
-#set apiKey to use HTTPS Auth
+#Gitlab API Token (required, token of user the collector will use by default, can be overriden on a per repo basis from the UI. API token provided by Gitlab)
 gitlab.apiToken=
 
 #Maximum number of days to go back in time when fetching commits
