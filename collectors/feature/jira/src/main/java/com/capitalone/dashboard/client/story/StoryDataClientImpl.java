@@ -349,18 +349,20 @@ public class StoryDataClientImpl implements StoryDataClient {
 		feature.setsProjectPath("");
 		
 
-		IssueField team = fields.get(featureSettings.getJiraTeamFieldName());
-		if (team != null && team.getValue() != null && !TOOLS.sanitizeResponse(team.getValue()).isEmpty()) {
-			String teamID = TOOLS.sanitizeResponse(team.getValue());
-			
-			ObjectId jiraFeatureId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
-			ScopeOwnerCollectorItem scopeOwner = teamRepository.findTeamCollector(jiraFeatureId, teamID);
-			if (scopeOwner != null && StringUtils.isNotEmpty(scopeOwner.getName())) {
-			    // sTeamID
-			    feature.setsTeamID(teamID);
-			    // sTeamName
-				feature.setsTeamName(TOOLS.sanitizeResponse(scopeOwner.getName()));
-			}
+		if (StringUtils.isNotEmpty(featureSettings.getJiraTeamFieldName())) {
+    		IssueField team = fields.get(featureSettings.getJiraTeamFieldName());
+    		if (team != null && team.getValue() != null && !TOOLS.sanitizeResponse(team.getValue()).isEmpty()) {
+    			String teamID = TOOLS.sanitizeResponse(team.getValue());
+    			
+    			ObjectId jiraFeatureId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
+    			ScopeOwnerCollectorItem scopeOwner = teamRepository.findTeamCollector(jiraFeatureId, teamID);
+    			if (scopeOwner != null && StringUtils.isNotEmpty(scopeOwner.getName())) {
+    			    // sTeamID
+    			    feature.setsTeamID(teamID);
+    			    // sTeamName
+    				feature.setsTeamName(TOOLS.sanitizeResponse(scopeOwner.getName()));
+    			}
+    		}
 		}
 		
 		// sTeamChangeDate - not able to retrieve at this asset level from Jira

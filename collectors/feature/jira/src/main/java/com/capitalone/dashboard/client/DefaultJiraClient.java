@@ -157,6 +157,10 @@ public class DefaultJiraClient implements JiraClient {
 	public List<Team> getTeams() {
 	    List<Team> result = new ArrayList<>();
 		
+	    if (StringUtils.isEmpty(featureSettings.getJiraTeamFieldName())) {
+	        return result;
+	    }
+	    
 		try {			
 			URL url = new URL(featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/")? "" : "/") 
 						+ TEMPO_TEAMS_REST_SUFFIX);
