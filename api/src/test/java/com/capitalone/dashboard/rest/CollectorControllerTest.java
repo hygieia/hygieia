@@ -6,7 +6,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,7 +62,6 @@ public class CollectorControllerTest {
         when(collectorService.collectorItemsByTypeWithFilter(eq(CollectorType.Build), eq(filterString), any(Pageable.class))).thenReturn(pages);
         mockMvc.perform(get("/collector/item/type/build?size=10&page=0"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("totalEntities", is("2")))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$.[0].id", is(item1.getId().toString())))
                 .andExpect(jsonPath("$[0].collectorId", is(item1.getCollectorId().toString())))
