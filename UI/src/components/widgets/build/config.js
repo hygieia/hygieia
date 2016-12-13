@@ -7,23 +7,21 @@
         .module(HygieiaConfig.module)
         .controller('BuildWidgetConfigController', BuildWidgetConfigController);
     BuildWidgetConfigController.$inject = ['modalData', '$scope', 'collectorData', '$uibModalInstance'];
-    function BuildWidgetConfigController(modalData, $scope, collectorData, $modalInstance) {
+    function BuildWidgetConfigController(modalData, $scope, collectorData, $uibModalInstance) {
         var ctrl = this,
-        widgetConfig = modalData.widgetConfig,
+        widgetConfig = modalData.widgetConfig;
+        
         // public variables
-        buildCollector = modalData.dashboard.application.components[0].collectorItems.Build,
-        savedCollectorBuildJob = buildCollector ? buildCollector[0].description : null;
-
-        // method implementations
+        ctrl.buildDurationThreshold = 3;
+        ctrl.buildConsecutiveFailureThreshold = 5;
+        
         $scope.getJobs = function (filter) {
         	return collectorData.itemsByType('build', {"search": filter, "size": 20}).then(function (response){
         		return returnBuildJobs(response);
         	});
         }
-
-        ctrl.collectorItemId = savedCollectorBuildJob ? $scope.getJobs(savedCollectorBuildJob).then(getBuildsCallback) : null;
-        ctrl.buildDurationThreshold = 3;
-        ctrl.buildConsecutiveFailureThreshold = 5;
+        
+        loadSavedBuildJob();
         // set values from config
         if (widgetConfig) {
             if (widgetConfig.options.buildDurationThreshold) {
@@ -36,7 +34,15 @@
         // public methods
         ctrl.submit = submitForm;
 
-
+        // method implementations
+        function loadSavedBuildJob(){
+        	var buildCollector = modalData.dashboard.application.components[0].collectorItems.Build,
+            savedCollectorBuildJob = buildCollector ? buildCollector[0].description : null;
+            if(savedCollectorBuildJob) { 
+            	$scope.getJobs(savedCollectorBuildJob).then(getBuildsCallback) 
+            }
+        }
+        
         function getBuildsCallback(data) {
             ctrl.collectorItemId = data[0];
         }
