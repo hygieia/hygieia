@@ -7,7 +7,7 @@
         .module(HygieiaConfig.module)
         .controller('BuildWidgetConfigController', BuildWidgetConfigController);
     BuildWidgetConfigController.$inject = ['modalData', '$scope', 'collectorData', '$uibModalInstance'];
-    function BuildWidgetConfigController(modalData, $scope, collectorData, $modalInstance) {
+    function BuildWidgetConfigController(modalData, $scope, collectorData, $uibModalInstance) {
         var ctrl = this,
         widgetConfig = modalData.widgetConfig,
         // public variables
@@ -17,7 +17,7 @@
         // method implementations
         $scope.getJobs = function (filter) {
         	return collectorData.itemsByType('build', {"search": filter, "size": 20}).then(function (response){
-        		return returnBuildJobs(response);
+        		return response;
         	});
         }
 
@@ -40,19 +40,7 @@
         function getBuildsCallback(data) {
             ctrl.collectorItemId = data[0];
         }
-        function returnBuildJobs(data){
-            var builds = [];
-            for (var x = 0; x < data.length; x++) {
-                var obj = data[x];
-                var item = {
-                        value: obj.id,
-                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description : obj.collector.name + '-' + obj.description),
-                        group: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName : obj.collector.name)
-                    };
-                builds.push(item);
-            }
-            return builds;
-        }
+
         function submitForm(valid, collector) {
             console.log("Collector" + JSON.stringify(collector));
             if (valid) {
@@ -65,7 +53,7 @@
                         consecutiveFailureThreshold: parseFloat(form.buildConsecutiveFailureThreshold.value)
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: collector.value,
+                    collectorItemId: collector.id,
                 };
                 // pass this new config to the modal closing so it's saved
                 $uibModalInstance.close(postObj);

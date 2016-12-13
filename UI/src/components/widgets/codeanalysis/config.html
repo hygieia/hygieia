@@ -9,12 +9,17 @@
 
                 <div class="text-center modal-label">Static Code Analysis:</div>
 
-				<input type="text" name="caCollectorItem" class="form-control"
+				<input type="text" name="caCollectorItem" class="form-control" placeholder="Select a Code Analysis Job"
 					ng-model="caWidget.caCollectorItem"
-					uib-typeahead="item as item.displayName + ' - ' + item.description for item in getCodeQualityCollectors($viewValue)"
-					typeahead-wait-ms="250" autocomplete="off" 
-					type-ahead-min="0"
+					uib-typeahead="item as item.description for item in getCodeQualityCollectors($viewValue)"
+					typeahead-wait-ms="250" autocomplete="off"
+					typeahead-min-length="0"
+          typeahead-no-results="noResults"
+
 					required>
+          <div class="form-control" ng-show="noResults">
+            No Results Found
+          </div>
 
             </form-group>
         </div>

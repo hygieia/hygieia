@@ -25,12 +25,12 @@
 
         $scope.getCodeQualityCollectors = function(filter){
         	return collectorData.itemsByType('codequality', {"search": filter, "size": 20}).then(function (response){
-        		return returnCodeQualityCollectors(response);
+        		return response;
         	});
         }
-        
+
         loadSavedCodeQualityJob();
-        
+
         // request all the codequality and test collector items
         collectorData.itemsByType('staticSecurityScan').then(processSaResponse);
         collectorData.itemsByType('test').then(processTestsResponse);
@@ -38,27 +38,16 @@
         function loadSavedCodeQualityJob(){
         	var codeQualityCollectorItems = component.collectorItems.CodeQuality,
             savedCodeQualityJob = codeQualityCollectorItems ? codeQualityCollectorItems[0].description : null;
-            
+
             if(savedCodeQualityJob){
             	$scope.getCodeQualityCollectors(savedCodeQualityJob).then(getCodeQualityCollectorsCallback) ;
             }
         }
-        
-        function returnCodeQualityCollectors(data){
-        	var jobs = [];
-        	if (data) {
-                for (var j = 0; j < data.length; ++j) {
-                    data[j].displayName = ((data[j].niceName != null) && (data[j].niceName != ""))? data[j].niceName : data[j].collector.name;
-                    jobs.push(data[j]);
-                }
-            }
-        	return jobs;
-        }
-        
+
         function getCodeQualityCollectorsCallback(data) {
             ctrl.caCollectorItem = data[0];
         }
-        
+
         function processSaResponse(data) {
             var saCollectorItems = component.collectorItems.StaticSecurityScan;
             var saCollectorItemId = _.isEmpty(saCollectorItems) ? null : saCollectorItems[0].id;

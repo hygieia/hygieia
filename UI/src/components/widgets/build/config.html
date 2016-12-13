@@ -2,14 +2,20 @@
     <form name="buildConfigForm" role="form"
           ng-submit="buildConfig.submit(buildConfigForm.$valid,buildConfig.collectorItemId)" novalidate="novalidate">
         <form-group class="text-center" input="collectorItemId" errors="{required: 'Please select a collector'}">
-            
+
             <label class="modal-label">Build Job</label>
- 			 <input type="text" name="collectorItemId" class="form-control" ng-model="buildConfig.collectorItemId" 
- 			 uib-typeahead="item as item.name for item in getJobs($viewValue)" 
+ 			 <input type="text" name="collectorItemId" class="form-control" placeholder="Select a build job"
+       ng-model="buildConfig.collectorItemId"
+ 			 uib-typeahead="item as item.description for item in getJobs($viewValue)"
  			 typeahead-min-length="0"
- 			 typeahead-wait-ms="250" 
- 			 autocomplete="off" 
+ 			 typeahead-wait-ms="250"
+ 			 autocomplete="off"
+       typeahead-no-results="noResults"
  			 required>
+
+       <div class="form-control" ng-show="noResults">
+            No Results Found
+        </div>
 
         </form-group>
 
