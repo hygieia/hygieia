@@ -8,13 +8,12 @@
         .module(HygieiaConfig.module)
         .controller('CodeAnalysisConfigController', CodeAnalysisConfigController);
 
-    CodeAnalysisConfigController.$inject = ['modalData', 'collectorData', '$uibModalInstance'];
-    function CodeAnalysisConfigController(modalData, collectorData, $uibModalInstance) {
-        var ctrl = this;
-        var widgetConfig = modalData.widgetConfig;
-        var component = modalData.dashboard.application.components[0];
+    CodeAnalysisConfigController.$inject = ['modalData', '$scope', 'collectorData', '$uibModalInstance'];
+    function CodeAnalysisConfigController(modalData, $scope, collectorData, $uibModalInstance) {
+        var ctrl = this,
+        widgetConfig = modalData.widgetConfig,
+        component = modalData.dashboard.application.components[0];
 
-        ctrl.caToolsDropdownPlaceholder = 'Loading Code Analysis Jobs...';
         ctrl.saToolsDropdownPlaceholder = 'Loading Security Analysis Jobs...';
         ctrl.testToolsDropdownPlaceholder = 'Loading Functional Test Jobs...';
 
@@ -24,28 +23,42 @@
         ctrl.addTestConfig = addTestConfig;
         ctrl.deleteTestConfig = deleteTestConfig;
 
+        $scope.getCodeQualityCollectors = function(filter){
+        	return collectorData.itemsByType('codequality', {"search": filter, "size": 20}).then(function (response){
+        		return returnCodeQualityCollectors(response);
+        	});
+        }
+        
+        loadSavedCodeQualityJob();
+        
         // request all the codequality and test collector items
-        collectorData.itemsByType('codequality').then(processCaResponse);
         collectorData.itemsByType('staticSecurityScan').then(processSaResponse);
         collectorData.itemsByType('test').then(processTestsResponse);
 
-        function processCaResponse(data) {
-
-            var caCollectorItems = component.collectorItems.CodeQuality;
-            var caCollectorItemId = _.isEmpty(caCollectorItems) ? null : caCollectorItems[0].id;
-            if (data != null) {
-                var j;
-                for (j = 0; j < data.length; ++j) {
+        function loadSavedCodeQualityJob(){
+        	var codeQualityCollectorItems = component.collectorItems.CodeQuality,
+            savedCodeQualityJob = codeQualityCollectorItems ? codeQualityCollectorItems[0].description : null;
+            
+            if(savedCodeQualityJob){
+            	$scope.getCodeQualityCollectors(savedCodeQualityJob).then(getCodeQualityCollectorsCallback) ;
+            }
+        }
+        
+        function returnCodeQualityCollectors(data){
+        	var jobs = [];
+        	if (data) {
+                for (var j = 0; j < data.length; ++j) {
                     data[j].displayName = ((data[j].niceName != null) && (data[j].niceName != ""))? data[j].niceName : data[j].collector.name;
+                    jobs.push(data[j]);
                 }
             }
-            ctrl.caJobs = data;
-
-            ctrl.caCollectorItem = caCollectorItemId ? _.findWhere(ctrl.caJobs, {id: caCollectorItemId}) : null;
-            ctrl.caToolsDropdownPlaceholder = data.length ? 'Select a Code Analysis Job' : 'No Code Analysis Job Found';
-            ctrl.caLoading = false;
+        	return jobs;
         }
-
+        
+        function getCodeQualityCollectorsCallback(data) {
+            ctrl.caCollectorItem = data[0];
+        }
+        
         function processSaResponse(data) {
             var saCollectorItems = component.collectorItems.StaticSecurityScan;
             var saCollectorItemId = _.isEmpty(saCollectorItems) ? null : saCollectorItems[0].id;
