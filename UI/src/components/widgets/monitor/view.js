@@ -6,8 +6,8 @@
         .controller('monitorViewController', monitorViewController)
         .controller('monitorStatusController', monitorStatusController);
 
-    monitorViewController.$inject = ['$scope', 'monitorData', 'DashStatus', '$modal', '$q', '$interval'];
-    function monitorViewController($scope, monitorData, DashStatus, $modal, $q, $interval) {
+    monitorViewController.$inject = ['$scope', 'monitorData', 'DashStatus', '$uibModal', '$q', '$interval'];
+    function monitorViewController($scope, monitorData, DashStatus, $uibModal, $q, $interval) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -47,7 +47,7 @@
 
         function openStatusWindow(service) {
             // open up a new modal window for the user to set the status
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'monitorStatus.html',
                 controller: 'monitorStatusController',
                 controllerAs: 'ctrl',
@@ -144,8 +144,8 @@
         }
     }
 
-    monitorStatusController.$inject = ['service', 'statuses', '$modalInstance'];
-    function monitorStatusController(service, statuses, $modalInstance) {
+    monitorStatusController.$inject = ['service', 'statuses', '$uibModalInstance'];
+    function monitorStatusController(service, statuses, $uibModalInstance) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -163,7 +163,7 @@
 
         function submit() {
             // pass the service back so the widget can update
-            $modalInstance.close(ctrl.service);
+            $uibModalInstance.close(ctrl.service);
         }
     }
 })();

@@ -25,8 +25,8 @@
         })
         .directive('widget', widgetDirective);
 
-    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$modal', 'WidgetState', 'DisplayState', '$interval', 'dashboardData','$cookies'];
-    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $modal, WidgetState, DisplayState, $interval, dashboardData,$cookies) {
+    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$uibModal', 'WidgetState', 'DisplayState', '$interval', 'dashboardData','$cookies'];
+    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $uibModal, WidgetState, DisplayState, $interval, dashboardData,$cookies) {
         return {
             templateUrl: 'app/dashboard/views/widget.html',
             require: '^widgetContainer',
@@ -122,7 +122,7 @@
             {
 
                 $scope.owner=data;
-                if ($scope.owner == $cookies.username || $cookies.username == 'admin')
+                if ($scope.owner == $cookies.get('username') || $cookies.get('username') == 'admin')
                 {
                     configModal();
                 }
@@ -150,7 +150,7 @@
 
                 // when the widget closes if an object is passed we'll assume it's an updated
                 // widget configuration so try and send it to the api or update the existing one
-                $modal.open(modalConfig).result.then(upsertWidget);
+                $uibModal.open(modalConfig).result.then(upsertWidget);
             }
 
             function upsertWidget(newWidgetConfig) {

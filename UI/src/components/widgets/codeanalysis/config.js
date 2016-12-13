@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('CodeAnalysisConfigController', CodeAnalysisConfigController);
 
-    CodeAnalysisConfigController.$inject = ['modalData', 'collectorData', '$modalInstance'];
-    function CodeAnalysisConfigController(modalData, collectorData, $modalInstance) {
+    CodeAnalysisConfigController.$inject = ['modalData', 'collectorData', '$uibModalInstance'];
+    function CodeAnalysisConfigController(modalData, collectorData, $uibModalInstance) {
         var ctrl = this;
         var widgetConfig = modalData.widgetConfig;
         var component = modalData.dashboard.application.components[0];
@@ -110,7 +110,7 @@
                 collectorItemIds: collectorItems
             };
             // pass this new config to the modal closing so it's saved
-            $modalInstance.close(postObj);
+            $uibModalInstance.close(postObj);
         }
 
 

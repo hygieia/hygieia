@@ -4,7 +4,7 @@
 	angular.module(HygieiaConfig.module).controller('featureConfigController',
 			featureConfigController);
 
-	featureConfigController.$inject = [ 'modalData', '$modalInstance',
+	featureConfigController.$inject = [ 'modalData', '$uibModalInstance',
 			'collectorData', 'featureData' ];
 
 	function featureConfigController(modalData, $modalInstance, collectorData, featureData) {
@@ -390,7 +390,7 @@
     		}
 			
 			// pass this new config to the modal closing so it's saved
-			$modalInstance.close(postObj);
+			$uibModalInstance.close(postObj);
 		}
 	}
 })();

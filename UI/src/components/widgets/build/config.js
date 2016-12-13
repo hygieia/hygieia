@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('BuildWidgetConfigController', BuildWidgetConfigController);
 
-    BuildWidgetConfigController.$inject = ['modalData', '$scope', 'collectorData', '$modalInstance'];
-    function BuildWidgetConfigController(modalData, $scope, collectorData, $modalInstance) {
+    BuildWidgetConfigController.$inject = ['modalData', '$scope', 'collectorData', '$uibModalInstance'];
+    function BuildWidgetConfigController(modalData, $scope, collectorData, $uibModalInstance) {
         var ctrl = this;
         var widgetConfig = modalData.widgetConfig;
 
@@ -158,7 +158,7 @@
                 console.log(modalData.dashboard.application.components[0].id);
 
                 // pass this new config to the modal closing so it's saved
-                $modalInstance.close(postObj);
+                $uibModalInstance.close(postObj);
             }
         }
     }
