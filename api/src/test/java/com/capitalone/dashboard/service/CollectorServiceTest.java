@@ -45,7 +45,7 @@ public class CollectorServiceTest {
 		when(collectorRepository.findByCollectorType(CollectorType.Build)).thenReturn(Arrays.asList(c));
 
 		Page<CollectorItem> page = new PageImpl<CollectorItem>(Arrays.asList(item1, item2), null, 2);
-		when(collectorItemRepository.findByCollectorIdInAndDescriptionContaining(anyCollection(), any(String.class),
+		when(collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(anyCollection(), any(String.class),
 				any(Pageable.class))).thenReturn(page);
 		Page<CollectorItem> items = collectorService.collectorItemsByTypeWithFilter(CollectorType.Build, FILTER_STRING,
 				null);

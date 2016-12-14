@@ -49,7 +49,7 @@ public class CollectorServiceImpl implements CollectorService {
 
         List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorId()));
 
-        Page<CollectorItem> collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContaining(collectorIds, descriptionFilter, pageable);
+        Page<CollectorItem> collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(collectorIds, descriptionFilter, pageable);
 
         for (CollectorItem options : collectorItems) {
             options.setCollector(collectorById(options.getCollectorId(), collectors));

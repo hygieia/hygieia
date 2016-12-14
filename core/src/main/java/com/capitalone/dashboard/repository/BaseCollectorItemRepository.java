@@ -42,7 +42,7 @@ public interface BaseCollectorItemRepository<T extends CollectorItem> extends Pa
      * @param {@link org.springframework.data.domain.Pageable} object to determine which page to return
      * @return page of {@link CollectorItem}s
      */
-    Page<T> findByCollectorIdInAndDescriptionContaining(Collection<ObjectId> ids, String description, Pageable pageable);
+    Page<T> findByCollectorIdInAndDescriptionContainingIgnoreCase(Collection<ObjectId> ids, String description, Pageable pageable);
 
     /**
      * Finds the {@link CollectorItem} for a given collector and options. This should represent a unique
