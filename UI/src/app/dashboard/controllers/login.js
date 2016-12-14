@@ -40,24 +40,17 @@
         login.doSignup = function () {
             $location.path('/signup');
         };
-        function checkApi() {
-            var url = '/api/dashboard';
-            $http.get(url).success(function (data, status) {
-                login.apiup = (status == 200);
-            }).error(function (data, status) {
-                login.apiup = false;
-            });
-        }
-        checkApi();
 
         function getAppVersion(){
             var url = '/api/appinfo';
             $http.get(url).success(function (data, status) {
                 console.log("appinfo:"+data);
                 login.appVersion=data;
+                login.apiup = (status == 200);
             }).error(function(data,status){
                 console.log("appInfo:"+data);
                 login.appVersion="0.0";
+                login.apiup = false;
             });
         }
         getAppVersion();
