@@ -29,7 +29,9 @@ public class TokenAuthenticationService {
      }
 
      public Authentication getAuthentication(HttpServletRequest request) {
-         String token = StringUtils.split(request.getHeader(headerString), " ")[1];
+         String authHeader = request.getHeader(headerString);
+         if(authHeader == null) { return null; }
+    	 String token = StringUtils.split(authHeader, " ")[1];
          if (token != null) {
              String username = Jwts.parser()
                  .setSigningKey(secret)

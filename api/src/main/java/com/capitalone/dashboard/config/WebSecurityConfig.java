@@ -11,27 +11,24 @@ import com.capitalone.dashboard.auth.JWTAuthenticationFilter;
 import com.capitalone.dashboard.auth.JWTLoginFilter;
 
 @Configuration
- @EnableWebSecurity
- public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-     @Override
-     protected void configure(HttpSecurity http) throws Exception {
-         http.headers().cacheControl();
-         http.csrf();
-         http.authorizeRequests()
-             .antMatchers("/appinfo").permitAll()
-             .antMatchers("/authenticateUser").permitAll()
-             .anyRequest().authenticated()
-             .and()
-             .addFilterBefore(new JWTLoginFilter("/authenticateUser", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
-             .addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-     }
-     
-     @Override
-     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-         auth.inMemoryAuthentication()
-             .withUser("admin")
-             .password("password")
-             .roles("ADMIN");
-     }
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.headers().cacheControl();
+		http.csrf().disable();
+		http.authorizeRequests().antMatchers("/appinfo").permitAll()
+								.antMatchers("/authenticateUser").permitAll()
+								.anyRequest().authenticated().and()
+								.addFilterBefore(new JWTLoginFilter("/authenticateUser", authenticationManager()),
+										UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+	}
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.inMemoryAuthentication().withUser("admin").password("password").roles("ADMIN");
+	}
+	
 }
