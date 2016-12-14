@@ -43,11 +43,12 @@ public class FeatureController {
 	 */
 	@RequestMapping(value = "/feature/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> relevantStories(
+	        @RequestParam(value = "projectId", required = true) String projectId,
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
 		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getRelevantStories(componentId, teamId, agileType);
+		return this.featureService.getRelevantStories(componentId, teamId, projectId, agileType);
 	}
 
 	/**
@@ -77,11 +78,12 @@ public class FeatureController {
 	 */
 	@RequestMapping(value = "/iteration/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> currentSprintDetail(
+	        @RequestParam(value = "projectId", required = true) String projectId,
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
 		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getCurrentSprintDetail(componentId, teamId, agileType);
+		return this.featureService.getCurrentSprintDetail(componentId, teamId, projectId, agileType);
 	}
 
 	/**
@@ -96,12 +98,13 @@ public class FeatureController {
 	 */
 	@RequestMapping(value = "/feature/estimates/super/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> featureEpics(
+	        @RequestParam(value = "projectId", required = true) String projectId,
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
 			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
 		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getFeatureEpicEstimates(componentId, teamId, agileType, estimateMetricType);
+		return this.featureService.getFeatureEpicEstimates(componentId, teamId, projectId, agileType, estimateMetricType);
 	}
 	
 	/**
@@ -113,12 +116,13 @@ public class FeatureController {
 	 */
 	@RequestMapping(value = "/feature/estimates/aggregatedsprints/{teamId}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<SprintEstimate> featureAggregatedSprintEstimates (
+	        @RequestParam(value = "projectId", required = true) String projectId,
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
 			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
 			@RequestParam(value = "component", required = true) String cId,
 			@PathVariable String teamId) {
 		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getAggregatedSprintEstimates(componentId, teamId, agileType, estimateMetricType);
+		return this.featureService.getAggregatedSprintEstimates(componentId, teamId, projectId, agileType, estimateMetricType);
 	}
 
 	/**

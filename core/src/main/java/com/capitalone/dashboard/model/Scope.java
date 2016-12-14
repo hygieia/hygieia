@@ -19,6 +19,7 @@ package com.capitalone.dashboard.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -44,6 +45,17 @@ public class Scope extends BaseModel {
 	private String changeDate;
 	private String assetState;
 	private String isDeleted;
+	
+	@Transient
+    private Collector collector;
+	
+	public Collector getCollector() {
+        return collector;
+    }
+
+    public void setCollector(Collector collector) {
+        this.collector = collector;
+    }
 
 	public ObjectId getCollectorId() {
         return collectorId;

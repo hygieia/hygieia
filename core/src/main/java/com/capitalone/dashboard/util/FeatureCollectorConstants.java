@@ -24,6 +24,9 @@ public final class FeatureCollectorConstants {
 		
 		public static final String SPRINT_SCRUM = "scrum";
 		public static final String SPRINT_KANBAN = "kanban";
+		
+		public static final String TEAM_ID_ANY = "any";
+		public static final String PROJECT_ID_ANY = "any";
 
         private FeatureCollectorConstants() {
                 // This class should not be instantiable
