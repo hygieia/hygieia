@@ -51,7 +51,7 @@ public class ProjectDataClientImplTest {
 	public void testUpdateProjectInformation() {
 		List<BasicProject> jiraResponse = Arrays.asList(
 				new BasicProject(URI.create("http://my.jira.com/rest/api/2/project/100"), "key1", Long.valueOf(100L), "name1"),
-				new BasicProject(URI.create("http://my.jira.com/rest/api/2/project/200"), "key1", Long.valueOf(200L), "name2"));
+				new BasicProject(URI.create("http://my.jira.com/rest/api/2/project/200"), "key2", Long.valueOf(200L), "name2"));
 
 		Mockito.when(jiraClient.getProjects()).thenReturn(jiraResponse);
 		ArgumentCaptor<Scope> captor = ArgumentCaptor.forClass(Scope.class);

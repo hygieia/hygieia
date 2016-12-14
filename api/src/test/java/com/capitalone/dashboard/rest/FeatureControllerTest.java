@@ -308,6 +308,7 @@ public class FeatureControllerTest {
 	@Test
 	public void testRelevantStories_HappyPath() throws Exception {
 		String testTeamId = mockV1Feature.getsTeamID();
+		String testProjectId = mockV1Feature.getsProjectID();
 		List<Feature> features = new ArrayList<Feature>();
 		features.add(mockV1Feature);
 		features.add(mockJiraFeature);
@@ -315,14 +316,15 @@ public class FeatureControllerTest {
 		DataResponse<List<Feature>> response = new DataResponse<>(features,
 				mockV1Collector.getLastExecuted());
 
-		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, Optional.empty(), Optional.empty())).thenReturn(response);
-		mockMvc.perform(get("/feature/" + testTeamId + "?component=" + mockComponentId.toString()))
+		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
+		mockMvc.perform(get("/feature/" + testTeamId + "?component=" + mockComponentId.toString() + "&projectId=" + testProjectId))
 				.andExpect(status().isOk());
 	}
 
 	@Test
 	public void testFeatureEstimates_HappyPath() throws Exception {
 		String testTeamId = mockV1Feature.getsTeamID();
+        String testProjectId = mockV1Feature.getsProjectID();		
 		List<Feature> features = new ArrayList<Feature>();
 		features.add(mockV1Feature);
 		features.add(mockJiraFeature);
@@ -330,15 +332,16 @@ public class FeatureControllerTest {
 		DataResponse<List<Feature>> response = new DataResponse<>(features,
 				mockV1Collector.getLastExecuted());
 
-		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, Optional.empty(), Optional.empty())).thenReturn(response);
+		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
 		mockMvc.perform(
 				get("/feature/estimates/super/" + testTeamId + "?component="
-						+ mockComponentId.toString())).andExpect(status().isOk());
+						+ mockComponentId.toString() + "&projectId=" + testProjectId)).andExpect(status().isOk());
 	}
 
 	@Test
 	public void testFeatureEstimates_SameEpicWithEstimates_UniqueResponse() throws Exception {
 		String testTeamId = mockV1Feature.getsTeamID();
+        String testProjectId = mockV1Feature.getsProjectID();
 		List<Feature> features = new ArrayList<Feature>();
 		features.add(mockV1Feature);
 		features.add(mockJiraFeature);
@@ -346,10 +349,10 @@ public class FeatureControllerTest {
 		DataResponse<List<Feature>> response = new DataResponse<>(features,
 				mockV1Collector.getLastExecuted());
 
-		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, Optional.empty(), Optional.empty())).thenReturn(response);
+		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
 		mockMvc.perform(
 				get("/feature/estimates/super/" + testTeamId + "?component="
-						+ mockComponentId.toString()))
+						+ mockComponentId.toString() + "&projectId=" + testProjectId))
 				.andExpect(jsonPath("$result[0].sEpicNumber", is(mockV1Feature.getsEpicNumber())))
 				.andExpect(jsonPath("$result[0].sEstimate", is(mockV1Feature.getsEstimate())))
 				.andExpect(jsonPath("$result", hasSize(3)));
