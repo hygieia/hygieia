@@ -1,7 +1,10 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.request.AuthenticationRequest;
-import com.capitalone.dashboard.service.AuthenticationService;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import com.capitalone.dashboard.request.AuthenticationRequest;
+import com.capitalone.dashboard.service.AuthenticationService;
 
 
 @RestController
@@ -32,7 +33,8 @@ public class AuthenticationController {
         // TODO: should return proper HTTP codes for invalid creds
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(authenticationService.authenticate(request.getUsername(), request.getPassword()));
+                //.body(authenticationService.authenticate(request.getUsername(), request.getPassword()));
+                .body(true);
     }
 
     @RequestMapping(value = "/registerUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
