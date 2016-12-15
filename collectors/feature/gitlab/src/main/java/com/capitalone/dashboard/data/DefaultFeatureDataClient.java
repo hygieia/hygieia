@@ -22,6 +22,7 @@ import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.model.UpdateResult;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
+import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.IssueItemRepository;
 import com.capitalone.dashboard.repository.ProjectItemRepository;
 import com.capitalone.dashboard.repository.TeamItemRepository;
@@ -35,17 +36,19 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	private final FeatureCollectorRepository featureCollectorRepo;
 	private final TeamItemRepository teamRepo;
 	private final ProjectItemRepository projectRepo;
-	private final IssueItemRepository featureRepo;
+	private final IssueItemRepository issueItemRepo;
+	private final FeatureRepository featureRepository;
 	private final FeatureDataMapper featureDataMapper;
 	
 	@Autowired
 	public DefaultFeatureDataClient(FeatureCollectorRepository featureCollectorRepo, TeamItemRepository teamRepo, 
-			ProjectItemRepository scopeRepo, IssueItemRepository featureRepo, FeatureDataMapper featureDataMapper) {
+			ProjectItemRepository scopeRepo, IssueItemRepository issueRepo, FeatureDataMapper featureDataMapper, FeatureRepository featureRepo) {
 		this.featureCollectorRepo = featureCollectorRepo;
 		this.teamRepo = teamRepo;
 		this.projectRepo = scopeRepo;
-		this.featureRepo = featureRepo;
+		this.issueItemRepo = issueRepo;
 		this.featureDataMapper = featureDataMapper;
+		this.featureRepository = featureRepo;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -103,7 +106,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 			inProgressLabels.add(label.getName());
 		}
 		
-		List<Feature> savedFeatures = featureRepo.getFeaturesByCollectorAndProjectId(gitlabCollector.getId(), projectId);
+		List<Feature> savedFeatures = issueItemRepo.getFeaturesByCollectorAndProjectId(gitlabCollector.getId(), projectId);
 		
 		return updateAll(issues, gitlabCollector, inProgressLabels, savedFeatures);
 	}
@@ -115,15 +118,15 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		List<Feature> updatedFeatures = new ArrayList<>();
 		for(GitlabIssue issue : gitlabIssues) {
 			String issueId = String.valueOf(issue.getId());
-			ObjectId existingId = getExistingId(featureRepo.getFeatureIdById(issueId));
+			ObjectId existingId = getExistingId(featureRepository.getFeatureIdById(issueId));
 			Feature feature = featureDataMapper.mapToFeatureItem(issue, inProgressLabels, existingId, gitlabCollector.getId());
 			updatedFeatures.add(feature);
 		}
 		
 		Collection<Feature> deletedFeatures = CollectionUtils.subtract(savedFeatures, updatedFeatures);
 		
-		featureRepo.save(updatedFeatures);
-		featureRepo.delete(deletedFeatures);
+		issueItemRepo.save(updatedFeatures);
+		issueItemRepo.delete(deletedFeatures);
 		UpdateResult updateResult = new UpdateResult(updatedFeatures.size(), deletedFeatures.size());
 				
 		return updateResult;
