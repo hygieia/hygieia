@@ -8,15 +8,17 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
-    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
+    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType', '$window'];
+    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType, $window) {
         var ctrl = this;
 
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
+
+        //TODO: Need to get username from token
         ctrl.username = $cookies.username;
-        ctrl.showAuthentication = $cookies.authenticated;
+        ctrl.showAuthentication = $window.localStorage.token;
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
@@ -77,8 +79,7 @@
 
         function logout()
         {
-            $cookieStore.remove("username");
-            $cookieStore.remove("authenticated");
+            $window.localStorage.removeItem('token');
             $location.path('/');
         }
 
@@ -206,5 +207,3 @@
 
 
 })();
-
-

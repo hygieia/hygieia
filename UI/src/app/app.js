@@ -52,6 +52,7 @@ var localStorageSupported = (function () {
         // in data providers and then redirect them to a remote api if
         // necessary
         function ($httpProvider) {
+            $httpProvider.interceptors.push('authInterceptor');
             $httpProvider.interceptors.push(function () {
                 return {
                     request: function (config) {
@@ -65,7 +66,7 @@ var localStorageSupported = (function () {
                         }
 
                         return config;
-                    }
+                    },
                 };
             });
         }])
