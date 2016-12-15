@@ -2,12 +2,11 @@ package com.capitalone.dashboard.auth;
 
 import java.util.Date;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.util.WebUtils;
 
 import com.capitalone.dashboard.model.AuthenticatedUser;
 
@@ -16,26 +15,26 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class TokenAuthenticationService {
 
+	private static final String AUTHORIZATION = "Authorization";
+	private static final String AUTH_PREFIX_W_SPACE = "Bearer ";
+	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
+	
 	private long EXPIRATIONTIME = 1000 * 60 * 60 * 24 * 10;
 	private String secret = "ThisIsASecret";
-	private String headerString = "Authorization";
-	private String cookieAuthString = "XSRF-TOKEN";
-	private String requestCookieName = "XSRF-TOKEN";
-
+	
 	public void addAuthentication(HttpServletResponse response, String username) {
 		String JWT = Jwts.builder().setSubject(username)
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		Cookie tokenCookie = new Cookie(cookieAuthString, JWT);
-		response.addCookie(tokenCookie);
+		response.addHeader(AUTH_RESPONSE_HEADER, JWT);
 	}
 
 	public Authentication getAuthentication(HttpServletRequest request) {
-		Cookie cookie = WebUtils.getCookie(request, requestCookieName);
-		// TODO: verify cookie is constructed correctly
+		String header = request.getHeader(AUTHORIZATION);
 		
-		if (cookie != null) {
-			String username = Jwts.parser().setSigningKey(secret).parseClaimsJws(cookie.getValue()).getBody().getSubject();
+		if (StringUtils.isNotBlank(header)) {
+			String token = StringUtils.removeStart(header, AUTH_PREFIX_W_SPACE);
+			String username = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
 			if (username != null) {
 				return new AuthenticatedUser(username);
 			}
