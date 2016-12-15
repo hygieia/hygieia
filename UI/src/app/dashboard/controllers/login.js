@@ -24,15 +24,16 @@
             var valid = $scope.lg.$valid;
             if (valid) {
                 loginData.login(login.username, login.password)
-                    .then(function (data) {
-                        $scope.lg.username.$setValidity(
-                          'invalidUsernamePassword',
-                          data
-                        );
-                        if (data) {
+                    .then(function (response) {
+                        if (response.status == 200) {
                             $cookies.authenticated = true;
                             $cookies.username = login.username;
                             $location.path('/site');
+                        } else if (response.status == 401) {
+                            $scope.lg.username.$setValidity(
+                                    'invalidUsernamePassword',
+                                    false
+                                  );
                         }
                     });
             }
