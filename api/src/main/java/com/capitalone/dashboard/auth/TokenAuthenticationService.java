@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.auth;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,23 +13,24 @@ import org.springframework.security.core.Authentication;
 
 import com.capitalone.dashboard.model.AuthenticatedUser;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
 public class TokenAuthenticationService {
 
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String AUTH_PREFIX_W_SPACE = "Bearer ";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-	
-	private long EXPIRATIONTIME = 1000 * 60 * 60 * 24 * 10;
-	private String secret = "ThisIsASecret";
-	
+	private final long expirationTime;
+	private final String secret;
+		
+	public TokenAuthenticationService(long expirationTime, String secret){
+		this.expirationTime = expirationTime;
+		this.secret = secret;
+	}
+
 	public void addAuthentication(HttpServletResponse response, String username) {
-		String JWT = Jwts.builder().setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
+		String jwt = Jwts.builder().setSubject(username)
+				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		response.addHeader(AUTH_RESPONSE_HEADER, JWT);
+		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 	}
 
 	public Authentication getAuthentication(HttpServletRequest request) {
