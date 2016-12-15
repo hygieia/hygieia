@@ -27,16 +27,6 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-
-    @RequestMapping(value = "/authenticateUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> authenticateUser(@Valid @RequestBody AuthenticationRequest request) {
-        // TODO: should return proper HTTP codes for invalid creds
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                //.body(authenticationService.authenticate(request.getUsername(), request.getPassword()));
-                .body(true);
-    }
-
     @RequestMapping(value = "/registerUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> registerUser(@Valid @RequestBody AuthenticationRequest request) {
         // TODO: should return proper HTTP codes for existing users
