@@ -19,9 +19,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.headers().cacheControl();
 		http.csrf().disable();
 		http.authorizeRequests().antMatchers("/appinfo").permitAll()
-								.antMatchers("/authenticateUser").permitAll()
-								.anyRequest().authenticated().and()
-								.addFilterBefore(new JWTLoginFilter("/authenticateUser", authenticationManager()),
+								.antMatchers("/login").permitAll()
+								.anyRequest().authenticated()
+									.and()
+								.addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
 										UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
