@@ -3,14 +3,14 @@
 (function () {
     'use strict';
     var app = angular.module(HygieiaConfig.module)
-    var inject = ['$cookies', '$http', '$location', '$scope', 'loginData']
-    function LoginController($cookies, $http, $location, $scope, loginData) {
-        if ($cookies.authenticated) {
+    var inject = ['$window', '$http', '$location', '$scope', 'loginData']
+    function LoginController($window, $http, $location, $scope, loginData) {
+        if ($window.localStorage.token) {
             $location.path('/site');
             return;
         }
         var login = this;
-        login.showAuthentication = $cookies.authenticated;
+        login.showAuthentication = $window.sessionStorage.token;
         login.templateUrl = 'app/dashboard/views/navheader.html';
         login.apiup = false;
         login.username = '';
@@ -26,8 +26,7 @@
                 loginData.login(login.username, login.password)
                     .then(function (response) {
                         if (response.status == 200) {
-                            $cookies.authenticated = true;
-                            $cookies.username = login.username;
+                            $window.localStorage.token = response.headers()['x-authentication-token'];
                             $location.path('/site');
                         } else if (response.status == 401) {
                             $scope.lg.username.$setValidity(

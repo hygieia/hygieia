@@ -64,6 +64,11 @@ var localStorageSupported = (function () {
                             config.url = HygieiaConfig.api + path;
                         }
 
+                        config.headers = config.headers || {};
+                        if (localStorage.token) {
+                          config.headers.Authorization = 'Bearer ' + localStorage.token;
+                        }
+
                         return config;
                     }
                 };
