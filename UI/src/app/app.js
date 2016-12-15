@@ -52,6 +52,7 @@ var localStorageSupported = (function () {
         // in data providers and then redirect them to a remote api if
         // necessary
         function ($httpProvider) {
+            $httpProvider.interceptors.push('authInterceptor');
             $httpProvider.interceptors.push(function () {
                 return {
                     request: function (config) {
@@ -64,13 +65,8 @@ var localStorageSupported = (function () {
                             config.url = HygieiaConfig.api + path;
                         }
 
-                        config.headers = config.headers || {};
-                        if (localStorage.token) {
-                          config.headers.Authorization = 'Bearer ' + localStorage.token;
-                        }
-
                         return config;
-                    }
+                    },
                 };
             });
         }])
