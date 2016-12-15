@@ -38,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 									.and()
 								.addFilterBefore(new JWTLoginFilter("/login", authenticationManager(), tokenAuthenticationService()),
 										UsernamePasswordAuthenticationFilter.class)
-								.addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService()), UsernamePasswordAuthenticationFilter.class);
+								.addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService()), UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
 	}
 
