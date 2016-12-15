@@ -10,7 +10,7 @@
 
     function loginData($http) {
         var testDetailRoute = 'test-data/login_detail.json';
-        var LoginDetailRoute = '/api/authenticateUser/';
+        var LoginDetailRoute = '/api/login';
 
         return {
             login: login
@@ -40,7 +40,11 @@
           else
           {
         return $http.post(LoginDetailRoute,postData).then(function (response) {
-            return response.data;
+            return response;
+        }, 
+        	// error callback
+        	function(response) {
+        		return response;
         });
       }
     }
