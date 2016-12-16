@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.capitalone.dashboard.auth.JWTAuthenticationFilter;
 import com.capitalone.dashboard.auth.JWTLoginFilter;
 import com.capitalone.dashboard.auth.TokenAuthenticationService;
+import com.capitalone.dashboard.auth.TokenAuthenticationServiceImpl;
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +26,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Bean
 	public TokenAuthenticationService tokenAuthenticationService(){
-		return new TokenAuthenticationService(tokenAuthConfigProperties.getExpirationTime(), tokenAuthConfigProperties.getSecret());
+		return new TokenAuthenticationServiceImpl(tokenAuthConfigProperties.getExpirationTime(), tokenAuthConfigProperties.getSecret());
 	}
 
 	@Override
