@@ -32,7 +32,7 @@
         ctrl.filterDashboards = filterDashboards;
         ctrl.renameDashboard = renameDashboard;
 
-        if (ctrl.username === 'admin') {
+        if (userService.isAdmin()) {
             ctrl.myadmin = true;
         }
 

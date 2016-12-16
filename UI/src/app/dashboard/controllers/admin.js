@@ -9,12 +9,11 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$cookies', '$cookieStore', '$location','$modal'];
-    function AdminController(dashboardData, $cookies, $cookieStore, $location,$modal) {
+    AdminController.$inject = ['dashboardData', '$location','$modal', 'userService', 'loginData'];
+    function AdminController(dashboardData, $location, $modal, userService, loginData) {
         var ctrl = this;
-        if ($cookies.username == 'admin') {
+        if (userService.isAdmin()) {
             $location.path('/admin');
-
         }
         else {
             console.log("Not authenticated redirecting");
@@ -23,7 +22,7 @@
 
         ctrl.storageAvailable = localStorageSupported;
         ctrl.templateUrl = "app/dashboard/views/navheader.html";
-        ctrl.username = $cookies.username;
+        ctrl.username = userService.getUsername();
         ctrl.logout = logout;
         ctrl.renameDashboard=renameDashboard;
 
@@ -65,8 +64,7 @@
 
         //implementation of logout
         function logout() {
-            $cookieStore.remove("username");
-            $cookieStore.remove("authenticated");
+            loginData.logout();
             $location.path("/");
         }
 

@@ -23,4 +23,12 @@ angular.module(HygieiaConfig.module).service('userService', function (tokenServi
     return false;
   }
 
+  this.isAdmin = function () {
+    //TODO: check role
+    if(this.getUsername() === 'admin') {
+      return true;
+    }
+    return false;
+  }
+
 });
