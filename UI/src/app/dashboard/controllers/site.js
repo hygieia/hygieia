@@ -8,17 +8,16 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType', '$window'];
-    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType, $window) {
+    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType', '$window', 'userService'];
+    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType, $window, userService) {
         var ctrl = this;
 
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
 
-        //TODO: Need to get username from token
-        ctrl.username = $cookies.username;
-        ctrl.showAuthentication = $window.localStorage.token;
+        ctrl.username = userService.getUsername();
+        ctrl.showAuthentication = ctrl.username;
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 

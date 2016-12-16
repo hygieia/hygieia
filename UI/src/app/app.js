@@ -45,7 +45,8 @@ var localStorageSupported = (function () {
         'ngCookies',
         'validation.match',
         'as.sortable',
-        'ui.select'
+        'ui.select',
+        'angular-jwt'
     ])
     .config(['$httpProvider',
         // intercepting the http provider allows us to use relative routes

@@ -10,7 +10,6 @@
             return;
         }
         var login = this;
-        login.showAuthentication = $window.sessionStorage.token;
         login.templateUrl = 'app/dashboard/views/navheader.html';
         login.apiup = false;
         login.username = '';

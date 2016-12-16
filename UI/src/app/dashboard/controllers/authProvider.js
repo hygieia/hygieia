@@ -1,4 +1,4 @@
-angular.module(HygieiaConfig.module).factory('authInterceptor', function ($rootScope, $q, $window, $location) {
+angular.module(HygieiaConfig.module).factory('authInterceptor', function ($q, $window, $location) {
   return {
     request: function (config) {
       config.headers = config.headers || {};
