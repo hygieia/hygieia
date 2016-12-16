@@ -1,7 +1,7 @@
-angular.module(HygieiaConfig.module).service('userService', function ($window, jwtHelper) {
+angular.module(HygieiaConfig.module).service('userService', function (tokenService, jwtHelper) {
 
   var getUser = function () {
-    var token = $window.localStorage.token;
+    var token = tokenService.getToken();
     if(token) {
       return jwtHelper.decodeToken(token);
     }
@@ -10,6 +10,17 @@ angular.module(HygieiaConfig.module).service('userService', function ($window, j
 
   this.getUsername = function () {
     return getUser().sub;
+  }
+
+  this.getExpiration = function () {
+    return getUser().expiration;
+  }
+
+  this.isAuthenticated = function () {
+    if(this.getUsername() && !jwtHelper.isTokenExpired(tokenService.getToken())) {
+      return true;
+    }
+    return false;
   }
 
 });

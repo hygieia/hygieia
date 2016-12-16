@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType', '$window', 'userService'];
-    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType, $window, userService) {
+    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', 'DashboardType', 'userService', 'loginData'];
+    function SiteController($scope, $q, $modal, dashboardData, $location, DashboardType, userService, loginData) {
         var ctrl = this;
 
         // public variables
@@ -17,7 +17,7 @@
         ctrl.myadmin = '';
 
         ctrl.username = userService.getUsername();
-        ctrl.showAuthentication = ctrl.username;
+        ctrl.showAuthentication = userService.isAuthenticated();
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
@@ -78,7 +78,7 @@
 
         function logout()
         {
-            $window.localStorage.removeItem('token');
+            loginData.logout();
             $location.path('/');
         }
 

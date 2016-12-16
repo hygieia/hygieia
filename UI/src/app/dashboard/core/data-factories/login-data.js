@@ -8,12 +8,13 @@
         .module(HygieiaConfig.module + '.core')
         .factory('loginData', loginData);
 
-    function loginData($http) {
+    function loginData($http, tokenService) {
         var testDetailRoute = 'test-data/login_detail.json';
         var LoginDetailRoute = '/api/login';
 
         return {
-            login: login
+            login: login,
+            logout: logout
         };
 
 
@@ -40,13 +41,18 @@
           else
           {
         return $http.post(LoginDetailRoute,postData).then(function (response) {
+            tokenService.setToken(response.headers()['x-authentication-token']);
             return response;
-        }, 
+        },
         	// error callback
         	function(response) {
         		return response;
         });
       }
+    }
+
+    function logout() {
+      tokenService.removeToken();
     }
   }
 })();

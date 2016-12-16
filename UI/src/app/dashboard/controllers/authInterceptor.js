@@ -1,9 +1,10 @@
-angular.module(HygieiaConfig.module).factory('authInterceptor', function ($q, $window, $location) {
+angular.module(HygieiaConfig.module).factory('authInterceptor', function ($q, $location, tokenService) {
   return {
     request: function (config) {
       config.headers = config.headers || {};
-      if ($window.localStorage.token) {
-        config.headers.Authorization = 'Bearer ' + $window.localStorage.token;
+      var token = tokenService.getToken();
+      if (token) {
+        config.headers.Authorization = 'Bearer ' + token;
       }
       return config;
     },

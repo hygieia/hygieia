@@ -3,9 +3,9 @@
 (function () {
     'use strict';
     var app = angular.module(HygieiaConfig.module)
-    var inject = ['$window', '$http', '$location', '$scope', 'loginData']
-    function LoginController($window, $http, $location, $scope, loginData) {
-        if ($window.localStorage.token) {
+    var inject = ['$http', '$location', '$scope', 'loginData', 'userService']
+    function LoginController($http, $location, $scope, loginData, userService) {
+        if (userService.isAuthenticated()) {
             $location.path('/site');
             return;
         }
@@ -25,7 +25,6 @@
                 loginData.login(login.username, login.password)
                     .then(function (response) {
                         if (response.status == 200) {
-                            $window.localStorage.token = response.headers()['x-authentication-token'];
                             $location.path('/site');
                         } else if (response.status == 401) {
                             $scope.lg.username.$setValidity(
