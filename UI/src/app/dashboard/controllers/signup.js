@@ -7,8 +7,8 @@
         .module(HygieiaConfig.module)
         .controller('SignupController', SignupController);
 
-    SignupController.$inject = ['$scope', 'signupData', '$location', '$cookies'];
-    function SignupController($scope, signupData, $location, $cookies) {
+    SignupController.$inject = ['$scope', 'signupData', '$location'];
+    function SignupController($scope, signupData, $location) {
         var signup = this;
 
         // public variables
