@@ -15,7 +15,6 @@
           if (response.status === 401) {
             $location.path('/login');
           }
-          //TODO: handle this on server
           if (response.status === 500) {
             $location.path('/login');
           }
