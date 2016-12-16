@@ -1,12 +1,16 @@
 package com.capitalone.dashboard.auth;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.capitalone.dashboard.model.AuthenticatedUser;
 
@@ -42,7 +46,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			String token = StringUtils.removeStart(header, AUTH_PREFIX_W_SPACE);
 			String username = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
 			if (username != null) {
-				return new AuthenticatedUser(username);
+				List<GrantedAuthority> grantedAuths = new ArrayList<GrantedAuthority>();
+				grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
+				return new AuthenticatedUser(username, grantedAuths);
 			}
 		}
 		return null;

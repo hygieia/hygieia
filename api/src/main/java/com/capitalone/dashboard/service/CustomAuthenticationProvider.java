@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.model.AuthenticatedUser;
 import com.capitalone.dashboard.repository.AuthenticationRepository;
 
 @Component
@@ -31,7 +32,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		 if (dbUser != null && dbUser.checkPassword(authentication.getCredentials().toString())) {
 			 List<GrantedAuthority> grantedAuths = new ArrayList<GrantedAuthority>();
 			 grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
-			 return new UsernamePasswordAuthenticationToken(dbUser.getUsername(), dbUser.getPassword(), grantedAuths);
+			 return new AuthenticatedUser(dbUser.getUsername(), grantedAuths);
 		 }
 		return null;
 	}
