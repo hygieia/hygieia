@@ -8,14 +8,25 @@
         .module(HygieiaConfig.module)
         .factory('authInterceptor', authInterceptor);
 
-    authInterceptor.$inject = ['$q', '$location', 'tokenService'];
-    function authInterceptor($q, $location, tokenService) {
+    authInterceptor.$inject = ['$q', '$location', 'tokenService', 'loginRedirectUrl'];
+    function authInterceptor($q, $location, tokenService, loginRedirectUrl) {
+      var saveCurrentUrl = function () {
+        if($location.path().toLowerCase() != '/login') {
+          loginRedirectUrl.url = $location.path();
+        }
+        else {
+          loginRedirectUrl.url = '/';
+        }
+      };
+
       return {
         responseError: function (response) {
           if (response.status === 401) {
+            saveCurrentUrl();
             $location.path('/login');
           }
           if (response.status === 500) {
+            saveCurrentUrl();
             $location.path('/login');
           }
 

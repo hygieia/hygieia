@@ -20,6 +20,5 @@
         this.logout = function () {
           tokenService.removeToken();
         }
-
     }
 })();
