@@ -48,11 +48,17 @@ var localStorageSupported = (function () {
         'ui.select',
         'angular-jwt'
     ])
-    .config(['$httpProvider',
+    .config(['$httpProvider', 'jwtOptionsProvider',
         // intercepting the http provider allows us to use relative routes
         // in data providers and then redirect them to a remote api if
         // necessary
-        function ($httpProvider) {
+        function ($httpProvider, jwtOptionsProvider) {
+            jwtOptionsProvider.config({
+              tokenGetter: ['tokenService', function(tokenService) {
+                return tokenService.getToken();
+              }]
+            });
+            $httpProvider.interceptors.push('jwtInterceptor');
             $httpProvider.interceptors.push('authInterceptor');
             $httpProvider.interceptors.push(function () {
                 return {
@@ -91,14 +97,14 @@ var localStorageSupported = (function () {
                     controllerAs: 'ctrl'
                 })
                 // dashboard selection/creation
-                .when('/site', {
+                .when('/', {
                     templateUrl: 'app/dashboard/views/site.html',
                     controller: 'SiteController',
                     controllerAs: 'ctrl'
                 })
                 //login
 
-                .when('/',{
+                .when('/login',{
                   templateUrl: 'app/dashboard/views/login.html',
                   controller: 'LoginController',
                   controllerAs: 'login'

@@ -11,17 +11,12 @@
     authInterceptor.$inject = ['$q', '$location', 'tokenService'];
     function authInterceptor($q, $location, tokenService) {
       return {
-        request: function (config) {
-          config.headers = config.headers || {};
-          var token = tokenService.getToken();
-          if (token) {
-            config.headers.Authorization = 'Bearer ' + token;
-          }
-          return config;
-        },
         responseError: function (response) {
           if (response.status === 401) {
-            $location.path('/');
+            $location.path('/login');
+          }
+          if (response.status === 500) {
+            $location.path('/login');
           }
 
           return $q.reject(response);

@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$location','$modal', 'userService', 'loginData'];
-    function AdminController(dashboardData, $location, $modal, userService, loginData) {
+    AdminController.$inject = ['dashboardData', '$location','$modal', 'userService', 'authService'];
+    function AdminController(dashboardData, $location, $modal, userService, authService) {
         var ctrl = this;
         if (userService.isAdmin()) {
             $location.path('/admin');
@@ -64,7 +64,7 @@
 
         //implementation of logout
         function logout() {
-            loginData.logout();
+            authService.logout();
             $location.path("/");
         }
 
