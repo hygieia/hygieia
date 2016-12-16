@@ -15,6 +15,7 @@ import com.capitalone.dashboard.auth.JwtAuthenticationFilter;
 import com.capitalone.dashboard.auth.JwtLoginFilter;
 import com.capitalone.dashboard.auth.TokenAuthenticationService;
 import com.capitalone.dashboard.auth.TokenAuthenticationServiceImpl;
+import com.capitalone.dashboard.service.CustomAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
@@ -23,6 +24,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private TokenAuthConfigProperties tokenAuthConfigProperties;
+	
+	@Autowired
+	private CustomAuthenticationProvider customAuthenticationProvider;
 	
 	@Bean
 	public TokenAuthenticationService tokenAuthenticationService(){
@@ -45,9 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser("admin").password("password").roles("ADMIN");
-		auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
-		auth.inMemoryAuthentication().withUser("user2").password("password").roles("USER");
+		auth.authenticationProvider(customAuthenticationProvider);
 	}
 	
 }
