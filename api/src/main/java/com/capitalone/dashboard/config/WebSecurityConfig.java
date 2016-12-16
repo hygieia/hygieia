@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -10,10 +13,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.capitalone.dashboard.auth.JWTAuthenticationFilter;
 import com.capitalone.dashboard.auth.JWTLoginFilter;
+import com.capitalone.dashboard.auth.TokenAuthenticationService;
 
 @Configuration
 @EnableWebSecurity
+@EnableConfigurationProperties
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	
+	@Autowired
+	private TokenAuthConfigProperties tokenAuthConfigProperties;
+	
+	@Bean
+	public TokenAuthenticationService tokenAuthenticationService(){
+		return new TokenAuthenticationService(tokenAuthConfigProperties.getExpirationTime(), tokenAuthConfigProperties.getSecret());
+	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -23,9 +36,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.antMatchers("/login").permitAll()
 								.anyRequest().authenticated()
 									.and()
-								.addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
+								.addFilterBefore(new JWTLoginFilter("/login", authenticationManager(), tokenAuthenticationService()),
 										UsernamePasswordAuthenticationFilter.class)
-								.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService()), UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
 	}
 
