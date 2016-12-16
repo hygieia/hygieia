@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "muffin.authToken")
+@ConfigurationProperties(prefix = "auth")
 public class TokenAuthConfigProperties {
 
 	private String expirationTime;
