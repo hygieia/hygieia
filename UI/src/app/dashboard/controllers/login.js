@@ -6,7 +6,7 @@
     var inject = ['$http', '$location', '$scope', 'authService', 'userService']
     function LoginController($http, $location, $scope, authService, userService) {
         if (userService.isAuthenticated()) {
-            $location.path('/site');
+            $location.path('/');
             return;
         }
         var login = this;
@@ -26,7 +26,7 @@
                 authService.login(auth)
                     .then(function (response) {
                         if (response.status == 200) {
-                            $location.path('/site');
+                            $location.path('/');
                         } else if (response.status == 401) {
                             $scope.lg.username.$setValidity(
                                     'invalidUsernamePassword',

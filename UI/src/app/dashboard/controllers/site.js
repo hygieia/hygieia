@@ -79,7 +79,7 @@
         function logout()
         {
             authService.logout();
-            $location.path('/');
+            $location.path('/login');
         }
 
         // method implementations

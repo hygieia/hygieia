@@ -97,14 +97,14 @@ var localStorageSupported = (function () {
                     controllerAs: 'ctrl'
                 })
                 // dashboard selection/creation
-                .when('/site', {
+                .when('/', {
                     templateUrl: 'app/dashboard/views/site.html',
                     controller: 'SiteController',
                     controllerAs: 'ctrl'
                 })
                 //login
 
-                .when('/',{
+                .when('/login',{
                   templateUrl: 'app/dashboard/views/login.html',
                   controller: 'LoginController',
                   controllerAs: 'login'

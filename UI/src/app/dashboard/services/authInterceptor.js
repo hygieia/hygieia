@@ -13,10 +13,11 @@
       return {
         responseError: function (response) {
           if (response.status === 401) {
-            $location.path('/');
+            $location.path('/login');
           }
+          //TODO: handle this on server
           if (response.status === 500) {
-            $location.path('/');
+            $location.path('/login');
           }
 
           return $q.reject(response);
