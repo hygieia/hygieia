@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 @Component
-public class JWTAuthenticationFilter extends GenericFilterBean{
+public class JwtAuthenticationFilter extends GenericFilterBean{
 	
 	private TokenAuthenticationService tokenAuthenticationService;
 	
 	
 	@Autowired
-	public JWTAuthenticationFilter(TokenAuthenticationService tokenAuthenticationService){
+	public JwtAuthenticationFilter(TokenAuthenticationService tokenAuthenticationService){
 		this.tokenAuthenticationService = tokenAuthenticationService;
 		
 	}

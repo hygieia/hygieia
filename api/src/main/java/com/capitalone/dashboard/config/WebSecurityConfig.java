@@ -11,8 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.capitalone.dashboard.auth.JWTAuthenticationFilter;
-import com.capitalone.dashboard.auth.JWTLoginFilter;
+import com.capitalone.dashboard.auth.JwtAuthenticationFilter;
+import com.capitalone.dashboard.auth.JwtLoginFilter;
 import com.capitalone.dashboard.auth.TokenAuthenticationService;
 import com.capitalone.dashboard.auth.TokenAuthenticationServiceImpl;
 
@@ -37,9 +37,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.antMatchers("/login").permitAll()
 								.anyRequest().authenticated()
 									.and()
-								.addFilterBefore(new JWTLoginFilter("/login", authenticationManager(), tokenAuthenticationService()),
+								.addFilterBefore(new JwtLoginFilter("/login", authenticationManager(), tokenAuthenticationService()),
 										UsernamePasswordAuthenticationFilter.class)
-								.addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService()), UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(new JwtAuthenticationFilter(tokenAuthenticationService()), UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
 	}
 

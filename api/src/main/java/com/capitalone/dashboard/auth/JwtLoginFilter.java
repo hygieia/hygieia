@@ -18,11 +18,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.capitalone.dashboard.model.AccountCredentials;
 
 
-public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private TokenAuthenticationService tokenAuthenticationService;
     
-    public JWTLoginFilter(String url, AuthenticationManager authenticationManager, TokenAuthenticationService tokenAuthenticationService) {
+    public JwtLoginFilter(String url, AuthenticationManager authenticationManager, TokenAuthenticationService tokenAuthenticationService) {
          super(new AntPathRequestMatcher(url));
          setAuthenticationManager(authenticationManager);
          this.tokenAuthenticationService = tokenAuthenticationService;
