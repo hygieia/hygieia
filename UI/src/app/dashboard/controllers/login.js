@@ -42,7 +42,7 @@
 
         function getAppVersion(){
             var url = '/api/appinfo';
-            $http.get(url).success(function (data, status) {
+            $http.get(url, {skipAuthorization: true}).success(function (data, status) {
                 console.log("appinfo:"+data);
                 login.appVersion=data;
                 login.apiup = (status == 200);
