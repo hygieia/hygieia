@@ -3,8 +3,8 @@
 (function () {
     'use strict';
     var app = angular.module(HygieiaConfig.module)
-    var inject = ['$http', '$location', '$scope', 'loginData', 'userService']
-    function LoginController($http, $location, $scope, loginData, userService) {
+    var inject = ['$http', '$location', '$scope', 'authService', 'userService']
+    function LoginController($http, $location, $scope, authService, userService) {
         if (userService.isAuthenticated()) {
             $location.path('/site');
             return;
@@ -22,7 +22,8 @@
             $scope.lg.username.$setValidity('invalidUsernamePassword', true);
             var valid = $scope.lg.$valid;
             if (valid) {
-                loginData.login(login.username, login.password)
+                var auth = {'username': login.username, 'password': login.password};
+                authService.login(auth)
                     .then(function (response) {
                         if (response.status == 200) {
                             $location.path('/site');

@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', 'DashboardType', 'userService', 'loginData'];
-    function SiteController($scope, $q, $modal, dashboardData, $location, DashboardType, userService, loginData) {
+    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService'];
+    function SiteController($scope, $q, $modal, dashboardData, $location, DashboardType, userService, authService) {
         var ctrl = this;
 
         // public variables
@@ -78,7 +78,7 @@
 
         function logout()
         {
-            loginData.logout();
+            authService.logout();
             $location.path('/');
         }
 
