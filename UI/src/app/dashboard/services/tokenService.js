@@ -1,5 +1,6 @@
 /**
- * Controller for performing signup a new user */
+ * Service to handle all token operations
+*/
 (function () {
     'use strict';
 
