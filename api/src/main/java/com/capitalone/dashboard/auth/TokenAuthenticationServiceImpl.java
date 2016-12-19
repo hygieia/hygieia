@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.capitalone.dashboard.model.AuthenticatedUser;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -44,11 +45,15 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		
 		if (StringUtils.isNotBlank(header)) {
 			String token = StringUtils.removeStart(header, AUTH_PREFIX_W_SPACE);
-			String username = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
-			if (username != null) {
-				List<GrantedAuthority> grantedAuths = new ArrayList<GrantedAuthority>();
-				grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
-				return new AuthenticatedUser(username, grantedAuths);
+			try {
+				String username = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
+				if (username != null) {
+					List<GrantedAuthority> grantedAuths = new ArrayList<GrantedAuthority>();
+					grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
+					return new AuthenticatedUser(username, grantedAuths);
+				}
+			} catch (ExpiredJwtException e) {
+				return null;
 			}
 		}
 		return null;

@@ -25,11 +25,6 @@
             saveCurrentUrl();
             $location.path('/login');
           }
-          if (response.status === 500) {
-            saveCurrentUrl();
-            $location.path('/login');
-          }
-
           return $q.reject(response);
         }
       };
