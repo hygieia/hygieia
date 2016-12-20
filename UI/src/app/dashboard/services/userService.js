@@ -34,11 +34,7 @@
       }
 
       this.isAdmin = function () {
-        //TODO: check role
-        if(this.getUsername() === 'admin') {
-          return true;
-        }
-        return false;
+        return getUser().admin;
       }
     }
 })();

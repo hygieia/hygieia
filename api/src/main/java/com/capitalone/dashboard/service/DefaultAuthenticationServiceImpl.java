@@ -1,19 +1,26 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.Authentication;
-import com.capitalone.dashboard.repository.AuthenticationRepository;
+import java.util.Collection;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import com.capitalone.dashboard.model.Authentication;
+import com.capitalone.dashboard.repository.AuthenticationRepository;
+import com.google.common.collect.Sets;
+
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService {
+public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthenticationRepository authenticationRepository;
 
     @Autowired
-    public AuthenticationServiceImpl(
+    public DefaultAuthenticationServiceImpl(
             AuthenticationRepository authenticationRepository) {
         this.authenticationRepository = authenticationRepository;
     }
@@ -74,14 +81,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public boolean authenticate(String username, String password) {
-        boolean flag = false;
+    public org.springframework.security.core.Authentication authenticate(String username, String password) {
         Authentication authentication = authenticationRepository.findByUsername(username);
 
         if (authentication != null && authentication.checkPassword(password)) {
-            flag = true;
+        	org.springframework.security.core.Authentication user = new PreAuthenticatedAuthenticationToken(authentication.getUsername(), null, getAuthorities(authentication));
+            return user;
         }
-        return flag;
+        return null;
+    }
+    
+    private Collection<? extends GrantedAuthority> getAuthorities(Authentication authentication) {
+    	//TODO: make enum for authorities
+    	//Make role based instead of just looking at the name
+    	Collection<GrantedAuthority> authorities = Sets.newHashSet();
+    	if("admin".equals(authentication.getUsername())) {
+    		GrantedAuthority authority = new SimpleGrantedAuthority("admin");
+    		authorities.add(authority);
+    	}
+    	
+    	return authorities;
     }
 
 }

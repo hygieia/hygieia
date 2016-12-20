@@ -56,5 +56,5 @@ public interface AuthenticationService {
      * @param password
 	 * @return
 	 */
-	boolean authenticate(String username, String password);
+	org.springframework.security.core.Authentication authenticate(String username, String password);
 }

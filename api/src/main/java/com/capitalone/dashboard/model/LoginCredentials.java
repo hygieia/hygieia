@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.model;
 
-public class AccountCredentials {
+public class LoginCredentials {
 
 	private String username;
 	private String password;

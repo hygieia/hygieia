@@ -15,7 +15,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.capitalone.dashboard.model.AccountCredentials;
+import com.capitalone.dashboard.model.LoginCredentials;
 
 
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
@@ -31,7 +31,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
     throws AuthenticationException, IOException, ServletException {
-    	AccountCredentials credentials = new ObjectMapper().readValue(httpServletRequest.getInputStream(), AccountCredentials.class);
+    	LoginCredentials credentials = new ObjectMapper().readValue(httpServletRequest.getInputStream(), LoginCredentials.class);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword());
         return getAuthenticationManager().authenticate(token);
     }
@@ -39,7 +39,6 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication)
     throws IOException, ServletException {
-        String name = authentication.getName();
-        tokenAuthenticationService.addAuthentication(response, name);
+        tokenAuthenticationService.addAuthentication(response, authentication);
     }
 }
