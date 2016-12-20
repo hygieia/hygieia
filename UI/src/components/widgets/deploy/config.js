@@ -18,41 +18,21 @@
         ctrl.jobDropdownDisabled = true;
         ctrl.jobDropdownPlaceholder = 'Loading...';
         ctrl.submitted = false;
-        ctrl.ignoreRegex = 'Loading...';
-        ctrl.ignoreRegexInputDisabled = true;
+        ctrl.ignoreRegex = '';
         if (widgetConfig.options.ignoreRegex !== undefined && widgetConfig.options.ignoreRegex !== null) {
-            // If user had set regex previously, just use it
             ctrl.ignoreRegex=widgetConfig.options.ignoreRegex;
-            ctrl.ignoreRegexInputDisabled = false;
         }
 
         // public methods
         ctrl.submit = submit;
 
-        $q.all([getAndProcessSystemConfig(), collectorData.itemsByType('deployment')]).then(processResponse);
-
-        function getAndProcessSystemConfig() {
-            return systemConfigData.config().then(function(data) {
-                var systemConfig = data;
-                
-                if (ctrl.ignoreRegex === 'Loading...') {
-                    if (systemConfig.globalProperties && systemConfig.globalProperties.ignoreEnvironmentFailuresRegex) {
-                        // if user hadn't set a regex previously, but systemconfig has one, use it
-                        ctrl.ignoreRegex=systemConfig.globalProperties.ignoreEnvironmentFailuresRegex;
-                    } else {
-                        // if both user and systemconfig don't have a regex, just leave it blank
-                        ctrl.ignoreRegex='';
-                    }
-                    ctrl.ignoreRegexInputDisabled = false;
-                }
-                
-                return (systemConfig.globalProperties && systemConfig.globalProperties.multipleDeploymentServers) || false;
-            });
-        }
+        $q.all([systemConfigData.config(), collectorData.itemsByType('deployment')]).then(processResponse);
         
         function processResponse(dataA) {
-            var aggregateServers = dataA[0];
+        	var systemConfig = dataA[0];
             var data = dataA[1];
+            
+            var aggregateServers = (systemConfig.globalProperties && systemConfig.globalProperties.multipleDeploymentServers) || false;
             
             var worker = {
                 getDeploys: getDeploys

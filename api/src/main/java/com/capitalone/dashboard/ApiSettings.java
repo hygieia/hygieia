@@ -21,12 +21,6 @@ public class ApiSettings {
      */
     @Value("${systemConfig.multipleDeploymentServers:false}")
     private boolean multipleDeploymentServers;
-    
-    /**
-     * Regex that specifies environments that should not be cause for concern if they are down.
-     */
-    @Value("${systemConfig.ignoreEnvironmentFailuresRegex:^$}")
-    private String ignoreEnvironmentFailuresRegex;
     // End global config
     
     public String getKey() {
@@ -47,9 +41,5 @@ public class ApiSettings {
     
     public boolean isMultipleDeploymentServers() {
     	return multipleDeploymentServers;
-    }
-    
-    public String getIgnoreEnvironmentFailuresRegex() {
-    	return ignoreEnvironmentFailuresRegex;
     }
 }

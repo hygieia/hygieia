@@ -22,16 +22,13 @@
         ctrl.showDetail = showDetail;
 
         function load() {
-        	var deferred = $q.defer();
-        	
-        	$q.all([deployData.details($scope.widgetConfig.componentId)])
-        		.then(function(dataA) {
-        		    processResponse(dataA[0].result);
-                    deferred.resolve(dataA[0].lastUpdated);
-        		});
-        	
-        	return deferred.promise;
-        };
+            var deferred = $q.defer();
+            deployData.details($scope.widgetConfig.componentId).then(function(data) {
+                processResponse(data.result);
+                deferred.resolve(data.lastUpdated);
+            });
+            return deferred.promise;
+        }
 
         function showDetail(environment) {
             $modal.open({
