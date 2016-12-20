@@ -7,10 +7,13 @@ import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import jenkins.plugins.hygieia.CustomObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.springframework.util.CollectionUtils;
 
 import java.io.FileFilter;
@@ -81,20 +84,39 @@ public class HygieiaUtils {
     public static String getBuildUrl(AbstractBuild<?, ?> build) {
     	return build.getProject().getAbsoluteUrl() + String.valueOf(build.getNumber()) + "/";
     }
-    
+
+    public static String getBuildUrl(Run<?, ?> run) {
+        return run.getParent().getAbsoluteUrl() + String.valueOf(run.getNumber()) + "/";
+    }
+
     public static String getBuildNumber(AbstractBuild<?, ?> build) {
     	return String.valueOf(build.getNumber());
     }
-    
+
+    public static String getBuildNumber(Run<?, ?> run) {
+        return String.valueOf(run.getNumber());
+    }
+
     public static String getJobUrl(AbstractBuild<?, ?> build) {
     	return build.getProject().getAbsoluteUrl();
     }
+
+    public static String getJobUrl(Run<?, ?> run) {
+        return run.getParent().getAbsoluteUrl();
+    }
+
     
     public static String getJobName(AbstractBuild<?, ?> build) {
     	return build.getProject().getName();
     }
-    
-    public static String getInstanceUrl(AbstractBuild<?, ?> build, BuildListener listener) {
+
+    public static String getJobName(Run<?, ?> run) {
+        return run.getParent().getDisplayName();
+    }
+
+
+
+    public static String getInstanceUrl(AbstractBuild<?, ?> build, TaskListener listener) {
         String envValue = getEnvironmentVariable(build, listener, "JENKINS_URL");
         
         if (envValue != null) {
@@ -105,7 +127,19 @@ public class HygieiaUtils {
             return build.getProject().getAbsoluteUrl().substring(0, ind);
         }
     }
-    
+
+    public static String getInstanceUrl(Run<?, ?> run, TaskListener listener) {
+        String envValue = getEnvironmentVariable(run, listener, "JENKINS_URL");
+
+        if (envValue != null) {
+            return envValue;
+        } else {
+            String jobPath = "/job" + "/" + run.getParent().getName() + "/";
+            int ind = run.getParent().getAbsoluteUrl().indexOf(jobPath);
+            return run.getParent().getAbsoluteUrl().substring(0, ind);
+        }
+    }
+
     public static String getScmUrl(AbstractBuild<?, ?> build, BuildListener listener) {
     	if (isGitScm(build)) {
     		return getEnvironmentVariable(build, listener, "GIT_URL");
@@ -115,7 +149,7 @@ public class HygieiaUtils {
     	
     	return null;
     }
-    
+
     public static String getScmBranch(AbstractBuild<?, ?> build, BuildListener listener) {
     	if (isGitScm(build)) {
     		return getEnvironmentVariable(build, listener, "GIT_BRANCH");
@@ -125,7 +159,8 @@ public class HygieiaUtils {
     	
     	return null;
     }
-    
+
+
     public static String getScmRevisionNumber(AbstractBuild<?, ?> build, BuildListener listener) {
     	if (isGitScm(build)) {
     		return getEnvironmentVariable(build, listener, "GIT_COMMIT");
@@ -139,22 +174,25 @@ public class HygieiaUtils {
     public static boolean isGitScm(AbstractBuild<?, ?> build) {
     	return "hudson.plugins.git.GitSCM".equalsIgnoreCase(build.getProject().getScm().getType());
     }
-    
+
+
     public static boolean isSvnScm(AbstractBuild<?, ?> build) {
     	return "hudson.scm.SubversionSCM".equalsIgnoreCase(build.getProject().getScm().getType());
     }
-    
-    public static String getEnvironmentVariable(AbstractBuild<?, ?> build, BuildListener listener, String key) {
+
+
+    public static String getEnvironmentVariable(Run<?, ?> run, TaskListener listener, String key) {
         EnvVars env = null;
         try {
-            env = build.getEnvironment(listener);
+            env = run.getEnvironment(listener);
         } catch (IOException | InterruptedException e) {
             logger.warning("Error getting environment variables");
         }
         if (env != null) {
             return env.get(key);
         } else {
-        	return null;
+            return null;
         }
     }
+
 }

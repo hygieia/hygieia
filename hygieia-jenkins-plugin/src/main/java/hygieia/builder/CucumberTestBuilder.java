@@ -120,6 +120,8 @@ public class CucumberTestBuilder {
                 listener.getLogger().println("Hygieia Publisher: Error Parsing File: " + file.getRemote());
             } catch (IOException e) {
                 listener.getLogger().println("Hygieia Publisher: Error Reading File: " + file.getName());
+            } catch (InterruptedException e) {
+                listener.getLogger().println("Hygieia Publisher: Error Reading File: " + file.getName());
             }
         }
         return capabilities;

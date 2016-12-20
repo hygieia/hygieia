@@ -4,10 +4,7 @@ import com.capitalone.dashboard.model.TestSuiteType;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.AutoCompletionCandidates;
-import hudson.model.BuildListener;
+import hudson.model.*;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
@@ -283,10 +280,6 @@ public class HygieiaPublisher extends Notifier {
     }
 
     public HygieiaService newHygieiaService(AbstractBuild r, BuildListener listener) {
-        String hygieiaAPIUrl = getDescriptor().getHygieiaAPIUrl();
-        String hygieiaToken = getDescriptor().getHygieiaToken();
-        String hygieiaJenkinsName = getDescriptor().getHygieiaJenkinsName();
-        boolean useProxy = getDescriptor().isUseProxy();
         EnvVars env;
         try {
             env = r.getEnvironment(listener);
@@ -294,6 +287,25 @@ public class HygieiaPublisher extends Notifier {
             listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
             env = new EnvVars();
         }
+        return makeService(env);
+    }
+
+    public HygieiaService newHygieiaService(Run r, TaskListener listener) {
+        EnvVars env;
+        try {
+            env = r.getEnvironment(listener);
+        } catch (Exception e) {
+            listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
+            env = new EnvVars();
+        }
+        return makeService(env);
+    }
+
+    private HygieiaService makeService (EnvVars env) {
+        String hygieiaAPIUrl = getDescriptor().getHygieiaAPIUrl();
+        String hygieiaToken = getDescriptor().getHygieiaToken();
+        String hygieiaJenkinsName = getDescriptor().getHygieiaJenkinsName();
+        boolean useProxy = getDescriptor().isUseProxy();
         hygieiaAPIUrl = env.expand(hygieiaAPIUrl);
         hygieiaToken = env.expand(hygieiaToken);
         hygieiaJenkinsName = env.expand(hygieiaJenkinsName);
@@ -313,15 +325,15 @@ public class HygieiaPublisher extends Notifier {
         private String hygieiaToken;
         private String hygieiaJenkinsName;
         private boolean useProxy;
-        private Set<String> deployAppNames = new HashSet<String>();
-        private Set<String> deployEnvNames = new HashSet<String>();
+        private Set<String> deployAppNames = new HashSet<>();
+        private Set<String> deployEnvNames = new HashSet<>();
 
         private String deployApplicationNameSelected;
         private String deployEnvSelected;
         private String testApplicationNameSelected;
         private String testEnvSelected;
 
-        private Map<String, Set<String>> appEnv = new HashMap<String, Set<String>>();
+        private Map<String, Set<String>> appEnv = new HashMap<>();
 
         public DescriptorImpl() {
             load();
