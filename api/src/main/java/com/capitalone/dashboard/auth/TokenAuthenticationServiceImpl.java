@@ -37,7 +37,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
 		boolean admin = authentication.getAuthorities().contains(new SimpleGrantedAuthority(ADMIN_CLAIM));
 		
-		String jwt = Jwts.builder().setSubject(authentication.getName()).claim(ADMIN_CLAIM, admin)
+		String jwt = Jwts.builder().setSubject(authentication.getName())
+				.claim(ADMIN_CLAIM, admin)
 				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
@@ -45,27 +46,29 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Override
 	public Authentication getAuthentication(HttpServletRequest request) {
-		String header = request.getHeader(AUTHORIZATION);
-		if (StringUtils.isBlank(header)) return null;
+		String authHeader = request.getHeader(AUTHORIZATION);
+		if (StringUtils.isBlank(authHeader)) return null;
 		
 		Authentication authentication = null;
-		String token = StringUtils.removeStart(header, AUTH_PREFIX_W_SPACE);
+		String token = StringUtils.removeStart(authHeader, AUTH_PREFIX_W_SPACE);
 		try {
 			Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 			String username = claims.getSubject();
 			boolean admin = (Boolean) claims.get(ADMIN_CLAIM);
-			if (username != null) {
-				Collection<GrantedAuthority> grantedAuths = Sets.newHashSet();
-				if (admin) {
-					grantedAuths.add(new SimpleGrantedAuthority(ADMIN_CLAIM));
-				}
-				authentication = new PreAuthenticatedAuthenticationToken(username, null, grantedAuths);
-			}
+			authentication = new PreAuthenticatedAuthenticationToken(username, null, buildGrantedAuthorities(admin));
 		} catch (ExpiredJwtException e) {
 			return null;
 		}
 
 		return authentication;
 
+	}
+
+	private Collection<GrantedAuthority> buildGrantedAuthorities(boolean admin) {
+		Collection<GrantedAuthority> grantedAuths = Sets.newHashSet();
+		if (admin) {
+			grantedAuths.add(new SimpleGrantedAuthority(ADMIN_CLAIM));
+		}
+		return grantedAuths;
 	}
 }
