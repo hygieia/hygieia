@@ -73,9 +73,6 @@ public class BuildBuilder {
             WorkflowRun wr = (WorkflowRun) run;
             request.setSourceChangeSet(getCommitList(wr.getChangeSets()));
         }
-        listener.getLogger().println("Run duration = " + request.getDuration());
-        listener.getLogger().println("Run status = " + result.toString());
-
     }
 
     private void createBuildRequest() {
@@ -107,23 +104,29 @@ public class BuildBuilder {
         return commitBuilder.getCommits();
     }
 
-    private List<RepoBranch> getRepoBranch(AbstractBuild r) {
+    private List<RepoBranch> getRepoBranchFromScmObject (Object scm, Run r) {
         List<RepoBranch> list = new ArrayList<>();
-        if (r.getProject().getScm() instanceof SubversionSCM) {
-            list = getSVNRepoBranch((SubversionSCM) r.getProject().getScm());
-        } else if (r.getProject().getScm() instanceof GitSCM) {
-            list = getGitHubRepoBranch((GitSCM) r.getProject().getScm(), r);
-        } else if (r.getProject().getScm() instanceof MultiSCM) {
-            List<hudson.scm.SCM> multiScms = ((MultiSCM) r.getProject().getScm()).getConfiguredSCMs();
-            for (hudson.scm.SCM scm : multiScms) {
-                if (scm instanceof SubversionSCM) {
-                    list.addAll(getSVNRepoBranch((SubversionSCM) scm));
-                } else if (scm instanceof GitSCM) {
-                    list.addAll(getGitHubRepoBranch((GitSCM) scm, r));
+        if (scm instanceof SubversionSCM) {
+            list = getSVNRepoBranch((SubversionSCM) scm);
+        } else if (scm instanceof GitSCM) {
+            list = getGitHubRepoBranch((GitSCM) scm, r);
+        } else if (scm instanceof MultiSCM) {
+            List<hudson.scm.SCM> multiScms = ((MultiSCM) scm).getConfiguredSCMs();
+            listener.getLogger().print("ITS MULTI");
+            for (hudson.scm.SCM hscm : multiScms) {
+                if (hscm instanceof SubversionSCM) {
+                    list.addAll(getSVNRepoBranch((SubversionSCM) hscm));
+                } else if (hscm instanceof GitSCM) {
+                    list.addAll(getGitHubRepoBranch((GitSCM) hscm, r));
                 }
             }
         }
         return list;
+    }
+
+    private List<RepoBranch> getRepoBranch(AbstractBuild r) {
+        List<RepoBranch> list = new ArrayList<>();
+        return getRepoBranchFromScmObject(r.getProject().getScm(), r);
     }
 
     private List<RepoBranch> getRepoBranch(Run run) {
@@ -131,22 +134,7 @@ public class BuildBuilder {
         if (run instanceof WorkflowRun) {
             WorkflowRun r = (WorkflowRun) run;
             for (Object o : r.getParent().getSCMs()) {
-                if (o instanceof SubversionSCM) {
-                    list = getSVNRepoBranch((SubversionSCM) o);
-                } else if (o instanceof GitSCM) {
-                    listener.getLogger().print("ITS GIT");
-                    list = getGitHubRepoBranch((GitSCM) o, r);
-                } else if (o instanceof MultiSCM) {
-                    List<hudson.scm.SCM> multiScms = ((MultiSCM) o).getConfiguredSCMs();
-                    listener.getLogger().print("ITS MULTI");
-                    for (hudson.scm.SCM scm : multiScms) {
-                        if (scm instanceof SubversionSCM) {
-                            list.addAll(getSVNRepoBranch((SubversionSCM) scm));
-                        } else if (scm instanceof GitSCM) {
-                            list.addAll(getGitHubRepoBranch((GitSCM) scm, r));
-                        }
-                    }
-                }
+                list.addAll(getRepoBranchFromScmObject(o, run));
             }
         }
         return list;
@@ -154,9 +142,6 @@ public class BuildBuilder {
 
     private List<RepoBranch> getGitHubRepoBranch(GitSCM scm, Run r) {
         List<RepoBranch> list = new ArrayList<>();
-        listener.getLogger().println("scm.getRepositories().get(0).getName()" + scm.getRepositories().get(0).getName());
-        listener.getLogger().println("scm.getKey" + scm.getKey());
-
         if (!CollectionUtils.isEmpty(scm.getBuildData(r).remoteUrls)) {
             for (String url : scm.getBuildData(r).remoteUrls) {
                 if (url.endsWith(".git")) {
