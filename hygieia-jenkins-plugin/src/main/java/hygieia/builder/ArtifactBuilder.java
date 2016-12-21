@@ -20,12 +20,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import static hygieia.utils.HygieiaUtils.getEnvironment;
+
 public class ArtifactBuilder {
 
     private static final Logger logger = Logger.getLogger(ArtifactBuilder.class.getName());
     private AbstractBuild<?, ?> build;
     private Run<?, ?> run;
-//    private BuildListener buildListener;
     private TaskListener listener;
     private String hygieiaBuildId;
 
@@ -38,8 +39,10 @@ public class ArtifactBuilder {
 
     private Set<BinaryArtifactCreateRequest> artifacts = new HashSet<>();
 
-    public ArtifactBuilder(AbstractBuild<?, ?> run, HygieiaPublisher publisher, TaskListener listener, String hygieiaBuildId) {
-        this.run = run;
+    public ArtifactBuilder(AbstractBuild<?, ?> build, HygieiaPublisher publisher, TaskListener listener, String hygieiaBuildId) {
+        //fixme: Need to fix the run and build dual!
+        this.build = build;
+        this.run = build;
         directory = publisher.getHygieiaArtifact().getArtifactDirectory().trim();
         filePattern = publisher.getHygieiaArtifact().getArtifactName().trim();
         group = publisher.getHygieiaArtifact().getArtifactGroup().trim();
@@ -52,7 +55,7 @@ public class ArtifactBuilder {
     }
 
     public ArtifactBuilder(Run<?, ?> run, FilePath filePath, HygieiaArtifactPublishStep publisher, TaskListener listener, String hygieiaBuildId) {
-        this.run =run;
+        this.run = run;
         directory = publisher.getArtifactDirectory().trim();
         filePattern = publisher.getArtifactName().trim();
         group = publisher.getArtifactGroup().trim();
@@ -71,18 +74,15 @@ public class ArtifactBuilder {
 
         List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets = new ArrayList<>();
 
-        EnvVars envVars = new EnvVars();
-        try {
-            envVars = run.getEnvironment(listener);
+
+        EnvVars envVars = getEnvironment(run, listener);
+        if (envVars != null) {
             version = envVars.expand(version);
             group = envVars.expand(group);
             directory = envVars.expand(directory);
             filePattern = envVars.expand(filePattern);
-        } catch (IOException e) {
-            listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
-        } catch (InterruptedException e) {
-            listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
         }
+
 
         listener.getLogger().println("Hygieia Build Artifact Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory);
         try {
@@ -102,7 +102,7 @@ public class ArtifactBuilder {
 
                 if (run instanceof WorkflowRun) {
                     changeLogSets = ((WorkflowRun) run).getChangeSets();
-                } else if (run instanceof AbstractBuild){
+                } else if (run instanceof AbstractBuild) {
                     changeLogSets = ((AbstractBuild) run).getChangeSets();
                 }
                 CommitBuilder commitBuilder = new CommitBuilder(changeLogSets);

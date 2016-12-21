@@ -187,14 +187,19 @@ public class HygieiaUtils {
     	return "hudson.scm.SubversionSCM".equalsIgnoreCase(build.getProject().getScm().getType());
     }
 
-
-    public static String getEnvironmentVariable(Run<?, ?> run, TaskListener listener, String key) {
+    public static EnvVars getEnvironment(Run<?, ?> run, TaskListener listener) {
         EnvVars env = null;
         try {
             env = run.getEnvironment(listener);
         } catch (IOException | InterruptedException e) {
             logger.warning("Error getting environment variables");
         }
+        return env;
+    }
+
+
+    public static String getEnvironmentVariable(Run<?, ?> run, TaskListener listener, String key) {
+        EnvVars env = getEnvironment(run, listener);
         if (env != null) {
             return env.get(key);
         } else {
