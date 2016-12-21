@@ -1,5 +1,6 @@
 package hygieia.utils;
 
+import com.capitalone.dashboard.model.RepoBranch;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,16 +10,22 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.plugins.git.GitSCM;
+import hudson.plugins.git.util.Build;
+import hudson.scm.SubversionSCM;
 import jenkins.plugins.hygieia.CustomObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.jenkinsci.plugins.multiplescms.MultiSCM;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.springframework.util.CollectionUtils;
 
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -140,7 +147,7 @@ public class HygieiaUtils {
         }
     }
 
-    public static String getScmUrl(AbstractBuild<?, ?> build, BuildListener listener) {
+    public static String getScmUrl(AbstractBuild<?, ?> build, TaskListener listener) {
     	if (isGitScm(build)) {
     		return getEnvironmentVariable(build, listener, "GIT_URL");
     	} else if (isSvnScm(build)) {
@@ -150,7 +157,7 @@ public class HygieiaUtils {
     	return null;
     }
 
-    public static String getScmBranch(AbstractBuild<?, ?> build, BuildListener listener) {
+    public static String getScmBranch(AbstractBuild<?, ?> build, TaskListener listener) {
     	if (isGitScm(build)) {
     		return getEnvironmentVariable(build, listener, "GIT_BRANCH");
     	} else if (isSvnScm(build)) {
@@ -161,7 +168,7 @@ public class HygieiaUtils {
     }
 
 
-    public static String getScmRevisionNumber(AbstractBuild<?, ?> build, BuildListener listener) {
+    public static String getScmRevisionNumber(AbstractBuild<?, ?> build, TaskListener listener) {
     	if (isGitScm(build)) {
     		return getEnvironmentVariable(build, listener, "GIT_COMMIT");
     	} else if (isSvnScm(build)) {
@@ -193,6 +200,78 @@ public class HygieiaUtils {
         } else {
             return null;
         }
+    }
+
+    /** moved from BuildBuilder class **/
+
+
+    public static List<RepoBranch> getRepoBranch(AbstractBuild r) {
+        List<RepoBranch> list = new ArrayList<>();
+        return getRepoBranchFromScmObject(r.getProject().getScm(), r);
+    }
+
+
+    public static List<RepoBranch> getRepoBranch(Run run) {
+        List<RepoBranch> list = new ArrayList<>();
+        if (run instanceof WorkflowRun) {
+            WorkflowRun r = (WorkflowRun) run;
+            for (Object o : r.getParent().getSCMs()) {
+                list.addAll(getRepoBranchFromScmObject(o, run));
+            }
+        }
+        return list;
+    }
+
+    private static List<RepoBranch> getRepoBranchFromScmObject(Object scm, Run r) {
+        List<RepoBranch> list = new ArrayList<>();
+        if (scm instanceof SubversionSCM) {
+            list = getSVNRepoBranch((SubversionSCM) scm);
+        } else if (scm instanceof GitSCM) {
+            list = getGitHubRepoBranch((GitSCM) scm, r);
+        } else if (scm instanceof MultiSCM) {
+            List<hudson.scm.SCM> multiScms = ((MultiSCM) scm).getConfiguredSCMs();
+            for (hudson.scm.SCM hscm : multiScms) {
+                if (hscm instanceof SubversionSCM) {
+                    list.addAll(getSVNRepoBranch((SubversionSCM) hscm));
+                } else if (hscm instanceof GitSCM) {
+                    list.addAll(getGitHubRepoBranch((GitSCM) hscm, r));
+                }
+            }
+        }
+        return list;
+    }
+
+
+    private static List<RepoBranch> getGitHubRepoBranch(GitSCM scm, Run r) {
+        List<RepoBranch> list = new ArrayList<>();
+        if (!org.apache.commons.collections.CollectionUtils.isEmpty(scm.getBuildData(r).remoteUrls)) {
+            for (String url : scm.getBuildData(r).remoteUrls) {
+                if (url.endsWith(".git")) {
+                    url = url.substring(0, url.lastIndexOf(".git"));
+                }
+                Map<String, Build> branches = scm.getBuildData(r).getBuildsByBranchName();
+                String branch = "";
+                for (String key : branches.keySet()) {
+                    hudson.plugins.git.util.Build b = branches.get(key);
+                    if (b.hudsonBuildNumber == r.getNumber()) {
+                        branch = key;
+                    }
+                }
+                list.add(new RepoBranch(url, branch, RepoBranch.RepoType.GIT));
+            }
+        }
+        return list;
+    }
+
+    private static List<RepoBranch> getSVNRepoBranch(SubversionSCM scm) {
+        List<RepoBranch> list = new ArrayList<>();
+        SubversionSCM.ModuleLocation[] mLocations = scm.getLocations();
+        if (mLocations != null) {
+            for (int i = 0; i < mLocations.length; i++) {
+                list.add(new RepoBranch(mLocations[i].getURL(), "", RepoBranch.RepoType.SVN));
+            }
+        }
+        return list;
     }
 
 }

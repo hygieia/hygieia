@@ -18,7 +18,9 @@ public class CommitBuilder {
     }
 
     public CommitBuilder(List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets) {
-        buildCommits(changeLogSets);
+        if (changeLogSets != null) {
+            buildCommits(changeLogSets);
+        }
     }
 
 
