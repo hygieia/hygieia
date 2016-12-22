@@ -43,6 +43,9 @@ dbpassword=dbpass
 # Collector schedule (required)
 jenkins.cron=0 0/5 * * * *
 
+# The page size
+jenkins.pageSize=1000
+
 # Jenkins server (required) - Can provide multiple
 jenkins.servers[0]=http://jenkins.company.com
 

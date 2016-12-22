@@ -437,10 +437,11 @@ public class FeatureRepositoryTest extends FongoBaseRepositoryTest {
 		featureRepo.save(mockJiraFeature2);
 		String testTeamID = "08374321";
 		String testStoryId = "0812345";
+		String testProjectID = "583482";
 
 		assertEquals(
 				"Expected top ordered sprint story ID did not match actual top ordered sprint story ID",
-				testStoryId, featureRepo.findByActiveEndingSprints(testTeamID, maxDateWinner)
+				testStoryId, featureRepo.findByActiveEndingSprints(testTeamID, testProjectID, jiraCollectorId, maxDateWinner, false)
 						.get(0).getsId().toString());
 	}
 
@@ -450,9 +451,10 @@ public class FeatureRepositoryTest extends FongoBaseRepositoryTest {
 		featureRepo.save(mockJiraFeature);
 		featureRepo.save(mockJiraFeature2);
 		String testTeamId = "08374321";
+		String testProjectID = "583482";
 		String testSprintName = "Test Sprint 2";
 		assertEquals("Expected current sprint detail did not match actual current sprint detail",
-				testSprintName, featureRepo.findByActiveEndingSprintsMinimal(testTeamId, maxDateWinner)
+				testSprintName, featureRepo.findByActiveEndingSprints(testTeamId, testProjectID, jiraCollectorId, maxDateWinner, true)
 						.get(0).getsSprintName());
 	}
 
@@ -466,7 +468,7 @@ public class FeatureRepositoryTest extends FongoBaseRepositoryTest {
 		assertEquals(
 				"The size of the actual response was not expected",
 				3,
-				featureRepo.findByActiveEndingSprintsMinimal(mockJiraFeature3.getsTeamID(),
-						currentSprintEndDate).size());
+				featureRepo.findByActiveEndingSprints(mockJiraFeature3.getsTeamID(), mockJiraFeature3.getsProjectID(), jiraCollectorId,
+						currentSprintEndDate, true).size());
 	}
 }

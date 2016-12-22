@@ -17,7 +17,7 @@ public interface ScopeService {
 	 * 
 	 * @return A data response list of type Scope containing all unique scopes
 	 */
-	DataResponse<List<Scope>> getAllScopes(ObjectId componentId);
+	List<Scope> getAllScopes();
 
 	/**
 	 * Retrieves the scope information for a given scope source system ID
