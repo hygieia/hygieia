@@ -315,7 +315,13 @@ public final class ClientUtil {
 
 					if ("id".equals(key)) {
 						sprint.setId(Long.valueOf(valueAsStr));
-					} else if ("state".equals(key)) {
+					} else if ("rapidViewId".equals(key)) {
+					    try {
+					        sprint.setRapidViewId(Long.valueOf(valueAsStr));
+					    } catch (NumberFormatException e) {
+					        LOGGER.error("rapidViewId found is not a number: " + valueAsStr + ", sprint: " + rawSprintToString);
+					    }
+                    } else if ("state".equals(key)) {
 						sprint.setState(valueAsStr);
 					} else if ("name".equals(key)) {
 						sprint.setName(valueAsStr);

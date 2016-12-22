@@ -65,8 +65,9 @@ public class FeatureSettings {
 	 * <strong>Note:</strong> You can retrieve your instance's IssueType ID
 	 * listings via the following URI:
 	 * https://[your-jira-domain-name]/rest/api/2/issuetype/
+	 * Multiple comma-separated values can be specified.
 	 */
-	private String jiraIssueTypeId;
+	private String[] jiraIssueTypeNames;
 	/**
 	 * In Jira, your instance will have its own custom field created for "sprint" or "timebox" details, which includes a list of information.  This field allows you to specify that data field for your instance of Jira.
 	 * <p>
@@ -87,6 +88,8 @@ public class FeatureSettings {
 	private String jiraEpicIdFieldName;
 	
 	private String jiraStoryPointsFieldName;
+	
+	private String jiraTeamFieldName;
 
 	public String getCron() {
 		return this.cron;
@@ -288,12 +291,12 @@ public class FeatureSettings {
 		this.jiraProxyPort = jiraProxyPort;
 	}
 	
-	public String getJiraIssueTypeId() {
-		return jiraIssueTypeId;
+	public String[] getJiraIssueTypeNames() {
+		return jiraIssueTypeNames;
 	}
 
-	public void setJiraIssueTypeId(String jiraIssueTypeId) {
-		this.jiraIssueTypeId = jiraIssueTypeId;
+	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) {
+		this.jiraIssueTypeNames = jiraIssueTypeNames;
 	}
 
 	public String getJiraSprintDataFieldName() {
@@ -318,5 +321,13 @@ public class FeatureSettings {
 
 	public void setJiraStoryPointsFieldName(String jiraStoryPointsFieldName) {
 		this.jiraStoryPointsFieldName = jiraStoryPointsFieldName;
+	}
+	
+	public String getJiraTeamFieldName() {
+		return jiraTeamFieldName;
+	}
+
+	public void setJiraTeamFieldName(String jiraTeamFieldName) {
+		this.jiraTeamFieldName = jiraTeamFieldName;
 	}
 }

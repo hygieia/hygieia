@@ -62,6 +62,11 @@ Local Testing with Mocks:
  gulp serve --local true
 ```
 
+Using browser-sync's [`ghostMode`](https://www.browsersync.io/docs/options#option-ghostMode) functionality:
+```bash
+gulp serve:ghost-mode
+```
+
 or you can run via maven from UI project root folder
  ```bash
  mvn clean package integration-test
@@ -87,7 +92,7 @@ docker run -t -p 8088:80 --link hygieia-api -i hygieia-ui:latest
 ```
 
 ### API check
- 
+
 #### API layer successfully connected
 ![Image](/media/images/apiup.png)
 
