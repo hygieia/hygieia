@@ -92,7 +92,7 @@ public class BuildBuilder {
             request.setDuration(build.getDuration());
             request.setEndTime(build.getStartTimeInMillis() + build.getDuration());
         } else {
-            request.setBuildStatus("InProgress");
+            request.setBuildStatus(BuildStatus.InProgress.toString());
         }
     }
 

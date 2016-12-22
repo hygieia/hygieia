@@ -1,12 +1,19 @@
 package hygieia.builder;
 
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hygieia.utils.HygieiaUtils;
 import jenkins.plugins.hygieia.HygieiaPublisher;
+import jenkins.plugins.hygieia.workflow.HygieiaArtifactPublishStep;
+import jenkins.plugins.hygieia.workflow.HygieiaDeployPublishStep;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,74 +26,108 @@ public class DeployBuilder {
 
     private static final Logger logger = Logger.getLogger(DeployBuilder.class.getName());
     private AbstractBuild build;
-    private HygieiaPublisher publisher;
-    private BuildListener listener;
+    private Run run;
+    private TaskListener listener;
     private String buildId;
+    private String jenkinsName;
+    private BuildStatus result;
+
+    private  String artifactName;
+    private  String artifactDirectory;
+    private  String artifactGroup;
+    private  String artifactVersion;
+    private  String applicationName;
+    private  String environmentName;
+    private FilePath rootDirectory;
+    private BuildDataCreateRequest buildDataCreateRequest;
+
 
     private Set<DeployDataCreateRequest> deploys = new HashSet<>();
 
-    public DeployBuilder(AbstractBuild build, HygieiaPublisher publisher, BuildListener listener, String buildId) {
+    public DeployBuilder(AbstractBuild build, HygieiaPublisher publisher, TaskListener listener, String buildId) {
+        //fixme: Need to settle on run vs build dual
         this.build = build;
-        this.publisher = publisher;
+        this.run = build;
+        this.artifactDirectory = publisher.getHygieiaDeploy().getArtifactDirectory().trim();
+        this.artifactGroup = publisher.getHygieiaDeploy().getArtifactGroup().trim();
+        this.artifactName = publisher.getHygieiaDeploy().getArtifactName().trim();
+        this.artifactVersion = publisher.getHygieiaDeploy().getArtifactVersion().trim();
+        this.applicationName = publisher.getHygieiaDeploy().getApplicationName().trim();
+        this.environmentName = publisher.getHygieiaDeploy().getEnvironmentName().trim();
         this.buildId = buildId;
         this.listener = listener;
+        rootDirectory = build.getWorkspace().withSuffix(artifactDirectory);
+        this.jenkinsName = publisher.getDescriptor().getHygieiaJenkinsName();
         buildDeployRequests();
     }
 
+    public DeployBuilder(Run run, String jenkinsName, HygieiaDeployPublishStep publisher, FilePath filePath, TaskListener listener, String buildId, BuildStatus result) {
+        this.run = run;
+        this.artifactDirectory = publisher.getArtifactDirectory().trim();
+        this.artifactGroup = publisher.getArtifactGroup().trim();
+        this.artifactName = publisher.getArtifactName().trim();
+        this.artifactVersion = publisher.getArtifactVersion().trim();
+        this.applicationName = publisher.getApplicationName().trim();
+        this.environmentName = publisher.getEnvironmentName().trim();
+        this.buildId = buildId;
+        this.listener = listener;
+        rootDirectory = filePath.withSuffix(artifactDirectory);
+        this.jenkinsName = jenkinsName;
+        this.result = result;
+        buildDeployRequests();
+
+    }
+
     private void buildDeployRequests() {
-        String directory = publisher.getHygieiaDeploy().getArtifactDirectory().trim();
-        String filePattern = publisher.getHygieiaDeploy().getArtifactName().trim();
-        String group = publisher.getHygieiaDeploy().getArtifactGroup().trim();
-        String version = publisher.getHygieiaDeploy().getArtifactVersion().trim();
-        String environmentName = publisher.getHygieiaDeploy().getEnvironmentName();
-        String applicationName = publisher.getHygieiaDeploy().getApplicationName();
         EnvVars envVars = null;
         try {
-            envVars = build.getEnvironment(listener);
-            version = envVars.expand(version);
-            group = envVars.expand(group);
-            directory = envVars.expand(directory);
-            filePattern = envVars.expand(filePattern);
+            envVars = run.getEnvironment(listener);
+            artifactVersion = envVars.expand(artifactVersion);
+            artifactGroup = envVars.expand(artifactGroup);
+            artifactDirectory = envVars.expand(artifactDirectory);
+            artifactName = envVars.expand(artifactName);
             environmentName = envVars.expand(environmentName);
+            applicationName = envVars.expand(applicationName);
         } catch (IOException e) {
             listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
         } catch (InterruptedException e) {
             listener.getLogger().println("Hygieia BuildArtifact Publisher - IOException getting EnvVars");
         }
 
-        FilePath rootDirectory = build.getWorkspace().withSuffix(directory);
-        listener.getLogger().println("Hygieia Deployment Publisher - Looking for file pattern '" + filePattern + "' in directory " + rootDirectory);
+        listener.getLogger().println("Hygieia Deployment Publisher - Looking for file pattern '" + artifactName + "' in directory " + rootDirectory);
         try {
-            List<FilePath> artifactFiles = HygieiaUtils.getArtifactFiles(rootDirectory, filePattern, new ArrayList<FilePath>());
+            List<FilePath> artifactFiles = HygieiaUtils.getArtifactFiles(rootDirectory, artifactName, new ArrayList<FilePath>());
             for (FilePath f : artifactFiles) {
                 listener.getLogger().println("Hygieia Deployment Publisher: Processing  file: " + f.getRemote());
                 DeployDataCreateRequest bac = new DeployDataCreateRequest();
-                String v = "";
-                bac.setArtifactGroup(group);
-                if ("".equals(version)) {
-                    version = HygieiaUtils.guessVersionNumber(f.getName());
+                if ("".equals(artifactVersion)) {
+                    artifactVersion = HygieiaUtils.guessVersionNumber(f.getName());
                 }
-                bac.setArtifactVersion(version);
-                bac.setArtifactName(HygieiaUtils.getFileNameMinusVersion(f, version));
-                bac.setDeployStatus(build.getResult().toString());
-                bac.setDuration(build.getDuration());
-                bac.setEndTime(build.getStartTimeInMillis() + build.getDuration());
-                bac.setStartTime(build.getStartTimeInMillis());
-                bac.setExecutionId(String.valueOf(build.getNumber()));
+                bac.setArtifactVersion(artifactVersion);
+                bac.setArtifactName(HygieiaUtils.getFileNameMinusVersion(f, artifactVersion));
+
+                BuildBuilder buildBuilder;
+
+                if (run instanceof WorkflowRun) {
+                    buildBuilder = new BuildBuilder(run, jenkinsName, listener, result);
+                } else {
+                    buildBuilder = new BuildBuilder((AbstractBuild) run, jenkinsName, listener, true);
+                }
+
+                buildDataCreateRequest = buildBuilder.getBuildData();
+
+                bac.setDeployStatus(buildDataCreateRequest.getBuildStatus());
+                bac.setDuration(buildDataCreateRequest.getDuration());
+                bac.setEndTime(buildDataCreateRequest.getEndTime());
+                bac.setStartTime(buildDataCreateRequest.getStartTime());
+                bac.setExecutionId(buildDataCreateRequest.getNumber());
                 bac.setHygieiaId(buildId);
                 bac.setAppName(applicationName);
                 bac.setEnvName(environmentName);
-                bac.setJobName(build.getProject().getName());
-                bac.setJobUrl(build.getProject().getAbsoluteUrl());
-                bac.setNiceName(publisher.getDescriptor().getHygieiaJenkinsName());
-                if (envVars != null) {
-                    bac.setInstanceUrl(envVars.get("JENKINS_URL"));
-                } else {
-                    String jobPath = "/job" + "/" + build.getProject().getName() + "/";
-                    int ind = build.getProject().getAbsoluteUrl().indexOf(jobPath);
-                    bac.setInstanceUrl(build.getProject().getAbsoluteUrl().substring(0, ind));
-                }
-
+                bac.setJobName(buildDataCreateRequest.getJobName());
+                bac.setJobUrl(buildDataCreateRequest.getJobUrl());
+                bac.setNiceName(jenkinsName);
+                bac.setInstanceUrl(buildDataCreateRequest.getInstanceUrl());
                 deploys.add(bac);
             }
         } catch (IOException e) {
@@ -99,5 +140,9 @@ public class DeployBuilder {
 
     public Set<DeployDataCreateRequest> getDeploys() {
         return deploys;
+    }
+
+    public BuildDataCreateRequest getBuildDataCreateRequest() {
+        return buildDataCreateRequest;
     }
 }
