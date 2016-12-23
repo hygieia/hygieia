@@ -30,6 +30,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,7 +55,8 @@ public class DefaultHudsonClient implements HudsonClient {
     private final RestOperations rest;
     private final HudsonSettings settings;
 
-    private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs[name,url,builds[number,url]]";
+    private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs";
+    private static final String JOBS_DETAILS_SUFFIX = "[name,url,builds[number,url]]";
 
     private static final String[] CHANGE_SET_ITEMS_TREE = new String[]{
             "user",
@@ -89,59 +91,119 @@ public class DefaultHudsonClient implements HudsonClient {
         this.settings = settings;
     }
 
-
     @Override
     public Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl) {
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
-        try {
+        
+        int jobsCount = getJobsCount(instanceUrl);
+        
+        int i = 0, pageSize = settings.getPageSize();
+        // Default pageSize to 1000 for backward compatibility of settings when pageSize defaults to 0
+        if (pageSize <= 0) {
+        	pageSize = 1000;
+        }
+        while (i < jobsCount) {
+	        try {
+	            String url = joinURL(instanceUrl, JOBS_URL_SUFFIX + JOBS_DETAILS_SUFFIX + URLEncoder.encode("{" + i + "," + (i + pageSize) + "}", "UTF-8"));
+	            ResponseEntity<String> responseEntity = makeRestCall(url);
+	            if (responseEntity == null) {
+	            	break;
+	            }
+	            String returnJSON = responseEntity.getBody();
+	            if (StringUtils.isEmpty(returnJSON)) {
+	            	break;	            	
+	            }
+	            JSONParser parser = new JSONParser();
+	            
+	            try {
+	                JSONObject object = (JSONObject) parser.parse(returnJSON);
+	                JSONArray jobs = getJsonArray(object, "jobs");
+	                if (jobs.size() == 0) {
+	                	break;
+	                }
+	                
+	                for (Object job : jobs) {
+	                    JSONObject jsonJob = (JSONObject) job;
+	
+	                    final String jobName = getString(jsonJob, "name");
+	                    final String jobURL = getString(jsonJob, "url");
+	                    LOG.debug("Job:" + jobName);
+	                    LOG.debug("jobURL: " + jobURL);
+	                    HudsonJob hudsonJob = new HudsonJob();
+	                    hudsonJob.setInstanceUrl(instanceUrl);
+	                    hudsonJob.setJobName(jobName);
+	                    hudsonJob.setJobUrl(jobURL);
+	
+	                    Set<Build> builds = new LinkedHashSet<>();
+	                    for (Object build : getJsonArray(jsonJob, "builds")) {
+	                        JSONObject jsonBuild = (JSONObject) build;
+	
+	                        // A basic Build object. This will be fleshed out later if this is a new Build.
+	                        String dockerLocalHostIP = settings.getDockerLocalHostIP();
+	                        String buildNumber = jsonBuild.get("number").toString();
+	                        if (!"0".equals(buildNumber)) {
+	                            Build hudsonBuild = new Build();
+	                            hudsonBuild.setNumber(buildNumber);
+	                            String buildURL = getString(jsonBuild, "url");
+	
+	                            //Modify localhost if Docker Natting is being done
+	                            if (!dockerLocalHostIP.isEmpty()) {
+	                                buildURL = buildURL.replace("localhost", dockerLocalHostIP);
+	                                LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
+	                            } else {
+	                                LOG.debug(" Adding Build: " + buildURL);
+	                            }
+	
+	                            hudsonBuild.setBuildUrl(buildURL);
+	                            builds.add(hudsonBuild);
+	                        }
+	                    }
+	                    // add the builds to the job
+	                    result.put(hudsonJob, builds);
+	                }
+	            } catch (ParseException e) {
+	                LOG.error("Parsing jobs details on instance: " + instanceUrl, e);
+	            }
+	        } catch (RestClientException rce) {
+	            LOG.error("client exception loading jobs details", rce);
+	            throw rce;
+	        } catch (MalformedURLException mfe) {
+	            LOG.error("malformed url for loading jobs details", mfe);
+	        } catch (UnsupportedEncodingException uee) {
+	        	LOG.error("unsupported encoding for loading jobs details", uee);
+			} catch (URISyntaxException e1) {
+			    LOG.error("wrong syntax url for loading jobs details", e1);
+            }
+	        
+	        i += pageSize;
+        }
+        return result;
+    }
+    
+    /**
+     * Get number of jobs first so that we don't get 500 internal server error when paging with index out of bounds.
+     * TODO: We get the jobs JSON without details and then get the size of the array. Is there a better way to get number of jobs for paging?
+     * @param 		instanceUrl
+     * @return		number of jobs
+     */
+    private int getJobsCount(String instanceUrl) {
+    	int result = 0;
+    	
+    	try {
             String url = joinURL(instanceUrl, JOBS_URL_SUFFIX);
             ResponseEntity<String> responseEntity = makeRestCall(url);
+            if (responseEntity == null) {
+            	return result;
+            }
             String returnJSON = responseEntity.getBody();
-            JSONParser parser = new JSONParser();
-
+            if (StringUtils.isEmpty(returnJSON)) {
+            	return result;	            	
+            }
+            JSONParser parser = new JSONParser();           
             try {
                 JSONObject object = (JSONObject) parser.parse(returnJSON);
-
-                for (Object job : getJsonArray(object, "jobs")) {
-                    JSONObject jsonJob = (JSONObject) job;
-
-                    final String jobName = getString(jsonJob, "name");
-                    final String jobURL = getString(jsonJob, "url");
-                    LOG.debug("Job:" + jobName);
-                    LOG.debug("jobURL: " + jobURL);
-                    
-                    HudsonJob hudsonJob = new HudsonJob();
-                    hudsonJob.setInstanceUrl(instanceUrl);
-                    hudsonJob.setJobName(jobName);
-                    hudsonJob.setJobUrl(jobURL);
-
-                    Set<Build> builds = new LinkedHashSet<>();
-                    for (Object build : getJsonArray(jsonJob, "builds")) {
-                        JSONObject jsonBuild = (JSONObject) build;
-
-                        // A basic Build object. This will be fleshed out later if this is a new Build.
-                        String dockerLocalHostIP = settings.getDockerLocalHostIP();
-                        String buildNumber = jsonBuild.get("number").toString();
-                        if (!"0".equals(buildNumber)) {
-                            Build hudsonBuild = new Build();
-                            hudsonBuild.setNumber(buildNumber);
-                            String buildURL = getString(jsonBuild, "url");
-
-                            //Modify localhost if Docker Natting is being done
-                            if (!dockerLocalHostIP.isEmpty()) {
-                                buildURL = buildURL.replace("localhost", dockerLocalHostIP);
-                                LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildURL);
-                            } else {
-                                LOG.debug(" Adding Build: " + buildURL);
-                            }
-
-                            hudsonBuild.setBuildUrl(buildURL);
-                            builds.add(hudsonBuild);
-                        }
-                    }
-                    // add the builds to the job
-                    result.put(hudsonJob, builds);
-                }
+                JSONArray jobs = getJsonArray(object, "jobs");
+                result = jobs.size();
             } catch (ParseException e) {
                 LOG.error("Parsing jobs on instance: " + instanceUrl, e);
             }
@@ -153,7 +215,7 @@ public class DefaultHudsonClient implements HudsonClient {
         } catch (URISyntaxException e1) {
         	LOG.error("wrong syntax url for loading jobs", e1);
 		}
-        return result;
+    	return result;
     }
 
     @Override
