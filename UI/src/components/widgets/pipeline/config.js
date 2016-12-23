@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('pipelineConfigController', pipelineConfigController);
 
-    pipelineConfigController.$inject = ['modalData', 'deployData', '$modalInstance'];
-    function pipelineConfigController(modalData, deployData, $modalInstance) {
+    pipelineConfigController.$inject = ['modalData', 'deployData', '$uibModalInstance'];
+    function pipelineConfigController(modalData, deployData, $uibModalInstance) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -59,7 +59,7 @@
             modalData.widgetConfig.options.mappings = ctrl.mappings;
 
             var postObj = angular.copy(modalData.widgetConfig);
-            $modalInstance.close(postObj);
+            $uibModalInstance.close(postObj);
         }
     }
 })();
