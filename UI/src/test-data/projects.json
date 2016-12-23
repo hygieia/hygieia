@@ -1,0 +1,20 @@
+[{
+    "id" : "57dab42acff47e00078d9282",
+    "collectorId" : "57434890ec52a31f1c6d54c2",
+    "pId" : "11801",
+    "name" : "Disney",
+    "projectPath" : "Disney",
+    "beginDate" : "",
+    "endDate" : "",
+    "changeDate" : "",
+    "assetState" : "Active",
+    "isDeleted" : "False",
+    "collector": {
+        "id": "57434890ec52a31f1c6d54c2",
+        "name": "Jira",
+        "collectorType": "ScopeOwner",
+        "enabled": true,
+        "online": false,
+        "lastExecuted": 1464717445568
+    }
+}]

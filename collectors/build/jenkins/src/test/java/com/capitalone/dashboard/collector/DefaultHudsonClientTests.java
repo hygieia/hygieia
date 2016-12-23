@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,11 +49,13 @@ public class DefaultHudsonClientTests {
     private DefaultHudsonClient defaultHudsonClient;
 
     private static final String URL_TEST = "http://server/job/job2/2/";
+    private static final int PAGE_SIZE = 10;
 
     @Before
     public void init() {
         when(restOperationsSupplier.get()).thenReturn(rest);
         settings = new HudsonSettings();
+        settings.setPageSize(PAGE_SIZE);
         hudsonClient = defaultHudsonClient = new DefaultHudsonClient(restOperationsSupplier,
                 settings);
     }
@@ -182,8 +185,15 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void instanceJobs_twoJobsTwoBuilds() throws Exception {
-        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+    	when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs")), 
+        		eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+		    	.thenReturn(new ResponseEntity<>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
+        when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs[name,url,builds[number,url]]" + URLEncoder.encode("{0," + settings.getPageSize() + "}", "UTF-8"))), 
+        		eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
+        when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs[name,url,builds[number,url]]" + URLEncoder.encode("{" + settings.getPageSize() + "," + 2*settings.getPageSize() + "}", "UTF-8"))), 
+        		eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR));
 
         Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
 
