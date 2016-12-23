@@ -33,6 +33,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
     throws AuthenticationException, IOException, ServletException {
     	LoginCredentials credentials = new ObjectMapper().readValue(httpServletRequest.getInputStream(), LoginCredentials.class);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword());
+        token.setDetails(httpServletRequest);
         return getAuthenticationManager().authenticate(token);
     }
 

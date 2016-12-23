@@ -96,7 +96,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
     	//Make role based instead of just looking at the name
     	Collection<GrantedAuthority> authorities = Sets.newHashSet();
     	if("admin".equals(authentication.getUsername())) {
-    		GrantedAuthority authority = new SimpleGrantedAuthority("admin");
+    		GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_ADMIN");
     		authorities.add(authority);
     	}
     	

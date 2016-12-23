@@ -39,7 +39,7 @@
           }
           else
           {
-        return $http.post(LoginDetailRoute,postData).then(function (response) {
+        return $http.post(LoginDetailRoute,postData, {headers: {'auth-scheme': 'ldap'}}).then(function (response) {
             return response;
         },
         	// error callback
