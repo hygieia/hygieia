@@ -20,6 +20,7 @@ public class HudsonSettings {
     private List<String> usernames;
     private List<String> apiKeys;
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
+    private int pageSize;
 
     public String getCron() {
         return cron;
@@ -85,4 +86,12 @@ public class HudsonSettings {
     	}
         return localHostOverride;
     }
+    
+    public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+    
+    public int getPageSize() {
+		return pageSize;
+	}
 }
