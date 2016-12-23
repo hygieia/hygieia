@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('deployConfigController', deployConfigController);
 
-    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$modalInstance', '$q'];
-    function deployConfigController(modalData, collectorData, systemConfigData, $modalInstance, $q) {
+    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$uibModalInstance', '$q'];
+    function deployConfigController(modalData, collectorData, systemConfigData, $uibModalInstance, $q) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -120,7 +120,7 @@
                     collectorItemIds: job.value
                 };
 
-                $modalInstance.close(postObj);
+                $uibModalInstance.close(postObj);
             }
         }
     }
