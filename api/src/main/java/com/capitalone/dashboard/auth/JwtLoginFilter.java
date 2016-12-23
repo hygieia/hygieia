@@ -20,6 +20,8 @@ import com.capitalone.dashboard.model.LoginCredentials;
 
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
+	private static final String AUTHENTICATION_SCHEME_HEADER = "auth-scheme";
+	
     private TokenAuthenticationService tokenAuthenticationService;
     
     public JwtLoginFilter(String url, AuthenticationManager authenticationManager, TokenAuthenticationService tokenAuthenticationService) {
@@ -33,7 +35,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
     throws AuthenticationException, IOException, ServletException {
     	LoginCredentials credentials = new ObjectMapper().readValue(httpServletRequest.getInputStream(), LoginCredentials.class);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword());
-        token.setDetails(httpServletRequest);
+        token.setDetails(extract(httpServletRequest));
         return getAuthenticationManager().authenticate(token);
     }
 
@@ -42,4 +44,9 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
     throws IOException, ServletException {
         tokenAuthenticationService.addAuthentication(response, authentication);
     }
+    
+	private AuthenticationScheme extract(HttpServletRequest request) {
+		String scheme = request.getHeader(AUTHENTICATION_SCHEME_HEADER);
+		return AuthenticationScheme.valueOf(scheme.toUpperCase());
+	}
 }
