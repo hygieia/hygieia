@@ -1,0 +1,35 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+        <f:entry>
+            <f:checkbox name="publishEvenBuildFails" title="Publish even if build fails" value="true"/>
+        </f:entry>
+        <f:entry>
+            <f:checkbox name="publishTestStart" title="Publish Build Start Status" value="true"
+                        checked="${instance.getHygieiaTest().isPublishTestStart()}"/>
+        </f:entry>
+        <f:entry field="testType" title="Test Type" help="/plugin/hygieia-publisher/help-projectConfig-testType.html">
+            <f:select default="${instance.getHygieiaTest().getTestType()}"/>
+        </f:entry>
+        <f:entry title="Application Name" field="testApplicationName"
+                 help="/plugin/hygieia-publisher/help-projectConfig-hygieiaApplicationName.html">
+            <f:textbox name="testApplicationName" value="${instance.getHygieiaTest().getTestApplicationName()}"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkTestingAppNameValue?value='+this.value"/>
+        </f:entry>
+
+        <f:entry title="Environment Name" field="testEnvironmentName"
+                 help="/plugin/hygieia-publisher/help-projectConfig-hygieiaEnvName.html">
+            <f:textbox name="testEnvironmentName" value="${instance.getHygieiaTest().getTestEnvironmentName()}"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkTestingEnvValue?value='+this.value"/>
+        </f:entry>
+
+        <f:entry title="Results Directory" help="/plugin/hygieia-publisher/help-projectConfig-filePath.html">
+            <f:textbox name="testResultsDirectory" value="${instance.getHygieiaTest().getTestResultsDirectory()}"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkValue?value='+this.value"
+            />
+        </f:entry>
+        <f:entry title="File Name Pattern" help="/plugin/hygieia-publisher/help-projectConfig-filePattern.html">
+            <f:textbox name="testFileNamePattern" value="${instance.getHygieiaTest().getTestFileNamePattern()}"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkValue?value='+this.value"
+            />
+        </f:entry>
+</j:jelly>

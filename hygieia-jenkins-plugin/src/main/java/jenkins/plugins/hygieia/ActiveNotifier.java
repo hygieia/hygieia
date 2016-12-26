@@ -9,6 +9,7 @@ import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.TaskListener;
 import hudson.plugins.git.GitSCM;
 import hudson.scm.SubversionSCM;
 import hygieia.builder.*;
@@ -126,7 +127,8 @@ public class ActiveNotifier implements FineGrainedNotifier {
 
             if (publishSonar) {
                 try {
-                    SonarBuilder sonarBuilder = new SonarBuilder(r, publisher, listener, buildResponse.getResponseValue());
+                    SonarBuilder sonarBuilder = new SonarBuilder(r, listener, publisher.getDescriptor().getHygieiaJenkinsName(), publisher.getHygieiaSonar().getCeQueryIntervalInSeconds(),
+                            publisher.getHygieiaSonar().getCeQueryMaxAttempts(), buildResponse.getResponseValue(), publisher.getDescriptor().isUseProxy());
                     CodeQualityCreateRequest request = sonarBuilder.getSonarMetrics();
                     if (request != null) {
                         HygieiaResponse sonarResponse = getHygieiaService(r).publishSonarResults(request);

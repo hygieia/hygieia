@@ -171,11 +171,9 @@ public class HygieiaPublisher extends Notifier {
         private final String ceQueryIntervalInSeconds;
         private final String ceQueryMaxAttempts;
 
-        public static final int DEFAULT_QUERY_INTERVAL = 10;
-        public static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
 
         @DataBoundConstructor
-        public HygieiaSonar(boolean publishBuildStart, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts ) {
+        public HygieiaSonar(boolean publishBuildStart, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts) {
             this.publishBuildStart = publishBuildStart;
             this.ceQueryIntervalInSeconds = ceQueryIntervalInSeconds;
             this.ceQueryMaxAttempts = ceQueryMaxAttempts;
@@ -185,30 +183,24 @@ public class HygieiaPublisher extends Notifier {
             return publishBuildStart;
         }
 
-        /** Sonar 5.2+ changes: get query interval from config
+        /**
+         * Sonar 5.2+ changes: get query interval from config
          * If value is empty or null - return 10 (recommended value from SonarQube)
+         *
          * @return max number of attempts to query Sonar CE API (10 if blank)
          */
         public String getCeQueryIntervalInSeconds() {
-            if (!StringUtils.isEmpty(ceQueryIntervalInSeconds)) {
-                return ceQueryIntervalInSeconds;
-            }
-            else {
-                return String.valueOf(DEFAULT_QUERY_INTERVAL);
-            }
+            return ceQueryIntervalInSeconds;
         }
 
-        /** Sonar 5.2+ changes: get query max attempts from config
+        /**
+         * Sonar 5.2+ changes: get query max attempts from config
          * If value is empty or null - return 30 (recommended value from SonarQube)
+         *
          * @return max number of attempts to query Sonar CE API (30 if blank)
          */
         public String getCeQueryMaxAttempts() {
-            if (!StringUtils.isEmpty(ceQueryIntervalInSeconds)) {
-                return ceQueryMaxAttempts;
-            }
-            else {
-                return String.valueOf(DEFAULT_QUERY_MAX_ATTEMPTS);
-            }
+            return ceQueryMaxAttempts;
         }
 
     }
@@ -301,7 +293,7 @@ public class HygieiaPublisher extends Notifier {
         return makeService(env);
     }
 
-    private HygieiaService makeService (EnvVars env) {
+    private HygieiaService makeService(EnvVars env) {
         String hygieiaAPIUrl = getDescriptor().getHygieiaAPIUrl();
         String hygieiaToken = getDescriptor().getHygieiaToken();
         String hygieiaJenkinsName = getDescriptor().getHygieiaJenkinsName();

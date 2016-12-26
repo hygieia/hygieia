@@ -6,12 +6,10 @@ import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hygieia.utils.HygieiaUtils;
 import jenkins.plugins.hygieia.HygieiaPublisher;
-import jenkins.plugins.hygieia.workflow.HygieiaArtifactPublishStep;
 import jenkins.plugins.hygieia.workflow.HygieiaDeployPublishStep;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 

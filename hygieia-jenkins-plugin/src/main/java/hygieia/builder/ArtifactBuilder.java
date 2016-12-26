@@ -10,7 +10,6 @@ import hudson.scm.ChangeLogSet;
 import hygieia.utils.HygieiaUtils;
 import jenkins.plugins.hygieia.HygieiaPublisher;
 import jenkins.plugins.hygieia.workflow.HygieiaArtifactPublishStep;
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.io.IOException;
@@ -25,7 +24,6 @@ import static hygieia.utils.HygieiaUtils.getEnvironment;
 public class ArtifactBuilder {
 
     private static final Logger logger = Logger.getLogger(ArtifactBuilder.class.getName());
-    private AbstractBuild<?, ?> build;
     private Run<?, ?> run;
     private TaskListener listener;
     private String hygieiaBuildId;
@@ -41,7 +39,6 @@ public class ArtifactBuilder {
 
     public ArtifactBuilder(AbstractBuild<?, ?> build, HygieiaPublisher publisher, TaskListener listener, String hygieiaBuildId) {
         //fixme: Need to fix the run and build dual!
-        this.build = build;
         this.run = build;
         directory = publisher.getHygieiaArtifact().getArtifactDirectory().trim();
         filePattern = publisher.getHygieiaArtifact().getArtifactName().trim();
@@ -67,13 +64,8 @@ public class ArtifactBuilder {
     }
 
     private void buildArtifacts() {
-//        String directory = publisher.getHygieiaArtifact().getArtifactDirectory().trim();
-//        String filePattern = publisher.getHygieiaArtifact().getArtifactName().trim();
-//        String group = publisher.getHygieiaArtifact().getArtifactGroup().trim();
-//        String version = publisher.getHygieiaArtifact().getArtifactVersion().trim();
 
         List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets = new ArrayList<>();
-
 
         EnvVars envVars = getEnvironment(run, listener);
         if (envVars != null) {

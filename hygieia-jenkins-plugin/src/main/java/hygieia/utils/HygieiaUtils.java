@@ -17,6 +17,7 @@ import jenkins.plugins.hygieia.CustomObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.multiplescms.MultiSCM;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.springframework.util.CollectionUtils;
@@ -277,6 +278,21 @@ public class HygieiaUtils {
             }
         }
         return list;
+    }
+
+    public static int getSafePositiveInteger(String value, int defaultValue) {
+        int returnValue = defaultValue;
+        if (value != null) {
+            try {
+                returnValue = Integer.parseInt(value.trim());
+                if (returnValue < 0) {
+                    returnValue = defaultValue;
+                }
+            } catch (java.lang.NumberFormatException nfe) {
+                //do nothing. will return default at the end.
+            }
+        }
+        return returnValue;
     }
 
 }
