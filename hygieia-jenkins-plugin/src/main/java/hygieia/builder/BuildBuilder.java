@@ -34,20 +34,23 @@ public class BuildBuilder {
     private boolean isComplete;
     private BuildDataCreateRequest request;
     private BuildStatus result;
+    boolean buildChangeSet;
 
-    public BuildBuilder(AbstractBuild<?, ?> build, String jenkinsName, TaskListener listener, boolean isComplete) {
+    public BuildBuilder(AbstractBuild<?, ?> build, String jenkinsName, TaskListener listener, boolean isComplete, boolean buildChangeSet) {
         this.build = build;
         this.jenkinsName = jenkinsName;
         this.listener = listener;
         this.isComplete = isComplete;
+        this.buildChangeSet = buildChangeSet;
         createBuildRequest();
     }
 
-    public BuildBuilder(Run<?, ?> run, String jenkinsName, TaskListener listener, BuildStatus result) {
+    public BuildBuilder(Run<?, ?> run, String jenkinsName, TaskListener listener, BuildStatus result, boolean buildChangeSet) {
         this.run = run;
         this.jenkinsName = jenkinsName;
         this.listener = listener;
         this.result = result;
+        this.buildChangeSet = buildChangeSet;
         if (run instanceof AbstractBuild) {
             this.build = (AbstractBuild<?, ?>) run;
             createBuildRequest();
@@ -70,9 +73,11 @@ public class BuildBuilder {
         if (!result.equals(BuildStatus.InProgress)) {
             request.setDuration(System.currentTimeMillis() - run.getStartTimeInMillis());
             request.setEndTime(System.currentTimeMillis());
-            request.setCodeRepos(getRepoBranch(run));
-            WorkflowRun wr = (WorkflowRun) run;
-            request.setSourceChangeSet(getCommitList(wr.getChangeSets()));
+            if (buildChangeSet) {
+                request.setCodeRepos(getRepoBranch(run));
+                WorkflowRun wr = (WorkflowRun) run;
+                request.setSourceChangeSet(getCommitList(wr.getChangeSets()));
+            }
         }
     }
 
@@ -86,11 +91,13 @@ public class BuildBuilder {
         request.setNumber(HygieiaUtils.getBuildNumber(build));
         request.setStartTime(build.getStartTimeInMillis());
         if (isComplete) {
-            request.setCodeRepos(getRepoBranch(build));
-            request.setSourceChangeSet(getCommitList(build.getChangeSets()));
             request.setBuildStatus(build.getResult().toString());
             request.setDuration(build.getDuration());
             request.setEndTime(build.getStartTimeInMillis() + build.getDuration());
+            if (buildChangeSet) {
+                request.setCodeRepos(getRepoBranch(build));
+                request.setSourceChangeSet(getCommitList(build.getChangeSets()));
+            }
         } else {
             request.setBuildStatus(BuildStatus.InProgress.toString());
         }

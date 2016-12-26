@@ -143,13 +143,11 @@ public class HygieiaArtifactPublishStep extends AbstractStepImpl {
                 return -1;
             }
 
-            listener.getLogger().println("Hygieia: FILEPATH=" + filepath.toURI().toString());
-
             HygieiaPublisher.DescriptorImpl hygieiaDesc = jenkins.getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
             HygieiaService hygieiaService = getHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
 
-            BuildBuilder buildBuilder = new BuildBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), listener, BuildStatus.Success);
+            BuildBuilder buildBuilder = new BuildBuilder(run, hygieiaDesc.getHygieiaJenkinsName(), listener, BuildStatus.Success, true);
             HygieiaResponse buildResponse = hygieiaService.publishBuildData(buildBuilder.getBuildData());
 
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {

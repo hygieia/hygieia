@@ -31,7 +31,7 @@ public class DeployBuilder {
     private BuildStatus result;
 
     private  String artifactName;
-    private  String artifactDirectory;
+//    private  String artifactDirectory;
     private  String artifactGroup;
     private  String artifactVersion;
     private  String applicationName;
@@ -46,7 +46,6 @@ public class DeployBuilder {
         //fixme: Need to settle on run vs build dual
         this.build = build;
         this.run = build;
-        this.artifactDirectory = publisher.getHygieiaDeploy().getArtifactDirectory().trim();
         this.artifactGroup = publisher.getHygieiaDeploy().getArtifactGroup().trim();
         this.artifactName = publisher.getHygieiaDeploy().getArtifactName().trim();
         this.artifactVersion = publisher.getHygieiaDeploy().getArtifactVersion().trim();
@@ -54,14 +53,13 @@ public class DeployBuilder {
         this.environmentName = publisher.getHygieiaDeploy().getEnvironmentName().trim();
         this.buildId = buildId;
         this.listener = listener;
-        rootDirectory = build.getWorkspace().withSuffix(artifactDirectory);
+        rootDirectory = build.getWorkspace().withSuffix(publisher.getHygieiaDeploy().getArtifactDirectory().trim());
         this.jenkinsName = publisher.getDescriptor().getHygieiaJenkinsName();
         buildDeployRequests();
     }
 
     public DeployBuilder(Run run, String jenkinsName, HygieiaDeployPublishStep publisher, FilePath filePath, TaskListener listener, String buildId, BuildStatus result) {
         this.run = run;
-        this.artifactDirectory = publisher.getArtifactDirectory().trim();
         this.artifactGroup = publisher.getArtifactGroup().trim();
         this.artifactName = publisher.getArtifactName().trim();
         this.artifactVersion = publisher.getArtifactVersion().trim();
@@ -69,7 +67,7 @@ public class DeployBuilder {
         this.environmentName = publisher.getEnvironmentName().trim();
         this.buildId = buildId;
         this.listener = listener;
-        rootDirectory = filePath.withSuffix(artifactDirectory);
+        rootDirectory = filePath.withSuffix(publisher.getArtifactDirectory().trim());
         this.jenkinsName = jenkinsName;
         this.result = result;
         buildDeployRequests();
@@ -82,7 +80,6 @@ public class DeployBuilder {
             envVars = run.getEnvironment(listener);
             artifactVersion = envVars.expand(artifactVersion);
             artifactGroup = envVars.expand(artifactGroup);
-            artifactDirectory = envVars.expand(artifactDirectory);
             artifactName = envVars.expand(artifactName);
             environmentName = envVars.expand(environmentName);
             applicationName = envVars.expand(applicationName);
@@ -107,9 +104,9 @@ public class DeployBuilder {
                 BuildBuilder buildBuilder;
 
                 if (run instanceof WorkflowRun) {
-                    buildBuilder = new BuildBuilder(run, jenkinsName, listener, result);
+                    buildBuilder = new BuildBuilder(run, jenkinsName, listener, result, false);
                 } else {
-                    buildBuilder = new BuildBuilder((AbstractBuild) run, jenkinsName, listener, true);
+                    buildBuilder = new BuildBuilder((AbstractBuild) run, jenkinsName, listener, true, false);
                 }
 
                 buildDataCreateRequest = buildBuilder.getBuildData();

@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia;
 
+import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
@@ -7,8 +8,10 @@ import com.capitalone.dashboard.request.BuildDataCreateRequest;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.plugins.git.GitSCM;
 import hudson.scm.SubversionSCM;
@@ -54,7 +57,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
 
 
         if (publish) {
-            BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, false);
+            BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, false, true);
             HygieiaResponse response = getHygieiaService(r).publishBuildData(builder.getBuildData());
             if (response.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Complete Data. " + response.toString());
@@ -78,7 +81,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
                 (publisher.getHygieiaBuild() != null) || (publisher.getHygieiaTest() != null) || (publisher.getHygieiaDeploy() != null);
 
         if (publishBuild) {
-            BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, true);
+            BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getHygieiaJenkinsName(), listener, true, true);
             HygieiaResponse buildResponse = getHygieiaService(r).publishBuildData(builder.getBuildData());
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("Hygieia: Published Build Complete Data. " + buildResponse.toString());
@@ -109,7 +112,11 @@ public class ActiveNotifier implements FineGrainedNotifier {
             boolean publishTest = (publisher.getHygieiaTest() != null) && (successBuild || publisher.getHygieiaTest().isPublishEvenBuildFails());
 
             if (publishTest) {
-                CucumberTestBuilder cucumberTestBuilder = new CucumberTestBuilder(r, publisher, listener, buildResponse.getResponseValue());
+//                CucumberTestBuilder(Run run, TaskListener listener, BuildStatus buildStatus, FilePath filePath, String applicationName, String environmentName, String testType, String filePattern, String directory, String jenkinsName, String buildId)
+                BuildStatus buildStatus = BuildStatus.fromString(r.getResult().toString());
+                CucumberTestBuilder cucumberTestBuilder = new CucumberTestBuilder(r, listener, buildStatus, r.getWorkspace(), publisher.getHygieiaTest().getTestApplicationName(),
+                        publisher.getHygieiaTest().getTestEnvironmentName(), publisher.getHygieiaTest().getTestType(), publisher.getHygieiaTest().getTestFileNamePattern(), publisher.getHygieiaTest().getTestResultsDirectory(),
+                        publisher.getDescriptor().getHygieiaJenkinsName(), buildResponse.getResponseValue());
                 TestDataCreateRequest request = cucumberTestBuilder.getTestDataCreateRequest();
                 if (request != null) {
                     HygieiaResponse testResponse = getHygieiaService(r).publishTestResults(request);
