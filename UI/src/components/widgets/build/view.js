@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('BuildWidgetViewController', BuildWidgetViewController);
 
-    BuildWidgetViewController.$inject = ['$scope', 'buildData', 'DisplayState', '$q', '$modal'];
-    function BuildWidgetViewController($scope, buildData, DisplayState, $q, $modal) {
+    BuildWidgetViewController.$inject = ['$scope', 'buildData', 'DisplayState', '$q', '$uibModal'];
+    function BuildWidgetViewController($scope, buildData, DisplayState, $q, $uibModal) {
         var ctrl = this;
         var builds = [];
 
@@ -90,7 +90,7 @@
         };
 
         ctrl.detail = function(build) {
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'components/widgets/build/detail.html',
                 controller: 'BuildWidgetDetailController',
                 controllerAs: 'detail',

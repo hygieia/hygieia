@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('monitorConfigController', monitorConfigController);
 
-    monitorConfigController.$inject = ['$scope', '$q', '$modalInstance', 'monitorData', 'modalData'];
-    function monitorConfigController($scope, $q, $modalInstance, monitorData, modalData) {
+    monitorConfigController.$inject = ['$scope', '$q', '$uibModalInstance', 'monitorData', 'modalData'];
+    function monitorConfigController($scope, $q, $uibModalInstance, monitorData, modalData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -166,7 +166,7 @@
                         id: modalData.widgetConfig.options.id
                     }
                 };
-                $modalInstance.close(responses.length ? widgetResponse : null);
+                $uibModalInstance.close(responses.length ? widgetResponse : null);
             });
         }
     }
