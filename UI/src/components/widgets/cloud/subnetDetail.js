@@ -9,16 +9,16 @@
         .module(HygieiaConfig.module)
         .controller('SubnetDetailController', SubnetDetailController);
 
-    SubnetDetailController.$inject = ['$scope', '$modalInstance', 'subnet', '$modal'];
-    function SubnetDetailController($scope, $modalInstance, subnet, $modal) {
-      
+    SubnetDetailController.$inject = ['$scope', '$uibModalInstance', 'subnet', '$uibModal'];
+    function SubnetDetailController($scope, $uibModalInstance, subnet, $uibModal) {
+
         var ctrl = this;
         ctrl.subnet = subnet;
         ctrl.close = close;
 
         function close() {
-            $modalInstance.dismiss('close');
-        }      
+            $uibModalInstance.dismiss('close');
+        }
 
     }
 })();

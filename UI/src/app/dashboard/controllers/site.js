@@ -8,15 +8,15 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
-    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
+    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
+    function SiteController($scope, $q, $uibModal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
         var ctrl = this;
 
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
-        ctrl.username = $cookies.username;
-        ctrl.showAuthentication = $cookies.authenticated;
+        ctrl.username = $cookies.get('username');
+        ctrl.showAuthentication = $cookies.get('authenticated');
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
@@ -31,9 +31,10 @@
         ctrl.filterDashboards = filterDashboards;
         ctrl.renameDashboard = renameDashboard;
 
-        if (ctrl.username === 'admin') {
+         if (ctrl.username === 'admin') {
             ctrl.myadmin = true;
         }
+        checkPassThrough();
 
         (function() {
             // set up the different types of dashboards with a custom icon
@@ -70,6 +71,14 @@
             return matchesSearch;
         }
 
+        function checkPassThrough(){
+            if(angular.isUndefined(ctrl.username) || angular.isUndefined(ctrl.showAuthentication) || ctrl.showAuthentication == false){
+                console.log('Authentication failed, redirecting to login page');
+                $location.path('/login');
+            }
+
+        }
+
         function admin() {
             console.log('sending to admin page');
             $location.path('/admin');
@@ -85,7 +94,7 @@
         // method implementations
         function createDashboard() {
             // open modal for creating a new dashboard
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'app/dashboard/views/createDashboard.html',
                 controller: 'CreateDashboardController',
                 controllerAs: 'ctrl'
@@ -94,9 +103,8 @@
 
         function renameDashboard(item)
         {
-            console.log("Rename Dashboard");
-
-            var mymodalInstance=$modal.open({
+            // open modal for renaming dashboard
+            $uibModal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',
@@ -109,12 +117,6 @@
                     }
                 }
             });
-
-            mymodalInstance.result.then(function(condition) {
-                window.location.reload(false);
-            });
-
-
         }
 
 
@@ -206,5 +208,3 @@
 
 
 })();
-
-

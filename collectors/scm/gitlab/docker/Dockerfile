@@ -7,10 +7,12 @@ RUN \
   mkdir /hygieia
 
 COPY *.jar /hygieia/
-COPY application.properties /hygieia/
+COPY gitlab-properties-builder.sh /hygieia/
+
 WORKDIR /hygieia
 
 VOLUME ["/hygieia/logs"]
 
-CMD java -jar gitlab-git-collector*.jar --spring.config.location=/hygieia/application.properties
+CMD ./gitlab-properties-builder.sh && \
+  java -jar gitlab-git-collector*.jar --spring.config.location=/hygieia/hygieia-gitlab-git-collector.properties
 
