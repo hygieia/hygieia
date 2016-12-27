@@ -3,6 +3,7 @@ package com.capitalone.dashboard.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,6 +30,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
+	@Bean
+	public JwtLoginFilter jwtLoginFilter() throws Exception {
+		return new JwtLoginFilter(authenticationManager(), tokenAuthenticationService);
+	}
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.headers().cacheControl();
@@ -37,8 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.antMatchers("/login").permitAll()
 								.anyRequest().authenticated()
 									.and()
-								.addFilterBefore(new JwtLoginFilter("/login", authenticationManager(), tokenAuthenticationService),
-										UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(jwtLoginFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
 	}

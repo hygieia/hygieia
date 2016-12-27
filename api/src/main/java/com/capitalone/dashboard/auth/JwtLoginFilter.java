@@ -17,15 +17,15 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.capitalone.dashboard.model.LoginCredentials;
 
-
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
 	private static final String AUTHENTICATION_SCHEME_HEADER = "auth-scheme";
+	private static final String LOGIN_PATH = "/login";
 	
     private TokenAuthenticationService tokenAuthenticationService;
     
-    public JwtLoginFilter(String url, AuthenticationManager authenticationManager, TokenAuthenticationService tokenAuthenticationService) {
-         super(new AntPathRequestMatcher(url));
+    public JwtLoginFilter(AuthenticationManager authenticationManager, TokenAuthenticationService tokenAuthenticationService) {
+         super(new AntPathRequestMatcher(LOGIN_PATH));
          setAuthenticationManager(authenticationManager);
          this.tokenAuthenticationService = tokenAuthenticationService;
     }
