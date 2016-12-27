@@ -28,6 +28,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
 
 	private static final String ADMIN_CLAIM = "admin";
+	private static final String ADMIN_ROLE = "ROLE_ADMIN";
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String AUTH_PREFIX_W_SPACE = "Bearer ";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
@@ -37,7 +38,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
-		boolean admin = authentication.getAuthorities().contains(new SimpleGrantedAuthority(ADMIN_CLAIM));
+		boolean admin = authentication.getAuthorities().contains(new SimpleGrantedAuthority(ADMIN_ROLE));
 		
 		String jwt = Jwts.builder().setSubject(authentication.getName())
 				.claim(ADMIN_CLAIM, admin)
