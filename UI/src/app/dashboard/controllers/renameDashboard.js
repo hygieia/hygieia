@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('RenameDashboardController', RenameDashboardController);
 
-    RenameDashboardController.$inject = ['$modalInstance', 'dashboardData', 'dashboardId','dashboardName'];
-    function RenameDashboardController($modalInstance, dashboardData, dashboardId,dashboardName) {
+    RenameDashboardController.$inject = ['$uibModalInstance', 'dashboardData', 'dashboardId','dashboardName'];
+    function RenameDashboardController($uibModalInstance, dashboardData, dashboardId,dashboardName) {
 
         var ctrl = this;
 
@@ -29,7 +29,8 @@
                 dashboardData
                     .rename(dashboardId, document.cdf.dashboardTitle.value)
                     .success(function (data) {
-                        $modalInstance.close();
+                        $uibModalInstance.close();
+                        window.location.reload(false);
                 })
                     .error(function(data){
                     form.dashboardTitle.$setValidity('createError', false);
@@ -41,6 +42,6 @@
             }
 
         }
-        
+
     }
 })();

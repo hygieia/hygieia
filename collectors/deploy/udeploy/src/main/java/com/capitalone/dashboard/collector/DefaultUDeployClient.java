@@ -234,6 +234,7 @@ public class DefaultUDeployClient implements UDeployClient {
     }
 
 
+    @SuppressWarnings("unchecked")
     private JSONArray getLowestLevelChildren(JSONObject topParent, JSONArray returnArray) {
         JSONArray jsonChildren = (JSONArray) topParent.get("children");
 
