@@ -18,11 +18,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean{
 	
 	private TokenAuthenticationService tokenAuthenticationService;
 	
-	
 	@Autowired
 	public JwtAuthenticationFilter(TokenAuthenticationService tokenAuthenticationService){
 		this.tokenAuthenticationService = tokenAuthenticationService;
-		
 	}
 	
     @Override

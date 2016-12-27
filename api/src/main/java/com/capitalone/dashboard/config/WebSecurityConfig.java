@@ -26,6 +26,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private CustomAuthenticationProvider customAuthenticationProvider;
 	
+	@Autowired
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.headers().cacheControl();
@@ -36,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 									.and()
 								.addFilterBefore(new JwtLoginFilter("/login", authenticationManager(), tokenAuthenticationService),
 										UsernamePasswordAuthenticationFilter.class)
-								.addFilterBefore(new JwtAuthenticationFilter(tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
 	}
 
