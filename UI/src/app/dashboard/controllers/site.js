@@ -8,15 +8,15 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
-    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
+    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
+    function SiteController($scope, $q, $uibModal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
         var ctrl = this;
 
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
-        ctrl.username = $cookies.username;
-        ctrl.showAuthentication = $cookies.authenticated;
+        ctrl.username = $cookies.get('username');
+        ctrl.showAuthentication = $cookies.get('authenticated');
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
@@ -94,7 +94,7 @@
         // method implementations
         function createDashboard() {
             // open modal for creating a new dashboard
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'app/dashboard/views/createDashboard.html',
                 controller: 'CreateDashboardController',
                 controllerAs: 'ctrl'
@@ -103,9 +103,8 @@
 
         function renameDashboard(item)
         {
-            console.log("Rename Dashboard");
             // open modal for renaming dashboard
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',
@@ -209,5 +208,3 @@
 
 
 })();
-
-
