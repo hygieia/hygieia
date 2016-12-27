@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('CodeAnalysisViewController', CodeAnalysisViewController);
 
-    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', '$q', '$filter', '$modal'];
-    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, $q, $filter, $modal) {
+    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', '$q', '$filter', '$uibModal'];
+    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, $q, $filter, $uibModal) {
         var ctrl = this;
 
         ctrl.pieOptions = {
@@ -189,7 +189,7 @@
 
 
         function showDetail(test) {
-            $modal.open({
+            $uibModal.open({
                 controller: 'TestDetailsController',
                 controllerAs: 'testDetails',
                 templateUrl: 'components/widgets/codeanalysis/testdetails.html',

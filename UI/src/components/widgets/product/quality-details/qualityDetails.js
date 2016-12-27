@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('productQualityDetailsController', productQualityDetailsController);
 
-    productQualityDetailsController.$inject = ['modalData', '$modalInstance', '$timeout'];
-    function productQualityDetailsController(modalData, $modalInstance, $timeout) {
+    productQualityDetailsController.$inject = ['modalData', '$uibModalInstance', '$timeout'];
+    function productQualityDetailsController(modalData, $uibModalInstance, $timeout) {
         /*jshint validthis:true */
         var ctrl = this;
         ctrl.tabSettings = {
