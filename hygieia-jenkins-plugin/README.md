@@ -2,7 +2,7 @@
 
 # Developer instructions
 
-Install Maven and JDK.  This was last built with Maven 3.5.1 and JDK 1.8. 
+Install Maven and JDK.  This was last built with Maven 3.3.9 and JDK 1.8. 
 
 Run unit tests
 
