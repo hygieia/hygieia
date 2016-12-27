@@ -7,10 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
 
@@ -19,19 +22,18 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+@Component
+@EnableConfigurationProperties
+@ConfigurationProperties(prefix = "auth")
 public class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
 
 	private static final String ADMIN_CLAIM = "admin";
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String AUTH_PREFIX_W_SPACE = "Bearer ";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-	private final long expirationTime;
-	private final String secret;
-
-	public TokenAuthenticationServiceImpl(long expirationTime, String secret) {
-		this.expirationTime = expirationTime;
-		this.secret = secret;
-	}
+	
+	private long expirationTime;
+	private String secret;
 
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
@@ -70,5 +72,13 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			grantedAuths.add(new SimpleGrantedAuthority(ADMIN_CLAIM));
 		}
 		return grantedAuths;
+	}
+	
+	public void setExpirationTime(long expirationTime) {
+		this.expirationTime = expirationTime;
+	}
+	
+	public void setSecret(String secret) {
+		this.secret = secret;
 	}
 }
