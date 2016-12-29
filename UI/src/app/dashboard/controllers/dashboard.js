@@ -23,7 +23,7 @@
         // dashboard is guaranteed by the resolve setting in the route
 
         // public variables
-        ctrl.templateUrl = 'components/templates/' + dashboard.template.toLowerCase() + '.html';
+        ctrl.templateUrl = 'components/templates/' + dashboard.type.toLowerCase() + '.html';
         ctrl.dashboard = dashboard;
 
         console.log('Dashboard', dashboard);

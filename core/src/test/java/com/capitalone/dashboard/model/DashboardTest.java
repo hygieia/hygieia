@@ -39,7 +39,7 @@ public class DashboardTest {
             app.addComponent(new Component(compName));
         }
 
-        Dashboard dashboard = new Dashboard(template, title, app, owner, DashboardType.Team);
+        Dashboard dashboard = new Dashboard(title, app, owner, DashboardType.Team);
         return dashboard;
     }
 

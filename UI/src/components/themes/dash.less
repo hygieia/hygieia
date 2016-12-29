@@ -11,7 +11,6 @@
 // keyframes
 .blink-keyframe();
 
-
 // LOCAL VARIABLES FOR THIS THEME
 // ========================================
 @white: #fff;
@@ -160,6 +159,30 @@
     }
 }
 
+// DASHBOARD CONFIG
+// ========================================
+@dash-config-table-padding: 1em;
+@dash-config-table-border: rgba(0,0,0,.35);
+.dash-widgets-config {
+    td {
+    	vertical-align: top;
+    }
+    
+    td:not(:last-child) {
+        border-right: 1px solid @dash-config-table-border;
+        padding: 0 @dash-config-table-padding;
+    }
+
+    td:last-child, th {
+        padding: 0 @dash-config-table-padding;
+    }
+}
+
+.update-errors {
+	color: #FF0000;
+}
+
+
 // DASHBOARD
 // ========================================
 #dashboard {
@@ -179,6 +202,48 @@
         }
     }
 
+	.flex-widget-container {
+		width: 100%;
+		
+		// use flex for auto spacing of widgets        
+		display: -webkit-box;
+		display: -moz-box;
+		display: -ms-flexbox;
+		display: -webkit-flex;
+	    display: flex;
+	    -webkit-flex-wrap: wrap;
+	    -ms-flex-wrap: wrap;
+	    flex-wrap: wrap;
+	}
+
+	.widget-narrow {
+		flex: 0 0 25%;
+		-webkit-flex: 0 0 25%;   /* Safari */
+		//margin: auto;
+	}
+	
+	.widget-wide {
+		flex: 0 0 50%;
+		-webkit-flex: 0 0 50%;   /* Safari */
+		//margin: auto;
+	}
+    
+    .empty-container-banner {
+		color: @dash-dashboard-text;
+        font-size: large;
+        width: 100%;
+		height: 10rem;
+		// use flex for auto spacing       
+		display: -webkit-box;
+		display: -moz-box;
+		display: -ms-flexbox;
+		display: -webkit-flex;
+	    display: flex;
+
+        align-items: center;
+        justify-content: center;
+    }
+	
     .ct-grid {
         stroke-dasharray: 2px;
     }

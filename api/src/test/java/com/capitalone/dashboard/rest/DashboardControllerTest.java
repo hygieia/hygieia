@@ -48,13 +48,12 @@ public class DashboardControllerTest {
 
     @Test
     public void dashboards() throws Exception {
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
+        Dashboard d1 = makeDashboard("title", "app", "comp","amit", DashboardType.Team);
         when(dashboardService.all()).thenReturn(Arrays.asList(d1));
 
         mockMvc.perform(get("/dashboard"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].template", is("t1")))
                 .andExpect(jsonPath("$[0].title", is("title")))
                 .andExpect(jsonPath("$[0].application.name", is("app")))
                 .andExpect(jsonPath("$[0].application.components[0].name", is("comp")));
@@ -62,7 +61,7 @@ public class DashboardControllerTest {
 
     @Test
     public void createProductDashboard() throws Exception {
-        DashboardRequest request = makeDashboardRequest("template", "title", null, null,"amit", null, "product");
+        DashboardRequest request = makeDashboardRequest("title", null, null,"amit", null, "product");
         mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
@@ -71,7 +70,7 @@ public class DashboardControllerTest {
 
     @Test
     public void createTeamDashboard() throws Exception {
-        DashboardRequest request = makeDashboardRequest("template", "title", "app", "comp","amit", null, "team");
+        DashboardRequest request = makeDashboardRequest("title", "app", "comp","amit", null, "team");
         mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
@@ -84,7 +83,6 @@ public class DashboardControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(new DashboardRequest())))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.fieldErrors.template", hasItems("may not be null")))
             .andExpect(jsonPath("$.fieldErrors.title", hasItems("may not be null")))
 
 //            TODO:  These are no longer necessary in all cases.  Potentially add new class-level validator.
@@ -96,7 +94,7 @@ public class DashboardControllerTest {
     @Test
     public void getDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
+        Dashboard d1 = makeDashboard("title", "app", "comp","amit", DashboardType.Team);
         d1.setId(objectId);
 
         when(dashboardService.get(objectId)).thenReturn(d1);
@@ -109,8 +107,8 @@ public class DashboardControllerTest {
     @Test
     public void updateTeamDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
-        DashboardRequest request = makeDashboardRequest("template", "title", "app", "comp","amit", null, "team");
+        Dashboard orig = makeDashboard("title", "app", "comp","amit", DashboardType.Team);
+        DashboardRequest request = makeDashboardRequest("title", "app", "comp","amit", null, "team");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
         when(dashboardService.update(Matchers.any(Dashboard.class))).thenReturn(orig);
@@ -136,7 +134,7 @@ public class DashboardControllerTest {
         List<ObjectId> collIds = Arrays.asList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 1).put("option2", "2").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
+        Dashboard d1 = makeDashboard("title", "app", "comp","amit", DashboardType.Team);
         Widget widgetWithId = request.widget();
         widgetWithId.setId(ObjectId.get());
         Component component = makeComponent(compId, "Component", CollectorType.Build, collId);
@@ -169,7 +167,7 @@ public class DashboardControllerTest {
         List<ObjectId> collIds = Arrays.asList(collId);
         Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 2).put("option2", "3").get();
         WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
-        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
+        Dashboard d1 = makeDashboard("title", "app", "comp","amit", DashboardType.Team);
         Widget widget = makeWidget(widgetId, "build", compId, options);
 
         when(dashboardService.get(dashId)).thenReturn(d1);
@@ -182,9 +180,8 @@ public class DashboardControllerTest {
                 .andExpect(status().isOk());
     }
 
-    private DashboardRequest makeDashboardRequest(String template, String title, String appName, String compName, String owner, List<String> teamDashboardIds, String type) {
+    private DashboardRequest makeDashboardRequest(String title, String appName, String compName, String owner, List<String> teamDashboardIds, String type) {
         DashboardRequest request = new DashboardRequest();
-        request.setTemplate(template);
         request.setTitle(title);
         request.setApplicationName(appName);
         request.setComponentName(compName);
@@ -194,7 +191,7 @@ public class DashboardControllerTest {
         return request;
     }
 
-    private Dashboard makeDashboard(String template, String title, String appName, String compName, String owner, DashboardType type) {
+    private Dashboard makeDashboard(String title, String appName, String compName, String owner, DashboardType type) {
         Application application = null;
         if(type.equals(DashboardType.Team)){
             Component component = new Component();
@@ -202,7 +199,7 @@ public class DashboardControllerTest {
             application = new Application(appName, component);
         }
 
-        return new Dashboard(template, title, application,owner, type);
+        return new Dashboard(title, application,owner, type);
     }
 
     private Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {

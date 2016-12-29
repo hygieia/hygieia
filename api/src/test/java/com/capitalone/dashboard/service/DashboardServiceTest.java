@@ -396,7 +396,7 @@ public class DashboardServiceTest {
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-        return new Dashboard(template, title, app, owner, DashboardType.Team);
+        return new Dashboard(title, app, owner, DashboardType.Team);
     }
 
     private Widget makeWidget(ObjectId id, String name) {

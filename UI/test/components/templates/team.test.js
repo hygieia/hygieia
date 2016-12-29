@@ -2,7 +2,7 @@
  * Created by nmande on 4/11/16.
  */
 
-describe('CapOneTemplateController', function () {
+describe('TemplateController', function () {
 
     var controller;
     var scope;
@@ -15,7 +15,7 @@ describe('CapOneTemplateController', function () {
 
 
         scope = $rootScope.$new();
-        controller = $controller('CapOneTemplateController', {$scope: scope});
+        controller = $controller('TemplateController', {$scope: scope});
     }));
 
 

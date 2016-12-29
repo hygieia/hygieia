@@ -178,7 +178,7 @@ public class CommitEventListenerTest {
         }
 
         Application application = new Application("app", component);
-        Dashboard dashboard = new Dashboard("template", "title", application, "owner", DashboardType.Team);
+        Dashboard dashboard = new Dashboard("title", application, "owner", DashboardType.Team);
         dashboard.setId(ObjectId.get());
         return dashboard;
     }

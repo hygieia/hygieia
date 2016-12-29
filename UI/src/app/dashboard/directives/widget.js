@@ -45,6 +45,16 @@
 
             scope.$widgetEl = element;
             scope.container = containerController;
+            
+        	if(containerController.activeWidgetTypes && containerController.activeWidgetTypes.length !== 0) {
+        		var family = containerController.activeWidgetTypes[attrs.family];
+	        	if(element.hasClass('removeable') && family.length >= 0 && family.indexOf(attrs.name) < 0) {
+	        		element.detach();
+	        		element = null;
+	        		return;
+	        	}
+        	}
+            
             scope.widgetDefinition = widgetManager.getWidget(attrs.name);
             scope.title = attrs.title || scope.widgetDefinition.view.defaults.title;
             scope.header = attrs.header ? attrs.header != 'false' : true;

@@ -54,7 +54,7 @@ public class ServiceServiceTest {
         final ObjectId id = ObjectId.get();
         final String name = "service";
         final String url = "https://abc123456.com";
-        final Dashboard dashboard = new Dashboard("template", "title", new Application("app"), "amit", DashboardType.Team);
+        final Dashboard dashboard = new Dashboard("title", new Application("app"), "amit", DashboardType.Team);
         when(dashboardRepository.findOne(id)).thenReturn(dashboard);
 
         Service service=serviceService.create(id, name,url);

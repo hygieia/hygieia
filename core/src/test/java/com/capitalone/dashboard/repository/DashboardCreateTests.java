@@ -28,7 +28,7 @@ public class DashboardCreateTests extends FongoBaseRepositoryTest {
 
         Application application = new Application("Jay's App", component);
 
-        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application,"amit", DashboardType.Team);
+        Dashboard dashboard = new Dashboard("Jays's Dashboard", application,"amit", DashboardType.Team);
 
         Widget build = new Widget();
         build.setName("build");

@@ -1,13 +1,18 @@
 package com.capitalone.dashboard.request;
 
-import com.capitalone.dashboard.model.*;
+import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-public class DashboardRequest {
-    @NotNull
-    private String template;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.WidgetFamily;
+import com.capitalone.dashboard.model.WidgetType;
 
+public class DashboardRequest {
     @NotNull
     private String title;
 
@@ -20,14 +25,8 @@ public class DashboardRequest {
 
     @NotNull
     private String type;
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(String template) {
-        this.template = template;
-    }
+    
+    private Map<WidgetFamily, List<WidgetType>> activeWidgetTypes;
 
     public String getTitle() {
         return title;
@@ -65,10 +64,20 @@ public class DashboardRequest {
 		this.owner = owner;
 	}
 
+	public Map<WidgetFamily, List<WidgetType>> getActiveWidgetTypes() {
+		return activeWidgetTypes;
+	}
+
+	public void setActiveWidgetTypes(Map<WidgetFamily, List<WidgetType>> activeWidgetTypes) {
+		this.activeWidgetTypes = activeWidgetTypes;
+	}
+	
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
-        return new Dashboard(template, title, application, owner, type);
+        Dashboard dashboard = new Dashboard(title, application, owner, type);
+        dashboard.setActiveWidgetTypes(activeWidgetTypes);
+        return dashboard;
     }
 
     public Dashboard copyTo(Dashboard dashboard) {
@@ -76,4 +85,5 @@ public class DashboardRequest {
         updated.setId(dashboard.getId());
         return updated;
     }
+    
 }
