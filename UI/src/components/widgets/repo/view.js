@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('RepoViewController', RepoViewController);
 
-    RepoViewController.$inject = ['$q', '$scope','codeRepoData', '$uibModal'];
-    function RepoViewController($q, $scope, codeRepoData, $uibModal) {
+    RepoViewController.$inject = ['$q', '$scope','codeRepoData', '$modal'];
+    function RepoViewController($q, $scope, codeRepoData, $modal) {
         var ctrl = this;
 
         ctrl.commitChartOptions = {
@@ -61,7 +61,7 @@
             var target = evt.target,
                 pointIndex = target.getAttribute('ct:point-index');
 
-            $uibModal.open({
+            $modal.open({
                 controller: 'RepoDetailController',
                 controllerAs: 'detail',
                 templateUrl: 'components/widgets/repo/detail.html',
