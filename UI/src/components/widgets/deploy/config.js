@@ -18,22 +18,25 @@
         ctrl.jobDropdownDisabled = true;
         ctrl.jobDropdownPlaceholder = 'Loading...';
         ctrl.submitted = false;
+        ctrl.ignoreRegex = '';
+        if (widgetConfig.options.ignoreRegex !== undefined && widgetConfig.options.ignoreRegex !== null) {
+            ctrl.ignoreRegex=widgetConfig.options.ignoreRegex;
+        }
 
         // public methods
         ctrl.submit = submit;
 
         $q.all([systemConfigData.config(), collectorData.itemsByType('deployment')]).then(processResponse);
-
+        
         function processResponse(dataA) {
         	var systemConfig = dataA[0];
-        	var data = dataA[1];
-        	
-        	var aggregateServers = (systemConfig.globalProperties && systemConfig.globalProperties.multipleDeploymentServers) || false;
-        	
+            var data = dataA[1];
+            
+            var aggregateServers = (systemConfig.globalProperties && systemConfig.globalProperties.multipleDeploymentServers) || false;
+            
             var worker = {
                 getDeploys: getDeploys
             };
-
             
             function getDeploys(data, currentCollectorItemIds, cb) {
                 var selectedIndex = null;
@@ -114,7 +117,8 @@
                 var postObj = {
                     name: 'deploy',
                     options: {
-                        id: widgetConfig.options.id
+                        id: widgetConfig.options.id,
+                        ignoreRegex: ctrl.ignoreRegex
                     },
                     componentId: modalData.dashboard.application.components[0].id,
                     collectorItemIds: job.value
