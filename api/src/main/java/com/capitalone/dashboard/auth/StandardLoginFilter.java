@@ -17,15 +17,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.capitalone.dashboard.model.LoginCredentials;
 
-public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class StandardLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-	private static final String AUTHENTICATION_SCHEME_HEADER = "auth-scheme";
-	private static final String LOGIN_PATH = "/login";
-	
     private TokenAuthenticationService tokenAuthenticationService;
     
-    public JwtLoginFilter(AuthenticationManager authenticationManager, TokenAuthenticationService tokenAuthenticationService) {
-         super(new AntPathRequestMatcher(LOGIN_PATH));
+    public StandardLoginFilter(String path, AuthenticationManager authenticationManager, TokenAuthenticationService tokenAuthenticationService) {
+         super(new AntPathRequestMatcher(path));
          setAuthenticationManager(authenticationManager);
          this.tokenAuthenticationService = tokenAuthenticationService;
     }
@@ -35,8 +32,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
     throws AuthenticationException, IOException, ServletException {
     	LoginCredentials credentials = new ObjectMapper().readValue(httpServletRequest.getInputStream(), LoginCredentials.class);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword());
-        token.setDetails(extract(httpServletRequest));
-        return getAuthenticationManager().authenticate(token);
+        return token;
     }
 
     @Override
@@ -45,8 +41,4 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         tokenAuthenticationService.addAuthentication(response, authentication);
     }
     
-	private AuthenticationScheme extract(HttpServletRequest request) {
-		String scheme = request.getHeader(AUTHENTICATION_SCHEME_HEADER);
-		return AuthenticationScheme.valueOf(scheme.toUpperCase());
-	}
 }

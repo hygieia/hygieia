@@ -12,9 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.capitalone.dashboard.auth.JwtAuthenticationFilter;
-import com.capitalone.dashboard.auth.JwtLoginFilter;
+import com.capitalone.dashboard.auth.StandardLoginFilter;
 import com.capitalone.dashboard.auth.TokenAuthenticationService;
-import com.capitalone.dashboard.service.CustomAuthenticationProvider;
+import com.capitalone.dashboard.service.StandardAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
@@ -25,14 +25,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private TokenAuthenticationService tokenAuthenticationService;
 	
 	@Autowired
-	private CustomAuthenticationProvider customAuthenticationProvider;
+	private StandardAuthenticationProvider standardAuthenticationProvider;
 	
 	@Autowired
 	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
 	@Bean
-	public JwtLoginFilter jwtLoginFilter() throws Exception {
-		return new JwtLoginFilter(authenticationManager(), tokenAuthenticationService);
+	public StandardLoginFilter standardLoginFilter() throws Exception {
+		return new StandardLoginFilter("/login", authenticationManager(), tokenAuthenticationService);
 	}
 	
 	@Override
@@ -40,17 +40,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.headers().cacheControl();
 		http.csrf().disable()
 			.authorizeRequests().antMatchers("/appinfo").permitAll()
-								.antMatchers("/login").permitAll()
+								.antMatchers("/login**").permitAll()
 								.anyRequest().authenticated()
 									.and()
-								.addFilterBefore(jwtLoginFilter(), UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(standardLoginFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
 	}
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(customAuthenticationProvider);
+		auth.authenticationProvider(standardAuthenticationProvider);
 	}
 	
 }
