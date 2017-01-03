@@ -5,8 +5,9 @@
         .module(HygieiaConfig.module)
         .controller('deployConfigController', deployConfigController);
 
-    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$modalInstance', '$q'];
-    function deployConfigController(modalData, collectorData, systemConfigData, $modalInstance, $q) {
+    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$modalInstance', '$q', '$scope'];
+
+    function deployConfigController(modalData, collectorData, systemConfigData, $modalInstance, $q, $scope) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -18,6 +19,15 @@
         ctrl.jobDropdownDisabled = true;
         ctrl.jobDropdownPlaceholder = 'Loading...';
         ctrl.submitted = false;
+        ctrl.aggregateServers = false;
+        ctrl.currentData = null;
+        // set values from config
+        if (widgetConfig) {
+            if (widgetConfig.options.aggregateServers) {
+                ctrl.aggregateServers = widgetConfig.options.aggregateServers;
+            }
+        }
+      
         ctrl.ignoreRegex = '';
         if (widgetConfig.options.ignoreRegex !== undefined && widgetConfig.options.ignoreRegex !== null) {
             ctrl.ignoreRegex=widgetConfig.options.ignoreRegex;
@@ -30,10 +40,10 @@
         
         function processResponse(dataA) {
         	var systemConfig = dataA[0];
-            var data = dataA[1];
-            
-            var aggregateServers = (systemConfig.globalProperties && systemConfig.globalProperties.multipleDeploymentServers) || false;
-            
+        	var data = dataA[1];
+        	ctrl.currentData = dataA;
+        	
+
             var worker = {
                 getDeploys: getDeploys
             };
@@ -45,11 +55,12 @@
                 // multiple servers as equivalent. This allows us to fully track an application across
                 // all environments in the case that servers are split by function (prod deployment servers
                 // vs nonprod deployment servers)
-                var multiServerEquality = aggregateServers;
-                var dataGrouped = dataGrouped = _(data)
-                	.groupBy(function(d) { return (!multiServerEquality ? d.options.instanceUrl + "#" : "" ) + d.options.applicationId; })
-                	.map(function(d) { return d; });
-                
+                var multiServerEquality = ctrl.aggregateServers;
+
+                var dataGrouped = _(data)
+                    .groupBy(function(d) { return (!multiServerEquality ? d.options.instanceUrl + "#" : "" ) + d.options.applicationName + d.options.applicationId; })
+                    .map(function(d) { return d; });
+
                 var deploys = _(dataGrouped).map(function(deploys, idx) {
                 	var firstDeploy = deploys[0];
                 	
@@ -118,6 +129,7 @@
                     name: 'deploy',
                     options: {
                         id: widgetConfig.options.id,
+                        aggregateServers: form.aggregateServers.checked,
                         ignoreRegex: ctrl.ignoreRegex
                     },
                     componentId: modalData.dashboard.application.components[0].id,
@@ -127,5 +139,9 @@
                 $modalInstance.close(postObj);
             }
         }
+
+        $scope.reload = function() {
+            processResponse(ctrl.currentData);
+        };
     }
 })();
