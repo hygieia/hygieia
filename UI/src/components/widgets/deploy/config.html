@@ -26,6 +26,18 @@
             </ui-select>
             
         </form-group>
+        
+        <form-group input="ignoreRegex" errors="{validregex:'Please enter a valid Regular Expression'}">
+	
+	        <label class="modal-label">Ignore Environment Failures Pattern:</label>
+	        <input type="text"
+	               name="ignoreRegex"
+	               class="form-control text-center"
+	               ng-model="deployConfig.ignoreRegex"
+	               placeholder="Enter Regex"
+	               autocomplete="on"
+	               validregex />
+	    </form-group>
 
         <div class="form-group checkbox">
             <label>
