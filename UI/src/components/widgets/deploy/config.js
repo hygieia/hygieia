@@ -5,8 +5,9 @@
         .module(HygieiaConfig.module)
         .controller('deployConfigController', deployConfigController);
 
-    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$uibModalInstance', '$q'];
-    function deployConfigController(modalData, collectorData, systemConfigData, $uibModalInstance, $q) {
+    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$uibModalInstance', '$q', '$scope'];
+
+    function deployConfigController(modalData, collectorData, systemConfigData, $uibModalInstance, $q, $scope) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -18,6 +19,14 @@
         ctrl.jobDropdownDisabled = true;
         ctrl.jobDropdownPlaceholder = 'Loading...';
         ctrl.submitted = false;
+        ctrl.aggregateServers = false;
+        ctrl.currentData = null;
+        // set values from config
+        if (widgetConfig) {
+            if (widgetConfig.options.aggregateServers) {
+                ctrl.aggregateServers = widgetConfig.options.aggregateServers;
+            }
+        }
 
         // public methods
         ctrl.submit = submit;
@@ -27,8 +36,7 @@
         function processResponse(dataA) {
         	var systemConfig = dataA[0];
         	var data = dataA[1];
-        	
-        	var aggregateServers = (systemConfig.globalProperties && systemConfig.globalProperties.multipleDeploymentServers) || false;
+        	ctrl.currentData = dataA;
         	
             var worker = {
                 getDeploys: getDeploys
@@ -42,11 +50,12 @@
                 // multiple servers as equivalent. This allows us to fully track an application across
                 // all environments in the case that servers are split by function (prod deployment servers
                 // vs nonprod deployment servers)
-                var multiServerEquality = aggregateServers;
-                var dataGrouped = dataGrouped = _(data)
-                	.groupBy(function(d) { return (!multiServerEquality ? d.options.instanceUrl + "#" : "" ) + d.options.applicationId; })
-                	.map(function(d) { return d; });
-                
+                var multiServerEquality = ctrl.aggregateServers;
+
+                var dataGrouped = _(data)
+                    .groupBy(function(d) { return (!multiServerEquality ? d.options.instanceUrl + "#" : "" ) + d.options.applicationName + d.options.applicationId; })
+                    .map(function(d) { return d; });
+
                 var deploys = _(dataGrouped).map(function(deploys, idx) {
                 	var firstDeploy = deploys[0];
                 	
@@ -55,7 +64,6 @@
                 	var ids = new Array(deploys.length);
                 	for (var i = 0; i < deploys.length; ++i) {
                 		var deploy = deploys[i];
-                		
                 		ids[i] = deploy.id;
                 		
                 		if (_.contains(currentCollectorItemIds, deploy.id)) {
@@ -114,7 +122,8 @@
                 var postObj = {
                     name: 'deploy',
                     options: {
-                        id: widgetConfig.options.id
+                        id: widgetConfig.options.id,
+                        aggregateServers: form.aggregateServers.checked
                     },
                     componentId: modalData.dashboard.application.components[0].id,
                     collectorItemIds: job.value
@@ -123,5 +132,9 @@
                 $uibModalInstance.close(postObj);
             }
         }
+
+        $scope.reload = function() {
+            processResponse(ctrl.currentData);
+        };
     }
 })();
