@@ -21,10 +21,9 @@
                     <div ng-bind-html="job.name | highlight: $select.search"></div>
                 </ui-select-choices>
                 <ui-select-no-choice>
-                    No teams were found
+                    No deployment job was found
                 </ui-select-no-choice>
             </ui-select>
-            
             
         </form-group>
         
@@ -39,6 +38,13 @@
 	               autocomplete="on"
 	               validregex />
 	    </form-group>
+
+        <div class="form-group checkbox">
+            <label>
+                <input type="checkbox" name="aggregateServers" ng-model="deployConfig.aggregateServers" ng-change="reload()">
+                Aggregate Servers
+            </label>
+        </div>
 
         <hr/>
 
