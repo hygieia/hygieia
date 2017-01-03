@@ -5,9 +5,9 @@
         .module(HygieiaConfig.module)
         .controller('deployConfigController', deployConfigController);
 
-    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$uibModalInstance', '$q', '$scope'];
+    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$modalInstance', '$q', '$scope'];
 
-    function deployConfigController(modalData, collectorData, systemConfigData, $uibModalInstance, $q, $scope) {
+    function deployConfigController(modalData, collectorData, systemConfigData, $modalInstance, $q, $scope) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -64,6 +64,7 @@
                 	var ids = new Array(deploys.length);
                 	for (var i = 0; i < deploys.length; ++i) {
                 		var deploy = deploys[i];
+                		
                 		ids[i] = deploy.id;
                 		
                 		if (_.contains(currentCollectorItemIds, deploy.id)) {
