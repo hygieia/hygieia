@@ -22,6 +22,7 @@
       return {
         responseError: function (response) {
           if (response.status === 401) {
+            tokenService.removeToken();
             saveCurrentUrl();
             $location.path('/login');
           }

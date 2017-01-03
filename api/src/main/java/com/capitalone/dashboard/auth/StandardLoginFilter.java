@@ -2,43 +2,30 @@ package com.capitalone.dashboard.auth;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.capitalone.dashboard.model.LoginCredentials;
 
-public class StandardLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class StandardLoginFilter extends AbstractLoginFilter {
 
-    private TokenAuthenticationService tokenAuthenticationService;
-    
-    public StandardLoginFilter(String path, AuthenticationManager authenticationManager, TokenAuthenticationService tokenAuthenticationService) {
-         super(new AntPathRequestMatcher(path));
-         setAuthenticationManager(authenticationManager);
-         this.tokenAuthenticationService = tokenAuthenticationService;
-    }
+	public StandardLoginFilter(String path) {
+		super(path);
+	}
 
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-    throws AuthenticationException, IOException, ServletException {
-    	LoginCredentials credentials = new ObjectMapper().readValue(httpServletRequest.getInputStream(), LoginCredentials.class);
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword());
-        return token;
-    }
+	@Override
+	public Authentication createAuthentication(HttpServletRequest httpServletRequest) {
+		LoginCredentials credentials;
+		try {
+			credentials = new ObjectMapper().readValue(httpServletRequest.getInputStream(), LoginCredentials.class);
+		} catch (IOException e) {
+			throw new AuthenticationCredentialsNotFoundException(e.getMessage());
+		}
+		return new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword());
+	}
 
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication)
-    throws IOException, ServletException {
-        tokenAuthenticationService.addAuthentication(response, authentication);
-    }
-    
 }

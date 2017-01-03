@@ -12,7 +12,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
@@ -58,7 +57,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 			String username = claims.getSubject();
 			boolean admin = (Boolean) claims.get(ADMIN_CLAIM);
-			authentication = new PreAuthenticatedAuthenticationToken(username, null, buildGrantedAuthorities(admin));
+			authentication = new LdapAuthenticationToken(username, null);
 		} catch (ExpiredJwtException e) {
 			return null;
 		}
