@@ -130,7 +130,7 @@
                     collectorItemIds: job.value
                 };
 
-                $uibModalInstance.close(postObj);
+                $modalInstance.close(postObj);
             }
         }
 
