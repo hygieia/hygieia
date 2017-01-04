@@ -15,7 +15,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import com.capitalone.dashboard.model.UserRole;
 import com.google.common.collect.Sets;
 
 import io.jsonwebtoken.Claims;
@@ -28,53 +27,44 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @ConfigurationProperties(prefix = "auth")
 public class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
 
-	private static final String ADMIN_CLAIM = "admin";
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String AUTH_PREFIX_W_SPACE = "Bearer ";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-	private static final String DETAILS = "details";
+	private static final String ROLES_CLAIM = "roles";
+	private static final String DETAILS_CLAIM = "details";
 	
 	private long expirationTime;
 	private String secret;
 
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
-		boolean admin = authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()));
-		
 		String jwt = Jwts.builder().setSubject(authentication.getName())
-				.claim(DETAILS, authentication.getDetails())
-				.claim(ADMIN_CLAIM, admin)
+				.claim(DETAILS_CLAIM, authentication.getDetails())
+				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
 				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Authentication getAuthentication(HttpServletRequest request) {
 		String authHeader = request.getHeader(AUTHORIZATION);
 		if (StringUtils.isBlank(authHeader)) return null;
 		
-		Authentication authentication = null;
 		String token = StringUtils.removeStart(authHeader, AUTH_PREFIX_W_SPACE);
 		try {
 			Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 			String username = claims.getSubject();
-			boolean admin = (Boolean) claims.get(ADMIN_CLAIM);
-			authentication = new PreAuthenticatedAuthenticationToken(username, null, buildGrantedAuthorities(admin));
+			Collection<GrantedAuthority> authorities = getAuthorities(claims.get(ROLES_CLAIM, Collection.class));
+			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null, authorities);
+			authentication.setDetails(claims.get(DETAILS_CLAIM));
+			
+			return authentication;
+			
 		} catch (ExpiredJwtException e) {
 			return null;
 		}
-
-		return authentication;
-
-	}
-
-	private Collection<GrantedAuthority> buildGrantedAuthorities(boolean admin) {
-		Collection<GrantedAuthority> grantedAuths = Sets.newHashSet();
-		if (admin) {
-			grantedAuths.add(new SimpleGrantedAuthority(ADMIN_CLAIM));
-		}
-		return grantedAuths;
 	}
 	
 	public void setExpirationTime(long expirationTime) {
@@ -83,5 +73,23 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	
 	public void setSecret(String secret) {
 		this.secret = secret;
+	}
+	
+	private Collection<String> getRoles(Collection<? extends GrantedAuthority> authorities) {
+		Collection<String> roles = Sets.newHashSet();
+		authorities.forEach(authority -> {
+			roles.add(authority.getAuthority()); 
+		});
+		
+		return roles;
+	}
+	
+	private Collection<? extends GrantedAuthority> getAuthorities(Collection<String> roles) {
+		Collection<GrantedAuthority> authorities = Sets.newHashSet();
+		roles.forEach(role -> {
+			authorities.add(new SimpleGrantedAuthority(role));
+		});
+		
+		return authorities;
 	}
 }

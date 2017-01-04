@@ -34,7 +34,9 @@
       }
 
       this.isAdmin = function () {
-        return getUser().admin;
+        var user = getUser();
+        if (user.roles && user.roles.indexOf("ROLE_ADMIN") > -1) return true;
+        return false;
       }
     }
 })();
