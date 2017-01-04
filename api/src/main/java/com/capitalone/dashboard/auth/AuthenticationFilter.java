@@ -21,7 +21,7 @@ import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.service.UserInfoService;
 
 public abstract class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
-
+	
 	private final TokenAuthenticationService tokenAuthenticationService;
 	private final UserInfoService userInfoService;
 	
@@ -35,9 +35,12 @@ public abstract class AuthenticationFilter extends AbstractAuthenticationProcess
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication)
     throws IOException, ServletException {
 		Collection<UserRole> authorities = userInfoService.getAuthorities(authentication.getName(), getAuthType());
-		Authentication inflatedAuthentication = new PreAuthenticatedAuthenticationToken(authentication.getName(), authentication.getCredentials().toString(), createAuthorities(authorities));
+		PreAuthenticatedAuthenticationToken inflatedAuthentication = new PreAuthenticatedAuthenticationToken(authentication.getName(), authentication.getCredentials().toString(), createAuthorities(authorities));
+		inflatedAuthentication.setDetails(AuthenticationDetailsUtility.createDetails(getAuthType()));
         tokenAuthenticationService.addAuthentication(response, inflatedAuthentication);
     }
+
+
 
 	private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
 		Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();

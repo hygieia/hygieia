@@ -15,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.model.UserRole;
 import com.google.common.collect.Sets;
 
 import io.jsonwebtoken.Claims;
@@ -28,19 +29,20 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
 
 	private static final String ADMIN_CLAIM = "admin";
-	private static final String ADMIN_ROLE = "ROLE_ADMIN";
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String AUTH_PREFIX_W_SPACE = "Bearer ";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
+	private static final String DETAILS = "details";
 	
 	private long expirationTime;
 	private String secret;
 
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
-		boolean admin = authentication.getAuthorities().contains(new SimpleGrantedAuthority(ADMIN_ROLE));
+		boolean admin = authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()));
 		
 		String jwt = Jwts.builder().setSubject(authentication.getName())
+				.claim(DETAILS, authentication.getDetails())
 				.claim(ADMIN_CLAIM, admin)
 				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
