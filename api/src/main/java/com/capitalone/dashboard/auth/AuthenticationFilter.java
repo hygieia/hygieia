@@ -2,7 +2,9 @@ package com.capitalone.dashboard.auth;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -22,6 +24,8 @@ import com.capitalone.dashboard.service.UserInfoService;
 
 public abstract class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 	
+	private static final String AUTH_TYPE = "auth_type";
+	
 	private final TokenAuthenticationService tokenAuthenticationService;
 	private final UserInfoService userInfoService;
 	
@@ -36,12 +40,16 @@ public abstract class AuthenticationFilter extends AbstractAuthenticationProcess
     throws IOException, ServletException {
 		Collection<UserRole> authorities = userInfoService.getAuthorities(authentication.getName(), getAuthType());
 		PreAuthenticatedAuthenticationToken inflatedAuthentication = new PreAuthenticatedAuthenticationToken(authentication.getName(), authentication.getCredentials().toString(), createAuthorities(authorities));
-		inflatedAuthentication.setDetails(AuthenticationDetailsUtility.createDetails(getAuthType()));
+		inflatedAuthentication.setDetails(createDetails(getAuthType()));
         tokenAuthenticationService.addAuthentication(response, inflatedAuthentication);
     }
-
-
-
+	
+	private Map<Object, Object> createDetails(AuthType authType) {
+		Map<Object, Object> details = new HashMap<>();
+		details.put(AUTH_TYPE, authType);
+		return details;
+	}
+	
 	private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
 		Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
 		authorities.forEach(authority -> {
