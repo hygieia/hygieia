@@ -30,14 +30,30 @@ public class UserInfoServiceImpl implements UserInfoService {
 	public UserInfo getUserInfo(String username, AuthType authType) {
 		UserInfo userInfo = userInfoRepository.findByUsernameAndAuthType(username, authType);
 		if(userInfo == null) {
-			userInfo = new UserInfo();
-			userInfo.setUsername(username);
-			userInfo.setAuthType(authType);
-			userInfo.setAuthorities(Lists.newArrayList(UserRole.ROLE_USER));
+			userInfo = createUserInfo(username, authType);
 			userInfoRepository.save(userInfo);
 		}
+		// TODO: this will be refactored
+		// basing admin role on admin username
+		// plan to have a ui to select new / additional admin
+		setAdditionalRoles(userInfo);
 		
 		return userInfo;
+	}
+
+	private UserInfo createUserInfo(String username, AuthType authType) {
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUsername(username);
+		userInfo.setAuthType(authType);
+		userInfo.setAuthorities(Lists.newArrayList(UserRole.ROLE_USER));
+		
+		return userInfo;
+	}
+
+	private void setAdditionalRoles(UserInfo userInfo) {
+		if ("admin".equals(userInfo.getUsername())) {
+			userInfo.getAuthorities().add(UserRole.ROLE_ADMIN);
+		}
 	}
 	
 }
