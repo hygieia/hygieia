@@ -11,6 +11,9 @@ import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
  * CollectorItem repository for {@link ScopeOwnerCollectorItem}.
  */
 public interface ScopeOwnerRepository extends BaseCollectorItemRepository<ScopeOwnerCollectorItem> {
+	@Query(value = "{ 'collectorId' : ?0, 'options.teamId' : ?1, 'options.assetState': 'Active'}")
+	ScopeOwnerCollectorItem findTeamCollector(ObjectId collectorId, String teamId);
+	
 	@Query(value = "{ 'collectorId' : ?0, 'options.teamId' : ?1, options.name : ?2, 'options.assetState': 'Active'}")
 	ScopeOwnerCollectorItem findTeamCollector(ObjectId collectorId, String teamId, String name);
 

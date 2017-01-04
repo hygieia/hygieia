@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "gitlab")
 public class GitlabSettings {
     private String cron;
+    private String protocol;
     private String host;
+    private String port;
     private String apiToken;
 	private int firstRunHistoryDays;
 	private boolean selfSignedCertificate;
@@ -28,7 +30,15 @@ public class GitlabSettings {
         this.cron = cron;
     }
 
-    public String getApiToken() {
+    public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public String getApiToken() {
         return apiToken;
     }
 
@@ -42,6 +52,14 @@ public class GitlabSettings {
 
 	public void setHost(String host) {
 		this.host = host;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
 	}
 
 	public int getFirstRunHistoryDays() {
