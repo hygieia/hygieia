@@ -12,8 +12,8 @@
         .module(HygieiaConfig.module)
         .controller('CloudWidgetConfigController', CloudWidgetConfigController);
 
-    CloudWidgetConfigController.$inject = ['modalData', 'collectorData', '$uibModalInstance'];
-    function CloudWidgetConfigController(modalData, collectorData, $uibModalInstance) {
+    CloudWidgetConfigController.$inject = ['modalData', 'collectorData', '$modalInstance'];
+    function CloudWidgetConfigController(modalData, collectorData, $modalInstance) {
 
 
         //private properties/methods
@@ -48,7 +48,7 @@
             };
 
             // pass this new config to the modal closing so it's saved
-            $uibModalInstance.close(postObj);
+            $modalInstance.close(postObj);
         }
 
         function processCollectorsResponse(data) {
