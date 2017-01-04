@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntr
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -14,7 +13,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.capitalone.dashboard.auth.JwtAuthenticationFilter;
 import com.capitalone.dashboard.auth.StandardLoginFilter;
 import com.capitalone.dashboard.auth.TokenAuthenticationService;
-import com.capitalone.dashboard.service.StandardAuthenticationProvider;
+import com.capitalone.dashboard.service.AuthenticationService;
+import com.capitalone.dashboard.service.UserInfoService;
 
 @Configuration
 @EnableWebSecurity
@@ -22,17 +22,20 @@ import com.capitalone.dashboard.service.StandardAuthenticationProvider;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
-	private TokenAuthenticationService tokenAuthenticationService;
+	private AuthenticationService authenticationService;
 	
 	@Autowired
-	private StandardAuthenticationProvider standardAuthenticationProvider;
+	private TokenAuthenticationService tokenAuthenticationService;
 	
 	@Autowired
 	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
+	@Autowired
+	private UserInfoService userInfoService;
+	
 	@Bean
 	public StandardLoginFilter standardLoginFilter() throws Exception {
-		return new StandardLoginFilter("/login", authenticationManager(), tokenAuthenticationService);
+		return new StandardLoginFilter("/login", authenticationManager(), authenticationService, tokenAuthenticationService, userInfoService);
 	}
 	
 	@Override
@@ -46,11 +49,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.addFilterBefore(standardLoginFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
-	}
-
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(standardAuthenticationProvider);
 	}
 	
 }

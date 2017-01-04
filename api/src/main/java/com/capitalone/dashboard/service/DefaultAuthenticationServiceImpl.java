@@ -1,18 +1,17 @@
 package com.capitalone.dashboard.service;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import com.capitalone.dashboard.model.Authentication;
 import com.capitalone.dashboard.repository.AuthenticationRepository;
-import com.google.common.collect.Sets;
 
 @Service
 public class DefaultAuthenticationServiceImpl implements AuthenticationService {
@@ -85,22 +84,10 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
         Authentication authentication = authenticationRepository.findByUsername(username);
 
         if (authentication != null && authentication.checkPassword(password)) {
-        	org.springframework.security.core.Authentication user = new PreAuthenticatedAuthenticationToken(authentication.getUsername(), null, getAuthorities(authentication));
-            return user;
+            return new UsernamePasswordAuthenticationToken(authentication.getUsername(), password, new ArrayList<GrantedAuthority>());
         }
-        return null;
+
+        throw new BadCredentialsException("Login Failed: Invalid credentials for user " + username);
     }
     
-    private Collection<? extends GrantedAuthority> getAuthorities(Authentication authentication) {
-    	//TODO: make enum for authorities
-    	//Make role based instead of just looking at the name
-    	Collection<GrantedAuthority> authorities = Sets.newHashSet();
-    	if("admin".equals(authentication.getUsername())) {
-    		GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_ADMIN");
-    		authorities.add(authority);
-    	}
-    	
-    	return authorities;
-    }
-
 }
