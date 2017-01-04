@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('TestDetailsController', TestDetailsController);
 
-    TestDetailsController.$inject = ['$scope','$uibModalInstance', 'testResult', 'DashStatus'];
-    function TestDetailsController($scope, $uibModalInstance, testResult, DashStatus) {
+    TestDetailsController.$inject = ['$scope','$modalInstance', 'testResult', 'DashStatus'];
+    function TestDetailsController($scope, $modalInstance, testResult, DashStatus) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -16,7 +16,7 @@
         ctrl.close = close;
 
         function close() {
-            $uibModalInstance.dismiss('close');
+            $modalInstance.dismiss('close');
         }
 
         $scope.showCapabilityDetail = function (capability) {
