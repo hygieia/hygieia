@@ -1,14 +1,19 @@
 package com.capitalone.dashboard.request;
 
-import com.capitalone.dashboard.model.*;
-
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
 
 public class DashboardRequest {
     @NotNull
     private String template;
 
     @NotNull
+    @Pattern(message="Special character(s) found", regexp="^[a-zA-Z0-9 ]*$")
     private String title;
 
     private String applicationName;

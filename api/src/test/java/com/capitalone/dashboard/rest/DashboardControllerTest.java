@@ -1,13 +1,20 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.request.DashboardRequest;
-import com.capitalone.dashboard.request.WidgetRequest;
-import com.capitalone.dashboard.service.DashboardService;
-import com.capitalone.dashboard.util.TestUtil;
-import com.capitalone.dashboard.util.WidgetOptionsBuilder;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,15 +28,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.request.DashboardRequest;
+import com.capitalone.dashboard.request.WidgetRequest;
+import com.capitalone.dashboard.service.DashboardService;
+import com.capitalone.dashboard.util.TestUtil;
+import com.capitalone.dashboard.util.WidgetOptionsBuilder;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
@@ -93,6 +105,16 @@ public class DashboardControllerTest {
             ;
     }
 
+    @Test
+    public void createDashboard_specialCharacters_badRequest() throws Exception {
+        DashboardRequest request = makeDashboardRequest("template", "bad/title", "app", "comp","amit", null, "team");
+        mockMvc.perform(post("/dashboard")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.fieldErrors.title", hasItems("Special character(s) found")));
+    }
+    
     @Test
     public void getDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
