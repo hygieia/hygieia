@@ -12,9 +12,10 @@
     function userService(tokenService, jwtHelper) {
       var getUser = function () {
         var token = tokenService.getToken();
-        if(token) {
+        if (token) {
           return jwtHelper.decodeToken(token);
         }
+
         return {};
       }
 
