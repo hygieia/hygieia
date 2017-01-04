@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.LoginCredentials;
 import com.capitalone.dashboard.service.AuthenticationService;
 import com.capitalone.dashboard.service.UserInfoService;
@@ -33,4 +34,9 @@ public class StandardLoginFilter extends AuthenticationFilter {
         return authenticationService.authenticate(credentials.getUsername(), credentials.getPassword());
     }
 
+	@Override
+	public AuthType getAuthType() {
+		return AuthType.STANDARD;
+	}
+    
 }

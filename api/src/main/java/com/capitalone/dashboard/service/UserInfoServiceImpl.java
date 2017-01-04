@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.repository.UserInfoRepository;
@@ -21,16 +22,17 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 	
 	@Override
-	public Collection<UserRole> getAuthorities(String username) {
-		return getUserInfo(username).getAuthorities();
+	public Collection<UserRole> getAuthorities(String username, AuthType authType) {
+		return getUserInfo(username, authType).getAuthorities();
 	}
 	
 	@Override
-	public UserInfo getUserInfo(String username) {
-		UserInfo userInfo = userInfoRepository.findByUsername(username);
+	public UserInfo getUserInfo(String username, AuthType authType) {
+		UserInfo userInfo = userInfoRepository.findByUsernameAndAuthType(username, authType);
 		if(userInfo == null) {
 			userInfo = new UserInfo();
 			userInfo.setUsername(username);
+			userInfo.setAuthType(authType);
 			userInfo.setAuthorities(Lists.newArrayList(UserRole.ROLE_USER));
 			userInfoRepository.save(userInfo);
 		}

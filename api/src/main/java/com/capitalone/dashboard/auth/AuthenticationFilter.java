@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.service.UserInfoService;
 
@@ -33,7 +34,7 @@ public abstract class AuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication)
     throws IOException, ServletException {
-		Collection<UserRole> authorities = userInfoService.getAuthorities(authentication.getName());
+		Collection<UserRole> authorities = userInfoService.getAuthorities(authentication.getName(), getAuthType());
 		Authentication inflatedAuthentication = new PreAuthenticatedAuthenticationToken(authentication.getName(), authentication.getCredentials().toString(), createAuthorities(authorities));
         tokenAuthenticationService.addAuthentication(response, inflatedAuthentication);
     }
@@ -46,5 +47,7 @@ public abstract class AuthenticationFilter extends AbstractAuthenticationProcess
 		
 		return grantedAuthorities;
 	}
+	
+	public abstract AuthType getAuthType();
 	
 }
