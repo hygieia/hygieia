@@ -19,8 +19,7 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		Authentication authenticate = authenticationService.authenticate(authentication.getName(), authentication.getCredentials().toString());
-		return authenticate;
+		return authenticationService.authenticate(authentication.getName(), authentication.getCredentials().toString());
 	}
 
 	@Override

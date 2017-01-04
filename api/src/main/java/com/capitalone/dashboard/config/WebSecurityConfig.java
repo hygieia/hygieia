@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.capitalone.dashboard.auth.JwtAuthenticationFilter;
 import com.capitalone.dashboard.auth.StandardLoginFilter;
 import com.capitalone.dashboard.auth.TokenAuthenticationService;
 import com.capitalone.dashboard.service.StandardAuthenticationProvider;
@@ -26,21 +27,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private StandardAuthenticationProvider standardAuthenticationProvider;
 	
-//	@Autowired
-//	private LdapAuthenticationProvider ldapAuthenticationProvider;
-	
-//	@Autowired
-//	private JwtAuthenticationFilter jwtAuthenticationFilter;
+	@Autowired
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
 	@Bean
 	public StandardLoginFilter standardLoginFilter() throws Exception {
-		return new StandardLoginFilter("/login");
+		return new StandardLoginFilter("/login", authenticationManager(), tokenAuthenticationService);
 	}
-	
-//	@Bean
-//	public LdapLoginFilter ldapLoginFilter() throws Exception {
-//		return new LdapLoginFilter("/login/ldap", authenticationManager(), tokenAuthenticationService);
-//	}
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -50,16 +43,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.antMatchers("/login**").permitAll()
 								.anyRequest().authenticated()
 									.and()
-								//.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(standardLoginFilter(), UsernamePasswordAuthenticationFilter.class)
-								//.addFilterBefore(ldapLoginFilter(), UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
 	}
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(standardAuthenticationProvider);
-		//auth.authenticationProvider(ldapAuthenticationProvider);
 	}
 	
 }

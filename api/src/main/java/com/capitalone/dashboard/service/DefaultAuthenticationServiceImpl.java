@@ -5,9 +5,9 @@ import java.util.Collection;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import com.capitalone.dashboard.model.Authentication;
@@ -85,7 +85,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
         Authentication authentication = authenticationRepository.findByUsername(username);
 
         if (authentication != null && authentication.checkPassword(password)) {
-        	org.springframework.security.core.Authentication user = new UsernamePasswordAuthenticationToken(authentication.getUsername(), password, getAuthorities(authentication));
+        	org.springframework.security.core.Authentication user = new PreAuthenticatedAuthenticationToken(authentication.getUsername(), null, getAuthorities(authentication));
             return user;
         }
         return null;
