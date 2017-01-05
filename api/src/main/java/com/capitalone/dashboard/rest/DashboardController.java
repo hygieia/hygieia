@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitalone.dashboard.auth.annotations.DashboardOwnerOrAdmin;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
@@ -69,7 +69,7 @@ public class DashboardController {
         return dashboardService.get(id);
     }
 
-    
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateDashboard(@PathVariable ObjectId id,
                                                   @RequestBody DashboardRequest request) {
@@ -83,7 +83,7 @@ public class DashboardController {
         }
     }
 
-
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/rename/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> renameDashboard(@PathVariable ObjectId id,
                                                   @RequestBody DashboardRequest request) {
@@ -121,13 +121,14 @@ public class DashboardController {
         }
     }
 
-
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}", method = DELETE)
     public ResponseEntity<Void> deleteDashboard(@PathVariable ObjectId id) {
         dashboardService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}/widget", method = POST,
             consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<WidgetResponse> addWidget(@PathVariable ObjectId id, @RequestBody WidgetRequest request) {
@@ -142,7 +143,7 @@ public class DashboardController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new WidgetResponse(component, widget));
     }
 
-    @PreAuthorize("@methodLevelSecurityHandler.isOwnerOfDashboard(authentication, #id)")
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}/widget/{widgetId}", method = PUT,
             consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<WidgetResponse> updateWidget(@PathVariable ObjectId id,
