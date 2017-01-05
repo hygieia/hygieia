@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('addTeamController', addTeamController);
 
-    addTeamController.$inject = ['$scope', '$uibModalInstance', 'collectorData', '$timeout'];
-    function addTeamController($scope, $uibModalInstance, collectorData, $timeout) {
+    addTeamController.$inject = ['$scope', '$modalInstance', 'collectorData', '$timeout'];
+    function addTeamController($scope, $modalInstance, collectorData, $timeout) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -101,7 +101,7 @@
                     };
                 }
 
-                $uibModalInstance.close(obj);
+                $modalInstance.close(obj);
             }
         }
     }

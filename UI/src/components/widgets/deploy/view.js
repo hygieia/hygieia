@@ -5,14 +5,18 @@
         .module(HygieiaConfig.module)
         .controller('deployViewController', deployViewController);
 
-    deployViewController.$inject = ['$scope', 'DashStatus', 'deployData', 'DisplayState', '$q', '$uibModal'];
-    function deployViewController($scope, DashStatus, deployData, DisplayState, $q, $uibModal) {
+    deployViewController.$inject = ['$scope', 'DashStatus', 'deployData', 'DisplayState', '$q', '$modal'];
+    function deployViewController($scope, DashStatus, deployData, DisplayState, $q, $modal) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // public variables
         ctrl.environments = [];
         ctrl.statuses = DashStatus;
+        ctrl.ignoreEnvironmentFailuresRegex=/^$/;
+        if ($scope.widgetConfig.options.ignoreRegex !== undefined && $scope.widgetConfig.options.ignoreRegex !== null && $scope.widgetConfig.options.ignoreRegex !== '') {
+            ctrl.ignoreEnvironmentFailuresRegex=new RegExp($scope.widgetConfig.options.ignoreRegex.replace(/^"(.*)"$/, '$1'));
+        }
 
         ctrl.load = load;
         ctrl.showDetail = showDetail;
@@ -27,7 +31,7 @@
         }
 
         function showDetail(environment) {
-            $uibModal.open({
+            $modal.open({
                 controller: 'DeployDetailController',
                 controllerAs: 'detail',
                 templateUrl: 'components/widgets/deploy/detail.html',
@@ -51,13 +55,20 @@
                 getEnvironments: getEnvironments,
                 getIsDefaultState: getIsDefaultState
             };
+            
+            var ignoreEnvironmentFailuresRegex = ctrl.ignoreEnvironmentFailuresRegex;
+            
+            function ignoreEnvironmentFailures(environment) {
+            	return ignoreEnvironmentFailuresRegex.test(environment.name);
+            }
 
             function getIsDefaultState(data, cb) {
                 var isDefaultState = true;
                 _(data).forEach(function (environment) {
                     var offlineUnits = _(environment.units).where({'deployed': false}).value().length;
 
-                    if(environment.units && environment.units.length == offlineUnits) {
+                    if(environment.units && environment.units.length == offlineUnits
+                    		&& !ignoreEnvironmentFailures(environment)) {
                         isDefaultState = false;
                     }
                 });
@@ -75,6 +86,7 @@
                         serverUpCount: getServerOnlineCount(item.units, true),
                         serverDownCount: getServerOnlineCount(item.units, false),
                         failedComponents: getFailedComponentCount(item.units),
+                        ignoreFailure: ignoreEnvironmentFailures(item),
                         lastUpdated: getLatestUpdate(item.units)
                     };
 

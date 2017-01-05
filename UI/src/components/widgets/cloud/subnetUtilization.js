@@ -9,14 +9,14 @@
         .module(HygieiaConfig.module)
         .controller('SubnetUtilizationController', SubnetUtilizationController);
 
-    SubnetUtilizationController.$inject = ['$scope', '$uibModalInstance', 'vpc', '$uibModal'];
-    function SubnetUtilizationController($scope, $uibModalInstance, vpc, $uibModal) {
+    SubnetUtilizationController.$inject = ['$scope', '$modalInstance', 'vpc', '$modal'];
+    function SubnetUtilizationController($scope, $modalInstance, vpc, $modal) {
         var ctrl = this;
         ctrl.vpc = vpc;
         ctrl.close = close;
 
         function close() {
-            $uibModalInstance.dismiss('close');
+            $modalInstance.dismiss('close');
         }
 
         ctrl.pieOptions = {
@@ -77,7 +77,7 @@
         ctrl.subnets =  ctrl.aggregateSubnetsByAz(ctrl.vpc.subnets);        
 
         ctrl.detail = function(subnet) {
-          $uibModal.open({
+          $modal.open({
                 controller: 'SubnetDetailController',
                 controllerAs: 'subnetDetail',                
                 templateUrl: 'components/widgets/cloud/subnetDetail.html',

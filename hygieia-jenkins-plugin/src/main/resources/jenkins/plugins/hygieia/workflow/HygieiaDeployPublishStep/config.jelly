@@ -1,0 +1,39 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+         <f:entry field="buildStatus" title="Build Status" >
+              <f:select />
+         </f:entry>
+
+        <f:entry title="Application Name" field="applicationName"
+                 help="/plugin/hygieia-publisher/help-projectConfig-hygieiaApplicationName.html">
+            <f:textbox name="applicationName"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkDeployAppNameValue?value='+this.value"/>
+        </f:entry>
+
+        <f:entry title="Environment Name" field="environmentName"
+                 help="/plugin/hygieia-publisher/help-projectConfig-hygieiaEnvName.html">
+            <f:textbox name="environmentName"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkDeployEnvValue?value='+this.value"/>
+        </f:entry>
+
+        <f:entry title="Artifact Directory" help="/plugin/hygieia-publisher/help-projectConfig-filePath.html">
+            <f:textbox name="artifactDirectory"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkValue?value='+this.value"/>
+        </f:entry>
+        <f:entry title="Artifact File Name Pattern"
+                 help="/plugin/hygieia-publisher/help-projectConfig-filePattern.html">
+            <f:textbox name="artifactName"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkValue?value='+this.value"
+            />
+        </f:entry>
+        <f:entry title="Artifact Group" help="/plugin/hygieia-publisher/help-projectConfig-artifactGroup.html">
+            <f:textbox name="artifactGroup"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkValue?value='+this.value"
+            />
+        </f:entry>
+        <f:entry title="Artifact Version" help="/plugin/hygieia-publisher/help-projectConfig-artifactVersion.html">
+            <f:textbox name="artifactVersion"
+            />
+        </f:entry>
+
+</j:jelly>
