@@ -21,10 +21,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.service.UserInfoService;
+import com.capitalone.dashboard.util.AuthenticationUtil;
 
 public abstract class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
-	
-	private static final String AUTH_TYPE = "auth_type";
 	
 	private final TokenAuthenticationService tokenAuthenticationService;
 	private final UserInfoService userInfoService;
@@ -46,7 +45,7 @@ public abstract class AuthenticationFilter extends AbstractAuthenticationProcess
 	
 	private Map<Object, Object> createDetails(AuthType authType) {
 		Map<Object, Object> details = new HashMap<>();
-		details.put(AUTH_TYPE, authType);
+		details.put(AuthenticationUtil.AUTH_TYPE, authType);
 		return details;
 	}
 	

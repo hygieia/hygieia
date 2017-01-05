@@ -1,12 +1,12 @@
 package com.capitalone.dashboard.model;
 
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * A collection of widgets, collectors and application components that represent a software
@@ -22,7 +22,12 @@ public class Dashboard extends BaseModel {
     private String title;
 
     private List<Widget> widgets = new ArrayList<>();
+
+    // multiple owner references for backwards compatibility
+    // TODO: remove once impacts of breaking change are assessed
     private String owner;
+    private List<Owner> owners = new ArrayList<Owner>();
+    
     private DashboardType type;
 
     private Application application;
@@ -30,12 +35,12 @@ public class Dashboard extends BaseModel {
     Dashboard() {
     }
 
-    public Dashboard(String template, String title, Application application,String owner, DashboardType type) {
+    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type) {
         this.template = template;
         this.title = title;
         this.application = application;
-        this.owner = owner;
         this.type = type;
+        this.owners.add(owner);
     }
 
     public String getTemplate() {
@@ -72,6 +77,14 @@ public class Dashboard extends BaseModel {
 
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+	
+	public List<Owner> getOwners() {
+		return owners;
+	}
+
+	public void setOwners(List<Owner> owners) {
+		this.owners = owners;
 	}
 
     public DashboardType getType(){ return this.type; }

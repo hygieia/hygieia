@@ -162,7 +162,7 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard/mydashboard", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public List<Dashboard> getOwnedDashboards(@RequestParam String username) {
-        List<Dashboard> myDashboard = dashboardService.getOwnedDashboards(username);
+    	List<Dashboard> myDashboard = dashboardService.getOwnedDashboards(username);
         return myDashboard;
 
     }

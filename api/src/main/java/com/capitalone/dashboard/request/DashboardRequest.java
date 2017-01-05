@@ -1,8 +1,13 @@
 package com.capitalone.dashboard.request;
 
-import com.capitalone.dashboard.model.*;
-
 import javax.validation.constraints.NotNull;
+
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.util.AuthenticationUtil;
 
 public class DashboardRequest {
     @NotNull
@@ -15,9 +20,6 @@ public class DashboardRequest {
 
     private String componentName;
     
-    @NotNull
-    private String owner;
-
     @NotNull
     private String type;
 
@@ -57,17 +59,10 @@ public class DashboardRequest {
 
     public void setType(String type) { this.type = type; }
 
-    public String getOwner() {
-		return owner;
-	}
-
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
+        Owner owner = new Owner(AuthenticationUtil.getUsername(), AuthenticationUtil.getAuthType());
         return new Dashboard(template, title, application, owner, type);
     }
 
