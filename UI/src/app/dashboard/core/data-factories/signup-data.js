@@ -10,7 +10,7 @@
 
     function signupData($http) {
         var testDetailRoute = 'test-data/signup_detail.json';
-        var SignupDetailRoute = '/api/registerUser/';
+        var SignupDetailRoute = '/api/registerUser';
 
         return {
             signup: signup
