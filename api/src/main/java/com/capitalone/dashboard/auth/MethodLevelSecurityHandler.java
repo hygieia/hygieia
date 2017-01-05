@@ -2,11 +2,13 @@ package com.capitalone.dashboard.auth;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.util.AuthenticationUtil;
 
 @Component
 public class MethodLevelSecurityHandler {
@@ -18,10 +20,26 @@ public class MethodLevelSecurityHandler {
 		this.dashboardRepository = dashboardRepository;
 	}
 	
-	public boolean isOwnerOfDashboard(Authentication authentication, ObjectId dashboardId) {
-		Dashboard findOne = dashboardRepository.findOne(dashboardId);
-		String owner = findOne.getOwner();
-		boolean value = owner.equals(authentication.getPrincipal());
-		return value;
+	public boolean isOwnerOfDashboard(ObjectId dashboardId) {
+		Dashboard dashboard = dashboardRepository.findOne(dashboardId);
+		if (dashboard == null) {
+			return false;
+		}
+		
+		String username = AuthenticationUtil.getUsername();
+		AuthType authType = AuthenticationUtil.getAuthType();
+		
+		//Check list of owners of dashboard to see if it contains the authenticated user
+		if (null != dashboard.getOwners() && dashboard.getOwners().contains(new Owner(username, authType))) {
+			return true;
+		}
+		
+		//Maintain backwards compatability for dashboards created before authentication changes
+		if (authType.equals(AuthType.STANDARD) && username.equals(dashboard.getOwner())) {
+			return true;
+		}
+		
+		
+		return false;
 	}
 }
