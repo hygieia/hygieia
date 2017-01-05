@@ -23,8 +23,8 @@ public class AuthenticationUtil {
 		Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
 		
 		try {
-			Map<String, AuthType> detailMap = (HashMap) details;
-			return detailMap.get(AUTH_TYPE);
+			Map<String, String> detailMap = (HashMap) details;
+			return AuthType.valueOf(detailMap.get(AUTH_TYPE));
 		} catch (ClassCastException cce) {
 			LOGGER.error("Authentication Details was not set as map.", cce.getMessage());
 			return null;

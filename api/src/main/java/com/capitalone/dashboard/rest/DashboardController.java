@@ -20,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitalone.dashboard.misc.HygieiaException;
@@ -161,8 +160,8 @@ public class DashboardController {
 
     @RequestMapping(value = "/dashboard/mydashboard", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public List<Dashboard> getOwnedDashboards(@RequestParam String username) {
-    	List<Dashboard> myDashboard = dashboardService.getOwnedDashboards(username);
+    public List<Dashboard> getOwnedDashboards() {
+    	List<Dashboard> myDashboard = dashboardService.getOwnedDashboards();
         return myDashboard;
 
     }
