@@ -167,13 +167,10 @@ public class DashboardController {
 
     }
 
-    @RequestMapping(value = "/dashboard/myowner/{dashboardtitle}", method = GET,
+    @DashboardOwnerOrAdmin
+    @RequestMapping(value = "/dashboard/myowner/{id}", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public String getDashboardOwner(@PathVariable String dashboardtitle) {
-        String dashboardOwner = "No Owner defined";
-        if (null != dashboardtitle) {
-            dashboardOwner = dashboardService.getDashboardOwner(dashboardtitle);
-        }
-        return dashboardOwner;
+    public String getDashboardOwner(@PathVariable ObjectId id) {
+    	return "Authorized";
     }
 }

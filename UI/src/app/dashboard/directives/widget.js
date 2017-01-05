@@ -112,24 +112,15 @@
             $scope.checkPermission=checkPermission;
 
             function checkPermission(){
-
-                dashboardData.myowner($scope.dashboard.title).then(processmyownerresponse);
-
-
+                dashboardData.myowner($scope.dashboard.id).then(processmyownerresponse, processmyownerfailure);
             }
 
-            function processmyownerresponse(data)
-            {
+            function processmyownerresponse(data) {
+                configModal();
+            }
 
-                $scope.owner=data;
-                if ($scope.owner == userService.getUsername() || userService.getUsername() == 'admin')
-                {
-                    configModal();
-                }
-                else
-                {
-                    $scope.alerts.push({type: 'info', msg: 'You are not authorized'});
-                }
+            function processmyownerfailure() {
+              $scope.alerts.push({type: 'info', msg: 'You are not authorized'});
             }
 
             // method implementations
