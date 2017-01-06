@@ -1,13 +1,15 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.model.EnvironmentComponent;
-import com.capitalone.dashboard.model.deploy.DeployableUnit;
-import com.capitalone.dashboard.model.deploy.Environment;
-import com.capitalone.dashboard.model.deploy.Server;
-import com.capitalone.dashboard.service.DeployService;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,13 +22,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.EnvironmentComponent;
+import com.capitalone.dashboard.model.deploy.DeployableUnit;
+import com.capitalone.dashboard.model.deploy.Environment;
+import com.capitalone.dashboard.model.deploy.Server;
+import com.capitalone.dashboard.service.DeployService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
@@ -65,15 +68,15 @@ public class DeployControllerTest {
 
         mockMvc.perform(get("/deploy/status/" + componentId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$result", hasSize(1)))
-                .andExpect(jsonPath("$result[0].name", is(e.getName())))
-                .andExpect(jsonPath("$result[0].units", hasSize(1)))
-                .andExpect(jsonPath("$result[0].units[0].name", is(unit.getName())))
-                .andExpect(jsonPath("$result[0].units[0].version", is(unit.getVersion())))
-                .andExpect(jsonPath("$result[0].units[0].deployed", is(unit.isDeployed())))
-                .andExpect(jsonPath("$result[0].units[0].lastUpdated", is((int) unit.getLastUpdated())))
-                .andExpect(jsonPath("$result[0].units[0].servers", hasSize(1)))
-                .andExpect(jsonPath("$result[0].units[0].servers[0].name", is(server.getName())))
-                .andExpect(jsonPath("$result[0].units[0].servers[0].online", is(server.isOnline())));
+                .andExpect(jsonPath("$.result", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].name", is(e.getName())))
+                .andExpect(jsonPath("$.result[0].units", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].units[0].name", is(unit.getName())))
+                .andExpect(jsonPath("$.result[0].units[0].version", is(unit.getVersion())))
+                .andExpect(jsonPath("$.result[0].units[0].deployed", is(unit.isDeployed())))
+                .andExpect(jsonPath("$.result[0].units[0].lastUpdated", is((int) unit.getLastUpdated())))
+                .andExpect(jsonPath("$.result[0].units[0].servers", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].units[0].servers[0].name", is(server.getName())))
+                .andExpect(jsonPath("$.result[0].units[0].servers[0].online", is(server.isOnline())));
     }
 }

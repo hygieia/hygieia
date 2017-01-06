@@ -1,10 +1,14 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.request.TestResultRequest;
-import com.capitalone.dashboard.service.TestResultService;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Arrays;
+
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,14 +22,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Arrays;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.TestCase;
+import com.capitalone.dashboard.model.TestCaseStatus;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.request.TestResultRequest;
+import com.capitalone.dashboard.service.TestResultService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
@@ -56,41 +63,41 @@ public class TestResultControllerTest {
 
         mockMvc.perform(get("/quality/test?componentId=" + ObjectId.get()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$result", hasSize(1)))
-                .andExpect(jsonPath("$result[0].id", is(testResult.getId().toString())))
-                .andExpect(jsonPath("$result[0].collectorItemId", is(testResult.getCollectorItemId().toString())))
-                .andExpect(jsonPath("$result[0].timestamp", is(intVal(testResult.getTimestamp()))))
-                .andExpect(jsonPath("$result[0].executionId", is(testResult.getExecutionId())))
-                .andExpect(jsonPath("$result[0].description", is(testResult.getDescription())))
-                .andExpect(jsonPath("$result[0].url", is(testResult.getUrl())))
-                .andExpect(jsonPath("$result[0].startTime", is(intVal(testResult.getStartTime()))))
-                .andExpect(jsonPath("$result[0].endTime", is(intVal(testResult.getEndTime()))))
-                .andExpect(jsonPath("$result[0].duration", is(intVal(testResult.getDuration()))))
-                .andExpect(jsonPath("$result[0].failureCount", is(intVal(testResult.getFailureCount()))))
-                .andExpect(jsonPath("$result[0].successCount", is(intVal(testResult.getSuccessCount()))))
-                .andExpect(jsonPath("$result[0].skippedCount", is(intVal(testResult.getSkippedCount()))))
-                .andExpect(jsonPath("$result[0].totalCount", is(intVal(testResult.getTotalCount()))))
-                .andExpect(jsonPath("$result[0].testCapabilities", hasSize(1)))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].description", is(testCapability.getDescription())))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].startTime", is(intVal(testCapability.getStartTime()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].endTime", is(intVal(testCapability.getEndTime()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].duration", is(intVal(testCapability.getDuration()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites", hasSize(1)))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].description", is(testSuite.getDescription())))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].type", is(testSuite.getType().toString())))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].startTime", is(intVal(testResult.getStartTime()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].endTime", is(intVal(testResult.getEndTime()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].duration", is(intVal(testResult.getDuration()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].failedTestCaseCount", is(intVal(testResult.getFailureCount()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].successTestCaseCount", is(intVal(testResult.getSuccessCount()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].skippedTestCaseCount", is(intVal(testResult.getSkippedCount()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].totalTestCaseCount", is(intVal(testResult.getTotalCount()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].unknownStatusCount", is(intVal(testResult.getUnknownStatusCount()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].testCases", hasSize(1)))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].testCases[0].id", is(testCase.getId())))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].testCases[0].description", is(testCase.getDescription())))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].testCases[0].duration", is(intVal(testCase.getDuration()))))
-                .andExpect(jsonPath("$result[0].testCapabilities[0].testSuites[0].testCases[0].status", is(testCase.getStatus().toString())));
+                .andExpect(jsonPath("$.result", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].id", is(testResult.getId().toString())))
+                .andExpect(jsonPath("$.result[0].collectorItemId", is(testResult.getCollectorItemId().toString())))
+                .andExpect(jsonPath("$.result[0].timestamp", is(intVal(testResult.getTimestamp()))))
+                .andExpect(jsonPath("$.result[0].executionId", is(testResult.getExecutionId())))
+                .andExpect(jsonPath("$.result[0].description", is(testResult.getDescription())))
+                .andExpect(jsonPath("$.result[0].url", is(testResult.getUrl())))
+                .andExpect(jsonPath("$.result[0].startTime", is(intVal(testResult.getStartTime()))))
+                .andExpect(jsonPath("$.result[0].endTime", is(intVal(testResult.getEndTime()))))
+                .andExpect(jsonPath("$.result[0].duration", is(intVal(testResult.getDuration()))))
+                .andExpect(jsonPath("$.result[0].failureCount", is(intVal(testResult.getFailureCount()))))
+                .andExpect(jsonPath("$.result[0].successCount", is(intVal(testResult.getSuccessCount()))))
+                .andExpect(jsonPath("$.result[0].skippedCount", is(intVal(testResult.getSkippedCount()))))
+                .andExpect(jsonPath("$.result[0].totalCount", is(intVal(testResult.getTotalCount()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].description", is(testCapability.getDescription())))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].startTime", is(intVal(testCapability.getStartTime()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].endTime", is(intVal(testCapability.getEndTime()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].duration", is(intVal(testCapability.getDuration()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].description", is(testSuite.getDescription())))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].type", is(testSuite.getType().toString())))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].startTime", is(intVal(testResult.getStartTime()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].endTime", is(intVal(testResult.getEndTime()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].duration", is(intVal(testResult.getDuration()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].failedTestCaseCount", is(intVal(testResult.getFailureCount()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].successTestCaseCount", is(intVal(testResult.getSuccessCount()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].skippedTestCaseCount", is(intVal(testResult.getSkippedCount()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].totalTestCaseCount", is(intVal(testResult.getTotalCount()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].unknownStatusCount", is(intVal(testResult.getUnknownStatusCount()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].testCases", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].testCases[0].id", is(testCase.getId())))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].testCases[0].description", is(testCase.getDescription())))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].testCases[0].duration", is(intVal(testCase.getDuration()))))
+                .andExpect(jsonPath("$.result[0].testCapabilities[0].testSuites[0].testCases[0].status", is(testCase.getStatus().toString())));
     }
 
     private TestResult makeTestResult() {

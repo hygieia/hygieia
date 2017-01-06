@@ -1,14 +1,19 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.model.Feature;
-import com.capitalone.dashboard.service.FeatureService;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -23,18 +28,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.service.FeatureService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class, WebMVCConfig.class })
@@ -353,8 +355,8 @@ public class FeatureControllerTest {
 		mockMvc.perform(
 				get("/feature/estimates/super/" + testTeamId + "?component="
 						+ mockComponentId.toString() + "&projectId=" + testProjectId))
-				.andExpect(jsonPath("$result[0].sEpicNumber", is(mockV1Feature.getsEpicNumber())))
-				.andExpect(jsonPath("$result[0].sEstimate", is(mockV1Feature.getsEstimate())))
-				.andExpect(jsonPath("$result", hasSize(3)));
+				.andExpect(jsonPath("$.result[0].sEpicNumber", is(mockV1Feature.getsEpicNumber())))
+				.andExpect(jsonPath("$.result[0].sEstimate", is(mockV1Feature.getsEstimate())))
+				.andExpect(jsonPath("$.result", hasSize(3)));
 	}
 }
