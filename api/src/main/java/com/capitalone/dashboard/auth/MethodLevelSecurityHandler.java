@@ -35,11 +35,6 @@ public class MethodLevelSecurityHandler {
 		}
 		
 		//Maintain backwards compatability for dashboards created before authentication changes
-		if (authType.equals(AuthType.STANDARD) && username.equals(dashboard.getOwner())) {
-			return true;
-		}
-		
-		
-		return false;
+		return authType.equals(AuthType.STANDARD) && username.equals(dashboard.getOwner());
 	}
 }

@@ -8,7 +8,7 @@ import com.capitalone.dashboard.model.UserRole;
 
 public interface UserInfoService {
 
-	public Collection<UserRole> getAuthorities(String username, AuthType authType);
-	public UserInfo getUserInfo(String username, AuthType authType);
+	Collection<UserRole> getAuthorities(String username, AuthType authType);
+	UserInfo getUserInfo(String username, AuthType authType);
 	
 }

@@ -6,11 +6,13 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import org.bson.types.ObjectId;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Dashboard;
@@ -29,6 +31,11 @@ public class MethodLevelSecurityHandlerTest {
 	
 	@Mock
 	private DashboardRepository dashboardRepository;
+	
+	@Before
+	public void setup() {
+		SecurityContextHolder.clearContext();
+	}
 	
 	@Test
 	public void testIsOwnerOfDashboard_noDashFound() {

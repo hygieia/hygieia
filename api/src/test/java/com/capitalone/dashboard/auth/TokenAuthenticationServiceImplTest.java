@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -45,6 +46,7 @@ public class TokenAuthenticationServiceImplTest {
 	
 	@Before
 	public void setup() {
+		SecurityContextHolder.clearContext();
 		response = mock(HttpServletResponse.class);
 		request = mock(HttpServletRequest.class);
 		

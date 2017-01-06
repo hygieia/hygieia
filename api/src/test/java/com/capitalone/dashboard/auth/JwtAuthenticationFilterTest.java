@@ -36,6 +36,7 @@ public class JwtAuthenticationFilterTest {
 	
 	@Before
 	public void setup() {
+		SecurityContextHolder.clearContext();
 		filter = new JwtAuthenticationFilter(authService);
 		when(authService.getAuthentication(any(HttpServletRequest.class))).thenReturn(authentication);
 	}
