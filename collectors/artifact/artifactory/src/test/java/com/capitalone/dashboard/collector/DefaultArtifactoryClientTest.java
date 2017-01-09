@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import org.springframework.web.client.RestOperations;
 
 import com.capitalone.dashboard.model.ArtifactoryRepo;
 import com.capitalone.dashboard.model.BinaryArtifact;
+import com.capitalone.dashboard.util.ArtifactUtilTest;
 import com.capitalone.dashboard.util.Supplier;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,6 +46,7 @@ public class DefaultArtifactoryClientTest {
     	when(restOperationsSupplier.get()).thenReturn(rest);
         settings = new ArtifactorySettings();
         settings.setServers(Collections.singletonList("http://localhost:8081/artifactory/"));
+        settings.setPatterns(Arrays.asList(	ArtifactUtilTest.IVY_PATTERN1, ArtifactUtilTest.IVY_ARTIFACT_PATTERN1, ArtifactUtilTest.MAVEN_PATTERN1));
         defaultArtifactoryClient = new DefaultArtifactoryClient(settings, restOperationsSupplier);
     }
     

@@ -4,10 +4,10 @@
 	angular.module(HygieiaConfig.module).controller('featureConfigController',
 			featureConfigController);
 
-	featureConfigController.$inject = [ 'modalData', '$uibModalInstance',
+	featureConfigController.$inject = [ 'modalData', '$modalInstance',
 			'collectorData', 'featureData' ];
 
-	function featureConfigController(modalData, $uibModalInstance, collectorData, featureData) {
+	function featureConfigController(modalData, $modalInstance, collectorData, featureData) {
 		/* jshint validthis:true */
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
@@ -59,11 +59,11 @@
 		// Request collector items
 		collectorData.itemsByType('scopeowner').then(
 				processCollectorItemsResponse);
-
+		
 		// Request projects
 		featureData.projects().then(
 				processProjectsResponse);
-
+		
 		initEstimateMetricType(widgetConfig);
 		initSprintType(widgetConfig);
 		initListType(widgetConfig);
@@ -71,7 +71,7 @@
 		function processProjectsResponse(data) {
 			var projects = [];
 			var featureProjectId = widgetConfig.options.projectId;
-
+			
 			if (ctrl.collectorId !== "") {
 				projects = getProjects(data, featureProjectId);
 				evaluateTypeSelection();
@@ -142,7 +142,7 @@
 				}
 			}
 		}
-
+		
 		function processCollectorItemsResponse(data) {
 			var scopeOwners = [];
 			var featureCollector = modalData.dashboard.application.components[0].collectorItems.ScopeOwner;
@@ -269,7 +269,7 @@
 				}
 			}
 		}
-
+		
 		function initEstimateMetricType(widgetConfig) {
 			if (widgetConfig.options.estimateMetricType != undefined && widgetConfig.options.estimateMetricType != null) {
 				ctrl.estimateMetricType = widgetConfig.options.estimateMetricType;
@@ -277,7 +277,7 @@
 				ctrl.estimateMetricType = 'storypoints';
 			}
 		}
-
+		
 		function initSprintType(widgetConfig) {
 			if (widgetConfig && widgetConfig.options && widgetConfig.options.sprintType) {
 				ctrl.sprintType = widgetConfig.options.sprintType;
@@ -285,7 +285,7 @@
 				ctrl.sprintType = 'kanban';
 			}
 		}
-
+		
 		function initListType(widgetConfig) {
             if (widgetConfig && widgetConfig.options && widgetConfig.options.listType) {
                 ctrl.listType = widgetConfig.options.listType;
@@ -307,13 +307,13 @@
 				}
 			}
 			ctrl.scopeOwners = tempTypeOptions;
-
+			
 			var tempProjects = [];
 			for ( var x = 0; x < ctrl.permanentProjects.length; x++) {
 			    var sampleProject = ctrl.permanentProjects[x].projectName
                                         .substr(0, ctrl.permanentProjects[x].projectName
                                         .indexOf(' '));
-                if (ctrl.collectorId != null && (ctrl.permanentProjects[x].projectName === 'Any'
+                if (ctrl.collectorId != null && (ctrl.permanentProjects[x].projectName === 'Any' 
                                                     || sampleProject === ctrl.collectorId.value)) {
                     tempProjects.push(ctrl.permanentProjects[x]);
                 }
@@ -386,11 +386,11 @@
                     },
                     componentId : modalData.dashboard.application.components[0].id,
                     collectorItemId : ctrl.collectorItemId.value
-                };
+                };    
     		}
-
+			
 			// pass this new config to the modal closing so it's saved
-			$uibModalInstance.close(postObj);
+			$modalInstance.close(postObj);
 		}
 	}
 })();

@@ -56,6 +56,29 @@ artifactory.cron=${ARTIFACTORY_CRON:-0 0/5 * * * *}
 #The repos to collect artifacts from (required) - Can provide multiple (comma separated for each server)
 #artifactory.repos[0]=prerelease,release
 
+# Artifact Regex Patterns
+# Each artifact found is matched against the following patterns in order (first one wins)
+# The following capture groups are available:
+#  - group
+#  - module
+#  - artifact
+#  - version
+#  - classifier
+#  - ext
+EOF
+idx=0
+for x in ${!ARTIFACTORY_PATTERN*}
+do
+cat >> $PROP_FILE <<EOF
+artifactory.patterns[${idx}]=${!x}
+EOF
+	
+	idx=$((idx+1))
+done
+
+cat >> $PROP_FILE <<EOF
+
+# Artifactory urls and credentials
 EOF
 
 # find how many artifactory urls are configured
@@ -91,7 +114,8 @@ EOF
 done
 
 cat >> $PROP_FILE <<EOF
-#Artifactory REST endpoint
+
+# Artifactory REST endpoint
 artifactory.endpoint=${ARTIFACTORY_ENDPOINT:-artifactory/}
 EOF
 

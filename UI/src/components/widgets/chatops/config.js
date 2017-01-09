@@ -8,9 +8,9 @@
         .module(HygieiaConfig.module)
         .controller('ChatOpsConfigController', ChatOpsConfigController);
 
-    ChatOpsConfigController.$inject = ['modalData', '$uibModalInstance',
+    ChatOpsConfigController.$inject = ['modalData', '$modalInstance',
         'collectorData'];
-    function ChatOpsConfigController(modalData, $uibModalInstance, collectorData) {
+    function ChatOpsConfigController(modalData, $modalInstance, collectorData) {
         var ctrl = this;
         var widgetConfig = modalData.widgetConfig;
 
@@ -111,7 +111,7 @@
             };
 
             // pass this new config to the modal closing so it's saved
-            $uibModalInstance.close(postObj);
+            $modalInstance.close(postObj);
         }
     }
 })();
