@@ -36,7 +36,7 @@
         }
 
         function doLogin() {
-            $location.path('/');
+            $location.path('/login');
         }
 
         function processResponse(data) {
