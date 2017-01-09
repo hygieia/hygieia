@@ -2,7 +2,9 @@ package com.capitalone.dashboard.auth;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,6 +38,11 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private long expirationTime;
 	private String secret;
 
+	@PostConstruct
+	public void init() {
+		secret = UUID.randomUUID().toString().replace("-", "");
+	}
+	
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = Jwts.builder().setSubject(authentication.getName())
@@ -69,10 +76,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	
 	public void setExpirationTime(long expirationTime) {
 		this.expirationTime = expirationTime;
-	}
-	
-	public void setSecret(String secret) {
-		this.secret = secret;
 	}
 	
 	private Collection<String> getRoles(Collection<? extends GrantedAuthority> authorities) {
