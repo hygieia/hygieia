@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FilenameUtils;
+
 public class DeployBuilder {
 
     private static final Logger logger = Logger.getLogger(DeployBuilder.class.getName());
@@ -98,13 +100,17 @@ public class DeployBuilder {
                 if ("".equals(artifactVersion)) {
                     artifactVersion = HygieiaUtils.guessVersionNumber(f.getName());
                 }
+              
+                String artifactName = HygieiaUtils.determineArtifactName(f, artifactVersion);
+                
                 bac.setArtifactVersion(artifactVersion);
-                bac.setArtifactName(HygieiaUtils.getFileNameMinusVersion(f, artifactVersion));
-
+                bac.setArtifactName(artifactName);
+                
                 BuildBuilder buildBuilder;
 
                 if (run instanceof WorkflowRun) {
                     buildBuilder = new BuildBuilder(run, jenkinsName, listener, result, false);
+
                 } else {
                     buildBuilder = new BuildBuilder((AbstractBuild) run, jenkinsName, listener, true, false);
                 }
