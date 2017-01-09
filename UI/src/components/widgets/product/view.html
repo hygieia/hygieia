@@ -186,7 +186,8 @@
             <div
                 class="product-table-tr new-team-row"
                 ng-class="{'no-teams': !ctrl.configuredTeams.length}"
-                ng-click="ctrl.addTeam()">
+                ng-click="ctrl.addTeam()"
+                ng-show="hasPermission()">
                 <div class="product-table-td">
                     <span class="fa fa-plus fa-thin-border"></span>
                     <div>Add a team</div>
