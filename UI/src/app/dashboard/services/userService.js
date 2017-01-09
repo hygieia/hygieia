@@ -33,11 +33,39 @@
         }
         return false;
       }
+      
+      this.getAuthType = function () {
+    	  return getUser().details.auth_type;
+      }
 
       this.isAdmin = function () {
         var user = getUser();
         if (user.roles && user.roles.indexOf("ROLE_ADMIN") > -1) return true;
         return false;
+      }
+      
+      this.hasDashboardConfigPermission = function (owner, owners) {
+    	if (this.isAdmin()) {
+    		return true;
+    	}
+    	  
+    	var authtype = this.getAuthType();
+    	var username = this.getUsername();
+    	
+    	// preexisting dashboards
+      	if (authtype === 'STANDARD' && dashboard.owner === username) {
+      		return true;
+      	} 
+      	
+      	var hasPermission = false;
+      	owners.forEach(function (owner) {
+      	debugger;
+      		if (owner.username === username && owner.authType === authtype) {
+      			hasPermission = true;
+      		}
+      	});
+      	
+      	return hasPermission;
       }
     }
 })();

@@ -107,21 +107,9 @@
 
             // public methods
             $scope.configModal = configModal;
+            $scope.hasPermission = hasPermission;
             $scope.setState = setState;
             $scope.init = init;
-            $scope.checkPermission=checkPermission;
-
-            function checkPermission(){
-                dashboardData.myowner($scope.dashboard.id).then(processmyownerresponse, processmyownerfailure);
-            }
-
-            function processmyownerresponse(data) {
-                configModal();
-            }
-
-            function processmyownerfailure() {
-              $scope.alerts.push({type: 'info', msg: 'You are not authorized'});
-            }
 
             // method implementations
             function configModal() {
@@ -142,6 +130,12 @@
                 // when the widget closes if an object is passed we'll assume it's an updated
                 // widget configuration so try and send it to the api or update the existing one
                 $modal.open(modalConfig).result.then(upsertWidget);
+            }
+            
+            function hasPermission() {
+            	var dashboard = $scope.dashboard;
+
+            	return userService.hasDashboardConfigPermission(dashboard.owner, dashboard.owners);
             }
 
             function upsertWidget(newWidgetConfig) {
