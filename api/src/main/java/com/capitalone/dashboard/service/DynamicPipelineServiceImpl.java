@@ -698,7 +698,17 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 			
 			if (env.getUnits() != null) {
 				for (DeployableUnit du : env.getUnits()) {
-					ArtifactIdentifier id = new ArtifactIdentifier(null, du.getName(), du.getVersion(), null, null);
+			        String artifactName = du.getName();
+			        String artifactExtension = null;
+			        int dotIdx = artifactName.lastIndexOf('.');
+			        if (dotIdx > 0) {
+			        	// If idx is 0 starts with a dot... in which case not an extension
+			        	
+			        	artifactName = artifactName.substring(0, dotIdx);
+			        	artifactExtension = artifactName.substring(dotIdx);
+			        }
+					
+					ArtifactIdentifier id = new ArtifactIdentifier(null, artifactName, du.getVersion(), null, artifactExtension);
 					
 					ids.add(id);
 				}
@@ -715,7 +725,7 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		Set<ArtifactIdentifier> idsDedup = new HashSet<>(ids);
 		
 		for (ArtifactIdentifier id : idsDedup) {
-			List<BinaryArtifact> artifacts = getBinaryArtifacts(id.getGroup(), id.getName(), id.getVersion());
+			List<BinaryArtifact> artifacts = getBinaryArtifacts(id.getGroup(), id.getName(), id.getVersion(), id.getExtension());
 			
 			rt.put(id, artifacts);
 		}
@@ -723,13 +733,14 @@ public class DynamicPipelineServiceImpl implements PipelineService {
 		return rt;
 	}
 	
-	private List<BinaryArtifact> getBinaryArtifacts(String group, String name, String version) {
+	private List<BinaryArtifact> getBinaryArtifacts(String group, String name, String version, String ext) {
 		List<BinaryArtifact> rt;
 		
 		BinaryArtifactSearchRequest request = new BinaryArtifactSearchRequest();
 		request.setArtifactGroup(group != null && group.length() > 0? group : null);
 		request.setArtifactName(name != null && name.length() > 0? name : null);
 		request.setArtifactVersion(version != null && version.length() > 0? version : null);
+		request.setArtifactExtension(ext != null? ext : null); // empty string extension is valid
 		
 		DataResponse<Iterable<BinaryArtifact>> response = binaryArtifactService.search(request);
 		
