@@ -59,7 +59,6 @@
       	
       	var hasPermission = false;
       	owners.forEach(function (owner) {
-      	debugger;
       		if (owner.username === username && owner.authType === authtype) {
       			hasPermission = true;
       		}
