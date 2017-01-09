@@ -16,6 +16,7 @@ public class ArtifactorySettings {
     private List<String> apiKeys;
     private List<String> servers;
     private List<String[]> repos;
+    private List<String> patterns;
     private String endpoint;
     
     public String getCron() {
@@ -65,4 +66,18 @@ public class ArtifactorySettings {
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
+
+	/**
+	 * @return the patterns
+	 */
+	public List<String> getPatterns() {
+		return patterns;
+	}
+
+	/**
+	 * @param patterns the patterns to set
+	 */
+	public void setPatterns(List<String> patterns) {
+		this.patterns = patterns;
+	}
 }
