@@ -32,10 +32,13 @@ dbhostport=[host1:port1,host2:port2,host3:port3]
 server.contextPath=[Web Context path if any]
 server.port=[Web server port - default is 8080]
 version.number=@application.version.number@
+
+auth.expirationTime=[JWT expiration time in milliseconds]
 ```
 
 All the above values are optional. Even without the property file you must be able to run the api (assuming you have mongodb installed with no authorization).
 **Note:** When `dbusername` is not present or the value is empty then it skips the mongodb authorization part.
+**Note:** If the expiration time is left blank, the token will can be thought of as permanently expired. This will cause the users to never see any content. While leaving this value blank will not terminate application start up, this is a mandatory field if you wish users to see any content.
 
 ## Run the API
 
