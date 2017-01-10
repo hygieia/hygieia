@@ -7,6 +7,7 @@
  			 <input type="text" name="collectorItemId" class="form-control" placeholder="Select a build job"
        ng-model="buildConfig.collectorItemId"
  			 uib-typeahead="item as item.description for item in getJobs($viewValue)"
+ 			 typeahead-template-url="jobUrlTemplate.html"
  			 typeahead-min-length="0"
  			 typeahead-wait-ms="250"
  			 autocomplete="off"
@@ -54,3 +55,8 @@
         </div>
     </form>
 </widget-modal>
+<script type="text/ng-template" id="jobUrlTemplate.html">
+	<a title={{match.model.options.instanceUrl}}>
+		<span ng-bind-html="match.label | uibTypeaheadHighlight:query"/> 
+	</a>
+</script>

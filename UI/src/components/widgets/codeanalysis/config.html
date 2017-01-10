@@ -12,6 +12,7 @@
 				<input type="text" name="caCollectorItem" class="form-control" placeholder="Select a Code Analysis Job"
 					ng-model="caWidget.caCollectorItem"
 					uib-typeahead="item as item.description for item in getCodeQualityCollectors($viewValue)"
+					typeahead-template-url="sonarProjectUrlTemplate.html"
 					typeahead-wait-ms="250" autocomplete="off"
 					typeahead-min-length="0"
           typeahead-no-results="noResults"
@@ -103,3 +104,8 @@
         </form-group>
     </form>
 </widget-modal>
+<script type="text/ng-template" id="sonarProjectUrlTemplate.html">
+	<a title={{match.model.options.instanceUrl}}>
+		<span ng-bind-html="match.label | uibTypeaheadHighlight:query"/> 
+	</a>
+</script>
