@@ -2,7 +2,9 @@ package com.capitalone.dashboard.auth;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,15 +35,20 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String ROLES_CLAIM = "roles";
 	private static final String DETAILS_CLAIM = "details";
 	
-	private long expirationTime;
+	private Long expirationTime;
 	private String secret;
 
+	@PostConstruct
+	public void init() {
+		secret = UUID.randomUUID().toString().replace("-", "");
+	}
+	
 	@Override
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = Jwts.builder().setSubject(authentication.getName())
 				.claim(DETAILS_CLAIM, authentication.getDetails())
 				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+				.setExpiration(new Date(System.currentTimeMillis() + getExpirationTime()))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 	}
@@ -67,12 +74,16 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		}
 	}
 	
-	public void setExpirationTime(long expirationTime) {
+	public void setExpirationTime(Long expirationTime) {
 		this.expirationTime = expirationTime;
 	}
 	
-	public void setSecret(String secret) {
-		this.secret = secret;
+	public long getExpirationTime() {
+		if (expirationTime == null) {
+			return 0L;
+		}
+		
+		return expirationTime;
 	}
 	
 	private Collection<String> getRoles(Collection<? extends GrantedAuthority> authorities) {
