@@ -31,22 +31,25 @@
 
         function doSignup(valid) {
             if (valid) {
-                authService.register({username:document.suf.id.value, password:document.suf.password.value}).then(processResponse);
+                authService.register({username:document.suf.id.value, password:document.suf.password.value}).then(processSuccessfulResponse, processFailureResponse);
             }
         }
 
         function doLogin() {
+            $location.path('/login');
+        }
+
+        function processSuccessfulResponse(response) {
             $location.path('/');
         }
 
-        function processResponse(response) {
-          if(response.status === 200) {
-            $location.path('/');
-          } else {
-            $scope.suf.id.$setValidity('exists', false);
-            signup.userCreated = false;
-          }
+        function processFailureResponse(response) {
+          $scope.suf.id.$setValidity('exists', false);
+          signup.userCreated = false;
+        }
 
+        $scope.resetUsernameFieldValidity = function () {
+          $scope.suf.id.$setValidity('exists', true);
         }
 
     }

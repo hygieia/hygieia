@@ -11,18 +11,17 @@
     authService.$inject = ['signupData', 'loginData', 'tokenService'];
     function authService(signupData, loginData, tokenService) {
 
+        var processResponse = function (response) {
+          tokenService.setToken(response.headers()['x-authentication-token']);
+          return response;
+        }
+
         this.register = function (credentials) {
-          return signupData.signup(credentials.username, credentials.password).then(function (response) {
-            tokenService.setToken(response.headers()['x-authentication-token']);
-            return response;
-          })
+          return signupData.signup(credentials.username, credentials.password).then(processResponse)
         }
 
         this.login = function (credentials) {
-          return loginData.login(credentials.username, credentials.password).then(function (response) {
-            tokenService.setToken(response.headers()['x-authentication-token']);
-            return response;
-          })
+          return loginData.login(credentials.username, credentials.password).then(processResponse)
         }
 
         this.logout = function () {
