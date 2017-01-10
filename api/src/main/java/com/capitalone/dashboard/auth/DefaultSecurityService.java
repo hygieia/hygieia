@@ -20,17 +20,18 @@ import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.AuthenticationUtil;
 
 @Component
-public class SecurityService {
+public class DefaultSecurityService implements SecurityService{
 	
 	private final TokenAuthenticationService tokenAuthenticationService;
 	private final UserInfoService userInfoService;
 	
 	@Autowired
-	public SecurityService(TokenAuthenticationService tokenAuthenticationService, UserInfoService userInfoService) {
+	public DefaultSecurityService(TokenAuthenticationService tokenAuthenticationService, UserInfoService userInfoService) {
 		this.tokenAuthenticationService = tokenAuthenticationService;
 		this.userInfoService = userInfoService;
 	}
 	
+	@Override
 	public void inflateResponse(HttpServletResponse response, Authentication authentication, AuthType authType) {
 		Collection<UserRole> authorities = userInfoService.getAuthorities(authentication.getName(), authType);
 		PreAuthenticatedAuthenticationToken inflatedAuthentication = new PreAuthenticatedAuthenticationToken(authentication.getName(), authentication.getCredentials().toString(), createAuthorities(authorities));
