@@ -42,7 +42,7 @@
         function processResponse(data) {
           if(data.status === 200) {
             tokenService.setToken(data.headers()['x-authentication-token']);
-            $location.path('/login');
+            $location.path('/');
           } else {
             $scope.suf.id.$setValidity('exists', false);
             signup.userCreated = false;
