@@ -42,7 +42,9 @@
           else
           {
         return $http.post(SignupDetailRoute,postData).then(function (response) {
-            return response.data;
+            return response;
+        }, function (response) {
+            return response;
         });
       }
     }

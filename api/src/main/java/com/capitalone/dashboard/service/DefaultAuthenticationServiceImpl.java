@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -39,13 +38,8 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String create(String username, String password) {
-        Authentication authentication = new Authentication(username, password);
-        try {
-            authenticationRepository.save(authentication);
-            return "User is created";
-        } catch (DuplicateKeyException e) {
-            return "User already exists";
-        }
+        authenticationRepository.save(new Authentication(username, password));
+        return username;
 
     }
 

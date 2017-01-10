@@ -7,8 +7,8 @@
         .module(HygieiaConfig.module)
         .controller('SignupController', SignupController);
 
-    SignupController.$inject = ['$scope', 'signupData', '$location'];
-    function SignupController($scope, signupData, $location) {
+    SignupController.$inject = ['$scope', 'signupData', '$location', 'tokenService'];
+    function SignupController($scope, signupData, $location, tokenService) {
         var signup = this;
 
         // public variables
@@ -36,13 +36,18 @@
         }
 
         function doLogin() {
-            $location.path('/login');
+            $location.path('/');
         }
 
         function processResponse(data) {
-            var exists = data == 'User already exists';
-            $scope.suf.id.$setValidity('exists', !exists);
-            signup.userCreated = !exists;
+          if(data.status === 200) {
+            tokenService.setToken(data.headers()['x-authentication-token']);
+            $location.path('/login');
+          } else {
+            $scope.suf.id.$setValidity('exists', false);
+            signup.userCreated = false;
+          }
+
         }
 
     }
