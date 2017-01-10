@@ -2,15 +2,12 @@ package com.capitalone.dashboard.auth;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.UUID;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,8 +22,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
-@EnableConfigurationProperties
-@ConfigurationProperties(prefix = "auth")
 public class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
 
 	private static final String AUTHORIZATION = "Authorization";
@@ -34,13 +29,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final String ROLES_CLAIM = "roles";
 	private static final String DETAILS_CLAIM = "details";
-	
-	private Long expirationTime;
-	private String secret;
 
-	@PostConstruct
-	public void init() {
-		secret = UUID.randomUUID().toString().replace("-", "");
+	private TokenAuthProperties tokenAuthProperties;
+	
+	@Autowired
+	public TokenAuthenticationServiceImpl(TokenAuthProperties tokenAuthProperties) {
+		this.tokenAuthProperties = tokenAuthProperties;
 	}
 	
 	@Override
@@ -48,8 +42,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		String jwt = Jwts.builder().setSubject(authentication.getName())
 				.claim(DETAILS_CLAIM, authentication.getDetails())
 				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
-				.setExpiration(new Date(System.currentTimeMillis() + getExpirationTime()))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
+				.setExpiration(new Date(System.currentTimeMillis() + tokenAuthProperties.getExpirationTime()))
+				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 	}
 
@@ -61,7 +55,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		
 		String token = StringUtils.removeStart(authHeader, AUTH_PREFIX_W_SPACE);
 		try {
-			Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token).getBody();
 			String username = claims.getSubject();
 			Collection<GrantedAuthority> authorities = getAuthorities(claims.get(ROLES_CLAIM, Collection.class));
 			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null, authorities);
@@ -72,18 +66,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		} catch (ExpiredJwtException e) {
 			return null;
 		}
-	}
-	
-	public void setExpirationTime(Long expirationTime) {
-		this.expirationTime = expirationTime;
-	}
-	
-	public long getExpirationTime() {
-		if (expirationTime == null) {
-			return 0L;
-		}
-		
-		return expirationTime;
 	}
 	
 	private Collection<String> getRoles(Collection<? extends GrantedAuthority> authorities) {
@@ -103,4 +85,5 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		
 		return authorities;
 	}
+
 }
