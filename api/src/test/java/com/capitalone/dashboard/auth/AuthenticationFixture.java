@@ -2,29 +2,20 @@ package com.capitalone.dashboard.auth;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.test.context.TestPropertySource;
 
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserRole;
-import com.capitalone.dashboard.util.AuthenticationUtil;
 import com.google.common.collect.Sets;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-@EnableConfigurationProperties
-@ConfigurationProperties(prefix = "auth")
-@TestPropertySource(locations="classpath:jwt.properties")
 public class AuthenticationFixture {
 
 	private static final String ROLES_CLAIM = "roles";
@@ -32,9 +23,7 @@ public class AuthenticationFixture {
 	
 	public static void createAuthentication(String username) {
 		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, "password");
-		Map<String, String> details = new HashMap<String, String>();
-		details.put(AuthenticationUtil.AUTH_TYPE, AuthType.STANDARD.name());
-		auth.setDetails(details);
+		auth.setDetails(AuthType.STANDARD.name());
 		SecurityContext context = new SecurityContextImpl();
 		context.setAuthentication(auth);
 		SecurityContextHolder.setContext(context);

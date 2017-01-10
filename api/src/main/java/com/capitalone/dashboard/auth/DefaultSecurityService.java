@@ -1,9 +1,7 @@
 package com.capitalone.dashboard.auth;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,10 +15,9 @@ import org.springframework.stereotype.Component;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.service.UserInfoService;
-import com.capitalone.dashboard.util.AuthenticationUtil;
 
 @Component
-public class DefaultSecurityService implements SecurityService{
+public class DefaultSecurityService implements SecurityService {
 	
 	private final TokenAuthenticationService tokenAuthenticationService;
 	private final UserInfoService userInfoService;
@@ -35,14 +32,8 @@ public class DefaultSecurityService implements SecurityService{
 	public void inflateResponse(HttpServletResponse response, Authentication authentication, AuthType authType) {
 		Collection<UserRole> authorities = userInfoService.getAuthorities(authentication.getName(), authType);
 		PreAuthenticatedAuthenticationToken inflatedAuthentication = new PreAuthenticatedAuthenticationToken(authentication.getName(), authentication.getCredentials().toString(), createAuthorities(authorities));
-		inflatedAuthentication.setDetails(createDetails(authType));
+		inflatedAuthentication.setDetails(authType.name());
         tokenAuthenticationService.addAuthentication(response, inflatedAuthentication);
-	}
-	
-	private Map<Object, Object> createDetails(AuthType authType) {
-		Map<Object, Object> details = new HashMap<>();
-		details.put(AuthenticationUtil.AUTH_TYPE, authType);
-		return details;
 	}
 	
 	private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {

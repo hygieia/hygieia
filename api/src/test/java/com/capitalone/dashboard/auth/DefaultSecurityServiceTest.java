@@ -7,8 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,7 +28,6 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.service.UserInfoService;
-import com.capitalone.dashboard.util.AuthenticationUtil;
 import com.google.common.collect.Sets;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -76,11 +73,8 @@ public class DefaultSecurityServiceTest {
 		assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN")));
 		assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_USER")));
 		
-		Map<Object, Object> details = (Map<Object, Object>) capture.getDetails();
-		assertEquals(HashMap.class, details.getClass());
-		assertEquals(1, details.keySet().size());
-		assertTrue(details.containsKey(AuthenticationUtil.AUTH_TYPE));
-		assertEquals(AuthType.STANDARD, details.get(AuthenticationUtil.AUTH_TYPE));
+		String details = (String) capture.getDetails();
+		assertEquals(AuthType.STANDARD, AuthType.valueOf(details));
 	}
 
 	private Authentication createAuthentication() {

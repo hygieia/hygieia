@@ -1,8 +1,5 @@
 package com.capitalone.dashboard.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,16 +17,7 @@ public class AuthenticationUtil {
 	}
 	
 	public static AuthType getAuthType() {
-		Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
-		
-		try {
-			Map<String, String> detailMap = (HashMap) details;
-			return AuthType.valueOf(detailMap.get(AUTH_TYPE));
-		} catch (ClassCastException cce) {
-			LOGGER.error("Authentication Details was not set as map.", cce.getMessage());
-			return null;
-		}
-		
+		return AuthType.valueOf((String)SecurityContextHolder.getContext().getAuthentication().getDetails());
 	}
 	
 }
