@@ -14,10 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,52 +29,41 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserRole;
-import com.capitalone.dashboard.service.AuthenticationService;
 import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.AuthenticationUtil;
 import com.google.common.collect.Sets;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DefaultSecurityServiceTest {
 	
+	private static final String USERNAME = "user1";
+	private static final Object PASSWORD = "password";
+
 	@Mock
 	private TokenAuthenticationService tokenAuthenticationService;
 	
 	@Mock
 	private UserInfoService userInfoService;
 	
-	@Mock
-	private AuthenticationManager authenticationManager;
+	@InjectMocks
+	private DefaultSecurityService service;
 	
-	@Mock
-	private AuthenticationService authenticationService;
-	
-	private MockHttpServletRequest request;
-	private StandardLoginFilter filter;
+	private MockHttpServletResponse httpServletResponse;
+	private Authentication authentication;
 	
 	@Before
 	public void setup() {
 		SecurityContextHolder.clearContext();
-		filter = new StandardLoginFilter("/login", authenticationManager, authenticationService, tokenAuthenticationService, userInfoService);
-		
-		when(authenticationService.authenticate(USERNAME, PASSWORD)).thenReturn(createAuthentication());
+		httpServletResponse = new MockHttpServletResponse();
+		authentication = createAuthentication();
 		when(userInfoService.getAuthorities(USERNAME, AuthType.STANDARD)).thenReturn(Sets.newHashSet(UserRole.ROLE_ADMIN, UserRole.ROLE_USER));
 	}
-
 	
+	@SuppressWarnings("unchecked")
 	@Test
-	public void testAttemptAuthentication() throws Exception {
-		Authentication result = filter.attemptAuthentication(request, null);
-		assertEquals(UsernamePasswordAuthenticationToken.class, result.getClass());
-		assertEquals(USERNAME, result.getName());
-		assertEquals(PASSWORD, result.getCredentials().toString());
-		
-		verify(authenticationService).authenticate(USERNAME, PASSWORD);
-	}
-	
-	@Test
-	public void testSuccessfulAuthentication() throws Exception {
+	public void shouldInflateResponse() throws Exception {
 		ArgumentCaptor<PreAuthenticatedAuthenticationToken> captorAuthentication = ArgumentCaptor.forClass(PreAuthenticatedAuthenticationToken.class);
-		filter.successfulAuthentication(request, null, null, createAuthentication());
+		service.inflateResponse(httpServletResponse, authentication, AuthType.STANDARD);
 		
 		verify(tokenAuthenticationService).addAuthentication(any(HttpServletResponse.class), captorAuthentication.capture());
 		
@@ -85,7 +76,7 @@ public class DefaultSecurityServiceTest {
 		assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN")));
 		assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_USER")));
 		
-		Map details = (Map<Object, Object>) capture.getDetails();
+		Map<Object, Object> details = (Map<Object, Object>) capture.getDetails();
 		assertEquals(HashMap.class, details.getClass());
 		assertEquals(1, details.keySet().size());
 		assertTrue(details.containsKey(AuthenticationUtil.AUTH_TYPE));
