@@ -12,10 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.capitalone.dashboard.auth.JwtAuthenticationFilter;
+import com.capitalone.dashboard.auth.SecurityService;
 import com.capitalone.dashboard.auth.StandardLoginFilter;
-import com.capitalone.dashboard.auth.TokenAuthenticationService;
 import com.capitalone.dashboard.service.AuthenticationService;
-import com.capitalone.dashboard.service.UserInfoService;
 
 @Configuration
 @EnableWebSecurity
@@ -27,17 +26,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private AuthenticationService authenticationService;
 	
 	@Autowired
-	private TokenAuthenticationService tokenAuthenticationService;
-	
-	@Autowired
 	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
 	@Autowired
-	private UserInfoService userInfoService;
+	private SecurityService securityService;
 	
 	@Bean
 	public StandardLoginFilter standardLoginFilter() throws Exception {
-		return new StandardLoginFilter("/login", authenticationManager(), authenticationService, tokenAuthenticationService, userInfoService);
+		return new StandardLoginFilter("/login", authenticationManager(), authenticationService, securityService);
 	}
 	
 	@Override

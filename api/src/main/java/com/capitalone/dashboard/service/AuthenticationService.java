@@ -28,7 +28,7 @@ public interface AuthenticationService {
      * @param username new Authentication to createCollectorItem
      * @return newly created Authentication object
      */
-    String create(String username, String password);
+    org.springframework.security.core.Authentication create(String username, String password);
 
     /**
      * Updates an existing quthentication instance.

@@ -15,14 +15,13 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.LoginCredentials;
 import com.capitalone.dashboard.service.AuthenticationService;
-import com.capitalone.dashboard.service.UserInfoService;
 
 public class StandardLoginFilter extends AuthenticationFilter {
 
 	private final AuthenticationService authenticationService; 
     
-    public StandardLoginFilter(String path, AuthenticationManager authenticationManager, AuthenticationService authenticationService, TokenAuthenticationService tokenAuthenticationService, UserInfoService userInfoService) {
-         super(new AntPathRequestMatcher(path), tokenAuthenticationService, userInfoService);
+    public StandardLoginFilter(String path, AuthenticationManager authenticationManager, AuthenticationService authenticationService, SecurityService securityService) {
+         super(new AntPathRequestMatcher(path), securityService);
          setAuthenticationManager(authenticationManager);
          this.authenticationService = authenticationService;
     }

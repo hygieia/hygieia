@@ -37,10 +37,10 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public String create(String username, String password) {
-        authenticationRepository.save(new Authentication(username, password));
-        return username;
-
+    public org.springframework.security.core.Authentication create(String username, String password) {
+        Authentication user = authenticationRepository.save(new Authentication(username, password));
+        
+        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), new ArrayList<>());
     }
 
     @Override
