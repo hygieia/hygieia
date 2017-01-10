@@ -41,11 +41,7 @@
           }
           else
           {
-        return $http.post(SignupDetailRoute,postData).then(function (response) {
-            return response;
-        }, function (response) {
-            return response;
-        });
+        return $http.post(SignupDetailRoute,postData);
       }
     }
   }
