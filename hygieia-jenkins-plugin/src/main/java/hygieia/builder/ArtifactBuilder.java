@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FilenameUtils;
 import static hygieia.utils.HygieiaUtils.getEnvironment;
+
 
 public class ArtifactBuilder {
 
@@ -86,9 +88,14 @@ public class ArtifactBuilder {
                 if ("".equals(version)) {
                     version = HygieiaUtils.guessVersionNumber(f.getName());
                 }
+                String artifactName = HygieiaUtils.determineArtifactName(f, version);
+                
                 bac.setArtifactVersion(version);
                 bac.setCanonicalName(f.getName());
-                bac.setArtifactName(HygieiaUtils.getFileNameMinusVersion(f, version));
+
+                bac.setArtifactName(artifactName);
+                bac.setArtifactModule(artifactName); // for now assume maven artifact
+                bac.setArtifactExtension(FilenameUtils.getExtension(f.getName()));
                 bac.setTimestamp(run.getTimeInMillis());
                 bac.setBuildId(hygieiaBuildId);
 
@@ -98,6 +105,7 @@ public class ArtifactBuilder {
                     changeLogSets = ((AbstractBuild) run).getChangeSets();
                 }
                 CommitBuilder commitBuilder = new CommitBuilder(changeLogSets);
+
                 bac.getSourceChangeSet().addAll(commitBuilder.getCommits());
 
                 bac.getMetadata().put("buildUrl", HygieiaUtils.getBuildUrl(run));
