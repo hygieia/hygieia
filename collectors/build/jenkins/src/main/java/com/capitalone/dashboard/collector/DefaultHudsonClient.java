@@ -334,14 +334,8 @@ public class DefaultHudsonClient implements HudsonClient {
     //This method will rebuild the API endpoint because the buildUrl obtained via Jenkins API
     //does not save the auth user info and we need to add it back.
     public static String rebuildJobUrl(String build, String server) throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
-        LOG.debug("build url is: " + build);
-        LOG.debug("server url is: " + server);
         URL instanceUrl = new URL(server);
         String userInfo = instanceUrl.getUserInfo();
-        if (userInfo == null) {
-            //you don't need to rebuild it
-            return build;
-        }
         String instanceProtocol = instanceUrl.getProtocol();
 
         //decode to handle spaces in the job name.
