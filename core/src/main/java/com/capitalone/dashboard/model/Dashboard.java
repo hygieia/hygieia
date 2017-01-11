@@ -4,9 +4,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A collection of widgets, collectors and application components that represent a software
@@ -77,29 +75,5 @@ public class Dashboard extends BaseModel {
     public DashboardType getType(){ return this.type; }
 
     public void setType(DashboardType type) { this.type = type; }
-
-    /**
-     * Finds the mapped names for each stage type from the widget options
-     * @return
-     */
-	public Map<PipelineStageType, String> findEnvironmentMappings(){
-
-        HashMap<String, String> environmentMappings = new HashMap<>();
-        for(Widget widget : this.getWidgets()) {
-            if (widget.getName().equalsIgnoreCase("pipeline")) {
-                HashMap<?, ?> gh = (HashMap<?, ?>)widget.getOptions().get("mappings");
-                for (Map.Entry<?, ?> entry : gh.entrySet()) {
-                    environmentMappings.put((String) entry.getKey(), (String) entry.getValue());
-                }
-            }
-        }
-        Map<PipelineStageType, String> stageTypeToEnvironmentNameMap = new HashMap<>();
-        if(!environmentMappings.isEmpty()){
-            for (Map.Entry<String,String> mapping : environmentMappings.entrySet()) {
-                stageTypeToEnvironmentNameMap.put(PipelineStageType.fromString((String) mapping.getKey()), (String) mapping.getValue());
-            }
-        }
-        return stageTypeToEnvironmentNameMap;
-    }
 
 }

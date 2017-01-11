@@ -1,9 +1,13 @@
 package com.captialone.dashboard.response;
 
+import java.util.List;
 import java.util.Map;
+
+import com.capitalone.dashboard.model.PipelineStage;
 
 public class SystemConfigResponse {
 	private Map<String, Object> globalProperties;
+	private List<PipelineStage> systemStages;
 
 	/**
 	 * @return the globalProperties
@@ -19,5 +23,12 @@ public class SystemConfigResponse {
 		this.globalProperties = globalProperties;
 	}
 	
+	public List<PipelineStage> getSystemStages() {
+		return systemStages;
+	}
+	
+	public void setSystemStages(List<PipelineStage> systemStages) {
+		this.systemStages = systemStages;
+	}
 	
 }

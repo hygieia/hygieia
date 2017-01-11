@@ -40,7 +40,7 @@ public class CommitEventListener extends HygieiaMongoEventListener<Commit> {
                     if (CommitType.New.equals(commit.getType())) {
                         PipelineCommit pipelineCommit = new PipelineCommit(commit, commit.getScmCommitTimestamp());
                         Pipeline pipeline = getOrCreatePipeline(teamDashboard);
-                        pipeline.addCommit(PipelineStageType.Commit.name(), pipelineCommit);
+                        pipeline.addCommit(PipelineStage.COMMIT.getName(), pipelineCommit);
                         pipelineRepository.save(pipeline);
                     }
                 });

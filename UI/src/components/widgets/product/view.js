@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
-    productViewController.$inject = ['$scope', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
-    function productViewController($scope, $document, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
+    productViewController.$inject = ['$scope', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'systemConfigData', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
+    function productViewController($scope, $document, $modal, $location, $q, $routeParams, $timeout, systemConfigData, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -64,52 +64,9 @@
         // private properties
         var teamDashboardDetails = {},
             isReload = null;
-
-        // public properties
-        ctrl.stages = ['Commit', 'Build', 'Dev', 'QA', 'Int', 'Perf', 'Prod'];
-        ctrl.sortableOptions = {
-            additionalPlaceholderClass: 'product-table-tr',
-            placeholder: function(el) {
-                // create a placeholder row
-                var tr = $document[0].createElement('div');
-                for(var x=0;x<=ctrl.stages.length;x++) {
-                    var td = $document[0].createElement('div');
-                    td.setAttribute('class', 'product-table-td');
-
-                    if(x == 0) {
-                        // add the name of the row so it somewhat resembles the actual data
-                        var name = $document[0].createElement('div');
-                        name.setAttribute('class', 'team-name');
-                        name.innerText = el.element[0].querySelector('.team-name').innerText;
-                        td.setAttribute('class', 'product-table-td team-name-cell');
-                        td.appendChild(name);
-                    }
-                    tr.appendChild(td);
-                }
-
-                return tr;
-            },
-            orderChanged: function() {
-                // re-order our widget options
-                var teams = ctrl.configuredTeams,
-                    existingConfigTeams = $scope.widgetConfig.options.teams,
-                    newConfigTeams = [];
-
-                _(teams).forEach(function(team) {
-                    _(existingConfigTeams).forEach(function(configTeam) {
-                        if(team.collectorItemId == configTeam.collectorItemId) {
-                            newConfigTeams.push(configTeam);
-                        }
-                    });
-                });
-
-                $scope.widgetConfig.options.teams = newConfigTeams;
-                updateWidgetOptions($scope.widgetConfig.options);
-            }
-        };
-
+        
         // public methods
-        ctrl.load = load;
+        ctrl.load = function() { systemConfigData.config().then(processLoad); };
         ctrl.addTeam = addTeam;
         ctrl.editTeam = editTeam;
         ctrl.openDashboard = openDashboard;
@@ -127,7 +84,51 @@
         }
 
         //region public methods
-        function load() {
+        function processLoad(systemConfig) {
+        	ctrl.stages = _(systemConfig.systemStages)
+	        	.map(function (stage) { return stage.name } )
+	        	.value();
+            ctrl.sortableOptions = {
+                    additionalPlaceholderClass: 'product-table-tr',
+                    placeholder: function(el) {
+                        // create a placeholder row
+                        var tr = $document[0].createElement('div');
+                        for(var x=0;x<=ctrl.stages.length;x++) {
+                            var td = $document[0].createElement('div');
+                            td.setAttribute('class', 'product-table-td');
+
+                            if(x == 0) {
+                                // add the name of the row so it somewhat resembles the actual data
+                                var name = $document[0].createElement('div');
+                                name.setAttribute('class', 'team-name');
+                                name.innerText = el.element[0].querySelector('.team-name').innerText;
+                                td.setAttribute('class', 'product-table-td team-name-cell');
+                                td.appendChild(name);
+                            }
+                            tr.appendChild(td);
+                        }
+
+                        return tr;
+                    },
+                    orderChanged: function() {
+                        // re-order our widget options
+                        var teams = ctrl.configuredTeams,
+                            existingConfigTeams = $scope.widgetConfig.options.teams,
+                            newConfigTeams = [];
+
+                        _(teams).forEach(function(team) {
+                            _(existingConfigTeams).forEach(function(configTeam) {
+                                if(team.collectorItemId == configTeam.collectorItemId) {
+                                    newConfigTeams.push(configTeam);
+                                }
+                            });
+                        });
+
+                        $scope.widgetConfig.options.teams = newConfigTeams;
+                        updateWidgetOptions($scope.widgetConfig.options);
+                    }
+                };
+        	
             // determine our current state
             if (isReload === null) {
                 isReload = false;
