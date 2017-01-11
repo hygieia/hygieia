@@ -48,7 +48,7 @@ var localStorageSupported = (function () {
         'ui.select',
         'angular-jwt'
     ])
-    .value('loginRedirectUrl', { url: '/' })
+
     .config(['$httpProvider', 'jwtOptionsProvider',
         // intercepting the http provider allows us to use relative routes
         // in data providers and then redirect them to a remote api if
@@ -119,5 +119,10 @@ var localStorageSupported = (function () {
                 .otherwise({
                     redirectTo: '/'
                 });
+        })
+        .run(function ($rootScope, loginRedirectService) {
+          $rootScope.$on('$locationChangeStart', function (event, nextPath, currentPath) {
+            loginRedirectService.saveCurrentPath(currentPath);
+          });
         });
 })();
