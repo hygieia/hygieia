@@ -18,6 +18,6 @@ angular.module(HygieiaConfig.module + '.core')
         };
     })
 
-    .directive('popoverHtmlUnsafe', [ '$uibTooltip', function ($uibTooltip) {
-        return $uibTooltip('popoverHtmlUnsafe', 'popover', 'click');
+    .directive('popoverHtmlUnsafe', [ '$tooltip', function ($tooltip) {
+        return $tooltip('popoverHtmlUnsafe', 'popover', 'click');
     }]);

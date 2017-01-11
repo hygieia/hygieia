@@ -7,9 +7,9 @@
 	angular.module(HygieiaConfig.module).controller('RepoConfigController',
 			RepoConfigController);
 
-	RepoConfigController.$inject = [ 'modalData', '$uibModalInstance',
+	RepoConfigController.$inject = [ 'modalData', '$modalInstance',
 			'collectorData' ];
-	function RepoConfigController(modalData, $uibModalInstance, collectorData) {
+	function RepoConfigController(modalData, $modalInstance, collectorData) {
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
 
@@ -80,7 +80,7 @@
 						ctrl.gitBranch === widgetConfig.options.branch &&
 						ctrl.repouser === widgetConfig.options.userID &&
 						ctrl.repopass === widgetConfig.options.password) {
-						$uibModalInstance.close();
+						$modalInstance.close();
 						return;
 					}
 				}
@@ -189,7 +189,7 @@
 			};
 
 			// pass this new config to the modal closing so it's saved
-			$uibModalInstance.close(postObj);
+			$modalInstance.close(postObj);
 		}
 	}
 })();

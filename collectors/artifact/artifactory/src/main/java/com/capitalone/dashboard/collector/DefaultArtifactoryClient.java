@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
@@ -30,6 +30,7 @@ import org.springframework.web.client.RestOperations;
 
 import com.capitalone.dashboard.model.ArtifactoryRepo;
 import com.capitalone.dashboard.model.BinaryArtifact;
+import com.capitalone.dashboard.util.ArtifactUtil;
 import com.capitalone.dashboard.util.Supplier;
 
 @Component
@@ -44,10 +45,32 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 	private final ArtifactorySettings artifactorySettings;
 	private final RestOperations restOperations;
 	
+	private final List<Pattern> artifactPatterns;
+	
 	@Autowired
 	public DefaultArtifactoryClient(ArtifactorySettings artifactorySettings, Supplier<RestOperations> restOperationsSupplier) {
         this.artifactorySettings = artifactorySettings;
         this.restOperations = restOperationsSupplier.get();
+        this.artifactPatterns = new ArrayList<>();
+        
+        if (artifactorySettings.getPatterns() != null) {
+	        for (String str : artifactorySettings.getPatterns()) {
+	        	try {
+		        	Pattern p = Pattern.compile(str);
+		        	
+		        	LOGGER.info("Adding Pattern " + p.pattern());
+		        	
+		        	artifactPatterns.add(p);
+	        	} catch (PatternSyntaxException e) {
+	        		LOGGER.error("Invalid pattern: " + e.getMessage());
+	        		throw e;
+	        	}
+	        }
+        }
+        
+        if (artifactPatterns.isEmpty()) {
+        	throw new IllegalStateException("No valid artifact patterns configured. Aborting.");
+        }
 	}
 	
 	public List<ArtifactoryRepo> getRepos(String instanceUrl) {
@@ -133,12 +156,13 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 	
 	/**
 	 * Creates an artifact given its canonical name and path.
-	 * Artifacts can be of the following forms:
+	 * Artifacts are created by supplied pattern configurations. By default three are supplied:
 	 * 1. Maven artifacts:
-	 * 		[org]/[module]/[version]/[module]-[version][-classifier].[ext]
+	 * 		[org]/[module]/[version]/[module]-[version]([-classifier])(.[ext])
 	 * 2. Ivy artifacts:
-	 * 		(a) [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier]).[ext]
+	 * 		(a) [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier])(.[ext])
 	 * 		(b) [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml
+	 * 
 	 * Using these patterns, we extract the artifact name, version and group id from the canonical name and path.
 	 * 
 	 * @param artifactCanonicalName			artifact's canonical name in artifactory
@@ -149,70 +173,34 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 	 */
 	private BinaryArtifact createArtifact(String artifactCanonicalName, String artifactPath, long timestamp, JSONObject jsonArtifact) {
 		BinaryArtifact result = null;
+		String fullPath = artifactPath + "/" + artifactCanonicalName;
 		
-		Pattern pathPattern = Pattern.compile("(?<org>.+)/(?<module>[^/]+)/(?<version>[^/]+)");
-        Matcher pathMatcher = pathPattern.matcher(artifactPath);
-        if (pathMatcher.matches() && pathMatcher.group("org") != null && pathMatcher.group("module") != null && pathMatcher.group("version") != null) {
-        	if (artifactCanonicalName.matches("ivy-" + pathMatcher.group("version") + "(-[^\\.]+)?.xml")) {
-        		// ivy artifact in the format [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml
-        		if (LOGGER.isDebugEnabled()) {
-        			LOGGER.debug("ivy artifact of form [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml found: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
-        		}
-        		result = new BinaryArtifact();
-        		result.setCanonicalName(artifactCanonicalName);
-        		result.setArtifactName("ivy");
-        		result.setArtifactVersion(pathMatcher.group("version"));
-        		result.setArtifactGroupId(pathMatcher.group("org"));
-        		result.setTimestamp(timestamp);
-        		addMetadataToArtifact(result, jsonArtifact);
-        	} else if (artifactCanonicalName.matches(pathMatcher.group("module") + "-" + pathMatcher.group("version") + "(-[^\\.]+)?.[^\\.]+")) {
-    			// maven artifact in format [org]/[module]/[version]/[module]-[version][-classifier].[ext]
-        		if (LOGGER.isDebugEnabled()) {
-        			LOGGER.debug("maven artifact of form [org]/[module]/[version]/[module]-[version][-classifier].[ext] found: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
-        		}
-        		result = new BinaryArtifact();
-        		result.setCanonicalName(artifactCanonicalName);
-        		result.setArtifactName(pathMatcher.group("module"));
-        		result.setArtifactVersion(pathMatcher.group("version"));
-        		result.setArtifactGroupId(pathMatcher.group("org").replace('/', '.'));
-        		result.setTimestamp(timestamp);
-        		addMetadataToArtifact(result, jsonArtifact);
-            } else {
-        		pathPattern = Pattern.compile("(?<org>.+)/(?<module>[^/]+)/(?<revision>[^/]+)/(?<type>[^/]+)");
-        		pathMatcher = pathPattern.matcher(artifactPath);
-        		if (pathMatcher.matches() && pathMatcher.group("org") != null && pathMatcher.group("module") != null && pathMatcher.group("revision") != null && pathMatcher.group("type") != null) {
-        			if (artifactCanonicalName.matches(".+-" + pathMatcher.group("revision") + "(-[^\\.]+)?.[^\\.]+")) {
-	        			// ivy artifact in the format [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier]).[ext]
-        				if (LOGGER.isDebugEnabled()) {
-        					LOGGER.debug("ivy artifact of form [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier]).[ext] found: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
-        				}
-        				result = new BinaryArtifact();
-                		result.setCanonicalName(artifactCanonicalName);
-                		result.setArtifactName(artifactCanonicalName.substring(0, artifactCanonicalName.indexOf("-" + pathMatcher.group("revision"))));
-                		result.setArtifactVersion(pathMatcher.group("revision"));
-                		result.setArtifactGroupId(pathMatcher.group("org"));
-                		result.setTimestamp(timestamp);
-                		addMetadataToArtifact(result, jsonArtifact);
-        			} else {
-        				if (LOGGER.isDebugEnabled()) {
-        					LOGGER.debug("Unsupported artifact name: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
-        				}
-        			}
-        		} else {
-        			if (LOGGER.isDebugEnabled()) {
-        				LOGGER.debug("Unsupported artifact: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
-        			}
-                }
-        	}
-        } else {
-        	if (LOGGER.isDebugEnabled()) {
-        		LOGGER.debug("Unsupported artifact path: NAME=" + artifactCanonicalName + " PATH=" + artifactPath);
-        	}
-        }
-        
-        return result;
+		int idx = 0;
+		for (Pattern pattern : artifactPatterns) {
+			result = ArtifactUtil.parse(pattern, fullPath);
+			
+			if (result != null) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Artifact at " + fullPath + " matched pattern " + idx);
+				}
+				
+				result.setCanonicalName(artifactCanonicalName);
+				result.setTimestamp(timestamp);
+				addMetadataToArtifact(result, jsonArtifact);
+				
+				return result;
+			}
+			
+			idx++;
+		}
+		
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Artifact at " + fullPath + " did not match any patterns.");
+		}
+		return null;
 	}
 	
+	@SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
 	private void addMetadataToArtifact(BinaryArtifact ba, JSONObject jsonArtifact) {
 		if (ba != null && jsonArtifact != null) {
         	JSONArray jsonProperties = getJsonArray(jsonArtifact, "properties");

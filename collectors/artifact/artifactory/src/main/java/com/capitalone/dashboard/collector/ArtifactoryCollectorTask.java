@@ -206,7 +206,8 @@ public class ArtifactoryCollectorTask extends CollectorTask<ArtifactoryCollector
 	}
     
     private boolean isNewArtifact(ArtifactoryRepo repo, BinaryArtifact artifact) {
-        return Iterables.size(binaryArtifactRepository.findByCollectorItemIdAndArtifactGroupIdAndArtifactNameAndArtifactVersion(repo.getId(),
-        		artifact.getArtifactGroupId(), artifact.getArtifactName(), artifact.getArtifactVersion())) == 0;
+        return Iterables.size(binaryArtifactRepository.findByAttributes(repo.getId(),
+        		artifact.getArtifactGroupId(), artifact.getArtifactModule(), artifact.getArtifactVersion(), artifact.getArtifactName(),
+        		artifact.getArtifactClassifier(), artifact.getArtifactExtension())) == 0;
     }
 }

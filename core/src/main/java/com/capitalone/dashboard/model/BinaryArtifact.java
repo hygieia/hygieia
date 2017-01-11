@@ -39,10 +39,14 @@ public class BinaryArtifact extends BaseModel {
     private ObjectId collectorItemId;
     private long timestamp;
 
-    private String artifactName;
     private String canonicalName;
     private String artifactGroupId;
+    private String artifactModule;
     private String artifactVersion;
+    private String artifactName;
+    private String artifactClassifier;
+    private String artifactExtension;
+    
     private Build buildInfo;
     
     private Map<String, String> metadata = new HashMap<>();
@@ -103,6 +107,48 @@ public class BinaryArtifact extends BaseModel {
     public void setCanonicalName(String canonicalName) {
         this.canonicalName = canonicalName;
     }
+    
+	/**
+	 * @return the artifactModule
+	 */
+	public String getArtifactModule() {
+		return artifactModule;
+	}
+
+	/**
+	 * @param artifactModule the artifactModule to set
+	 */
+	public void setArtifactModule(String artifactModule) {
+		this.artifactModule = artifactModule;
+	}
+
+	/**
+	 * @return the artifactClassifier
+	 */
+	public String getArtifactClassifier() {
+		return artifactClassifier;
+	}
+
+	/**
+	 * @param artifactClassifier the artifactClassifier to set
+	 */
+	public void setArtifactClassifier(String artifactClassifier) {
+		this.artifactClassifier = artifactClassifier;
+	}
+
+	/**
+	 * @return the artifactExtension
+	 */
+	public String getArtifactExtension() {
+		return artifactExtension;
+	}
+
+	/**
+	 * @param artifactExtension the artifactExtension to set
+	 */
+	public void setArtifactExtension(String artifactExtension) {
+		this.artifactExtension = artifactExtension;
+	}
     
     public String getBuildUrl() {
     	return getMetadata().get(METADATA_BUILD_URL);
