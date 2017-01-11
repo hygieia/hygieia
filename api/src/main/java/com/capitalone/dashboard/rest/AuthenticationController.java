@@ -35,14 +35,14 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/registerUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> registerUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @Valid @RequestBody AuthenticationRequest request) {
-    	try {
-	    	Authentication authentication = authenticationService.create(request.getUsername(), request.getPassword());
-	    	securityService.inflateResponse(httpServletResponse, authentication, AuthType.STANDARD);
-	    	return ResponseEntity.ok().body(authentication.getName());
-    	} catch (DuplicateKeyException dke) {
-    		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("User already exists");
-    	}
+    public ResponseEntity<Void> registerUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @Valid @RequestBody AuthenticationRequest request) {
+	    	try {
+		    	Authentication authentication = authenticationService.create(request.getUsername(), request.getPassword());
+		    	securityService.inflateResponse(httpServletResponse, authentication, AuthType.STANDARD);
+		    	return ResponseEntity.ok().build();
+	    	} catch (DuplicateKeyException dke) {
+	    		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+	    	}
     }
 
     @RequestMapping(value = "/updateUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
