@@ -237,7 +237,7 @@ public class DefaultHudsonClient implements HudsonClient {
             final String subJobURL = getString((JSONObject) subJob, "url");
             
             try {
-                ResponseEntity<String> responseEntity = makeRestCall(joinURL(subJobURL, SUBJOBS_URL_SUFFIX));
+                ResponseEntity<String> responseEntity = makeRestCall(joinURL(rebuildJobUrl(subJobURL, instanceUrl), SUBJOBS_URL_SUFFIX));
                 String returnJSON = responseEntity.getBody();
                 
                 try {
@@ -254,6 +254,8 @@ public class DefaultHudsonClient implements HudsonClient {
                 LOG.error("malformed url for loading jobs", mfe);
             } catch (URISyntaxException e1) {
                 LOG.error("wrong syntax url for loading jobs", e1);
+            } catch (UnsupportedEncodingException unse) {
+                LOG.error("Unsupported Encoding Exception subJobURL=" + subJobURL, unse);
             }
         }
     }
@@ -330,8 +332,14 @@ public class DefaultHudsonClient implements HudsonClient {
     //This method will rebuild the API endpoint because the buildUrl obtained via Jenkins API
     //does not save the auth user info and we need to add it back.
     public static String rebuildJobUrl(String build, String server) throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
+        LOG.debug("build url is: " + build);
+        LOG.debug("server url is: " + server);
         URL instanceUrl = new URL(server);
         String userInfo = instanceUrl.getUserInfo();
+        if (userInfo == null) {
+            //you don't need to rebuild it
+            return build;
+        }
         String instanceProtocol = instanceUrl.getProtocol();
 
         //decode to handle spaces in the job name.
@@ -349,7 +357,9 @@ public class DefaultHudsonClient implements HudsonClient {
      * Grabs changeset information for the given build.
      *
      * @param build     a Build
-     * @param buildJson the build JSON object
+     * @param changeSet the build JSON object
+     * @param commitIds the commitIds
+     * @param revisions the revisions
      */
     private void addChangeSet(Build build, JSONObject changeSet, Set<String> commitIds, Set<String> revisions) {        
         String scmType = getString(changeSet, "kind");
