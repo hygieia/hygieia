@@ -307,7 +307,9 @@ public class DefaultHudsonClient implements HudsonClient {
                         }
                     } else {
                         JSONObject changeSet = (JSONObject) buildJson.get("changeSet");
-                        addChangeSet(build, changeSet, commitIds, revisions);
+                        if (changeSet != null) {
+                            addChangeSet(build, changeSet, commitIds, revisions);
+                        }
                     }
                     return build;
                 }
