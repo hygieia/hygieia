@@ -89,7 +89,7 @@
 					if (ctrl.repopass === widgetConfig.options.password) {
 						//password is unchanged in the form so don't encrypt it again
 						try {
-							createCollectorItem().then(processCollectorItemResponse);
+							createCollectorItem().then(processCollectorItemResponse, handleError);
 						} catch (e) {
 							console.log(e);
 						}
@@ -101,14 +101,14 @@
 							}
 							ctrl.repopass = response;
 							try {
-								createCollectorItem().then(processCollectorItemResponse);
+								createCollectorItem().then(processCollectorItemResponse, handleError);
 							} catch (e) {
 								console.log(e);
 							}
 						});
 					}
 				} else {
-					createCollectorItem().then(processCollectorItemResponse);
+					createCollectorItem().then(processCollectorItemResponse, handleError);
 				}
 			}
 		}
@@ -171,6 +171,12 @@
 				};
 			}
 			return collectorData.createCollectorItem(item);
+		}
+
+		function handleError(response) {
+			if(response.status === 401) {
+				$modalInstance.close();
+			}
 		}
 
 		function processCollectorItemResponse(response) {
