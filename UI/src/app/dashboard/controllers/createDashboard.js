@@ -103,6 +103,9 @@
                     .error(function (data) {
                         // display error message
                         form.dashboardTitle.$setValidity('createError', false);
+                        if(data.status === 401) {
+                          $modalInstance.close();
+                        }
                     });
             }
         }
