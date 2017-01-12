@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntr
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,6 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests().antMatchers("/appinfo").permitAll()
 								.antMatchers("/registerUser").permitAll()
 								.antMatchers("/login**").permitAll()
+								.antMatchers(HttpMethod.GET, "/**").permitAll()
 								.anyRequest().authenticated()
 									.and()
 								.addFilterBefore(standardLoginFilter(), UsernamePasswordAuthenticationFilter.class)

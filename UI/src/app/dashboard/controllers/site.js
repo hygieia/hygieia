@@ -25,6 +25,7 @@
         ctrl.createDashboard = createDashboard;
         ctrl.deleteDashboard = deleteDashboard;
         ctrl.open = open;
+        ctrl.login = login;
         ctrl.logout = logout;
         ctrl.admin = admin;
         ctrl.setType = setType;
@@ -76,8 +77,11 @@
             $location.path('/admin');
         }
 
-        function logout()
-        {
+        function login() {
+          $location.path('/login');
+        }
+
+        function logout() {
             authService.logout();
             $location.path('/login');
         }
