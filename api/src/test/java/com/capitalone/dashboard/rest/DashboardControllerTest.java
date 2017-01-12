@@ -46,7 +46,6 @@ import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.util.TestUtil;
 import com.capitalone.dashboard.util.WidgetOptionsBuilder;
-import com.google.common.collect.Maps;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
@@ -259,9 +258,7 @@ public class DashboardControllerTest {
 
     private void initiateSecurityContext(String username, AuthType standard) {
     	UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, "password");
-    	Map<String, AuthType> details = Maps.newHashMap();
-    	details.put("auth_type", AuthType.STANDARD);
-    	authentication.setDetails(details);
+    	authentication.setDetails(AuthType.STANDARD.name());
     	SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
     
