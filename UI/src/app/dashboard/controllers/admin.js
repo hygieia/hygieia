@@ -21,8 +21,10 @@
         }
 
         ctrl.storageAvailable = localStorageSupported;
+        ctrl.showAuthentication = userService.isAuthenticated();
         ctrl.templateUrl = "app/dashboard/views/navheader.html";
         ctrl.username = userService.getUsername();
+        ctrl.login = login;
         ctrl.logout = logout;
         ctrl.renameDashboard=renameDashboard;
 
@@ -65,7 +67,11 @@
         //implementation of logout
         function logout() {
             authService.logout();
-            $location.path("/");
+            $location.path("/login");
+        }
+
+        function login() {
+          $location.path("/login")
         }
 
         // method implementations
