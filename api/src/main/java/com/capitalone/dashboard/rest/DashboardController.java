@@ -167,7 +167,7 @@ public class DashboardController {
 
     }
 
-    @DashboardOwnerOrAdmin
+    @Deprecated
     @RequestMapping(value = "/dashboard/myowner/{id}", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public String getDashboardOwner(@PathVariable ObjectId id) {
