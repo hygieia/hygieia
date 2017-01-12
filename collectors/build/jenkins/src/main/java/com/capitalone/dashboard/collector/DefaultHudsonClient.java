@@ -237,7 +237,7 @@ public class DefaultHudsonClient implements HudsonClient {
             final String subJobURL = getString((JSONObject) subJob, "url");
             
             try {
-                ResponseEntity<String> responseEntity = makeRestCall(joinURL(subJobURL, SUBJOBS_URL_SUFFIX));
+                ResponseEntity<String> responseEntity = makeRestCall(joinURL(rebuildJobUrl(subJobURL, instanceUrl), SUBJOBS_URL_SUFFIX));
                 String returnJSON = responseEntity.getBody();
                 
                 try {
@@ -254,6 +254,8 @@ public class DefaultHudsonClient implements HudsonClient {
                 LOG.error("malformed url for loading jobs", mfe);
             } catch (URISyntaxException e1) {
                 LOG.error("wrong syntax url for loading jobs", e1);
+            } catch (UnsupportedEncodingException unse) {
+                LOG.error("Unsupported Encoding Exception subJobURL=" + subJobURL, unse);
             }
         }
     }
@@ -305,7 +307,9 @@ public class DefaultHudsonClient implements HudsonClient {
                         }
                     } else {
                         JSONObject changeSet = (JSONObject) buildJson.get("changeSet");
-                        addChangeSet(build, changeSet, commitIds, revisions);
+                        if (changeSet != null) {
+                            addChangeSet(build, changeSet, commitIds, revisions);
+                        }
                     }
                     return build;
                 }
@@ -349,7 +353,9 @@ public class DefaultHudsonClient implements HudsonClient {
      * Grabs changeset information for the given build.
      *
      * @param build     a Build
-     * @param buildJson the build JSON object
+     * @param changeSet the build JSON object
+     * @param commitIds the commitIds
+     * @param revisions the revisions
      */
     private void addChangeSet(Build build, JSONObject changeSet, Set<String> commitIds, Set<String> revisions) {        
         String scmType = getString(changeSet, "kind");
