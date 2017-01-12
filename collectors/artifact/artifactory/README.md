@@ -57,4 +57,23 @@ artifactory.repos[0]=prerelease,release
 
 # Artifactory REST endpoint
 artifactory.endpoint=artifactory/
+
+# Artifact Regex Patterns
+# Each artifact found is matched against the following patterns in order (first one wins)
+# The following capture groups are available:
+#  - group
+#  - module
+#  - artifact
+#  - version
+#  - classifier
+#  - ext
+# Matches maven artifacts of the form [org]/[module]/[version]/[module]-[version]([-classifier])(.[ext])
+artifactory.patterns[0]=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>\\k<module>)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?
+
+# Matches ivy files of the form [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml 
+artifactory.patterns[1]=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>ivy)-\\k<version>(-(?<classifier>[^\\.]+))?\\.(?<ext>xml)
+
+# Matches ivy artifact files of the form [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier])(.[ext])
+artifactory.patterns[2]=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<type>[^/]+)/(?<artifact>[^\\.-/]+)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?
+
 ```

@@ -131,7 +131,7 @@
                 // widget configuration so try and send it to the api or update the existing one
                 $modal.open(modalConfig).result.then(upsertWidget);
             }
-            
+
             function hasPermission() {
             	var dashboard = $scope.dashboard;
 

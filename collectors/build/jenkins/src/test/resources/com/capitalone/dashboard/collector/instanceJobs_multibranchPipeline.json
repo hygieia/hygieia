@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    {
+      "_class":"org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject",
+      "name": "job1",
+      "url": "http://server/job/job1/",
+      "jobs": [
+        {
+          "name": "master",
+          "url": "http://server/job/job1/job/master"
+        }
+      ]
+    }
+  ]
+}
