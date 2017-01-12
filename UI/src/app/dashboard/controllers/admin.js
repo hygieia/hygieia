@@ -12,7 +12,7 @@
     AdminController.$inject = ['dashboardData', '$location','$modal', 'userService', 'authService'];
     function AdminController(dashboardData, $location, $modal, userService, authService) {
         var ctrl = this;
-        if (userService.isAdmin()) {
+        if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
         }
         else {
