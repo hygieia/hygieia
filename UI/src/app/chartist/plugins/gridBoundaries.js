@@ -13,7 +13,13 @@
             chart.on('draw', function(data) {
                 // remove any elements if showGrid is still on
                 if(data.type == 'grid') {
-                    data.element._node.remove();
+                    if(typeof data.element._node.remove=='function') {
+                        data.element._node.remove();
+                    } else {
+                        while(data.element._node.hasChildNodes()) {
+                            data.element._node.removeChild(_node.firstChild);
+                        }
+                    }
                 }
             });
 
