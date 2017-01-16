@@ -79,8 +79,14 @@
 
             for(var i = 0; i < tags.length; i++) {
                 var item = tags[i];
-                if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDE") {
-                    return "disabled" ;
+                if (typeof item.name.toUpperCase().includes=='function') {
+                    if (item.name.toUpperCase().includes("NOTT") && item.value.toUpperCase() == "EXCLUDE") {
+                        return "disabled" ;
+                    }
+                } else {
+                    if(item.name.toUpperCase().indexOf("NOTT") >= 0  && item.value.toUpperCase() == "EXCLUDE" ) {
+                        return "disabled" ;
+                    }
                 }
             }
             return "enabled";
@@ -448,9 +454,12 @@
 
                                     array[index].formattedTags = JSON.stringify(element.tags).split(",").join("<br />");
 
-                                    var subnet = ctrl.subnetsByAccount.find(function(value) {
-                                        return value.subnetId == element.subnetId
-                                    });
+                                    var subnet;
+                                    if(typeof ctrl.subnetsByAccount.find=='function') {
+                                        subnet = ctrl.subnetsByAccount.find(function(value) {
+                                            return value.subnetId == element.subnetId
+                                        });
+                                    }
 
                                     if (subnet != undefined) {
                                         array[index].subnetUsageStatus = getSubnetStatus(subnet.usedIPCount, subnet.availableIPCount);
