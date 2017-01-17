@@ -128,7 +128,9 @@
                 }
                 else
                 {
-                    $scope.alerts.push({type: 'info', msg: 'You are not authorized'});
+                    if($scope.alerts.length==0){
+                        $scope.alerts.push({type: 'info', msg: 'You are not authorized'});
+                    }
                 }
             }
 

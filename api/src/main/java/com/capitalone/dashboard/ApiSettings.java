@@ -15,7 +15,7 @@ public class ApiSettings {
     private boolean logRequest;
     
     // Start global config
-    /*
+    /**
      * Location to place configurations that are consumed by the UI and API. May be moved into a separate location
      * (such as a collection in mongo) in the future.
      */

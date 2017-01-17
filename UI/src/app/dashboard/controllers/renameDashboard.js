@@ -30,6 +30,7 @@
                     .rename(dashboardId, document.cdf.dashboardTitle.value)
                     .success(function (data) {
                         $modalInstance.close();
+                        window.location.reload(false);
                 })
                     .error(function(data){
                     form.dashboardTitle.$setValidity('createError', false);
@@ -41,6 +42,6 @@
             }
 
         }
-        
+
     }
 })();
