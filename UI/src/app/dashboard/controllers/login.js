@@ -32,7 +32,12 @@
                         if (data) {
                             $cookies.authenticated = true;
                             $cookies.username = login.username;
+                            if(login.username == 'admin') {
+                              $location.path('/adminsite');
+                            }
+                            else {
                             $location.path('/site');
+                          }
                         }
                     });
             }
