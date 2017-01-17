@@ -94,6 +94,12 @@ var localStorageSupported = (function () {
                     controller: 'SiteController',
                     controllerAs: 'ctrl'
                 })
+                //added Admin Site
+                .when('/adminsite', {
+                    templateUrl: 'app/dashboard/views/adminsite.html',
+                    controller: 'SiteController',
+                    controllerAs: 'ctrl'
+                })
                 //login
 
                 .when('/',{
