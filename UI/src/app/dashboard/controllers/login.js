@@ -5,7 +5,11 @@
     var app = angular.module(HygieiaConfig.module)
     var inject = ['$cookies', '$http', '$location', '$scope', 'loginData']
     function LoginController($cookies, $http, $location, $scope, loginData) {
-        if ($cookies.authenticated) {
+        if ($cookies.authenticated && $cookies.username == 'admin') {
+            $location.path('/adminsite');
+            return;
+        }
+        if ($cookies.authenticated && $cookies.username != 'admin' ) {
             $location.path('/site');
             return;
         }
