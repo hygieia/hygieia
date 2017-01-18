@@ -37,6 +37,7 @@
               }
 
         }, 60000);
+        // Change Refresh Rate for Serices
 
 
 
