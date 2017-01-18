@@ -25,6 +25,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
+import com.capitalone.dashboard.auth.token.TokenAuthenticationService;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.service.UserInfoService;

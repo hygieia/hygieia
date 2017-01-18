@@ -1,9 +1,10 @@
-package com.capitalone.dashboard.util;
+package com.capitalone.dashboard.auth;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.ldap.userdetails.LdapUserDetails;
 
+import com.capitalone.dashboard.auth.standard.StandardUserDetails;
 import com.capitalone.dashboard.model.AuthType;
 
 public class AuthenticationUtil {
@@ -31,6 +32,10 @@ public class AuthenticationUtil {
 	public static AuthType getAuthTypeByPrincipal(Object principal) {
 		if(principal instanceof LdapUserDetails) {
 			return AuthType.LDAP;
+		}
+		
+		if(principal instanceof StandardUserDetails) {
+			return AuthType.STANDARD;
 		}
 		
 		throw new RuntimeException("AuthType is Unknown");

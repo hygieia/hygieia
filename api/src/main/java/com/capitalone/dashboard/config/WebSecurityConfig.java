@@ -5,17 +5,17 @@ import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntr
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.capitalone.dashboard.auth.AuthenticationResultHandler;
-import com.capitalone.dashboard.auth.JwtAuthenticationFilter;
+import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,10 +27,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
 	@Autowired
-	private LdapAuthoritiesPopulator ldapAuthoritiesPopulator;
-	
-	@Autowired
 	private AuthenticationResultHandler authenticationResultHandler;
+
+	@Autowired
+	private AuthenticationProvider standardAuthenticationProvider;
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -49,9 +49,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(standardAuthenticationProvider);
 		auth.ldapAuthentication()
 				.userDnPatterns("uid={0},ou=enterpriseusers,ou=enterprise,o=statefarm,c=us")
-				.ldapAuthoritiesPopulator(ldapAuthoritiesPopulator)
 				.contextSource().url("ldap://vds.statefarm.com:2389");
 	}
 	

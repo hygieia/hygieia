@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.capitalone.dashboard.auth.token.TokenAuthProperties;
+
 public class TokenAuthPropertiesTest {
 
 	private TokenAuthProperties tokenAuthProperties;

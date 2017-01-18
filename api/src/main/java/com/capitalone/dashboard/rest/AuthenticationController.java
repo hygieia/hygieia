@@ -3,6 +3,9 @@ package com.capitalone.dashboard.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -16,8 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitalone.dashboard.auth.SecurityService;
-import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.auth.AuthenticationResponseService;
 import com.capitalone.dashboard.request.AuthenticationRequest;
 import com.capitalone.dashboard.service.AuthenticationService;
 
@@ -26,19 +28,20 @@ import com.capitalone.dashboard.service.AuthenticationService;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final SecurityService securityService;
+    
+    private final AuthenticationResponseService authenticationResponseService;
     
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService, SecurityService securityService) {
+    public AuthenticationController(AuthenticationService authenticationService, AuthenticationResponseService authenticationResponseService) {
         this.authenticationService = authenticationService;
-        this.securityService = securityService;
+        this.authenticationResponseService = authenticationResponseService;
     }
 
     @RequestMapping(value = "/registerUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> registerUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @Valid @RequestBody AuthenticationRequest request) {
+    public ResponseEntity<Void> registerUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @Valid @RequestBody AuthenticationRequest request) throws IOException, ServletException {
 	    	try {
 		    	Authentication authentication = authenticationService.create(request.getUsername(), request.getPassword());
-		    	securityService.inflateResponse(httpServletResponse, authentication, AuthType.STANDARD);
+		    	authenticationResponseService.handle(httpServletResponse, authentication);
 		    	return ResponseEntity.ok().build();
 	    	} catch (DuplicateKeyException dke) {
 	    		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();

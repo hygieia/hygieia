@@ -1,8 +1,11 @@
 package com.capitalone.dashboard.service;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.model.AuthType;
@@ -22,8 +25,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 	
 	@Override
-	public Collection<UserRole> getAuthorities(String username, AuthType authType) {
-		return getUserInfo(username, authType).getAuthorities();
+	public Collection<? extends GrantedAuthority> getAuthorities(String username, AuthType authType) {
+		Collection<UserRole> roles = getUserInfo(username, authType).getAuthorities();
+		return createAuthorities(roles);
 	}
 	
 	@Override
@@ -54,6 +58,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if ("admin".equals(userInfo.getUsername())) {
 			userInfo.getAuthorities().add(UserRole.ROLE_ADMIN);
 		}
+	}
+	
+	private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
+		Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
+		authorities.forEach(authority -> {
+			grantedAuthorities.add(new SimpleGrantedAuthority(authority.name())); 
+		});
+		
+		return grantedAuthorities;
 	}
 	
 }

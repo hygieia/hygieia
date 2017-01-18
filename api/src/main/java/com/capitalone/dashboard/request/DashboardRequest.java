@@ -2,12 +2,12 @@ package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
 
+import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.util.AuthenticationUtil;
 
 public class DashboardRequest {
     @NotNull

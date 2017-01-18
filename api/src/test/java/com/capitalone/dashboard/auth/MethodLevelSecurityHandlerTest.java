@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.capitalone.dashboard.auth.access.MethodLevelSecurityHandler;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;

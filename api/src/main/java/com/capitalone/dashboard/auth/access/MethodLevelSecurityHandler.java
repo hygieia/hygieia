@@ -1,14 +1,14 @@
-package com.capitalone.dashboard.auth;
+package com.capitalone.dashboard.auth.access;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.repository.DashboardRepository;
-import com.capitalone.dashboard.util.AuthenticationUtil;
 
 @Component
 public class MethodLevelSecurityHandler {

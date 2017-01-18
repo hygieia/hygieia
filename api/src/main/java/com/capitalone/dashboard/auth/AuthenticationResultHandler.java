@@ -15,12 +15,13 @@ import org.springframework.stereotype.Component;
 public class AuthenticationResultHandler implements AuthenticationSuccessHandler {
 
 	@Autowired
-	private TokenAuthenticationService tokenAuthenticationService;
+	private AuthenticationResponseService authenticationResponseService;
 	
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-			Authentication authentication) throws IOException, ServletException {
-		tokenAuthenticationService.addAuthentication(response, authentication);
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+		authenticationResponseService.handle(response, authentication);
 	}
+	
+	
 
 }

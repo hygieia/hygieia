@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import com.capitalone.dashboard.auth.standard.StandardUserDetailsImpl;
 import com.capitalone.dashboard.model.Authentication;
 import com.capitalone.dashboard.repository.AuthenticationRepository;
 
@@ -38,9 +39,9 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public org.springframework.security.core.Authentication create(String username, String password) {
-        Authentication user = authenticationRepository.save(new Authentication(username, password));
+        Authentication authentication = authenticationRepository.save(new Authentication(username, password));
         
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), new ArrayList<>());
+        return buildAuthentication(authentication);
     }
 
     @Override
@@ -78,10 +79,17 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
         Authentication authentication = authenticationRepository.findByUsername(username);
 
         if (authentication != null && authentication.checkPassword(password)) {
-            return new UsernamePasswordAuthenticationToken(authentication.getUsername(), password, new ArrayList<GrantedAuthority>());
+        	return buildAuthentication(authentication);
         }
 
         throw new BadCredentialsException("Login Failed: Invalid credentials for user " + username);
     }
+
+	private org.springframework.security.core.Authentication buildAuthentication(Authentication authentication) {
+		StandardUserDetailsImpl details = new StandardUserDetailsImpl();
+		details.setUsername(authentication.getUsername());
+		details.setPassword(authentication.getPassword());
+		return new UsernamePasswordAuthenticationToken(details, authentication.getPassword(), new ArrayList<GrantedAuthority>());
+	}
     
 }

@@ -21,6 +21,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.capitalone.dashboard.auth.token.TokenAuthProperties;
+import com.capitalone.dashboard.auth.token.TokenAuthenticationServiceImpl;
+
 @RunWith(MockitoJUnitRunner.class)
 public class TokenAuthenticationServiceImplTest {
 
