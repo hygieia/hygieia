@@ -26,8 +26,8 @@ public class MethodLevelSecurityHandler {
 			return false;
 		}
 		
-		String username = AuthenticationUtil.getUsername();
-		AuthType authType = AuthenticationUtil.getAuthType();
+		String username = AuthenticationUtil.getUsernameFromContext();
+		AuthType authType = AuthenticationUtil.getAuthTypeFromContext();
 		
 		//Check list of owners of dashboard to see if it contains the authenticated user
 		if (null != dashboard.getOwners() && dashboard.getOwners().contains(new Owner(username, authType))) {

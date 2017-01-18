@@ -262,12 +262,12 @@ public class DashboardServiceImpl implements DashboardService {
 	public List<Dashboard> getOwnedDashboards() {
 		Set<Dashboard> myDashboards = new HashSet<Dashboard>();
 		
-		Owner owner = new Owner(AuthenticationUtil.getUsername(), AuthenticationUtil.getAuthType());
+		Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
 		myDashboards.addAll(dashboardRepository.findByOwners(owner));
 		
 		// TODO: This if check is to ensure backwards compatibility for dashboards created before AuthenticationTypes were introduced.
-		if (AuthenticationUtil.getAuthType() == AuthType.STANDARD) {
-			myDashboards.addAll(dashboardRepository.findByOwner(AuthenticationUtil.getUsername()));
+		if (AuthenticationUtil.getAuthTypeFromContext() == AuthType.STANDARD) {
+			myDashboards.addAll(dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext()));
 		}
 		
 		return Lists.newArrayList(myDashboards);
