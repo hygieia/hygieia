@@ -10,6 +10,7 @@
             return;
         }
         var login = this;
+        login.isStandardLogin = true;
         login.templateUrl = 'app/dashboard/views/navheader.html';
         login.apiup = false;
         login.username = '';
@@ -36,23 +37,29 @@
                     });
             }
         };
+
+        login.doLoginLdap = function () {
+            $scope.lg.username.$setValidity('invalidUsernamePassword', true);
+            var valid = $scope.lg.$valid;
+            if (valid) {
+                var auth = {'username': login.username, 'password': login.password};
+                authService.loginLdap(auth)
+                    .then(function (response) {
+                        if (response.status == 200) {
+                            $location.path(loginRedirectService.getRedirectPath());
+                        } else if (response.status == 401) {
+                            $scope.lg.username.$setValidity(
+                                    'invalidUsernamePassword',
+                                    false
+                                  );
+                        }
+                    });
+            }
+        };
+
         login.doSignup = function () {
             $location.path('/signup');
         };
-
-        function getAppVersion(){
-            var url = '/api/appinfo';
-            $http.get(url, {skipAuthorization: true}).success(function (data, status) {
-                console.log("appinfo:"+data);
-                login.appVersion=data;
-                login.apiup = (status == 200);
-            }).error(function(data,status){
-                console.log("appInfo:"+data);
-                login.appVersion="0.0";
-                login.apiup = false;
-            });
-        }
-        getAppVersion();
 
     }
     app.controller('LoginController', inject.concat([LoginController]));
