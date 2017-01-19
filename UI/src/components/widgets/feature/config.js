@@ -145,7 +145,6 @@
 		
 		function processCollectorItemsResponse(data) {
 			var scopeOwners = [];
-			var featureCollector = modalData.dashboard.application.components[0].collectorItems.ScopeOwner;
 			var featureTeamId = widgetConfig.options.teamId;
 
 			if (ctrl.collectorId !== "") {
@@ -227,6 +226,9 @@
 			var featureCollector = modalData.dashboard.application.components[0].collectorItems.ScopeOwner;
 			var featureCollectorId = featureCollector ? featureCollector[0].collectorId
 					: null;
+			if (featureCollectorId == null) {
+				featureCollectorId = widgetConfig.options.collectorIdOverride;
+			}
 
 			getCollectors(data, featureCollectorId);
 
