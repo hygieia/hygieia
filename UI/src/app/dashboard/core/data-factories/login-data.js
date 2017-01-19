@@ -11,9 +11,11 @@
     function loginData($http) {
         var testDetailRoute = 'test-data/login_detail.json';
         var LoginDetailRoute = '/api/login';
+        var LdapLoginDetailRoute = '/api/login/ldap';
 
         return {
-            login: login
+            login: login,
+            loginLdap: loginLdap
         };
 
 
@@ -28,7 +30,15 @@
             });
         }
 
-      function login(id,passwd){
+      function login(id, password) {
+        return callLogin(LoginDetailRoute, id, password);
+      }
+
+      function loginLdap(id, password) {
+        return callLogin(LdapLoginDetailRoute, id, password);
+      }
+
+      function callLogin(route, id, passwd){
         var postData={
     				'username': id,
     				'password': passwd
@@ -42,7 +52,7 @@
 
         return $http({
           method: 'POST',
-          url: LoginDetailRoute,
+          url: route,
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           data: postData,
           transformRequest: function(data) {
@@ -57,14 +67,6 @@
           function(response) {
             return response;
         })
-
-        // return $http.post(LoginDetailRoute, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}, transformRequest(obj), postData).then(function (response) {
-        //     return response;
-        // },
-        // 	// error callback
-        // 	function(response) {
-        // 		return response;
-        // });
       }
     }
   }
