@@ -69,13 +69,21 @@
       deferred.then(function(){
         detectIterationChange();
       });
+      return deferred;
     };
-    
+
+    function getLastUpdated(data){
+      var deferred = $q.defer();
+      deferred.resolve(data.lastUpdated);
+      return deferred.promise;
+    }
+
     function processSprintEstimateResponse(data) {
         ctrl.totalStoryPoints = data.result.totalEstimate;
         ctrl.openStoryPoints = data.result.openEstimate;
         ctrl.wipStoryPoints = data.result.inProgressEstimate;
         ctrl.doneStoryPoints = data.result.completeEstimate;
+      return getLastUpdated(data);
     }
     
     function processSprintEstimateKanbanResponse(data) {
@@ -83,6 +91,7 @@
         ctrl.openStoryPointsKanban = data.result.openEstimate;
         ctrl.wipStoryPointsKanban = data.result.inProgressEstimate;
         ctrl.doneStoryPointsKanban = data.result.completeEstimate;
+      return getLastUpdated(data);
     }
 
     /**
@@ -103,6 +112,7 @@
       }
 
       ctrl.epicStoryPoints = epicCollection.sort(compareEpics).reverse();
+      return getLastUpdated(data);
     }
 
     /**
@@ -124,6 +134,7 @@
       }
 
       ctrl.epicStoryPointsKanban = epicCollection.sort(compareEpics).reverse();
+      return getLastUpdated(data);
     }
 
     /**
@@ -217,7 +228,8 @@
         iteration = null;
       }
       
-      issueCollection.sort(compareIssues).reverse()
+      issueCollection.sort(compareIssues).reverse();
+      return getLastUpdated(data);
     }
     
     /*

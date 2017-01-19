@@ -3,6 +3,8 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.HudsonJob;
+import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.model.RepoBranch.RepoType;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.io.IOUtils;
@@ -24,6 +26,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,11 +51,13 @@ public class DefaultHudsonClientTests {
     private DefaultHudsonClient defaultHudsonClient;
 
     private static final String URL_TEST = "http://server/job/job2/2/";
+    private static final int PAGE_SIZE = 10;
 
     @Before
     public void init() {
         when(restOperationsSupplier.get()).thenReturn(rest);
         settings = new HudsonSettings();
+        settings.setPageSize(PAGE_SIZE);
         hudsonClient = defaultHudsonClient = new DefaultHudsonClient(restOperationsSupplier,
                 settings);
     }
@@ -182,8 +187,15 @@ public class DefaultHudsonClientTests {
 
     @Test
     public void instanceJobs_twoJobsTwoBuilds() throws Exception {
-        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+    	when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs")), 
+        		eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+		    	.thenReturn(new ResponseEntity<>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
+        when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs[name,url,builds[number,url],jobs[name,url]]" + URLEncoder.encode("{0," + settings.getPageSize() + "}", "UTF-8"))), 
+        		eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
+        when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs[name,url,builds[number,url],jobs[name,url]]" + URLEncoder.encode("{" + settings.getPageSize() + "," + 2*settings.getPageSize() + "}", "UTF-8"))), 
+        		eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR));
 
         Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
 
@@ -209,6 +221,81 @@ public class DefaultHudsonClientTests {
         assertThat(buildIt.hasNext(), is(false));
 
         assertThat(jobIt.hasNext(), is(false));
+    }
+    
+    @Test
+    public void instanceJobs_multibranchPipeline() throws Exception {
+        when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs")), 
+                eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(getJson("instanceJobs_multibranchPipeline.json"), HttpStatus.OK));
+        when(rest.exchange(eq(URI.create(URL_TEST + "api/json?tree=jobs[name,url,builds[number,url],jobs[name,url]]" + URLEncoder.encode("{0," + settings.getPageSize() + "}", "UTF-8"))), 
+                eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(getJson("instanceJobs_multibranchPipeline.json"), HttpStatus.OK));
+        
+        when(rest.exchange(eq(URI.create("http://server/job/job1/job/master/api/json?tree=builds[number,url],jobs[name,url]")), 
+                eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(getJson("instanceJobs_multibranchPipeline-master.json"), HttpStatus.OK));
+        
+        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
+        
+        assertThat(jobs.size(), is(1));
+        Iterator<HudsonJob> jobIt = jobs.keySet().iterator();
+        
+        HudsonJob job = jobIt.next();
+        assertJob(job, "job1/master", "http://server/job/job1/job/master");
+
+        Iterator<Build> buildIt = jobs.get(job).iterator();
+        assertBuild(buildIt.next(),"2", "http://server/job/job1/job/master/2/");
+        assertBuild(buildIt.next(),"1", "http://server/job/job1/job/master/1/");
+        assertThat(buildIt.hasNext(), is(false));
+        
+        assertThat(jobIt.hasNext(), is(false));
+    }
+    
+    @Test
+    public void buildDetails_pipeline() throws Exception {
+        when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(getJson("buildDetails_pipeline-duplicate_changeSets.json"), HttpStatus.OK));
+
+        Build build = hudsonClient.getBuildDetails("http://server/job/job2/2/", "http://server");
+
+        assertThat(build.getTimestamp(), notNullValue());
+        assertThat(build.getNumber(), is("2483"));
+        assertThat(build.getBuildUrl(), is(URL_TEST));
+        assertThat(build.getStartTime(), is(1421281415000L));
+        assertThat(build.getEndTime(), is(1421284113495L));
+        assertThat(build.getDuration(), is(2698495L));
+        assertThat(build.getBuildStatus(), is(BuildStatus.Failure));
+        assertThat(build.getStartedBy(), is("ab"));
+        assertThat(build.getSourceChangeSet().size(), is(2));
+
+        // ChangeSet 1
+        SCM scm = build.getSourceChangeSet().get(0);
+        assertThat(scm.getScmUrl(), is("http://svn.apache.org/repos/asf/lucene/dev/branches/branch_5x"));
+        assertThat(scm.getScmRevisionNumber(), is("1651902"));
+        assertThat(scm.getScmCommitLog(), is("Merged revision(s) 1651901 from lucene/dev/trunk:\nLUCENE-6177: fix typo"));
+        assertThat(scm.getScmAuthor(), is("uschindler"));
+        assertThat(scm.getScmCommitTimestamp(), notNullValue());
+        assertThat(scm.getNumberOfChanges(), is(4L));
+
+        // ChangeSet 2
+        scm = build.getSourceChangeSet().get(1);
+        assertThat(scm.getScmUrl(), is("http://svn.apache.org/repos/asf/lucene/dev/branches/branch_6x"));
+        assertThat(scm.getScmRevisionNumber(), is("1651896"));
+        assertThat(scm.getScmCommitLog(), is("SOLR-6900: bin/post improvements including glob handling, spaces in file names, and improved help output (merged from trunk r1651895)"));
+        assertThat(scm.getScmAuthor(), is("ehatcher"));
+        assertThat(scm.getScmCommitTimestamp(), notNullValue());
+        assertThat(scm.getNumberOfChanges(), is(5L));
+        
+        // RepoBranch 1
+        RepoBranch repoBranch = build.getCodeRepos().get(0);
+        assertThat(repoBranch.getUrl(), is("http://svn.apache.org/repos/asf/lucene/dev/branches/branch_5x"));
+        assertThat(repoBranch.getType(), is(RepoType.Unknown));
+        
+        // RepoBranch 2
+        repoBranch = build.getCodeRepos().get(1);
+        assertThat(repoBranch.getUrl(), is("http://svn.apache.org/repos/asf/lucene/dev/branches/branch_6x"));
+        assertThat(repoBranch.getType(), is(RepoType.Unknown));
     }
 
     @Test
