@@ -60,10 +60,10 @@ sonar.cron=${SONAR_CRON:-0 0/5 * * * *}
 sonar.servers[0]=${SONAR_URL:-http://localhost:9000}
 
 #Sonar Authentication Username - default is blank
-sonar.username=${SONAR_USERNAME:-sonarusername}
+sonar.username=$SONAR_USERNAME
 
 #Sonar Authentication Password - default is blank
-sonar.password=${SONAR_PASSWORD:-sonarpassword}
+sonar.password=$SONAR_PASSWORD
 
 #Sonar Metrics
 sonar.metrics=${SONAR_METRICS:-ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,sqale_index,test_success_density,test_failures,test_errors,tests}
