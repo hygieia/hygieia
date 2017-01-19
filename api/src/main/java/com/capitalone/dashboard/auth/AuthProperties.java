@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.auth.token;
+package com.capitalone.dashboard.auth;
 
 import java.util.UUID;
 
@@ -13,12 +13,14 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth")
-public class TokenAuthProperties {
+public class AuthProperties {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(TokenAuthProperties.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuthProperties.class);
 	
 	private Long expirationTime;
 	private String secret;
+	private String ldapUserDnPattern;
+	private String ldapServerUrl;
 	
 	public void setExpirationTime(Long expirationTime) {
 		this.expirationTime = expirationTime;
@@ -36,6 +38,22 @@ public class TokenAuthProperties {
 		return secret;
 	}
 	
+	public String getLdapUserDnPattern() {
+		return ldapUserDnPattern;
+	}
+
+	public void setLdapUserDnPattern(String ldapUserDnPattern) {
+		this.ldapUserDnPattern = ldapUserDnPattern;
+	}
+
+	public String getLdapServerUrl() {
+		return ldapServerUrl;
+	}
+
+	public void setLdapServerUrl(String ldapServerUrl) {
+		this.ldapServerUrl = ldapServerUrl;
+	}
+
 	@PostConstruct
 	public void applyDefaultsIfNeeded() {
 		if (getSecret() == null) {

@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.capitalone.dashboard.auth.AuthProperties;
 import com.capitalone.dashboard.auth.AuthenticationResultHandler;
 import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
 import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
@@ -34,6 +36,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private AuthenticationProvider standardAuthenticationProvider;
 	
+	@Autowired
+	private AuthProperties authProperties;
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.headers().cacheControl();
@@ -53,9 +58,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(standardAuthenticationProvider);
-		auth.ldapAuthentication()
-				.userDnPatterns("uid={0},ou=enterpriseusers,ou=enterprise,o=statefarm,c=us")
-				.contextSource().url("ldap://vds.statefarm.com:2389");
+		
+		 if (StringUtils.isNotBlank(authProperties.getLdapServerUrl())) {
+			auth.ldapAuthentication()
+			.userDnPatterns(authProperties.getLdapUserDnPattern())
+			.contextSource().url(authProperties.getLdapServerUrl());
+		}
 	}
 	
 	@Bean
