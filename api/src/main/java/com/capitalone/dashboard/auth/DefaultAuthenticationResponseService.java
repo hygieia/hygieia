@@ -25,12 +25,11 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	
 	@Override
 	public void handle(HttpServletResponse response, Authentication authentication) {
-		AuthType authType = AuthenticationUtil.getAuthTypeByPrincipal(authentication.getPrincipal());
+		Collection<? extends GrantedAuthority> authorities = userInfoService.getAuthorities(authentication.getName(), (AuthType)authentication.getDetails());
+		UsernamePasswordAuthenticationToken authenticationWithAuthorities = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), authorities);
+		authenticationWithAuthorities.setDetails(authentication.getDetails());
 		
-		Collection<? extends GrantedAuthority> authorities = userInfoService.getAuthorities(authentication.getName(), authType);
-		Authentication authenticationWithAuthorities = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), authorities);
-		
-		tokenAuthenticationService.addAuthentication(response, authenticationWithAuthorities, authType);
+		tokenAuthenticationService.addAuthentication(response, authenticationWithAuthorities);
 
 	}
 

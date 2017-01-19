@@ -14,7 +14,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import com.capitalone.dashboard.model.AuthType;
 import com.google.common.collect.Sets;
 
 import io.jsonwebtoken.Claims;
@@ -39,9 +38,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 	
 	@Override
-	public void addAuthentication(HttpServletResponse response, Authentication authentication, AuthType authType) {
+	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
 		String jwt = Jwts.builder().setSubject(authentication.getName())
-				.claim(DETAILS_CLAIM, authType)
+				.claim(DETAILS_CLAIM, authentication.getDetails())
 				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
 				.setExpiration(new Date(System.currentTimeMillis() + tokenAuthProperties.getExpirationTime()))
 				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();

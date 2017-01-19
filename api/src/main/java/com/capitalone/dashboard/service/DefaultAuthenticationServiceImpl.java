@@ -9,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import com.capitalone.dashboard.auth.standard.StandardUserDetailsImpl;
 import com.capitalone.dashboard.model.Authentication;
 import com.capitalone.dashboard.repository.AuthenticationRepository;
 
@@ -86,10 +85,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
     }
 
 	private org.springframework.security.core.Authentication buildAuthentication(Authentication authentication) {
-		StandardUserDetailsImpl details = new StandardUserDetailsImpl();
-		details.setUsername(authentication.getUsername());
-		details.setPassword(authentication.getPassword());
-		return new UsernamePasswordAuthenticationToken(details, authentication.getPassword(), new ArrayList<GrantedAuthority>());
+		return new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(), new ArrayList<GrantedAuthority>());
 	}
     
 }

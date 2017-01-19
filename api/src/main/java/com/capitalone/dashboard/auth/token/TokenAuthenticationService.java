@@ -5,11 +5,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
 
-import com.capitalone.dashboard.model.AuthType;
-
 public interface TokenAuthenticationService {
 
-	void addAuthentication(HttpServletResponse response, Authentication authentication, AuthType authType);
+	void addAuthentication(HttpServletResponse response, Authentication authentication);
 	Authentication getAuthentication(HttpServletRequest request);
 
 }

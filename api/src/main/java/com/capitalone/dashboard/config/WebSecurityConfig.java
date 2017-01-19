@@ -3,6 +3,7 @@ package com.capitalone.dashboard.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -11,10 +12,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.capitalone.dashboard.auth.AuthenticationResultHandler;
+import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
+import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
 import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
 
 @Configuration
@@ -35,7 +37,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.headers().cacheControl();
-		http.formLogin().successHandler(authenticationResultHandler).failureHandler(new SimpleUrlAuthenticationFailureHandler());
 		http.csrf().disable()
 			.authorizeRequests().antMatchers("/appinfo").permitAll()
 								.antMatchers("/registerUser").permitAll()
@@ -43,6 +44,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.antMatchers(HttpMethod.GET, "/**").permitAll()
 								.anyRequest().authenticated()
 									.and()
+								.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(ldapLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
 	}
@@ -53,6 +56,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.ldapAuthentication()
 				.userDnPatterns("uid={0},ou=enterpriseusers,ou=enterprise,o=statefarm,c=us")
 				.contextSource().url("ldap://vds.statefarm.com:2389");
+	}
+	
+	@Bean
+	protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
+		return new StandardLoginRequestFilter("/login", authenticationManager(), authenticationResultHandler);
+	}
+	
+	@Bean
+	protected LdapLoginRequestFilter ldapLoginRequestFilter() throws Exception {
+		return new LdapLoginRequestFilter("/login/ldap", authenticationManager(), authenticationResultHandler);
 	}
 	
 }
