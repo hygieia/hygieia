@@ -10,56 +10,24 @@
             return;
         }
         var login = this;
-        login.isStandardLogin = true;
+        $scope.isStandardLogin = true;
         login.templateUrl = 'app/dashboard/views/navheader.html';
-        login.apiup = false;
-        login.username = '';
-        login.password = '';
         login.invalidUsernamePassword = false;
-        login.appVersion='';
 
+        $scope.showStandard = function () {
+          $scope.isStandardLogin = true;
+        }
 
-        login.doLogin = function () {
-            $scope.lg.username.$setValidity('invalidUsernamePassword', true);
-            var valid = $scope.lg.$valid;
-            if (valid) {
-                var auth = {'username': login.username, 'password': login.password};
-                authService.login(auth)
-                    .then(function (response) {
-                        if (response.status == 200) {
-                            $location.path(loginRedirectService.getRedirectPath());
-                        } else if (response.status == 401) {
-                            $scope.lg.username.$setValidity(
-                                    'invalidUsernamePassword',
-                                    false
-                                  );
-                        }
-                    });
-            }
-        };
+        $scope.showLdap = function () {
+          $scope.isStandardLogin = false;
+        }
 
-        login.doLoginLdap = function () {
-            $scope.lg.username.$setValidity('invalidUsernamePassword', true);
-            var valid = $scope.lg.$valid;
-            if (valid) {
-                var auth = {'username': login.username, 'password': login.password};
-                authService.loginLdap(auth)
-                    .then(function (response) {
-                        if (response.status == 200) {
-                            $location.path(loginRedirectService.getRedirectPath());
-                        } else if (response.status == 401) {
-                            $scope.lg.username.$setValidity(
-                                    'invalidUsernamePassword',
-                                    false
-                                  );
-                        }
-                    });
-            }
-        };
-
-        login.doSignup = function () {
+        var signup = function () {
             $location.path('/signup');
         };
+
+        $scope.standardLogin = { name: 'Standard Login', login: authService.login, signup: signup };
+        $scope.ldapLogin = { name: 'Ldap Login', login: authService.loginLdap };
 
     }
     app.controller('LoginController', inject.concat([LoginController]));
