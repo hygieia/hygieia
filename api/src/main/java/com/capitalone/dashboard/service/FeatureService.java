@@ -25,7 +25,10 @@ public interface FeatureService {
 	 * @return A data response list of type Feature containing all features for
 	 *         the given team and current sprint
 	 */
-	DataResponse<List<Feature>> getRelevantStories(ObjectId componentId,
+	DataResponse<List<Feature>> getRelevantStoriesByComponentId(ObjectId componentId,
+			String teamId, String projectId, Optional<String> agileType);
+	
+	DataResponse<List<Feature>> getRelevantStoriesByCollectorId(ObjectId componentId,
 			String teamId, String projectId, Optional<String> agileType);
 
 	/**
@@ -39,7 +42,10 @@ public interface FeatureService {
 	 * 
 	 * @return A data response list of type Feature containing a single story
 	 */
-	DataResponse<List<Feature>> getStory(ObjectId componentId,
+	DataResponse<List<Feature>> getStoryByComponentId(ObjectId componentId,
+			String storyNumber);
+	
+	DataResponse<List<Feature>> getStoryByCollectorId(ObjectId componentId,
 			String storyNumber);
 
 	/**
@@ -60,7 +66,10 @@ public interface FeatureService {
 	 *         features plus their sub features' estimates associated to the
 	 *         current sprint and team
 	 */
-	DataResponse<List<Feature>> getFeatureEpicEstimates(ObjectId componentId,
+	DataResponse<List<Feature>> getFeatureEpicEstimatesByComponentId(ObjectId componentId,
+			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType);
+	
+	DataResponse<List<Feature>> getFeatureEpicEstimatesByCollectorId(ObjectId componentId,
 			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType);
 	
 	/**
@@ -142,7 +151,10 @@ public interface FeatureService {
 	 * @return A data response list of type Feature containing the done estimate
 	 *         number for all features
 	 */
-	DataResponse<SprintEstimate> getAggregatedSprintEstimates(ObjectId componentId,
+	DataResponse<SprintEstimate> getAggregatedSprintEstimatesByComponentId(ObjectId componentId,
+			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType);
+	
+	DataResponse<SprintEstimate> getAggregatedSprintEstimatesByCollectorId(ObjectId componentId,
 			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType);
 	
 	/**
@@ -159,6 +171,9 @@ public interface FeatureService {
 	 * @return A data response list of type Feature containing several relevant
 	 *         sprint fields for the current team's sprint
 	 */
-	DataResponse<List<Feature>> getCurrentSprintDetail(ObjectId componentId,
+	DataResponse<List<Feature>> getCurrentSprintDetailByComponentId(ObjectId componentId,
+			String teamId, String projectId, Optional<String> agileType);
+	
+	DataResponse<List<Feature>> getCurrentSprintDetailByCollectorId(ObjectId componentId,
 			String teamId, String projectId, Optional<String> agileType);
 }
