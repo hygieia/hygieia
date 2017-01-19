@@ -28,7 +28,7 @@ public interface FeatureService {
 	DataResponse<List<Feature>> getRelevantStoriesByComponentId(ObjectId componentId,
 			String teamId, String projectId, Optional<String> agileType);
 	
-	DataResponse<List<Feature>> getRelevantStoriesByCollectorId(ObjectId componentId,
+	DataResponse<List<Feature>> getRelevantStoriesByCollectorId(ObjectId collectorId,
 			String teamId, String projectId, Optional<String> agileType);
 
 	/**
@@ -45,7 +45,7 @@ public interface FeatureService {
 	DataResponse<List<Feature>> getStoryByComponentId(ObjectId componentId,
 			String storyNumber);
 	
-	DataResponse<List<Feature>> getStoryByCollectorId(ObjectId componentId,
+	DataResponse<List<Feature>> getStoryByCollectorId(ObjectId collectorId,
 			String storyNumber);
 
 	/**
@@ -69,7 +69,7 @@ public interface FeatureService {
 	DataResponse<List<Feature>> getFeatureEpicEstimatesByComponentId(ObjectId componentId,
 			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType);
 	
-	DataResponse<List<Feature>> getFeatureEpicEstimatesByCollectorId(ObjectId componentId,
+	DataResponse<List<Feature>> getFeatureEpicEstimatesByCollectorId(ObjectId collectorId,
 			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType);
 	
 	/**
@@ -154,7 +154,7 @@ public interface FeatureService {
 	DataResponse<SprintEstimate> getAggregatedSprintEstimatesByComponentId(ObjectId componentId,
 			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType);
 	
-	DataResponse<SprintEstimate> getAggregatedSprintEstimatesByCollectorId(ObjectId componentId,
+	DataResponse<SprintEstimate> getAggregatedSprintEstimatesByCollectorId(ObjectId collectorId,
 			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType);
 	
 	/**
@@ -174,6 +174,6 @@ public interface FeatureService {
 	DataResponse<List<Feature>> getCurrentSprintDetailByComponentId(ObjectId componentId,
 			String teamId, String projectId, Optional<String> agileType);
 	
-	DataResponse<List<Feature>> getCurrentSprintDetailByCollectorId(ObjectId componentId,
+	DataResponse<List<Feature>> getCurrentSprintDetailByCollectorId(ObjectId collectorId,
 			String teamId, String projectId, Optional<String> agileType);
 }
