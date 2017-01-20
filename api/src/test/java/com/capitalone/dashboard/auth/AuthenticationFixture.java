@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -22,7 +24,8 @@ public class AuthenticationFixture {
 	private static final String DETAILS_CLAIM = "details";
 	
 	public static void createAuthentication(String username) {
-		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, "password");
+		Collection<GrantedAuthority> authorities = Sets.newHashSet(new SimpleGrantedAuthority("ROLE_ADMIN"));
+		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, "password", authorities );
 		auth.setDetails(AuthType.STANDARD.name());
 		SecurityContext context = new SecurityContextImpl();
 		context.setAuthentication(auth);
