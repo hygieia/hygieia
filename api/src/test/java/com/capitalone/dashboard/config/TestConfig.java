@@ -4,8 +4,6 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.capitalone.dashboard.auth.DefaultSecurityService;
-import com.capitalone.dashboard.auth.SecurityService;
 import com.capitalone.dashboard.service.AuthenticationService;
 import com.capitalone.dashboard.service.BinaryArtifactService;
 import com.capitalone.dashboard.service.BuildService;
@@ -35,11 +33,6 @@ public class TestConfig {
 	@Bean
 	public AuthenticationService authenticationService() {
 		return Mockito.mock(AuthenticationService.class);
-	}
-	
-	@Bean
-	public SecurityService securityService() {
-		return Mockito.mock(DefaultSecurityService.class);
 	}
 
 	@Bean

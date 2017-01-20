@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 
@@ -16,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 import com.capitalone.dashboard.auth.token.TokenAuthenticationService;
 import com.capitalone.dashboard.model.AuthType;
@@ -32,7 +31,7 @@ import com.capitalone.dashboard.service.UserInfoService;
 import com.google.common.collect.Sets;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultSecurityServiceTest {
+public class DefaultAuthenticationResponseServiceTest {
 	
 	private static final String USERNAME = "user1";
 	private static final Object PASSWORD = "password";
@@ -44,7 +43,7 @@ public class DefaultSecurityServiceTest {
 	private UserInfoService userInfoService;
 	
 	@InjectMocks
-	private DefaultSecurityService service;
+	private DefaultAuthenticationResponseService service;
 	
 	private MockHttpServletResponse httpServletResponse;
 	private Authentication authentication;
@@ -54,18 +53,18 @@ public class DefaultSecurityServiceTest {
 		SecurityContextHolder.clearContext();
 		httpServletResponse = new MockHttpServletResponse();
 		authentication = createAuthentication();
-		when(userInfoService.getAuthorities(USERNAME, AuthType.STANDARD)).thenReturn(Sets.newHashSet(UserRole.ROLE_ADMIN, UserRole.ROLE_USER));
+		Collection<? extends GrantedAuthority> authorities = Sets.newHashSet(new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()), new SimpleGrantedAuthority(UserRole.ROLE_USER.name()));
+		Mockito.doReturn(authorities).when(userInfoService).getAuthorities(USERNAME, AuthType.STANDARD);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldInflateResponse() throws Exception {
-		ArgumentCaptor<PreAuthenticatedAuthenticationToken> captorAuthentication = ArgumentCaptor.forClass(PreAuthenticatedAuthenticationToken.class);
-		service.inflateResponse(httpServletResponse, authentication, AuthType.STANDARD);
+	public void shouldHandleResponse() throws Exception {
+		ArgumentCaptor<UsernamePasswordAuthenticationToken> captorAuthentication = ArgumentCaptor.forClass(UsernamePasswordAuthenticationToken.class);
+		service.handle(httpServletResponse, authentication);
 		
 		verify(tokenAuthenticationService).addAuthentication(any(HttpServletResponse.class), captorAuthentication.capture());
 		
-		PreAuthenticatedAuthenticationToken capture = captorAuthentication.getValue();
+		UsernamePasswordAuthenticationToken capture = captorAuthentication.getValue();
 		assertEquals(USERNAME, capture.getName());
 		assertEquals(PASSWORD, capture.getCredentials().toString());
 		
@@ -74,12 +73,14 @@ public class DefaultSecurityServiceTest {
 		assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN")));
 		assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_USER")));
 		
-		String details = (String) capture.getDetails();
-		assertEquals(AuthType.STANDARD, AuthType.valueOf(details));
+		AuthType details = (AuthType) capture.getDetails();
+		assertEquals(AuthType.STANDARD, details);
 	}
 
 	private Authentication createAuthentication() {
-		return new UsernamePasswordAuthenticationToken(USERNAME, PASSWORD);
+		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(USERNAME, PASSWORD);
+		usernamePasswordAuthenticationToken.setDetails(AuthType.STANDARD);
+		return usernamePasswordAuthenticationToken;
 	}
 
 }

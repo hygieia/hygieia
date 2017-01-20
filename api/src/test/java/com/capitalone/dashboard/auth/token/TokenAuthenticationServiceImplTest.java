@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.auth;
+package com.capitalone.dashboard.auth.token;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.capitalone.dashboard.auth.AuthProperties;
+import com.capitalone.dashboard.auth.AuthenticationFixture;
 import com.capitalone.dashboard.auth.token.TokenAuthenticationServiceImpl;
 
 @RunWith(MockitoJUnitRunner.class)
