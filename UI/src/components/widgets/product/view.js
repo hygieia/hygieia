@@ -66,7 +66,7 @@
             isReload = null;
 
         // public properties
-        ctrl.stages = ['Commit', 'Build'];
+        ctrl.stages = ['Commit', 'Build', 'Feature'];
         ctrl.sortableOptions = {
             additionalPlaceholderClass: 'product-table-tr',
             placeholder: function(el) {

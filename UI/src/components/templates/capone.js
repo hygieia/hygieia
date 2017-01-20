@@ -14,8 +14,7 @@
         var ctrl = this;
 
         ctrl.tabs = [
-            { name: "Widget"},
-            { name: "Monitor"}
+            { name: "Widget"}
            ];
 
         ctrl.widgetView = ctrl.tabs[0].name;

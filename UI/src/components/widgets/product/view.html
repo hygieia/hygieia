@@ -172,15 +172,17 @@
                         </div>
 
                         <div class="team-prod-average-desc">
-                            average from commit to production
+                             average from commit to production 
                         </div>
 
                         <div class="team-prod-last-90">
                             <span class="team-prod-last-90-num">{{team.prod.totalCommits}}</span>
+							
                             <ng-pluralize count="team.prod.totalCommits" when="{1:' commit ',other:' commits '}"></ng-pluralize> in the last <span class="widget-font-bold">90 days</span>
-                        </div>
+                           
+						</div>
                     </div>
-                </div>
+                </div> 
             </div>
 
 

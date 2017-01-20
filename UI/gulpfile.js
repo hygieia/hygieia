@@ -100,7 +100,7 @@ function server(ghostMode) {
       /*
        * Location of your backend server
        */
-      var proxyTarget = config.api || 'http://10.207.4.201:8080';
+      var proxyTarget = config.api || 'http://rambuild.marriott.com:9090';
 
       var proxy = httpProxy.createProxyServer({
           target: proxyTarget
