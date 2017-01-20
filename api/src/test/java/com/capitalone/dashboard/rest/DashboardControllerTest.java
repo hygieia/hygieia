@@ -3,6 +3,8 @@ package com.capitalone.dashboard.rest;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -15,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +41,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.request.DashboardRequest;
+import com.capitalone.dashboard.request.DashboardRequestTitle;
 import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.util.TestUtil;
@@ -74,7 +78,7 @@ public class DashboardControllerTest {
 
     @Test
     public void createProductDashboard() throws Exception {
-        DashboardRequest request = makeDashboardRequest("template", "title", null, null,"amit", null, "product");
+        DashboardRequest request = makeDashboardRequest("template", "dashboard title", null, null,"amit", null, "product");
         mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
@@ -83,25 +87,37 @@ public class DashboardControllerTest {
 
     @Test
     public void createTeamDashboard() throws Exception {
-        DashboardRequest request = makeDashboardRequest("template", "title", "app", "comp","amit", null, "team");
+        DashboardRequest request = makeDashboardRequest("template", "dashboard title", "app", "comp","amit", null, "team");
         mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
             .andExpect(status().isCreated());
     }
-
-    @Test
-    public void createDashboard_nothingProvided_badRequest() throws Exception {
+    
+    public void createDashboard_nullRequest() throws Exception {
         mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(new DashboardRequest())))
             .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.fieldErrors.owner", hasItems("may not be null")))
             .andExpect(jsonPath("$.fieldErrors.template", hasItems("may not be null")))
-            .andExpect(jsonPath("$.fieldErrors.title", hasItems("may not be null")))
-
-//            TODO:  These are no longer necessary in all cases.  Potentially add new class-level validator.
-//            .andExpect(jsonPath("$.fieldErrors.componentName", hasItems("may not be null")))
-//            .andExpect(jsonPath("$.fieldErrors.applicationName", hasItems("may not be null")))
+            .andExpect(jsonPath("$.fieldErrors.type", hasItems("may not be null")))
+            .andExpect(jsonPath("$.fieldErrors.dashboardRequestTitle", hasItems("may not be null")));
+    }
+    
+    @Test
+    public void createDashboard_emptyValues() throws Exception {
+    	DashboardRequest dashboardRequest = new DashboardRequest();
+    	dashboardRequest.setTitle(StringUtils.EMPTY);
+    	dashboardRequest.setTemplate(StringUtils.EMPTY);
+    	dashboardRequest.setType(StringUtils.EMPTY);
+        mockMvc.perform(post("/dashboard")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(dashboardRequest)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.fieldErrors.template", hasItems("Please select a template")))
+            .andExpect(jsonPath("$.fieldErrors.type", hasItems("Please select a type")))
+            .andExpect(jsonPath("$.fieldErrors.[dashboardRequestTitle.title]", hasItems("size must be between 6 and 50")))
             ;
     }
 
@@ -112,7 +128,7 @@ public class DashboardControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.fieldErrors.title", hasItems("Special character(s) found")));
+            .andExpect(jsonPath("$.fieldErrors.[dashboardRequestTitle.title]", hasItems("Special character(s) found")));
     }
     
     @Test
@@ -131,8 +147,8 @@ public class DashboardControllerTest {
     @Test
     public void updateTeamDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team);
-        DashboardRequest request = makeDashboardRequest("template", "title", "app", "comp","amit", null, "team");
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team);
+        DashboardRequest request = makeDashboardRequest("template", "dashboard title", "app", "comp","amit", null, "team");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
         when(dashboardService.update(Matchers.any(Dashboard.class))).thenReturn(orig);
@@ -143,6 +159,90 @@ public class DashboardControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void renameTeamDashboard() throws Exception {
+        ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team);
+        DashboardRequestTitle request = makeDashboardRequestTitle("different title");
+
+        when(dashboardService.get(objectId)).thenReturn(orig);
+        when(dashboardService.all()).thenReturn(Arrays.asList(orig));
+
+        mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+	
+                .andExpect(status().isOk());
+    }
+    
+    @Test
+    public void renameTeamDashboard_titleExists() throws Exception {
+        ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
+        Dashboard orig = makeDashboard("t1", "title exists", "app", "comp","amit", DashboardType.Team);
+        DashboardRequestTitle request = makeDashboardRequestTitle("title exists");
+
+        when(dashboardService.get(objectId)).thenReturn(orig);
+        when(dashboardService.all()).thenReturn(Arrays.asList(orig));
+
+        mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isBadRequest());
+        verify(dashboardService, never()).update(orig);
+    }
+    
+    @Test
+    public void renameTeamDashboard_invalidTitle() throws Exception {
+        ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team);
+        DashboardRequestTitle request = makeDashboardRequestTitle("bad / title");
+
+        when(dashboardService.get(objectId)).thenReturn(orig);
+        when(dashboardService.all()).thenReturn(Arrays.asList(orig));
+
+        mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.[title]", hasItems("Special character(s) found")))
+                ;
+    }
+    
+    @Test
+    public void renameTeamDashboard_emptyTitle() throws Exception {
+        ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team);
+        DashboardRequestTitle request = makeDashboardRequestTitle("");
+
+        when(dashboardService.get(objectId)).thenReturn(orig);
+        when(dashboardService.all()).thenReturn(Arrays.asList(orig));
+
+        mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.[title]", hasItems("size must be between 6 and 50")))
+                ;
+    }
+    
+    @Test
+    public void renameTeamDashboard_nullTitle() throws Exception {
+        ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team);
+        DashboardRequestTitle request = new DashboardRequestTitle();
+
+        when(dashboardService.get(objectId)).thenReturn(orig);
+        when(dashboardService.all()).thenReturn(Arrays.asList(orig));
+
+        mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.[title]", hasItems("may not be null")))
+                ;
+    }
+    
+    
     @Test
     public void deleteDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
@@ -208,11 +308,18 @@ public class DashboardControllerTest {
         DashboardRequest request = new DashboardRequest();
         request.setTemplate(template);
         request.setTitle(title);
+        request.setDashboardRequestTitle(makeDashboardRequestTitle(title));
         request.setApplicationName(appName);
         request.setComponentName(compName);
         request.setOwner(owner);
         request.setType(type);
+        return request;
+    }
 
+    
+    private DashboardRequestTitle makeDashboardRequestTitle(String title) {
+        DashboardRequestTitle request = new DashboardRequestTitle();
+        request.setTitle(title);
         return request;
     }
 

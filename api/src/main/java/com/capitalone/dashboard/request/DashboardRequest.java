@@ -1,7 +1,8 @@
 package com.capitalone.dashboard.request;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Component;
@@ -10,11 +11,12 @@ import com.capitalone.dashboard.model.DashboardType;
 
 public class DashboardRequest {
     @NotNull
+    @Size(min=1, message="Please select a template")
     private String template;
 
+    @Valid
     @NotNull
-    @Pattern(message="Special character(s) found", regexp="^[a-zA-Z0-9 ]*$")
-    private String title;
+    private DashboardRequestTitle dashboardRequestTitle;
 
     private String applicationName;
 
@@ -24,6 +26,7 @@ public class DashboardRequest {
     private String owner;
 
     @NotNull
+    @Size(min=1, message="Please select a type")
     private String type;
 
     public String getTemplate() {
@@ -34,13 +37,19 @@ public class DashboardRequest {
         this.template = template;
     }
 
-    public String getTitle() {
-        return title;
-    }
+	public DashboardRequestTitle getDashboardRequestTitle() {
+		return dashboardRequestTitle;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setDashboardRequestTitle(DashboardRequestTitle dashboardRequestTitle) {
+		this.dashboardRequestTitle = dashboardRequestTitle;
+	}
+
+	public void setTitle(String title) {
+		DashboardRequestTitle dashboardRequestTitle = new DashboardRequestTitle();
+		dashboardRequestTitle.setTitle(title);
+		this.dashboardRequestTitle = dashboardRequestTitle;
+	}
 
     public String getApplicationName() {
         return applicationName;
@@ -73,7 +82,7 @@ public class DashboardRequest {
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
-        return new Dashboard(template, title, application, owner, type);
+        return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type);
     }
 
     public Dashboard copyTo(Dashboard dashboard) {
