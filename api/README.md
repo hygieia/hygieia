@@ -43,11 +43,12 @@ All the above values are optional. Even without the property file you must be ab
 After you have build your project, from the target folder run the below command,
 
 ```bash
-java -jar api.jar --spring.config.location=dashboard.properties
+java -jar api.jar --spring.config.location=dashboard.properties -Djasypt.encryptor.password=hygieiasecret
 ```
 
 By default the server starts at port `8080` and uses the context path `/api`.
 These values are configurable by using the below 2 properties in `dashboard.properties`.
+The jasypt.encryptor.password system property is used to decrypt the database password. For more information, refer to encrypted properties.
 
 ```properties
 server.contextPath=/api
@@ -155,3 +156,17 @@ Step 2 : run the following on the command line
 ```bash
 mongo <dbhost>:<dbport>/<dbname> fixdups.js
 ```
+
+### Encrypted Properties
+
+Properties that are recommended to not be stored in plain text can be encrypted/decrypted using jasypt. 
+Encrypted properties are enclosed in keyword ENC(), i.e. ENC(thisisanencryptedproperty).
+To generate an encrypted property, run
+`java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar  org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="dbpass" password=hygieiasecret algorithm=PBEWithMD5AndDES` where dbpass is the property being encrypted and hygieiasecret is the secret password. The secret password has to be passed as a System property to Spring boot using `-Djasypt.encryptor.password=hygieiasecret` in order to decrypt the property. 
+
+Via docker, pass as an environment variable `docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -e "JASYPT_ENCRYPTOR_SECRET=hygieiasecret" -i hygieia-api:latest` then pass the environment variable as a Spring boot system property `java -Djasypt.encryptor.password=$JASYPT_ENCRYPTOR_SECRET -jar api.jar --spring.config.location=dashboard.properties`
+
+For additional information, see jasypt spring boot [documentation](https://github.com/ulisesbocchio/jasypt-spring-boot/blob/master/README.md).
+
+Tip: If using GitLab CI Runner, specify the value for JASYPT_ENCRYPTOR_SECRET as a secure variable. Secure variables are added to a Git Lab project by navigating to Project Settings > Variables > Add Variable. 
+A secure variable's value is by default not visible in the build log and can only be configured by an administrator of a project.
