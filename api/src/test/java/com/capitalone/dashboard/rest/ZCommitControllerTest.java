@@ -60,13 +60,13 @@ public class ZCommitControllerTest {
 
         mockMvc.perform(get("/commit?componentId=" + ObjectId.get()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$result", hasSize(1)))
-                .andExpect(jsonPath("$result[0].scmUrl", is(commit.getScmUrl())))
-                .andExpect(jsonPath("$result[0].scmRevisionNumber", is(commit.getScmRevisionNumber())))
-                .andExpect(jsonPath("$result[0].numberOfChanges", is(Ints.saturatedCast(commit.getNumberOfChanges()))))
-                .andExpect(jsonPath("$result[0].scmCommitTimestamp", is(Ints.saturatedCast(commit.getScmCommitTimestamp()))))
-                .andExpect(jsonPath("$result[0].scmCommitLog", is(commit.getScmCommitLog())))
-                .andExpect(jsonPath("$result[0].scmAuthor", is(commit.getScmAuthor())));
+                .andExpect(jsonPath("$.result", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].scmUrl", is(commit.getScmUrl())))
+                .andExpect(jsonPath("$.result[0].scmRevisionNumber", is(commit.getScmRevisionNumber())))
+                .andExpect(jsonPath("$.result[0].numberOfChanges", is(Ints.saturatedCast(commit.getNumberOfChanges()))))
+                .andExpect(jsonPath("$.result[0].scmCommitTimestamp", is(Ints.saturatedCast(commit.getScmCommitTimestamp()))))
+                .andExpect(jsonPath("$.result[0].scmCommitLog", is(commit.getScmCommitLog())))
+                .andExpect(jsonPath("$.result[0].scmAuthor", is(commit.getScmAuthor())));
     }
 
     @Test

@@ -353,8 +353,8 @@ public class FeatureControllerTest {
 		mockMvc.perform(
 				get("/feature/estimates/super/" + testTeamId + "?component="
 						+ mockComponentId.toString() + "&projectId=" + testProjectId))
-				.andExpect(jsonPath("$result[0].sEpicNumber", is(mockV1Feature.getsEpicNumber())))
-				.andExpect(jsonPath("$result[0].sEstimate", is(mockV1Feature.getsEstimate())))
-				.andExpect(jsonPath("$result", hasSize(3)));
+				.andExpect(jsonPath("$.result[0].sEpicNumber", is(mockV1Feature.getsEpicNumber())))
+				.andExpect(jsonPath("$.result[0].sEstimate", is(mockV1Feature.getsEstimate())))
+				.andExpect(jsonPath("$.result", hasSize(3)));
 	}
 }

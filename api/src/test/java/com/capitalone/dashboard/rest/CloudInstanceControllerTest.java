@@ -78,13 +78,10 @@ public class CloudInstanceControllerTest {
 
     @Test
     public void refreshInstancesEmptyRequest() throws Exception {
-        CloudInstanceListRefreshRequest req = new CloudInstanceListRefreshRequest();
-        req.setAccountNumber("1234");
-
         mockMvc.perform(post("/cloud/instance/refresh")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(null)))
-                .andExpect(status().isOk());
+                .andExpect(status().is5xxServerError());
     }
 
 
@@ -102,7 +99,7 @@ public class CloudInstanceControllerTest {
         mockMvc.perform(post("/cloud/instance/create")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(null)))
-                .andExpect(status().isOk());
+                .andExpect(status().is5xxServerError());
     }
 
     @Test

@@ -70,29 +70,29 @@ public class CodeQualityControllerTest {
 		mockMvc.perform(
 				get("/quality/static-analysis?componentId=" + ObjectId.get() + "&max=1"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$result", hasSize(1)))
+				.andExpect(jsonPath("$.result", hasSize(1)))
 				.andExpect(
-						jsonPath("$result[0].id",
+						jsonPath("$.result[0].id",
 								is(quality.getId().toString())))
 				.andExpect(
-						jsonPath("$result[0].collectorItemId", is(quality
+						jsonPath("$.result[0].collectorItemId", is(quality
 								.getCollectorItemId().toString())))
 				.andExpect(
-						jsonPath("$result[0].timestamp",
+						jsonPath("$.result[0].timestamp",
 								is(intVal(quality.getTimestamp()))))
-				.andExpect(jsonPath("$result[0].name", is(quality.getName().toString())))
-				.andExpect(jsonPath("$result[0].url", is(quality.getUrl())))
-				.andExpect(jsonPath("$result[0].type", is(quality.getType().toString())))
+				.andExpect(jsonPath("$.result[0].name", is(quality.getName().toString())))
+				.andExpect(jsonPath("$.result[0].url", is(quality.getUrl())))
+				.andExpect(jsonPath("$.result[0].type", is(quality.getType().toString())))
 				.andExpect(
-						jsonPath("$result[0].version", is(quality.getVersion())))
+						jsonPath("$.result[0].version", is(quality.getVersion())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].name",
+						jsonPath("$.result[0].metrics[0].name",
 								is(metric.getName().toString())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].formattedValue",
+						jsonPath("$.result[0].metrics[0].formattedValue",
 								is(metric.getFormattedValue())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].status",
+						jsonPath("$.result[0].metrics[0].status",
 								is(metric.getStatus().toString())));
 	}
 
@@ -108,29 +108,29 @@ public class CodeQualityControllerTest {
 		mockMvc.perform(
 				get("/quality/security-analysis?componentId=" + ObjectId.get() + "&max=1"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$result", hasSize(1)))
+				.andExpect(jsonPath("$.result", hasSize(1)))
 				.andExpect(
-						jsonPath("$result[0].id",
+						jsonPath("$.result[0].id",
 								is(quality.getId().toString())))
 				.andExpect(
-						jsonPath("$result[0].collectorItemId", is(quality
+						jsonPath("$.result[0].collectorItemId", is(quality
 								.getCollectorItemId().toString())))
 				.andExpect(
-						jsonPath("$result[0].timestamp",
+						jsonPath("$.result[0].timestamp",
 								is(intVal(quality.getTimestamp()))))
-				.andExpect(jsonPath("$result[0].name", is(quality.getName())))
-				.andExpect(jsonPath("$result[0].url", is(quality.getUrl())))
-				.andExpect(jsonPath("$result[0].type", is(quality.getType().toString())))
+				.andExpect(jsonPath("$.result[0].name", is(quality.getName())))
+				.andExpect(jsonPath("$.result[0].url", is(quality.getUrl())))
+				.andExpect(jsonPath("$.result[0].type", is(quality.getType().toString())))
 				.andExpect(
-						jsonPath("$result[0].version", is(quality.getVersion())))
+						jsonPath("$.result[0].version", is(quality.getVersion())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].name",
+						jsonPath("$.result[0].metrics[0].name",
 								is(metric.getName())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].formattedValue",
+						jsonPath("$.result[0].metrics[0].formattedValue",
 								is(metric.getFormattedValue())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].status",
+						jsonPath("$.result[0].metrics[0].status",
 								is(metric.getStatus().toString())));
 	}
 
