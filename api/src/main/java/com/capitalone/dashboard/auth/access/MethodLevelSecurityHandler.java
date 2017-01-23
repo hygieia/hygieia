@@ -1,14 +1,14 @@
-package com.capitalone.dashboard.auth;
+package com.capitalone.dashboard.auth.access;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.repository.DashboardRepository;
-import com.capitalone.dashboard.util.AuthenticationUtil;
 
 @Component
 public class MethodLevelSecurityHandler {
@@ -26,8 +26,8 @@ public class MethodLevelSecurityHandler {
 			return false;
 		}
 		
-		String username = AuthenticationUtil.getUsername();
-		AuthType authType = AuthenticationUtil.getAuthType();
+		String username = AuthenticationUtil.getUsernameFromContext();
+		AuthType authType = AuthenticationUtil.getAuthTypeFromContext();
 		
 		//Check list of owners of dashboard to see if it contains the authenticated user
 		if (null != dashboard.getOwners() && dashboard.getOwners().contains(new Owner(username, authType))) {

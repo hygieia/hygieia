@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.auth.annotations;
+package com.capitalone.dashboard.auth.access;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

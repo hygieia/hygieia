@@ -34,11 +34,14 @@ server.port=[Web server port - default is 8080]
 version.number=@application.version.number@
 
 auth.expirationTime=[JWT expiration time in milliseconds]
+auth.ldapServerUrl=[LDAP Server Url, including port of your LDAP server]
+auth.ldapUserDnPattern=[LDAP User Dn Pattern, where the username is replaced with '{0}']
 ```
 
 All the above values are optional. Even without the property file you must be able to run the api (assuming you have mongodb installed with no authorization).
 **Note:** When `dbusername` is not present or the value is empty then it skips the mongodb authorization part.
 **Note:** If the expiration time is left blank, the token will can be thought of as permanently expired. This will cause the users to never see any content. While leaving this value blank will not terminate application start up, this is a mandatory field if you wish users to see any content.
+**Note:** If both LDAP parameters are not provided, LDAP will not be an available authentication provider. 
 
 ## Run the API
 

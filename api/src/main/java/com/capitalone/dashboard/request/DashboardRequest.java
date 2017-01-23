@@ -2,12 +2,12 @@ package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
 
+import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.util.AuthenticationUtil;
 
 public class DashboardRequest {
     @NotNull
@@ -62,7 +62,7 @@ public class DashboardRequest {
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
-        Owner owner = new Owner(AuthenticationUtil.getUsername(), AuthenticationUtil.getAuthType());
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
         return new Dashboard(template, title, application, owner, type);
     }
 

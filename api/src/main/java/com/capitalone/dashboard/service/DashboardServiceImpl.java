@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Collector;
@@ -27,7 +28,6 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.repository.ServiceRepository;
-import com.capitalone.dashboard.util.AuthenticationUtil;
 import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -262,12 +262,12 @@ public class DashboardServiceImpl implements DashboardService {
 	public List<Dashboard> getOwnedDashboards() {
 		Set<Dashboard> myDashboards = new HashSet<Dashboard>();
 		
-		Owner owner = new Owner(AuthenticationUtil.getUsername(), AuthenticationUtil.getAuthType());
+		Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
 		myDashboards.addAll(dashboardRepository.findByOwners(owner));
 		
 		// TODO: This if check is to ensure backwards compatibility for dashboards created before AuthenticationTypes were introduced.
-		if (AuthenticationUtil.getAuthType() == AuthType.STANDARD) {
-			myDashboards.addAll(dashboardRepository.findByOwner(AuthenticationUtil.getUsername()));
+		if (AuthenticationUtil.getAuthTypeFromContext() == AuthType.STANDARD) {
+			myDashboards.addAll(dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext()));
 		}
 		
 		return Lists.newArrayList(myDashboards);

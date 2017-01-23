@@ -10,49 +10,24 @@
             return;
         }
         var login = this;
+        $scope.isStandardLogin = true;
         login.templateUrl = 'app/dashboard/views/navheader.html';
-        login.apiup = false;
-        login.username = '';
-        login.password = '';
         login.invalidUsernamePassword = false;
-        login.appVersion='';
 
+        $scope.showStandard = function () {
+          $scope.isStandardLogin = true;
+        }
 
-        login.doLogin = function () {
-            $scope.lg.username.$setValidity('invalidUsernamePassword', true);
-            var valid = $scope.lg.$valid;
-            if (valid) {
-                var auth = {'username': login.username, 'password': login.password};
-                authService.login(auth)
-                    .then(function (response) {
-                        if (response.status == 200) {
-                            $location.path(loginRedirectService.getRedirectPath());
-                        } else if (response.status == 401) {
-                            $scope.lg.username.$setValidity(
-                                    'invalidUsernamePassword',
-                                    false
-                                  );
-                        }
-                    });
-            }
-        };
-        login.doSignup = function () {
+        $scope.showLdap = function () {
+          $scope.isStandardLogin = false;
+        }
+
+        var signup = function () {
             $location.path('/signup');
         };
 
-        function getAppVersion(){
-            var url = '/api/appinfo';
-            $http.get(url, {skipAuthorization: true}).success(function (data, status) {
-                console.log("appinfo:"+data);
-                login.appVersion=data;
-                login.apiup = (status == 200);
-            }).error(function(data,status){
-                console.log("appInfo:"+data);
-                login.appVersion="0.0";
-                login.apiup = false;
-            });
-        }
-        getAppVersion();
+        $scope.standardLogin = { name: 'Standard Login', login: authService.login, signup: signup };
+        $scope.ldapLogin = { name: 'Ldap Login', login: authService.loginLdap };
 
     }
     app.controller('LoginController', inject.concat([LoginController]));

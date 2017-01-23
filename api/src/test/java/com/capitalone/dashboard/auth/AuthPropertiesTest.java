@@ -6,13 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TokenAuthPropertiesTest {
+public class AuthPropertiesTest {
 
-	private TokenAuthProperties tokenAuthProperties;
+	private AuthProperties tokenAuthProperties;
 	
 	@Before
 	public void setup() {
-		tokenAuthProperties = new TokenAuthProperties();
+		tokenAuthProperties = new AuthProperties();
 	}
 	
 	@Test
@@ -30,11 +30,15 @@ public class TokenAuthPropertiesTest {
 	public void testApplyDefaultsNotNeeded() {
 		tokenAuthProperties.setExpirationTime(8L);
 		tokenAuthProperties.setSecret("secret");
+		tokenAuthProperties.setLdapServerUrl("url");
+		tokenAuthProperties.setLdapUserDnPattern("pattern");
 		
 		tokenAuthProperties.applyDefaultsIfNeeded();
 		
 		assertEquals(Long.valueOf(8), tokenAuthProperties.getExpirationTime());
 		assertEquals("secret", tokenAuthProperties.getSecret());
+		assertEquals("url", tokenAuthProperties.getLdapServerUrl());
+		assertEquals("pattern", tokenAuthProperties.getLdapUserDnPattern());
 	}
 
 }

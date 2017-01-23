@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.util;
+package com.capitalone.dashboard.auth;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,7 +9,7 @@ public class AuthenticationUtil {
 
 	public static final String AUTH_TYPE = "auth_type";
 	
-	public static String getUsername() {
+	public static String getUsernameFromContext() {
 		Authentication authentication = getAuthentication();
 		if (authentication != null) {
 			return authentication.getName();
@@ -18,7 +18,7 @@ public class AuthenticationUtil {
 		return null;
 	}
 	
-	public static AuthType getAuthType() {
+	public static AuthType getAuthTypeFromContext() {
 		Authentication authentication = getAuthentication();
 		if (authentication != null) {
 			return AuthType.valueOf((String)authentication.getDetails());

@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.auth;
+package com.capitalone.dashboard.auth.token;
 
 import java.util.Collection;
 import java.util.Date;
@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.auth.AuthProperties;
 import com.google.common.collect.Sets;
 
 import io.jsonwebtoken.Claims;
@@ -30,10 +31,10 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String ROLES_CLAIM = "roles";
 	private static final String DETAILS_CLAIM = "details";
 
-	private TokenAuthProperties tokenAuthProperties;
+	private AuthProperties tokenAuthProperties;
 	
 	@Autowired
-	public TokenAuthenticationServiceImpl(TokenAuthProperties tokenAuthProperties) {
+	public TokenAuthenticationServiceImpl(AuthProperties tokenAuthProperties) {
 		this.tokenAuthProperties = tokenAuthProperties;
 	}
 	

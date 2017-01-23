@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.auth;
+package com.capitalone.dashboard.auth.token;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,6 +21,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.capitalone.dashboard.auth.AuthProperties;
+import com.capitalone.dashboard.auth.AuthenticationFixture;
+import com.capitalone.dashboard.auth.token.TokenAuthenticationServiceImpl;
+
 @RunWith(MockitoJUnitRunner.class)
 public class TokenAuthenticationServiceImplTest {
 
@@ -31,7 +35,7 @@ public class TokenAuthenticationServiceImplTest {
 	
 	private TokenAuthenticationServiceImpl service;
 	
-	private TokenAuthProperties tokenAuthProperties;
+	private AuthProperties tokenAuthProperties;
 	
 	@Mock
 	private HttpServletResponse response;
@@ -41,7 +45,7 @@ public class TokenAuthenticationServiceImplTest {
 	
 	@Before
 	public void setup() {
-		tokenAuthProperties = new TokenAuthProperties();
+		tokenAuthProperties = new AuthProperties();
 		tokenAuthProperties.setExpirationTime(100000L);
 		tokenAuthProperties.setSecret("somesupersecretphrase");
 		service = new TokenAuthenticationServiceImpl(tokenAuthProperties);

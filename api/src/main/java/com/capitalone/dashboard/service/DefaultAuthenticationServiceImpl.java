@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Authentication;
 import com.capitalone.dashboard.repository.AuthenticationRepository;
 
@@ -38,9 +39,10 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public org.springframework.security.core.Authentication create(String username, String password) {
-        Authentication user = authenticationRepository.save(new Authentication(username, password));
-        
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), new ArrayList<>());
+        Authentication authentication = authenticationRepository.save(new Authentication(username, password));
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(), new ArrayList<GrantedAuthority>());
+        token.setDetails(AuthType.STANDARD);
+        return token;
     }
 
     @Override
@@ -78,7 +80,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
         Authentication authentication = authenticationRepository.findByUsername(username);
 
         if (authentication != null && authentication.checkPassword(password)) {
-            return new UsernamePasswordAuthenticationToken(authentication.getUsername(), password, new ArrayList<GrantedAuthority>());
+        	return new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(), new ArrayList<GrantedAuthority>());
         }
 
         throw new BadCredentialsException("Login Failed: Invalid credentials for user " + username);

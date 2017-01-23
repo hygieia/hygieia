@@ -1,0 +1,46 @@
+<div class="auth-modal-heading">{{authType.name}}</div>
+<div class="auth-modal-body">
+    <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2"
+        id="lg"
+        name="lg"
+        class="form"
+        ng-submit="login(username, password)"
+        role="form"
+        novalidate>
+        <form-group input="username"
+            errors="{required: 'Username is required', invalidUsernamePassword: 'Incorrect username and password'}">
+            <input type="text"
+                name="username"
+                class="form-control text-center"
+                ng-model="username"
+                required
+                minlength="4"
+                autocomplete="off"
+                placeholder="Enter your username"/>
+        </form-group>
+        <form-group input="password"
+            errors="{required:'Password is required'}">
+            <input type="password"
+                name="password"
+                class="form-control text-center"
+                ng-model="password"
+                required
+                placeholder="Enter your password" />
+        </form-group>
+        <div class="text-center">
+            <button type="submit" class="btn btn-default btn-wide">
+                <i class="fa fa-lg fa fa-thumbs-o-up"></i>
+                Log in
+            </button>
+        </div>
+        <div class="gap text-center" ng-show="authType.signup">
+            <p>Don't have an account?</p>
+            <div class="btn btn-link btn-wide"
+                ng-click="authType.signup()">
+                <span class="fa fa-lg fa-key"></span>
+                Sign up
+            </div>
+        </div>
+    </form>
+  </div>
+</div>
