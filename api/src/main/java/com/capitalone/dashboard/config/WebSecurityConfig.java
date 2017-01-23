@@ -59,10 +59,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(standardAuthenticationProvider);
 		
-		 if (StringUtils.isNotBlank(authProperties.getLdapServerUrl())) {
+		String ldapServerUrl = authProperties.getLdapServerUrl();
+		String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
+		if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
 			auth.ldapAuthentication()
-			.userDnPatterns(authProperties.getLdapUserDnPattern())
-			.contextSource().url(authProperties.getLdapServerUrl());
+			.userDnPatterns(ldapUserDnPattern)
+			.contextSource().url(ldapServerUrl);
 		}
 	}
 	
