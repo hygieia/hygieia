@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.capitalone.dashboard.auth.token.TokenAuthenticationServiceImpl;
 import com.capitalone.dashboard.config.TestDefaultAuthConfig;
 import com.capitalone.dashboard.config.WebMVCConfig;
 import com.capitalone.dashboard.config.WebSecurityConfig;
@@ -33,7 +34,6 @@ import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Authentication;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.LoginCredentials;
 import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.repository.AuthenticationRepository;
@@ -41,7 +41,6 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.capitalone.dashboard.service.DashboardService;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
  
  @RunWith(SpringJUnit4ClassRunner.class)
  @SpringApplicationConfiguration(classes = {TestDefaultAuthConfig.class, WebMVCConfig.class, WebSecurityConfig.class})
@@ -128,7 +127,7 @@ import com.google.gson.Gson;
      	Authentication authentication = new Authentication("someAdmin", "someAdminPassword");
      	when(authenticationTestRepository.findByUsername("someAdmin")).thenReturn(authentication);
      	mockMvc.perform(post("/login")
-     			.accept(MediaType.APPLICATION_JSON).content("{\"username\":\"someAdmin\",\"password\":\"someAdminPassword\"}")
+     			.accept(MediaType.APPLICATION_JSON).param("username", "someAdmin").param("password", "someAdminPassword")
      			).andExpect(status().isOk());
      }
      
@@ -137,7 +136,7 @@ import com.google.gson.Gson;
      	Authentication authentication = new Authentication("someAdmin", "someAdminPassword");
      	when(authenticationTestRepository.findByUsername("someAdmin")).thenReturn(authentication);
      	mockMvc.perform(post("/login")
-     			.accept(MediaType.APPLICATION_JSON).content("{\"username\":\"someAdmin\",\"password\":\"wrongPassword\"}")
+     			.accept(MediaType.APPLICATION_JSON).param("username", "someAdmin").param("password", "badPassword")
      			).andExpect(status().isUnauthorized());
      }
      
@@ -148,16 +147,10 @@ import com.google.gson.Gson;
      	UserInfo userInfo = new UserInfo();
      	userInfo.setAuthorities(Lists.newArrayList(roles));
      	
-     	when(userInfoRepository.findByUsernameAndAuthType("someAdmin", AuthType.STANDARD)).thenReturn(userInfo);
+     	when(userInfoRepository.findByUsernameAndAuthType(username, AuthType.STANDARD)).thenReturn(userInfo);
      	
-     	LoginCredentials creds = new LoginCredentials();
-     	creds.setUsername(username);
-     	creds.setPassword(password);
-     	
-     	Gson gson = new Gson();
-     	String loginCredsJson = gson.toJson(creds);
      	MvcResult loginResult = mockMvc.perform(post("/login")
-     			.accept(MediaType.APPLICATION_JSON).content(loginCredsJson)
+     			.accept(MediaType.APPLICATION_JSON).param("username", username).param("password", password)
      			).andExpect(status().isOk()).andReturn();
      	
      	return loginResult.getResponse().getHeader(ReflectionTestUtils.getField(TokenAuthenticationServiceImpl.class, "AUTH_RESPONSE_HEADER").toString());
