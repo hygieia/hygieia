@@ -76,6 +76,18 @@
                 console.log('Authentication failed, redirecting to login page');
                 $location.path('/login');
             }
+            if( ($location.path() === '/site')  && ctrl.username != 'admin'){
+              console.log('Cannot Route readonly user to Admin Site');
+              $location.path('/site')
+            }
+            if( ($location.path() === '/site') && ctrl.username == 'admin'){
+              console.log('Routing to Admin Site');
+              $location.path('/adminsite')
+            }
+            if( ($location.path() === '/adminsite') && ctrl.username != 'admin'){
+              console.log('Routing to readonly Site');
+              $location.path('/site')
+            }
 
         }
 
@@ -209,5 +221,3 @@
 
 
 })();
-
-
