@@ -15,7 +15,7 @@ select:
 sort:
    - Timebox.BeginDate
 filter:
-  - (IsDeleted='False'|IsDeleted='True')
+  - IsDeleted='False','True'
   - Timebox.ID!=''
   - Team.ID!=''
   - Timebox.EndDate<'$sprintEndDate$'
