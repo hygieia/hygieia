@@ -6,17 +6,21 @@ import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.util.IOUtils;
-import jenkins.plugins.hygieia.HygieiaPublisher;
 import jenkins.plugins.hygieia.RestCall;
+import jenkins.plugins.hygieia.workflow.HygieiaSonarPublishStep;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.lang.Integer;
 import java.lang.InterruptedException;
 import java.lang.String;
@@ -29,13 +33,15 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static hygieia.utils.HygieiaUtils.getSafePositiveInteger;
+
 public class SonarBuilder {
     private static final Logger logger = Logger.getLogger(SonarBuilder.class.getName());
     /**
      * Pattern for Sonar project URL in logs
      */
     public static final String URL_PATTERN_IN_LOGS = ".*" + Pattern.quote("ANALYSIS SUCCESSFUL, you can browse ") + "(.*)";
-    public static final String URL_PROJECT_ID_FRAGMENT = "/api/projects?format=json&key=%s";
+    public static final String URL_PROJECT_ID_FRAGMENT = "/api/projects/index?format=json&key=%s";
 
     public static final String CE_URL_PATTERN_IN_LOGS = ".*" + Pattern.quote("More about the report processing at ") + "(.*)";
     public static final String CE_URL_PROJECT_ID_FRAGMENT = "/ce/task?id=%s";
@@ -60,57 +66,63 @@ public class SonarBuilder {
     private String sonarProjectName;
     private String sonarProjectID;
     private String buildId;
-    private BuildListener listener;
-    private HygieiaPublisher publisher;
+    private TaskListener listener;
+
     private String sonarCEAPIUrl;
     private int ceQueryIntervalInSeconds;
     private int ceQueryMaxAttempts;
+    private String jenkinsName;
+    private boolean useProxy;
+
+
+    public static final int DEFAULT_QUERY_INTERVAL = 10;
+    public static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
 
     /**
      * Hide utility-class constructor.
      */
-    public SonarBuilder(AbstractBuild<?, ?> build, HygieiaPublisher publisher, BuildListener listener, String buildId) throws IOException, URISyntaxException, ParseException {
+//    public SonarBuilder(AbstractBuild<?, ?> build, TaskListener listener, String jenkinsName, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts, String buildId, boolean useProxy) throws IOException, URISyntaxException, ParseException {
+//        this.listener = listener;
+//        this.jenkinsName = jenkinsName;
+//        this.ceQueryIntervalInSeconds = getSafePositiveInteger(ceQueryIntervalInSeconds, DEFAULT_QUERY_INTERVAL);
+//        this.ceQueryMaxAttempts = getSafePositiveInteger(ceQueryMaxAttempts, DEFAULT_QUERY_MAX_ATTEMPTS);
+//        this.buildId = buildId;
+//        this.useProxy = useProxy;
+//        setSonarDetails(build);
+//    }
+
+    public SonarBuilder(Run<?, ?> run, TaskListener listener, String jenkinsName, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts, String buildId, boolean useProxy) throws IOException, URISyntaxException, ParseException {
         this.listener = listener;
-        this.publisher = publisher;
-        setSonarDetails(build, buildId);
+        this.jenkinsName = jenkinsName;
+        this.ceQueryIntervalInSeconds = getSafePositiveInteger(ceQueryIntervalInSeconds, DEFAULT_QUERY_INTERVAL);
+        this.ceQueryMaxAttempts = getSafePositiveInteger(ceQueryMaxAttempts, DEFAULT_QUERY_MAX_ATTEMPTS);
+        this.buildId = buildId;
+        this.jenkinsName = jenkinsName;
+        this.useProxy = useProxy;
+        setSonarDetails(run);
+
     }
 
-    private void setSonarDetails(AbstractBuild build, String buildId) throws IOException, URISyntaxException, ParseException {
-        String sonarBuildLink = extractSonarProjectURLFromLogs(build);
-        this.buildId = buildId;
+    private void setSonarDetails(Run run) throws IOException, URISyntaxException, ParseException {
+        String sonarBuildLink = extractSonarProjectURLFromLogs(run);
         if (!StringUtils.isEmpty(sonarBuildLink)) {
             this.sonarProjectName = getSonarProjectName(sonarBuildLink);
             this.sonarServer = sonarBuildLink.substring(0, sonarBuildLink.indexOf("/dashboard/index/" + this.sonarProjectName));
             this.sonarProjectID = getSonarProjectID(this.sonarProjectName);
         }
         //sonar 5.3 changes
-        String sonarCEAPILink =  extractSonarProjectCEUrlFromLogs(build);
+        String sonarCEAPILink = extractSonarProjectCEUrlFromLogs(run);
         if (!StringUtils.isEmpty(sonarCEAPILink)) {
             this.sonarCEAPIUrl = sonarCEAPILink;
-            String queryIntervalFromConfig = StringUtils.defaultIfBlank(publisher.getHygieiaSonar().getCeQueryIntervalInSeconds(), "10");
-            String queryMaxAttempts = StringUtils.defaultIfBlank(publisher.getHygieiaSonar().getCeQueryMaxAttempts(), "30");
-
-            try {
-                this.ceQueryIntervalInSeconds = Integer.parseInt(queryIntervalFromConfig);
-            } catch (java.lang.NumberFormatException nfe) {
-                // the value could not be fetched from config, use the
-                // Sonar recommended value for query interval
-                this.ceQueryIntervalInSeconds = publisher.getHygieiaSonar().DEFAULT_QUERY_INTERVAL;
-            }
-            try {
-                this.ceQueryMaxAttempts = Integer.parseInt(queryMaxAttempts);
-            } catch (java.lang.NumberFormatException nfe) {
-                // the value could not be fetched from config, use the
-                // Sonar recommended value for query max attempts
-                this.ceQueryMaxAttempts = publisher.getHygieiaSonar().DEFAULT_QUERY_MAX_ATTEMPTS;
-            }
         }
-
     }
 
-    /** Keeps polling Sonar's Compute Engine (CE) API to determine status of sonar analysis
+
+    /**
+     * Keeps polling Sonar's Compute Engine (CE) API to determine status of sonar analysis
      * From Sonar 5.2+, the final analysis is now an asynchronous and the status
      * of the sonar analysis needs to be determined from the Sonar CE API
+     *
      * @param restCall
      * @return true after Compute Engine has completed processing or it is an old Sonar version.
      * Else returns false
@@ -129,7 +141,7 @@ public class SonarBuilder {
         // status of sonar analysis. After every attempt if CE API is not yet
         // ready, sleep for configured interval period.
         // Return true as soon as the status changes to SUCCESS
-        for(int i=0;i<this.ceQueryMaxAttempts;i++) {
+        for (int i = 0; i < this.ceQueryMaxAttempts; i++) {
             // get the status of sonar analysis using Sonar CE API
             RestCall.RestCallResponse ceAPIResponse = restCall.makeRestCallGet(this.sonarCEAPIUrl);
             int responseCodeCEAPI = ceAPIResponse.getResponseCode();
@@ -156,8 +168,7 @@ public class SonarBuilder {
                         return false;
                 }
 
-            }
-            else {
+            } else {
                 listener.getLogger().println("Hygieia Publisher: Sonar CE API Connection failed. Response: " + responseCodeCEAPI);
                 return false;
             }
@@ -170,10 +181,9 @@ public class SonarBuilder {
     public CodeQualityCreateRequest getSonarMetrics() throws ParseException {
         if (StringUtils.isEmpty(sonarServer) || StringUtils.isEmpty(sonarProjectID)) return null;
         String url = String.format(sonarServer + URL_METRIC_FRAGMENT, sonarProjectID, METRICS);
-        RestCall restCall = new RestCall(publisher.getDescriptor().isUseProxy());
-
+        RestCall restCall = new RestCall(useProxy);
         //sonar 5.2+ changes - CE api
-        if(ceProcessingComplete(restCall)) {
+        if (ceProcessingComplete(restCall)) {
             RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
             int responseCode = callResponse.getResponseCode();
             if (responseCode == HttpStatus.SC_OK) {
@@ -182,8 +192,7 @@ public class SonarBuilder {
             }
             listener.getLogger().println("Hygieia Publisher: Sonar Connection Failed. Response: " + responseCode);
             return null;
-        }
-        else {
+        } else {
             listener.getLogger().println("Hygieia Publisher: Sonar Compute Engine API Failed. ");
             return null;
         }
@@ -209,7 +218,7 @@ public class SonarBuilder {
             CodeQualityCreateRequest codeQuality = new CodeQualityCreateRequest();
             codeQuality.setProjectName(str(prjData, NAME));
             codeQuality.setProjectUrl(sonarServer + "/dashboard/index/" + sonarProjectID);
-            codeQuality.setNiceName(publisher.getDescriptor().getHygieiaJenkinsName());
+            codeQuality.setNiceName(jenkinsName);
             codeQuality.setType(CodeQualityType.StaticAnalysis);
             codeQuality.setTimestamp(timestamp(prjData, DATE));
             codeQuality.setProjectVersion(str(prjData, VERSION));
@@ -223,11 +232,10 @@ public class SonarBuilder {
 
                 // if data element is set, set data into value property
                 // this usually happens for custom metrics
-                if(metricJson.get("data") != null) {
+                if (metricJson.get("data") != null) {
                     metric.setFormattedValue(metricJson.get("data").toString());
                     metric.setValue(metricJson.get("data"));
-                }
-                else if (metric.getName().startsWith("new_")) {
+                } else if (metric.getName().startsWith("new_")) {
                     // for new  metrics- use var2 and fvar2
                     // this is because var2 and fvar2 represents values since
                     // last analysis
@@ -235,8 +243,7 @@ public class SonarBuilder {
                         metric.setValue(metricJson.get("var2"));
                         metric.setFormattedValue(str(metricJson, "fvar2"));
                     }
-                }
-                else {
+                } else {
                     // for other regular metrics - use default fields
                     metric.setValue(metricJson.get(VALUE));
                     metric.setFormattedValue(str(metricJson, FORMATTED_VALUE));
@@ -279,37 +286,27 @@ public class SonarBuilder {
     /**
      * Read logs of the build to find URL of the project dashboard in Sonar
      */
-    private String extractSonarProjectURLFromLogs(AbstractBuild build) throws IOException {
-        BufferedReader br = null;
-        String url = null;
-        try {
-            br = new BufferedReader(build.getLogReader());
-            String strLine;
-            Pattern p = Pattern.compile(URL_PATTERN_IN_LOGS);
-            while ((strLine = br.readLine()) != null) {
-                Matcher match = p.matcher(strLine);
-                if (match.matches()) {
-                    url = match.group(1);
-                }
-            }
-        } finally {
-            IOUtils.closeQuietly(br);
-        }
-        return url;
+    private String extractSonarProjectURLFromLogs(Run run) throws IOException {
+        return getSonarUrl(run.getLogReader(), URL_PATTERN_IN_LOGS);
     }
+
 
     /**
      * Sonar 5.3 Changes: As per changes in Sonar 5.3 onwards, the sonar analysis update on server
      * is now processed asynchronously on server. Sonar provides an API called Compute Engine (CE)
      * whihc needs to be polled regularly to determine status of the analysis. URL of CE API can be taken from logs
      */
-    public String extractSonarProjectCEUrlFromLogs(AbstractBuild build) throws IOException {
+    public String extractSonarProjectCEUrlFromLogs(Run run) throws IOException {
+        return getSonarUrl(run.getLogReader(), CE_URL_PATTERN_IN_LOGS);
+    }
+
+    private String getSonarUrl(Reader reader, String pattern) throws IOException {
         BufferedReader br = null;
         String url = null;
         try {
-            br = new BufferedReader(build.getLogReader());
+            br = new BufferedReader(reader);
             String strLine;
-            Pattern p = Pattern.compile(CE_URL_PATTERN_IN_LOGS);
+            Pattern p = Pattern.compile(pattern);
             while ((strLine = br.readLine()) != null) {
                 Matcher match = p.matcher(strLine);
                 if (match.matches()) {
@@ -332,7 +329,7 @@ public class SonarBuilder {
 
     private String getSonarProjectID(String project) throws IOException, URISyntaxException, ParseException {
         String url = String.format(sonarServer + URL_PROJECT_ID_FRAGMENT, project);
-        RestCall restCall = new RestCall(publisher.getDescriptor().isUseProxy());
+        RestCall restCall = new RestCall(useProxy);
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(url);
         int responseCode = callResponse.getResponseCode();
         if (responseCode == HttpStatus.SC_OK) {
@@ -341,7 +338,7 @@ public class SonarBuilder {
             JSONObject obj = (JSONObject) arr.get(0);
             return str(obj, "id");
         }
-        logger.log(Level.WARNING, "Hygieia Sonar Connection Failed. Response: " + responseCode);
+        logger.log(Level.WARNING, "Hygieia getSonarProjectID Failed. Response: " + responseCode);
         return "";
     }
 

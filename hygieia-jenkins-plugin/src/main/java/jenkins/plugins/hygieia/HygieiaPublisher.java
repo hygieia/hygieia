@@ -4,10 +4,7 @@ import com.capitalone.dashboard.model.TestSuiteType;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.AutoCompletionCandidates;
-import hudson.model.BuildListener;
+import hudson.model.*;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
@@ -174,11 +171,9 @@ public class HygieiaPublisher extends Notifier {
         private final String ceQueryIntervalInSeconds;
         private final String ceQueryMaxAttempts;
 
-        public static final int DEFAULT_QUERY_INTERVAL = 10;
-        public static final int DEFAULT_QUERY_MAX_ATTEMPTS = 30;
 
         @DataBoundConstructor
-        public HygieiaSonar(boolean publishBuildStart, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts ) {
+        public HygieiaSonar(boolean publishBuildStart, String ceQueryIntervalInSeconds, String ceQueryMaxAttempts) {
             this.publishBuildStart = publishBuildStart;
             this.ceQueryIntervalInSeconds = ceQueryIntervalInSeconds;
             this.ceQueryMaxAttempts = ceQueryMaxAttempts;
@@ -188,30 +183,24 @@ public class HygieiaPublisher extends Notifier {
             return publishBuildStart;
         }
 
-        /** Sonar 5.2+ changes: get query interval from config
+        /**
+         * Sonar 5.2+ changes: get query interval from config
          * If value is empty or null - return 10 (recommended value from SonarQube)
+         *
          * @return max number of attempts to query Sonar CE API (10 if blank)
          */
         public String getCeQueryIntervalInSeconds() {
-            if (!StringUtils.isEmpty(ceQueryIntervalInSeconds)) {
-                return ceQueryIntervalInSeconds;
-            }
-            else {
-                return String.valueOf(DEFAULT_QUERY_INTERVAL);
-            }
+            return ceQueryIntervalInSeconds;
         }
 
-        /** Sonar 5.2+ changes: get query max attempts from config
+        /**
+         * Sonar 5.2+ changes: get query max attempts from config
          * If value is empty or null - return 30 (recommended value from SonarQube)
+         *
          * @return max number of attempts to query Sonar CE API (30 if blank)
          */
         public String getCeQueryMaxAttempts() {
-            if (!StringUtils.isEmpty(ceQueryIntervalInSeconds)) {
-                return ceQueryMaxAttempts;
-            }
-            else {
-                return String.valueOf(DEFAULT_QUERY_MAX_ATTEMPTS);
-            }
+            return ceQueryMaxAttempts;
         }
 
     }
@@ -283,10 +272,6 @@ public class HygieiaPublisher extends Notifier {
     }
 
     public HygieiaService newHygieiaService(AbstractBuild r, BuildListener listener) {
-        String hygieiaAPIUrl = getDescriptor().getHygieiaAPIUrl();
-        String hygieiaToken = getDescriptor().getHygieiaToken();
-        String hygieiaJenkinsName = getDescriptor().getHygieiaJenkinsName();
-        boolean useProxy = getDescriptor().isUseProxy();
         EnvVars env;
         try {
             env = r.getEnvironment(listener);
@@ -294,6 +279,25 @@ public class HygieiaPublisher extends Notifier {
             listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
             env = new EnvVars();
         }
+        return makeService(env);
+    }
+
+    public HygieiaService newHygieiaService(Run r, TaskListener listener) {
+        EnvVars env;
+        try {
+            env = r.getEnvironment(listener);
+        } catch (Exception e) {
+            listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
+            env = new EnvVars();
+        }
+        return makeService(env);
+    }
+
+    private HygieiaService makeService(EnvVars env) {
+        String hygieiaAPIUrl = getDescriptor().getHygieiaAPIUrl();
+        String hygieiaToken = getDescriptor().getHygieiaToken();
+        String hygieiaJenkinsName = getDescriptor().getHygieiaJenkinsName();
+        boolean useProxy = getDescriptor().isUseProxy();
         hygieiaAPIUrl = env.expand(hygieiaAPIUrl);
         hygieiaToken = env.expand(hygieiaToken);
         hygieiaJenkinsName = env.expand(hygieiaJenkinsName);
@@ -313,15 +317,15 @@ public class HygieiaPublisher extends Notifier {
         private String hygieiaToken;
         private String hygieiaJenkinsName;
         private boolean useProxy;
-        private Set<String> deployAppNames = new HashSet<String>();
-        private Set<String> deployEnvNames = new HashSet<String>();
+        private Set<String> deployAppNames = new HashSet<>();
+        private Set<String> deployEnvNames = new HashSet<>();
 
         private String deployApplicationNameSelected;
         private String deployEnvSelected;
         private String testApplicationNameSelected;
         private String testEnvSelected;
 
-        private Map<String, Set<String>> appEnv = new HashMap<String, Set<String>>();
+        private Map<String, Set<String>> appEnv = new HashMap<>();
 
         public DescriptorImpl() {
             load();

@@ -9,6 +9,12 @@ public class BinaryArtifactSearchRequest {
     private String artifactGroup;
 
     private String artifactVersion;
+    
+    private String artifactModule;
+    
+    private String artifactClassifier;
+    
+    private String artifactExtension;
 
     private ObjectId buildId;
 
@@ -44,4 +50,28 @@ public class BinaryArtifactSearchRequest {
     public void setBuildId(ObjectId buildId) {
         this.buildId = buildId;
     }
+
+	public String getArtifactModule() {
+		return artifactModule;
+	}
+
+	public void setArtifactModule(String artifactModule) {
+		this.artifactModule = artifactModule;
+	}
+
+	public String getArtifactClassifier() {
+		return artifactClassifier;
+	}
+
+	public void setArtifactClassifier(String artifactClassifier) {
+		this.artifactClassifier = artifactClassifier;
+	}
+
+	public String getArtifactExtension() {
+		return artifactExtension;
+	}
+
+	public void setArtifactExtension(String artifactExtension) {
+		this.artifactExtension = artifactExtension;
+	}
 }
