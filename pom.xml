@@ -193,7 +193,7 @@
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
         <module>UI</module>
-        <module>collector-servers-config</module>
+        <module>collector-config-server</module>
       </modules>
       <build>
         <pluginManagement>
@@ -232,7 +232,7 @@
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
      	<module>UI</module>
-     	<module>collector-servers-config</module>
+     	<module>collector-config-server</module>
  </modules>
       <build>
         <plugins>

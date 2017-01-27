@@ -12,5 +12,5 @@ VOLUME ["/hygieia/logs"]
 
 EXPOSE 8888
 
-CMD ./collector-servers-config-properties-builder.sh && \ 
-	java -jar collector-servers-config.jar --spring.config.location=/hygieia/hygieia-collector-servers-config.properties
+CMD ./collector-config-server-properties-builder.sh && \ 
+	java -jar collector-config-server.jar --spring.config.location=/hygieia/hygieia-collector-config-server.properties

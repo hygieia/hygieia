@@ -5,7 +5,7 @@ then
     #for testing locally
     PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-collector-servers-config.properties
+	PROP_FILE=hygieia-collector-config-server.properties
 fi
 
 cat > $PROP_FILE <<EOF

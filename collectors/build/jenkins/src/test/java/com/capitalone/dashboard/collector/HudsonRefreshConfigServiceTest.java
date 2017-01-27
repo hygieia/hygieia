@@ -10,13 +10,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.cloud.endpoint.RefreshEndpoint;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RefreshConfigServiceTest {
+public class HudsonRefreshConfigServiceTest {
 
 	@Mock
 	private RefreshEndpoint refreshEndpoint;
 	
 	@InjectMocks
-	private RefreshConfigService service;
+	private HudsonRefreshConfigService service;
 	
 	@Test
 	public void refershEndpoint(){

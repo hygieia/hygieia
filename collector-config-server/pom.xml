@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>collector-servers-config</artifactId>
+	<artifactId>collector-config-server</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>Spring cloud config server of collector's servers</description>
+	<description>Collector's configuration server</description>
 
 	<parent>
 		<groupId>com.capitalone.dashboard</groupId>
@@ -25,7 +25,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>1.4.3.RELEASE</version>
             <scope>test</scope>
         </dependency>
 
@@ -33,7 +32,7 @@
     </dependencies>
 
     <build>
-    	<finalName>collector-servers-config</finalName>
+    	<finalName>collector-config-server</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
