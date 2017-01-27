@@ -25,10 +25,10 @@ import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.client.Sprint;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureStatus;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
-import com.capitalone.dashboard.repository.ScopeOwnerRepository;
+import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
@@ -91,7 +91,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 	private final FeatureSettings featureSettings;
 	private final FeatureRepository featureRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
-	private final ScopeOwnerRepository teamRepository;
+	private final TeamRepository teamRepository;
 	private final JiraClient jiraClient;
 	
 	// epicId : list of epics
@@ -103,8 +103,8 @@ public class StoryDataClientImpl implements StoryDataClient {
 	/**
 	 * Extends the constructor from the super class.
 	 */
-	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings, FeatureSettings featureSettings, 
-			FeatureRepository featureRepository, FeatureCollectorRepository featureCollectorRepository, ScopeOwnerRepository teamRepository,
+	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings, FeatureSettings featureSettings,
+			FeatureRepository featureRepository, FeatureCollectorRepository featureCollectorRepository, TeamRepository teamRepository,
 			JiraClient jiraClient) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
@@ -166,6 +166,8 @@ public class StoryDataClientImpl implements StoryDataClient {
 				updateMongoInfo(issues);
 				count += issues.size();
 			}
+
+			LOGGER.info("Loop i " + i + " pageSize " + issues.size());
 			
 			// will result in an extra call if number of results == pageSize
 			// but I would rather do that then complicate the jira client implementation
@@ -352,12 +354,11 @@ public class StoryDataClientImpl implements StoryDataClient {
 		IssueField team = fields.get(featureSettings.getJiraTeamFieldName());
 		if (team != null && team.getValue() != null && !TOOLS.sanitizeResponse(team.getValue()).isEmpty()) {
 			String teamID = TOOLS.sanitizeResponse(team.getValue());
-			
-			ObjectId jiraFeatureId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
-			ScopeOwnerCollectorItem scopeOwner = teamRepository.findTeamCollector(jiraFeatureId, teamID);
+
+			Team scopeOwner = teamRepository.findByTeamId(teamID);
+			// sTeamID
+			feature.setsTeamID(teamID);
 			if (scopeOwner != null && StringUtils.isNotEmpty(scopeOwner.getName())) {
-			    // sTeamID
-			    feature.setsTeamID(teamID);
 			    // sTeamName
 				feature.setsTeamName(TOOLS.sanitizeResponse(scopeOwner.getName()));
 			}
