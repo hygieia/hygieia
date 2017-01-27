@@ -24,6 +24,17 @@ hygieia-ui:
   links:
   - hygieia-api
 
+hygieia-collector-config-server:
+  image: hygieia-collector-config-server:latest
+  container_name: hygieia-collector-config-server
+  volumes:
+  - ./logs:/hygieia/logs
+  ports:
+  - "8888:8888"
+#  environment:
+#  - CONFIG_SERVER_GIT_URI
+#  - CONFIG_SERVER_GIT_USERNAME
+#  - CONFIG_SERVER_GIT_PASSWORD
 
 hygieia-github-scm-collector:
   image: hygieia-github-scm-collector:latest
@@ -127,7 +138,9 @@ hygieia-jenkins-build-collector:
   links:
   - mongodb:mongo
   - hygieia-api
-#  environment:
+  - hygieia-collector-config-server
+  environment:
+  - spring.cloud.config.uri=http://hygieia-collector-config-server:8888
 #Jenkins server (required) - Can provide multiple
 #  - JENKINS_MASTER=ttp://jenkins.company.com
 #If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
@@ -138,7 +151,7 @@ hygieia-jenkins-build-collector:
 #  - JENKINS_CRON=0 0/5 * * * *
 #Determines if build console log is collected - defaults to false
 #  - JENKINS_SAVE_LOG=true
-
+  
 hygieia-jenkins-cucumber-test-collector:
   image: hygieia-jenkins-cucumber-test-collector:latest
   container_name: hygieia-jenkins-cucumber
@@ -167,7 +180,9 @@ hygieia-sonar-codequality-collector:
   links:
   - mongodb:mongo
   - hygieia-api
-#  environment:
+  - hygieia-collector-config-server
+  environment:
+  - spring.cloud.config.uri=http://hygieia-collector-config-server:8888
 #  - SONAR_CRON=0 0/5 * * * *
 #  - SONAR_URL=http://localhost:9000
 
