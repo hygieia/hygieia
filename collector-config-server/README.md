@@ -68,7 +68,7 @@ spring.cloud.config.server.git.password=[password to connect to git]
 
 ```
 
-The server can connect to other version controlled repositories like svn and even a local file system by prefixing the uri with 'file://'. Refer to spring cloud config [documentation](https://cloud.spring.io/spring-cloud-config/spring-cloud-config.html).
+The server can connect to other version controlled repositories like svn and even a local file system by prefixing the uri with 'file://'. Refer to spring cloud config [documentation](https://cloud.spring.io/spring-cloud-config/spring-cloud-config.html) for full details.
 
 ## Run the collector config server
 
