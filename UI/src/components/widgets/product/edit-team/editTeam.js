@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('editTeamController', editTeamController);
 
-    editTeamController.$inject = ['$scope', '$modalInstance', 'editTeamConfig'];
-    function editTeamController($scope, $modalInstance, editTeamConfig) {
+    editTeamController.$inject = ['$scope','$cookies' ,'$modalInstance', 'editTeamConfig'];
+    function editTeamController($scope,$cookies, $modalInstance, editTeamConfig) {
         /*jshint validthis:true */
         var ctrl = this,
             team = editTeamConfig.team;

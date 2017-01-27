@@ -5,11 +5,11 @@
         .module(HygieiaConfig.module)
         .controller('addTeamController', addTeamController);
 
-    addTeamController.$inject = ['$scope', '$modalInstance', 'collectorData', '$timeout'];
-    function addTeamController($scope, $modalInstance, collectorData, $timeout) {
+    addTeamController.$inject = ['$scope','$cookies' ,'$modalInstance', 'collectorData', '$timeout'];
+    function addTeamController($scope,$cookies, $modalInstance, collectorData, $timeout) {
         /*jshint validthis:true */
         var ctrl = this;
-
+        
         // public properties
         ctrl.dashboards = [];
 

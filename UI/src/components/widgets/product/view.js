@@ -5,11 +5,11 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
-    productViewController.$inject = ['$scope', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
-    function productViewController($scope, $document, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
+    productViewController.$inject = ['$scope', '$cookies', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
+    function productViewController($scope,$cookies,$document, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
-
+        this.productUsername = $cookies.username;
         //region Dexie configuration
         // setup our local db
         var db = new Dexie('ProductPipelineDb');

@@ -33,7 +33,8 @@
                  ng-repeat="team in ctrl.configuredTeams">
 
                 <div class="product-table-td team-name-cell" as-sortable-item-handle>
-                    <span class="fa fa-cog" ng-click="ctrl.editTeam(team.collectorItemId)"></span>
+                <!--  <span class="fa fa-cog" ng-click="ctrl.editTeam(team.collectorItemId)"></span> -->
+                <span class="fa fa-cog" ng-if="ctrl.productUsername == 'admin'" ng-click="ctrl.editTeam(team.collectorItemId)"></span>
 
                     <a title="{{item.customName || item.name}}"
                        class="team-name"
@@ -172,23 +173,24 @@
                         </div>
 
                         <div class="team-prod-average-desc">
-                             average from commit to production 
+                             average from commit to production
                         </div>
 
                         <div class="team-prod-last-90">
                             <span class="team-prod-last-90-num">{{team.prod.totalCommits}}</span>
-							
+
                             <ng-pluralize count="team.prod.totalCommits" when="{1:' commit ',other:' commits '}"></ng-pluralize> in the last <span class="widget-font-bold">90 days</span>
-                           
+
 						</div>
                     </div>
-                </div> 
+                </div>
             </div>
 
 
             <div
                 class="product-table-tr new-team-row"
                 ng-class="{'no-teams': !ctrl.configuredTeams.length}"
+                ng-if="ctrl.productUsername == 'admin'"
                 ng-click="ctrl.addTeam()">
                 <div class="product-table-td">
                     <span class="fa fa-plus fa-thin-border"></span>
