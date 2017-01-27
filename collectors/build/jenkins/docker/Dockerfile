@@ -8,6 +8,7 @@ RUN \
 
 COPY *.jar /hygieia/
 COPY jenkins-build-properties-builder.sh /hygieia/
+COPY bootstrap.properties /hygieia/
 
 WORKDIR /hygieia
 

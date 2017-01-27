@@ -49,3 +49,22 @@ sonar.servers[0]=http://sonar.company.com
 # Sonar Metrics
 sonar.metrics=ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,sqale_index,test_success_density,test_failures,test_errors,tests
 ```
+
+
+## boostrap.properties
+If you want to take advantage of being able to update property file values without having to restart the collector, leverage the collector-config-server. Properties that often get updated (i.e. sonar.servers) are prime candidates for the collector-config-server. All that needs to be done is source control a sonar.properties file to the repository where collector-config-server is pointing to, then provide values to bootrap.properties:
+
+```
+# The name of the property file tracked by the collector-config-server. 
+# Specify 'sonar' if property file is sonar.properties
+spring.application.name=sonar
+
+# The url of the collector-config-server
+spring.cloud.config.uri=http://localhost:8888
+```
+
+### Docker
+If the collector is a client of the collector-config server make sure to link the collector with collector-config-server and specify the spring.cloud.config.uri as http://[linked collector-config-server container]:[collector-config-server port]
+```
+docker run -dit --name hygieia-sonar-codequality-collector --link hygieia-api:hygieia-api --link hygieia-collector-servers-config:hygieia-collector-servers-config -e "spring.cloud.config.uri=http://hygieia-collector-servers-config:8888" hygieia-sonar-codequality-collector:latest
+```
