@@ -4,7 +4,7 @@ RUN \
   mkdir /hygieia
 
 COPY *.jar /hygieia/
-COPY collector-servers-config-properties-builder.sh /hygieia/
+COPY collector-config-server-properties-builder.sh /hygieia/
 
 WORKDIR /hygieia
 
