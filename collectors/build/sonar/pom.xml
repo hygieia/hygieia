@@ -50,6 +50,11 @@
               <directory>${project.build.directory}</directory>
               <include>${project.build.finalName}.jar</include>
             </resource>
+             <resource>
+               <targetPath>/</targetPath>
+               <directory>${project.basedir}/src/main/resources</directory>
+               <include>bootstrap.properties</include>
+             </resource>
           </resources>
         </configuration>
       </plugin>
