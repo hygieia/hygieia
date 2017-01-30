@@ -38,14 +38,14 @@ public class CloudInstanceController {
             produces = APPLICATION_JSON_VALUE)
 
     public ResponseEntity<Collection<String>> refreshInstances(
-            @Valid @RequestBody CloudInstanceListRefreshRequest request) {
+            @Valid @RequestBody(required=false) CloudInstanceListRefreshRequest request) {
         return ResponseEntity.ok().body(cloudInstanceService.refreshInstances(request));
     }
 
     @RequestMapping(value = "/cloud/instance/create", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> upsertInstance(
-            @Valid @RequestBody List<CloudInstanceCreateRequest> request) throws HygieiaException {
+            @Valid @RequestBody(required=false) List<CloudInstanceCreateRequest> request) throws HygieiaException {
         return ResponseEntity.ok().body(cloudInstanceService.upsertInstance(request));
     }
 
