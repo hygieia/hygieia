@@ -1,6 +1,6 @@
 # Hygieia℠ Collector Config Server
 
-This is a spring boot application that acts as a server of property files in a version controlled repository (i.e. application.properties in a git repository). Collectors can talk to this server to get the latest config values. Property file values that often get updated are good candidates to be pushed in a version controlled repo and served up by collector config server. The list of servers that the jenkins collector gather data from is a good example. Its ideal to be able to add, update or delete servers, without having to change the property file packaged with the jenkins collector, rebuild and restart the collector.
+This is a spring boot application that acts as a server of property files in a version controlled repository (i.e. application.properties in a git repository). Collectors can talk to this server to get the latest config values. Property file values that often get updated are good candidates to be pushed in a version controlled repo and served up by collector config server. The list of servers that the jenkins collector gather data from is a good example. It's ideal to be able to add, update, or delete servers, without having to change the property file packaged with the jenkins collector, rebuild and restart the collector.
 
 
 Below is a setup to illustrate the config server to client (collector) relationship:

@@ -64,7 +64,7 @@ spring.cloud.config.uri=http://localhost:8888
 ```
 
 ### Docker
-If the collector is a client of the collector-config server make sure to link the collector with collector-config-server and specify the spring.cloud.config.uri as http://[linked collector-config-server container]:[collector-config-server port]
+If this collector is a client of the collector-config server make sure to link it with the collector-config-server docker container. Specify the spring.cloud.config.uri as http://[linked collector-config-server container]:[collector-config-server port].
 ```
 docker run -dit --name hygieia-sonar-codequality-collector --link hygieia-api:hygieia-api --link hygieia-collector-servers-config:hygieia-collector-servers-config -e "spring.cloud.config.uri=http://hygieia-collector-servers-config:8888" hygieia-sonar-codequality-collector:latest
 ```
