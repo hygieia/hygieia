@@ -75,7 +75,7 @@ public class ScopeServiceImpl implements ScopeService {
 			String scopeId) {
 		Component component = componentRepository.findOne(componentId);
 		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.ScopeOwner).get(0);
+				.get(CollectorType.AgileTool).get(0);
 		QScopeOwner team = new QScopeOwner("team");
 		BooleanBuilder builder = new BooleanBuilder();
 

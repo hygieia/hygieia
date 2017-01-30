@@ -54,7 +54,7 @@
 		ctrl.listTypes = [{type: "epics", value: "Epics"}, {type: "issues", value: "Issues"}];
 
 		// Request collectors
-		collectorData.collectorsByType('scopeowner').then(
+		collectorData.collectorsByType('AgileTool').then(
 				processCollectorsResponse);
 
 		initEstimateMetricType(widgetConfig);
@@ -159,7 +159,7 @@
 
 		function processCollectorsResponse(data) {
 			ctrl.collectors = data;
-			var featureCollector = modalData.dashboard.application.components[0].collectorItems.ScopeOwner;
+			var featureCollector = modalData.dashboard.application.components[0].collectorItems.AgileTool;
 			var featureCollectorId = featureCollector ? featureCollector[0].collectorId
 					: null;
 

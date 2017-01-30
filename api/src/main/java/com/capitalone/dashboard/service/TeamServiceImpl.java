@@ -78,7 +78,7 @@ public class TeamServiceImpl implements TeamService {
                                               String teamId) {
         Component component = componentRepository.findOne(componentId);
         CollectorItem item = component.getCollectorItems()
-                .get(CollectorType.ScopeOwner).get(0);
+                .get(CollectorType.AgileTool).get(0);
 
         // Get one scope by Id
         Team team = teamRepository.findByTeamId(teamId);
