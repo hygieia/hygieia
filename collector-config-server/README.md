@@ -50,14 +50,11 @@ Given the above setup, on start up of the jenkins collector, it will load the va
 Changes made to jenkins.properties, committed and pushed to git, will be picked up by the jenkins collector in its next run. The HudsonRefreshConfigService refreshes beans in the context that has a @RefreshScope annotation, in this case HudsonSettings.java.
 
 ## Building
-
 Run `mvn install` to package the collector into an executable JAR file.
 
 
 ## Collector Config Server Properties file
-
 The Collector Config Server needs a property file in following format:
-
 ```properties
 # application.properties
 server.port=[config server port, (from spring cloud guide) make sure to specify a different server.port value to avoid port conflicts when you run both this server and another Spring Boot application on the same machine.]
@@ -71,15 +68,12 @@ spring.cloud.config.server.git.password=[password to connect to git]
 The server can connect to other version controlled repositories like svn and even a local file system by prefixing the uri with 'file://'. Refer to spring cloud config [documentation](https://cloud.spring.io/spring-cloud-config/spring-cloud-config.html) for full details.
 
 ## Run the collector config server
-
 After you have built your project, from the target folder run
-
 ```bash
 java -jar collector-config-server.jar 
 ```
 
 ## Docker image
-
 ### Create
 ```bash
 # from top-level project
