@@ -27,7 +27,7 @@ public interface TeamRepository extends CrudRepository<Team, ObjectId>,
      * @return A single Change Date value that is the maximum value of the
      *         existing collection
      */
-    @Query(value = "{ 'collectorId' : ?0, 'changeDate' : {$gt: ?1}, '_class' : 'com.capitalone.dashboard.model.CollectorItem', 'assetState': 'Active'}")
+    @Query(value = "{ 'collectorId' : ?0, 'changeDate' : {$gt: ?1}, '_class' : 'com.capitalone.dashboard.model.Team', 'assetState': 'Active'}")
     List<Team> findTopByChangeDateDesc(ObjectId collectorId, String changeDate);
 
     @Query(value = "{ 'collectorId' : ?0 }")
