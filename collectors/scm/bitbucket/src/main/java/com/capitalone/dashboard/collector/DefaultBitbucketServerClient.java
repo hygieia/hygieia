@@ -159,6 +159,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 		
 		String repoUrlRaw = rawUrl;
 		String repoUrlProcessed = repoUrlRaw;
+		String bitbucket ="";
 		
 		if (repoUrlProcessed.endsWith(".git")) {
 			repoUrlProcessed = repoUrlProcessed.substring(0, repoUrlProcessed.lastIndexOf(".git"));
@@ -170,7 +171,12 @@ public class DefaultBitbucketServerClient implements GitClient {
 		String scheme = "ssh".equalsIgnoreCase(uri.getScheme())? "https" : uri.getScheme();
 		int port = uri.getPort();
 		String path = uri.getPath();
-		if ((path.startsWith("scm/") || path.startsWith("/scm")) && path.length() > 4) {
+		if ((path.startsWith("/bitbucket/scm/") || path.startsWith("bitbucket/scm")) && path.length() > 13) {
+			bitbucket = "/bitbucket";
+			path = path.substring(14);
+		}
+		else
+                if ((path.startsWith("scm/") || path.startsWith("/scm")) && path.length() > 4) {
 			path = path.substring(4);
 		}
 		if (path.length() > 0 && path.charAt(0) == '/') {
@@ -197,7 +203,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 		}
 		
 		builder.setScheme(scheme);
-		builder.setHost(host);
+		builder.setHost(host+bitbucket);
 		if (port != -1) {
 			builder.setPort(port);
 		}
