@@ -11,10 +11,10 @@
                    autocomplete="off"
                    ng-model="ctrl.collectorItemId"
                    select-on-click
-                   uib-typeahead="item.id as item.title for item in items = (ctrl.dashboards | filter:ctrl.filterDashboards($viewValue)) | orderBy: 'title'"
+                   typeahead="item.id as item.title for item in items = (ctrl.dashboards | filter:ctrl.filterDashboards($viewValue)) | orderBy: 'title'"
                    typeahead-input-formatter="ctrl.formatLabel($model)"
                    typeahead-editable="false"
-                   typeahead-min-length="0"
+                   typeahead-focus
                    ng-blur="ctrl.onBlur(addTeamForm)"
                    required />
 
