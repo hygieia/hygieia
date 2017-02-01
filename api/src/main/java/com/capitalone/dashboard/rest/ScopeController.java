@@ -34,7 +34,7 @@ public class ScopeController {
 	 * REST endpoint for retrieving all features for a given sprint and team
 	 * (the sprint is derived)
 	 *
-	 * @param teamId
+	 * @param scopeId
 	 *            A given scope-owner's source-system ID
 	 * @return A data response list of type Feature containing all features for
 	 *         the given team and current sprint
@@ -48,13 +48,22 @@ public class ScopeController {
 	}
 
 	/**
+	 *
+	 * @param collectorId
+	 *
+	 * @return projects
+	 */
+	@RequestMapping(value = "/scopecollector/{collectorId}", method = GET, produces = APPLICATION_JSON_VALUE)
+	public List<Scope> teamsByCollector(
+			@PathVariable String collectorId) {
+		return this.scopeService.getScopesByCollector(new ObjectId(collectorId));
+	}
+
+	/**
 	 * REST endpoint for retrieving all features for a given sprint and team
 	 * (the sprint is derived)
 	 *
-	 * @param teamId
-	 *            A given scope-owner's source-system ID
-	 * @return A data response list of type Feature containing all features for
-	 *         the given team and current sprint
+	 * @return scopes
 	 */
 	@RequestMapping(value = "/scope", method = GET, produces = APPLICATION_JSON_VALUE)
 	public List<Scope> allScopes() {
