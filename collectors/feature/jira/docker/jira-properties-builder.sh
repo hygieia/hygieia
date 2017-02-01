@@ -134,7 +134,7 @@ feature.jiraStoryPointsFieldName=${JIRA_STORY_POINTS_FIELD_NAME:-customfield_100
 # queried user story issue has team set on it; your custom field name describes the
 # team value you expect to see:
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
-feature.jiraTeamFieldName=${JIRA_TEAM_FIELD_NAME:-customfield_10703}
+feature.jiraTeamFieldName=${JIRA_TEAM_FIELD_NAME}
 
 EOF
 

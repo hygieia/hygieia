@@ -10,7 +10,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.capitalone.dashboard.model.Scope;
 
 /**
- * Repository for {@link ScopeCollector}.
+ * Repository for {@link Scope}.
  */
 public interface ScopeRepository extends CrudRepository<Scope, ObjectId>,
 		QueryDslPredicateExecutor<Scope> {
@@ -37,4 +37,7 @@ public interface ScopeRepository extends CrudRepository<Scope, ObjectId>,
 
 	@Query(value = "{'pId' : ?0 }")
 	List<Scope> getScopeById(String pId);
+
+	@Query(value = "{ 'collectorId' : ?0 }")
+	List<Scope> findByCollectorId(ObjectId collectorId);
 }

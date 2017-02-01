@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.capitalone.dashboard.model.Team;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.joda.time.DateTime;
@@ -40,10 +41,9 @@ import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.FeatureStatus;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
-import com.capitalone.dashboard.repository.ScopeOwnerRepository;
+import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
@@ -65,7 +65,7 @@ public class StoryDataClientImplTests {
 	CoreFeatureSettings coreFeatureSettings;
 	FeatureSettings featureSettings;
 	@Mock FeatureRepository featureRepo;
-	@Mock ScopeOwnerRepository teamRepo;
+	@Mock TeamRepository teamRepo;
 	@Mock FeatureCollectorRepository featureCollectorRepository;
 	@Mock JiraClient jiraClient;
 	@Captor ArgumentCaptor<List<Feature>> captor;
@@ -122,10 +122,10 @@ public class StoryDataClientImplTests {
 		
 		Mockito.when(jiraClient.getIssues(Mockito.anyLong(), Mockito.eq(0))).thenReturn(jiraClientResponse);
 		
-		ScopeOwnerCollectorItem scopeOwner = new ScopeOwnerCollectorItem();
+		Team scopeOwner = new Team("", "");
 		scopeOwner.setName("warriors");
 		scopeOwner.setTeamId("1534");
-		Mockito.when(teamRepo.findTeamCollector(Mockito.any(ObjectId.class), Mockito.anyString())).thenReturn(scopeOwner);
+		Mockito.when(teamRepo.findByTeamId(Mockito.anyString())).thenReturn(scopeOwner);
 		
 		int cnt = storyDataClient.updateStoryInformation();
 		Mockito.verify(featureRepo).save(captor.capture());
