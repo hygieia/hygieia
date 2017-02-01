@@ -159,6 +159,7 @@
                     <button class="pull-right btn-default btn-xm active" ng-show="ctrl.showFeatureLimitButton" ng-click="ctrl.setFeatureLimit()" ng-init="ctrl.featureLimit=4">+/-</button>
                 </div>
                 <div class="dash-row" ng-repeat="issue in ctrl.issueStoryPointsKanban | limitTo:ctrl.featureLimit">
+                    <!-- If ctrl.estimateMetricType === 'count', we don't display the estimate number since it doesn't make sense to display 1 against each issue -->
                     <div class="pull-right" ng-if="ctrl.estimateMetricType === 'storypoints'">{{issue.sEstimate}}</div>
                     <div class="pull-right" ng-if="ctrl.estimateMetricType === 'hours'">{{issue.sEstimateTime}}</div>
                     <div class="feature-link" ng-if="issue.sUrl !== undefined && issue.sUrl !== null && issue.sUrl !== ''">
