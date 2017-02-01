@@ -7,7 +7,7 @@ import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
-import com.capitalone.dashboard.repository.ScopeOwnerRepository;
+import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 
 import org.codehaus.plexus.util.StringUtils;
@@ -28,7 +28,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeatureCollectorTask.class);
 
     private final FeatureRepository featureRepository;
-    private final ScopeOwnerRepository teamRepository;
+    private final TeamRepository teamRepository;
     private final ScopeRepository projectRepository;
     private final FeatureCollectorRepository featureCollectorRepository;
     private final FeatureSettings featureSettings;
@@ -47,7 +47,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
      */
     @Autowired
     public FeatureCollectorTask(TaskScheduler taskScheduler, FeatureRepository featureRepository,
-                                ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
+                                TeamRepository teamRepository, ScopeRepository projectRepository,
                                 FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings)
             throws HygieiaException {
         super(taskScheduler, FeatureCollectorConstants.VERSIONONE);
