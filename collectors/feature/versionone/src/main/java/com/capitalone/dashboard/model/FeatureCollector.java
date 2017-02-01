@@ -20,7 +20,7 @@ public class FeatureCollector extends Collector {
 		protoType.setName(FeatureCollectorConstants.VERSIONONE);
 		protoType.setOnline(true);
         protoType.setEnabled(true);
-		protoType.setCollectorType(CollectorType.ScopeOwner);
+		protoType.setCollectorType(CollectorType.AgileTool);
 		protoType.setLastExecuted(System.currentTimeMillis());
 
 		return protoType;
