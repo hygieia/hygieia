@@ -42,10 +42,6 @@ public class ScopeServiceImpl implements ScopeService {
 	/**
 	 * Retrieves all unique scopes
 	 * 
-	 * @param componentId
-	 *            The ID of the related UI component that will reference
-	 *            collector item content from this collector
-	 * 
 	 * @return A data response list of type Scope containing all unique scopes
 	 */
 	@Override
@@ -79,7 +75,7 @@ public class ScopeServiceImpl implements ScopeService {
 			String scopeId) {
 		Component component = componentRepository.findOne(componentId);
 		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.ScopeOwner).get(0);
+				.get(CollectorType.AgileTool).get(0);
 		QScopeOwner team = new QScopeOwner("team");
 		BooleanBuilder builder = new BooleanBuilder();
 
@@ -92,5 +88,25 @@ public class ScopeServiceImpl implements ScopeService {
 				.findOne(item.getCollectorId());
 
 		return new DataResponse<>(scope, collector.getLastExecuted());
+	}
+
+	/**
+	 * Retrieves the scope information for a given scope source system ID
+	 *
+	 * @param collectorId
+	 *
+	 * @return projects
+	 */
+	@Override
+	public List<Scope>  getScopesByCollector(ObjectId collectorId) {
+		List<Scope> scopes = scopeRepository.findByCollectorId(collectorId);
+
+		//clean up needed for < > characters
+		for (Scope scope : scopes) {
+			scope.setName(  scope.getName().replaceAll("[<>]", "")  );
+			scope.setProjectPath(  scope.getProjectPath().replaceAll("[<>]", "")  );
+		}
+
+		return scopes;
 	}
 }

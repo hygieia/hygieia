@@ -9,7 +9,7 @@ import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.ScopeRepository;
-import com.capitalone.dashboard.repository.ScopeOwnerRepository;
+import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureSettings;
@@ -31,7 +31,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	
 	private final CoreFeatureSettings coreFeatureSettings;
 	private final FeatureRepository featureRepository;
-	private final ScopeOwnerRepository teamRepository;
+	private final TeamRepository teamRepository;
 	private final ScopeRepository projectRepository;
 	private final FeatureCollectorRepository featureCollectorRepository;
 	private final FeatureSettings featureSettings;
@@ -53,7 +53,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	@Autowired
 	public FeatureCollectorTask(CoreFeatureSettings coreFeatureSettings,
 			TaskScheduler taskScheduler, FeatureRepository featureRepository,
-			ScopeOwnerRepository teamRepository, ScopeRepository projectRepository,
+			TeamRepository teamRepository, ScopeRepository projectRepository,
 			FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings,
 			JiraClient jiraClient) {
 		super(taskScheduler, FeatureCollectorConstants.JIRA);
