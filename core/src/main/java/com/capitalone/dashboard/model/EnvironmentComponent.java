@@ -18,6 +18,7 @@ public class EnvironmentComponent extends BaseModel {
     private String componentID;
 	private String componentName;
     private String componentVersion;
+    private String jobUrl;
     private boolean deployed;
     private long deployTime;
     private long asOfDate;
@@ -79,6 +80,14 @@ public class EnvironmentComponent extends BaseModel {
 
     public void setComponentVersion(String componentVersion) {
         this.componentVersion = componentVersion;
+    }
+
+    public String getJobUrl() {
+		return jobUrl;
+    }
+
+    public void setJobUrl(String jobUrl) {
+        this.jobUrl = jobUrl;
     }
 
     public boolean isDeployed() {
