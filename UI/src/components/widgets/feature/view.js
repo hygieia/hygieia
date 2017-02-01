@@ -173,7 +173,7 @@
               changeDate: data.result[i].changeDate,
               sEstimate: data.result[i].sEstimate,
               sEstimateTime: data.result[i].sEstimateTime !== null ? (parseInt(data.result[i].sEstimateTime)/60).toString() : null,
-              sStatus: data.result[i].sStatus !== null ? data.result[i].sStatus.toLowerCase() : null
+              sStatus: (data.result[i].sStatus !== null && data.result[i].sStatus !== undefined) ? data.result[i].sStatus.toLowerCase() : null
             };
             issueCollection.push(issue);
         }
