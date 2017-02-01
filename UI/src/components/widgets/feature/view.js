@@ -54,15 +54,15 @@
     ctrl.load = function() {
       var deferred = $q.all([
         // Scrum
-        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "scrum").then(processSprintEstimateResponse),
-        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "scrum").then(processFeatureWipResponse),
-        featureData.sprint($scope.widgetConfig.componentId, filterTeamId, filterProjectId, "scrum")
+        featureData.sprintMetrics($scope.widgetConfig.componentId, $scope.widgetConfig.options.collectorIdOverride, filterTeamId, filterProjectId, ctrl.estimateMetricType, "scrum").then(processSprintEstimateResponse),
+        featureData.featureWip($scope.widgetConfig.componentId, $scope.widgetConfig.options.collectorIdOverride, filterTeamId, filterProjectId, ctrl.estimateMetricType, "scrum").then(processFeatureWipResponse),
+        featureData.sprint($scope.widgetConfig.componentId, $scope.widgetConfig.options.collectorIdOverride, filterTeamId, filterProjectId, "scrum")
           .then(function(data) { processSprintResponse(data, false) }),
 
         // Kanban
-        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "kanban").then(processSprintEstimateKanbanResponse),
-        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "kanban").then(processFeatureWipKanbanResponse),
-        featureData.sprint($scope.widgetConfig.componentId, filterTeamId, filterProjectId, "kanban")
+        featureData.sprintMetrics($scope.widgetConfig.componentId, $scope.widgetConfig.options.collectorIdOverride, filterTeamId, filterProjectId, ctrl.estimateMetricType, "kanban").then(processSprintEstimateKanbanResponse),
+        featureData.featureWip($scope.widgetConfig.componentId, $scope.widgetConfig.options.collectorIdOverride, filterTeamId, filterProjectId, ctrl.estimateMetricType, "kanban").then(processFeatureWipKanbanResponse),
+        featureData.sprint($scope.widgetConfig.componentId, $scope.widgetConfig.options.collectorIdOverride, filterTeamId, filterProjectId, "kanban")
           .then(function(data) { processSprintResponse(data, true) })
       ]);
 
@@ -165,7 +165,7 @@
       
       for (var i = 0; i < data.result.length; i++) {          
         // Add features only if there are no duplicates
-        if (isInIssuesArray(data.result[i].sNumber, issueCollection) === false) {
+        if (data.result[i].sNumber && isInIssuesArray(data.result[i].sNumber, issueCollection) === false) {
             issue = {
               sNumber: data.result[i].sNumber,
               sName: data.result[i].sName,

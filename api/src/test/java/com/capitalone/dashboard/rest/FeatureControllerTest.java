@@ -316,7 +316,7 @@ public class FeatureControllerTest {
 		DataResponse<List<Feature>> response = new DataResponse<>(features,
 				mockV1Collector.getLastExecuted());
 
-		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
+		when(featureService.getFeatureEpicEstimatesByComponentId(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
 		mockMvc.perform(get("/feature/" + testTeamId + "?component=" + mockComponentId.toString() + "&projectId=" + testProjectId))
 				.andExpect(status().isOk());
 	}
@@ -332,7 +332,7 @@ public class FeatureControllerTest {
 		DataResponse<List<Feature>> response = new DataResponse<>(features,
 				mockV1Collector.getLastExecuted());
 
-		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
+		when(featureService.getFeatureEpicEstimatesByComponentId(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
 		mockMvc.perform(
 				get("/feature/estimates/super/" + testTeamId + "?component="
 						+ mockComponentId.toString() + "&projectId=" + testProjectId)).andExpect(status().isOk());
@@ -349,7 +349,7 @@ public class FeatureControllerTest {
 		DataResponse<List<Feature>> response = new DataResponse<>(features,
 				mockV1Collector.getLastExecuted());
 
-		when(featureService.getFeatureEpicEstimates(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
+		when(featureService.getFeatureEpicEstimatesByComponentId(mockComponentId, testTeamId, testProjectId, Optional.empty(), Optional.empty())).thenReturn(response);
 		mockMvc.perform(
 				get("/feature/estimates/super/" + testTeamId + "?component="
 						+ mockComponentId.toString() + "&projectId=" + testProjectId))

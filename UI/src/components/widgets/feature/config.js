@@ -145,7 +145,6 @@
 		
 		function processCollectorItemsResponse(data) {
 			var scopeOwners = [];
-			var featureCollector = modalData.dashboard.application.components[0].collectorItems.ScopeOwner;
 			var featureTeamId = widgetConfig.options.teamId;
 
 			if (ctrl.collectorId !== "") {
@@ -227,6 +226,9 @@
 			var featureCollector = modalData.dashboard.application.components[0].collectorItems.ScopeOwner;
 			var featureCollectorId = featureCollector ? featureCollector[0].collectorId
 					: null;
+			if (featureCollectorId == null) {
+				featureCollectorId = widgetConfig.options.collectorIdOverride;
+			}
 
 			getCollectors(data, featureCollectorId);
 
@@ -363,7 +365,9 @@
     				    },
     					estimateMetricType : ctrl.estimateMetricType,
     					sprintType: ctrl.sprintType,
-    					listType: ctrl.listType
+    					listType: ctrl.listType,
+    					// See PR 1030. We need information about the collector when we don't have a collector item selected
+        				collectorIdOverride : ctrl.collectorId.id
     				},
     				componentId : modalData.dashboard.application.components[0].id
     			};
@@ -382,7 +386,9 @@
                         },
                         estimateMetricType : ctrl.estimateMetricType,
                         sprintType: ctrl.sprintType,
-                        listType: ctrl.listType
+                        listType: ctrl.listType,
+                        // See PR 1030. We need information about the collector when we don't have a collector item selected
+                        collectorIdOverride : null
                     },
                     componentId : modalData.dashboard.application.components[0].id,
                     collectorItemId : ctrl.collectorItemId.value

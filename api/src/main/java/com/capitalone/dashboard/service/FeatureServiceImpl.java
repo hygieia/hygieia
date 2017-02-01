@@ -6,14 +6,11 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.Feature;
-import com.capitalone.dashboard.model.QScopeOwner;
 import com.capitalone.dashboard.model.SprintEstimate;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
-import com.mysema.query.BooleanBuilder;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,7 +83,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 * @return A data response list of type Feature containing a single story
 	 */
 	@Override
-	public DataResponse<List<Feature>> getStory(ObjectId componentId, String storyNumber) {
+	public DataResponse<List<Feature>> getStoryByComponentId(ObjectId componentId, String storyNumber) {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
@@ -97,13 +94,27 @@ public class FeatureServiceImpl implements FeatureService {
 
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 
-		QScopeOwner team = new QScopeOwner("team");
-		BooleanBuilder builder = new BooleanBuilder();
-		builder.and(team.collectorItemId.eq(item.getId()));
-
+		return getStoryByCollectorId(item.getCollectorId(), storyNumber);
+	}
+	
+	/**
+	 * Retrieves a single story based on a back-end story number
+	 *
+	 * @param collectorId
+	 *            The ID of the collector
+	 * @param storyNumber
+	 *            A back-end story ID used by a source system
+	 * @return A data response list of type Feature containing a single story
+	 */
+	@Override
+	public DataResponse<List<Feature>> getStoryByCollectorId(ObjectId collectorId, String storyNumber) {
+		if (collectorId == null) {
+			return getEmptyLegacyDataResponse();
+		}
+		
 		// Get one story based on story number, based on component
 		List<Feature> story = featureRepository.getStoryByNumber(storyNumber);
-		Collector collector = collectorRepository.findOne(item.getCollectorId());
+		Collector collector = collectorRepository.findOne(collectorId);
 		return new DataResponse<>(story, collector.getLastExecuted());
 	}
 
@@ -119,7 +130,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         the given team and current sprint
 	 */
 	@Override
-	public DataResponse<List<Feature>> getRelevantStories(ObjectId componentId, String teamId, String projectId,
+	public DataResponse<List<Feature>> getRelevantStoriesByComponentId(ObjectId componentId, String teamId, String projectId,
 			Optional<String> agileType) {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
@@ -131,14 +142,30 @@ public class FeatureServiceImpl implements FeatureService {
 
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 
-		QScopeOwner team = new QScopeOwner("team");
-		BooleanBuilder builder = new BooleanBuilder();
-		builder.and(team.collectorItemId.eq(item.getId()));
+		return getRelevantStoriesByCollectorId(item.getCollectorId(), teamId, projectId, agileType);
+	}
+	
+	/**
+	 * Retrieves all stories for a given team and their current sprint
+	 *
+	 * @param collectorId
+	 *            The ID of the collector
+	 * @param teamId
+	 *            A given scope-owner's source-system ID
+	 * @return A data response list of type Feature containing all features for
+	 *         the given team and current sprint
+	 */
+	@Override
+	public DataResponse<List<Feature>> getRelevantStoriesByCollectorId(ObjectId collectorId, String teamId, String projectId,
+			Optional<String> agileType) {
+		if (collectorId == null) {
+			return getEmptyLegacyDataResponse();
+		}
 
 		// Get teamId first from available collector item, based on component
-		List<Feature> relevantStories = getFeaturesForCurrentSprints(teamId, projectId, item.getCollectorId(), agileType.isPresent()? agileType.get() : null, false);
+		List<Feature> relevantStories = getFeaturesForCurrentSprints(teamId, projectId, collectorId, agileType.isPresent()? agileType.get() : null, false);
 
-		Collector collector = collectorRepository.findOne(item.getCollectorId());
+		Collector collector = collectorRepository.findOne(collectorId);
 
 		return new DataResponse<>(relevantStories, collector.getLastExecuted());
 	}
@@ -157,7 +184,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         current sprint and team
 	 */
 	@Override
-	public DataResponse<List<Feature>> getFeatureEpicEstimates(ObjectId componentId, String teamId, String projectId,
+	public DataResponse<List<Feature>> getFeatureEpicEstimatesByComponentId(ObjectId componentId, String teamId, String projectId,
 			Optional<String> agileType, Optional<String> estimateMetricType) {
 		Component component = componentRepository.findOne(componentId);
 
@@ -170,7 +197,29 @@ public class FeatureServiceImpl implements FeatureService {
 
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 		
-		List<Feature> relevantFeatureEstimates = getFeaturesForCurrentSprints(teamId, projectId, item.getCollectorId(), agileType.isPresent()? agileType.get() : null, true);
+		return getFeatureEpicEstimatesByCollectorId(item.getCollectorId(), teamId, projectId, agileType, estimateMetricType);
+	}
+	
+	/**
+	 * Retrieves all unique super features and their total sub feature estimates
+	 * for a given team and their current sprint
+	 *
+	 * @param collectorId
+	 *            The ID of the collector
+	 * @param teamId
+	 *            A given scope-owner's source-system ID
+	 * @return A data response list of type Feature containing the unique
+	 *         features plus their sub features' estimates associated to the
+	 *         current sprint and team
+	 */
+	@Override
+	public DataResponse<List<Feature>> getFeatureEpicEstimatesByCollectorId(ObjectId collectorId, String teamId, String projectId,
+			Optional<String> agileType, Optional<String> estimateMetricType) {
+		if (collectorId == null) {
+			return getEmptyLegacyDataResponse();
+		}
+		
+		List<Feature> relevantFeatureEstimates = getFeaturesForCurrentSprints(teamId, projectId, collectorId, agileType.isPresent()? agileType.get() : null, true);
 		
 		// epicID : epic information (in the form of a Feature object)
 		Map<String, Feature> epicIDToEpicFeatureMap = new HashMap<>();
@@ -206,12 +255,12 @@ public class FeatureServiceImpl implements FeatureService {
 			}
 		}
 		
-		Collector collector = collectorRepository.findOne(item.getCollectorId());
+		Collector collector = collectorRepository.findOne(collectorId);
 		return new DataResponse<>(new ArrayList<>(epicIDToEpicFeatureMap.values()), collector.getLastExecuted());
 	}
 	
 	@Override
-	public DataResponse<SprintEstimate> getAggregatedSprintEstimates(ObjectId componentId,
+	public DataResponse<SprintEstimate> getAggregatedSprintEstimatesByComponentId(ObjectId componentId,
 			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType) {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
@@ -222,9 +271,20 @@ public class FeatureServiceImpl implements FeatureService {
 		}
 
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
-		Collector collector = collectorRepository.findOne(item.getCollectorId());
+		return getAggregatedSprintEstimatesByCollectorId(item.getCollectorId(), teamId, projectId, agileType, estimateMetricType);
+	}
+	
+	@Override
+	public DataResponse<SprintEstimate> getAggregatedSprintEstimatesByCollectorId(ObjectId collectorId,
+			String teamId, String projectId, Optional<String> agileType, Optional<String> estimateMetricType) {
+		if (collectorId == null) {
+			return new DataResponse<SprintEstimate>(new SprintEstimate(), 0);
+		}
+			
+			
+		Collector collector = collectorRepository.findOne(collectorId);
 		
-		SprintEstimate estimate = getSprintEstimates(teamId, projectId, item.getCollectorId(), agileType, estimateMetricType);
+		SprintEstimate estimate = getSprintEstimates(teamId, projectId, collectorId, agileType, estimateMetricType);
 		return new DataResponse<>(estimate, collector.getLastExecuted());
 	}
 
@@ -348,7 +408,7 @@ public class FeatureServiceImpl implements FeatureService {
 	 *         sprint fields for the current team's sprint
 	 */
 	@Override
-	public DataResponse<List<Feature>> getCurrentSprintDetail(ObjectId componentId, String teamId, String projectId,
+	public DataResponse<List<Feature>> getCurrentSprintDetailByComponentId(ObjectId componentId, String teamId, String projectId,
 			Optional<String> agileType) {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
@@ -360,10 +420,30 @@ public class FeatureServiceImpl implements FeatureService {
 
 		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
 
-		// Get teamId first from available collector item, based on component
-		List<Feature> sprintResponse = getFeaturesForCurrentSprints(teamId, projectId, item.getCollectorId(), agileType.isPresent()? agileType.get() : null, true);
+		return getCurrentSprintDetailByCollectorId(item.getCollectorId(), teamId, projectId, agileType);
+	}
+	
+	/**
+	 * Retrieves the current sprint's detail for a given team.
+	 *
+	 * @param collectorId
+	 *            The ID of the collector
+	 * @param teamId
+	 *            A given scope-owner's source-system ID
+	 * @return A data response list of type Feature containing several relevant
+	 *         sprint fields for the current team's sprint
+	 */
+	@Override
+	public DataResponse<List<Feature>> getCurrentSprintDetailByCollectorId(ObjectId collectorId, String teamId, String projectId,
+			Optional<String> agileType) {
+		if (collectorId == null) {
+			return getEmptyLegacyDataResponse();
+		}
 
-		Collector collector = collectorRepository.findOne(item.getCollectorId());
+		// Get teamId first from available collector item, based on component
+		List<Feature> sprintResponse = getFeaturesForCurrentSprints(teamId, projectId, collectorId, agileType.isPresent()? agileType.get() : null, true);
+
+		Collector collector = collectorRepository.findOne(collectorId);
 		return new DataResponse<>(sprintResponse, collector.getLastExecuted());
 	}
 	

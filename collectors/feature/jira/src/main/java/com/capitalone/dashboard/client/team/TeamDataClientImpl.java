@@ -1,12 +1,10 @@
 package com.capitalone.dashboard.client.team;
 
-import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.ScopeOwnerRepository;
-import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
 
@@ -27,7 +25,6 @@ import java.util.List;
  */
 public class TeamDataClientImpl implements TeamDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientImpl.class);
-	private static final ClientUtil TOOLS = ClientUtil.getInstance();
 
 	private final FeatureSettings featureSettings;
 	private final ScopeOwnerRepository teamRepo;
@@ -63,13 +60,6 @@ public class TeamDataClientImpl implements TeamDataClient {
 		if (CollectionUtils.isNotEmpty(teams)) {
 			updateMongoInfo(teams);
 			count += teams.size();
-		} else {
-			List<BasicProject> projects = jiraClient.getProjects();
-			
-			if (CollectionUtils.isNotEmpty(projects)) {
-				updateMongoInfoLegacy(projects);
-				count += projects.size();
-			}
 		}
 		
 		return count;
@@ -117,58 +107,6 @@ public class TeamDataClientImpl implements TeamDataClient {
 
 			// Saving back to MongoDB
 			teamRepo.save(team);
-		}
-	}
-	
-	/**
-	 * Updates the MongoDB with a JSONArray received from the source system
-	 * back-end with story-based data.
-	 * 
-	 * @param currentPagedJiraRs
-	 *            A list response of Jira issues from the source system
-	 */
-	@Deprecated
-	private void updateMongoInfoLegacy(List<BasicProject> currentPagedJiraRs) {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
-		}
-		
-		if (currentPagedJiraRs != null) {
-			ObjectId jiraCollectorId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
-			
-			for (BasicProject jiraTeam : currentPagedJiraRs) {
-				String teamId = TOOLS.sanitizeResponse(jiraTeam.getId());
-				
-				/*
-				 * Initialize DOMs
-				 */
-				ScopeOwnerCollectorItem team = findOneScopeOwnerCollectorItem(teamId);
-				
-				if (team == null) {
-					team = new ScopeOwnerCollectorItem();
-				}
-
-				// collectorId
-				team.setCollectorId(jiraCollectorId);
-
-				// teamId
-				team.setTeamId(TOOLS.sanitizeResponse(jiraTeam.getId()));
-
-				// name
-				team.setName(TOOLS.sanitizeResponse(jiraTeam.getName()));
-
-				// changeDate - does not exist for jira
-				team.setChangeDate("");
-
-				// assetState - does not exist for jira
-				team.setAssetState("Active");
-
-				// isDeleted - does not exist for jira
-				team.setIsDeleted("False");
-
-				// Saving back to MongoDB
-				teamRepo.save(team);
-			}
 		}
 	}
 	

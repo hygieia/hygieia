@@ -6,6 +6,7 @@ import com.capitalone.dashboard.model.SprintEstimate;
 import com.capitalone.dashboard.service.FeatureService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,10 +46,16 @@ public class FeatureController {
 	public DataResponse<List<Feature>> relevantStories(
 	        @RequestParam(value = "projectId", required = true) String projectId,
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
-			@RequestParam(value = "component", required = true) String cId,
+			@RequestParam(value = "component", required = false) String componentId,
+			@RequestParam(value = "collector", required = false) String collectorId,
 			@PathVariable String teamId) {
-		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getRelevantStories(componentId, teamId, projectId, agileType);
+		if (!StringUtils.isEmpty(componentId)) {
+			return featureService.getRelevantStoriesByComponentId(new ObjectId(componentId), teamId, projectId, agileType);
+		} else if (!StringUtils.isEmpty(collectorId)) {
+			return featureService.getRelevantStoriesByCollectorId(new ObjectId(collectorId), teamId, projectId, agileType);
+		} else {
+			throw new IllegalArgumentException("Either 'component' or 'collector' parameter must be set.");
+		}
 	}
 
 	/**
@@ -62,10 +69,16 @@ public class FeatureController {
 	 */
 	@RequestMapping(value = "/feature", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> story(
-			@RequestParam(value = "component", required = true) String cId,
+			@RequestParam(value = "component", required = false) String componentId,
+			@RequestParam(value = "collector", required = false) String collectorId,
 			@RequestParam(value = "number", required = true) String storyNumber) {
-		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getStory(componentId, storyNumber);
+		if (!StringUtils.isEmpty(componentId)) {
+			return featureService.getStoryByComponentId(new ObjectId(componentId), storyNumber);
+		} else if (!StringUtils.isEmpty(collectorId)) {
+			return featureService.getStoryByCollectorId(new ObjectId(collectorId), storyNumber);
+		} else {
+			throw new IllegalArgumentException("Either 'component' or 'collector' parameter must be set.");
+		}
 	}
 
 	/**
@@ -80,10 +93,16 @@ public class FeatureController {
 	public DataResponse<List<Feature>> currentSprintDetail(
 	        @RequestParam(value = "projectId", required = true) String projectId,
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
-			@RequestParam(value = "component", required = true) String cId,
+			@RequestParam(value = "component", required = false) String componentId,
+			@RequestParam(value = "collector", required = false) String collectorId,
 			@PathVariable String teamId) {
-		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getCurrentSprintDetail(componentId, teamId, projectId, agileType);
+		if (!StringUtils.isEmpty(componentId)) {
+			return featureService.getCurrentSprintDetailByComponentId(new ObjectId(componentId), teamId, projectId, agileType);
+		} else if (!StringUtils.isEmpty(collectorId)) {
+			return featureService.getCurrentSprintDetailByCollectorId(new ObjectId(collectorId), teamId, projectId, agileType);
+		} else {
+			throw new IllegalArgumentException("Either 'component' or 'collector' parameter must be set.");
+		}
 	}
 
 	/**
@@ -101,10 +120,16 @@ public class FeatureController {
 	        @RequestParam(value = "projectId", required = true) String projectId,
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
 			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
-			@RequestParam(value = "component", required = true) String cId,
+			@RequestParam(value = "component", required = false) String componentId,
+			@RequestParam(value = "collector", required = false) String collectorId,
 			@PathVariable String teamId) {
-		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getFeatureEpicEstimates(componentId, teamId, projectId, agileType, estimateMetricType);
+		if (!StringUtils.isEmpty(componentId)) {
+			return featureService.getFeatureEpicEstimatesByComponentId(new ObjectId(componentId), teamId, projectId, agileType, estimateMetricType);
+		} else if (!StringUtils.isEmpty(collectorId)) {
+			return featureService.getFeatureEpicEstimatesByCollectorId(new ObjectId(collectorId), teamId, projectId, agileType, estimateMetricType);
+		} else {
+			throw new IllegalArgumentException("Either 'component' or 'collector' parameter must be set.");
+		}
 	}
 	
 	/**
@@ -119,10 +144,16 @@ public class FeatureController {
 	        @RequestParam(value = "projectId", required = true) String projectId,
 			@RequestParam(value = "agileType", required = false) Optional<String> agileType,
 			@RequestParam(value = "estimateMetricType", required = false) Optional<String> estimateMetricType,
-			@RequestParam(value = "component", required = true) String cId,
+			@RequestParam(value = "component", required = false) String componentId,
+			@RequestParam(value = "collector", required = false) String collectorId,
 			@PathVariable String teamId) {
-		ObjectId componentId = new ObjectId(cId);
-		return this.featureService.getAggregatedSprintEstimates(componentId, teamId, projectId, agileType, estimateMetricType);
+		if (!StringUtils.isEmpty(componentId)) {
+			return featureService.getAggregatedSprintEstimatesByComponentId(new ObjectId(componentId), teamId, projectId, agileType, estimateMetricType);
+		} else if (!StringUtils.isEmpty(collectorId)) {
+			return featureService.getAggregatedSprintEstimatesByCollectorId(new ObjectId(collectorId), teamId, projectId, agileType, estimateMetricType);
+		} else {
+			throw new IllegalArgumentException("Either 'component' or 'collector' parameter must be set.");
+		}
 	}
 
 	/**
