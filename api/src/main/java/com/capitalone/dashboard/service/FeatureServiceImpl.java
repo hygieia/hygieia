@@ -473,6 +473,10 @@ public class FeatureServiceImpl implements FeatureService {
 		return estimateMetricType.isPresent() && FeatureCollectorConstants.STORY_HOURS_ESTIMATE.equalsIgnoreCase(estimateMetricType.get());
 	}
 	
+	private boolean isEstimateCount(Optional<String> estimateMetricType) {
+        return estimateMetricType.isPresent() && FeatureCollectorConstants.STORY_COUNT_ESTIMATE.equalsIgnoreCase(estimateMetricType.get());
+    }
+	
 	private int getEstimate(Feature feature, Optional<String> estimateMetricType) {
 		int rt = 0;
 		
@@ -480,6 +484,8 @@ public class FeatureServiceImpl implements FeatureService {
 			if (feature.getsEstimateTime() != null) {
 				rt = feature.getsEstimateTime().intValue();
 			}
+		} else if (isEstimateCount(estimateMetricType)) {
+		    rt = 1;
 		} else {
 			// default to story points since that should be the most common use case
 			if (!StringUtils.isEmpty(feature.getsEstimate())) {
