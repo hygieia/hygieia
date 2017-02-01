@@ -135,4 +135,9 @@ public class TestConfig {
     public PaginationHeaderUtility paginationHeaderUtility() {
     	return Mockito.mock(PaginationHeaderUtility.class);
     }
+
+	@Bean
+	public TeamService teamService() {
+		return Mockito.mock(TeamService.class);
+	}
 }
