@@ -27,6 +27,7 @@ import com.capitalone.dashboard.service.PipelineService;
 import com.capitalone.dashboard.service.ScopeService;
 import com.capitalone.dashboard.service.ServiceService;
 import com.capitalone.dashboard.service.SystemConfigService;
+import com.capitalone.dashboard.service.TeamService;
 import com.capitalone.dashboard.service.TestResultService;
 import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.service.UserInfoServiceImpl;
@@ -153,5 +154,10 @@ import com.capitalone.dashboard.service.UserInfoServiceImpl;
      @Bean
      public CloudVolumeService cloudVolumeService() {
          return Mockito.mock(CloudVolumeService.class);
+     }
+     
+     @Bean
+     public TeamService teamService() {
+    	 return Mockito.mock(TeamService.class);
      }
  }

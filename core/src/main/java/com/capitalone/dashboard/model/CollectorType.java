@@ -8,8 +8,12 @@ public enum CollectorType {
     Build,
     Artifact,
     Deployment,
+    AgileTool,
+    @Deprecated
     Feature,
+    @Deprecated
     ScopeOwner,
+    @Deprecated
     Scope,
     CodeQuality,
     Test,

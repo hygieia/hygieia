@@ -28,6 +28,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.WidgetResponse;
 import com.capitalone.dashboard.request.DashboardRequest;
+import com.capitalone.dashboard.request.DashboardRequestTitle;
 import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
 
@@ -86,7 +87,7 @@ public class DashboardController {
     @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/rename/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> renameDashboard(@PathVariable ObjectId id,
-                                                  @RequestBody DashboardRequest request) {
+    		@Valid @RequestBody DashboardRequestTitle request) {
 
 
         Dashboard dashboard = getDashboard(id);
