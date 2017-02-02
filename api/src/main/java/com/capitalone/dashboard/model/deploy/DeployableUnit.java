@@ -9,6 +9,7 @@ import java.util.List;
 public class DeployableUnit {
     private final String name;
     private final String version;
+    private final String jobUrl;
     private final boolean deployed;
     private final long lastUpdated;
     private final List<Server> servers = new ArrayList<>();
@@ -17,6 +18,7 @@ public class DeployableUnit {
         this.name = component.getComponentName();
         this.version = component.getComponentVersion();
         this.deployed = component.isDeployed();
+        this.jobUrl = component.getJobUrl();
         this.lastUpdated = component.getAsOfDate();
         this.servers.addAll(Lists.newArrayList(servers));
     }
@@ -27,6 +29,10 @@ public class DeployableUnit {
 
     public String getVersion() {
         return version;
+    }
+
+    public String getJobUrl() {
+        return jobUrl;
     }
 
     public boolean isDeployed() {

@@ -22,6 +22,7 @@ import com.capitalone.dashboard.service.PipelineService;
 import com.capitalone.dashboard.service.ScopeService;
 import com.capitalone.dashboard.service.ServiceService;
 import com.capitalone.dashboard.service.SystemConfigService;
+import com.capitalone.dashboard.service.TeamService;
 import com.capitalone.dashboard.service.TestResultService;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
 
@@ -135,4 +136,9 @@ public class TestConfig {
     public PaginationHeaderUtility paginationHeaderUtility() {
     	return Mockito.mock(PaginationHeaderUtility.class);
     }
+
+	@Bean
+	public TeamService teamService() {
+		return Mockito.mock(TeamService.class);
+	}
 }
