@@ -27,6 +27,7 @@ import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.model.UpdateResult;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
+import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.IssueItemRepository;
 import com.capitalone.dashboard.repository.ProjectItemRepository;
 import com.capitalone.dashboard.repository.TeamItemRepository;
@@ -46,7 +47,10 @@ public class DefaultFeatureDataClientTest {
 	private ProjectItemRepository projectRepo;
 	
 	@Mock
-	private IssueItemRepository featureRepo;
+	private IssueItemRepository issueItemRepo;
+	
+	@Mock
+	private FeatureRepository featureRepo;
 	
 	@Mock
 	private FeatureDataMapper featureDataMapper;
@@ -138,7 +142,7 @@ public class DefaultFeatureDataClientTest {
 		savedFeature.setsId("6");
 		savedFeature.setCollectorId(collectorId);
 		List<Feature> savedFeatures = Lists.newArrayList(savedFeature );
-		when(featureRepo.getFeaturesByCollectorAndProjectId(collectorId, projectId)).thenReturn(savedFeatures );
+		when(issueItemRepo.getFeaturesByCollectorAndProjectId(collectorId, projectId)).thenReturn(savedFeatures );
 		
 		UpdateResult result = featureDataClient.updateIssues(projectId , issues , inProgressLabelsForProject );
 		
