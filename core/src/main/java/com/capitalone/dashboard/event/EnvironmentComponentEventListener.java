@@ -12,8 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @org.springframework.stereotype.Component
 public class EnvironmentComponentEventListener extends HygieiaMongoEventListener<EnvironmentComponent> {
@@ -89,15 +92,44 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         if (LOGGER.isDebugEnabled()) {
         	LOGGER.debug("Attempting to find new artifacts to process for environment '" + environmentComponent.getEnvironmentName() + "'");
         }
+        
+        String artifactName = environmentComponent.getComponentName();
+        String artifactExtension = null;
+        int dotIdx = artifactName.lastIndexOf('.');
+        if (dotIdx > 0) {
+        	// If idx is 0 starts with a dot... in which case not an extension
+        	
+        	artifactName = artifactName.substring(0, dotIdx);
+        	artifactExtension = artifactName.substring(dotIdx);
+        }
 
-        Iterable<BinaryArtifact> artifacts;
+        List<BinaryArtifact> artifacts = new ArrayList<>();
         BinaryArtifact oldLastArtifact = currentStage.getLastArtifact();
         if(oldLastArtifact != null){
             Long lastArtifactTimestamp = oldLastArtifact != null ? oldLastArtifact.getTimestamp() : null;
-            artifacts = binaryArtifactRepository.findByArtifactNameAndTimestampGreaterThan(environmentComponent.getComponentName(), lastArtifactTimestamp);
+            artifacts.addAll(Lists.newArrayList(binaryArtifactRepository.findByArtifactNameAndArtifactExtensionAndTimestampGreaterThan(artifactName, artifactExtension, lastArtifactTimestamp)));
+            
+            // Backwards compatibility
+            if (artifactExtension != null) {
+	        	// In the past the extension was saved as part of the artifact name
+	            artifacts.addAll(Lists.newArrayList(binaryArtifactRepository.findByArtifactNameAndArtifactExtensionAndTimestampGreaterThan(environmentComponent.getComponentName(), null, lastArtifactTimestamp)));
+            }
         }
-        else{
-            artifacts = binaryArtifactRepository.findByArtifactName(environmentComponent.getComponentName());
+        else {
+        	Map<String, Object> attributes = new HashMap<>();
+        	attributes.put(BinaryArtifactRepository.ARTIFACT_NAME, artifactName);
+        	attributes.put(BinaryArtifactRepository.ARTIFACT_EXTENSION, artifactExtension);
+        	
+        	artifacts.addAll(Lists.newArrayList(binaryArtifactRepository.findByAttributes(attributes)));
+        	
+        	// Backwards compatibility
+        	if (artifactExtension != null) {
+	        	// In the past the extension was saved as part of the artifact name
+	        	attributes.clear();
+	        	attributes.put(BinaryArtifactRepository.ARTIFACT_NAME, environmentComponent.getComponentName());
+	        	attributes.put(BinaryArtifactRepository.ARTIFACT_EXTENSION, null);
+	        	artifacts.addAll(Lists.newArrayList(binaryArtifactRepository.findByAttributes(attributes)));
+        	}
         }
 
         /**

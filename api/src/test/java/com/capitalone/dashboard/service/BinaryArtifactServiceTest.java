@@ -37,7 +37,8 @@ public class BinaryArtifactServiceTest {
 		BinaryArtifact stubBA = new BinaryArtifact();
 		stubBA.setId(new ObjectId("57d80a9646e0fb000ecc2ac7"));
 		
-		Mockito.when(artifactRepository.findByArtifactGroupIdAndArtifactNameAndArtifactVersion(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+		Mockito.when(artifactRepository.findByAttributes(Mockito.anyString(), Mockito.anyString(), 
+				Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
 			.thenReturn(Collections.<BinaryArtifact>emptyList());
 		
 		Mockito.when(artifactRepository.save(Mockito.any(BinaryArtifact.class))).thenReturn(stubBA);

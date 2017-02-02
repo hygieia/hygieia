@@ -3,7 +3,9 @@ package com.capitalone.dashboard.request;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Component;
@@ -13,8 +15,10 @@ import com.capitalone.dashboard.model.WidgetFamily;
 import com.capitalone.dashboard.model.WidgetType;
 
 public class DashboardRequest {
+
+    @Valid
     @NotNull
-    private String title;
+    private DashboardRequestTitle dashboardRequestTitle;
 
     private String applicationName;
 
@@ -24,17 +28,24 @@ public class DashboardRequest {
     private String owner;
 
     @NotNull
+    @Size(min=1, message="Please select a type")
     private String type;
     
     private Map<WidgetFamily, List<WidgetType>> activeWidgetTypes;
 
-    public String getTitle() {
-        return title;
-    }
+	public DashboardRequestTitle getDashboardRequestTitle() {
+		return dashboardRequestTitle;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setDashboardRequestTitle(DashboardRequestTitle dashboardRequestTitle) {
+		this.dashboardRequestTitle = dashboardRequestTitle;
+	}
+
+	public void setTitle(String title) {
+		DashboardRequestTitle dashboardRequestTitle = new DashboardRequestTitle();
+		dashboardRequestTitle.setTitle(title);
+		this.dashboardRequestTitle = dashboardRequestTitle;
+	}
 
     public String getApplicationName() {
         return applicationName;
@@ -75,7 +86,7 @@ public class DashboardRequest {
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
-        Dashboard dashboard = new Dashboard(title, application, owner, type);
+        Dashboard dashboard = new Dashboard(dashboardRequestTitle.getTitle(), application, owner, type);
         dashboard.setActiveWidgetTypes(activeWidgetTypes);
         return dashboard;
     }

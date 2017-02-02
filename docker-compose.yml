@@ -313,6 +313,14 @@ hygieia-artifactory-artifact-collector:
   environment:
 #JFrog Artifactory server (required) - Can provide multiple 
   - ARTIFACTORY_URL=https://www.jfrog.com
+# Matches maven artifacts of the form [org]/[module]/[version]/[module]-[version]([-classifier])(.[ext])
+  - ARTIFACTORY_PATTERN0=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>\\k<module>)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?
+# Matches ivy files of the form [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml 
+  - ARTIFACTORY_PATTERN1=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>ivy)-\\k<version>(-(?<classifier>[^\\.]+))?\\.(?<ext>xml)
+# Matches ivy artifact files of the form [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier])(.[ext])
+  - ARTIFACTORY_PATTERN2=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<type>[^/]+)/(?<artifact>[^\\.-/]+)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?
+
+  
 # Artifactory user name (required)
 #  - ARTIFACTORY_USERNAME=bobama
 # Artifactory API key (required)
