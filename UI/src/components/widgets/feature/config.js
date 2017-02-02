@@ -47,7 +47,7 @@
 		ctrl.featureTypeOption = "";
 		ctrl.featureTypeOptions = [];
 		ctrl.estimateMetricType = "";
-		ctrl.estimateMetrics = [{type: "hours", value: "Hours"}, {type: "storypoints", value: "Story Points" }];
+		ctrl.estimateMetrics = [{type: "hours", value: "Hours"}, {type: "storypoints", value: "Story Points" }, {type: "count", value: "Issue Count" }];
 		ctrl.sprintType = "";
 		ctrl.sprintTypes = [{type: "scrum", value: "Scrum"}, {type: "kanban", value: "Kanban"}, {type: "scrumkanban", value:"Both"}];
 		ctrl.listType = "";
