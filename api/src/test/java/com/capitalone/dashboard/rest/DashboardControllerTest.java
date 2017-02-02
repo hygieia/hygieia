@@ -1,8 +1,11 @@
 package com.capitalone.dashboard.rest;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,6 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +32,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -46,6 +51,9 @@ import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.util.TestUtil;
 import com.capitalone.dashboard.util.WidgetOptionsBuilder;
+import com.jayway.jsonpath.JsonPath;
+
+import net.minidev.json.JSONArray;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
@@ -111,25 +119,30 @@ public class DashboardControllerTest {
     	dashboardRequest.setTitle(StringUtils.EMPTY);
     	dashboardRequest.setTemplate(StringUtils.EMPTY);
     	dashboardRequest.setType(StringUtils.EMPTY);
-        mockMvc.perform(post("/dashboard")
+    	MvcResult result = mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(dashboardRequest)))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.fieldErrors.template", hasItems("Please select a template")))
             .andExpect(jsonPath("$.fieldErrors.type", hasItems("Please select a type")))
-            .andExpect(jsonPath("$.fieldErrors.[dashboardRequestTitle.title]", hasItems("size must be between 6 and 50")))
-            ;
+            .andReturn();
+    	
+		assertThat(getFieldErrors(result), hasEntry(is("dashboardRequestTitle.title"), contains(is("size must be between 6 and 50"))));
+
     }
 
     @Test
     public void createDashboard_specialCharacters_badRequest() throws Exception {
         DashboardRequest request = makeDashboardRequest("template", "bad/title", "app", "comp","amit", null, "team");
-        mockMvc.perform(post("/dashboard")
+        MvcResult result = mockMvc.perform(post("/dashboard")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.fieldErrors.[dashboardRequestTitle.title]", hasItems("Special character(s) found")));
+            .andReturn();
+
+		assertThat(getFieldErrors(result), hasEntry(is("dashboardRequestTitle.title"), contains(is("Special character(s) found"))));
     }
+
     
     @Test
     public void getDashboard() throws Exception {
@@ -200,12 +213,14 @@ public class DashboardControllerTest {
         when(dashboardService.get(objectId)).thenReturn(orig);
         when(dashboardService.all()).thenReturn(Arrays.asList(orig));
 
-        mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
+       mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fieldErrors.[title]", hasItems("Special character(s) found")))
+                .andExpect(jsonPath("$.fieldErrors.title", hasItems("Special character(s) found")))
                 ;
+       
+        
     }
     
     @Test
@@ -221,7 +236,7 @@ public class DashboardControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fieldErrors.[title]", hasItems("size must be between 6 and 50")))
+                .andExpect(jsonPath("$.fieldErrors.title", hasItems("size must be between 6 and 50")))
                 ;
     }
     
@@ -238,7 +253,7 @@ public class DashboardControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fieldErrors.[title]", hasItems("may not be null")))
+                .andExpect(jsonPath("$.fieldErrors.title", hasItems("may not be null")))
                 ;
     }
     
@@ -364,4 +379,9 @@ public class DashboardControllerTest {
         request.setOptions(options);
         return request;
     }
+    
+	private Map<String, JSONArray> getFieldErrors(MvcResult result) throws UnsupportedEncodingException {
+		String content = result.getResponse().getContentAsString();
+		return JsonPath.read(content, "$.fieldErrors");
+	}
 }
