@@ -42,11 +42,12 @@
                 testSuiteData.details(testRequest).then(processTestResponse)
             ]);
         };
-
+        
         function processCaResponse(response) {
             var deferred = $q.defer();
             var caData = _.isEmpty(response.result) ? {} : response.result[0];
 
+            ctrl.reportUrl = caData.url;
             ctrl.versionNumber = caData.version;
 
             ctrl.rulesCompliance = getMetric(caData.metrics, 'violations_density');
