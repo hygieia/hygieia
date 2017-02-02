@@ -23,24 +23,25 @@
 
         function submit(form) {
 
-            form.dashboardTitle.$setValidity('createError', true);
+            form.dashboardTitle.$setValidity('renameError', true);
 
             if (form.$valid) {
                 dashboardData
                     .rename(dashboardId, document.cdf.dashboardTitle.value)
                     .success(function (data) {
                         $modalInstance.close();
+                        window.location.reload(false);
                 })
                     .error(function(data){
-                    form.dashboardTitle.$setValidity('createError', false);
+                    form.dashboardTitle.$setValidity('renameError', false);
                 });
             }
             else
             {
-                form.dashboardTitle.$setValidity('createError', false);
+                form.dashboardTitle.$setValidity('renameError', false);
             }
 
         }
-        
+
     }
 })();

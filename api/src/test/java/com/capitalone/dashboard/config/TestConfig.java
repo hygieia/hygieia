@@ -110,4 +110,9 @@ public class TestConfig {
     public CloudVolumeService cloudVolumeService() {
         return Mockito.mock(CloudVolumeService.class);
     }
+
+	@Bean
+	public TeamService teamService() {
+		return Mockito.mock(TeamService.class);
+	}
 }

@@ -46,7 +46,7 @@
                     <div ng-bind-html="item.projectName | highlight: $select.search"></div>
                 </ui-select-choices>
                 <ui-select-no-choice>
-                    No features were found
+                    No projects were found
                 </ui-select-no-choice>
             </ui-select>
 
@@ -55,24 +55,23 @@
                 a valid project</p>
         </div>
         
-        <div ng-hide="ctrl.hideScopeOwnerDropDown" class="col-sm-push-2 col-sm-8">
+        <div ng-hide="ctrl.hideTeamDropDown" class="col-sm-push-2 col-sm-8">
             <label class="modal-label">Team Name:</label>
-
-            <ui-select id="collectorItemId" ng-model="ctrl.collectorItemId" theme="bootstrap"
-                       ng-disabled="ctrl.toolsDropdownDisabled" required>
-                <ui-select-match placeholder={{ctrl.toolsDropdownPlaceholder}}>{{$select.selected.teamName}}
+			<ui-select id="selectedTeam" ng-model="ctrl.selectedTeam" theme="bootstrap"
+                       ng-disabled="ctrl.teamsDropdownDisabled" required>
+                <ui-select-match placeholder={{ctrl.teamsDropdownPlaceholder}}>{{$select.selected.teamName}}
                 </ui-select-match>
                 <ui-select-choices
-                        repeat="item in (ctrl.scopeOwners | orderBy: 'teamName' | filter: $select.search)  track by item.value">
+                        repeat="item in (ctrl.teams | orderBy: 'teamName' | filter: $select.search)  track by item.teamId">
                     <div ng-bind-html="item.teamName | highlight: $select.search"></div>
                 </ui-select-choices>
                 <ui-select-no-choice>
-                    No features were found
+                    No teams were found
                 </ui-select-no-choice>
             </ui-select>
             
             <p class="help-block"
-                ng-if="configForm.collectorItemId.$error.required">Please select
+                ng-if="configForm.selectedTeam.$error.required">Please select
                 a valid team</p>
         </div>
 		
