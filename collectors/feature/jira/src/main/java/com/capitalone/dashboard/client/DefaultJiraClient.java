@@ -157,6 +157,10 @@ public class DefaultJiraClient implements JiraClient {
 	public List<Team> getTeams() {
 	    List<Team> result = new ArrayList<>();
 		
+	    if (StringUtils.isEmpty(featureSettings.getJiraTeamFieldName())) {
+	        return result;
+	    }
+	    
 		try {			
 			URL url = new URL(featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/")? "" : "/") 
 						+ TEMPO_TEAMS_REST_SUFFIX);
@@ -364,15 +368,19 @@ public class DefaultJiraClient implements JiraClient {
                     JSONObject jsonStatus = (JSONObject) status;
                     String statusName = (String) jsonStatus.get("name");
                     
+                    // Not added until jira 6. Old versions may still work - they will just have to manually specify 
+                    // categories in the jira properties file
                     Object statusCategory = jsonStatus.get("statusCategory");
-                    JSONObject jsonStatusCategory = (JSONObject) statusCategory;
-                    String statusCategoryName = (String) jsonStatusCategory.get("name");
-					if (statusCategoryName == null) {
-						LOGGER.warn("No statusCategory for status : " + statusName);
-						continue;
-					}
-					
-					statusMap.put(statusName, statusCategoryName);					
+                    if (statusCategory != null) {
+	                    JSONObject jsonStatusCategory = (JSONObject) statusCategory;
+	                    String statusCategoryName = (String) jsonStatusCategory.get("name");
+						if (statusCategoryName == null) {
+							LOGGER.warn("No statusCategory for status : " + statusName);
+							continue;
+						}
+						
+						statusMap.put(statusName, statusCategoryName);
+                    }
                 }
             } catch (ParseException pe) {
                 LOGGER.error("Parser exception when parsing statuses", pe);
