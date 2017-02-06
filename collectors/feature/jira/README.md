@@ -128,7 +128,7 @@ feature.jiraStoryPointsFieldName=customfield_10003
 # team value you expect to see:
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
 #############################################################################
-feature.jiraTeamFieldName=customfield_10703
+feature.jiraTeamFieldName=
 ```
 
 #### Troubleshooting

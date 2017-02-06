@@ -143,14 +143,14 @@ public class FeatureServiceImplTest {
 
 		// Creating Collector and Component relationship artifacts
 		mockV1Collector = new Collector();
-		mockV1Collector.setCollectorType(CollectorType.Feature);
+		mockV1Collector.setCollectorType(CollectorType.AgileTool);
 		mockV1Collector.setEnabled(true);
 		mockV1Collector.setName("VersionOne Collector");
 		mockV1Collector.setOnline(true);
 		mockV1Collector.setId(v1CollectorId);
 
 		mockJiraCollector = new Collector();
-		mockJiraCollector.setCollectorType(CollectorType.Feature);
+		mockJiraCollector.setCollectorType(CollectorType.AgileTool);
 		mockJiraCollector.setEnabled(true);
 		mockJiraCollector.setName("Jira Collector");
 		mockJiraCollector.setOnline(true);
@@ -185,7 +185,7 @@ public class FeatureServiceImplTest {
 		mockItem4.setCollector(mockJiraCollector);
 
 		mockComponent = new Component();
-		mockComponent.getCollectorItems().put(CollectorType.ScopeOwner,
+		mockComponent.getCollectorItems().put(CollectorType.AgileTool,
 				Arrays.asList(mockItem2, mockItem3, mockItem4));
 		mockComponent.setId(mockComponentId);
 		mockComponent.setName("Feature Widget Test");
