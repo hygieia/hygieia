@@ -3,7 +3,7 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,7 +12,13 @@ public class PipelineResponse {
     private String name;
     private ObjectId collectorItemId;
     private List<String> unmappedStages;
-    private Map<String, List<PipelineResponseCommit>> stages = new HashMap<>();
+    private Map<String, List<PipelineResponseCommit>> stages = new LinkedHashMap<>();
+    private String prodStage;
+
+
+    public String getProdStage() { return prodStage; }
+
+    public void setProdStage(String prodStage) { this.prodStage = prodStage; }
 
     public String getName() {
         return name;
@@ -29,7 +35,7 @@ public class PipelineResponse {
     public void setCollectorItemId(ObjectId collectorItemId) {
         this.collectorItemId = collectorItemId;
     }
-    
+
     public Map<String, List<PipelineResponseCommit>> getStages() {
         return stages;
     }
@@ -45,13 +51,13 @@ public class PipelineResponse {
     public void setUnmappedStages(List<String> unmappedStages) {
         this.unmappedStages = unmappedStages;
     }
-    
+
     public List<PipelineResponseCommit> getStageCommits(PipelineStage stage) {
-    	return getStages().get(stage.getName());
+        return getStages().get(stage.getName());
     }
-    
+
     public void setStageCommits(PipelineStage stage, List<PipelineResponseCommit> commits) {
-    	getStages().put(stage.getName(), commits);
+        getStages().put(stage.getName(), commits);
     }
 
     public void addToStage(PipelineStage stage, PipelineResponseCommit pipelineCommit) {

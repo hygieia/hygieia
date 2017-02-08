@@ -21,6 +21,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.*;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
@@ -35,17 +36,10 @@ public class PipelineServiceTest {
     private DashboardRepository dashboardRepository;
     @Mock
     private CollectorItemRepository collectorItemRepository;
-	@Mock
-	private ApiSettings apiSettings;
     @InjectMocks
     private PipelineServiceImpl pipelineService;
 
-	@Before
-	public void setUp() {
-		Mockito.when(apiSettings.getSystemStages()).thenReturn(Arrays.asList(PipelineStage.COMMIT, PipelineStage.BUILD, 
-				PipelineStage.valueOf("Dev ENV"), PipelineStage.valueOf("QA Env"), PipelineStage.valueOf("Int Env"), PipelineStage.valueOf("Perf Env"), PipelineStage.valueOf("Prod")));
-	}
-    
+
     @Test
     public void search() throws Exception {
         ObjectId dashboardCollectorItemId = ObjectId.get();
@@ -66,15 +60,15 @@ public class PipelineServiceTest {
 
         Pipeline pipeline = makePipeline(dashboardCollectorItem);
         pipeline.addCommit(PipelineStage.COMMIT.getName(), makePipelineCommit("sha0", 1454953452000L));
-        pipeline.addCommit(PipelineStage.BUILD.getName(), makePipelineCommit("sha0", 1454953452001L));
-        pipeline.addCommit("Dev ENV", makePipelineCommit("sha0", 1454953452002L));
-        pipeline.addCommit("QA Env", makePipelineCommit("sha0", 1454953452003L));
-        pipeline.addCommit("Prod", makePipelineCommit("sha0", 1454953452004L));
+        pipeline.addCommit(PipelineStage.BUILD.getName(), makePipelineCommit("sha1", 1454953452001L));
+        pipeline.addCommit("Dev ENV", makePipelineCommit("sha2", 1454953452002L));
+        pipeline.addCommit("QA Env", makePipelineCommit("sha3", 1454953452003L));
+        pipeline.addCommit("Prod", makePipelineCommit("sha4", 1454953452004L));
 
         List<Pipeline> pipelines = new ArrayList<>();
         pipelines.add(pipeline);
 
-        when(pipelineRepository.findByCollectorItemIdIn(request.getCollectorItemId())).thenReturn(pipelines);
+        when(pipelineRepository.findByCollectorItemId(dashboardCollectorItemId)).thenReturn(pipeline);
         when(collectorItemRepository.findOne(pipeline.getCollectorItemId())).thenReturn(dashboardCollectorItem);
         when(dashboardRepository.findOne(new ObjectId((String)dashboardCollectorItem.getOptions().get("dashboardId")))).thenReturn(dashboard);
 
@@ -84,8 +78,8 @@ public class PipelineServiceTest {
         PipelineResponse actual = pipelineResponses.get(0);
 
         assertEquals(actual.getCollectorItemId(), expected.getCollectorItemId());
-        assertEquals(actual.getStageCommits(PipelineStage.valueOf("prod")), actual.getStageCommits(PipelineStage.valueOf("prod")));
-        assertThat(actual.getStageCommits(PipelineStage.COMMIT).size(), is(0));
+        assertThat(actual.getStageCommits(PipelineStage.valueOf("prod")).size(),is(0));
+        assertThat(actual.getStageCommits(PipelineStage.COMMIT).size(), is(1));
     }
 
     private Widget makePipelineWidget(String devName, String qaName, String intName, String perfName, String prodName){
@@ -107,6 +101,7 @@ public class PipelineServiceTest {
         }
         if(prodName != null) {
             environmentMap.put("prod", prodName);
+            pipelineWidget.getOptions().put("prod",prodName);
         }
 
         pipelineWidget.getOptions().put("mappings", environmentMap);
@@ -167,24 +162,17 @@ public class PipelineServiceTest {
     //slow, explicit, and easy to read.
     private PipelineResponse makePipelineResponse(Pipeline pipeline, Dashboard dashboard){
         PipelineResponse pipelineResponse = new PipelineResponse();
-        for(PipelineStage stage : apiSettings.getSystemStages()) {
-        	pipelineResponse.setStageCommits(stage, new ArrayList<PipelineResponseCommit>());
-            if(PipelineStageType.DEPLOY.equals(stage.getType()) && stage.getName().matches("(?i)Prod(uction)?")) {
-                String mappedName = PipelineUtils.getStageToEnvironmentNameMap(dashboard).get(stage);
-                List<PipelineCommit> prodCommits = new ArrayList<>(pipeline.getEnvironmentStageMap().get(mappedName).getCommits());
-                for (PipelineCommit commit : prodCommits) {
-                    pipelineResponse.addToStage(PipelineStage.valueOf("prod"), new PipelineResponseCommit(commit));
-                }
-            }
+        List<PipelineStage> pipelineStageList =   Arrays.asList(PipelineStage.COMMIT, PipelineStage.BUILD,
+                PipelineStage.valueOf("Dev ENV"), PipelineStage.valueOf("QA Env"), PipelineStage.valueOf("Int Env"), PipelineStage.valueOf("Perf Env"), PipelineStage.valueOf("Prod"));
+        for(PipelineStage stage : pipelineStageList) {
+            pipelineResponse.setStageCommits(stage, new ArrayList<PipelineResponseCommit>());
         }
-
         pipelineResponse.setCollectorItemId(pipeline.getCollectorItemId());
-
         return pipelineResponse;
     }
 
     @SuppressWarnings("unused")
-	private void applyTimestamps(Pipeline pipeline, PipelineResponseCommit commit){
+    private void applyTimestamps(Pipeline pipeline, PipelineResponseCommit commit){
         throw new NotImplementedException();
     }
 }

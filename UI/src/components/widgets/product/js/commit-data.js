@@ -20,9 +20,10 @@
             isReload = dependencies.isReload,
             pipelineData = dependencies.pipelineData,
             nowTimestamp = dependencies.nowTimestamp,
-            ctrlStages = dependencies.ctrlStages;
-        
-        var prodStage = ctrlStages[ctrlStages.length-1];
+            ctrlStages = dependencies.ctrlStages,
+            prodStageValue = dependencies.prodStageValue;
+
+        var prodStage = prodStageValue;
 
         // timestamps
         var now = moment(),
@@ -344,7 +345,8 @@
 
                 dependencies.setTeamData(team.collectorItemId, {
                     stages: teamStageData,
-                    prod: teamProdData
+                    prod: teamProdData,
+                    prodStage:prodStage
                 });
             });
         }

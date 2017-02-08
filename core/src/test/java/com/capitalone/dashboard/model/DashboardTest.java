@@ -19,6 +19,8 @@ public class DashboardTest {
         Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
         dashboard.getWidgets().add(makePipelineWidget("DEV", "QA", null, null, "PROD"));
         Map<PipelineStage, String> expected = new HashMap<>();
+        expected.put(PipelineStage.valueOf("COMMIT"), "Commit");
+        expected.put(PipelineStage.valueOf("BUILD"), "Build");
         expected.put(PipelineStage.valueOf("DEV"), "DEV");
         expected.put(PipelineStage.valueOf("QA"), "QA");
         expected.put(PipelineStage.valueOf("PROD"), "PROD");
