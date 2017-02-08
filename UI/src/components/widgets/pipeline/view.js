@@ -5,40 +5,30 @@
         .module(HygieiaConfig.module)
         .controller('pipelineViewController', pipelineViewController);
 
-    pipelineViewController.$inject = ['$scope', 'deployData', 'systemConfigData', 'WidgetState', '$q'];
-    function pipelineViewController($scope, deployData, systemConfigData, WidgetState, $q) {
+    pipelineViewController.$inject = ['$scope', 'deployData', 'WidgetState', '$q'];
+    function pipelineViewController($scope, deployData, WidgetState, $q) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // placeholder for environments that are not deployed or have a server down
         var currentDownEnvironments = [];
 
+        // list of valid environments to validate and build data
+        var validMappings = [];
+        // prod stage value from pipeline widget options
+        var prodStage = $scope.widgetConfig.options.prod;
+        // push widget mappings to valid mappings
+        for(var x in $scope.widgetConfig.options.mappings) {
+            if(x!= prodStage){
+                validMappings.push(x);
+            }
+        }
+        // push prod stage at the end of the list
+        if(prodStage!=null || prodStage !=''){
+            validMappings.push(prodStage);
+        }
+
         ctrl.load = function() {
-        	systemConfigData.config().then(processLoad);
-        };
-        
-        function processLoad(systemConfig) {
-        	// list of valid environments to validate and build data
-        	var validMappings = _(systemConfig.systemStages)
-	    		.filter(function (stage) { return stage.type == 'DEPLOY' })
-	        	.map(function (stage) { return stage.name.toLowerCase() } )
-	        	.value();
-            
-	        // a list of environments used to loop environments in the view
-	        ctrl.environmentKeys = [];
-	
-	        // build up the environment keys array
-	        _(validMappings).forEach(function (key) {
-	            if($scope.widgetConfig.options.mappings[key]) {
-	                ctrl.environmentKeys.push(key);
-	            }
-	        });
-	
-	        // a grid width class to use based on the number of environments displayed.
-	        // values are captured by index of the displayed environment length
-	        var gridSizes = [12, 12, 6, 4, 3, 'fifths', 2, 'sevenths', 'eigths', 'ninths'];
-	        ctrl.colGridSize = gridSizes[ctrl.environmentKeys.length];
-        	
             // verify that a valid mapping exists
             var configLength = (function(map) {
                 var length = 0;
@@ -63,7 +53,25 @@
 
                 return deferred.promise;
             }
-        }
+        };
+
+        // a list of environments used to loop environments in the view
+        ctrl.environmentKeys = [];
+
+        // build up the environment keys array
+        _(validMappings).forEach(function (key) {
+            if($scope.widgetConfig.options.mappings[key]) {
+                ctrl.environmentKeys.push(key);
+            }
+        });
+
+        // a grid width class to use based on the number of environments displayed.
+        // values are captured by index of the displayed environment length
+        // var gridSizes = [12, 12, 6, 4, 3, 'fifths', 2];
+        // ctrl.colGridSize = gridSizes[ctrl.environmentKeys.length];
+
+        var gridSizes = [12, 12, 6, 4, 3, 'fifths', 2, 'sevenths', 'eigths', 'ninths'];
+        ctrl.colGridSize = gridSizes[ctrl.environmentKeys.length];
 
         // method to determine if environment is down and should display red marking
         ctrl.isDown = isDown;
@@ -79,50 +87,50 @@
             _(ctrl.environmentKeys).forEach(function (envKey) {
                 // limit our data to environments in our mappings file
                 var environments =
-                _(data).where(function(env) {
-                    return mappings[envKey] && mappings[envKey].toLowerCase() == env.name.toLowerCase();
-                })
-                    .forEach(function (env) {
+                    _(data).where(function(env) {
+                        return mappings[envKey] && mappings[envKey].toLowerCase() == env.name.toLowerCase();
+                    })
+                        .forEach(function (env) {
 
-                        // look at each unit and add data for the current environment key
-                        _(env.units).forEach(function (unit) {
-                            var unitValue = unit.name.toLowerCase();
+                            // look at each unit and add data for the current environment key
+                            _(env.units).forEach(function (unit) {
+                                var unitValue = unit.name.toLowerCase();
 
-                            // if this unit is not already in the area go ahead and add a placeholder object
-                            if(!units[unitValue]) {
-                                var defaultEnvironments = {};
-                                _(ctrl.environmentKeys).forEach(function(value) {
-                                    defaultEnvironments[value] = {version:'',lastUpdate:''};
-                                });
+                                // if this unit is not already in the area go ahead and add a placeholder object
+                                if(!units[unitValue]) {
+                                    var defaultEnvironments = {};
+                                    _(ctrl.environmentKeys).forEach(function(value) {
+                                        defaultEnvironments[value] = {version:'',lastUpdate:''};
+                                    });
 
-                                units[unitValue] = {
-                                    name: unit.name,
-                                    environments: defaultEnvironments
+                                    units[unitValue] = {
+                                        name: unit.name,
+                                        environments: defaultEnvironments
+                                    };
+                                }
+
+                                // if it wasn't deployed or one of the servers is down the environment is considered down
+                                var somethingDown = !unit.deployed;
+                                if(!somethingDown) {
+                                    somethingDown = _(unit.servers).where(function (server) {
+                                            return !server.online;
+                                        }).value().length > 0;
+                                }
+
+                                // add the down environment to the arra
+                                if(somethingDown && downEnvironments.indexOf(envKey) == -1) {
+                                    downEnvironments.push(envKey);
+                                }
+
+                                // populate the unit data for this environment
+                                hasUnit = true;
+                                units[unitValue].environments[envKey] = {
+                                    version: unit.version,
+                                    lastUpdate: unit.lastUpdated,
+                                    somethingDown: somethingDown
                                 };
-                            }
-
-                            // if it wasn't deployed or one of the servers is down the environment is considered down
-                            var somethingDown = !unit.deployed;
-                            if(!somethingDown) {
-                                somethingDown = _(unit.servers).where(function (server) {
-                                    return !server.online;
-                                }).value().length > 0;
-                            }
-
-                            // add the down environment to the arra
-                            if(somethingDown && downEnvironments.indexOf(envKey) == -1) {
-                                downEnvironments.push(envKey);
-                            }
-
-                            // populate the unit data for this environment
-                            hasUnit = true;
-                            units[unitValue].environments[envKey] = {
-                                version: unit.version,
-                                lastUpdate: unit.lastUpdated,
-                                somethingDown: somethingDown
-                            };
+                            });
                         });
-                    });
             });
 
             // set angular data

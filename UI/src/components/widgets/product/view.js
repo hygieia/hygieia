@@ -64,7 +64,7 @@
         // private properties
         var teamDashboardDetails = {},
             isReload = null;
-        
+
         // public methods
         ctrl.load = function() { systemConfigData.config().then(processLoad); };
         ctrl.addTeam = addTeam;
@@ -83,52 +83,90 @@
             ctrl.configuredTeams = widgetOptions.teams;
         }
 
+        ctrl.teamCrlStages = {};
+        ctrl.prodStages={};
+
+        // pull all the stages from pipeline. Create a map for all ctrl stages for each team.
+        var now = moment(),
+            dateEnds = now.valueOf(),
+            ninetyDaysAgo = now.add(-90, 'days').valueOf(),
+            dateBegins = ninetyDaysAgo;
+        var nowTimestamp = moment().valueOf();
+        // get our pipeline commit data. start by seeing if we've already run this request
+        _(ctrl.configuredTeams).forEach(function (configuredTeam) {
+            var collectId = configuredTeam.collectorItemId;
+            var orderedStages = orderKeys();
+            var stages = [];
+            pipelineData
+                .commits(dateBegins, nowTimestamp, collectId)
+                .then(function (response) {
+                    response = response[0];
+                    for (var x in response.stages) {
+                        orderedStages.push(x,x);
+                    }
+                    stages = orderedStages.keys();
+                    ctrl.teamCrlStages[collectId] = stages;
+                    ctrl.prodStages[collectId] = response.prodStage;
+                });
+        });
+
+        // make ordered list
+        function orderKeys() {
+            var keys = [];
+            var val = {};
+            return {
+                push: function(k,v){
+                    if (!val[k]) keys.push(k);
+                    val[k] = v;
+                },
+                keys: function(){return keys},
+                values: function(){return val}
+            };
+        };
+
         //region public methods
         function processLoad(systemConfig) {
-        	ctrl.stages = _(systemConfig.systemStages)
-	        	.map(function (stage) { return stage.name } )
-	        	.value();
             ctrl.sortableOptions = {
-                    additionalPlaceholderClass: 'product-table-tr',
-                    placeholder: function(el) {
-                        // create a placeholder row
-                        var tr = $document[0].createElement('div');
-                        for(var x=0;x<=ctrl.stages.length;x++) {
-                            var td = $document[0].createElement('div');
-                            td.setAttribute('class', 'product-table-td');
+                additionalPlaceholderClass: 'product-table-tr',
+                placeholder: function(el) {
+                    // create a placeholder row
+                    var tr = $document[0].createElement('div');
+                    for(var x=0;x<=$scope.widgetConfig.options.teams.length+1;x++) {
+                        var td = $document[0].createElement('div');
+                        td.setAttribute('class', 'product-table-td');
 
-                            if(x == 0) {
-                                // add the name of the row so it somewhat resembles the actual data
-                                var name = $document[0].createElement('div');
-                                name.setAttribute('class', 'team-name');
-                                name.innerText = el.element[0].querySelector('.team-name').innerText;
-                                td.setAttribute('class', 'product-table-td team-name-cell');
-                                td.appendChild(name);
-                            }
-                            tr.appendChild(td);
+                        if(x == 0) {
+                            // add the name of the row so it somewhat resembles the actual data
+                            var name = $document[0].createElement('div');
+                            name.setAttribute('class', 'team-name');
+                            name.innerText = el.element[0].querySelector('.team-name').innerText;
+                            td.setAttribute('class', 'product-table-td team-name-cell');
+                            td.appendChild(name);
                         }
-
-                        return tr;
-                    },
-                    orderChanged: function() {
-                        // re-order our widget options
-                        var teams = ctrl.configuredTeams,
-                            existingConfigTeams = $scope.widgetConfig.options.teams,
-                            newConfigTeams = [];
-
-                        _(teams).forEach(function(team) {
-                            _(existingConfigTeams).forEach(function(configTeam) {
-                                if(team.collectorItemId == configTeam.collectorItemId) {
-                                    newConfigTeams.push(configTeam);
-                                }
-                            });
-                        });
-
-                        $scope.widgetConfig.options.teams = newConfigTeams;
-                        updateWidgetOptions($scope.widgetConfig.options);
+                        tr.appendChild(td);
                     }
-                };
-        	
+
+                    return tr;
+                },
+                orderChanged: function() {
+                    // re-order our widget options
+                    var teams = ctrl.configuredTeams,
+                        existingConfigTeams = $scope.widgetConfig.options.teams,
+                        newConfigTeams = [];
+
+                    _(teams).forEach(function(team) {
+                        _(existingConfigTeams).forEach(function(configTeam) {
+                            if(team.collectorItemId == configTeam.collectorItemId) {
+                                newConfigTeams.push(configTeam);
+                            }
+                        });
+                    });
+
+                    $scope.widgetConfig.options.teams = newConfigTeams;
+                    updateWidgetOptions($scope.widgetConfig.options);
+                }
+            };
+
             // determine our current state
             if (isReload === null) {
                 isReload = false;
@@ -137,7 +175,7 @@
                 isReload = true;
             }
 
-            collectTeamStageData(widgetOptions.teams, [].concat(ctrl.stages));
+            collectTeamStageData(widgetOptions.teams, [].concat(ctrl.teamCrlStages));
 
             var requestedData = getTeamDashboardDetails(widgetOptions.teams);
             if(!requestedData) {
@@ -174,10 +212,23 @@
                     options.teams = [];
                 }
 
-                // add our new config to the array
-                options.teams.push(config);
+                var itemInd = false;
 
-                updateWidgetOptions(options);
+                // iterate over teams and set itemInd to true if team is already added to prod dashboard.
+                for(var i=0;i<options.teams.length;i++){
+                    if(options.teams[i].collectorItemId == config.collectorItemId){
+                        itemInd = true; break;
+                    }
+                }
+                // prompt a message if team is already added or add to prod dashboard otherwise.
+                if(itemInd){
+                    swal(config.name+' dashboard added already');
+                }else{
+                    // add our new config to the array
+                    options.teams.push(config);
+
+                    updateWidgetOptions(options);
+                }
             });
         }
 
@@ -257,7 +308,7 @@
                         return {
                             team: team,
                             stage: stage,
-                            stages: ctrl.stages
+                            stages: ctrl.teamCrlStages[team.collectorItemId]
                         };
                     }
                 }
@@ -292,7 +343,7 @@
                 if(configuredTeam.collectorItemId == collectorItemId) {
                     idx = i;
                     team = configuredTeam;
-                }
+                   }
             });
 
             if(!team) { return; }
@@ -324,6 +375,13 @@
                     obj[x] = xData;
                 }
             }
+
+            _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
+                if(configuredTeam.collectorItemId == collectorItemId) {
+                    idx = i;
+                    team = configuredTeam;
+                }
+            });
         }
 
         function getTeamDashboardDetails(teams) {
@@ -410,7 +468,7 @@
             productTestSuiteData.process(angular.extend(processDependencyObject, { testSuiteData: testSuiteData }));
         }
 
-        function collectTeamStageData(teams, ctrlStages) {
+        function collectTeamStageData(teams, teamCtrlStages) {
             // no need to go further if teams aren't configured
             if(!teams || !teams.length) {
                 return;
@@ -427,7 +485,8 @@
                     cleanseData: cleanseData,
                     pipelineData: pipelineData,
                     $q: $q,
-                    ctrlStages: ctrlStages
+                    ctrlStages: ctrl.teamCrlStages[configuredTeam.collectorItemId],
+                    prodStageValue:ctrl.prodStages[configuredTeam.collectorItemId]
                 };
 
                 productCommitData.process(commitDependencyObject);
