@@ -6,10 +6,14 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.Issue;
+import com.capitalone.dashboard.model.Pull;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitHubRepoRepository;
+import com.capitalone.dashboard.repository.IssueRepository;
+import com.capitalone.dashboard.repository.PullRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -32,6 +36,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     private final BaseCollectorRepository<Collector> collectorRepository;
     private final GitHubRepoRepository gitHubRepoRepository;
     private final CommitRepository commitRepository;
+    private final PullRepository pullRepository;
+    private final IssueRepository issueRepository;
     private final GitHubClient gitHubClient;
     private final GitHubSettings gitHubSettings;
     private final ComponentRepository dbComponentRepository;
@@ -41,6 +47,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                                    BaseCollectorRepository<Collector> collectorRepository,
                                    GitHubRepoRepository gitHubRepoRepository,
                                    CommitRepository commitRepository,
+                                   PullRepository pullRepository,
+                                   IssueRepository issueRepository,
                                    GitHubClient gitHubClient,
                                    GitHubSettings gitHubSettings,
                                    ComponentRepository dbComponentRepository) {
@@ -48,6 +56,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         this.collectorRepository = collectorRepository;
         this.gitHubRepoRepository = gitHubRepoRepository;
         this.commitRepository = commitRepository;
+        this.pullRepository = pullRepository;
+        this.issueRepository = issueRepository;
         this.gitHubClient = gitHubClient;
         this.gitHubSettings = gitHubSettings;
         this.dbComponentRepository = dbComponentRepository;
@@ -122,7 +132,9 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         logBanner("Starting...");
         long start = System.currentTimeMillis();
         int repoCount = 0;
-        int commitCount = 0;
+            int commitCount = 0;
+        int pullCount = 0;
+        int issueCount = 0;
 
         clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
@@ -140,11 +152,24 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     commitCount++;
                 }
             }
-
+            for (Pull pull : gitHubClient.getPulls(repo, firstRun, pullRepository)) {
+                LOG.debug(pull.getTimestamp()+":::"+pull.getScmCommitLog());
+                pull.setCollectorItemId(repo.getId());
+                pullRepository.save(pull);
+                pullCount++;
+            }
+            for (Issue issue : gitHubClient.getIssues(repo, firstRun, issueRepository)) {
+                LOG.debug(issue.getTimestamp()+":::"+issue.getScmCommitLog());
+                issue.setCollectorItemId(repo.getId());
+                issueRepository.save(issue);
+                issueCount++;
+            }
             repoCount++;
         }
         log("Repo Count", start, repoCount);
         log("New Commits", start, commitCount);
+        log("New Pulls", start, pullCount);
+        log("New Issues", start, issueCount);
 
         log("Finished", start);
     }
