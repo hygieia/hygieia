@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('pipelineConfigController', pipelineConfigController);
 
-    pipelineConfigController.$inject = ['modalData', 'deployData', 'systemConfigData', '$modalInstance', '$q','$scope'];
-    function pipelineConfigController(modalData, deployData, systemConfigData, $modalInstance, $q,$scope) {
+    pipelineConfigController.$inject = ['modalData', 'deployData', 'systemConfigData', '$modalInstance', '$q'];
+    function pipelineConfigController(modalData, deployData, systemConfigData, $modalInstance, $q) {
         /*jshint validthis:true */
         var ctrl = this;
 
