@@ -1,0 +1,11 @@
+[{
+  "_id" : "6887b732966295affb04fe67",
+  "_class" : "com.capitalone.dashboard.model.Team",
+  "collectorId" : "6887b731966295affb04fe64",
+  "teamId" : "Team:15079",
+  "name" : "ATeamName",
+  "changeDate" : "2016-09-12T09:29:25.1370000",
+  "assetState" : "Active",
+  "isDeleted" : "False",
+  "enabled" : false
+}]

@@ -90,12 +90,12 @@ public class FeatureServiceImpl implements FeatureService {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
-						.isEmpty(component.getCollectorItems().get(CollectorType.ScopeOwner))
-				|| (component.getCollectorItems().get(CollectorType.ScopeOwner).get(0) == null)) {
+						.isEmpty(component.getCollectorItems().get(CollectorType.AgileTool))
+				|| (component.getCollectorItems().get(CollectorType.AgileTool).get(0) == null)) {
 			return getEmptyLegacyDataResponse();
 		}
 
-		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.AgileTool).get(0);
 
 		QScopeOwner team = new QScopeOwner("team");
 		BooleanBuilder builder = new BooleanBuilder();
@@ -124,12 +124,12 @@ public class FeatureServiceImpl implements FeatureService {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
-						.isEmpty(component.getCollectorItems().get(CollectorType.ScopeOwner))
-				|| (component.getCollectorItems().get(CollectorType.ScopeOwner).get(0) == null)) {
+						.isEmpty(component.getCollectorItems().get(CollectorType.AgileTool))
+				|| (component.getCollectorItems().get(CollectorType.AgileTool).get(0) == null)) {
 			return getEmptyLegacyDataResponse();
 		}
 
-		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.AgileTool).get(0);
 
 		QScopeOwner team = new QScopeOwner("team");
 		BooleanBuilder builder = new BooleanBuilder();
@@ -163,12 +163,12 @@ public class FeatureServiceImpl implements FeatureService {
 
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
-						.isEmpty(component.getCollectorItems().get(CollectorType.ScopeOwner))
-				|| (component.getCollectorItems().get(CollectorType.ScopeOwner).get(0) == null)) {
+						.isEmpty(component.getCollectorItems().get(CollectorType.AgileTool))
+				|| (component.getCollectorItems().get(CollectorType.AgileTool).get(0) == null)) {
 			return getEmptyLegacyDataResponse();
 		}
 
-		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.AgileTool).get(0);
 		
 		List<Feature> relevantFeatureEstimates = getFeaturesForCurrentSprints(teamId, projectId, item.getCollectorId(), agileType.isPresent()? agileType.get() : null, true);
 		
@@ -216,12 +216,12 @@ public class FeatureServiceImpl implements FeatureService {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
-						.isEmpty(component.getCollectorItems().get(CollectorType.ScopeOwner))
-				|| (component.getCollectorItems().get(CollectorType.ScopeOwner).get(0) == null)) {
+						.isEmpty(component.getCollectorItems().get(CollectorType.AgileTool))
+				|| (component.getCollectorItems().get(CollectorType.AgileTool).get(0) == null)) {
 			return new DataResponse<SprintEstimate>(new SprintEstimate(), 0);
 		}
 
-		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.AgileTool).get(0);
 		Collector collector = collectorRepository.findOne(item.getCollectorId());
 		
 		SprintEstimate estimate = getSprintEstimates(teamId, projectId, item.getCollectorId(), agileType, estimateMetricType);
@@ -248,12 +248,12 @@ public class FeatureServiceImpl implements FeatureService {
 
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
-						.isEmpty(component.getCollectorItems().get(CollectorType.ScopeOwner))
-				|| (component.getCollectorItems().get(CollectorType.ScopeOwner).get(0) == null)) {
+						.isEmpty(component.getCollectorItems().get(CollectorType.AgileTool))
+				|| (component.getCollectorItems().get(CollectorType.AgileTool).get(0) == null)) {
 			return getEmptyLegacyDataResponse();
 		}
 
-		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.AgileTool).get(0);
 		
 		SprintEstimate estimate = getSprintEstimates(teamId, FeatureCollectorConstants.PROJECT_ID_ANY, item.getCollectorId(), agileType, estimateMetricType);
 		
@@ -284,12 +284,12 @@ public class FeatureServiceImpl implements FeatureService {
 
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
-						.isEmpty(component.getCollectorItems().get(CollectorType.ScopeOwner))
-				|| (component.getCollectorItems().get(CollectorType.ScopeOwner).get(0) == null)) {
+						.isEmpty(component.getCollectorItems().get(CollectorType.AgileTool))
+				|| (component.getCollectorItems().get(CollectorType.AgileTool).get(0) == null)) {
 			return getEmptyLegacyDataResponse();
 		}
 
-		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.AgileTool).get(0);
 		
 		SprintEstimate estimate = getSprintEstimates(teamId, FeatureCollectorConstants.PROJECT_ID_ANY, item.getCollectorId(), agileType, estimateMetricType);
 		
@@ -320,12 +320,12 @@ public class FeatureServiceImpl implements FeatureService {
 
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
-						.isEmpty(component.getCollectorItems().get(CollectorType.ScopeOwner))
-				|| (component.getCollectorItems().get(CollectorType.ScopeOwner).get(0) == null)) {
+						.isEmpty(component.getCollectorItems().get(CollectorType.AgileTool))
+				|| (component.getCollectorItems().get(CollectorType.AgileTool).get(0) == null)) {
 			return getEmptyLegacyDataResponse();
 		}
 
-		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.AgileTool).get(0);
 		
 		SprintEstimate estimate = getSprintEstimates(teamId, FeatureCollectorConstants.PROJECT_ID_ANY, item.getCollectorId(), agileType, estimateMetricType);
 		
@@ -353,12 +353,12 @@ public class FeatureServiceImpl implements FeatureService {
 		Component component = componentRepository.findOne(componentId);
 		if ((component == null) || CollectionUtils.isEmpty(component.getCollectorItems())
 				|| CollectionUtils
-						.isEmpty(component.getCollectorItems().get(CollectorType.ScopeOwner))
-				|| (component.getCollectorItems().get(CollectorType.ScopeOwner).get(0) == null)) {
+						.isEmpty(component.getCollectorItems().get(CollectorType.AgileTool))
+				|| (component.getCollectorItems().get(CollectorType.AgileTool).get(0) == null)) {
 			return getEmptyLegacyDataResponse();
 		}
 
-		CollectorItem item = component.getCollectorItems().get(CollectorType.ScopeOwner).get(0);
+		CollectorItem item = component.getCollectorItems().get(CollectorType.AgileTool).get(0);
 
 		// Get teamId first from available collector item, based on component
 		List<Feature> sprintResponse = getFeaturesForCurrentSprints(teamId, projectId, item.getCollectorId(), agileType.isPresent()? agileType.get() : null, true);
@@ -473,6 +473,10 @@ public class FeatureServiceImpl implements FeatureService {
 		return estimateMetricType.isPresent() && FeatureCollectorConstants.STORY_HOURS_ESTIMATE.equalsIgnoreCase(estimateMetricType.get());
 	}
 	
+	private boolean isEstimateCount(Optional<String> estimateMetricType) {
+        return estimateMetricType.isPresent() && FeatureCollectorConstants.STORY_COUNT_ESTIMATE.equalsIgnoreCase(estimateMetricType.get());
+    }
+	
 	private int getEstimate(Feature feature, Optional<String> estimateMetricType) {
 		int rt = 0;
 		
@@ -480,6 +484,8 @@ public class FeatureServiceImpl implements FeatureService {
 			if (feature.getsEstimateTime() != null) {
 				rt = feature.getsEstimateTime().intValue();
 			}
+		} else if (isEstimateCount(estimateMetricType)) {
+		    rt = 1;
 		} else {
 			// default to story points since that should be the most common use case
 			if (!StringUtils.isEmpty(feature.getsEstimate())) {

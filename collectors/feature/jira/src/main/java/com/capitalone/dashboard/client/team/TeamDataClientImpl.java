@@ -1,19 +1,16 @@
 package com.capitalone.dashboard.client.team;
 
-import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.capitalone.dashboard.client.JiraClient;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.ScopeOwnerRepository;
-import com.capitalone.dashboard.util.ClientUtil;
+import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 /**
@@ -27,10 +24,9 @@ import java.util.List;
  */
 public class TeamDataClientImpl implements TeamDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClientImpl.class);
-	private static final ClientUtil TOOLS = ClientUtil.getInstance();
 
 	private final FeatureSettings featureSettings;
-	private final ScopeOwnerRepository teamRepo;
+	private final TeamRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
 	private final JiraClient jiraClient;
 
@@ -39,8 +35,8 @@ public class TeamDataClientImpl implements TeamDataClient {
 	 * 
 	 * @param teamRepository
 	 */
-	public TeamDataClientImpl(FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings, 
-			ScopeOwnerRepository teamRepository, JiraClient jiraClient) {
+	public TeamDataClientImpl(FeatureCollectorRepository featureCollectorRepository, FeatureSettings featureSettings,
+			TeamRepository teamRepository, JiraClient jiraClient) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Constructing data collection for the feature widget, team-level data...");
 		}
@@ -63,13 +59,6 @@ public class TeamDataClientImpl implements TeamDataClient {
 		if (CollectionUtils.isNotEmpty(teams)) {
 			updateMongoInfo(teams);
 			count += teams.size();
-		} else {
-			List<BasicProject> projects = jiraClient.getProjects();
-			
-			if (CollectionUtils.isNotEmpty(projects)) {
-				updateMongoInfoLegacy(projects);
-				count += projects.size();
-			}
 		}
 		
 		return count;
@@ -79,22 +68,22 @@ public class TeamDataClientImpl implements TeamDataClient {
 	 * Updates the MongoDB with a JSONArray received from the source system
 	 * back-end with story-based data.
 	 * 
-	 * @param teamDetailArray
+	 * @param jiraTeams
 	 *            A list response of Jira teams from the source system
 	 */
-	private void updateMongoInfo(List<Team> jiraTeams) {	
+	private void updateMongoInfo(List<Team> jiraTeams) {
 		ObjectId jiraCollectorId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
 		
 		for (Team jiraTeam : jiraTeams) {
-			String teamId = jiraTeam.getId();
+			String teamId = jiraTeam.getTeamId();
 			
 			/*
 			 * Initialize DOMs
 			 */
-			ScopeOwnerCollectorItem team = findOneScopeOwnerCollectorItem(teamId);
-			
+			Team team = teamRepo.findByTeamId(teamId);
+
 			if (team == null) {
-				team = new ScopeOwnerCollectorItem();
+				team = new Team("", "");
 			}
 
 			// collectorId
@@ -119,69 +108,17 @@ public class TeamDataClientImpl implements TeamDataClient {
 			teamRepo.save(team);
 		}
 	}
-	
-	/**
-	 * Updates the MongoDB with a JSONArray received from the source system
-	 * back-end with story-based data.
-	 * 
-	 * @param currentPagedJiraRs
-	 *            A list response of Jira issues from the source system
-	 */
-	@Deprecated
-	private void updateMongoInfoLegacy(List<BasicProject> currentPagedJiraRs) {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Size of paged Jira response: " + (currentPagedJiraRs == null? 0 : currentPagedJiraRs.size()));
-		}
-		
-		if (currentPagedJiraRs != null) {
-			ObjectId jiraCollectorId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
-			
-			for (BasicProject jiraTeam : currentPagedJiraRs) {
-				String teamId = TOOLS.sanitizeResponse(jiraTeam.getId());
-				
-				/*
-				 * Initialize DOMs
-				 */
-				ScopeOwnerCollectorItem team = findOneScopeOwnerCollectorItem(teamId);
-				
-				if (team == null) {
-					team = new ScopeOwnerCollectorItem();
-				}
 
-				// collectorId
-				team.setCollectorId(jiraCollectorId);
-
-				// teamId
-				team.setTeamId(TOOLS.sanitizeResponse(jiraTeam.getId()));
-
-				// name
-				team.setName(TOOLS.sanitizeResponse(jiraTeam.getName()));
-
-				// changeDate - does not exist for jira
-				team.setChangeDate("");
-
-				// assetState - does not exist for jira
-				team.setAssetState("Active");
-
-				// isDeleted - does not exist for jira
-				team.setIsDeleted("False");
-
-				// Saving back to MongoDB
-				teamRepo.save(team);
-			}
-		}
-	}
-	
 	/**
 	 * Retrieves the maximum change date for a given query.
-	 * 
+	 *
 	 * @return A list object of the maximum change date
 	 */
 	public String getMaxChangeDate() {
 		String data = null;
 
 		try {
-			List<ScopeOwnerCollectorItem> response = teamRepo.findTopByChangeDateDesc(
+			List<Team> response = teamRepo.findTopByChangeDateDesc(
 					featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId(),
 					featureSettings.getDeltaCollectorItemStartDate());
 			if ((response != null) && !response.isEmpty()) {
@@ -194,25 +131,5 @@ public class TeamDataClientImpl implements TeamDataClient {
 
 		return data;
 	}
-	
-	/**
-	 * Find the current collector item for the jira team id
-	 * 
-	 * @param teamId	the team id
-	 * @return			the collector item if it exists or null
-	 */
-	private ScopeOwnerCollectorItem findOneScopeOwnerCollectorItem(String teamId) {
-		List<ScopeOwnerCollectorItem> scopeOwnerCollectorItems = teamRepo.getTeamIdById(teamId);
-		
-		// Not sure of the state of the data
-		if (scopeOwnerCollectorItems.size() > 1) {
-			LOGGER.warn("More than one collector item found for teamId " + teamId);
-		}
-		
-		if (!scopeOwnerCollectorItems.isEmpty()) {
-			return scopeOwnerCollectorItems.get(0);
-		}
-		
-		return null;
-	}
+
 }
