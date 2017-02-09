@@ -2,8 +2,8 @@ package com.capitalone.dashboard.util;
 
 public class SonarDashboardUrl {
 
-	private final String SLASH = "/";
-	private final String PATH = "dashboard/index/";
+	private static final String SLASH = "/";
+	private static final String PATH = "dashboard/index/";
 	
 	private String projectUrl;
 	private String instanceId;
@@ -20,8 +20,8 @@ public class SonarDashboardUrl {
 			sb.append(SLASH);
 		}
 		
-		sb.append(PATH);
-		sb.append(instanceId);
+		sb.append(PATH)
+		  .append(instanceId);
 		return sb.toString();
 	}
 }
