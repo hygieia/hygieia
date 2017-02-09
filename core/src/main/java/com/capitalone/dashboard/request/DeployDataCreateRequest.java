@@ -29,6 +29,7 @@ public class DeployDataCreateRequest {
     private long endTime;
     private long duration;
     private String startedBy;
+    private String collectorName;
     private String niceName;
 
 
@@ -142,6 +143,14 @@ public class DeployDataCreateRequest {
 
     public void setStartedBy(String startedBy) {
         this.startedBy = startedBy;
+    }
+
+    public String getCollectorName() {
+        return collectorName;
+    }
+
+    public void setCollectorName(String collectorName) {
+        this.collectorName = collectorName;
     }
 
     public String getHygieiaId() {

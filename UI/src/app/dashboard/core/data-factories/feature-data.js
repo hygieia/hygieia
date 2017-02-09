@@ -25,23 +25,27 @@
 
 		var testSprint = 'test-data/feature-iteration.json';
 		var buildSprint = '/api/iteration/';
-
-		var testTeams = 'test-data/collector_type-scopeowner.json';
-		var buildTeams = '/api/collector/item/type/ScopeOwner';
-
-		var testTeamByCollectorItemId = 'test-data/collector_item-scopeowner.json';
-		var buildTeamByCollectorItemId = '/api/collector/item/';
 		
 		var testProjectsRoute = 'test-data/projects.json';
         var buildProjectsRoute = '/api/scope';
+
+		var testProjectsByCollectorId = 'test-data/teams.json';
+		var buildProjectsByCollectorId = '/api/scopecollector/';
+
+		var testTeamsRoute = 'test-data/teams.json';
+		var buildTeamsRoute = '/api/team';
+
+		var testTeamsByCollectorId = 'test-data/teams.json';
+		var buildTeamsByCollectorId = '/api/teamcollector/';
 
 		return {
 			sprintMetrics : aggregateSprintEstimates,
 			featureWip : featureWip,
 			sprint : sprint,
 			teams : teams,
-			teamByCollectorItemId : teamByCollectorItemId,
-			projects : projects
+			teamsByCollectorId : teamsByCollectorId,
+			projects : projects,
+			projectsByCollectorId : projectsByCollectorId
 		};
 		
 		function aggregateSprintEstimates(componentId, filterTeamId, filterProjectId, estimateMetricType, agileType) {
@@ -84,22 +88,24 @@
 		}
 
 		/**
-		 * Retrieves all team names and team IDs
+		 * Retrieves projects by  collector ID
+		 *
+		 * @param collectorId
 		 */
-		function teams() {
-			return $http.get(HygieiaConfig.local ? testTeams : buildTeams)
-					.then(function(response) {
-						return response.data;
-					});
+		function projectsByCollectorId(collectorId) {
+			return $http.get(HygieiaConfig.local ? testProjectsByCollectorId : buildProjectsByCollectorId + collectorId)
+				.then(function(response) {
+					return response.data;
+				});
 		}
 
 		/**
-		 * Retrieves a given team by its collector item ID
+		 * Retrieves teams by  collector ID
 		 *
-		 * @param collectorItemId
+		 * @param collectorId
 		 */
-		function teamByCollectorItemId(collectorItemId) {
-			return $http.get(HygieiaConfig.local ? testTeamByCollectorItemId : buildTeamByCollectorItemId + collectorItemId)
+		function teamsByCollectorId(collectorId) {
+			return $http.get(HygieiaConfig.local ? testTeamsByCollectorId : buildTeamsByCollectorId + collectorId)
 					.then(function(response) {
 						return response.data;
 					});
@@ -114,5 +120,15 @@
                     return response.data;
                 });
         }
+
+		/**
+		 * Retrieves all teams
+		 */
+		function teams() {
+			return $http.get(HygieiaConfig.local ? testTeamsRoute : (buildTeamsRoute))
+				.then(function (response) {
+					return response.data;
+				});
+		}
 	}
 })();

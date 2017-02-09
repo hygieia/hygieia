@@ -1,5 +1,18 @@
 package com.capitalone.dashboard.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.AbstractMap;
+import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -21,21 +34,11 @@ import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class DeployServiceImpl implements DeployService {
+    
+    private static final String DEFAULT_COLLECTOR_NAME = "Jenkins";
 
     private final ComponentRepository componentRepository;
     private final EnvironmentComponentRepository environmentComponentRepository;
@@ -108,42 +111,27 @@ public class DeployServiceImpl implements DeployService {
 
     private Map<Environment, List<EnvironmentComponent>> groupByEnvironment(
             List<EnvironmentComponent> components) {
-        Map<Environment, List<EnvironmentComponent>> map = new LinkedHashMap<>();
+        Map<Environment, Map<String, EnvironmentComponent>> trackingMap = new LinkedHashMap<>();
         for (EnvironmentComponent component : components) {
             Environment env = new Environment(component.getEnvironmentName(),
                     component.getEnvironmentUrl());
-
-            if (!map.containsKey(env)) {
-                map.put(env, new ArrayList<EnvironmentComponent>());
+            
+            if (!trackingMap.containsKey(env)) {
+                trackingMap.put(env, new LinkedHashMap<>());
             }
-
-            // Following logic is to send only the latest deployment status - there may be better way to do this
-            Iterator<EnvironmentComponent> alreadyAddedIter = map.get(env)
-                    .iterator();
-
-            boolean found = false;
-            ArrayList<EnvironmentComponent> toRemove = new ArrayList<EnvironmentComponent>();
-            ArrayList<EnvironmentComponent> toAdd = new ArrayList<EnvironmentComponent>();
-            while (alreadyAddedIter.hasNext()) {
-                EnvironmentComponent ec = (EnvironmentComponent) alreadyAddedIter
-                        .next();
-                if (component.getComponentName().equalsIgnoreCase(
-                        ec.getComponentName())) {
-                    found = true;
-                    if (component.getAsOfDate() > ec.getAsOfDate()) {
-                        toRemove.add(ec);
-                        toAdd.add(component);
-                    }
-                }
+            //two conditions to overwrite the value for the specific component
+            if (trackingMap.get(env).get(component.getComponentName()) == null ||
+            		component.getAsOfDate() > trackingMap.get(env)
+            		.get(component.getComponentName()).getAsOfDate()) {
+            	trackingMap.get(env).put(component.getComponentName(), component);
             }
-            if (!found) {
-                toAdd.add(component);
-            }
-            map.get(env).removeAll(toRemove);
-            map.get(env).addAll(toAdd);
         }
-
-        return map;
+        
+        //flatten the deeper map into a list
+        return trackingMap.entrySet().stream()
+        	.map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), 
+        			e.getValue().entrySet().stream().map(ec -> ec.getValue()).collect(Collectors.toList())))
+        	.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Iterable<Server> servers(final EnvironmentComponent component,
@@ -184,7 +172,7 @@ public class DeployServiceImpl implements DeployService {
          * Step 2: create Collector item if not there
          * Step 3: Insert build data if new. If existing, update it.
          */
-        Collector collector = createCollector();
+        Collector collector = createCollector(request);
 
         if (collector == null) {
             throw new HygieiaException("Failed creating Deploy collector.", HygieiaException.COLLECTOR_CREATE_ERROR);
@@ -208,19 +196,23 @@ public class DeployServiceImpl implements DeployService {
 
     @Override
     public DataResponse<List<Environment>> getDeployStatus(String applicationName) {
-        //FIXME: Remove hardcoding of Jenkins.
-        List<Collector> collectorList = collectorRepository.findByCollectorTypeAndName(CollectorType.Deployment, "Jenkins");
-        if (CollectionUtils.isEmpty(collectorList)) return new DataResponse<>(null, 0);
-
-        Collector collector = collectorList.get(0);
-        List<CollectorItem> cis = collectorItemRepository.findByOptionsAndDeployedApplicationName(collector.getId(), applicationName);
-
-        return getDeployStatus(cis);
+        List<Collector> collectorList = collectorRepository.findByCollectorType(CollectorType.Deployment);
+        for (Collector collector : collectorList) {
+            List<CollectorItem> cis = collectorItemRepository.findByOptionsAndDeployedApplicationName(collector.getId(), applicationName);
+            if (!cis.isEmpty()) {
+                return getDeployStatus(cis);
+            }
+        }
+        return new DataResponse<>(null,0);
     }
 
-    private Collector createCollector() {
+    private Collector createCollector(DeployDataCreateRequest request) {
         CollectorRequest collectorReq = new CollectorRequest();
-        collectorReq.setName("Jenkins");  //for now hardcode it.
+        String collectorName = request.getCollectorName();
+        if (StringUtils.isBlank(collectorName)) {
+            collectorName = DEFAULT_COLLECTOR_NAME;
+        }
+        collectorReq.setName(collectorName);
         collectorReq.setCollectorType(CollectorType.Deployment);
         Collector col = collectorReq.toCollector();
         col.setEnabled(true);
@@ -258,6 +250,8 @@ public class DeployServiceImpl implements DeployService {
         deploy.setComponentName(request.getArtifactName());
         deploy.setComponentVersion(request.getArtifactVersion());
         deploy.setEnvironmentName(request.getEnvName());
+        deploy.setEnvironmentUrl(request.getInstanceUrl());
+        deploy.setJobUrl(request.getJobUrl());
         deploy.setDeployTime(request.getEndTime());
         deploy.setDeployed("SUCCESS".equalsIgnoreCase(request.getDeployStatus()));
 
