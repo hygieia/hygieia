@@ -1,0 +1,31 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+         <f:entry field="buildStatus" title="Build Status" >
+                    <f:select />
+        </f:entry>
+        <f:entry field="testType" title="Test Type" help="/plugin/hygieia-publisher/help-projectConfig-testType.html">
+            <f:select />
+        </f:entry>
+        <f:entry title="Application Name" field="testApplicationName"
+                 help="/plugin/hygieia-publisher/help-projectConfig-hygieiaApplicationName.html">
+            <f:textbox name="testApplicationName"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkTestingAppNameValue?value='+this.value"/>
+        </f:entry>
+
+        <f:entry title="Environment Name" field="testEnvironmentName"
+                 help="/plugin/hygieia-publisher/help-projectConfig-hygieiaEnvName.html">
+            <f:textbox name="testEnvironmentName"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkTestingEnvValue?value='+this.value"/>
+        </f:entry>
+
+        <f:entry title="Results Directory" help="/plugin/hygieia-publisher/help-projectConfig-filePath.html">
+            <f:textbox name="testResultsDirectory"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkValue?value='+this.value"
+            />
+        </f:entry>
+        <f:entry title="File Name Pattern" help="/plugin/hygieia-publisher/help-projectConfig-filePattern.html">
+            <f:textbox name="testFileNamePattern"
+                       checkUrl="'descriptorByName/jenkins.plugins.hygieia.HygieiaPublisher/checkValue?value='+this.value"
+            />
+        </f:entry>
+</j:jelly>

@@ -4,6 +4,7 @@ select:
  - Name
  - Status.Name
  - AssetState
+ - AssetType
  - Estimate
  - IsDeleted
  - ChangeDate
@@ -45,5 +46,5 @@ select:
  - Owners.IsDeleted
 filter:
  - ChangeDate>'$changeDate$' 
- - (IsDeleted='False'|IsDeleted='True')
+ - IsDeleted='False','True'
  - AssetState!='200'"

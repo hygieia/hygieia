@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,7 +58,7 @@ public class DeployServiceTest {
     @Mock EnvironmentStatusRepository environmentStatusRepository;
     @Mock private CollectorRepository collectorRepository;
     @InjectMocks DeployServiceImpl deployService;
-    
+
     @Test
     public void getDeployStatus() {
         ObjectId compId = ObjectId.get();
@@ -277,8 +278,18 @@ public class DeployServiceTest {
     @Test
     public void collectorIsCreatedFromCollectorNamePropertyIfPresent() throws HygieiaException {
         DeployDataCreateRequest request = makeDataCreateRequest();
+        Collector expectedCollector = makeCollector();
+        when(collectorService.createCollector(any())).thenReturn(expectedCollector);
+        CollectorItem expectedItem = makeCollectorItem();
+        when(collectorService.createCollectorItem(any())).thenReturn(expectedItem);
+        when(environmentComponentRepository.findByUniqueKey(any(), any(), any(), anyLong()))
+            .thenReturn(null);
+        EnvironmentComponent co = new EnvironmentComponent();
         ObjectId id = new ObjectId();
+        co.setId(id);
         setUpCollector(id);
+        when(environmentComponentRepository.save((EnvironmentComponent)any()))
+            .thenReturn(co);
         String output = deployService.create(request);
         ArgumentCaptor<Collector> collectorCaptor = ArgumentCaptor.forClass(Collector.class);
         verify(collectorService, times(1)).createCollector(collectorCaptor.capture());

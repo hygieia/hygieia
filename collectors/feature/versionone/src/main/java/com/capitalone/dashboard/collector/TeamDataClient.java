@@ -21,9 +21,9 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.datafactory.versionone.VersionOneDataFactoryImpl;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
-import com.capitalone.dashboard.repository.ScopeOwnerRepository;
+import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.bson.types.ObjectId;
@@ -47,7 +47,7 @@ import java.util.List;
 public class TeamDataClient extends BaseClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamDataClient.class);
 
-	private final ScopeOwnerRepository teamRepo;
+	private final TeamRepository teamRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
 	private ObjectId oldTeamId;
 	private boolean oldTeamEnabledState;
@@ -58,13 +58,12 @@ public class TeamDataClient extends BaseClient {
 	 *
 	 */
 	public TeamDataClient(FeatureCollectorRepository featureCollectorRepository,
-			FeatureSettings featureSettings, ScopeOwnerRepository teamRepository,
+			FeatureSettings featureSettings, TeamRepository teamRepository,
 			VersionOneDataFactoryImpl vOneApi) {
         super(vOneApi, featureSettings);
-        LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
+        LOGGER.info("Get teams...");
 		this.featureCollectorRepository = featureCollectorRepository;
 		this.teamRepo = teamRepository;
-		teamRepo.delete("Closed");
 	}
 
 	/**
@@ -79,7 +78,7 @@ public class TeamDataClient extends BaseClient {
 	protected void updateMongoInfo(JSONArray tmpMongoDetailArray) {
 		for (Object obj : tmpMongoDetailArray) {
 			JSONObject dataMainObj = (JSONObject) obj;
-			ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
+			Team team = new Team("", "");
 			/*
 			 * Checks to see if the available asset state is not active from the
 			 * V1 Response and removes it if it exists and not active:
@@ -121,8 +120,8 @@ public class TeamDataClient extends BaseClient {
 
 	private void removeInactiveScopeOwnerByTeamId(String teamId) {
 		if (!StringUtils.isEmpty(teamId)
-				&& !CollectionUtils.isEmpty(teamRepo.getTeamIdById(teamId))) {
-			ObjectId inactiveTeamId = teamRepo.getTeamIdById(teamId).get(0).getId();
+				&& teamRepo.findByTeamId(teamId) != null) {
+			ObjectId inactiveTeamId = teamRepo.findByTeamId(teamId).getId();
 			if (inactiveTeamId != null) {
 				teamRepo.delete(inactiveTeamId);
 			}
@@ -156,16 +155,15 @@ public class TeamDataClient extends BaseClient {
 	protected Boolean removeExistingEntity(String localId) {
 		if (StringUtils.isEmpty(localId))
 			return false;
-		List<ScopeOwnerCollectorItem> teamIdList = teamRepo.getTeamIdById(localId);
-		if (CollectionUtils.isEmpty(teamIdList))
+		Team team = teamRepo.findByTeamId(localId);
+		if (team == null)
 			return false;
-		ScopeOwnerCollectorItem socItem = teamIdList.get(0);
-		if (!localId.equalsIgnoreCase(socItem.getTeamId()))
+		if (!localId.equalsIgnoreCase(team.getTeamId()))
 			return false;
 
-		this.setOldTeamId(socItem.getId());
-		this.setOldTeamEnabledState(socItem.isEnabled());
-		teamRepo.delete(socItem.getId());
+		this.setOldTeamId(team.getId());
+		this.setOldTeamEnabledState(team.isEnabled());
+		teamRepo.delete(team.getId());
 		return true;
 
 	}
@@ -184,7 +182,7 @@ public class TeamDataClient extends BaseClient {
 		if (StringUtils.isEmpty(getFeatureSettings().getDeltaCollectorItemStartDate()))
 			return "";
 
-		List<ScopeOwnerCollectorItem> response = teamRepo.findTopByChangeDateDesc(col.getId(),
+		List<Team> response = teamRepo.findTopByChangeDateDesc(col.getId(),
 				getFeatureSettings().getDeltaCollectorItemStartDate());
 		if (!CollectionUtils.isEmpty(response))
 			return response.get(0).getChangeDate();

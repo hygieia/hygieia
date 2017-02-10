@@ -25,8 +25,10 @@ import com.capitalone.dashboard.client.JiraClient;
 import com.capitalone.dashboard.client.Sprint;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureStatus;
+import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
+import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
@@ -34,6 +36,7 @@ import com.capitalone.dashboard.util.DateUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +91,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 	private final FeatureSettings featureSettings;
 	private final FeatureRepository featureRepo;
 	private final FeatureCollectorRepository featureCollectorRepository;
+	private final TeamRepository teamRepository;
 	private final JiraClient jiraClient;
 	
 	// epicId : list of epics
@@ -99,8 +103,8 @@ public class StoryDataClientImpl implements StoryDataClient {
 	/**
 	 * Extends the constructor from the super class.
 	 */
-	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings, FeatureSettings featureSettings, 
-			FeatureRepository featureRepository, FeatureCollectorRepository featureCollectorRepository,
+	public StoryDataClientImpl(CoreFeatureSettings coreFeatureSettings, FeatureSettings featureSettings,
+			FeatureRepository featureRepository, FeatureCollectorRepository featureCollectorRepository, TeamRepository teamRepository,
 			JiraClient jiraClient) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Constructing data collection for the feature widget, story-level data...");
@@ -109,6 +113,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		this.featureSettings = featureSettings;
 		this.featureRepo = featureRepository;
 		this.featureCollectorRepository = featureCollectorRepository;
+		this.teamRepository = teamRepository;
 		this.jiraClient = jiraClient;
 		
 		this.epicCache = new HashMap<>();
@@ -161,6 +166,8 @@ public class StoryDataClientImpl implements StoryDataClient {
 				updateMongoInfo(issues);
 				count += issues.size();
 			}
+
+			LOGGER.info("Loop i " + i + " pageSize " + issues.size());
 			
 			// will result in an extra call if number of results == pageSize
 			// but I would rather do that then complicate the jira client implementation
@@ -191,7 +198,11 @@ public class StoryDataClientImpl implements StoryDataClient {
 			
 			Map<String, String> issueEpics = new HashMap<>();
 			ObjectId jiraFeatureId = featureCollectorRepository.findByName(FeatureCollectorConstants.JIRA).getId();
-			String issueTypeName = featureSettings.getJiraIssueTypeId();
+			Set<String> issueTypeNames = new HashSet<>();
+			for (String issueTypeName : featureSettings.getJiraIssueTypeNames()) {
+				issueTypeNames.add(issueTypeName.toLowerCase(Locale.getDefault()));
+			}
+			
 			
 			for (Issue issue : currentPagedJiraRs) {
 				String issueId = TOOLS.sanitizeResponse(issue.getId());
@@ -207,7 +218,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 				IssueField epic = fields.get(featureSettings.getJiraEpicIdFieldName());
 				IssueField sprint = fields.get(featureSettings.getJiraSprintDataFieldName());
 				
-				if (TOOLS.sanitizeResponse(issueType.getName()).equalsIgnoreCase(issueTypeName)) {
+				if (issueTypeNames.contains(TOOLS.sanitizeResponse(issueType.getName()).toLowerCase(Locale.getDefault()))) {
 					if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug(String.format("[%-12s] %s", 
 								TOOLS.sanitizeResponse(issue.getKey()),
@@ -219,6 +230,10 @@ public class StoryDataClientImpl implements StoryDataClient {
 					
 					// ID
 					feature.setsId(TOOLS.sanitizeResponse(issue.getId()));
+					
+					// Type
+					feature.setsTypeId(TOOLS.sanitizeResponse(issueType.getId()));
+					feature.setsTypeName(TOOLS.sanitizeResponse(issueType.getName()));
 
 					processFeatureData(feature, issue, fields);
 					
@@ -260,6 +275,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		}
 	}
 	
+	@SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"})
 	private void processFeatureData(Feature feature, Issue issue, Map<String, IssueField> fields) {
 		BasicProject project = issue.getProject();
 		String status = this.toCanonicalFeatureStatus(issue.getStatus().getName());
@@ -276,6 +292,11 @@ public class StoryDataClientImpl implements StoryDataClient {
 
 		// sState
 		feature.setsState(TOOLS.sanitizeResponse(status));
+		
+		// sUrl (Example: 'http://my.jira.com/browse/KEY-1001')
+        feature.setsUrl(featureSettings.getJiraBaseUrl() 
+                + (featureSettings.getJiraBaseUrl().substring(featureSettings.getJiraBaseUrl().length()-1).equals("/") ? "" : "/")
+                + "browse/" + TOOLS.sanitizeResponse(issue.getKey()));
 		
 		int originalEstimate = 0;
 		
@@ -306,7 +327,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		feature.setIsDeleted("False");
 
 		// sProjectID
-		feature.setsProjectID(TOOLS.sanitizeResponse(project.getKey()));
+		feature.setsProjectID(TOOLS.sanitizeResponse(project.getId()));
 
 		// sProjectName
 		feature.setsProjectName(TOOLS.sanitizeResponse(project.getName()));
@@ -329,11 +350,19 @@ public class StoryDataClientImpl implements StoryDataClient {
 		// sProjectPath - does not exist in Jira
 		feature.setsProjectPath("");
 		
-		// sTeamID
-		feature.setsTeamID(TOOLS.sanitizeResponse(project.getId()));
 
-		// sTeamName
-		feature.setsTeamName(TOOLS.sanitizeResponse(project.getName()));
+		IssueField team = fields.get(featureSettings.getJiraTeamFieldName());
+		if (team != null && team.getValue() != null && !TOOLS.sanitizeResponse(team.getValue()).isEmpty()) {
+			String teamID = TOOLS.sanitizeResponse(team.getValue());
+
+			Team scopeOwner = teamRepository.findByTeamId(teamID);
+			// sTeamID
+			feature.setsTeamID(teamID);
+			if (scopeOwner != null && StringUtils.isNotEmpty(scopeOwner.getName())) {
+			    // sTeamName
+				feature.setsTeamName(TOOLS.sanitizeResponse(scopeOwner.getName()));
+			}
+		}
 		
 		// sTeamChangeDate - not able to retrieve at this asset level from Jira
 		feature.setsTeamChangeDate("");
@@ -372,6 +401,11 @@ public class StoryDataClientImpl implements StoryDataClient {
 	
 				// sEpicName
 				feature.setsEpicName(TOOLS.sanitizeResponse(epicName));
+				
+				// sEpicUrl (Example: 'http://my.jira.com/browse/KEY-1001')
+		        feature.setsEpicUrl(featureSettings.getJiraBaseUrl() 
+		                + (featureSettings.getJiraBaseUrl().substring(featureSettings.getJiraBaseUrl().length()-1).equals("/") ? "" : "/")
+		                + "browse/" + TOOLS.sanitizeResponse(epicNumber));
 	
 				// sEpicBeginDate - mapped to create date
 				if ((epicBeginDate != null) && !(epicBeginDate.isEmpty())) {
@@ -426,6 +460,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		feature.setsEpicIsDeleted("False");
 	}
 	
+	@SuppressWarnings("PMD.NPathComplexity")
 	private void processSprintData(Feature feature, IssueField sprintField) {
 		if (sprintField != null && sprintField.getValue() != null && !"".equals(sprintField.getValue())) {
 			Object sValue = sprintField.getValue();
@@ -453,6 +488,14 @@ public class StoryDataClientImpl implements StoryDataClient {
 						feature.setsSprintName(sprint.getName());
 					} else {
 						feature.setsSprintName("");
+					}
+					
+					// sSprintUrl (Example: 'http://my.jira.com/secure/RapidBoard.jspa?rapidView=123&view=reporting&chart=sprintRetrospective&sprint=1597' where sprintID = 1597 and rapidViewID = 123)
+					if (StringUtils.isNotEmpty(feature.getsSprintID()) && sprint.getRapidViewId() != null) {
+    			        feature.setsSprintUrl(featureSettings.getJiraBaseUrl() 
+    			                + (featureSettings.getJiraBaseUrl().substring(featureSettings.getJiraBaseUrl().length()-1).equals("/") ? "" : "/")
+    			                + "secure/RapidBoard.jspa?rapidView=" + sprint.getRapidViewId()
+    			                + "&view=reporting&chart=sprintRetrospective&sprint=" + feature.getsSprintID());
 					}
 	
 					// sSprintBeginDate

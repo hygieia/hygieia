@@ -20,9 +20,13 @@ public final class FeatureCollectorConstants {
 		
 		public static final String STORY_HOURS_ESTIMATE = "hours";
 		public static final String STORY_POINTS_ESTIMATE = "storypoints";
+		public static final String STORY_COUNT_ESTIMATE = "count";
 		
 		public static final String SPRINT_SCRUM = "scrum";
 		public static final String SPRINT_KANBAN = "kanban";
+		
+		public static final String TEAM_ID_ANY = "any";
+		public static final String PROJECT_ID_ANY = "any";
 
         private FeatureCollectorConstants() {
                 // This class should not be instantiable
