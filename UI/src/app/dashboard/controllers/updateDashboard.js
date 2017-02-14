@@ -23,6 +23,15 @@
         function submit(form) {
         	form.$setValidity('updateResponse', true);
         	
+        	var existingWidgets = dashboard.widgets.map(function(widget) {
+        		return {
+        			componentId: widget.componentId,
+        			id: widget.id,
+        			name: widget.name,
+        			options: widget.options
+        		}
+        	});
+        	
             // perform basic validation and send to the api
             if (form.$valid) {
             	var submitData = {
@@ -30,6 +39,7 @@
                         type: dashboard.type,
                         title: dashboard.title,
                         owner: dashboard.owner,
+                        widgets: existingWidgets,
                         applicationName: dashboard.application.name,
                         componentName: dashboard.application.name
                     };

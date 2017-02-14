@@ -25,7 +25,8 @@ public class DashboardRequestTest {
 	private DashboardRequest request;
 
 	private Map<WidgetFamily, List<WidgetType>> activeWidgetTypes;
-
+	private List<Widget> widgets;
+	
 	@Before
 	public void init() {
 		request = new DashboardRequest();
@@ -43,12 +44,16 @@ public class DashboardRequestTest {
 		activeWidgetTypes.put(WidgetFamily.cloud, cloud);
 		activeWidgetTypes.put(WidgetFamily.pipeline, pipeline);
 		
+		widgets = new ArrayList<Widget>();
+		widgets.add(new Widget());
+		
 		request.setTitle(TITLE);
 		request.setApplicationName(APP_NAME);
 		request.setComponentName(COMP_NAME);
 		request.setOwner(OWNER);
 		request.setType(TYPE);
 		request.setActiveWidgetTypes(activeWidgetTypes);
+		request.setWidgets(widgets);
 	}
 	
 	@Test
@@ -60,6 +65,7 @@ public class DashboardRequestTest {
 		assertEquals(OWNER, result.getOwner());
 		assertEquals(TYPE, result.getType().name());
 		assertEquals(activeWidgetTypes, result.getActiveWidgetTypes());
+		assertEquals(widgets, result.getWidgets());
 	}
 
 	@Test
@@ -79,6 +85,7 @@ public class DashboardRequestTest {
 		assertEquals(TYPE, result.getType().name());
 		assertEquals(dash.getId(), result.getId());
 		assertEquals(activeWidgetTypes, result.getActiveWidgetTypes());
+		assertEquals(widgets, result.getWidgets());
 		
 	}
 }

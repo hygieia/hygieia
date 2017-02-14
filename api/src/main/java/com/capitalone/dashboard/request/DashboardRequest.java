@@ -11,6 +11,7 @@ import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.WidgetFamily;
 import com.capitalone.dashboard.model.WidgetType;
 
@@ -32,7 +33,8 @@ public class DashboardRequest {
     private String type;
     
     private Map<WidgetFamily, List<WidgetType>> activeWidgetTypes;
-
+    private List<Widget> widgets;
+    
 	public DashboardRequestTitle getDashboardRequestTitle() {
 		return dashboardRequestTitle;
 	}
@@ -83,11 +85,20 @@ public class DashboardRequest {
 		this.activeWidgetTypes = activeWidgetTypes;
 	}
 	
+	public List<Widget> getWidgets() {
+		return widgets;
+	}
+
+	public void setWidgets(List<Widget> widgets) {
+		this.widgets = widgets;
+	}
+
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
         Dashboard dashboard = new Dashboard(dashboardRequestTitle.getTitle(), application, owner, type);
         dashboard.setActiveWidgetTypes(activeWidgetTypes);
+        dashboard.setWidgets(widgets);
         return dashboard;
     }
 

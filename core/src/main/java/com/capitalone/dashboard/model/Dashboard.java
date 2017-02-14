@@ -56,6 +56,10 @@ public class Dashboard extends BaseModel {
         return widgets;
     }
     
+    public void setWidgets(List<Widget> widgets) {
+    	this.widgets = widgets;
+    }
+    
     public Map<WidgetFamily, List<WidgetType>> getActiveWidgetTypes() {
     	return activeWidgetTypes;
     }
