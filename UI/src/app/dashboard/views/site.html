@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="col-sm-8 col-sm-pull-4">
-                        <div>
+                        <div id="myDashboardsSection">
                             <div class="text-2x">My Dashboards <span class="label label-default"></span></div>
 
                             <div class="text-center" ng-hide="ctrl.mydash">Loading Your Dashboards...</div>
@@ -63,7 +63,7 @@
                                            <span class="fa fa-lg fa-pencil-square-o text-success"></span>
                                        </a>
 
-                                       <a href ng-click="ctrl.deleteDashboard(myitem)">
+                                       <a href ng-click="ctrl.deleteDashboard(myitem)" id="deleteDashboardButton">
                                            <span class="fa fa-lg fa-trash text-danger"></span>
                                        </a>
                                     </span>
@@ -103,4 +103,3 @@
         </div>
     </div>
 </div>
-
