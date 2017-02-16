@@ -19,29 +19,28 @@ import com.capitalone.dashboard.model.BaseModel;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.Scope;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.model.UpdateResult;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.IssueItemRepository;
 import com.capitalone.dashboard.repository.ProjectItemRepository;
-import com.capitalone.dashboard.repository.TeamItemRepository;
+import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
-import com.google.common.collect.Lists;
 
 @Component
 public class DefaultFeatureDataClient implements FeatureDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultFeatureDataClient.class);
 	
 	private final FeatureCollectorRepository featureCollectorRepo;
-	private final TeamItemRepository teamRepo;
+	private final TeamRepository teamRepo;
 	private final ProjectItemRepository projectRepo;
 	private final IssueItemRepository issueItemRepo;
 	private final FeatureRepository featureRepository;
 	private final FeatureDataMapper featureDataMapper;
 	
 	@Autowired
-	public DefaultFeatureDataClient(FeatureCollectorRepository featureCollectorRepo, TeamItemRepository teamRepo, 
+	public DefaultFeatureDataClient(FeatureCollectorRepository featureCollectorRepo, TeamRepository teamRepo, 
 			ProjectItemRepository scopeRepo, IssueItemRepository issueRepo, FeatureDataMapper featureDataMapper, FeatureRepository featureRepo) {
 		this.featureCollectorRepo = featureCollectorRepo;
 		this.teamRepo = teamRepo;
@@ -56,23 +55,28 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	public UpdateResult updateTeams(List<GitlabTeam> gitlabTeams) {
 		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
 		
-		List<ScopeOwnerCollectorItem> currentTeams = new ArrayList<>();
+		List<Team> currentTeams = new ArrayList<>();
 		for(GitlabTeam team : gitlabTeams) {
 			String teamId = String.valueOf(team.getId());
-			ObjectId existingId = getExistingId(teamRepo.getTeamIdById(teamId));
-			ScopeOwnerCollectorItem scopeOwnerCollectorItem = featureDataMapper.mapToScopeOwnerCollectorItem(team, existingId, gitlabFeatureCollectorId);
+			Team existingTeam = teamRepo.findByTeamId(teamId);
+			ObjectId existingId = null;
+			if(existingTeam != null) {
+			    existingId = existingTeam.getId();
+			}
+			Team scopeOwnerCollectorItem = featureDataMapper.mapToTeam(team, existingId, gitlabFeatureCollectorId);
 			currentTeams.add(scopeOwnerCollectorItem);
 		}
 		
-		List<ScopeOwnerCollectorItem> savedTeams = teamRepo.findByCollectorIdIn(Lists.newArrayList(gitlabFeatureCollectorId));
-		
-		Collection<ScopeOwnerCollectorItem> teamsToAdd = CollectionUtils.subtract(currentTeams, savedTeams);
-		teamRepo.save(teamsToAdd);
-		
-		Collection<ScopeOwnerCollectorItem> teamsToDelete = CollectionUtils.subtract(savedTeams, currentTeams);
-		teamRepo.delete(teamsToDelete);
+//		List<Team> savedTeams = teamRepo.findByCollectorIdIn(Lists.newArrayList(gitlabFeatureCollectorId));
+//		
+//		Collection<Team> teamsToAdd = CollectionUtils.subtract(currentTeams, savedTeams);
+//		teamRepo.save(teamsToAdd);
+//		
+//		Collection<Team> teamsToDelete = CollectionUtils.subtract(savedTeams, currentTeams);
+//		teamRepo.delete(teamsToDelete);
+		teamRepo.save(currentTeams);
         
-        return new UpdateResult(teamsToAdd.size(), teamsToDelete.size());
+        return new UpdateResult(currentTeams.size(), 0);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -132,10 +136,10 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		return updateResult;
 	}
 
-	@Override
-	public List<ScopeOwnerCollectorItem> findEnabledTeams(ObjectId collectorId) {
-		return teamRepo.findEnabledTeams(collectorId);
-	}
+//	@Override
+//	public List<ScopeOwnerCollectorItem> findEnabledTeams(ObjectId collectorId) {
+//		return teamRepo.findEnabledTeams(collectorId);
+//	}
 	
 	private ObjectId getExistingId(List<? extends BaseModel> list) {
 		if(list.size() > 1) {

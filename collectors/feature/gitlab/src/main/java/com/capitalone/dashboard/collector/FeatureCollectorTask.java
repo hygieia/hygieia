@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.UpdateResult;
@@ -88,19 +86,19 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 	public void collect(FeatureCollector collector) {
 		logBanner("Starting...");
 		Long startTime = System.currentTimeMillis();
-		List<GitlabProject> projects = featureService.getProjectsForEnabledTeams(collector.getId());
+//		List<GitlabProject> projects = featureService.getProjectsForEnabledTeams(collector.getId());
 
 		ListenableFuture<UpdateResult> updateTeamsFuture = featureService.updateSelectableTeams();
 		updateTeamsFuture.addCallback(createCallback("Teams Added", "Teams Deleted", startTime));
 
-		ListenableFuture<UpdateResult> updateProjectsFuture = featureService.updateProjects(projects);
+		ListenableFuture<UpdateResult> updateProjectsFuture = featureService.updateProjects();
 		updateProjectsFuture.addCallback(createCallback("Projects Added", "Projects Deleted", startTime));
-
-		List<Future<UpdateResult>> updateIssuesFutures = new ArrayList<>();
-		for (GitlabProject project : projects) {
-			updateIssuesFutures.add(featureService.updateIssuesForProject(project));
-		}
-		logResults(updateIssuesFutures, startTime);
+//
+//		List<Future<UpdateResult>> updateIssuesFutures = new ArrayList<>();
+//		for (GitlabProject project : projects) {
+//			updateIssuesFutures.add(featureService.updateIssuesForProject(project));
+//		}
+//		logResults(updateIssuesFutures, startTime);
 	}
 
 	private ListenableFutureCallback<UpdateResult> createCallback(String addedText, String deletedText,

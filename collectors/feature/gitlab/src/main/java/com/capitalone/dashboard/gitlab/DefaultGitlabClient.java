@@ -20,7 +20,6 @@ import com.capitalone.dashboard.gitlab.model.GitlabLabel;
 import com.capitalone.dashboard.gitlab.model.GitlabList;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.gitlab.model.GitlabTeam;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 
 @Component
 public class DefaultGitlabClient implements GitlabClient {
@@ -43,8 +42,8 @@ public class DefaultGitlabClient implements GitlabClient {
 	}
 	
 	@Override
-	public List<GitlabProject> getProjects(ScopeOwnerCollectorItem team) {
-		URI uri = urlUtility.buildProjectsUri(team.getTeamId());
+	public List<GitlabProject> getProjects() {
+		URI uri = urlUtility.buildProjectsUri();
 		return makePaginatedGitlabRequest(uri, GitlabProject[].class);
 	}
 	

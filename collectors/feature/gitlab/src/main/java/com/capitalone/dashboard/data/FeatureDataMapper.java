@@ -14,7 +14,7 @@ import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.Scope;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 
 @Component
@@ -27,14 +27,12 @@ public class FeatureDataMapper {
 	private static final String FEATURE_DONE_STATUS = "Done";
 	private static final String GITLAB_DONE_STATUS = "closed";
 
-	public ScopeOwnerCollectorItem mapToScopeOwnerCollectorItem(GitlabTeam gitlabTeam, ObjectId existingTeamId, ObjectId gitlabFeatureCollectorId) {
+	public Team mapToTeam(GitlabTeam gitlabTeam, ObjectId existingTeamId, ObjectId gitlabFeatureCollectorId) {
 		String teamId = String.valueOf(gitlabTeam.getId());
 		
-		ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
+		Team team = new Team(teamId, gitlabTeam.getName());
 		team.setId(existingTeamId);
 		team.setCollectorId(gitlabFeatureCollectorId);
-		team.setTeamId(teamId);
-		team.setName(gitlabTeam.getName());
 		team.setChangeDate(EMPTY_STRING);
 		team.setAssetState(ACTIVE_ASSET_STATE);
 		team.setIsDeleted(FALSE_DELETED_STATE);

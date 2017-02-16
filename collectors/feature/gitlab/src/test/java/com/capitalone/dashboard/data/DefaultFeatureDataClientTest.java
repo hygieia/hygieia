@@ -78,7 +78,7 @@ public class DefaultFeatureDataClientTest {
 		List<GitlabTeam> gitlabTeams = Lists.newArrayList(team1);
 		when(teamRepo.getTeamIdById("1")).thenReturn(new ArrayList<>());
 		ScopeOwnerCollectorItem scopeOwner = new ScopeOwnerCollectorItem();
-		when(featureDataMapper.mapToScopeOwnerCollectorItem(team1, null, collectorId)).thenReturn(scopeOwner);
+		when(featureDataMapper.mapToTeam(team1, null, collectorId)).thenReturn(scopeOwner);
 		when(teamRepo.findByCollectorIdIn(anyCollection())).thenReturn(new ArrayList<>());
 		
 		UpdateResult result = featureDataClient.updateTeams(gitlabTeams);
@@ -96,7 +96,7 @@ public class DefaultFeatureDataClientTest {
 		when(teamRepo.getTeamIdById("1")).thenReturn(Lists.newArrayList(new ScopeOwnerCollectorItem(), new ScopeOwnerCollectorItem()));
 		ScopeOwnerCollectorItem scopeOwner = new ScopeOwnerCollectorItem();
 		scopeOwner.setTeamId("1");
-		when(featureDataMapper.mapToScopeOwnerCollectorItem(team1, null, collectorId)).thenReturn(scopeOwner);
+		when(featureDataMapper.mapToTeam(team1, null, collectorId)).thenReturn(scopeOwner);
 		ScopeOwnerCollectorItem savedTeam = new ScopeOwnerCollectorItem();
 		savedTeam.setTeamId("3");
 		List<ScopeOwnerCollectorItem> savedTeams = Lists.newArrayList(savedTeam);

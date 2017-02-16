@@ -31,7 +31,7 @@ public class FeatureDataMapperTest {
 		ObjectId existingTeamId = new ObjectId();
 		ObjectId gitlabFeatureCollectorId = new ObjectId();
 		
-		ScopeOwnerCollectorItem result = mapper.mapToScopeOwnerCollectorItem(gitlabTeam , existingTeamId , gitlabFeatureCollectorId );
+		ScopeOwnerCollectorItem result = mapper.mapToTeam(gitlabTeam , existingTeamId , gitlabFeatureCollectorId );
 		
 		assertNotNull(result);
 		assertEquals(existingTeamId, result.getId());

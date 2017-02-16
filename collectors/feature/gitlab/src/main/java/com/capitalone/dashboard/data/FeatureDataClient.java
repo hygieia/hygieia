@@ -2,13 +2,10 @@ package com.capitalone.dashboard.data;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
 import com.capitalone.dashboard.gitlab.model.GitlabIssue;
 import com.capitalone.dashboard.gitlab.model.GitlabLabel;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.gitlab.model.GitlabTeam;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 import com.capitalone.dashboard.model.UpdateResult;
 
 public interface FeatureDataClient {
@@ -19,6 +16,6 @@ public interface FeatureDataClient {
 
 	UpdateResult updateIssues(String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject);
 
-	List<ScopeOwnerCollectorItem> findEnabledTeams(ObjectId collectorId);
+//	List<ScopeOwnerCollectorItem> findEnabledTeams(ObjectId collectorId);
 	
 }

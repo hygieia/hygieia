@@ -6,13 +6,12 @@ import com.capitalone.dashboard.gitlab.model.GitlabIssue;
 import com.capitalone.dashboard.gitlab.model.GitlabLabel;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.gitlab.model.GitlabTeam;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
 
 public interface GitlabClient {
 	
 	List<GitlabTeam> getTeams();
 
-	List<GitlabProject> getProjects(ScopeOwnerCollectorItem team);
+	List<GitlabProject> getProjects();
 
 	List<GitlabLabel> getInProgressLabelsForProject(Long id);
 
