@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -68,17 +69,17 @@ public class FeatureCollectorTaskTest {
 		collector.setId(id);
 		List<GitlabProject> projects = new ArrayList<>();
 		projects.add(new GitlabProject());
-		when(featureService.getProjectsForEnabledTeams(id)).thenReturn(projects);
-		when(featureService.updateSelectableTeams()).thenReturn(future);
-		when(featureService.updateProjects(projects)).thenReturn(future);
-		when(featureService.updateIssuesForProject(isA(GitlabProject.class))).thenReturn(future);
+		when(featureService.getEnabledProjects(id)).thenReturn(projects);
+		when(featureService.updateSelectableTeams(id)).thenReturn(future);
+		when(featureService.updateProjects(id)).thenReturn(future);
+		when(featureService.updateIssuesForProject(eq(id), isA(GitlabProject.class))).thenReturn(future);
 		when(future.get()).thenReturn(new UpdateResult(1, 1));
 		
 		featureCollectorTask.collect(collector);
 		
-		verify(featureService).updateSelectableTeams();
-		verify(featureService).updateProjects(projects);
-		verify(featureService).updateIssuesForProject(projects.get(0));
+		verify(featureService).updateSelectableTeams(id);
+		verify(featureService).updateProjects(id);
+		verify(featureService).updateIssuesForProject(id, projects.get(0));
 	}
 	
 	@Test
@@ -88,17 +89,17 @@ public class FeatureCollectorTaskTest {
 		collector.setId(id);
 		List<GitlabProject> projects = new ArrayList<>();
 		projects.add(new GitlabProject());
-		when(featureService.getProjectsForEnabledTeams(id)).thenReturn(projects);
-		when(featureService.updateSelectableTeams()).thenReturn(future);
-		when(featureService.updateProjects(projects)).thenReturn(future);
-		when(featureService.updateIssuesForProject(isA(GitlabProject.class))).thenReturn(future);
+		when(featureService.getEnabledProjects(id)).thenReturn(projects);
+		when(featureService.updateSelectableTeams(id)).thenReturn(future);
+		when(featureService.updateProjects(id)).thenReturn(future);
+		when(featureService.updateIssuesForProject(eq(id), isA(GitlabProject.class))).thenReturn(future);
 		when(future.get()).thenThrow(new InterruptedException());
 		
 		featureCollectorTask.collect(collector);
 		
-		verify(featureService).updateSelectableTeams();
-		verify(featureService).updateProjects(projects);
-		verify(featureService).updateIssuesForProject(projects.get(0));
+		verify(featureService).updateSelectableTeams(id);
+		verify(featureService).updateProjects(id);
+		verify(featureService).updateIssuesForProject(id, projects.get(0));
 	}
 
 }
