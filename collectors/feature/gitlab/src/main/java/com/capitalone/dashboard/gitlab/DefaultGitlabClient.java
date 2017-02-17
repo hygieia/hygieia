@@ -2,6 +2,7 @@ package com.capitalone.dashboard.gitlab;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -46,6 +47,19 @@ public class DefaultGitlabClient implements GitlabClient {
 		URI uri = urlUtility.buildProjectsUri();
 		return makePaginatedGitlabRequest(uri, GitlabProject[].class);
 	}
+	
+    @Override
+    public Collection<GitlabProject> getProjectsForTeam(String teamId) {
+        URI uri = urlUtility.buildProjectsForTeamsUri(teamId);
+        return makePaginatedGitlabRequest(uri, GitlabProject[].class);
+    }
+    
+    @Override
+    public GitlabProject getProjectById(String projectId) {
+        URI uri = urlUtility.buildProjectsByIdUri(projectId);
+        HttpEntity<String> headersEntity = urlUtility.buildAuthenticationHeader();
+        return restOperations.exchange(uri, HttpMethod.GET, headersEntity, GitlabProject.class).getBody();
+    }
 	
 	@Override
 	public List<GitlabLabel> getInProgressLabelsForProject(Long projectId) {

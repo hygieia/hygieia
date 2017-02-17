@@ -16,45 +16,42 @@ import com.capitalone.dashboard.gitlab.model.GitlabLabel;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.BaseModel;
+import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Feature;
-import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.model.UpdateResult;
-import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.IssueItemRepository;
 import com.capitalone.dashboard.repository.ProjectItemRepository;
 import com.capitalone.dashboard.repository.TeamRepository;
-import com.capitalone.dashboard.util.FeatureCollectorConstants;
+import com.capitalone.dashboard.repository.WidgetRepository;
 
 @Component
 public class DefaultFeatureDataClient implements FeatureDataClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultFeatureDataClient.class);
 	
-	private final FeatureCollectorRepository featureCollectorRepo;
 	private final TeamRepository teamRepo;
 	private final ProjectItemRepository projectRepo;
 	private final IssueItemRepository issueItemRepo;
-	private final FeatureRepository featureRepository;
+	private final FeatureRepository featureRepo;
 	private final FeatureDataMapper featureDataMapper;
+	private final WidgetRepository widgetRepo;
 	
 	@Autowired
-	public DefaultFeatureDataClient(FeatureCollectorRepository featureCollectorRepo, TeamRepository teamRepo, 
-			ProjectItemRepository scopeRepo, IssueItemRepository issueRepo, FeatureDataMapper featureDataMapper, FeatureRepository featureRepo) {
-		this.featureCollectorRepo = featureCollectorRepo;
+	public DefaultFeatureDataClient(TeamRepository teamRepo, ProjectItemRepository scopeRepo, IssueItemRepository issueRepo,
+	        FeatureDataMapper featureDataMapper, FeatureRepository featureRepo, WidgetRepository widgetRepo) {
 		this.teamRepo = teamRepo;
 		this.projectRepo = scopeRepo;
 		this.issueItemRepo = issueRepo;
 		this.featureDataMapper = featureDataMapper;
-		this.featureRepository = featureRepo;
+		this.featureRepo = featureRepo;
+		this.widgetRepo = widgetRepo;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public UpdateResult updateTeams(List<GitlabTeam> gitlabTeams) {
-		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
-		
+	public UpdateResult updateTeams(ObjectId collectorId, List<GitlabTeam> gitlabTeams) {
 		List<Team> currentTeams = new ArrayList<>();
 		for(GitlabTeam team : gitlabTeams) {
 			String teamId = String.valueOf(team.getId());
@@ -63,7 +60,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 			if(existingTeam != null) {
 			    existingId = existingTeam.getId();
 			}
-			Team scopeOwnerCollectorItem = featureDataMapper.mapToTeam(team, existingId, gitlabFeatureCollectorId);
+			Team scopeOwnerCollectorItem = featureDataMapper.mapToTeam(team, existingId, collectorId);
 			currentTeams.add(scopeOwnerCollectorItem);
 		}
 		
@@ -81,17 +78,15 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public UpdateResult updateProjects(List<GitlabProject> projects) {
-		ObjectId gitlabFeatureCollectorId = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB).getId();
-		
+	public UpdateResult updateProjects(ObjectId collectorId, List<GitlabProject> projects) {
 		List<Scope> currentProjects = new ArrayList<>();
 		for(GitlabProject project : projects) {
 			String projectId = String.valueOf(project.getId());
 			ObjectId existingId = getExistingId(projectRepo.getScopeIdById(projectId));
-			Scope scope = featureDataMapper.mapToScopeItem(project, existingId, gitlabFeatureCollectorId);
+			Scope scope = featureDataMapper.mapToScopeItem(project, existingId, collectorId);
 			currentProjects.add(scope);
 		}
-		List<Scope> savedProjects = projectRepo.findScopeByCollectorId(gitlabFeatureCollectorId);
+		List<Scope> savedProjects = projectRepo.findScopeByCollectorId(collectorId);
 		
 		Collection<Scope> projectsToAdd = CollectionUtils.subtract(currentProjects, savedProjects);
 		projectRepo.save(projectsToAdd);
@@ -103,27 +98,26 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	}
 
 	@Override
-	public UpdateResult updateIssues(String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
-		FeatureCollector gitlabCollector = featureCollectorRepo.findByName(FeatureCollectorConstants.GITLAB);
+	public UpdateResult updateIssues(ObjectId collectorId, String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
 		List<String> inProgressLabels = new ArrayList<>();
 		for(GitlabLabel label : inProgressLabelsForProject) {
 			inProgressLabels.add(label.getName());
 		}
 		
-		List<Feature> savedFeatures = issueItemRepo.getFeaturesByCollectorAndProjectId(gitlabCollector.getId(), projectId);
+		List<Feature> savedFeatures = issueItemRepo.getFeaturesByCollectorAndProjectId(collectorId, projectId);
 		
-		return updateAll(issues, gitlabCollector, inProgressLabels, savedFeatures);
+		return updateAll(issues, collectorId, inProgressLabels, savedFeatures);
 	}
 
 	@SuppressWarnings("unchecked")
-	private UpdateResult updateAll(List<GitlabIssue> gitlabIssues, FeatureCollector gitlabCollector,
+	private UpdateResult updateAll(List<GitlabIssue> gitlabIssues, ObjectId collectorId,
 			List<String> inProgressLabels, List<Feature> savedFeatures) {
 		
 		List<Feature> updatedFeatures = new ArrayList<>();
 		for(GitlabIssue issue : gitlabIssues) {
 			String issueId = String.valueOf(issue.getId());
-			ObjectId existingId = getExistingId(featureRepository.getFeatureIdById(issueId));
-			Feature feature = featureDataMapper.mapToFeatureItem(issue, inProgressLabels, existingId, gitlabCollector.getId());
+			ObjectId existingId = getExistingId(featureRepo.getFeatureIdById(issueId));
+			Feature feature = featureDataMapper.mapToFeatureItem(issue, inProgressLabels, existingId, collectorId);
 			updatedFeatures.add(feature);
 		}
 		
@@ -140,6 +134,11 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 //	public List<ScopeOwnerCollectorItem> findEnabledTeams(ObjectId collectorId) {
 //		return teamRepo.findEnabledTeams(collectorId);
 //	}
+	
+    @Override
+    public List<CollectorItem> getEnabledWidgets(ObjectId collectorId) {
+        return widgetRepo.findByCollectorIdAndEnabled(collectorId, true);
+    }
 	
 	private ObjectId getExistingId(List<? extends BaseModel> list) {
 		if(list.size() > 1) {

@@ -52,6 +52,18 @@ public class GitlabUriUtility {
 		return uri;
 	}
 	
+    public URI buildProjectsForTeamsUri(String teamId) {
+        UriComponentsBuilder builder = buildApiUri();
+        URI uri = builder.pathSegment(GROUPS_PATH_SEGMENT).pathSegment(teamId).pathSegment(PROJECTS_PATH_SEGMENT).build().toUri();
+        return uri;
+    }
+    
+    public URI buildProjectsByIdUri(String projectId) {
+        UriComponentsBuilder builder = buildApiUri();
+        URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(projectId).build().toUri();
+        return uri;
+    }
+	
 	public URI buildBoardsUri(String projectId) {
 		UriComponentsBuilder builder = buildApiUri();
 		URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(projectId).pathSegment(BOARDS_PATH_SEGMENT).build().toUri();

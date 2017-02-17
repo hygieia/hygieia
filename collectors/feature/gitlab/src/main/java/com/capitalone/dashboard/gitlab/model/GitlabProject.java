@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.gitlab.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GitlabProject {
@@ -50,5 +53,19 @@ public class GitlabProject {
 	public void setNamespace(GitlabNamespace namespace) {
 		this.namespace = namespace;
 	}
+	
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) { return false; }
+        if (obj == this) { return true; }
+        if (obj.getClass() != getClass()) { return false; }
+        GitlabProject rhs = (GitlabProject) obj;
+        return new EqualsBuilder().append(id, rhs.id).isEquals();
+    }
+    
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(id).toHashCode();
+    }
 
 }

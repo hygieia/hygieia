@@ -212,7 +212,7 @@
 				}
 			}
 		}
-		
+
 		function initEstimateMetricType(widgetConfig) {
 			if (widgetConfig.options.estimateMetricType != undefined && widgetConfig.options.estimateMetricType != null) {
 				ctrl.estimateMetricType = widgetConfig.options.estimateMetricType;
@@ -220,7 +220,7 @@
 				ctrl.estimateMetricType = 'storypoints';
 			}
 		}
-		
+
 		function initSprintType(widgetConfig) {
 			if (widgetConfig && widgetConfig.options && widgetConfig.options.sprintType) {
 				ctrl.sprintType = widgetConfig.options.sprintType;
@@ -228,7 +228,7 @@
 				ctrl.sprintType = 'kanban';
 			}
 		}
-		
+
 		function initListType(widgetConfig) {
             if (widgetConfig && widgetConfig.options && widgetConfig.options.listType) {
                 ctrl.listType = widgetConfig.options.listType;
@@ -282,6 +282,8 @@
 				collectorId = _.findWhere(ctrl.collectors, {name: 'Jira'}).id
 			} else if (ctrl.collectorId.value === 'VersionOne') {
 				collectorId = _.findWhere(ctrl.collectors, {name: 'VersionOne'}).id
+			} else if (ctrl.collectorId.value ==='GitlabFeature') {
+				collectorId = _.findWhere(ctrl.collectors, {name: 'GitlabFeature'}).id
 			}
 
 			item = {
