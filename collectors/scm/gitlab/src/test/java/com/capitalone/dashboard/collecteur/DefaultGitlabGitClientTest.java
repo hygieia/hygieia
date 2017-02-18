@@ -112,7 +112,7 @@ public class DefaultGitlabGitClientTest {
 		assertTrue(commits.containsAll(secondPageOfCommits));
 	}
 	
-	@Test
+	@Test(expected = HttpClientErrorException.class)
 	public void shouldLogException() {
 		when(gitlabUrlUtility.buildApiUrl(isA(GitlabGitRepo.class), eq(true), anyInt())).thenReturn(apiUrl);
 		when(restOperations.exchange(isA(URI.class), eq(HttpMethod.GET), isA(HttpEntity.class), eq(String.class))).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
@@ -126,7 +126,7 @@ public class DefaultGitlabGitClientTest {
 	public void shouldUseApiTokenIfProvided() {
 		when(gitlabUrlUtility.buildApiUrl(isA(GitlabGitRepo.class), eq(true), anyInt())).thenReturn(apiUrl);
 		ArgumentCaptor<HttpEntity> captor = ArgumentCaptor.forClass(HttpEntity.class);
-		when(restOperations.exchange(isA(URI.class), eq(HttpMethod.GET), captor.capture(), eq(String.class))).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+		when(restOperations.exchange(isA(URI.class), eq(HttpMethod.GET), captor.capture(), eq(String.class))).thenReturn(response);
 		String expectedApiKey = "fakeApiKey";
 		when(repo.getUserId()).thenReturn(expectedApiKey);
 		
@@ -139,7 +139,7 @@ public class DefaultGitlabGitClientTest {
 	public void shouldUseCollectorsApiTokenIfNotProvided() {
 		when(gitlabUrlUtility.buildApiUrl(isA(GitlabGitRepo.class), eq(true), anyInt())).thenReturn(apiUrl);
 		ArgumentCaptor<HttpEntity> captor = ArgumentCaptor.forClass(HttpEntity.class);
-		when(restOperations.exchange(isA(URI.class), eq(HttpMethod.GET), captor.capture(), eq(String.class))).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+		when(restOperations.exchange(isA(URI.class), eq(HttpMethod.GET), captor.capture(), eq(String.class))).thenReturn(response);
 		String expectedApiKey = "fakeApiKey";
 		when(gitlabSettings.getApiToken()).thenReturn(expectedApiKey);
 		

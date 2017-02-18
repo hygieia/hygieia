@@ -21,6 +21,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorType;
@@ -155,6 +158,46 @@ public class GitlabGitCollectorTaskTest {
 		
 		verify(gitlabGitCollectorRepository, times(1)).save(gitlabGitRepo);
 		verify(commitRepository, times(1)).save(commit);
+	}
+	
+	@Test
+	public void shouldNotSaveRepoWhenClientError() {
+		when(componentRepository.findAll()).thenReturn(new ArrayList<>());
+		when(gitlabGitCollectorRepository.findByCollectorIdIn(anyCollection())).thenReturn(new ArrayList<>());
+		when(collector.getId()).thenReturn(new ObjectId());
+		List<GitlabGitRepo> enabledRepos = new ArrayList<>();
+		enabledRepos.add(gitlabGitRepo);
+		when(gitlabGitCollectorRepository.findEnabledGitlabRepos(isA(ObjectId.class))).thenReturn(enabledRepos);
+		when(gitlabGitRepo.getLastUpdated()).thenReturn(1477513100920L);
+		when(defaultGitlabGitClient.getCommits(isA(GitlabGitRepo.class), anyBoolean())).thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+		when(gitlabGitRepo.getId()).thenReturn(new ObjectId());
+		when(commit.getScmRevisionNumber()).thenReturn("12");
+		when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(isA(ObjectId.class), anyString())).thenReturn(null);
+		
+		gitlabGitCollectorTask.collect(collector);
+		
+		verify(gitlabGitCollectorRepository, never()).save(gitlabGitRepo);
+		verify(commitRepository, never()).save(commit);
+	}
+	
+	@Test
+	public void shouldNotSaveRepoWhenResourceAccessExceptin() {
+		when(componentRepository.findAll()).thenReturn(new ArrayList<>());
+		when(gitlabGitCollectorRepository.findByCollectorIdIn(anyCollection())).thenReturn(new ArrayList<>());
+		when(collector.getId()).thenReturn(new ObjectId());
+		List<GitlabGitRepo> enabledRepos = new ArrayList<>();
+		enabledRepos.add(gitlabGitRepo);
+		when(gitlabGitCollectorRepository.findEnabledGitlabRepos(isA(ObjectId.class))).thenReturn(enabledRepos);
+		when(gitlabGitRepo.getLastUpdated()).thenReturn(1477513100920L);
+		when(defaultGitlabGitClient.getCommits(isA(GitlabGitRepo.class), anyBoolean())).thenThrow(new ResourceAccessException("Bad"));
+		when(gitlabGitRepo.getId()).thenReturn(new ObjectId());
+		when(commit.getScmRevisionNumber()).thenReturn("12");
+		when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(isA(ObjectId.class), anyString())).thenReturn(null);
+		
+		gitlabGitCollectorTask.collect(collector);
+		
+		verify(gitlabGitCollectorRepository, never()).save(gitlabGitRepo);
+		verify(commitRepository, never()).save(commit);
 	}
 
 }
