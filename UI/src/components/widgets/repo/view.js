@@ -5,11 +5,11 @@
         .module(HygieiaConfig.module)
         .controller('RepoViewController', RepoViewController);
 
-    RepoViewController.$inject = ['$q', '$scope','codeRepoData', '$modal'];
-    function RepoViewController($q, $scope, codeRepoData, $modal) {
+    RepoViewController.$inject = ['$q', '$scope','codeRepoData', 'pullRepoData', 'issueRepoData','$modal'];
+    function RepoViewController($q, $scope, codeRepoData, pullRepoData, issueRepoData, $modal) {
         var ctrl = this;
 
-        ctrl.commitChartOptions = {
+        ctrl.combinedChartOptions = {
             plugins: [
                 Chartist.plugins.gridBoundaries(),
                 Chartist.plugins.lineAboveArea(),
@@ -31,7 +31,8 @@
                     textAnchor: 'middle'
                 })
             ],
-            showArea: true,
+
+            showArea: false,
             lineSmooth: false,
             fullWidth: true,
             axisY: {
@@ -43,6 +44,9 @@
         };
 
         ctrl.commits = [];
+        ctrl.pulls = [];
+        ctrl.issues = [];
+
         ctrl.showDetail = showDetail;
         ctrl.load = function() {
             var deferred = $q.defer();
@@ -51,33 +55,58 @@
                 numberOfDays: 14
             };
             codeRepoData.details(params).then(function(data) {
-                processResponse(data.result, params.numberOfDays);
+                processCommitResponse(data.result, params.numberOfDays);
                 deferred.resolve(data.lastUpdated);
             });
+            pullRepoData.details(params).then(function(data) {
+                processPullResponse(data.result, params.numberOfDays);
+                deferred.resolve(data.lastUpdated);
+            });
+            issueRepoData.details(params).then(function(data) {
+                processIssueResponse(data.result, params.numberOfDays);
+                deferred.resolve(data.lastUpdated);
+            });
+            
             return deferred.promise;
         };
+
 
         function showDetail(evt) {
             var target = evt.target,
                 pointIndex = target.getAttribute('ct:point-index');
 
+            var seriesIndex = target.getAttribute('ct:series-index');
+
+            alert(ctrl.commitController);
             $modal.open({
                 controller: 'RepoDetailController',
                 controllerAs: 'detail',
                 templateUrl: 'components/widgets/repo/detail.html',
                 size: 'lg',
+
                 resolve: {
                     commits: function() {
-                        return groupedCommitData[pointIndex];
+                        if (seriesIndex == "0")
+                            return groupedCommitData[pointIndex];
+                    },
+                    pulls: function() {
+                       if (seriesIndex == "1")
+                            return groupedpullData[pointIndex];
+                    },
+                    issues: function() {
+                       if (seriesIndex == "2")
+                            return groupedissueData[pointIndex];
                     }
                 }
             });
         }
+        var commits = [];
 
         var groupedCommitData = [];
-        function processResponse(data, numberOfDays) {
+        function processCommitResponse(data, numberOfDays) {
+            commits = [];
+            groupedCommitData = [];
             // get total commits by day
-            var commits = [];
             var groups = _(data).sortBy('timestamp')
                 .groupBy(function(item) {
                     return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
@@ -98,7 +127,7 @@
             if(commits.length)
             {
                 var labels = [];
-                _(commits).forEach(function(c) {
+                _(commits).forEach(function() {
                     labels.push('');
                 });
 
@@ -106,6 +135,7 @@
                     series: [commits],
                     labels: labels
                 };
+
             }
 
 
@@ -116,50 +146,143 @@
             sevenDays.setDate(sevenDays.getDate() - 7);
             fourteenDays.setDate(fourteenDays.getDate() - 14);
 
-            var lastDayCount = 0;
-            var lastDayContributors = [];
+            var lastDayCommitCount = 0;
+            var lastDayCommitContributors = [];
 
-            var lastSevenDayCount = 0;
-            var lastSevenDaysContributors = [];
+            var lastSevenDayCommitCount = 0;
+            var lastSevenDaysCommitContributors = [];
 
-            var lastFourteenDayCount = 0;
-            var lastFourteenDaysContributors = [];
+            var lastFourteenDayCommitCount = 0;
+            var lastFourteenDaysCommitContributors = [];
 
             // loop through and add to counts
             _(data).forEach(function (commit) {
 
                 if(commit.scmCommitTimestamp >= today.getTime()) {
-                    lastDayCount++;
+                    lastDayCommitCount++;
 
-                    if(lastDayContributors.indexOf(commit.scmAuthor) == -1) {
-                        lastDayContributors.push(commit.scmAuthor);
+                    if(lastDayCommitContributors.indexOf(commit.scmAuthor) == -1) {
+                        lastDayCommitContributors.push(commit.scmAuthor);
                     }
                 }
 
                 if(commit.scmCommitTimestamp >= sevenDays.getTime()) {
-                    lastSevenDayCount++;
+                    lastSevenDayCommitCount++;
 
-                    if(lastSevenDaysContributors.indexOf(commit.scmAuthor) == -1) {
-                        lastSevenDaysContributors.push(commit.scmAuthor);
+                    if(lastSevenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
+                        lastSevenDaysCommitContributors.push(commit.scmAuthor);
                     }
                 }
 
                 if(commit.scmCommitTimestamp >= fourteenDays.getTime()) {
-                    lastFourteenDayCount++;
+                    lastFourteenDayCommitCount++;
                     ctrl.commits.push(commit);
-                    if(lastFourteenDaysContributors.indexOf(commit.scmAuthor) == -1) {
-                        lastFourteenDaysContributors.push(commit.scmAuthor);
+                    if(lastFourteenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
+                        lastFourteenDaysCommitContributors.push(commit.scmAuthor);
                     }
                 }
 
             });
 
-            ctrl.lastDayCommitCount = lastDayCount;
-            ctrl.lastDayContributorCount = lastDayContributors.length;
-            ctrl.lastSevenDaysCommitCount = lastSevenDayCount;
-            ctrl.lastSevenDaysContributorCount = lastSevenDaysContributors.length;
-            ctrl.lastFourteenDaysCommitCount = lastFourteenDayCount;
-            ctrl.lastFourteenDaysContributorCount = lastFourteenDaysContributors.length;
+            ctrl.lastDayCommitCount = lastDayCommitCount;
+            ctrl.lastDayCommitContributorCount = lastDayCommitContributors.length;
+            ctrl.lastSevenDaysCommitCount = lastSevenDayCommitCount;
+            ctrl.lastSevenDaysCommitContributorCount = lastSevenDaysCommitContributors.length;
+            ctrl.lastFourteenDaysCommitCount = lastFourteenDayCommitCount;
+            ctrl.lastFourteenDaysCommitContributorCount = lastFourteenDaysCommitContributors.length;
+
+            function toMidnight(date) {
+                date.setHours(0, 0, 0, 0);
+                return date;
+            }
+        }
+        var pulls = [];
+
+        var groupedpullData = [];
+        function processPullResponse(data, numberOfDays) {
+            groupedpullData = [];
+            pulls = [];
+            // get total pulls by day
+            var groups = _(data).sortBy('timestamp')
+                .groupBy(function(item) {
+                    return -1 * Math.floor(moment.duration(moment().diff(moment(item.timestamp))).asDays());
+                }).value();
+
+            for(var x=-1*numberOfDays+1; x <= 0; x++) {
+                if(groups[x]) {
+                    pulls.push(groups[x].length);
+                    groupedpullData.push(groups[x]);
+                }
+                else {
+                    pulls.push(0);
+                    groupedpullData.push([]);
+                }
+            }
+
+            //update charts
+            if(pulls.length)
+            {
+                var labels = [];
+                _(pulls).forEach(function() {
+                    labels.push('');
+                });
+
+                ctrl.pullChartData = {
+                    series: [pulls],
+                    labels: labels
+                };
+
+            }
+
+            // group get total counts and contributors
+            var today = toMidnight(new Date());
+            var sevenDays = toMidnight(new Date());
+            var fourteenDays = toMidnight(new Date());
+            sevenDays.setDate(sevenDays.getDate() - 7);
+            fourteenDays.setDate(fourteenDays.getDate() - 14);
+
+            var lastDayPullCount = 0;
+            var lastDayPullContributors = [];
+
+            var lastsevenDayPullCount = 0;
+            var lastsevenDaysPullContributors = [];
+
+            var lastfourteenDayPullCount = 0;
+            var lastfourteenDaysPullContributors = [];
+
+            // loop through and add to counts
+            _(data).forEach(function (pull) {
+
+                if(pull.timestamp >= today.getTime()) {
+                    lastDayPullCount++;
+
+                    if(lastDayPullContributors.indexOf(pull.userId) == -1) {
+                        lastDayPullContributors.push(pull.userId);
+                    }
+                }
+                else if(pull.timestamp >= sevenDays.getTime()) {
+                    lastsevenDayPullCount++;
+
+                    if(lastsevenDaysPullContributors.indexOf(pull.userId) == -1) {
+                        lastsevenDaysPullContributors.push(pull.userId);
+                    }
+                }
+                else if(pull.timestamp >= fourteenDays.getTime()) {
+                    lastfourteenDayPullCount++;
+                    ctrl.pulls.push(pull);
+                    if(lastfourteenDaysPullContributors.indexOf(pull.userId) == -1) {
+                        lastfourteenDaysPullContributors.push(pull.userId);
+                    }
+                }
+
+            });
+
+            ctrl.lastDayPullCount = lastDayPullCount;
+            ctrl.lastDayPullContributorCount = lastDayPullContributors.length;
+            ctrl.lastsevenDaysPullCount = lastsevenDayPullCount;
+            ctrl.lastsevenDaysPullContributorCount = lastsevenDaysPullContributors.length;
+            ctrl.lastfourteenDaysPullCount = lastfourteenDayPullCount;
+            ctrl.lastfourteenDaysPullContributorCount = lastfourteenDaysPullContributors.length;
 
             function toMidnight(date) {
                 date.setHours(0, 0, 0, 0);
@@ -167,5 +290,113 @@
             }
         }
 
+        var issues = [];
+        var groupedissueData = [];
+        function processIssueResponse(data, numberOfDays) {
+            groupedissueData = [];
+            issues = [];
+            // get total issues by day
+            var groups = _(data).sortBy('timestamp')
+                .groupBy(function(item) {
+                    return -1 * Math.floor(moment.duration(moment().diff(moment(item.timestamp))).asDays());
+                }).value();
+
+            for(var x=-1*numberOfDays+1; x <= 0; x++) {
+                if(groups[x]) {
+                    issues.push(groups[x].length);
+                    groupedissueData.push(groups[x]);
+                }
+                else {
+                    issues.push(0);
+                    groupedissueData.push([]);
+                }
+            }
+            var labels = [];
+            _(issues).forEach(function() {
+                labels.push('');
+            });
+            //update charts
+            if(issues.length)
+            {
+                ctrl.issueChartData = {
+                    series: [issues],
+                    labels: labels
+                };
+            }
+            ctrl.combinedChartData = {
+                labels: labels,
+                series: [{
+                    name: 'commits',
+                    data: commits
+                }, {
+                    name: 'pulls',
+                    data: pulls
+                }, {
+                    name: 'issues',
+                    data: issues
+                }]
+            };
+
+            // group get total counts and contributors
+            var today = toMidnight(new Date());
+            var sevenDays = toMidnight(new Date());
+            var fourteenDays = toMidnight(new Date());
+            sevenDays.setDate(sevenDays.getDate() - 7);
+            fourteenDays.setDate(fourteenDays.getDate() - 14);
+
+            var lastDayIssueCount = 0;
+            var lastDayIssueContributors = [];
+
+            var lastsevenDayIssueCount = 0;
+            var lastsevenDaysIssueContributors = [];
+
+            var lastfourteenDayIssueCount = 0;
+            var lastfourteenDaysIssueContributors = [];
+
+            // loop through and add to counts
+            _(data).forEach(function (issue) {
+
+                if(issue.timestamp >= today.getTime()) {
+                    lastDayIssueCount++;
+
+                    if(lastDayIssueContributors.indexOf(issue.userId) == -1) {
+                        lastDayIssueContributors.push(issue.userId);
+                    }
+                }
+                else if(issue.timestamp >= sevenDays.getTime()) {
+                    lastsevenDayIssueCount++;
+
+                    if(lastsevenDaysIssueContributors.indexOf(issue.userId) == -1) {
+                        lastsevenDaysIssueContributors.push(issue.userId);
+                    }
+                }
+                else if(issue.timestamp >= fourteenDays.getTime()) {
+                    lastfourteenDayIssueCount++;
+                    ctrl.issues.push(issue);
+                    if(lastfourteenDaysIssueContributors.indexOf(issue.userId) == -1) {
+                        lastfourteenDaysIssueContributors.push(issue.userId);
+                    }
+                }
+
+            });
+
+            ctrl.lastDayIssueCount = lastDayIssueCount;
+            ctrl.lastDayIssueContributorCount = lastDayIssueContributors.length;
+            ctrl.lastsevenDaysIssueCount = lastsevenDayIssueCount;
+            ctrl.lastsevenDaysIssueContributorCount = lastsevenDaysIssueContributors.length;
+            ctrl.lastfourteenDaysIssueCount = lastfourteenDayIssueCount;
+            ctrl.lastfourteenDaysIssueContributorCount = lastfourteenDaysIssueContributors.length;
+
+            var labels = [];
+            _(issues).forEach(function() {
+                labels.push('');
+            });
+
+
+            function toMidnight(date) {
+                date.setHours(0, 0, 0, 0);
+                return date;
+            }
+        }
     }
 })();

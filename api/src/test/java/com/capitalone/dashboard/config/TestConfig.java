@@ -115,4 +115,9 @@ public class TestConfig {
 	public TeamService teamService() {
 		return Mockito.mock(TeamService.class);
 	}
+
+	@Bean
+	public GitRequestService gitRequestService() {
+		return Mockito.mock(GitRequestService.class);
+	}
 }
