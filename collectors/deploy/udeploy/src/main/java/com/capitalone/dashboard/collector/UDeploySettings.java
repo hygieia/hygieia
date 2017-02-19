@@ -12,6 +12,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "udeploy")
 public class UDeploySettings {
     private String cron;
+    private String token;
     private String username;
     private String password;
     private List<String> servers;
@@ -23,6 +24,14 @@ public class UDeploySettings {
 
     public void setCron(String cron) {
         this.cron = cron;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getUsername() {
