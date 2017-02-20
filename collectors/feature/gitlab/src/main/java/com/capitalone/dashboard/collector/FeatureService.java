@@ -38,16 +38,6 @@ public class FeatureService {
 		this.featureDataClient = featureDataClient;
 	}
 
-//	public List<GitlabProject> getProjectsForEnabledTeams(ObjectId collectorId) {
-//		List<ScopeOwnerCollectorItem> enabledTeams = featureDataClient.findEnabledTeams(collectorId);
-//		List<GitlabProject> projects = new ArrayList<>();
-//		for (ScopeOwnerCollectorItem enabledTeam : enabledTeams) {
-//			projects.addAll(gitlabClient.getProjects(enabledTeam));
-//		}
-//
-//		return projects;
-//	}
-
 	@Async
 	public ListenableFuture<UpdateResult> updateSelectableTeams(ObjectId collectorId) {
 		List<GitlabTeam> teams = gitlabClient.getTeams();
@@ -71,7 +61,7 @@ public class FeatureService {
 		List<GitlabIssue> issues = gitlabClient.getIssuesForProject(project);
 		UpdateResult result = featureDataClient.updateIssues(collectorId, projectId, issues, inProgressLabelsForProject);
 
-		LOGGER.info("{}: Added/Updated {} issues and deleted {} issues", project.getName(), result.getItemsAdded(),
+		LOGGER.debug("{}: Added/Updated {} issues and deleted {} issues", project.getName(), result.getItemsAdded(),
 				result.getItemsDeleted());
 		return new AsyncResult<UpdateResult>(result);
 	}

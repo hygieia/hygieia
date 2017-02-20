@@ -26,8 +26,8 @@ public class GitlabUriUtilityTest {
 	@Test
 	public void shouldBuildProjectsUriWithCustomHost() {
 		when(settings.getHost()).thenReturn("company.com");
-		URI result = urlUtility.buildProjectsUri("23"); 
-		assertEquals("http://company.com/api/v3/groups/23/projects?per_page=100", result.toString());
+		URI result = urlUtility.buildProjectsUri(); 
+		assertEquals("http://company.com/api/v3/projects?per_page=100", result.toString());
 	}
 	
 	@Test

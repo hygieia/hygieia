@@ -64,16 +64,15 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 			currentTeams.add(scopeOwnerCollectorItem);
 		}
 		
-//		List<Team> savedTeams = teamRepo.findByCollectorIdIn(Lists.newArrayList(gitlabFeatureCollectorId));
-//		
-//		Collection<Team> teamsToAdd = CollectionUtils.subtract(currentTeams, savedTeams);
-//		teamRepo.save(teamsToAdd);
-//		
-//		Collection<Team> teamsToDelete = CollectionUtils.subtract(savedTeams, currentTeams);
-//		teamRepo.delete(teamsToDelete);
-		teamRepo.save(currentTeams);
+		List<Team> savedTeams = teamRepo.findByCollectorId(collectorId);
+		
+		Collection<Team> teamsToAdd = CollectionUtils.subtract(currentTeams, savedTeams);
+		teamRepo.save(teamsToAdd);
+		
+		Collection<Team> teamsToDelete = CollectionUtils.subtract(savedTeams, currentTeams);
+		teamRepo.delete(teamsToDelete);
         
-        return new UpdateResult(currentTeams.size(), 0);
+        return new UpdateResult(teamsToAdd.size(), teamsToDelete.size());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -129,11 +128,6 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 				
 		return updateResult;
 	}
-
-//	@Override
-//	public List<ScopeOwnerCollectorItem> findEnabledTeams(ObjectId collectorId) {
-//		return teamRepo.findEnabledTeams(collectorId);
-//	}
 	
     @Override
     public List<CollectorItem> getEnabledWidgets(ObjectId collectorId) {

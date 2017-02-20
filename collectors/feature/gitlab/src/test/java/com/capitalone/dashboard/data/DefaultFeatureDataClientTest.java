@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.data;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,13 +24,14 @@ import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.Scope;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.model.UpdateResult;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.repository.IssueItemRepository;
 import com.capitalone.dashboard.repository.ProjectItemRepository;
-import com.capitalone.dashboard.repository.TeamItemRepository;
+import com.capitalone.dashboard.repository.TeamRepository;
+import com.capitalone.dashboard.repository.WidgetRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.google.common.collect.Lists;
 
@@ -41,7 +42,7 @@ public class DefaultFeatureDataClientTest {
 	private FeatureCollectorRepository featureCollectorRepo;
 	
 	@Mock
-	private TeamItemRepository teamRepo;
+	private TeamRepository teamRepo;
 	
 	@Mock
 	private ProjectItemRepository projectRepo;
@@ -57,6 +58,9 @@ public class DefaultFeatureDataClientTest {
 	
 	@Mock
 	private FeatureCollector collector;
+	
+	@Mock
+	private WidgetRepository widgetRepo;
 	
 	@InjectMocks
 	private DefaultFeatureDataClient featureDataClient;
@@ -76,12 +80,12 @@ public class DefaultFeatureDataClientTest {
 		GitlabTeam team1 = new GitlabTeam();
 		team1.setId(1L);
 		List<GitlabTeam> gitlabTeams = Lists.newArrayList(team1);
-		when(teamRepo.getTeamIdById("1")).thenReturn(new ArrayList<>());
-		ScopeOwnerCollectorItem scopeOwner = new ScopeOwnerCollectorItem();
-		when(featureDataMapper.mapToTeam(team1, null, collectorId)).thenReturn(scopeOwner);
-		when(teamRepo.findByCollectorIdIn(anyCollection())).thenReturn(new ArrayList<>());
+		when(teamRepo.findByTeamId("1")).thenReturn(null);
+		Team team = new Team("id", "name");
+		when(featureDataMapper.mapToTeam(team1, null, collectorId)).thenReturn(team);
+		when(teamRepo.findByCollectorId(isA(ObjectId.class))).thenReturn(new ArrayList<>());
 		
-		UpdateResult result = featureDataClient.updateTeams(gitlabTeams);
+		UpdateResult result = featureDataClient.updateTeams(collectorId, gitlabTeams);
 		
 		assertEquals(1, result.getItemsAdded());
 		assertEquals(0, result.getItemsDeleted());
@@ -93,16 +97,14 @@ public class DefaultFeatureDataClientTest {
 		GitlabTeam team1 = new GitlabTeam();
 		team1.setId(1L);
 		List<GitlabTeam> gitlabTeams = Lists.newArrayList(team1);
-		when(teamRepo.getTeamIdById("1")).thenReturn(Lists.newArrayList(new ScopeOwnerCollectorItem(), new ScopeOwnerCollectorItem()));
-		ScopeOwnerCollectorItem scopeOwner = new ScopeOwnerCollectorItem();
-		scopeOwner.setTeamId("1");
-		when(featureDataMapper.mapToTeam(team1, null, collectorId)).thenReturn(scopeOwner);
-		ScopeOwnerCollectorItem savedTeam = new ScopeOwnerCollectorItem();
-		savedTeam.setTeamId("3");
-		List<ScopeOwnerCollectorItem> savedTeams = Lists.newArrayList(savedTeam);
-		when(teamRepo.findByCollectorIdIn(anyCollection())).thenReturn(savedTeams);
+		when(teamRepo.findByTeamId("1")).thenReturn(new Team("1", "name"));
+		Team team = new Team("id", "name");
+		when(featureDataMapper.mapToTeam(team1, null, collectorId)).thenReturn(team);
+		Team savedTeam = new Team("3", "name");
+		List<Team> savedTeams = Lists.newArrayList(savedTeam);
+		when(teamRepo.findByCollectorId(isA(ObjectId.class))).thenReturn(savedTeams);
 		
-		UpdateResult result = featureDataClient.updateTeams(gitlabTeams);
+		UpdateResult result = featureDataClient.updateTeams(collectorId, gitlabTeams);
 		
 		assertEquals(1, result.getItemsAdded());
 		assertEquals(1, result.getItemsDeleted());
@@ -115,13 +117,14 @@ public class DefaultFeatureDataClientTest {
 		List<GitlabProject> projects = Lists.newArrayList(gitlabProject);
 		Scope savedProject = new Scope();
 		savedProject.setpId("3");
+		savedProject.setCollectorId(collectorId);
 		List<Scope> savedProjects = Lists.newArrayList(savedProject);
 		when(projectRepo.findScopeByCollectorId(collectorId)).thenReturn(savedProjects);
 		Scope scope = new Scope();
 		scope.setpId("1");
 		when(featureDataMapper.mapToScopeItem(gitlabProject, null, collectorId)).thenReturn(scope);
 		
-		UpdateResult result = featureDataClient.updateProjects(projects);
+		UpdateResult result = featureDataClient.updateProjects(collectorId, projects);
 		
 		assertEquals(1, result.getItemsDeleted());
 		assertEquals(1, result.getItemsAdded());
@@ -144,7 +147,7 @@ public class DefaultFeatureDataClientTest {
 		List<Feature> savedFeatures = Lists.newArrayList(savedFeature );
 		when(issueItemRepo.getFeaturesByCollectorAndProjectId(collectorId, projectId)).thenReturn(savedFeatures );
 		
-		UpdateResult result = featureDataClient.updateIssues(projectId , issues , inProgressLabelsForProject );
+		UpdateResult result = featureDataClient.updateIssues(collectorId, projectId , issues , inProgressLabelsForProject );
 		
 		assertEquals(1, result.getItemsDeleted());
 		assertEquals(1, result.getItemsAdded());
@@ -152,9 +155,9 @@ public class DefaultFeatureDataClientTest {
 	
 	@Test
 	public void shouldFindEnabledTeams() {
-		featureDataClient.findEnabledTeams(collectorId);
+		featureDataClient.getEnabledWidgets(collectorId);
 		
-		verify(teamRepo, times(1)).findEnabledTeams(collectorId);
+		verify(widgetRepo, times(1)).findByCollectorIdAndEnabled(collectorId, true);
 	}
 
 }

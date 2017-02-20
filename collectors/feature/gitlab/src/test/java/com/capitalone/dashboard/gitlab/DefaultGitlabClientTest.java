@@ -94,13 +94,13 @@ public class DefaultGitlabClientTest {
 		String teamId = "teamId";
 		ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
 		team.setTeamId(teamId);
-		when(gitlabUrlUtility.buildProjectsUri(teamId)).thenReturn(uri);
+		when(gitlabUrlUtility.buildProjectsUri()).thenReturn(uri);
 		when(restOperations.exchange(eq(uri), eq(HttpMethod.GET), isA(HttpEntity.class), eq(GitlabProject[].class))).thenReturn(projectResponse);
 		when(projectResponse.getHeaders()).thenReturn(headers);
 		when(headers.get("X-Next-Page")).thenReturn(Lists.newArrayList(""));
 		when(projectResponse.getBody()).thenReturn(projects);
 		
-		List<GitlabProject> result = gitlabClient.getProjects(team);
+		List<GitlabProject> result = gitlabClient.getProjects();
 		
 		assertNotNull(result);
 		assertTrue(result.contains(project));
@@ -113,14 +113,14 @@ public class DefaultGitlabClientTest {
 		String teamId = "teamId";
 		ScopeOwnerCollectorItem team = new ScopeOwnerCollectorItem();
 		team.setTeamId(teamId);
-		when(gitlabUrlUtility.buildProjectsUri(teamId)).thenReturn(uri);
+		when(gitlabUrlUtility.buildProjectsUri()).thenReturn(uri);
 		when(gitlabUrlUtility.updatePage(isA(URI.class), anyString())).thenReturn(uri);
 		when(restOperations.exchange(eq(uri), eq(HttpMethod.GET), isA(HttpEntity.class), eq(GitlabProject[].class))).thenReturn(projectResponse);
 		when(projectResponse.getHeaders()).thenReturn(headers);
 		when(headers.get("X-Next-Page")).thenReturn(Lists.newArrayList("2")).thenReturn(Lists.newArrayList("2")).thenReturn(Lists.newArrayList(""));
 		when(projectResponse.getBody()).thenReturn(projects);
 		
-		List<GitlabProject> result = gitlabClient.getProjects(team);
+		List<GitlabProject> result = gitlabClient.getProjects();
 		
 		assertNotNull(result);
 		assertTrue(result.contains(project));

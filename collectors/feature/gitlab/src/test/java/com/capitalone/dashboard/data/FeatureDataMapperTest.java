@@ -15,7 +15,7 @@ import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.Scope;
-import com.capitalone.dashboard.model.ScopeOwnerCollectorItem;
+import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.google.common.collect.Lists;
 
@@ -31,7 +31,7 @@ public class FeatureDataMapperTest {
 		ObjectId existingTeamId = new ObjectId();
 		ObjectId gitlabFeatureCollectorId = new ObjectId();
 		
-		ScopeOwnerCollectorItem result = mapper.mapToTeam(gitlabTeam , existingTeamId , gitlabFeatureCollectorId );
+		Team result = mapper.mapToTeam(gitlabTeam , existingTeamId , gitlabFeatureCollectorId );
 		
 		assertNotNull(result);
 		assertEquals(existingTeamId, result.getId());
