@@ -6,8 +6,8 @@
         .controller('deployConfigController', deployConfigController);
 
 
-    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$uibModalInstance', '$q'];
-    function deployConfigController(modalData, collectorData, systemConfigData, $uibModalInstance, $q) {
+    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$uibModalInstance', '$q', '$scope'];
+    function deployConfigController(modalData, collectorData, systemConfigData, $uibModalInstance, $q, $scope) {
         /*jshint validthis:true */
         var ctrl = this;
 
