@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('TemplateController', TemplateController);
 
-    TemplateController.$inject = ['$scope', '$modal', '$cookies', 'dashboardData'];
-    function TemplateController($scope, $modal, $cookies, dashboardData) {
+    TemplateController.$inject = ['$scope', '$uibModal', '$cookies', 'dashboardData'];
+    function TemplateController($scope, $uibModal, $cookies, dashboardData) {
         var ctrl = this;
 
         ctrl.tabs = [
@@ -30,7 +30,7 @@
         
         // TODO: Re-do this function once https://github.com/capitalone/Hygieia/pull/1129 is accepted.
         ctrl.isOwner = function(owner) {
-        	if (owner == $cookies.username || $cookies.username == 'admin') {
+        	if (owner == $cookies.get('username') || $cookies.get('username') == 'admin') {
                 return true;
             }
 	        
@@ -50,7 +50,7 @@
         }
         
         function configModal(dashboard) {
-        	$modal.open({
+        	$uibModal.open({
                 templateUrl: 'app/dashboard/views/updateDashboard.html',
                 controller: 'UpdateDashboardController',
                 controllerAs: 'ctrl',

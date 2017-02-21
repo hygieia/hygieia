@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('UpdateDashboardController', UpdateDashboardController);
 
-    UpdateDashboardController.$inject = ['dashboardData', '$route', '$modalInstance', 'dashboard'];
-    function UpdateDashboardController(dashboardData, $route, $modalInstance, dashboard) {
+    UpdateDashboardController.$inject = ['dashboardData', '$route', '$uibModalInstance', 'dashboard'];
+    function UpdateDashboardController(dashboardData, $route, $uibModalInstance, dashboard) {
         var ctrl = this;
 
         // public variables
@@ -49,7 +49,7 @@
                     .success(function (data) {
                     	$route.reload();
                     	// close dialog
-                        $modalInstance.dismiss();
+                        $uibModalInstance.dismiss();
                     })
                     .error(function (data) {
                         // display error message
