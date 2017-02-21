@@ -4,9 +4,9 @@
         .module(HygieiaConfig.module)
         .controller('subnetController', SubnetController);
 
-    SubnetController.$inject = ['$scope', 'cloudData', '$http', '$modal'];
+    SubnetController.$inject = ['$scope', 'cloudData', '$http', '$uibModal'];
     
-    function SubnetController($scope, cloudData, $http, $modal) {
+    function SubnetController($scope, cloudData, $http, $uibModal) {
 
         var ctrl = this;
         $scope.vpcs = [];
@@ -151,7 +151,7 @@
               }
             });
 
-            $modal.open({
+            $uibModal.open({
                 controller: 'SubnetUtilizationController',
                 controllerAs: 'subnetUtilization',                
                 templateUrl: 'components/widgets/cloud/subnetUtilization.html',

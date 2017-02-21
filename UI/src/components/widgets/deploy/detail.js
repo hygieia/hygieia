@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('DeployDetailController', DeployDetailController);
 
-    DeployDetailController.$inject = ['$modalInstance', 'environment', 'collectorName', 'collectorNiceName', 'DashStatus'];
-    function DeployDetailController($modalInstance, environment, collectorName, collectorNiceName, DashStatus) {
+    DeployDetailController.$inject = ['$uibModalInstance', 'environment', 'collectorName', 'collectorNiceName', 'DashStatus'];
+    function DeployDetailController($uibModalInstance, environment, collectorName, collectorNiceName, DashStatus) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -34,7 +34,7 @@
         }
         
         function close() {
-            $modalInstance.dismiss('close');
+            $uibModalInstance.dismiss('close');
         }
     }
 })();
