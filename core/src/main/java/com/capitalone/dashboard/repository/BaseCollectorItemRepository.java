@@ -1,13 +1,16 @@
 package com.capitalone.dashboard.repository;
 
-import com.capitalone.dashboard.model.CollectorItem;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+import com.capitalone.dashboard.model.CollectorItem;
 
 /**
  * Base {@link CollectorItem} repository that provides methods useful for any {@link CollectorItem}
@@ -15,7 +18,7 @@ import java.util.Map;
  *
  * @param <T> Class that extends {@link CollectorItem}
  */
-public interface BaseCollectorItemRepository<T extends CollectorItem> extends CrudRepository<T, ObjectId> {
+public interface BaseCollectorItemRepository<T extends CollectorItem> extends PagingAndSortingRepository<T, ObjectId> {
 
     /**
      * Finds all {@link CollectorItem}s that are enabled.
@@ -31,6 +34,15 @@ public interface BaseCollectorItemRepository<T extends CollectorItem> extends Cr
      * @return list of {@link CollectorItem}s
      */
     List<T> findByCollectorIdIn(Collection<ObjectId> ids);
+    
+    /**
+     * Finds paged results of {@link CollectorItem}s that match the provided id's.
+     *
+     * @param ids {@link Collection} of ids
+     * @param {@link org.springframework.data.domain.Pageable} object to determine which page to return
+     * @return page of {@link CollectorItem}s
+     */
+    Page<T> findByCollectorIdInAndDescriptionContainingIgnoreCase(Collection<ObjectId> ids, String description, Pageable pageable);
 
     /**
      * Finds the {@link CollectorItem} for a given collector and options. This should represent a unique

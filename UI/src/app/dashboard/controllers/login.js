@@ -5,12 +5,12 @@
     var app = angular.module(HygieiaConfig.module)
     var inject = ['$cookies', '$http', '$location', '$scope', 'loginData']
     function LoginController($cookies, $http, $location, $scope, loginData) {
-        if ($cookies.authenticated) {
+        if ($cookies.get('authenticated')) {
             $location.path('/site');
             return;
         }
         var login = this;
-        login.showAuthentication = $cookies.authenticated;
+        login.showAuthentication = $cookies.get('authenticated');
         login.templateUrl = 'app/dashboard/views/navheader.html';
         login.apiup = false;
         login.username = '';
@@ -30,8 +30,8 @@
                           data
                         );
                         if (data) {
-                            $cookies.authenticated = true;
-                            $cookies.username = login.username;
+                            $cookies.put('authenticated', true);
+                            $cookies.put('username', login.username);
                             $location.path('/site');
                         }
                     });
