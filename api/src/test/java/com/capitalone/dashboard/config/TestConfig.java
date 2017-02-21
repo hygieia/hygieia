@@ -25,6 +25,7 @@ import com.capitalone.dashboard.service.ServiceService;
 import com.capitalone.dashboard.service.SystemConfigService;
 import com.capitalone.dashboard.service.TeamService;
 import com.capitalone.dashboard.service.TestResultService;
+import com.capitalone.dashboard.util.PaginationHeaderUtility;
 
 /**
  * Spring context configuration for Testing purposes
@@ -135,6 +136,11 @@ public class TestConfig {
     @Bean
     public CloudVolumeService cloudVolumeService() {
         return Mockito.mock(CloudVolumeService.class);
+    }
+    
+    @Bean
+    public PaginationHeaderUtility paginationHeaderUtility() {
+    	return Mockito.mock(PaginationHeaderUtility.class);
     }
 
 	@Bean

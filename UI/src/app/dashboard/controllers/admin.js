@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$location','$modal', 'userService', 'authService'];
-    function AdminController(dashboardData, $location, $modal, userService, authService) {
+    AdminController.$inject = ['dashboardData', '$location','$uibModal', 'userService', 'authService'];
+    function AdminController(dashboardData, $location, $uibModal, userService, authService) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -92,7 +92,7 @@
         {
             console.log("Rename Dashboard in Admin");
 
-            var mymodalInstance=$modal.open({
+            var mymodalInstance=$uibModal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',

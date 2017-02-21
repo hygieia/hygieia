@@ -31,6 +31,7 @@ import com.capitalone.dashboard.service.TeamService;
 import com.capitalone.dashboard.service.TestResultService;
 import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.service.UserInfoServiceImpl;
+import com.capitalone.dashboard.util.PaginationHeaderUtility;
  
  @SpringBootApplication
  @ComponentScan(basePackages = {"com.capitalone.dashboard.auth"})
@@ -159,5 +160,10 @@ import com.capitalone.dashboard.service.UserInfoServiceImpl;
      @Bean
      public TeamService teamService() {
     	 return Mockito.mock(TeamService.class);
+     }
+     
+     @Bean
+     public PaginationHeaderUtility paginationHeaderUtility() {
+         return Mockito.mock(PaginationHeaderUtility.class);
      }
  }

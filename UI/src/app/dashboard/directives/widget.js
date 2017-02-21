@@ -25,8 +25,8 @@
         })
         .directive('widget', widgetDirective);
 
-    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$modal', 'WidgetState', 'DisplayState', '$interval', 'dashboardData','userService'];
-    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $modal, WidgetState, DisplayState, $interval, dashboardData, userService) {
+    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$uibModal', 'WidgetState', 'DisplayState', '$interval', 'dashboardData','userService'];
+    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $uibModal, WidgetState, DisplayState, $interval, dashboardData, userService) {
         return {
             templateUrl: 'app/dashboard/views/widget.html',
             require: '^widgetContainer',
@@ -129,7 +129,7 @@
 
                 // when the widget closes if an object is passed we'll assume it's an updated
                 // widget configuration so try and send it to the api or update the existing one
-                $modal.open(modalConfig).result.then(upsertWidget);
+                $uibModal.open(modalConfig).result.then(upsertWidget);
             }
 
             function hasPermission() {

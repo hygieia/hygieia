@@ -1,14 +1,18 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.editors.CaseInsensitiveCollectorTypeEditor;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.request.CollectorItemRequest;
-import com.capitalone.dashboard.request.CollectorRequest;
-import com.capitalone.dashboard.service.CollectorService;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
@@ -16,24 +20,29 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import com.capitalone.dashboard.editors.CaseInsensitiveCollectorTypeEditor;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.request.CollectorItemRequest;
+import com.capitalone.dashboard.request.CollectorRequest;
+import com.capitalone.dashboard.service.CollectorService;
+import com.capitalone.dashboard.util.PaginationHeaderUtility;
 
 @RestController
 public class CollectorController {
 
-    private final CollectorService collectorService;
+    private CollectorService collectorService;
+    private PaginationHeaderUtility paginationHeaderUtility;
 
 
-    @Autowired
-    public CollectorController(CollectorService collectorService) {
+	@Autowired
+    public CollectorController(CollectorService collectorService, PaginationHeaderUtility paginationHeaderUtility) {
         this.collectorService = collectorService;
+        this.paginationHeaderUtility = paginationHeaderUtility;
     }
 
     @InitBinder
@@ -69,7 +78,12 @@ public class CollectorController {
 
     @RequestMapping(value = "/collector/item/type/{collectorType}", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public List<CollectorItem> collectorItemsByType(@PathVariable CollectorType collectorType) {
-        return collectorService.collectorItemsByType(collectorType);
+    public ResponseEntity<List<CollectorItem>> collectorItemsByType(@PathVariable CollectorType collectorType, @RequestParam(value="search", required=false, defaultValue="") String descriptionFilter, @PageableDefault(size=Integer.MAX_VALUE) Pageable pageable) {
+    	Page<CollectorItem> pageOfCollectorItems = collectorService.collectorItemsByTypeWithFilter(collectorType, descriptionFilter, pageable);
+		return ResponseEntity
+				.ok()
+				.headers(paginationHeaderUtility.buildPaginationHeaders(pageOfCollectorItems))
+				.body(pageOfCollectorItems.getContent());
     }
+
 }

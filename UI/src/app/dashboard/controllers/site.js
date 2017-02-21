@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService'];
-    function SiteController($scope, $q, $modal, dashboardData, $location, DashboardType, userService, authService) {
+    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService'];
+    function SiteController($scope, $q, $uibModal, dashboardData, $location, DashboardType, userService, authService) {
         var ctrl = this;
 
         // public variables
@@ -18,6 +18,7 @@
 
         ctrl.username = userService.getUsername();
         ctrl.showAuthentication = userService.isAuthenticated();
+
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
@@ -89,7 +90,7 @@
         // method implementations
         function createDashboard() {
             // open modal for creating a new dashboard
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'app/dashboard/views/createDashboard.html',
                 controller: 'CreateDashboardController',
                 controllerAs: 'ctrl'
@@ -98,9 +99,8 @@
 
         function renameDashboard(item)
         {
-            console.log("Rename Dashboard");
             // open modal for renaming dashboard
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',
