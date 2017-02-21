@@ -9,24 +9,18 @@
 
                 <div class="text-center modal-label">Static Code Analysis:</div>
 
-                <!--<select name="caCollectorItem"
-                        class="form-control"
-                        ng-model="caWidget.caCollectorItem"
-                        ng-options="(item.displayName + ' - ' + item.description) for item in caWidget.caJobs | orderBy:['collector.name','description'] track by item.id"
-                        ng-disabled="caWidget.caJobs.length === 0">
-                    <option value="" disabled>{{caWidget.caToolsDropdownPlaceholder}}</option>
-                </select>-->
+				<input type="text" name="caCollectorItem" class="form-control" placeholder="Search a Code Analysis Job"
+					ng-model="caWidget.caCollectorItem"
+					uib-typeahead="item as item.description for item in getCodeQualityCollectors($viewValue)" typeahead-focus
+					typeahead-template-url="sonarProjectUrlTemplate.html"
+					typeahead-wait-ms="250" autocomplete="off"
+					typeahead-min-length="0"
+          typeahead-no-results="noResults"
 
-                <ui-select ng-model="caWidget.caCollectorItem" theme="bootstrap" ng-disabled="caWidget.caLoading">
-                    <ui-select-match placeholder="{{ caWidget.caToolsDropdownPlaceholder }}">{{$select.selected.description}}</ui-select-match>
-                    <ui-select-choices
-                            repeat="item in (caWidget.caJobs | orderBy:['collector.name','description'] | filter: $select.search) track by item.id"
-                            refresh="refreshPatients($select.search)"
-                            refresh-delay="0">
-                        <div ng-bind-html="(item.displayName + ' - ' + item.description) | highlight: $select.search"></div>
-                    </ui-select-choices>
-                </ui-select>
-
+					required>
+          <div class="form-control" ng-show="noResults">
+            No Results Found
+          </div>
 
             </form-group>
         </div>
@@ -110,3 +104,8 @@
         </form-group>
     </form>
 </widget-modal>
+<script type="text/ng-template" id="sonarProjectUrlTemplate.html">
+	<a title={{match.model.options.instanceUrl}}>
+		<span ng-bind-html="match.label | uibTypeaheadHighlight:query"/> 
+	</a>
+</script>

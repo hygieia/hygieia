@@ -11,4 +11,4 @@ sort:
  - Parent
 filter:
  - ChangeDate>'$changeDate$'
- - (IsDeleted='False'|IsDeleted='True')"
+ - IsDeleted='False','True'"
