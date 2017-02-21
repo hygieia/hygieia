@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.gitlab;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.capitalone.dashboard.gitlab.model.GitlabIssue;
@@ -18,7 +17,7 @@ public interface GitlabClient {
 
 	List<GitlabIssue> getIssuesForProject(GitlabProject project);
 
-    Collection<GitlabProject> getProjectsForTeam(String teamId);
+    List<GitlabProject> getProjectsForTeam(String teamId);
 
     GitlabProject getProjectById(String projectId);
 

@@ -22,6 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
@@ -162,6 +163,39 @@ public class DefaultGitlabClientTest {
 		assertNotNull(result);
 		assertSame(gitlabIssue, result.get(0));
 		assertSame(project, result.get(0).getProject());
+	}
+	
+	@Test
+    public void shouldGetProjectsForTeam() {   
+        Long projectId = 1L;
+        GitlabProject project = new GitlabProject();
+        project.setId(projectId);
+        GitlabProject[] projects = {project};
+        
+        when(gitlabUrlUtility.buildProjectsForTeamUri("1")).thenReturn(uri);
+        when(restOperations.exchange(eq(uri), eq(HttpMethod.GET), isA(HttpEntity.class), eq(GitlabProject[].class))).thenReturn(projectResponse);
+        when(projectResponse.getBody()).thenReturn(projects);
+        
+        List<GitlabProject> result = gitlabClient.getProjectsForTeam("1");
+    
+        assertNotNull(result);
+        assertSame(project, result.get(0));
+    }
+	
+	@Test
+	public void shouldGetProjectById() {
+	    Long projectId = 1L;
+        GitlabProject project = new GitlabProject();
+        project.setId(projectId);
+        ResponseEntity<GitlabProject> response = new ResponseEntity<GitlabProject>(project, HttpStatus.OK);
+        
+        when(gitlabUrlUtility.buildProjectsByIdUri("1")).thenReturn(uri);
+        when(restOperations.exchange(eq(uri), eq(HttpMethod.GET), isA(HttpEntity.class), eq(GitlabProject.class))).thenReturn(response);
+        
+        GitlabProject result = gitlabClient.getProjectById("1");
+    
+        assertNotNull(result);
+        assertSame(project, result);
 	}
 
 }

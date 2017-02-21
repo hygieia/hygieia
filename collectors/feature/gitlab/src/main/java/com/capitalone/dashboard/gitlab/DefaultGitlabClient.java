@@ -2,7 +2,6 @@ package com.capitalone.dashboard.gitlab;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -49,7 +48,7 @@ public class DefaultGitlabClient implements GitlabClient {
 	}
 	
     @Override
-    public Collection<GitlabProject> getProjectsForTeam(String teamId) {
+    public List<GitlabProject> getProjectsForTeam(String teamId) {
         URI uri = urlUtility.buildProjectsForTeamUri(teamId);
         return makePaginatedGitlabRequest(uri, GitlabProject[].class);
     }
