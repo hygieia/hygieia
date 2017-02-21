@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('RepoDetailController', RepoDetailController);
 
-    RepoDetailController.$inject = ['$modalInstance', 'commits', 'pulls','issues','DashStatus'];
-    function RepoDetailController($modalInstance, commits, pulls, issues, DashStatus) {
+    RepoDetailController.$inject = ['$uibModalInstance', 'commits', 'pulls','issues','DashStatus'];
+    function RepoDetailController($uibModalInstance, commits, pulls, issues, DashStatus) {
         /*jshint validthis:true */
         var ctrl = this;
 

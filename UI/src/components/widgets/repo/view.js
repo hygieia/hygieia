@@ -6,7 +6,7 @@
         .controller('RepoViewController', RepoViewController);
 
     RepoViewController.$inject = ['$q', '$scope','codeRepoData', 'pullRepoData', 'issueRepoData','$uibModal'];
-    function RepoViewController($q, $scope, codeRepoData, pullRepoData, issueRepoData, $modal) {
+    function RepoViewController($q, $scope, codeRepoData, pullRepoData, issueRepoData, $uibModal) {
         var ctrl = this;
 
         ctrl.combinedChartOptions = {
