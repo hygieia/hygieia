@@ -50,7 +50,7 @@ public class DefaultGitlabClient implements GitlabClient {
 	
     @Override
     public Collection<GitlabProject> getProjectsForTeam(String teamId) {
-        URI uri = urlUtility.buildProjectsForTeamsUri(teamId);
+        URI uri = urlUtility.buildProjectsForTeamUri(teamId);
         return makePaginatedGitlabRequest(uri, GitlabProject[].class);
     }
     

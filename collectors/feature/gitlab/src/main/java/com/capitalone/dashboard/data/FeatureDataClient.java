@@ -17,7 +17,7 @@ public interface FeatureDataClient {
 
 	UpdateResult updateProjects(ObjectId collectorId, List<GitlabProject> projects);
 
-	UpdateResult updateIssues(ObjectId collectorId, String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject);
+	UpdateResult updateIssues(ObjectId collectorId, long lastExecuted, String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject);
 
     List<CollectorItem> getEnabledWidgets(ObjectId collectorId);
 	

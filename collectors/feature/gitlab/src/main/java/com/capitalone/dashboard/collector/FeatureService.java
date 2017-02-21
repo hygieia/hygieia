@@ -55,11 +55,11 @@ public class FeatureService {
 	}
 
 	@Async
-	public ListenableFuture<UpdateResult> updateIssuesForProject(ObjectId collectorId, GitlabProject project) {
+	public ListenableFuture<UpdateResult> updateIssuesForProject(ObjectId collectorId, long lastExecuted, GitlabProject project) {
 		String projectId = String.valueOf(project.getId());
 		List<GitlabLabel> inProgressLabelsForProject = gitlabClient.getInProgressLabelsForProject(project.getId());
 		List<GitlabIssue> issues = gitlabClient.getIssuesForProject(project);
-		UpdateResult result = featureDataClient.updateIssues(collectorId, projectId, issues, inProgressLabelsForProject);
+		UpdateResult result = featureDataClient.updateIssues(collectorId, lastExecuted, projectId, issues, inProgressLabelsForProject);
 
 		LOGGER.debug("{}: Added/Updated {} issues and deleted {} issues", project.getName(), result.getItemsAdded(),
 				result.getItemsDeleted());

@@ -19,6 +19,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.capitalone.dashboard.gitlab.model.GitlabIssue;
 import com.capitalone.dashboard.gitlab.model.GitlabLabel;
+import com.capitalone.dashboard.gitlab.model.GitlabMilestone;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.Feature;
@@ -74,7 +75,6 @@ public class DefaultFeatureDataClientTest {
 		when(collector.getId()).thenReturn(collectorId);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldAddOneTeam() {
 		GitlabTeam team1 = new GitlabTeam();
@@ -91,7 +91,6 @@ public class DefaultFeatureDataClientTest {
 		assertEquals(0, result.getItemsDeleted());
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldDeleteOneTeamAndAddOneTeam() {
 		GitlabTeam team1 = new GitlabTeam();
@@ -113,15 +112,16 @@ public class DefaultFeatureDataClientTest {
 	@Test
 	public void shouldUpdateProjects() {
 		GitlabProject gitlabProject = new GitlabProject();
-		gitlabProject.setId(1L);
+		gitlabProject.setId(3L);
 		List<GitlabProject> projects = Lists.newArrayList(gitlabProject);
 		Scope savedProject = new Scope();
 		savedProject.setpId("3");
 		savedProject.setCollectorId(collectorId);
 		List<Scope> savedProjects = Lists.newArrayList(savedProject);
+		when(projectRepo.getScopeIdById("3")).thenReturn(Lists.newArrayList(savedProject));
 		when(projectRepo.findScopeByCollectorId(collectorId)).thenReturn(savedProjects);
 		Scope scope = new Scope();
-		scope.setpId("1");
+		scope.setpId("3");
 		when(featureDataMapper.mapToScopeItem(gitlabProject, null, collectorId)).thenReturn(scope);
 		
 		UpdateResult result = featureDataClient.updateProjects(collectorId, projects);
@@ -133,11 +133,22 @@ public class DefaultFeatureDataClientTest {
 	@Test
 	public void shouldUpdateIssues() {
 		String projectId = "7";
+		
 		GitlabIssue gitlabIssue = new GitlabIssue();
 		gitlabIssue.setId(1L);
+		gitlabIssue.setUpdatedAt("2018-02-20T12:00:00+01:00");
 		List<String> labels = Lists.newArrayList("To Do");
 		gitlabIssue.setLabels(labels);
-		List<GitlabIssue> issues = Lists.newArrayList(gitlabIssue);
+		
+		GitlabIssue gitlabIssue2 = new GitlabIssue();
+        gitlabIssue2.setId(1L);
+        gitlabIssue2.setUpdatedAt("2016-02-20T12:00:00+01:00");
+        gitlabIssue2.setLabels(labels);
+        GitlabMilestone milestone = new GitlabMilestone();
+        milestone.setUpdatedAt("2018-02-20T12:00:00+01:00");
+        gitlabIssue2.setMilestone(milestone);
+		
+		List<GitlabIssue> issues = Lists.newArrayList(gitlabIssue, gitlabIssue2);
 		GitlabLabel gitlabLabel = new GitlabLabel();
 		gitlabLabel.setName("To Do");
 		List<GitlabLabel> inProgressLabelsForProject = Lists.newArrayList(gitlabLabel);
@@ -147,11 +158,45 @@ public class DefaultFeatureDataClientTest {
 		List<Feature> savedFeatures = Lists.newArrayList(savedFeature );
 		when(issueItemRepo.getFeaturesByCollectorAndProjectId(collectorId, projectId)).thenReturn(savedFeatures );
 		
-		UpdateResult result = featureDataClient.updateIssues(collectorId, projectId , issues , inProgressLabelsForProject );
+		UpdateResult result = featureDataClient.updateIssues(collectorId, 1487688565442L, projectId , issues , inProgressLabelsForProject );
 		
 		assertEquals(1, result.getItemsDeleted());
-		assertEquals(1, result.getItemsAdded());
+		assertEquals(2, result.getItemsAdded());
 	}
+	
+	@Test
+    public void shouldNotUpdateIssues() {
+        String projectId = "7";
+        
+        GitlabIssue gitlabIssue = new GitlabIssue();
+        gitlabIssue.setId(1L);
+        gitlabIssue.setUpdatedAt("2016-02-20T12:00:00+01:00");
+        List<String> labels = Lists.newArrayList("To Do");
+        gitlabIssue.setLabels(labels);
+        
+        GitlabIssue gitlabIssue2 = new GitlabIssue();
+        gitlabIssue2.setId(1L);
+        gitlabIssue2.setUpdatedAt("2016-02-20T12:00:00+01:00");
+        gitlabIssue2.setLabels(labels);
+        GitlabMilestone milestone = new GitlabMilestone();
+        milestone.setUpdatedAt("2016-02-20T12:00:00+01:00");
+        gitlabIssue2.setMilestone(milestone);
+        
+        List<GitlabIssue> issues = Lists.newArrayList(gitlabIssue, gitlabIssue2);
+        GitlabLabel gitlabLabel = new GitlabLabel();
+        gitlabLabel.setName("To Do");
+        List<GitlabLabel> inProgressLabelsForProject = Lists.newArrayList(gitlabLabel);
+        Feature savedFeature = new Feature();
+        savedFeature.setsId("6");
+        savedFeature.setCollectorId(collectorId);
+        List<Feature> savedFeatures = Lists.newArrayList(savedFeature );
+        when(issueItemRepo.getFeaturesByCollectorAndProjectId(collectorId, projectId)).thenReturn(savedFeatures );
+        
+        UpdateResult result = featureDataClient.updateIssues(collectorId, 1487688565442L, projectId , issues , inProgressLabelsForProject );
+        
+        assertEquals(1, result.getItemsDeleted());
+        assertEquals(0, result.getItemsAdded());
+    }
 	
 	@Test
 	public void shouldFindEnabledTeams() {

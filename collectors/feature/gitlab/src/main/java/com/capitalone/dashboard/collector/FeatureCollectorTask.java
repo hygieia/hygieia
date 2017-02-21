@@ -99,7 +99,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 
 		List<Future<UpdateResult>> updateIssuesFutures = new ArrayList<>();
 		for (GitlabProject project : projects) {
-			updateIssuesFutures.add(featureService.updateIssuesForProject(collector.getId(), project));
+			updateIssuesFutures.add(featureService.updateIssuesForProject(collector.getId(), collector.getLastExecuted(), project));
 		}
 		logResults(updateIssuesFutures, startTime);
 	}

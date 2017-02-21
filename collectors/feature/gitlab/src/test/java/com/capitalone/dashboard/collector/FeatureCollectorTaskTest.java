@@ -65,41 +65,45 @@ public class FeatureCollectorTaskTest {
 	@Test
 	public void shouldCollect() throws InterruptedException, ExecutionException {
 		ObjectId id = new ObjectId();
+		long lastExecuted = 1;
 		FeatureCollector collector = new FeatureCollector();
 		collector.setId(id);
+		collector.setLastExecuted(lastExecuted);
 		List<GitlabProject> projects = new ArrayList<>();
 		projects.add(new GitlabProject());
 		when(featureService.getEnabledProjects(id)).thenReturn(projects);
 		when(featureService.updateSelectableTeams(id)).thenReturn(future);
 		when(featureService.updateProjects(id)).thenReturn(future);
-		when(featureService.updateIssuesForProject(eq(id), isA(GitlabProject.class))).thenReturn(future);
+		when(featureService.updateIssuesForProject(eq(id), eq(lastExecuted), isA(GitlabProject.class))).thenReturn(future);
 		when(future.get()).thenReturn(new UpdateResult(1, 1));
 		
 		featureCollectorTask.collect(collector);
 		
 		verify(featureService).updateSelectableTeams(id);
 		verify(featureService).updateProjects(id);
-		verify(featureService).updateIssuesForProject(id, projects.get(0));
+		verify(featureService).updateIssuesForProject(id, lastExecuted, projects.get(0));
 	}
 	
 	@Test
 	public void shouldLogException() throws InterruptedException, ExecutionException {
 		ObjectId id = new ObjectId();
+		long lastExecuted = 1;
 		FeatureCollector collector = new FeatureCollector();
 		collector.setId(id);
+		collector.setLastExecuted(lastExecuted);
 		List<GitlabProject> projects = new ArrayList<>();
 		projects.add(new GitlabProject());
 		when(featureService.getEnabledProjects(id)).thenReturn(projects);
 		when(featureService.updateSelectableTeams(id)).thenReturn(future);
 		when(featureService.updateProjects(id)).thenReturn(future);
-		when(featureService.updateIssuesForProject(eq(id), isA(GitlabProject.class))).thenReturn(future);
+		when(featureService.updateIssuesForProject(eq(id), eq(lastExecuted), isA(GitlabProject.class))).thenReturn(future);
 		when(future.get()).thenThrow(new InterruptedException());
 		
 		featureCollectorTask.collect(collector);
 		
 		verify(featureService).updateSelectableTeams(id);
 		verify(featureService).updateProjects(id);
-		verify(featureService).updateIssuesForProject(id, projects.get(0));
+		verify(featureService).updateIssuesForProject(id, lastExecuted, projects.get(0));
 	}
 
 }

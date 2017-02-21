@@ -51,6 +51,18 @@ public class GitlabUriUtilityTest {
 	}
 	
 	@Test
+    public void shouldBuildProjectsForTeamUri() {
+        URI result = urlUtility.buildProjectsForTeamUri("23"); 
+        assertEquals("http://gitlab.com/api/v3/groups/23/projects?per_page=100", result.toString());
+    }
+	
+	@Test
+    public void shouldBuildProjectsByIdUri() {
+        URI result = urlUtility.buildProjectsByIdUri("23"); 
+        assertEquals("http://gitlab.com/api/v3/projects/23?per_page=100", result.toString());
+    }
+	
+	@Test
 	public void shouldUpdatePage() {
 		URI uri = urlUtility.buildIssuesForProjectUri("23"); 
 		URI result = urlUtility.updatePage(uri, "2");

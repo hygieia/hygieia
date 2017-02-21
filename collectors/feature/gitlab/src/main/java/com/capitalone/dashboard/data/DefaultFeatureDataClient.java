@@ -1,7 +1,11 @@
 package com.capitalone.dashboard.data;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -97,7 +101,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 	}
 
 	@Override
-	public UpdateResult updateIssues(ObjectId collectorId, String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
+	public UpdateResult updateIssues(ObjectId collectorId, long lastExecuted, String projectId, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
 		List<String> inProgressLabels = new ArrayList<>();
 		for(GitlabLabel label : inProgressLabelsForProject) {
 			inProgressLabels.add(label.getName());
@@ -105,22 +109,26 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		
 		List<Feature> savedFeatures = issueItemRepo.getFeaturesByCollectorAndProjectId(collectorId, projectId);
 		
-		return updateAll(issues, collectorId, inProgressLabels, savedFeatures);
+		return updateAll(issues, collectorId, lastExecuted, inProgressLabels, savedFeatures);
 	}
 
 	@SuppressWarnings("unchecked")
 	private UpdateResult updateAll(List<GitlabIssue> gitlabIssues, ObjectId collectorId,
-			List<String> inProgressLabels, List<Feature> savedFeatures) {
+	        long lastExecuted, List<String> inProgressLabels, List<Feature> savedFeatures) {
 		
 		List<Feature> updatedFeatures = new ArrayList<>();
+		List<Feature> existingFeatures = new ArrayList<>();
 		for(GitlabIssue issue : gitlabIssues) {
 			String issueId = String.valueOf(issue.getId());
 			ObjectId existingId = getExistingId(featureRepo.getFeatureIdById(issueId));
 			Feature feature = featureDataMapper.mapToFeatureItem(issue, inProgressLabels, existingId, collectorId);
-			updatedFeatures.add(feature);
+			existingFeatures.add(feature);
+    		if(updatedSinceLastRun(lastExecuted, issue)) {
+    			updatedFeatures.add(feature);
+		    }
 		}
 		
-		Collection<Feature> deletedFeatures = CollectionUtils.subtract(savedFeatures, updatedFeatures);
+		Collection<Feature> deletedFeatures = CollectionUtils.subtract(savedFeatures, existingFeatures);
 		
 		issueItemRepo.save(updatedFeatures);
 		issueItemRepo.delete(deletedFeatures);
@@ -129,6 +137,18 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		return updateResult;
 	}
 	
+    private boolean updatedSinceLastRun(long lastExecuted, GitlabIssue issue) {
+        boolean needsUpdate = false;
+        OffsetDateTime lastExecutedDate = OffsetDateTime.ofInstant(new Date(lastExecuted).toInstant(), ZoneId.systemDefault());
+        OffsetDateTime issueLastUpdatedDate = OffsetDateTime.parse(issue.getUpdatedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusMinutes(10);
+        if(issue.getMilestone() != null) {
+            OffsetDateTime milestoneLastUpdatedDate = OffsetDateTime.parse(issue.getMilestone().getUpdatedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusMinutes(10);
+            needsUpdate = milestoneLastUpdatedDate.isAfter(lastExecutedDate);
+        }
+        
+        return issueLastUpdatedDate.isAfter(lastExecutedDate) || needsUpdate;
+    }
+
     @Override
     public List<CollectorItem> getEnabledWidgets(ObjectId collectorId) {
         return widgetRepo.findByCollectorIdAndEnabled(collectorId, true);
