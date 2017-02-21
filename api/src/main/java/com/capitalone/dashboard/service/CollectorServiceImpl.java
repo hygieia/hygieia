@@ -1,5 +1,15 @@
 package com.capitalone.dashboard.service;
 
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -11,12 +21,6 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.util.List;
 
 @Service
 public class CollectorServiceImpl implements CollectorService {
@@ -39,21 +43,21 @@ public class CollectorServiceImpl implements CollectorService {
         return collectorRepository.findByCollectorType(collectorType);
     }
 
-    @Override
-    public List<CollectorItem> collectorItemsByType(CollectorType collectorType) {
-        List<Collector> collectors = collectorRepository.findByCollectorType(collectorType);
+	@Override
+	public Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String descriptionFilter, Pageable pageable) {
+		List<Collector> collectors = collectorRepository.findByCollectorType(collectorType);
 
         List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorId()));
 
-        List<CollectorItem> collectorItems = collectorItemRepository.findByCollectorIdIn(collectorIds);
+        Page<CollectorItem> collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(collectorIds, descriptionFilter, pageable);
 
         for (CollectorItem options : collectorItems) {
             options.setCollector(collectorById(options.getCollectorId(), collectors));
         }
 
         return collectorItems;
-    }
-
+	}
+	
     /**
      * We want to initialize the Quasi-product collector when the API starts up
      * so that any existing Team dashboards will be added as CollectorItems.

@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('editTeamController', editTeamController);
 
-    editTeamController.$inject = ['$scope', '$modalInstance', 'editTeamConfig'];
-    function editTeamController($scope, $modalInstance, editTeamConfig) {
+    editTeamController.$inject = ['$scope', '$uibModalInstance', 'editTeamConfig'];
+    function editTeamController($scope, $uibModalInstance, editTeamConfig) {
         /*jshint validthis:true */
         var ctrl = this,
             team = editTeamConfig.team;
@@ -31,7 +31,7 @@
                 confirmButtonText: 'Yes, delete it!',
                 closeOnConfirm: true
             }, function(){
-                $modalInstance.close(angular.extend({
+                $uibModalInstance.close(angular.extend({
                     remove: true
                 }, editTeamConfig.team));
             });
@@ -48,7 +48,7 @@
                 });
 
                 team.customName = ctrl.customName;
-                $modalInstance.close(team);
+                $uibModalInstance.close(team);
             }
         }
     }
