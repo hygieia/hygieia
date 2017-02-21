@@ -5,7 +5,7 @@
         .module(HygieiaConfig.module)
         .controller('RepoViewController', RepoViewController);
 
-    RepoViewController.$inject = ['$q', '$scope','codeRepoData', 'pullRepoData', 'issueRepoData','$modal'];
+    RepoViewController.$inject = ['$q', '$scope','codeRepoData', 'pullRepoData', 'issueRepoData','$uibModal'];
     function RepoViewController($q, $scope, codeRepoData, pullRepoData, issueRepoData, $modal) {
         var ctrl = this;
 
@@ -78,7 +78,7 @@
             var seriesIndex = target.getAttribute('ct:series-index');
 
             alert(ctrl.commitController);
-            $modal.open({
+            $uibModal.open({
                 controller: 'RepoDetailController',
                 controllerAs: 'detail',
                 templateUrl: 'components/widgets/repo/detail.html',

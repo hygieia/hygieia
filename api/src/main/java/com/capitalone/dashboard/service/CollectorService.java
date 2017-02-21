@@ -1,12 +1,15 @@
 package com.capitalone.dashboard.service;
 
+import java.util.List;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
-import org.bson.types.ObjectId;
-
-import java.util.List;
 
 public interface CollectorService {
 
@@ -17,15 +20,17 @@ public interface CollectorService {
      * @return Collectors matching the specified type
      */
     List<Collector>  collectorsByType(CollectorType collectorType);
-
+    
     /**
-     * Finds all CollectorItems of a given type.
+     * Finds paged results of CollectorItems of a given type.
      *
      * @param collectorType collector type
+     * @param string to filter by when searching for matching records
+     * @param {@link org.springframework.data.domain.Pageable} object to determine which page to return
      * @return CollectorItems matching the specified type
      */
-    List<CollectorItem> collectorItemsByType(CollectorType collectorType);
-
+    Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String descriptionFilter, Pageable pageable);
+    
     /**
      * Find a CollectorItem by it's id.
      *
