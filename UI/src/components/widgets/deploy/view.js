@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('deployViewController', deployViewController);
 
-    deployViewController.$inject = ['$scope', 'DashStatus', 'deployData', 'DisplayState', '$q', '$modal'];
-    function deployViewController($scope, DashStatus, deployData, DisplayState, $q, $modal) {
+    deployViewController.$inject = ['$scope', 'DashStatus', 'deployData', 'DisplayState', '$q', '$uibModal'];
+    function deployViewController($scope, DashStatus, deployData, DisplayState, $q, $uibModal) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -31,7 +31,7 @@
         }
 
         function showDetail(environment) {
-            $modal.open({
+            $uibModal.open({
                 controller: 'DeployDetailController',
                 controllerAs: 'detail',
                 templateUrl: 'components/widgets/deploy/detail.html',
