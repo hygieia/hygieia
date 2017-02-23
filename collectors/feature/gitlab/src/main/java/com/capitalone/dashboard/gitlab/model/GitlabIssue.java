@@ -15,6 +15,7 @@ public class GitlabIssue {
 	private String state;
 	@JsonProperty("updated_at")
 	private String updatedAt;
+	private String weight;
 	private List<String> labels;
 	private GitlabMilestone milestone;
 	private GitlabProject project;
@@ -74,6 +75,14 @@ public class GitlabIssue {
 	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+	
+    public String getWeight() {
+        return weight == null ? "1" : weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
+    }
 
 	public List<String> getLabels() {
 		return labels;

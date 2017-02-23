@@ -140,6 +140,7 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
     private boolean updatedSinceLastRun(long lastExecuted, GitlabIssue issue) {
         boolean needsUpdate = false;
         OffsetDateTime lastExecutedDate = OffsetDateTime.ofInstant(new Date(lastExecuted).toInstant(), ZoneId.systemDefault());
+        // Adding 10 minutes to account for issues that could potentially be created after the issues have been collected, but before the collector finishes running.
         OffsetDateTime issueLastUpdatedDate = OffsetDateTime.parse(issue.getUpdatedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusMinutes(10);
         if(issue.getMilestone() != null) {
             OffsetDateTime milestoneLastUpdatedDate = OffsetDateTime.parse(issue.getMilestone().getUpdatedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusMinutes(10);

@@ -73,7 +73,7 @@ public class FeatureDataMapper {
 		issue.setsName(gitlabIssue.getTitle());
 		issue.setsStatus(determineStoryStatus(gitlabIssue, inProgressLabelsForProject));
 		issue.setsState(ACTIVE_ASSET_STATE);
-		issue.setsEstimate("1");
+		issue.setsEstimate(String.valueOf(gitlabIssue.getWeight()));
 		issue.setChangeDate(gitlabIssue.getUpdatedAt());
 		
 		//Project Data
