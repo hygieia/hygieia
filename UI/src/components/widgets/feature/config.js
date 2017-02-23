@@ -4,10 +4,10 @@
 	angular.module(HygieiaConfig.module).controller('featureConfigController',
 			featureConfigController);
 
-	featureConfigController.$inject = [ 'modalData', '$modalInstance',
+	featureConfigController.$inject = [ 'modalData', '$uibModalInstance',
 			'collectorData', 'featureData' ];
 
-	function featureConfigController(modalData, $modalInstance, collectorData, featureData) {
+	function featureConfigController(modalData, $uibModalInstance, collectorData, featureData) {
 		/* jshint validthis:true */
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
@@ -108,6 +108,7 @@
 				}
 			}
 		}
+
 
 		function processTeamsResponse(data) {
 			var teams = [];
@@ -212,7 +213,7 @@
 				}
 			}
 		}
-		
+
 		function initEstimateMetricType(widgetConfig) {
 			if (widgetConfig.options.estimateMetricType != undefined && widgetConfig.options.estimateMetricType != null) {
 				ctrl.estimateMetricType = widgetConfig.options.estimateMetricType;
@@ -220,7 +221,7 @@
 				ctrl.estimateMetricType = 'storypoints';
 			}
 		}
-		
+
 		function initSprintType(widgetConfig) {
 			if (widgetConfig && widgetConfig.options && widgetConfig.options.sprintType) {
 				ctrl.sprintType = widgetConfig.options.sprintType;
@@ -228,7 +229,7 @@
 				ctrl.sprintType = 'kanban';
 			}
 		}
-		
+
 		function initListType(widgetConfig) {
             if (widgetConfig && widgetConfig.options && widgetConfig.options.listType) {
                 ctrl.listType = widgetConfig.options.listType;
@@ -320,7 +321,7 @@
 			};
 
 			// pass this new config to the modal closing so it's saved
-			$modalInstance.close(postObj);
+			$uibModalInstance.close(postObj);
 		}
 	}
 })();
