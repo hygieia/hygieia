@@ -17,6 +17,7 @@
         var db = dependencies.db,
             configuredTeam = dependencies.configuredTeam,
             $q = dependencies.$q,
+            $timeout = dependencies.$timeout,
             isReload = dependencies.isReload,
             pipelineData = dependencies.pipelineData,
             nowTimestamp = dependencies.nowTimestamp,
@@ -339,11 +340,13 @@
                         teamStageData[stageName].needsConfiguration = team.unmappedStages.indexOf(stageName) != -1;
                     }
                 }
-
-                dependencies.setTeamData(team.collectorItemId, {
-                    stages: teamStageData,
-                    prod: teamProdData
-                });
+                
+                $timeout(function() {
+	                dependencies.setTeamData(team.collectorItemId, {
+	                    stages: teamStageData,
+	                    prod: teamProdData
+	                });
+	            });
             });
         }
 

@@ -426,6 +426,7 @@
                     cleanseData: cleanseData,
                     pipelineData: pipelineData,
                     $q: $q,
+                    $timeout: $timeout,
                     ctrlStages: ctrlStages
                 };
 
