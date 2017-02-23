@@ -26,6 +26,7 @@
         $q.all([deployData.details(modalData.dashboard.application.components[0].id)]).then(processResponse);
 
         function processResponse(dataA) {
+
             var data = dataA[0];
 
             for(var x in modalData.widgetConfig.options.mappings) {

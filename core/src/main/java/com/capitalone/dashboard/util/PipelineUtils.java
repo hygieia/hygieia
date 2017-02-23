@@ -34,6 +34,7 @@ public final class PipelineUtils {
                 rt.put(PipelineStage.valueOf("Build"), "Build");
                 for (Map.Entry<?, ?> entry : gh.entrySet()) {
                     rt.put(PipelineStage.valueOf((String) entry.getKey()), (String) entry.getValue());
+
                 }
 
             }

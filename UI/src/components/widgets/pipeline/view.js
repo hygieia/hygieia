@@ -15,7 +15,6 @@
 
         // list of valid environments to validate and build data
         var validMappings = [];
-
         // push widget mappings to valid mappings
         _($scope.widgetConfig.options.order).forEach(function (env) {
                 validMappings.push(env);

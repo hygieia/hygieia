@@ -23,7 +23,6 @@ public class PipelineResponse {
     public void setOrderMap(Map<String, String> orderMap) {
         this.orderMap = orderMap;
     }
-
     public String getProdStage() { return prodStage; }
 
     public void setProdStage(String prodStage) { this.prodStage = prodStage; }

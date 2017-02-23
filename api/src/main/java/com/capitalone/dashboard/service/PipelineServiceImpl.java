@@ -86,7 +86,6 @@ public class PipelineServiceImpl implements PipelineService {
     }
 
 
-
     /**
      * For a given commit, will traverse the pipeline and find the time it entered in each stage of the pipeline
      * @param commit
@@ -139,7 +138,6 @@ public class PipelineServiceImpl implements PipelineService {
      * @return a list of all commits as pipeline response commits that havent moved past the current stage
      */
     public List<PipelineResponseCommit> findNotPropagatedCommits(Dashboard dashboard, Pipeline pipeline, PipelineStage stage,List<PipelineStage> pipelineStageList){
-
         Map<String, PipelineCommit> startingStage = findCommitsForStage(dashboard, pipeline, stage);
         List<PipelineResponseCommit> notPropagatedCommits = new ArrayList<>();
         for(Map.Entry<String,PipelineCommit> entry : startingStage.entrySet()){

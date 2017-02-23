@@ -117,8 +117,7 @@
         }
 
 
-
-        // public methods
+      // public methods
         ctrl.addTeam = addTeam;
         ctrl.editTeam = editTeam;
         ctrl.openDashboard = openDashboard;
@@ -128,9 +127,10 @@
         // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
 
+
         //region public methods
         function processLoad() {
-            ctrl.sortableOptions = {
+          ctrl.sortableOptions = {
                 additionalPlaceholderClass: 'product-table-tr',
                 placeholder: function(el) {
                     // create a placeholder row
@@ -165,12 +165,12 @@
                             }
                         });
                     });
-
                     $scope.widgetConfig.options.teams = newConfigTeams;
                     updateWidgetOptions($scope.widgetConfig.options);
                 }
             };
-            // determine our current state
+
+          // determine our current state
             if (isReload === null) {
                 isReload = false;
             }
