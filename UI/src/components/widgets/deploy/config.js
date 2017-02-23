@@ -5,9 +5,9 @@
         .module(HygieiaConfig.module)
         .controller('deployConfigController', deployConfigController);
 
-    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$modalInstance', '$q', '$scope'];
+    deployConfigController.$inject = ['modalData', 'collectorData', '$modalInstance', '$q', '$scope'];
 
-    function deployConfigController(modalData, collectorData, systemConfigData, $modalInstance, $q, $scope) {
+    function deployConfigController(modalData, collectorData, $modalInstance, $q, $scope) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -36,11 +36,10 @@
         // public methods
         ctrl.submit = submit;
 
-        $q.all([systemConfigData.config(), collectorData.itemsByType('deployment')]).then(processResponse);
+        $q.all([collectorData.itemsByType('deployment')]).then(processResponse);
         
         function processResponse(dataA) {
-        	var systemConfig = dataA[0];
-        	var data = dataA[1];
+        	var data = dataA[0];
         	ctrl.currentData = dataA;
         	
 

@@ -34,6 +34,28 @@ public final class PipelineUtils {
                 rt.put(PipelineStage.valueOf("Build"), "Build");
                 for (Map.Entry<?, ?> entry : gh.entrySet()) {
                     rt.put(PipelineStage.valueOf((String) entry.getKey()), (String) entry.getValue());
+
+                }
+
+            }
+        }
+
+        return rt;
+    }
+
+    public static Map<String, String> getOrderForStages(Dashboard dashboard) {
+        Map<String, String> rt = new LinkedHashMap<>();
+
+        for(Widget widget : dashboard.getWidgets()) {
+            if (widget.getName().equalsIgnoreCase("pipeline")) {
+                Map<?,?> gh = (Map<?,?>) widget.getOptions().get("order");
+                rt.put("0", "Commit");
+                rt.put("1", "Build");
+                int count = 2;
+                if(gh!=null) {
+                    for (Map.Entry<?, ?> entry : gh.entrySet()) {
+                        rt.put(Integer.parseInt((String) entry.getKey())+count+"", (String) entry.getValue());
+                    }
                 }
 
             }

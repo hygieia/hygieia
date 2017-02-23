@@ -17,6 +17,7 @@
         var db = dependencies.db,
             configuredTeam = dependencies.configuredTeam,
             $q = dependencies.$q,
+            $timeout = dependencies.$timeout,
             isReload = dependencies.isReload,
             pipelineData = dependencies.pipelineData,
             nowTimestamp = dependencies.nowTimestamp,
@@ -101,7 +102,8 @@
 
         function processPipelineCommitData(team) {
             db.prodCommit.where('[collectorItemId+timestamp]').between([collectorItemId, ninetyDaysAgo], [collectorItemId, dateEnds]).toArray(function (rows) {
-                team.stages[prodStage] = _(rows).sortBy('timestamp').reverse().value();
+                var uniqueRows = _.uniq(rows,'scmRevisionNumber');
+                team.stages[prodStage] = _(uniqueRows).sortBy('timestamp').reverse().value();
 
                 var teamStageData = {},
                     stageDurations = {},
@@ -343,10 +345,12 @@
                     }
                 }
 
-                dependencies.setTeamData(team.collectorItemId, {
+                $timeout(function() {
+                    dependencies.setTeamData(team.collectorItemId, {
                     stages: teamStageData,
                     prod: teamProdData,
                     prodStage:prodStage
+                    });
                 });
             });
         }

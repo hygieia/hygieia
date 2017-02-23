@@ -14,8 +14,15 @@ public class PipelineResponse {
     private List<String> unmappedStages;
     private Map<String, List<PipelineResponseCommit>> stages = new LinkedHashMap<>();
     private String prodStage;
+    private Map<String,String> orderMap = new LinkedHashMap<>();
 
+    public Map<String, String> getOrderMap() {
+        return orderMap;
+    }
 
+    public void setOrderMap(Map<String, String> orderMap) {
+        this.orderMap = orderMap;
+    }
     public String getProdStage() { return prodStage; }
 
     public void setProdStage(String prodStage) { this.prodStage = prodStage; }

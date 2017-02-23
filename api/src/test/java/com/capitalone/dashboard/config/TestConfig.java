@@ -87,11 +87,6 @@ public class TestConfig {
 	}
 	
 	@Bean
-	public SystemConfigService systemConfigService() {
-		return Mockito.mock(SystemConfigService.class);
-	}
-
-    @Bean
     public CloudInstanceService cloudInstanceService() {
         return Mockito.mock(CloudInstanceService.class);
     }
