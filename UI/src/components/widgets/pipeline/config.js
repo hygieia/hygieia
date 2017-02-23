@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('pipelineConfigController', pipelineConfigController);
 
-    pipelineConfigController.$inject = ['modalData', 'deployData', 'systemConfigData', '$modalInstance', '$q'];
-    function pipelineConfigController(modalData, deployData, systemConfigData, $modalInstance, $q) {
+    pipelineConfigController.$inject = ['modalData', 'deployData', '$modalInstance', '$q'];
+    function pipelineConfigController(modalData, deployData, $modalInstance, $q) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -23,11 +23,11 @@
         ctrl.validateStage = validateStage;
         ctrl.validateDropDown = validateDropDown;
 
-        $q.all([systemConfigData.config(), deployData.details(modalData.dashboard.application.components[0].id)]).then(processResponse);
+        $q.all([deployData.details(modalData.dashboard.application.components[0].id)]).then(processResponse);
 
         function processResponse(dataA) {
-            var systemConfig = dataA[0];
-            var data = dataA[1];
+
+            var data = dataA[0];
 
             for(var x in modalData.widgetConfig.options.mappings) {
                 var envName = modalData.widgetConfig.options.mappings[x];
@@ -50,6 +50,7 @@
             }).value();
 
             ctrl.mappings = {};
+            ctrl.order = {};
 
             for(var x in modalData.widgetConfig.options.mappings) {
                 var envName = modalData.widgetConfig.options.mappings[x];
@@ -62,11 +63,16 @@
         }
 
         function save(form) {
+            var count = 0;
             if(form.$valid){
                 modalData.widgetConfig.name = 'pipeline';
                 ctrl.mappings = editMappings(ctrl.radioValue);
                 modalData.widgetConfig.options.prod = ctrl.radioValue;
                 modalData.widgetConfig.options.mappings = ctrl.mappings;
+                for(var env in ctrl.mappings){
+                    ctrl.order[count++] = env;
+                }
+                modalData.widgetConfig.options.order = ctrl.order;
                 var postObj = angular.copy(modalData.widgetConfig);
                 $modalInstance.close(postObj);
             }
