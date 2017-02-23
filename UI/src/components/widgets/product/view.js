@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
-    productViewController.$inject = ['$scope', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'systemConfigData', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
-    function productViewController($scope, $document, $modal, $location, $q, $routeParams, $timeout, systemConfigData, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
+    productViewController.$inject = ['$scope', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
+    function productViewController($scope, $document, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -65,17 +65,6 @@
         var teamDashboardDetails = {},
             isReload = null;
 
-        // public methods
-        ctrl.load = function() { systemConfigData.config().then(processLoad); };
-        ctrl.addTeam = addTeam;
-        ctrl.editTeam = editTeam;
-        ctrl.openDashboard = openDashboard;
-        ctrl.viewTeamStageDetails = viewTeamStageDetails;
-        ctrl.viewQualityDetails = viewQualityDetails;
-
-        // public data methods
-        ctrl.teamStageHasCommits = teamStageHasCommits;
-
         // set our data before we get things started
         var widgetOptions = angular.copy($scope.widgetConfig.options);
 
@@ -85,30 +74,33 @@
 
         ctrl.teamCrlStages = {};
         ctrl.prodStages={};
+        ctrl.orderedStages = {};
 
         // pull all the stages from pipeline. Create a map for all ctrl stages for each team.
-        var now = moment(),
-            dateEnds = now.valueOf(),
-            ninetyDaysAgo = now.add(-90, 'days').valueOf(),
-            dateBegins = ninetyDaysAgo;
-        var nowTimestamp = moment().valueOf();
-        // get our pipeline commit data. start by seeing if we've already run this request
-        _(ctrl.configuredTeams).forEach(function (configuredTeam) {
-            var collectId = configuredTeam.collectorItemId;
-            var orderedStages = orderKeys();
-            var stages = [];
-            pipelineData
-                .commits(dateBegins, nowTimestamp, collectId)
-                .then(function (response) {
-                    response = response[0];
-                    for (var x in response.stages) {
-                        orderedStages.push(x,x);
-                    }
-                    stages = orderedStages.keys();
-                    ctrl.teamCrlStages[collectId] = stages;
-                    ctrl.prodStages[collectId] = response.prodStage;
-                });
-        });
+        ctrl.load = function() {
+            var now = moment(),
+                ninetyDaysAgo = now.add(-90, 'days').valueOf(),
+                dateBegins = ninetyDaysAgo;
+            var nowTimestamp = moment().valueOf();
+            // get our pipeline commit data. start by seeing if we've already run this request
+            _(ctrl.configuredTeams).forEach(function (configuredTeam) {
+                var collectId = configuredTeam.collectorItemId;
+                var orderedStages = orderKeys();
+                var stages = [];
+                pipelineData
+                    .commits(dateBegins, nowTimestamp, collectId)
+                    .then(function (response) {
+                        response = response[0];
+                        for (var x in response.stages) {
+                            orderedStages.push(x, x);
+                        }
+                        stages = orderedStages.keys();
+                        ctrl.teamCrlStages[collectId] = stages;
+                        ctrl.prodStages[collectId] = response.prodStage;
+                        ctrl.orderedStages[collectId] = response.orderMap;
+                    }).then(processLoad);
+            });
+        };
 
         // make ordered list
         function orderKeys() {
@@ -122,10 +114,22 @@
                 keys: function(){return keys},
                 values: function(){return val}
             };
-        };
+        }
+
+
+
+        // public methods
+        ctrl.addTeam = addTeam;
+        ctrl.editTeam = editTeam;
+        ctrl.openDashboard = openDashboard;
+        ctrl.viewTeamStageDetails = viewTeamStageDetails;
+        ctrl.viewQualityDetails = viewQualityDetails;
+
+        // public data methods
+        ctrl.teamStageHasCommits = teamStageHasCommits;
 
         //region public methods
-        function processLoad(systemConfig) {
+        function processLoad() {
             ctrl.sortableOptions = {
                 additionalPlaceholderClass: 'product-table-tr',
                 placeholder: function(el) {
@@ -166,7 +170,6 @@
                     updateWidgetOptions($scope.widgetConfig.options);
                 }
             };
-
             // determine our current state
             if (isReload === null) {
                 isReload = false;
@@ -485,6 +488,7 @@
                     cleanseData: cleanseData,
                     pipelineData: pipelineData,
                     $q: $q,
+                    $timeout: $timeout,
                     ctrlStages: ctrl.teamCrlStages[configuredTeam.collectorItemId],
                     prodStageValue:ctrl.prodStages[configuredTeam.collectorItemId]
                 };

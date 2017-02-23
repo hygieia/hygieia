@@ -113,7 +113,7 @@
                     </div>
                 </div>
 
-                <div class="product-table-td team-data-cell" ng-repeat="stage in ctrl.teamCrlStages[team.collectorItemId]" ng-if="stage!=team.prodStage">
+                <div class="product-table-td team-data-cell" ng-repeat="(key,stage) in ctrl.orderedStages[team.collectorItemId] | orderBy: 'key'" ng-if="stage!=team.prodStage">
                     <div ng-class="{'team-stage-needs-configured': team.stages[stage].needsConfiguration}">
                         <div class="product-table-th product-text-active">{{::stage.toUpperCase()}} </div>
                         {{teamStageData = team.stages[stage].summary;""}}
@@ -160,7 +160,7 @@
                      as-sortable-item-handle >
                     <div class="product-table-th product-text-active product-text-active">{{::team.prodStage.toUpperCase()}}</div>
                     <div ng-if="team.prod">
-                        <div class="clearfix">
+                        <div class="clearfix team-prod-average-header">
                             <span class="pull-left team-prod-arrow fa" ng-class="{'fa-long-arrow-up text-danger':team.prod.trendUp == true, 'fa-long-arrow-down text-success': team.prod.trendUp == false}" ng-if="team.prod.trendUp != undefined"></span>
                             <span class="pull-left product-text-active">{{team.prod.averageDays}}</span>
                             <span class="pull-left team-prod-average-days"><ng-pluralize count="team.prod.averageDays" when="{1:' DAY',other:' DAYS'}"></ng-pluralize></span>
@@ -170,9 +170,12 @@
                             average from commit to production
                         </div>
 
-                        <div class="team-prod-last-90">
-                            <span class="team-prod-last-90-num">{{team.prod.totalCommits}}</span>
-                            <ng-pluralize count="team.prod.totalCommits" when="{1:' commit ',other:' commits '}"></ng-pluralize> in the last <span class="widget-font-bold">90 days</span>
+                        <div class="clearfix team-prod-average-header">
+                            <span class="pull-left product-text-active">{{team.prod.totalCommits}}</span>
+                            <span class="pull-left team-prod-average-days"><ng-pluralize count="team.prod.totalCommits" when="{1:' commit ',other:' commits '}"></ng-pluralize></span>
+                        </div>
+                        <div class="team-prod-average-desc">
+                            in the last 90 days
                         </div>
                     </div>
                 </div>

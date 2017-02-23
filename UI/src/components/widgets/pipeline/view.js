@@ -15,18 +15,11 @@
 
         // list of valid environments to validate and build data
         var validMappings = [];
-        // prod stage value from pipeline widget options
-        var prodStage = $scope.widgetConfig.options.prod;
+
         // push widget mappings to valid mappings
-        for(var x in $scope.widgetConfig.options.mappings) {
-            if(x!= prodStage){
-                validMappings.push(x);
-            }
-        }
-        // push prod stage at the end of the list
-        if(prodStage!=null || prodStage !=''){
-            validMappings.push(prodStage);
-        }
+        _($scope.widgetConfig.options.order).forEach(function (env) {
+                validMappings.push(env);
+        });
 
         ctrl.load = function() {
             // verify that a valid mapping exists
