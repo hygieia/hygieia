@@ -5,9 +5,9 @@
         .module(HygieiaConfig.module)
         .controller('deployConfigController', deployConfigController);
 
-    deployConfigController.$inject = ['modalData', 'collectorData', 'systemConfigData', '$uibModalInstance', '$q', '$scope'];
+    deployConfigController.$inject = ['modalData', 'collectorData', '$uibModalInstance', '$q', '$scope'];
   
-    function deployConfigController(modalData, collectorData, systemConfigData, $uibModalInstance, $q, $scope) {
+    function deployConfigController(modalData, collectorData, $uibModalInstance, $q, $scope) {
 
         /*jshint validthis:true */
         var ctrl = this;
