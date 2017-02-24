@@ -30,7 +30,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Pipeline;
-import com.capitalone.dashboard.model.PipelineStageType;
+import com.capitalone.dashboard.model.PipelineStage;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -75,8 +75,8 @@ public class CommitEventListenerTest {
         eventListener.onAfterSave(new AfterSaveEvent<>(commit, null, ""));
 
         // Assert
-        boolean commitFound = pipeline.getStages()
-                .get(PipelineStageType.Commit.name())
+        boolean commitFound = pipeline.getEnvironmentStageMap()
+                .get(PipelineStage.COMMIT.getName())
                 .getCommits()
                 .stream()
                 .anyMatch(pc -> pc.getScmRevisionNumber().equals(commit.getScmRevisionNumber()));
@@ -98,8 +98,8 @@ public class CommitEventListenerTest {
         eventListener.onAfterSave(new AfterSaveEvent<>(commit, null, ""));
 
         // Assert
-        boolean commitFound = !pipeline.getStages().isEmpty() &&  pipeline.getStages()
-                .get(PipelineStageType.Commit.name())
+        boolean commitFound = !pipeline.getEnvironmentStageMap().isEmpty() &&  pipeline.getEnvironmentStageMap()
+                .get(PipelineStage.COMMIT.getName())
                 .getCommits()
                 .stream()
                 .anyMatch(pc -> pc.getScmRevisionNumber().equals(commit.getScmRevisionNumber()));
@@ -121,8 +121,8 @@ public class CommitEventListenerTest {
         eventListener.onAfterSave(new AfterSaveEvent<>(commit, null, ""));
 
         // Assert
-        boolean commitFound = !pipeline.getStages().isEmpty() &&  pipeline.getStages()
-                .get(PipelineStageType.Commit.name())
+        boolean commitFound = !pipeline.getEnvironmentStageMap().isEmpty() &&  pipeline.getEnvironmentStageMap()
+                .get(PipelineStage.COMMIT.getName())
                 .getCommits()
                 .stream()
                 .anyMatch(pc -> pc.getScmRevisionNumber().equals(commit.getScmRevisionNumber()));
@@ -143,7 +143,7 @@ public class CommitEventListenerTest {
         eventListener.onAfterSave(new AfterSaveEvent<>(commit, null, ""));
 
         // Assert
-        assertThat(pipeline.getStages().get(PipelineStageType.Commit.name()), nullValue());
+        assertThat(pipeline.getEnvironmentStageMap().get(PipelineStage.COMMIT.getName()), nullValue());
         verify(pipelineRepository, never()).save(pipeline);
     }
 

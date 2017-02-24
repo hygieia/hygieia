@@ -26,7 +26,6 @@ import com.capitalone.dashboard.service.FeatureService;
 import com.capitalone.dashboard.service.PipelineService;
 import com.capitalone.dashboard.service.ScopeService;
 import com.capitalone.dashboard.service.ServiceService;
-import com.capitalone.dashboard.service.SystemConfigService;
 import com.capitalone.dashboard.service.TeamService;
 import com.capitalone.dashboard.service.TestResultService;
 import com.capitalone.dashboard.service.UserInfoService;
@@ -130,11 +129,6 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
  	@Bean
  	public PipelineService pipelineService() {
  		return Mockito.mock(PipelineService.class);
- 	}
- 	
- 	@Bean
- 	public SystemConfigService systemConfigService() {
- 		return Mockito.mock(SystemConfigService.class);
  	}
  
      @Bean
