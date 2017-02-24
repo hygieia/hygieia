@@ -9,7 +9,7 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Pipeline;
 import com.capitalone.dashboard.model.PipelineCommit;
-import com.capitalone.dashboard.model.PipelineStageType;
+import com.capitalone.dashboard.model.PipelineStage;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.repository.BuildRepository;
@@ -94,7 +94,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
             for (SCM scm : build.getSourceChangeSet()) {
             	// we want to use the build start time since the timestamp was just the time that the collector ran
                 PipelineCommit commit = new PipelineCommit(scm, build.getStartTime());
-                pipeline.addCommit(PipelineStageType.Build.name(), commit);
+                pipeline.addCommit(PipelineStage.BUILD.getName(), commit);
             }
 
             boolean hasFailedBuilds = !pipeline.getFailedBuilds().isEmpty();
@@ -108,12 +108,12 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
              * Logic:
              * If the build start time is after the scm commit, move the commit to build stage. Match the repo at the very least.
              */
-            Map<String, PipelineCommit> commitStageCommits = pipeline.getCommitsByStage(PipelineStageType.Commit.name());
-            Map<String, PipelineCommit> buildStageCommits = pipeline.getCommitsByStage(PipelineStageType.Build.name());
+            Map<String, PipelineCommit> commitStageCommits = pipeline.getCommitsByEnvironmentName(PipelineStage.COMMIT.getName());
+            Map<String, PipelineCommit> buildStageCommits = pipeline.getCommitsByEnvironmentName(PipelineStage.BUILD.getName());
             for (String rev : commitStageCommits.keySet()) {
                 PipelineCommit commit = commitStageCommits.get(rev);
                 if ((commit.getScmCommitTimestamp() < build.getStartTime()) && !buildStageCommits.containsKey(rev) && isMoveCommitToBuild(build, commit)) {
-                    pipeline.addCommit(PipelineStageType.Build.name(), commit);
+                    pipeline.addCommit(PipelineStage.BUILD.getName(), commit);
                 }
             }
             pipelineRepository.save(pipeline);
@@ -168,7 +168,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
                 if (b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())) {
                     for (SCM scm : b.getSourceChangeSet()) {
                         PipelineCommit failedBuildCommit = new PipelineCommit(scm, successfulBuild.getStartTime());
-                        pipeline.addCommit(PipelineStageType.Build.name(), failedBuildCommit);
+                        pipeline.addCommit(PipelineStage.BUILD.getName(), failedBuildCommit);
                         successfulBuild.getSourceChangeSet().add(scm);
                     }
                     failedBuilds.remove();

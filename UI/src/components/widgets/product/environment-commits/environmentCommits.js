@@ -25,7 +25,7 @@
         }
 
         // set data
-        ctrl.stages = _(modalData.stages).filter(function(stage) { return stage != 'PROD'}).value();
+        ctrl.stages = modalData.stages.slice(0, modalData.stages.length - 1);
         ctrl.displayTeamName = modalData.team.customName || modalData.team.name;
         ctrl.currentStageName = modalData.stage;
 

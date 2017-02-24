@@ -64,6 +64,23 @@
             }
         }
 
+        .product-table-td-last {
+
+            border-left: 1px solid @dash-divider;
+            width: 2.7rem;
+            right: -2.7rem;
+            height: 100%;
+            display: inline-block;
+
+
+            background-color: @dash-widget-section-highlight;;
+            background-image: linear-gradient(45deg, gray 25%, transparent 25%, transparent 75%, gray 75%, gray),
+            linear-gradient(45deg, gray 25%, transparent 25%, transparent 75%, gray 75%, gray);
+            background-size: 2.75rem 2.75rem;
+            background-position:0 0, 1.25rem 1.25rem;
+        }
+
+
         .product-text-active {
             color: @dash-dashboard-text-hover;
         }
@@ -76,6 +93,10 @@
             display: table-row-group;
 
             .product-table-tr {
+                &:nth-of-type(even) .product-table-td {
+                    border-bottom: 1px solid @dash-widget-section-highlight;
+                    border-top: 1px solid @dash-widget-section-highlight;
+                }
                 &:nth-of-type(odd) .product-table-td {
                     background-color: @dash-widget-section-highlight;
                 }
@@ -94,11 +115,11 @@
                 &.team-stage-needs-configured {
                     @line: rgba(122, 122, 122, 1);
                     background: repeating-linear-gradient(
-                        135deg,
-                        transparent,
-                        @dash-widget-section-highlight 5px,
-                        transparent 5px,
-                        transparent 5px
+                            135deg,
+                            transparent,
+                            @dash-widget-section-highlight 5px,
+                            transparent 5px,
+                            transparent 5px
                     );
                 }
             }

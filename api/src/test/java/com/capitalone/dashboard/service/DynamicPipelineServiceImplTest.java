@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -20,6 +21,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.ArtifactIdentifier;
 import com.capitalone.dashboard.model.BinaryArtifact;
@@ -38,7 +40,7 @@ import com.capitalone.dashboard.model.Pipeline;
 import com.capitalone.dashboard.model.PipelineCommit;
 import com.capitalone.dashboard.model.PipelineResponse;
 import com.capitalone.dashboard.model.PipelineResponseCommit;
-import com.capitalone.dashboard.model.PipelineStageType;
+import com.capitalone.dashboard.model.PipelineStage;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.RepoBranch.RepoType;
 import com.capitalone.dashboard.model.SCM;
@@ -120,8 +122,17 @@ public class DynamicPipelineServiceImplTest {
 	@Mock
 	private DeployService deployService;
 	
+	@Mock
+	private ApiSettings apiSettings;
+	
 	@InjectMocks
 	private DynamicPipelineServiceImpl service;
+	
+	@Before
+	public void setUp() {
+//		Mockito.when(apiSettings.getSystemStages()).thenReturn(Arrays.asList(PipelineStage.COMMIT, PipelineStage.BUILD,
+//				PipelineStage.valueOf("DEV"), PipelineStage.valueOf("QA"), PipelineStage.valueOf("INT"), PipelineStage.valueOf("PERF"), PipelineStage.valueOf("PROD")));
+	}
 	
 	@Test
 	public void testSearch() {
@@ -163,37 +174,34 @@ public class DynamicPipelineServiceImplTest {
 		
 		Iterable<PipelineResponse> responses = service.search(request);
 		PipelineResponse response = responses.iterator().next();
+
+		//assertEquals(2, response.getUnmappedStages().size());
 		
-		List<PipelineStageType> unmappedStages = response.getUnmappedStages();
-		Map<PipelineStageType, List<PipelineResponseCommit>> stages = response.getStages();
-		
-		assertEquals(2, unmappedStages.size());
-		
-		List<PipelineResponseCommit> prcs = stages.get(PipelineStageType.Commit);
+		List<PipelineResponseCommit> prcs = response.getStageCommits(PipelineStage.COMMIT);
 		Map<String, PipelineResponseCommit> prcMap = prcRevisionMap(prcs);
-		assertEquals(1, prcs.size());
+		assertEquals(9, prcs.size());
 		assertNotNull(prcMap.get("H"));
 		
-		prcs = stages.get(PipelineStageType.Build);
+		prcs = response.getStageCommits(PipelineStage.BUILD);
 		prcMap = prcRevisionMap(prcs);
-		assertEquals(1, prcs.size());
+		assertEquals(8, prcs.size());
 		assertNotNull(prcMap.get("G"));
 		
-		prcs = stages.get(PipelineStageType.Dev);
+		prcs = response.getStageCommits(PipelineStage.valueOf("dev"));
 		prcMap = prcRevisionMap(prcs);
-		assertEquals(3, prcs.size());
+		assertEquals(7, prcs.size());
 		assertNotNull(prcMap.get("C1"));
 		assertNotNull(prcMap.get("E"));
 		assertNotNull(prcMap.get("F"));
-		
-		prcs = stages.get(PipelineStageType.QA);
+
+		prcs = response.getStageCommits(PipelineStage.valueOf("qa"));
 		prcMap = prcRevisionMap(prcs);
-		assertEquals(3, prcs.size());
+		assertEquals(4, prcs.size());
 		assertNotNull(prcMap.get("B"));
 		assertNotNull(prcMap.get("C2"));
 		assertNotNull(prcMap.get("D"));
-		
-		prcs = stages.get(PipelineStageType.Int);
+
+		prcs = response.getStageCommits(PipelineStage.valueOf("int"));
 		prcMap = prcRevisionMap(prcs);
 		assertEquals(1, prcs.size());
 		assertNotNull(prcMap.get("A"));
@@ -234,7 +242,7 @@ public class DynamicPipelineServiceImplTest {
 		
 		pipeline = service.buildPipeline(pipeline, 0L, 100L);
 		
-		Map<String, PipelineCommit> pcs = pipeline.getCommitsByStage(PipelineStageType.Commit.name());
+		Map<String, PipelineCommit> pcs = pipeline.getCommitsByEnvironmentName(PipelineStage.COMMIT.getName());
 		assertEquals(9, pcs.size());
 		assertNotNull(pcs.get("A"));
 		assertNotNull(pcs.get("B"));
@@ -246,7 +254,7 @@ public class DynamicPipelineServiceImplTest {
 		assertNotNull(pcs.get("G"));
 		assertNotNull(pcs.get("H"));
 		
-		pcs = pipeline.getCommitsByStage(PipelineStageType.Build.name());
+		pcs = pipeline.getCommitsByEnvironmentName(PipelineStage.BUILD.getName());
 		assertEquals(8, pcs.size());
 		assertNotNull(pcs.get("A"));
 		assertNotNull(pcs.get("B"));
@@ -257,7 +265,7 @@ public class DynamicPipelineServiceImplTest {
 		assertNotNull(pcs.get("F"));
 		assertNotNull(pcs.get("G"));
 		
-		pcs = pipeline.getCommitsByStage(ENV_NAME1);
+		pcs = pipeline.getCommitsByEnvironmentName(ENV_NAME1);
 		assertEquals(7, pcs.size());
 		assertNotNull(pcs.get("A"));
 		assertNotNull(pcs.get("B"));
@@ -267,14 +275,14 @@ public class DynamicPipelineServiceImplTest {
 		assertNotNull(pcs.get("E"));
 		assertNotNull(pcs.get("F"));
 		
-		pcs = pipeline.getCommitsByStage(ENV_NAME2);
+		pcs = pipeline.getCommitsByEnvironmentName(ENV_NAME2);
 		assertEquals(4, pcs.size());
 		assertNotNull(pcs.get("A"));
 		assertNotNull(pcs.get("B"));
 		assertNotNull(pcs.get("C2"));
 		assertNotNull(pcs.get("D"));
 		
-		pcs = pipeline.getCommitsByStage(ENV_NAME3);
+		pcs = pipeline.getCommitsByEnvironmentName(ENV_NAME3);
 		assertEquals(1, pcs.size());
 		assertNotNull(pcs.get("A"));
 	}
@@ -287,7 +295,7 @@ public class DynamicPipelineServiceImplTest {
 		
 		service.processCommits(pipeline, commits);
 		
-		List<PipelineCommit> pipelineCommits = getPipelineCommits(pipeline, PipelineStageType.Commit);
+		List<PipelineCommit> pipelineCommits = getPipelineCommits(pipeline, PipelineStage.COMMIT.getName());
 		
 		assertEquals(9, pipelineCommits.size());
 		
@@ -353,7 +361,7 @@ public class DynamicPipelineServiceImplTest {
 		
 		service.processBuilds(pipeline, builds, commits);
 		
-		List<PipelineCommit> pipelineCommits = getPipelineCommits(pipeline, PipelineStageType.Build);
+		List<PipelineCommit> pipelineCommits = getPipelineCommits(pipeline, PipelineStage.BUILD.getName());
 		
 		assertEquals(8, pipelineCommits.size());
 		
@@ -416,7 +424,7 @@ public class DynamicPipelineServiceImplTest {
 		
 		service.processDeployments(pipeline, environments, artifacts, commits);
 		
-		Map<String, PipelineCommit> pcs = pipeline.getCommitsByStage(ENV_NAME3);
+		Map<String, PipelineCommit> pcs = pipeline.getCommitsByEnvironmentName(ENV_NAME3);
 		assertEquals(1, pcs.size());
 		assertNotNull(pcs.get("A"));
 		assertEquals("A", pcs.get("A").getScmRevisionNumber());
@@ -428,7 +436,7 @@ public class DynamicPipelineServiceImplTest {
 		assertEquals(100000000, pcs.get("A").getScmCommitTimestamp());
 		assertEquals(1, pcs.get("A").getNumberOfChanges());
 		
-		pcs = pipeline.getCommitsByStage(ENV_NAME2);
+		pcs = pipeline.getCommitsByEnvironmentName(ENV_NAME2);
 		assertEquals(4, pcs.size());
 		assertNotNull(pcs.get("D"));
 		assertEquals(100031000, pcs.get("D").getTimestamp());
@@ -439,7 +447,7 @@ public class DynamicPipelineServiceImplTest {
 		assertNotNull(pcs.get("A"));
 		assertEquals(100031000, pcs.get("A").getTimestamp());
 		
-		pcs = pipeline.getCommitsByStage(ENV_NAME1);
+		pcs = pipeline.getCommitsByEnvironmentName(ENV_NAME1);
 		assertEquals(7, pcs.size());
 		assertNotNull(pcs.get("F"));
 		assertEquals(100032000, pcs.get("F").getTimestamp());
@@ -484,8 +492,8 @@ public class DynamicPipelineServiceImplTest {
 		assertTrue(hist.contains("D"));
 	}
 	
-	private List<PipelineCommit> getPipelineCommits(Pipeline pipeline, PipelineStageType type) {
-		EnvironmentStage stage = pipeline.getStages().get(type.name());
+	private List<PipelineCommit> getPipelineCommits(Pipeline pipeline, String stageName) {
+		EnvironmentStage stage = pipeline.getEnvironmentStageMap().get(stageName);
 		
 		assertNotNull(stage);
 		
@@ -614,9 +622,9 @@ public class DynamicPipelineServiceImplTest {
 		Widget pipelineWidget = new Widget();
 		pipelineWidget.setName("pipeline");
 		Map<String, String> mappings = new HashMap<>();
-		mappings.put(PipelineStageType.Dev.name(), ENV_NAME1);
-		mappings.put(PipelineStageType.QA.name(), ENV_NAME2);
-		mappings.put(PipelineStageType.Int.name(), ENV_NAME3);
+		mappings.put("dev", ENV_NAME1);
+		mappings.put("qa", ENV_NAME2);
+		mappings.put("int", ENV_NAME3);
 		pipelineWidget.getOptions().put("mappings", mappings);
 		
 		rt.getWidgets().add(pipelineWidget);
