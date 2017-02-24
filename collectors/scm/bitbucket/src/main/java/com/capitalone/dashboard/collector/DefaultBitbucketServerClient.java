@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRepo;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
@@ -60,6 +61,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 		this.restOperations = restOperationsSupplier.get();
 	}
 
+	@SuppressWarnings("PMD.NPathComplexity")
 	@Override
 	public List<Commit> getCommits(GitRepo repo, boolean firstRun) {
 		List<Commit> commits = new ArrayList<>();
@@ -113,6 +115,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 					commit.setScmAuthor(author);
 					commit.setScmCommitLog(message);
 					commit.setScmCommitTimestamp(timestamp);
+					commit.setType(parentShas.size() > 1 ? CommitType.Merge : CommitType.New);
 					commit.setNumberOfChanges(1);
 					commits.add(commit);
 				}

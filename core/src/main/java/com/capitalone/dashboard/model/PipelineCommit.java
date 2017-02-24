@@ -1,7 +1,7 @@
 package com.capitalone.dashboard.model;
 
 public class PipelineCommit extends SCM{
-
+	
     public PipelineCommit() {
     }
 
@@ -23,17 +23,30 @@ public class PipelineCommit extends SCM{
         this.timestamp = timestamp;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if(o instanceof PipelineCommit){
-            PipelineCommit toCompareTo = (PipelineCommit) o;
-            return this.scmRevisionNumber.equals(toCompareTo.scmRevisionNumber);
-        }
-        return false;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((scmRevisionNumber == null) ? 0 : scmRevisionNumber.hashCode());
+		return result;
+	}
 
-    @Override
-    public int hashCode() {
-        return (int) (timestamp ^ (timestamp >>> 32));
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PipelineCommit other = (PipelineCommit) obj;
+		if (scmRevisionNumber == null) {
+			if (other.scmRevisionNumber != null)
+				return false;
+		} else if (!scmRevisionNumber.equals(other.scmRevisionNumber))
+			return false;
+		return true;
+	}
+    
+    
 }

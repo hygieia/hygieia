@@ -24,6 +24,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
@@ -51,13 +52,13 @@ public class RestApiAppConfig {
 	
 	@Bean PipelineService pipelineService(PipelineRepository pipelineRepository, DashboardRepository dashboardRepository,
 			CollectorItemRepository collectorItemRepository, BinaryArtifactService binaryArtifactService,
-			BuildService buildService, CommitService commitService, DeployService deployService) {
+			BuildService buildService, CommitService commitService, DeployService deployService, ApiSettings settings) {
 		if (featureEnabled(featureDynamicPipeline)) {
 			return new DynamicPipelineServiceImpl(pipelineRepository, dashboardRepository,
 					collectorItemRepository, binaryArtifactService,
-					buildService, commitService, deployService);
+					buildService, commitService, deployService, settings);
 		} else {
-			return new PipelineServiceImpl(pipelineRepository, dashboardRepository, collectorItemRepository);
+			return new PipelineServiceImpl(pipelineRepository, dashboardRepository, collectorItemRepository, settings);
 		}
 	}
 	
