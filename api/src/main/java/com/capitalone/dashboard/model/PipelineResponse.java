@@ -3,15 +3,29 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PipelineResponse {
     private String name;
     private ObjectId collectorItemId;
-    private List<PipelineStageType> unmappedStages;
-    private Map<PipelineStageType, List<PipelineResponseCommit>> stages = new HashMap<>();
+    private List<String> unmappedStages;
+    private Map<String, List<PipelineResponseCommit>> stages = new LinkedHashMap<>();
+    private String prodStage;
+    private Map<String,String> orderMap = new LinkedHashMap<>();
+
+    public Map<String, String> getOrderMap() {
+        return orderMap;
+    }
+
+    public void setOrderMap(Map<String, String> orderMap) {
+        this.orderMap = orderMap;
+    }
+    public String getProdStage() { return prodStage; }
+
+    public void setProdStage(String prodStage) { this.prodStage = prodStage; }
 
     public String getName() {
         return name;
@@ -29,27 +43,35 @@ public class PipelineResponse {
         this.collectorItemId = collectorItemId;
     }
 
-    public Map<PipelineStageType, List<PipelineResponseCommit>> getStages() {
+    public Map<String, List<PipelineResponseCommit>> getStages() {
         return stages;
     }
 
-    public void setStages(Map<PipelineStageType, List<PipelineResponseCommit>> stages) {
+    public void setStages(Map<String, List<PipelineResponseCommit>> stages) {
         this.stages = stages;
     }
 
-    public List<PipelineStageType> getUnmappedStages() {
+    public List<String> getUnmappedStages() {
         return unmappedStages;
     }
 
-    public void setUnmappedStages(List<PipelineStageType> unmappedStages) {
+    public void setUnmappedStages(List<String> unmappedStages) {
         this.unmappedStages = unmappedStages;
     }
 
-    public void addToStage(PipelineStageType stage, PipelineResponseCommit pipelineCommit) {
-        List<PipelineResponseCommit> pipelineStage = stages.get(stage);
+    public List<PipelineResponseCommit> getStageCommits(PipelineStage stage) {
+        return getStages().get(stage.getName());
+    }
+
+    public void setStageCommits(PipelineStage stage, List<PipelineResponseCommit> commits) {
+        getStages().put(stage.getName(), commits);
+    }
+
+    public void addToStage(PipelineStage stage, PipelineResponseCommit pipelineCommit) {
+        List<PipelineResponseCommit> pipelineStage = stages.get(stage.getName());
         if (pipelineStage == null) {
             pipelineStage = new ArrayList<>();
-            stages.put(stage, pipelineStage);
+            stages.put(stage.getName(), pipelineStage);
         }
         pipelineStage.add(pipelineCommit);
     }
