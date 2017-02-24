@@ -113,7 +113,7 @@
                     </div>
                 </div>
 
-                <div class="product-table-td team-data-cell" ng-repeat="(key,stage) in ctrl.orderedStages[team.collectorItemId] | orderBy: 'key'" ng-if="stage!=team.prodStage">
+                <div class="product-table-td team-data-cell" ng-repeat="(key,stage) in ctrl.orderedStages[team.collectorItemId]" ng-if="stage!=team.prodStage">
                     <div ng-class="{'team-stage-needs-configured': team.stages[stage].needsConfiguration}">
                         <div class="product-table-th product-text-active">{{::stage.toUpperCase()}} </div>
                         {{teamStageData = team.stages[stage].summary;""}}
