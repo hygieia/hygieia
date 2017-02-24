@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('pipelineConfigController', pipelineConfigController);
 
-    pipelineConfigController.$inject = ['modalData', 'deployData', '$modalInstance', '$q'];
-    function pipelineConfigController(modalData, deployData, $modalInstance, $q) {
+    pipelineConfigController.$inject = ['modalData', 'deployData', '$uibModalInstance', '$q'];
+    function pipelineConfigController(modalData, deployData, $uibModalInstance, $q) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -74,7 +74,7 @@
                 }
                 modalData.widgetConfig.options.order = ctrl.order;
                 var postObj = angular.copy(modalData.widgetConfig);
-                $modalInstance.close(postObj);
+                $uibModalInstance.close(postObj);
             }
         }
 
@@ -94,7 +94,7 @@
             ctrl.radioValue ='';
             ctrl.environmentMappings.push({key: 'Env' + newItemNo, value: null});
         }
-
+      
         function deleteMapping(item) {
             var index = ctrl.environmentMappings.indexOf(item);
             ctrl.environmentMappings.splice(index, 1);

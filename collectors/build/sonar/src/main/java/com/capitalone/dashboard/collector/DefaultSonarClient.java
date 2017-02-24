@@ -1,11 +1,11 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CodeQualityMetric;
-import com.capitalone.dashboard.model.CodeQualityMetricStatus;
-import com.capitalone.dashboard.model.CodeQualityType;
-import com.capitalone.dashboard.model.SonarProject;
-import com.capitalone.dashboard.util.Supplier;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -23,10 +23,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import java.math.BigDecimal;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityMetricStatus;
+import com.capitalone.dashboard.model.CodeQualityType;
+import com.capitalone.dashboard.model.SonarProject;
+import com.capitalone.dashboard.util.SonarDashboardUrl;
+import com.capitalone.dashboard.util.Supplier;
 
 @Component
 public class DefaultSonarClient implements SonarClient {
@@ -101,7 +104,7 @@ public class DefaultSonarClient implements SonarClient {
 
                 CodeQuality codeQuality = new CodeQuality();
                 codeQuality.setName(str(prjData, NAME));
-                codeQuality.setUrl(project.getInstanceUrl() + "/dashboard/index/" + project.getProjectId());
+                codeQuality.setUrl(new SonarDashboardUrl(project.getInstanceUrl(), project.getProjectId()).toString());
                 codeQuality.setType(CodeQualityType.StaticAnalysis);
                 codeQuality.setTimestamp(timestamp(prjData, DATE));
                 codeQuality.setVersion(str(prjData, VERSION));

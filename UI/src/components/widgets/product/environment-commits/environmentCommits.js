@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('productEnvironmentCommitController', productEnvironmentCommitController);
 
-    productEnvironmentCommitController.$inject = ['modalData', '$modalInstance', '$timeout'];
-    function productEnvironmentCommitController(modalData, $modalInstance, $timeout) {
+    productEnvironmentCommitController.$inject = ['modalData', '$uibModalInstance', '$timeout'];
+    function productEnvironmentCommitController(modalData, $uibModalInstance, $timeout) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -18,7 +18,7 @@
                 type: "error",
                 closeOnConfirm: true
             }, function() {
-                $modalInstance.close();
+                $uibModalInstance.close();
             });
 
             return;

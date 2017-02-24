@@ -19,7 +19,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestOperations;
 
 import com.capitalone.dashboard.model.Commit;
@@ -62,22 +61,18 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		String providedApiToken = repo.getUserId();
 		String apiToken = (StringUtils.isNotBlank(providedApiToken)) ? providedApiToken:gitlabSettings.getApiToken();
 
-		try {
-			boolean hasMorePages = true;
-			int nextPage = 1;
-			while (hasMorePages) {
-				ResponseEntity<String> response = makeRestCall(apiUrl, apiToken);
-				List<Commit> pageOfCommits = responseMapper.map(response.getBody(), repo.getRepoUrl(), repo.getBranch());
-				commits.addAll(pageOfCommits);
-				if (pageOfCommits.size() < RESULTS_PER_PAGE) {
-					hasMorePages = false;
-					continue;
-				}
-				apiUrl = gitlabUrlUtility.updatePage(apiUrl, nextPage);
-				nextPage++;
+		boolean hasMorePages = true;
+		int nextPage = 1;
+		while (hasMorePages) {
+			ResponseEntity<String> response = makeRestCall(apiUrl, apiToken);
+			List<Commit> pageOfCommits = responseMapper.map(response.getBody(), repo.getRepoUrl(), repo.getBranch());
+			commits.addAll(pageOfCommits);
+			if (pageOfCommits.size() < RESULTS_PER_PAGE) {
+				hasMorePages = false;
+				continue;
 			}
-		} catch (HttpClientErrorException e) {
-			LOG.info("Failed to retrieve data from: " + apiUrl);
+			apiUrl = gitlabUrlUtility.updatePage(apiUrl, nextPage);
+			nextPage++;
 		}
 
         return commits;

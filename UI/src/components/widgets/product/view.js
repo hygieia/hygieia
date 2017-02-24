@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController);
 
-    productViewController.$inject = ['$scope', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
-    function productViewController($scope, $document, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
+    productViewController.$inject = ['$scope', '$document', '$uibModal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
+    function productViewController($scope, $document, $uibModal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -198,7 +198,7 @@
         }
 
         function addTeam() {
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'components/widgets/product/add-team/add-team.html',
                 controller: 'addTeamController',
                 controllerAs: 'ctrl'
@@ -245,7 +245,7 @@
 
             if(!team) { return; }
 
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'components/widgets/product/edit-team/edit-team.html',
                 controller: 'editTeamController',
                 controllerAs: 'ctrl',
@@ -301,7 +301,7 @@
                 return false;
             }
 
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'components/widgets/product/environment-commits/environment-commits.html',
                 controller: 'productEnvironmentCommitController',
                 controllerAs: 'ctrl',
@@ -319,7 +319,7 @@
         }
 
         function viewQualityDetails(team, stage, metricIndex) {
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'components/widgets/product/quality-details/quality-details.html',
                 controller: 'productQualityDetailsController',
                 controllerAs: 'ctrl',

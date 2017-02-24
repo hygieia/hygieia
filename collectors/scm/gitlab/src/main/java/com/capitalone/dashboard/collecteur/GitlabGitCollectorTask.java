@@ -11,6 +11,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.capitalone.dashboard.collector.CollectorTask;
 import com.capitalone.dashboard.model.Collector;
@@ -94,9 +96,15 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 				firstRun = true;
 			repo.setLastUpdated(System.currentTimeMillis());
 			repo.removeLastUpdateDate();
-			gitlabGitCollectorRepository.save(repo);
-			List<Commit> commits = defaultGitlabGitClient.getCommits(repo, firstRun);
-			commitCount = saveNewCommits(commitCount, repo, commits);
+			
+			try {
+				List<Commit> commits = defaultGitlabGitClient.getCommits(repo, firstRun);
+				commitCount = saveNewCommits(commitCount, repo, commits);
+				gitlabGitCollectorRepository.save(repo);
+			} catch (HttpClientErrorException | ResourceAccessException e) {
+				LOG.info("Failed to retrieve data, the repo or collector is most likey misconfigured: " + repo.getRepoUrl() + ", " + e.getMessage());
+			}
+			
 			repoCount++;
         }
         log("Repo Count", start, repoCount);

@@ -47,10 +47,10 @@ artifactory.cron=0 0/5 * * * *
 artifactory.servers[0]=https://www.jfrog.com/artifactory/
 
 # Artifactory user name (required)
-artifactory.username=bobama
+artifactory.usernames[0]=bobama
 
 # Artifactory api key (required)
-artifactory.apiKey=s3cr3t
+artifactory.apiKeys[0]=s3cr3t
 
 # The repo to collect artifacts from (required) - Can provide multiple (comma separated for each server) 
 artifactory.repos[0]=prerelease,release
