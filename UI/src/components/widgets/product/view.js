@@ -3,7 +3,12 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('productViewController', productViewController);
+        .controller('productViewController', productViewController)
+        .filter('flattenToArray', function() { return function(obj) {
+        if (!(obj instanceof Object)) return obj;
+            return Object.keys(obj).map(function (key) { return obj[key]; });
+        }});
+
 
     productViewController.$inject = ['$scope', '$document', '$uibModal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
     function productViewController($scope, $document, $uibModal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
