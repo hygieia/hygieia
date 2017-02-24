@@ -113,7 +113,7 @@
                     </div>
                 </div>
 
-                <div class="product-table-td team-data-cell" ng-repeat="(key,stage) in ctrl.orderedStages[team.collectorItemId] | orderBy: 'key'" ng-if="stage!=team.prodStage">
+                <div class="product-table-td team-data-cell" ng-repeat="(key,stage) in ctrl.orderedStages[team.collectorItemId]" ng-if="stage!=team.prodStage">
                     <div ng-class="{'team-stage-needs-configured': team.stages[stage].needsConfiguration}">
                         <div class="product-table-th product-text-active">{{::stage.toUpperCase()}} </div>
                         {{teamStageData = team.stages[stage].summary;""}}
@@ -160,7 +160,7 @@
                      as-sortable-item-handle >
                     <div class="product-table-th product-text-active product-text-active">{{::team.prodStage.toUpperCase()}}</div>
                     <div ng-if="team.prod">
-                        <div class="clearfix">
+                        <div class="clearfix team-prod-average-header">
                             <span class="pull-left team-prod-arrow fa" ng-class="{'fa-long-arrow-up text-danger':team.prod.trendUp == true, 'fa-long-arrow-down text-success': team.prod.trendUp == false}" ng-if="team.prod.trendUp != undefined"></span>
                             <span class="pull-left product-text-active">{{team.prod.averageDays}}</span>
                             <span class="pull-left team-prod-average-days"><ng-pluralize count="team.prod.averageDays" when="{1:' DAY',other:' DAYS'}"></ng-pluralize></span>
