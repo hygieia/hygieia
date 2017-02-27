@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRepo;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
@@ -165,6 +166,7 @@ public class DefaultBitbucketCloudClient implements GitClient {
 					commit.setScmCommitLog(message);
 					commit.setScmCommitTimestamp(timestamp);
 					commit.setNumberOfChanges(1);
+					commit.setType(parentShas.size() > 1 ? CommitType.Merge : CommitType.New);
 					commits.add(commit);
 				}
 				if (jsonArray == null || jsonArray.isEmpty()) {
