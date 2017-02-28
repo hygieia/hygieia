@@ -28,10 +28,13 @@ public final class PipelineUtils {
         Map<PipelineStage, String> rt = new LinkedHashMap<>();
 
         for(Widget widget : dashboard.getWidgets()) {
+            if(widget.getName().equalsIgnoreCase("build")){
+                rt.put(PipelineStage.valueOf("Build"), "Build");
+            }if(widget.getName().equalsIgnoreCase("repo")){
+                rt.put(PipelineStage.valueOf("Commit"), "Commit");
+            }
             if (widget.getName().equalsIgnoreCase("pipeline")) {
                 Map<?,?> gh = (Map<?,?>) widget.getOptions().get("mappings");
-                rt.put(PipelineStage.valueOf("Commit"), "Commit");
-                rt.put(PipelineStage.valueOf("Build"), "Build");
                 for (Map.Entry<?, ?> entry : gh.entrySet()) {
                     rt.put(PipelineStage.valueOf((String) entry.getKey()), (String) entry.getValue());
 
@@ -45,12 +48,11 @@ public final class PipelineUtils {
 
     public static Map<String, String> getOrderForStages(Dashboard dashboard) {
         Map<String, String> rt = new LinkedHashMap<>();
-
+        rt.put("0", "Commit");
+        rt.put("1", "Build");
         for(Widget widget : dashboard.getWidgets()) {
             if (widget.getName().equalsIgnoreCase("pipeline")) {
                 Map<?,?> gh = (Map<?,?>) widget.getOptions().get("order");
-                rt.put("0", "Commit");
-                rt.put("1", "Build");
                 int count = 2;
                 if(gh!=null) {
                     for (Map.Entry<?, ?> entry : gh.entrySet()) {
