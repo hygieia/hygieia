@@ -46,7 +46,7 @@ public class TestPropertiesManager {
 	}
 	
 	private static String getStringProperty(String propertyName){
-	    String override = System.getProperty((String) propertyName);
+	    String override = System.getProperty(propertyName);
 	    if (StringUtils.isNotEmpty(override)) { return override; }
 		return (String) getProperties().get(propertyName);
 	}
