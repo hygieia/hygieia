@@ -9,10 +9,10 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$cookies', '$cookieStore', '$location','$modal'];
-    function AdminController(dashboardData, $cookies, $cookieStore, $location,$modal) {
+    AdminController.$inject = ['dashboardData', '$cookies', '$cookieStore', '$location','$uibModal'];
+    function AdminController(dashboardData, $cookies, $cookieStore, $location,$uibModal) {
         var ctrl = this;
-        if ($cookies.username == 'admin') {
+        if ($cookies.get('username') == 'admin') {
             $location.path('/admin');
 
         }
@@ -23,7 +23,7 @@
 
         ctrl.storageAvailable = localStorageSupported;
         ctrl.templateUrl = "app/dashboard/views/navheader.html";
-        ctrl.username = $cookies.username;
+        ctrl.username = $cookies.get('username');
         ctrl.logout = logout;
         ctrl.renameDashboard=renameDashboard;
 
@@ -88,7 +88,7 @@
         {
             console.log("Rename Dashboard in Admin");
 
-            var mymodalInstance=$modal.open({
+            var mymodalInstance=$uibModal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',

@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('productEnvironmentCommitController', productEnvironmentCommitController);
 
-    productEnvironmentCommitController.$inject = ['modalData', '$modalInstance', '$timeout'];
-    function productEnvironmentCommitController(modalData, $modalInstance, $timeout) {
+    productEnvironmentCommitController.$inject = ['modalData', '$uibModalInstance', '$timeout'];
+    function productEnvironmentCommitController(modalData, $uibModalInstance, $timeout) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -18,14 +18,14 @@
                 type: "error",
                 closeOnConfirm: true
             }, function() {
-                $modalInstance.close();
+                $uibModalInstance.close();
             });
 
             return;
         }
 
         // set data
-        ctrl.stages = _(modalData.stages).filter(function(stage) { return stage != 'PROD'}).value();
+        ctrl.stages = modalData.stages.slice(0, modalData.stages.length - 1);
         ctrl.displayTeamName = modalData.team.customName || modalData.team.name;
         ctrl.currentStageName = modalData.stage;
 

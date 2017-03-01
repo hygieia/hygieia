@@ -17,10 +17,14 @@
         var db = dependencies.db,
             configuredTeam = dependencies.configuredTeam,
             $q = dependencies.$q,
+            $timeout = dependencies.$timeout,
             isReload = dependencies.isReload,
             pipelineData = dependencies.pipelineData,
             nowTimestamp = dependencies.nowTimestamp,
-            ctrlStages = dependencies.ctrlStages;
+            ctrlStages = dependencies.ctrlStages,
+            prodStageValue = dependencies.prodStageValue;
+
+        var prodStage = prodStageValue;
 
         // timestamps
         var now = moment(),
@@ -84,11 +88,11 @@
             }
 
             // put all results in the database
-            _(response.stages.Prod).forEach(function (commit) {
+            _(response.stages[prodStage]).forEach(function (commit) {
                 // extend the commit object with fields we need
                 // to search the db
                 commit.collectorItemId = collectorItemId;
-                commit.timestamp = commit.processedTimestamps.Prod;
+                commit.timestamp = commit.processedTimestamps[prodStage];
 
                 db.prodCommit.add(commit);
             });
@@ -98,7 +102,8 @@
 
         function processPipelineCommitData(team) {
             db.prodCommit.where('[collectorItemId+timestamp]').between([collectorItemId, ninetyDaysAgo], [collectorItemId, dateEnds]).toArray(function (rows) {
-                team.stages.Prod = _(rows).sortBy('timestamp').reverse().value();
+                var uniqueRows = _.uniq(rows,'scmRevisionNumber');
+                team.stages[prodStage] = _(uniqueRows).sortBy('timestamp').reverse().value();
 
                 var teamStageData = {},
                     stageDurations = {},
@@ -296,7 +301,7 @@
                     commitTimeToProd = _(team.stages)
                     // limit to prod
                         .filter(function (val, key) {
-                            return key == 'Prod'
+                            return key == prodStage
                         })
                         // make all commits a single array
                         .reduce(function (num, commits) {
@@ -304,12 +309,12 @@
                         })
                         // they should, but make sure the commits have a prod timestamp
                         .filter(function (commit) {
-                            return commit.processedTimestamps && commit.processedTimestamps['Prod'];
+                            return commit.processedTimestamps && commit.processedTimestamps[prodStage];
                         })
                         // calculate their time to prod
                         .map(function (commit) {
                             return {
-                                duration: commit.processedTimestamps['Prod'] - commit.scmCommitTimestamp,
+                                duration: commit.processedTimestamps[prodStage] - commit.scmCommitTimestamp,
                                 commitTimestamp: commit.scmCommitTimestamp
                             };
                         });
@@ -340,9 +345,12 @@
                     }
                 }
 
-                dependencies.setTeamData(team.collectorItemId, {
+                $timeout(function() {
+                    dependencies.setTeamData(team.collectorItemId, {
                     stages: teamStageData,
-                    prod: teamProdData
+                    prod: teamProdData,
+                    prodStage:prodStage
+                    });
                 });
             });
         }

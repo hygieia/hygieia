@@ -3,10 +3,15 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('productViewController', productViewController);
+        .controller('productViewController', productViewController)
+        .filter('flattenToArray', function() { return function(obj) {
+        if (!(obj instanceof Object)) return obj;
+            return Object.keys(obj).map(function (key) { return obj[key]; });
+        }});
 
-    productViewController.$inject = ['$scope', '$document', '$modal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
-    function productViewController($scope, $document, $modal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
+
+    productViewController.$inject = ['$scope', '$document', '$uibModal', '$location', '$q', '$routeParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
+    function productViewController($scope, $document, $uibModal, $location, $q, $routeParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -65,51 +70,59 @@
         var teamDashboardDetails = {},
             isReload = null;
 
-        // public properties
-        ctrl.stages = ['Commit', 'Build', 'Dev', 'QA', 'Int', 'Perf', 'Prod'];
-        ctrl.sortableOptions = {
-            additionalPlaceholderClass: 'product-table-tr',
-            placeholder: function(el) {
-                // create a placeholder row
-                var tr = $document[0].createElement('div');
-                for(var x=0;x<=ctrl.stages.length;x++) {
-                    var td = $document[0].createElement('div');
-                    td.setAttribute('class', 'product-table-td');
+        // set our data before we get things started
+        var widgetOptions = angular.copy($scope.widgetConfig.options);
 
-                    if(x == 0) {
-                        // add the name of the row so it somewhat resembles the actual data
-                        var name = $document[0].createElement('div');
-                        name.setAttribute('class', 'team-name');
-                        name.innerText = el.element[0].querySelector('.team-name').innerText;
-                        td.setAttribute('class', 'product-table-td team-name-cell');
-                        td.appendChild(name);
-                    }
-                    tr.appendChild(td);
-                }
+        if (widgetOptions && widgetOptions.teams) {
+            ctrl.configuredTeams = widgetOptions.teams;
+        }
 
-                return tr;
-            },
-            orderChanged: function() {
-                // re-order our widget options
-                var teams = ctrl.configuredTeams,
-                    existingConfigTeams = $scope.widgetConfig.options.teams,
-                    newConfigTeams = [];
+        ctrl.teamCrlStages = {};
+        ctrl.prodStages={};
+        ctrl.orderedStages = {};
 
-                _(teams).forEach(function(team) {
-                    _(existingConfigTeams).forEach(function(configTeam) {
-                        if(team.collectorItemId == configTeam.collectorItemId) {
-                            newConfigTeams.push(configTeam);
+        // pull all the stages from pipeline. Create a map for all ctrl stages for each team.
+        ctrl.load = function() {
+            var now = moment(),
+                ninetyDaysAgo = now.add(-90, 'days').valueOf(),
+                dateBegins = ninetyDaysAgo;
+            var nowTimestamp = moment().valueOf();
+            // get our pipeline commit data. start by seeing if we've already run this request
+            _(ctrl.configuredTeams).forEach(function (configuredTeam) {
+                var collectId = configuredTeam.collectorItemId;
+                var orderedStages = orderKeys();
+                var stages = [];
+                pipelineData
+                    .commits(dateBegins, nowTimestamp, collectId)
+                    .then(function (response) {
+                        response = response[0];
+                        for (var x in response.stages) {
+                            orderedStages.push(x, x);
                         }
-                    });
-                });
-
-                $scope.widgetConfig.options.teams = newConfigTeams;
-                updateWidgetOptions($scope.widgetConfig.options);
-            }
+                        stages = orderedStages.keys();
+                        ctrl.teamCrlStages[collectId] = stages;
+                        ctrl.prodStages[collectId] = response.prodStage;
+                        ctrl.orderedStages[collectId] = response.orderMap;
+                    }).then(processLoad);
+            });
         };
 
-        // public methods
-        ctrl.load = load;
+        // make ordered list
+        function orderKeys() {
+            var keys = [];
+            var val = {};
+            return {
+                push: function(k,v){
+                    if (!val[k]) keys.push(k);
+                    val[k] = v;
+                },
+                keys: function(){return keys},
+                values: function(){return val}
+            };
+        }
+
+
+      // public methods
         ctrl.addTeam = addTeam;
         ctrl.editTeam = editTeam;
         ctrl.openDashboard = openDashboard;
@@ -119,16 +132,50 @@
         // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
 
-        // set our data before we get things started
-        var widgetOptions = angular.copy($scope.widgetConfig.options);
-
-        if (widgetOptions && widgetOptions.teams) {
-            ctrl.configuredTeams = widgetOptions.teams;
-        }
 
         //region public methods
-        function load() {
-            // determine our current state
+        function processLoad() {
+          ctrl.sortableOptions = {
+                additionalPlaceholderClass: 'product-table-tr',
+                placeholder: function(el) {
+                    // create a placeholder row
+                    var tr = $document[0].createElement('div');
+                    for(var x=0;x<=$scope.widgetConfig.options.teams.length+1;x++) {
+                        var td = $document[0].createElement('div');
+                        td.setAttribute('class', 'product-table-td');
+
+                        if(x == 0) {
+                            // add the name of the row so it somewhat resembles the actual data
+                            var name = $document[0].createElement('div');
+                            name.setAttribute('class', 'team-name');
+                            name.innerText = el.element[0].querySelector('.team-name').innerText;
+                            td.setAttribute('class', 'product-table-td team-name-cell');
+                            td.appendChild(name);
+                        }
+                        tr.appendChild(td);
+                    }
+
+                    return tr;
+                },
+                orderChanged: function() {
+                    // re-order our widget options
+                    var teams = ctrl.configuredTeams,
+                        existingConfigTeams = $scope.widgetConfig.options.teams,
+                        newConfigTeams = [];
+
+                    _(teams).forEach(function(team) {
+                        _(existingConfigTeams).forEach(function(configTeam) {
+                            if(team.collectorItemId == configTeam.collectorItemId) {
+                                newConfigTeams.push(configTeam);
+                            }
+                        });
+                    });
+                    $scope.widgetConfig.options.teams = newConfigTeams;
+                    updateWidgetOptions($scope.widgetConfig.options);
+                }
+            };
+
+          // determine our current state
             if (isReload === null) {
                 isReload = false;
             }
@@ -136,7 +183,7 @@
                 isReload = true;
             }
 
-            collectTeamStageData(widgetOptions.teams, [].concat(ctrl.stages));
+            collectTeamStageData(widgetOptions.teams, [].concat(ctrl.teamCrlStages));
 
             var requestedData = getTeamDashboardDetails(widgetOptions.teams);
             if(!requestedData) {
@@ -156,7 +203,7 @@
         }
 
         function addTeam() {
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'components/widgets/product/add-team/add-team.html',
                 controller: 'addTeamController',
                 controllerAs: 'ctrl'
@@ -173,10 +220,23 @@
                     options.teams = [];
                 }
 
-                // add our new config to the array
-                options.teams.push(config);
+                var itemInd = false;
 
-                updateWidgetOptions(options);
+                // iterate over teams and set itemInd to true if team is already added to prod dashboard.
+                for(var i=0;i<options.teams.length;i++){
+                    if(options.teams[i].collectorItemId == config.collectorItemId){
+                        itemInd = true; break;
+                    }
+                }
+                // prompt a message if team is already added or add to prod dashboard otherwise.
+                if(itemInd){
+                    swal(config.name+' dashboard added already');
+                }else{
+                    // add our new config to the array
+                    options.teams.push(config);
+
+                    updateWidgetOptions(options);
+                }
             });
         }
 
@@ -190,7 +250,7 @@
 
             if(!team) { return; }
 
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'components/widgets/product/edit-team/edit-team.html',
                 controller: 'editTeamController',
                 controllerAs: 'ctrl',
@@ -246,7 +306,7 @@
                 return false;
             }
 
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'components/widgets/product/environment-commits/environment-commits.html',
                 controller: 'productEnvironmentCommitController',
                 controllerAs: 'ctrl',
@@ -256,7 +316,7 @@
                         return {
                             team: team,
                             stage: stage,
-                            stages: ctrl.stages
+                            stages: ctrl.teamCrlStages[team.collectorItemId]
                         };
                     }
                 }
@@ -264,7 +324,7 @@
         }
 
         function viewQualityDetails(team, stage, metricIndex) {
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'components/widgets/product/quality-details/quality-details.html',
                 controller: 'productQualityDetailsController',
                 controllerAs: 'ctrl',
@@ -291,7 +351,7 @@
                 if(configuredTeam.collectorItemId == collectorItemId) {
                     idx = i;
                     team = configuredTeam;
-                }
+                   }
             });
 
             if(!team) { return; }
@@ -323,6 +383,13 @@
                     obj[x] = xData;
                 }
             }
+
+            _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
+                if(configuredTeam.collectorItemId == collectorItemId) {
+                    idx = i;
+                    team = configuredTeam;
+                }
+            });
         }
 
         function getTeamDashboardDetails(teams) {
@@ -409,7 +476,7 @@
             productTestSuiteData.process(angular.extend(processDependencyObject, { testSuiteData: testSuiteData }));
         }
 
-        function collectTeamStageData(teams, ctrlStages) {
+        function collectTeamStageData(teams, teamCtrlStages) {
             // no need to go further if teams aren't configured
             if(!teams || !teams.length) {
                 return;
@@ -426,7 +493,9 @@
                     cleanseData: cleanseData,
                     pipelineData: pipelineData,
                     $q: $q,
-                    ctrlStages: ctrlStages
+                    $timeout: $timeout,
+                    ctrlStages: ctrl.teamCrlStages[configuredTeam.collectorItemId],
+                    prodStageValue:ctrl.prodStages[configuredTeam.collectorItemId]
                 };
 
                 productCommitData.process(commitDependencyObject);
