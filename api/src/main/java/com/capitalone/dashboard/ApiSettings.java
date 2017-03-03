@@ -1,6 +1,5 @@
 package com.capitalone.dashboard;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -13,15 +12,6 @@ public class ApiSettings {
      */
     private String key;
     private boolean logRequest;
-    
-    // Start global config
-    /**
-     * Location to place configurations that are consumed by the UI and API. May be moved into a separate location
-     * (such as a collection in mongo) in the future.
-     */
-    @Value("${systemConfig.multipleDeploymentServers:false}")
-    private boolean multipleDeploymentServers;
-    // End global config
     
     public String getKey() {
         return key;
@@ -37,9 +27,5 @@ public class ApiSettings {
 
     public void setLogRequest(boolean logRequest) {
         this.logRequest = logRequest;
-    }
-    
-    public boolean isMultipleDeploymentServers() {
-    	return multipleDeploymentServers;
     }
 }

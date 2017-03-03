@@ -69,14 +69,14 @@ public abstract class HygieiaMongoEventListener<T> extends AbstractMongoEventLis
     /**
      * Finds or creates a new environment stage for a pipeline
      * @param pipeline
-     * @param stageName
+     * @param pseudoEnvironmentName
      * @return
      */
-    protected EnvironmentStage getOrCreateEnvironmentStage(Pipeline pipeline, String stageName){
-        EnvironmentStage stage = pipeline.getStages().get(stageName);
+    protected EnvironmentStage getOrCreateEnvironmentStage(Pipeline pipeline, String pseudoEnvironmentName){
+        EnvironmentStage stage = pipeline.getEnvironmentStageMap().get(pseudoEnvironmentName);
         if(stage == null){
             stage = new EnvironmentStage();
-            pipeline.getStages().put(stageName, stage);
+            pipeline.getEnvironmentStageMap().put(pseudoEnvironmentName, stage);
         }
         return stage;
     }
