@@ -90,7 +90,7 @@ public class UserSteps {
 	
 	@Step
 	public void sets_template_dropdown_to(String templateDropdownOption) {
-		homePage.setTemplateDropdownTo(templateDropdownOption);
+		//homePage.setTemplateDropdownTo(templateDropdownOption);
 	}
 	
 	@Step
@@ -103,13 +103,4 @@ public class UserSteps {
 		homePage.typeInToApplicationTitleInput(applicationTitle);
 	}
 
-	@Step
-	public void deletes_all_owned_dashboards() throws InterruptedException {
-		homePage.deleteAllOwnedDashboards();
-	}
-
-	@Step
-	public void clears_cookies() {
-		homePage.getDriver().manage().deleteAllCookies();
-	}
 }

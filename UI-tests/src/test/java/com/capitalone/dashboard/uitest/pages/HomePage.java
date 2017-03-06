@@ -1,16 +1,13 @@
 package com.capitalone.dashboard.uitest.pages;
 
-import net.serenitybdd.core.pages.PageObject;
-import net.thucydides.core.annotations.At;
-import net.thucydides.core.annotations.DefaultUrl;
-
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
+
+import net.serenitybdd.core.pages.PageObject;
+import net.thucydides.core.annotations.At;
+import net.thucydides.core.annotations.DefaultUrl;
 
 @DefaultUrl("https://localhost:3000/#/site")
 @At(urls={"#HOST/#/site"})
@@ -82,23 +79,6 @@ public class HomePage extends PageObject {
 
 	public void typeInToApplicationTitleInput(String applicationTitle) {
 		applicationNameInput.sendKeys(applicationTitle);
-	}
-
-	public void deleteAllOwnedDashboards() throws InterruptedException {
-		while(dashboardsToDelete()) {
-			int numElementsBeforeDelete = getDriver().findElement(By.id("myDashboardsSection")).findElements(By.id("deleteDashboardButton")).size();
-			WebDriverWait wait = new WebDriverWait(getDriver(), 10);
-			WebElement dashToDelete = getDriver().findElement(By.id("myDashboardsSection")).findElement(By.id("deleteDashboardButton"));
-			dashToDelete.click();
-			wait.until(ExpectedConditions.numberOfElementsToBeLessThan(By.id("deleteDashboardButton"), numElementsBeforeDelete));
-			
-		}
-		
-	}
-
-	private boolean dashboardsToDelete() throws InterruptedException {
-		return getDriver().findElement(By.id("myDashboardsSection")).findElements(By.id("deleteDashboardButton")).size() > 0;
-		
 	}
 
 }

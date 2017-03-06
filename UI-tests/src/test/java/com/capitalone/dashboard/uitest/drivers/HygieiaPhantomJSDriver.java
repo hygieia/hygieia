@@ -17,8 +17,6 @@ public class HygieiaPhantomJSDriver implements DriverSource {
 		systemPathPrepper.prepareSystemPath();
 
 		DesiredCapabilitiesBuilder desiredCapabilities = new DesiredCapabilitiesBuilder()
-		.withProxy()
-		.withProxyAuth()
 		.withHttps()
 		.withSslProtocol();
 
