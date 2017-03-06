@@ -85,9 +85,11 @@
             if(valid) {
                 // get the normal display name
                 var name = 'Unknown';
+                var dashBoardId = "";
                 _(ctrl.dashboards).forEach(function(item) {
                     if(ctrl.collectorItemId == item.id) {
                         name = item.title;
+                        dashBoardId = item.dashboardId;
                     }
                 });
 
@@ -97,7 +99,8 @@
                     obj = {
                         collectorItemId: ctrl.collectorItemId,
                         name: name,
-                        customName: ctrl.customName
+                        customName: ctrl.customName,
+                        dashBoardId: dashBoardId
                     };
                 }
 
