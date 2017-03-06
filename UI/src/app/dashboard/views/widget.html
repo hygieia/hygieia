@@ -1,4 +1,4 @@
-<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" class="alert alert-info">{{alert.msg}}</alert>
 <div class="widget row"
      ng-class="{'configure' : state == widget_state.CONFIGURE, 'alert': display == display_state.ERROR}">
     <div class="widget-heading" ng-if="header">

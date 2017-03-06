@@ -63,6 +63,13 @@ public class PipelineServiceTest {
 
         Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
         dashboard.getWidgets().add(makePipelineWidget("Dev ENV", "QA Env", null, null, "Prod"));
+        Widget buildWidget = new Widget();
+        buildWidget.setName("build");
+        dashboard.getWidgets().add(buildWidget);
+
+        Widget commitWidget = new Widget();
+        commitWidget.setName("repo");
+        dashboard.getWidgets().add(commitWidget);
         ObjectId dashboardId = ObjectId.get();
         dashboard.setId(dashboardId);
 
@@ -91,7 +98,7 @@ public class PipelineServiceTest {
         assertEquals(actual.getCollectorItemId(), expected.getCollectorItemId());
         assertThat(actual.getStageCommits(PipelineStage.valueOf("prod")).size(),is(1));
         assertThat(actual.getStageCommits(PipelineStage.COMMIT).size(), is(1));
-        assertThat(actual.getStageCommits(PipelineStage.BUILD).size(), is(1));
+             assertThat(actual.getStageCommits(PipelineStage.BUILD).size(), is(1));
         assertThat(actual.getStageCommits(PipelineStage.valueOf("dev")).size(),is(1));
         assertThat(actual.getStageCommits(PipelineStage.valueOf("qa")).size(),is(1));
     }
