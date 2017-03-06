@@ -1,37 +1,44 @@
 # Hygieia℠ UI Tests
 
-This contains a Serenity based project for testing the Hygieia UI. It is important to ensure that changes made in the development process will not break existing functionality, and having a UI test suite can accomplish that. The foundation Serenity provides is a BDD mentality allowing the easy addition of use cases and meaningful reporting. It can also be easily integrated into the developement pipeline.
+This contains a Serenity based project for testing the Hygieia UI. It is important to ensure that changes made in the development process will not break existing functionality, and having a UI test suite can accomplish that. The foundation Serenity provides is a BDD mentality allowing the easy addition of use cases and meaningful reporting. It can also be easily integrated into the development pipeline.
 
-## Building
+The acceptance test suite included is based upon a Docker platform, completed by:
+* Starting up containers needed for testing
+* Inserting dummy data
+* Running test suite
+* Cleaning up containers
 
-Run `mvn verify` from the UI-test project to run the UI tests.
+## Selenium Hub
 
-**Note:** If running tests that perform valid log in operations, you will need to have your encrypted password in application.properties file, and the following maven parameter passed in `-Duitest.secret=[yourEncryptionKey]`
+The tests incorporate a set of images produced by Selenium, known as the Selenium Hub and Nodes. By using the Hub, one can use a Chrome node, Firefox node, etc to ensure that the application is tested fully. See this github page [here](https://github.com/SeleniumHQ/docker-selenium) for more quality information.
+
+**NOTE:** Data does not need to be removed since database container has no volumes. *The test data is deleted with the container.*
+
+## Running the UI Tests
+
+Included in the UI-test folder is a uitests.sh script. By changing the exported fields in this file, the script can be run on a nix based machine to run the UI tests in a dockerized manner. The included docker-compose file will create all the dependent images, run your set of acceptance tests, and finally the script will clean up all of the artifacts created during your suite. The only files that will be persisted in the process will be those that reside in your parent project - the test results will be modified in place in the UI-Test folder.
 
 
-## uitest.properties file
+## Personalizing the uitests.sh file
 
-The UI-test layer needs a property file in following format:
+In the case where your organization is using different images to test/deploy your instance of Hygieia, you may put your specific image tag in its correspoding spot in the uitests.sh script. This is helpful if you have an internal private registry, are working off of a local built image, etc. The image tags should be entered in the form below:
 
-```properties
-# uitest.properties
-UITEST_PROXY_URL=[Proxy URL - if you are using a proxy, put the url here]
-UITEST_PROXY_USERNAME=[your proxy username]
-UITEST_PROXY_PASSWORD=[your encrypted proxy password]
-UITEST_EXISTING_USER=[Test Username used to login - REQUIRED]
-UITEST_EXISTING_USERS_PASSWORD=[Test Password used to login - REQUIRED (Must be encrypted, see section below for encrypting)]
+```bash
+export MONGO_IMAGE=[ mongo image ]
+export API_IMAGE=[ api image ]
+export UI_IMAGE=[ ui image ]
+export HUB_IMAGE=[ hub image ]
+export NODE1_IMAGE=[ browser node image ]
+export NODE1_DRIVER=[ browser driver name ]
+export TEST_IMAGE=[ ui test image ]
 ```
 
-## A note on proxies...
-If you are not using a proxy, you can omit the UITEST_PROXY_URL and UITEST_PROXY_PASSWORD from your uitest.properties file, but you must also
-remove lines 20 & 21 from HygieiaPhantomJSDriver.
-```
-.withProxy()
-.withProxyAuth()
+If you are running the Hygieia UI on an SSL enabled server, ensure that the following export is set to true. This will point the hub/node combo to use https://host:443 instead of http://host.
+
+```bash
+export SSL_UI=[ true | false ]
 ```
 
-## Encrypting Passwords
+## A note on passwords...
 
-There is a class in the UI-Tests project that assists you in creating encrypted credentials. The EncryptionHelper guides you through the process of creating a new encryption key, or encrypting new fields to be used in the UI-tests. Run the EncryptionHelper class to get an encryption key or to encrypt new fields.
-
-**WARNING:** The EncryptionHelper generates a new key each time the class is run. If you already have a key, **IGNORE THE NEWLY GENERATED ONE**. Ask your team lead for the main key used for encryption/decryption. Using multiple keys may cause confusion.
+Since this is all test data, passwords are not encrypted. The included database setup file (mongo_setup.js) has a hashed password 'password' to allow easy insertion.
