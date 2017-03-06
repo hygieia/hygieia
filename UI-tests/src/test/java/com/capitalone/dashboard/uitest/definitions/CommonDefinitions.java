@@ -12,7 +12,6 @@ public class CommonDefinitions {
 	private String existingUserUsername = TestPropertiesManager.getExistingUserUsername();
 	private String existingUserPassword = TestPropertiesManager.getExistingUserPassword();
 	
-	
 	@Steps
 	UserSteps user;
 	

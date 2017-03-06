@@ -6,8 +6,6 @@ import java.util.List;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import com.capitalone.dashboard.uitest.utils.TestPropertiesManager;
-
 public class DesiredCapabilitiesBuilder {
 	
 	private List<String> cliArgs; 
@@ -18,20 +16,6 @@ public class DesiredCapabilitiesBuilder {
 	
 	public DesiredCapabilitiesBuilder with(String arg) {
 		cliArgs.add(arg);
-		return this;
-	}
-	
-	public DesiredCapabilitiesBuilder withProxy() {
-		String proxy = TestPropertiesManager.getProxyUrl();
-		cliArgs.add("--proxy=" + proxy);
-		return this;
-	}
-	
-	public DesiredCapabilitiesBuilder withProxyAuth(){
-		String username = TestPropertiesManager.getProxyUsername();		
-		String password = TestPropertiesManager.getProxyPassword();
-			
-		cliArgs.add("--proxy-auth=" + username + ":" + password);
 		return this;
 	}
 	

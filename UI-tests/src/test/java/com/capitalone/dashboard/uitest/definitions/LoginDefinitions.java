@@ -1,12 +1,12 @@
 package com.capitalone.dashboard.uitest.definitions;
 
-import net.thucydides.core.annotations.Steps;
-
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 
 import com.capitalone.dashboard.uitest.steps.UserSteps;
 import com.capitalone.dashboard.uitest.utils.TestPropertiesManager;
+
+import net.thucydides.core.annotations.Steps;
 
 public class LoginDefinitions {
 	
