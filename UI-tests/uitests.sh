@@ -6,10 +6,10 @@ export NODE1_IMAGE=[ browser node image ]
 export NODE1_DRIVER=[ browser driver name ]
 export TEST_IMAGE=[ ui test image ]
 
-export SSL=[ true | false ]
+export SSL_UI=[ true | false ]
 
 BASE_URL_ARG='http://hygieia-ui:80'
-if [ "$SSL" = true ] ; then
+if [ "$SSL_UI" = true ] ; then
     BASE_URL_ARG='https://hygieia-ui:443'
 fi
 

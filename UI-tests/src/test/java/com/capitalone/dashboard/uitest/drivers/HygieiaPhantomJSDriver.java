@@ -1,24 +1,21 @@
 package com.capitalone.dashboard.uitest.drivers;
 
-import net.thucydides.core.webdriver.DriverSource;
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import com.capitalone.dashboard.uitest.drivers.config.DesiredCapabilitiesBuilder;
-import com.capitalone.dashboard.uitest.utils.SystemPathPrepper;
+
+import net.thucydides.core.webdriver.DriverSource;
 
 public class HygieiaPhantomJSDriver implements DriverSource {
 
 	@Override
 	public WebDriver newDriver()  {
+		DesiredCapabilitiesBuilder desiredCapabilities = new DesiredCapabilitiesBuilder();
 		
-		SystemPathPrepper systemPathPrepper = new SystemPathPrepper();
-		systemPathPrepper.prepareSystemPath();
-
-		DesiredCapabilitiesBuilder desiredCapabilities = new DesiredCapabilitiesBuilder()
-		.withHttps()
-		.withSslProtocol();
+		if(Boolean.valueOf(System.getProperty("SSL_UI"))) {
+			desiredCapabilities.withHttps().withSslProtocol();
+		}
 
 		WebDriver driver = new PhantomJSDriver(desiredCapabilities.build());
 		
