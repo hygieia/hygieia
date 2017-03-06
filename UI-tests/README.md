@@ -24,14 +24,16 @@ Included in the UI-test folder is a uitests.sh script. By changing the exported 
 In the case where your organization is using different images to test/deploy your instance of Hygieia, you may put your specific image tag in its correspoding spot in the uitests.sh script. This is helpful if you have an internal private registry, are working off of a local built image, etc. The image tags should be entered in the form below:
 
 ```bash
-export MONGO_IMAGE=[ mongo image ]
-export API_IMAGE=[ api image ]
-export UI_IMAGE=[ ui image ]
-export HUB_IMAGE=[ hub image ]
-export NODE1_IMAGE=[ browser node image ]
-export NODE1_DRIVER=[ browser driver name ]
+export MONGO_IMAGE=[ mongo image (mongo:latest)]
+export API_IMAGE=[ api image (capitalone/hygieia-api:2.0.5) ]
+export UI_IMAGE=[ ui image (my.internal.registry:5000/devteam/hygieia-ui) ]
+export HUB_IMAGE=[ hub image** ]
+export NODE1_IMAGE=[ browser node image** ]
+export NODE1_DRIVER=[ browser driver name (chrome, firefox, phantomjs, etc) ]
 export TEST_IMAGE=[ ui test image ]
 ```
+****NOTE:** The Hub image used in the development of this suite was selenium/hub:3.1.0
+****NOTE:** The Node iamge used in the development of this suite was selenium/node-chrome:3.1.0
 
 If you are running the Hygieia UI on an SSL enabled server, ensure that the following export is set to true. This will point the hub/node combo to use https://host:443 instead of http://host.
 
