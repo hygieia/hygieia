@@ -32,8 +32,9 @@ export NODE1_IMAGE=[ browser node image** ]
 export NODE1_DRIVER=[ browser driver name (chrome, firefox, phantomjs, etc) ]
 export TEST_IMAGE=[ ui test image ]
 ```
-****NOTE:** The Hub image used in the development of this suite was selenium/hub:3.1.0
-****NOTE:** The Node iamge used in the development of this suite was selenium/node-chrome:3.1.0
+**NOTE:** The Hub image used in the development of this suite was selenium/hub:3.1.0
+
+**NOTE:** The Node iamge used in the development of this suite was selenium/node-chrome:3.1.0
 
 If you are running the Hygieia UI on an SSL enabled server, ensure that the following export is set to true. This will point the hub/node combo to use https://host:443 instead of http://host.
 
