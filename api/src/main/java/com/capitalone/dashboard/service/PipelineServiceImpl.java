@@ -141,8 +141,8 @@ public class PipelineServiceImpl implements PipelineService {
         Map<String, PipelineCommit> startingStage = findCommitsForStage(dashboard, pipeline, stage);
         List<PipelineResponseCommit> notPropagatedCommits = new ArrayList<>();
         for(Map.Entry<String,PipelineCommit> entry : startingStage.entrySet()){
-                PipelineResponseCommit commit = applyStageTimestamps(new PipelineResponseCommit((PipelineCommit)entry.getValue()), dashboard, pipeline,pipelineStageList);
-                notPropagatedCommits.add(commit);
+            PipelineResponseCommit commit = applyStageTimestamps(new PipelineResponseCommit((PipelineCommit)entry.getValue()), dashboard, pipeline,pipelineStageList);
+            notPropagatedCommits.add(commit);
         }
         return notPropagatedCommits;
     }
