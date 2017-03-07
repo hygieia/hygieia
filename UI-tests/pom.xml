@@ -40,11 +40,6 @@
 			<artifactId>commons-exec</artifactId>
 			<version>${apache.commons.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.capitalone.dashboard</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 	</dependencies>
 
 	<build>
