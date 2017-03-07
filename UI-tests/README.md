@@ -18,6 +18,8 @@ The tests incorporate a set of images produced by Selenium, known as the Seleniu
 
 Included in the UI-test folder is a uitests.sh script. By changing the exported fields in this file, the script can be run on a nix based machine to run the UI tests in a dockerized manner. The included docker-compose file will create all the dependent images, run your set of acceptance tests, and finally the script will clean up all of the artifacts created during your suite. The only files that will be persisted in the process will be those that reside in your parent project - the test results will be modified in place in the UI-Test folder.
 
+**NOTE:** The UI-test image must be created before the uitests.sh script is run. See the included docker/Dockerfile.
+
 
 ## Personalizing the uitests.sh file
 
