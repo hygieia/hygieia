@@ -1,6 +1,6 @@
 # Hygieia℠ UI Tests
 
-This contains a Serenity based project for testing the Hygieia UI. It is important to ensure that changes made in the development process will not break existing functionality, and having a UI test suite can accomplish that. The foundation Serenity provides is a BDD mentality allowing the easy addition of use cases and meaningful reporting. It can also be easily integrated into the development pipeline.
+This contains a Serenity based project for testing the Hygieia UI. It is important to ensure that changes made in the development process will not break existing functionality, and having a UI test suite can accomplish that. The foundation Serenity provides is a BDD mentality allowing the easy addition of use cases and meaningful reporting. It can also be easily integrated into the development pipeline; the reports are mounted as a volume to the UI Test service, allowing for viewing in tools such as Jenkins and GitLab CI.
 
 The acceptance test suite included is based upon a Docker platform, completed by:
 * Starting up containers needed for testing
@@ -14,9 +14,9 @@ The tests incorporate a set of images produced by Selenium, known as the Seleniu
 
 **NOTE:** Data does not need to be removed since database container has no volumes. *The test data is deleted with the container.*
 
-## Running the UI Tests
+## Running the UI Tests (With Docker)
 
-Included in the UI-test folder is a uitests.sh script. By changing the exported fields in this file, the script can be run on a nix based machine to run the UI tests in a dockerized manner. The included docker-compose file will create all the dependent images, run your set of acceptance tests, and finally the script will clean up all of the artifacts created during your suite. The only files that will be persisted in the process will be those that reside in your parent project - the test results will be modified in place in the UI-Test folder.
+Included in the UI-test folder is a uitests.sh script. By changing the exported fields in this file, the script can be run on a nix based machine to run the UI tests in a dockerized manner. The included docker-compose file will create all the dependent images, run your set of acceptance tests, and finally the script will clean up all of the artifacts created during your suite. The only files that will be persisted in the process will be those that reside in your parent project - the test results will be modified in place in the UI-Test folder. *For running the UI tests as a maven build and not part of docker, see the section below.*
 
 **NOTE:** The UI-test image must be created before the uitests.sh script is run. See the included docker/Dockerfile.
 
@@ -43,6 +43,12 @@ If you are running the Hygieia UI on an SSL enabled server, ensure that the foll
 ```bash
 export SSL_UI=[ true | false ]
 ```
+
+## Running the UI Tests locally
+
+On an OSX/Nix system, simply put the image names into the uitests.sh script, and mark if the UI is running on an SSL enabled server or not. Run the script with the following command from the UI-Tests folder (Using GIT Bash on a Windows machine).
+
+`./uitests.sh`
 
 ## A note on passwords...
 
