@@ -18,6 +18,14 @@ public class DashboardTest {
     public void findEnvironmentMappings(){
         Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
         dashboard.getWidgets().add(makePipelineWidget("DEV", "QA", null, null, "PROD"));
+        Widget buildWidget = new Widget();
+        buildWidget.setName("build");
+        dashboard.getWidgets().add(buildWidget);
+
+        Widget commitWidget = new Widget();
+        commitWidget.setName("repo");
+        dashboard.getWidgets().add(commitWidget);
+
         Map<PipelineStage, String> expected = new HashMap<>();
         expected.put(PipelineStage.valueOf("COMMIT"), "Commit");
         expected.put(PipelineStage.valueOf("BUILD"), "Build");
@@ -33,7 +41,7 @@ public class DashboardTest {
     public void findEnvironmentMappings_no_mappings_configured(){
         Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
         Map<PipelineStage, String> expected = new HashMap<>();
-        
+
         Map<PipelineStage, String> actual = PipelineUtils.getStageToEnvironmentNameMap(dashboard);
         assertEquals(expected, actual);
     }
