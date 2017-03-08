@@ -16,7 +16,9 @@ services:
             SPRING_DATA_MONGODB_USERNAME: db
             SPRING_DATA_MONGODB_PASSWORD: password
             
-            # Using replica set configuration to guarentee overriding any database host information that may be saved in the image.
+            # Using replica set and single node configuration to guarentee overriding any database host information that may be saved in the image.
+            SPRING_DATA_MONGODB_HOST: mongo
+            SPRING_DATA_MONGODB_PORT: 27017
             SPRING_DATA_MONGODB_HOST_PORT: mongo:27017
             SPRING_DATA_MONGODB_REPSET: 'true'
         depends_on:
