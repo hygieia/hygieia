@@ -4,7 +4,7 @@
 	<artifactId>ui-tests</artifactId>
 	<name>Hygieia UI Tests</name>
 	<description>UI Tests using JBehave and Selenium for the Hygieia Continuous Delivery Dashboard</description>
-	
+
 	<parent>
 		<groupId>com.capitalone.dashboard</groupId>
 		<artifactId>Hygieia</artifactId>
@@ -22,9 +22,9 @@
 
 	<dependencies>
 		<dependency>
-		    <groupId>net.serenity-bdd</groupId>
-		    <artifactId>serenity-core</artifactId>
-		    <version>${serenity.version}</version>
+			<groupId>net.serenity-bdd</groupId>
+			<artifactId>serenity-core</artifactId>
+			<version>${serenity.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.serenity-bdd</groupId>
@@ -43,6 +43,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>ui-tests</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -80,8 +81,17 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
-				</configuration>			
+				</configuration>
 			</plugin>
+			<plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <skipDockerBuild>false</skipDockerBuild>
+                    <imageName>hygieia-${project.build.finalName}</imageName>
+                    <dockerDirectory>${project.basedir}/docker</dockerDirectory>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
