@@ -16,6 +16,8 @@ The tests incorporate a set of images produced by Selenium, known as the Seleniu
 
 ## Running the UI Tests (With Docker)
 
+**NOTE:** In order to run the UI tests with the included mechanism, **the machine running the tests needs to have a version of docker compatible with docker-compose**.
+
 Included in the UI-test folder is a uitests.sh script. By changing the exported fields in this file, the script can be run on a nix based machine to run the UI tests in a dockerized manner. The included docker-compose file will create all the dependent images, run your set of acceptance tests, and finally the script will clean up all of the artifacts created during your suite. The only files that will be persisted in the process will be those that reside in your parent project - the test results will be modified in place in the UI-Test folder. *For running the UI tests as a maven build and not part of docker, see the section below.*
 
 **NOTE:** The UI-test image must be created before the uitests.sh script is run. See the included docker/Dockerfile.
@@ -46,9 +48,13 @@ export SSL_UI=[ true | false ]
 
 ## Running the UI Tests locally
 
-On an OSX/Nix system, simply put the image names into the uitests.sh script, and mark if the UI is running on an SSL enabled server or not. Run the script with the following command from the UI-Tests folder (Using GIT Bash on a Windows machine).
+On an OSX/Nix system, simply put the image names into the uitests.sh script, and mark if the UI is running on an SSL enabled server or not. Run the script with the following command from the UI-Tests folder (Using GIT Bash if on a Windows machine). If choosing to run the tests locally without docker, the user takes the responsibility of ensuring the workstation is equipped with the necessary Selenium drivers, the proper networking configured, all application/database nodes configured correctly, and all system environments set in the script/docker-compose.yml file accordingly.
 
 `./uitests.sh`
+
+## A note on test data..
+
+Since the tests were designed to run on a docker platform, **there is no data cleanup**. The original intent was to just remove the database node once the tests were complete.
 
 ## A note on passwords...
 
