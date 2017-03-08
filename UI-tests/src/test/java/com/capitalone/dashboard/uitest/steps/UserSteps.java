@@ -90,7 +90,7 @@ public class UserSteps {
 	
 	@Step
 	public void sets_template_dropdown_to(String templateDropdownOption) {
-		//homePage.setTemplateDropdownTo(templateDropdownOption);
+		homePage.setTemplateDropdownTo(templateDropdownOption);
 	}
 	
 	@Step
