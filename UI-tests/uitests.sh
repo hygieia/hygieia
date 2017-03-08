@@ -14,10 +14,8 @@ if [ "$SSL_UI" = true ] ; then
 fi
 
 docker-compose rm -f
-docker-compose build
 docker-compose up --timeout 1 --no-build -d
 
 docker-compose run uitests mvn clean verify -f UI-tests/pom.xml -DUITEST_EXISTING_USERNAME=hygieia_test_user -DUITEST_EXISTING_PASSWORD=password -Dwebdriver.base.url=$BASE_URL_ARG -Dwebdriver.remote.url=http://hub:4444/wd/hub -Dwebdriver.remote.driver=$NODE1_DRIVER
 
-docker-compose stop
 docker-compose down
