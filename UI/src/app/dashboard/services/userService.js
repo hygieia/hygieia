@@ -53,7 +53,7 @@
     	var username = this.getUsername();
 
     	// preexisting dashboards
-      	if (authtype === 'STANDARD' && dashboard.owner === username) {
+      	if (authtype === 'STANDARD' && owner === username) {
       		return true;
       	}
 
