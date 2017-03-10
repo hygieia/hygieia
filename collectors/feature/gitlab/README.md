@@ -47,7 +47,7 @@ dbusername=db
 dbpassword=dbpass
 
 # Logging File location
-logging.file=./logs/gitlab.log
+logging.file=./logs/gitlabFeature.log
 
 #Collector schedule (required)
 gitlab.cron=0 0/1 * * * *
