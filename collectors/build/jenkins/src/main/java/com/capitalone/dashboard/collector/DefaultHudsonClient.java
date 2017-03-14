@@ -159,15 +159,14 @@ public class DefaultHudsonClient implements HudsonClient {
     }
 
     public String buildJobQueryString () {
-        String query = JOB_QUERY;
+        StringBuilder query = new StringBuilder(JOB_QUERY);
         int depth = settings.getFolderDepth();
         for (int i = 1; i < depth; i++) {
-            query = query.substring(0,query.length()-i).concat(","+JOB_QUERY);
-            for (int j = 0; j < i; j ++) {
-                query = query.concat("]");
-            }
+            query.insert((query.length()-i), ",");
+            query.insert((query.length()-i), JOB_QUERY.substring(0,JOB_QUERY.length()-1));
+            query.insert((query.length()-i), "]");
         }
-        return query;
+        return query.toString();
     }
     
     /**
