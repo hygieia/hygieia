@@ -47,6 +47,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.antMatchers("/registerUser").permitAll()
 								.antMatchers("/login**").permitAll()
 								.antMatchers(HttpMethod.GET, "/**").permitAll()
+								
+								// Temporary solution to allow jenkins plugin to send data to the api
+							    //TODO: Secure with API Key
+								.antMatchers(HttpMethod.POST, "/build").permitAll()
+					            .antMatchers(HttpMethod.POST, "/deploy").permitAll()
+					            .antMatchers(HttpMethod.POST, "/artifact").permitAll()
+					            .antMatchers(HttpMethod.POST, "/quality/test").permitAll()
+					            .antMatchers(HttpMethod.POST, "/quality/static-analysis").permitAll()
+					            
 								.anyRequest().authenticated()
 									.and()
 								.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -55,7 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
 	}
 	
-	@Override
+    @Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(standardAuthenticationProvider);
 		
