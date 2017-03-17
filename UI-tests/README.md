@@ -52,7 +52,11 @@ On an OSX/Nix system, simply put the image names into the uitests.sh script, and
 
 `./uitests.sh`
 
-## A note on test data..
+## Test Data Results
+
+While the tests are being run, the entire project directory will be mounted to the UI Test container. Simply go to ${UI-Test Project Home}/target/site/serenity/index.html when the test execution is complete to view the test results.
+
+## A note on test data...
 
 Since the tests were designed to run on a docker platform, **there is no data cleanup**. The original intent was to just remove the database node once the tests were complete.
 
