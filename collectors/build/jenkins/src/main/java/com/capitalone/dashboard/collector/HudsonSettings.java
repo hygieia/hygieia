@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,8 @@ public class HudsonSettings {
     private List<String> apiKeys;
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
     private int pageSize;
+    @Value("${folderDepth:10}")
+    private int folderDepth;
 
     public String getCron() {
         return cron;
@@ -94,4 +97,12 @@ public class HudsonSettings {
     public int getPageSize() {
 		return pageSize;
 	}
+
+    public void setFolderDepth(int folderDepth) {
+        this.folderDepth = folderDepth;
+    }
+
+    public int getFolderDepth() {
+        return folderDepth;
+    }
 }
