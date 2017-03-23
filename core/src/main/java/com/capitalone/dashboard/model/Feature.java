@@ -16,11 +16,13 @@
 
 package com.capitalone.dashboard.model;
 
+import java.util.List;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 /**
  * Represents a feature (story/requirement) of a component.
@@ -519,5 +521,22 @@ public class Feature extends BaseModel {
 
 	public List<String> getsOwnersIsDeleted() {
 		return this.sOwnersIsDeleted;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		Feature that = (Feature) o;
+		EqualsBuilder builder = new EqualsBuilder();
+		return builder.append(collectorId, that.collectorId).append(sId, that.sId).build();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(17, 37).append(collectorId).append(sId).toHashCode();
 	}
 }
