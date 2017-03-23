@@ -56,9 +56,10 @@ public class DefaultHudsonClient implements HudsonClient {
     private final RestOperations rest;
     private final HudsonSettings settings;
 
+    private static final String API_SUFFIX = "api/json?tree=";
+    private static final String JOB_QUERY = "jobs[name,url,builds[number,url],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn]]";
+
     private static final String JOBS_URL_SUFFIX = "/api/json?tree=jobs";
-    private static final String JOBS_DETAILS_SUFFIX = "[name,url,builds[number,url],jobs[name,url]]";
-    private static final String SUBJOBS_URL_SUFFIX = "/api/json?tree=builds[number,url],jobs[name,url]";
 
     private static final String[] CHANGE_SET_ITEMS_TREE = new String[]{
             "user",
@@ -96,9 +97,11 @@ public class DefaultHudsonClient implements HudsonClient {
 
     @Override
     public Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl) {
+        LOG.debug("Enter getInstanceJobs");
         Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
         
         int jobsCount = getJobsCount(instanceUrl);
+        LOG.debug("Number of jobs " + jobsCount);
         
         int i = 0, pageSize = settings.getPageSize();
         // Default pageSize to 1000 for backward compatibility of settings when pageSize defaults to 0
@@ -107,7 +110,7 @@ public class DefaultHudsonClient implements HudsonClient {
         }
         while (i < jobsCount) {
 	        try {
-	            String url = joinURL(instanceUrl, JOBS_URL_SUFFIX + JOBS_DETAILS_SUFFIX + URLEncoder.encode("{" + i + "," + (i + pageSize) + "}", "UTF-8"));
+                String url = joinURL(instanceUrl, API_SUFFIX + buildJobQueryString() + URLEncoder.encode("{" + i + "," + (i + pageSize) + "}", "UTF-8"));
 	            ResponseEntity<String> responseEntity = makeRestCall(url);
 	            if (responseEntity == null) {
 	            	break;
@@ -130,7 +133,10 @@ public class DefaultHudsonClient implements HudsonClient {
 	
 	                    final String jobName = getString(jsonJob, "name");
 	                    final String jobURL = getString(jsonJob, "url");
-	                    
+                        final String jobClass = getString(jsonJob, "_class");
+
+                        LOG.debug("Process jobName " + jobName + " jobURL " + jobURL + " jobClass " + jobClass);
+
 	                    recursiveGetJobDetails(jsonJob, jobName, jobURL, instanceUrl, parser, result);
 	                }
 	            } catch (ParseException e) {
@@ -150,6 +156,17 @@ public class DefaultHudsonClient implements HudsonClient {
 	        i += pageSize;
         }
         return result;
+    }
+
+    public String buildJobQueryString () {
+        StringBuilder query = new StringBuilder(JOB_QUERY);
+        int depth = settings.getFolderDepth();
+        for (int i = 1; i < depth; i++) {
+            query.insert((query.length()-i), ",");
+            query.insert((query.length()-i), JOB_QUERY.substring(0,JOB_QUERY.length()-1));
+            query.insert((query.length()-i), "]");
+        }
+        return query.toString();
     }
     
     /**
@@ -192,9 +209,8 @@ public class DefaultHudsonClient implements HudsonClient {
     
     private void recursiveGetJobDetails(JSONObject jsonJob, String jobName, String jobURL, String instanceUrl, 
             JSONParser parser, Map<HudsonJob, Set<Build>> result) {        
-        LOG.debug("Job:" + jobName);
-        LOG.debug("jobURL: " + jobURL);
-        
+        LOG.debug("recursiveGetJobDetails: jobName " + jobName + " jobURL: " + jobURL);
+
         JSONArray jsonBuilds = getJsonArray(jsonJob, "builds");
         if (!jsonBuilds.isEmpty()) {
             HudsonJob hudsonJob = new HudsonJob();
@@ -209,6 +225,7 @@ public class DefaultHudsonClient implements HudsonClient {
                 // A basic Build object. This will be fleshed out later if this is a new Build.
                 String dockerLocalHostIP = settings.getDockerLocalHostIP();
                 String buildNumber = jsonBuild.get("number").toString();
+                LOG.debug(" buildNumber: " + buildNumber);
                 if (!"0".equals(buildNumber)) {
                     Build hudsonBuild = new Build();
                     hudsonBuild.setNumber(buildNumber);
@@ -229,34 +246,15 @@ public class DefaultHudsonClient implements HudsonClient {
             // add the builds to the job
             result.put(hudsonJob, builds);
         }
-            
-        JSONArray subJobs = getJsonArray(jsonJob, "jobs");  
+        JSONArray subJobs = getJsonArray(jsonJob, "jobs");
+
         for (Object subJob : subJobs) {
             // has sub-jobs (like Pipeline Multibranch project)
             final String subJobName = getString((JSONObject) subJob, "name");
             final String subJobURL = getString((JSONObject) subJob, "url");
-            
-            try {
-                ResponseEntity<String> responseEntity = makeRestCall(joinURL(rebuildJobUrl(subJobURL, instanceUrl), SUBJOBS_URL_SUFFIX));
-                String returnJSON = responseEntity.getBody();
-                
-                try {
-                    JSONObject jsonSubJob = (JSONObject) parser.parse(returnJSON);
-                    
-                    recursiveGetJobDetails(jsonSubJob, jobName + "/" + subJobName, subJobURL, instanceUrl, parser, result);
-                } catch (ParseException e) {
-                    LOG.error("Parsing jobs on instance: " + instanceUrl, e);
-                }          
-            } catch (RestClientException rce) {
-                LOG.error("client exception loading jobs", rce);
-                throw rce;
-            } catch (MalformedURLException mfe) {
-                LOG.error("malformed url for loading jobs", mfe);
-            } catch (URISyntaxException e1) {
-                LOG.error("wrong syntax url for loading jobs", e1);
-            } catch (UnsupportedEncodingException unse) {
-                LOG.error("Unsupported Encoding Exception subJobURL=" + subJobURL, unse);
-            }
+
+            JSONObject jsonSubJob = (JSONObject) subJob;
+            recursiveGetJobDetails(jsonSubJob, jobName + "/" + subJobName, subJobURL, instanceUrl, parser, result);
         }
     }
 
@@ -549,6 +547,7 @@ public class DefaultHudsonClient implements HudsonClient {
     
     @SuppressWarnings("PMD")
     protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException, URISyntaxException {
+        LOG.debug("Enter makeRestCall " + sUrl);
         URI thisuri = URI.create(sUrl);
         String userInfo = thisuri.getUserInfo();
 
