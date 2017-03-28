@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -188,8 +189,16 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
      * @return
      */
     private List<Dashboard> findAllDashboardsForBuild(Build build) {
+        if (build == null || build.getCollectorItemId() == null) {
+            //return an empty list if the build is not associated with a Dashboard
+            return new ArrayList<>();
+        }
         CollectorItem buildCollectorItem = collectorItemRepository.findOne(build.getCollectorItemId());
         List<Component> components = componentRepository.findByBuildCollectorItemId(buildCollectorItem.getId());
+        if (components == null || components.size() == 0) {
+            //return an empty list if the build is not associated with a Dashboard
+            return new ArrayList<>();
+        }
         return dashboardRepository.findByApplicationComponentsIn(components);
     }
 
