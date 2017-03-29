@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collecteur;
+package com.capitalone.dashboard.collector;
 
 import static org.junit.Assert.assertEquals;
 

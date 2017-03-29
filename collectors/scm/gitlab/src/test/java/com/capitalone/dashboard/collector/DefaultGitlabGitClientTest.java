@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collecteur;
+package com.capitalone.dashboard.collector;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestOperations;
 
+import com.capitalone.dashboard.collector.GitlabSettings;
 import com.capitalone.dashboard.gitlab.DefaultGitlabGitClient;
 import com.capitalone.dashboard.gitlab.GitlabCommitsResponseMapper;
 import com.capitalone.dashboard.gitlab.GitlabUrlUtility;

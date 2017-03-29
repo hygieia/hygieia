@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
-import com.capitalone.dashboard.collecteur.GitlabSettings;
+import com.capitalone.dashboard.collector.GitlabSettings;
 import com.capitalone.dashboard.gitlab.model.GitlabCommit;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitlabGitRepo;
