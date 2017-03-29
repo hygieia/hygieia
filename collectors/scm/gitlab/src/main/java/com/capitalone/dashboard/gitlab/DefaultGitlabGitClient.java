@@ -48,11 +48,11 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     public DefaultGitlabGitClient(GitlabUrlUtility gitlabUrlUtility, 
     								   GitlabSettings gitlabSettings,
                                        Supplier<RestOperations> restOperationsSupplier,
-                                       GitlabCommitsResponseMapper mapper) {
+                                       GitlabCommitsResponseMapper responseMapper) {
         this.gitlabUrlUtility = gitlabUrlUtility;
         this.gitlabSettings = gitlabSettings;
         this.restOperations = restOperationsSupplier.get();
-        this.responseMapper = mapper;
+        this.responseMapper = responseMapper;
     }
 
     @Override
