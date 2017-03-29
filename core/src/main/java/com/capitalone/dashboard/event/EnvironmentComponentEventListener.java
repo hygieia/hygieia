@@ -99,9 +99,9 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         int dotIdx = artifactName.lastIndexOf('.');
         if (dotIdx > 0) {
         	// If idx is 0 starts with a dot... in which case not an extension
-        	
-        	artifactName = artifactName.substring(0, dotIdx);
-        	artifactExtension = artifactName.substring(dotIdx);
+            artifactExtension = artifactName.substring(dotIdx + 1);
+            artifactName = artifactName.substring(0, dotIdx);
+
         }
 
         List<BinaryArtifact> artifacts = new ArrayList<>();
