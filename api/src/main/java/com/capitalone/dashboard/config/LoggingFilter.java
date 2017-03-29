@@ -108,6 +108,13 @@ public class LoggingFilter implements Filter {
             }
 
         } else {
+            //new code added 
+			//adds headers to response to allow CORS	
+			httpServletResponse.addHeader("Access-Control-Allow-Origin", "*");
+			
+			httpServletResponse.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+			httpServletResponse.addHeader("Access-Control-Allow-Headers", "Content-Type");
+			httpServletResponse.addHeader("Access-Control-Max-Age", "1");
             chain.doFilter(request, response);
         }
     }
