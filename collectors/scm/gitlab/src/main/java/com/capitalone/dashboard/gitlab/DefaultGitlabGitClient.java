@@ -42,7 +42,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     private final RestOperations restOperations;
     private final GitlabUrlUtility gitlabUrlUtility;
     private final GitlabSettings gitlabSettings;
-    private final GitlabCommitsResponseMapper mapper;;
+    private final GitlabCommitsResponseMapper responseMapper;
     
     @Autowired
     public DefaultGitlabGitClient(GitlabUrlUtility gitlabUrlUtility, 
@@ -52,7 +52,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
         this.gitlabUrlUtility = gitlabUrlUtility;
         this.gitlabSettings = gitlabSettings;
         this.restOperations = restOperationsSupplier.get();
-        this.mapper = mapper;
+        this.responseMapper = mapper;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		int nextPage = 1;
 		while (hasMorePages) {
 			ResponseEntity<GitlabCommit[]> response = makeRestCall(apiUrl, apiToken);
-			List<Commit> pageOfCommits = mapper.map(response.getBody(), repo.getRepoUrl(), repo.getBranch());
+			List<Commit> pageOfCommits = responseMapper.map(response.getBody(), repo.getRepoUrl(), repo.getBranch());
 			commits.addAll(pageOfCommits);
 			if (pageOfCommits.size() < RESULTS_PER_PAGE) {
 				hasMorePages = false;
