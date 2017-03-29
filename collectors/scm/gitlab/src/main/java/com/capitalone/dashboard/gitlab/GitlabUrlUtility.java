@@ -52,9 +52,13 @@ public class GitlabUrlUtility {
 		String date = getDateForCommits(repo, firstRun);
 
 		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+		
+		if(StringUtils.isNotBlank(gitlabSettings.getPort())) {
+		    builder.port(gitlabSettings.getPort());
+		}
+		
 		URI uri = builder.scheme(protocol)
 				.host(host)
-				.port(gitlabSettings.getPort())
 				.path(SEGMENT_API)
 				.path(repoName)
 				.path(COMMITS_API)

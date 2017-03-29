@@ -15,7 +15,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
 import com.capitalone.dashboard.collector.CollectorTask;
-import com.capitalone.dashboard.gitlab.v3.DefaultGitlabGitClient;
+import com.capitalone.dashboard.gitlab.DefaultGitlabGitClient;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
