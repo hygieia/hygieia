@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.capitalone.dashboard.gitlab.GitlabUrlUtility;
 import com.capitalone.dashboard.model.GitlabGitRepo;
 
 @RunWith(MockitoJUnitRunner.class)

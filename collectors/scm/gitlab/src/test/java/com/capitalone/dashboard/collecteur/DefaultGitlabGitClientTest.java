@@ -30,6 +30,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestOperations;
 
+import com.capitalone.dashboard.gitlab.GitlabUrlUtility;
+import com.capitalone.dashboard.gitlab.v3.DefaultGitlabGitClient;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitlabGitRepo;
 import com.capitalone.dashboard.util.Supplier;

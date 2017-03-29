@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collecteur;
+package com.capitalone.dashboard.gitlab;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.capitalone.dashboard.collecteur.GitlabSettings;
 import com.capitalone.dashboard.model.GitlabGitRepo;
 
 @Component

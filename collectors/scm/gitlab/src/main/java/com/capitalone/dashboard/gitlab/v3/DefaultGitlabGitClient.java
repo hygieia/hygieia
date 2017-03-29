@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collecteur;
+package com.capitalone.dashboard.gitlab.v3;
 
 import java.net.URI;
 import java.security.cert.CertificateException;
@@ -13,6 +13,7 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
+import com.capitalone.dashboard.collecteur.GitlabSettings;
+import com.capitalone.dashboard.gitlab.GitlabGitClient;
+import com.capitalone.dashboard.gitlab.GitlabUrlUtility;
+import com.capitalone.dashboard.gitlab.model.GitlabCommit;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitlabGitRepo;
 import com.capitalone.dashboard.util.Supplier;
@@ -40,17 +45,14 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     private final RestOperations restOperations;
     private final GitlabUrlUtility gitlabUrlUtility;
     private final GitlabSettings gitlabSettings;
-    private final GitlabCommitsResponseMapper responseMapper;
     
     @Autowired
     public DefaultGitlabGitClient(GitlabUrlUtility gitlabUrlUtility, 
     								   GitlabSettings gitlabSettings,
-                                       Supplier<RestOperations> restOperationsSupplier, 
-                                       GitlabCommitsResponseMapper responseMapper) {
+                                       Supplier<RestOperations> restOperationsSupplier) {
         this.gitlabUrlUtility = gitlabUrlUtility;
         this.gitlabSettings = gitlabSettings;
         this.restOperations = restOperationsSupplier.get();
-        this.responseMapper = responseMapper;
     }
 
     @Override
@@ -64,8 +66,8 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		boolean hasMorePages = true;
 		int nextPage = 1;
 		while (hasMorePages) {
-			ResponseEntity<String> response = makeRestCall(apiUrl, apiToken);
-			List<Commit> pageOfCommits = responseMapper.map(response.getBody(), repo.getRepoUrl(), repo.getBranch());
+			ResponseEntity<GitlabCommit[]> response = makeRestCall(apiUrl, apiToken);
+			List<Commit> pageOfCommits = mapResponseToCommit(response.getBody(), repo.getRepoUrl(), repo.getBranch());
 			commits.addAll(pageOfCommits);
 			if (pageOfCommits.size() < RESULTS_PER_PAGE) {
 				hasMorePages = false;
@@ -78,14 +80,35 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
         return commits;
     }
 
-	private ResponseEntity<String> makeRestCall(URI url, String apiToken) {
+	private ResponseEntity<GitlabCommit[]> makeRestCall(URI url, String apiToken) {
 		if(gitlabSettings.isSelfSignedCertificate()) {
 			trustSelfSignedSSL();
 		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("PRIVATE-TOKEN", apiToken);
-		return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+		return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), GitlabCommit[].class);
 	}
+	
+	private List<Commit> mapResponseToCommit(GitlabCommit[] gitlabCommits, String repoUrl, String branch) {
+        List<Commit> commits = new ArrayList<>();
+        for (GitlabCommit gitlabCommit : gitlabCommits) {
+            long timestamp = new DateTime(gitlabCommit.getCreatedAt()).getMillis();
+            
+            Commit commit = new Commit();
+            commit.setTimestamp(System.currentTimeMillis());
+            commit.setScmUrl(repoUrl);
+            commit.setScmBranch(branch);
+            commit.setScmRevisionNumber(gitlabCommit.getId());
+            commit.setScmAuthor(gitlabCommit.getAuthorName());
+            commit.setScmCommitLog(gitlabCommit.getMessage());
+            commit.setScmCommitTimestamp(timestamp);
+            commit.setNumberOfChanges(1);
+            commit.setScmParentRevisionNumbers(gitlabCommit.getParentIds());
+            
+            commits.add(commit);
+        }
+        return commits;
+    }
 
 	private void trustSelfSignedSSL() {
 		try {
