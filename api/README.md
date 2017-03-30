@@ -158,6 +158,42 @@ Step 2 : run the following on the command line
 mongo <dbhost>:<dbport>/<dbname> fixdups.js
 ```
 
+## Rundeck Webhook Integration
+
+Hygieia supports registering deployments using the Rundeck [webhook](http://rundeck.org/docs/manual/jobs.html#webhooks).  In the Rundeck job configuration, select **Send Notification?** and check the on success and on failure webhook checkboxes.  Configure the URL as `http://<apihost>:<apiport>/api/deploy/rundeck`.  In order to provide configurability, a few additional features can be added to the webhook URL to assist in locating the proper data to register the deployment.
+
+Additional request parameters can be added to the webhook URL to provide input on where to locate this data.  These parameters can be specified as `optionName=<value>` or `optionNameParam=<value>`.  When the webhook URL provides a parameter in the form `optionName=<value>`, it will use the value provided in the parameter for the field in Hygieia.  When the webhook URL provides a request parameter in the form `optionNameParam=<value>`, the option named `<value>` will be queried and the value of that option in the job will be used to populate that field.  Otherwise, the default values will be used.
+
+This can be done for the following options:
+
+* `appName`
+* `envName` (required)
+* `artifactName` (required)
+* `artifactGroup`
+* `artifactVersion`
+* `niceName` - Name that appears for the collector in the Hygieia UI.
+
+For a couple examples, to set the `artifactName` based on the `deploymentUnit` option in the Rundeck job, the webhook URL would be `http://<apihost>:<apiport>/api/deploy/rundeck?artifactNameParam=deploymentUnit`.  To set the `envName` to be `QA` every time this job runs, the webhook URL would be `http://<apihost>:<apiport>/api/deploy/rundeck?envName=QA`.
+
+If these values are not provided, it will first query the job to see if it has an option that matches the name of the field.  If not, it will look through the following possibilities:
+
+* `appName`
+    * `hygieiaAppName`
+* `envName`
+    * `environment`
+    * `env`
+    * `hygieiaEnvName`
+* `artifactName`
+    * `artifactId`
+    * `hygieiaArtifactName`
+* `artfactGroup`
+    * `group`
+    * `hygieiaArtifactGroup`
+* `niceName`
+    * `hygieiaNiceName`
+
+For the required fields, if the methods to locate values have been exhausted, the webhook endpoint will fail and no deployment will be registered.  An exception will appear in the Hygieia API log with the field name that is missing from the job.  If `appName` is not set, it will be set based on the Rundeck project name.
+
 ### Encrypted Properties
 
 Properties that are recommended to not be stored in plain text can be encrypted/decrypted using jasypt. 

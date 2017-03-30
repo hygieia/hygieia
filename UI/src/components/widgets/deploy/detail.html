@@ -58,6 +58,7 @@
                         <td ng-hide="server.online" class="servers-down"><span class="fa fa-arrow-down"></span></td>
                     </tr>
                     <tr ng-if="!unit.servers || unit.servers.length === 0">
+                        <td dash-status="{{unit.deployed}}"></td>
                         <td dash-status="{{unit.deployed? detail.statuses.PASS : (detail.environment.ignoreFailure? detail.statuses.IGNORE : detail.statuses.FAIL)}}"></td>
                         <td ng-if="unit.jobUrl">
                             <a ng-href="{{::unit.jobUrl}}" target="_blank">
