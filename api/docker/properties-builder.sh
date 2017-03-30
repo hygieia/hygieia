@@ -27,5 +27,14 @@ dbusername=${SPRING_DATA_MONGODB_USERNAME:-db}
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
+#Monitor Widget proxy credentials
+monitor.proxy.username=${MONITOR_PROXY_USERNAME:-}
+monitor.proxy.password=${MONITOR_PROXY_PASSWORD:-}
+
+#Monitor Widget proxy information
+monitor.proxy.type=${MONITOR_PROXY_TYPE:-http}
+monitor.proxy.host=${MONITOR_PROXY_HOST:-}
+monitor.proxy.port=${MONITOR_PROXY_PORT:-80}
+
 feature.dynamicPipeline=${FEATURE_DYNAMIC_PIPELINE:-disabled}
 EOF
