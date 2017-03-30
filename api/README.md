@@ -31,6 +31,8 @@ dbreplicaset=[false if you are not using MongoDB replicaset]
 dbhostport=[host1:port1,host2:port2,host3:port3]
 server.contextPath=[Web Context path if any]
 server.port=[Web server port - default is 8080]
+corsEnabled=false
+corsWhitelist=http://domain1.com:port,http://domain2.com:port
 version.number=@application.version.number@
 ```
 
