@@ -1,5 +1,6 @@
 package com.capitalone.dashboard;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,9 @@ public class ApiSettings {
      * encryptionKey to be specific. For now (for backwards compatibility) keeping it as it was.
      */
     private String key;
+    @Value("${corsEnabled:false}")
+    private boolean corsEnabled;
+    private String corsWhitelist;
     private boolean logRequest;
     
     public String getKey() {
@@ -19,6 +23,22 @@ public class ApiSettings {
 
     public void setKey(final String key) {
         this.key = key;
+    }
+
+    public boolean isCorsEnabled() {
+        return corsEnabled;
+    }
+
+    public void setCorsEnabled(boolean corsEnabled) {
+        this.corsEnabled = corsEnabled;
+    }
+
+    public String getCorsWhitelist() {
+        return corsWhitelist;
+    }
+
+    public void setCorsWhitelist(String corsWhitelist) {
+        this.corsWhitelist = corsWhitelist;
     }
 
     public boolean isLogRequest() {
