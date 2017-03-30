@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collecteur;
+package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.util.Supplier;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
