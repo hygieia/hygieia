@@ -111,7 +111,7 @@ public class DefaultJiraClient implements JiraClient {
 					rt = Lists.newArrayList(jiraRawRs);
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().get() != null && e.getStatusCode().get() == 401 ) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401 ) {
 					LOGGER.error("Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.");
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
@@ -138,7 +138,7 @@ public class DefaultJiraClient implements JiraClient {
 					rt = Lists.newArrayList(jiraRawRs);
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().get() != null && e.getStatusCode().get() == 401 ) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401 ) {
 					LOGGER.error("Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.");
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
@@ -253,7 +253,7 @@ public class DefaultJiraClient implements JiraClient {
 					rt = Lists.newArrayList(jiraRawRs);
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().get() != null && e.getStatusCode().get() == 401 ) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401 ) {
 					LOGGER.error("Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.");
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
@@ -295,7 +295,7 @@ public class DefaultJiraClient implements JiraClient {
 					}
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().get() != null && e.getStatusCode().get() == 401 ) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401 ) {
 					LOGGER.error("Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.");
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());

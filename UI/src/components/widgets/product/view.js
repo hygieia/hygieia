@@ -5,7 +5,7 @@
         .module(HygieiaConfig.module)
         .controller('productViewController', productViewController)
         .filter('flattenToArray', function() { return function(obj) {
-        if (!(obj instanceof Object)) return obj;
+            if (!(obj instanceof Object)) return obj;
             return Object.keys(obj).map(function (key) { return obj[key]; });
         }});
 
@@ -122,7 +122,7 @@
         }
 
 
-      // public methods
+        // public methods
         ctrl.addTeam = addTeam;
         ctrl.editTeam = editTeam;
         ctrl.openDashboard = openDashboard;
@@ -135,7 +135,7 @@
 
         //region public methods
         function processLoad() {
-          ctrl.sortableOptions = {
+            ctrl.sortableOptions = {
                 additionalPlaceholderClass: 'product-table-tr',
                 placeholder: function(el) {
                     // create a placeholder row
@@ -175,7 +175,7 @@
                 }
             };
 
-          // determine our current state
+            // determine our current state
             if (isReload === null) {
                 isReload = false;
             }
@@ -228,15 +228,32 @@
                         itemInd = true; break;
                     }
                 }
-                // prompt a message if team is already added or add to prod dashboard otherwise.
-                if(itemInd){
-                    swal(config.name+' dashboard added already');
-                }else{
-                    // add our new config to the array
-                    options.teams.push(config);
+                // get team dashboard details and see if build and commit widgets are available
+                var dashId = config.dashBoardId;
+                var buildInd = false;
+                var repoInd = false;
+                var widgets=[];
+                dashboardData.detail(dashId).then(function(result) {
+                    var res = result;
+                     widgets = result.widgets;
+                    _(widgets).forEach(function (widget) {
+                        if(widget.name == "build") buildInd = true;
+                        if(widget.name =="repo") repoInd = true;
 
-                    updateWidgetOptions(options);
-                }
+                    });
+
+                    // prompt a message if team is already added or add to prod dashboard otherwise.
+                    if(itemInd){
+                        swal(config.name+' dashboard added already');
+                    }else if(widgets==null ||(!buildInd && !repoInd)){
+                        swal('Configure Build and Code Repository for '+config.name+' before adding to Product Dashboard');
+                    }else{
+                        // add our new config to the array
+                        options.teams.push(config);
+
+                        updateWidgetOptions(options);
+                    }
+                });
             });
         }
 
@@ -351,7 +368,7 @@
                 if(configuredTeam.collectorItemId == collectorItemId) {
                     idx = i;
                     team = configuredTeam;
-                   }
+                }
             });
 
             if(!team) { return; }

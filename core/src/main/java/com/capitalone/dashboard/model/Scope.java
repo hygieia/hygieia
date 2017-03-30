@@ -16,6 +16,8 @@
 
 package com.capitalone.dashboard.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -125,6 +127,23 @@ public class Scope extends BaseModel {
 
 	public void setIsDeleted(String isDeleted) {
 		this.isDeleted = isDeleted;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
+
+		Scope that = (Scope) obj;
+		EqualsBuilder builder = new EqualsBuilder();
+		return builder.append(pId, that.pId).append(collectorId, that.collectorId).build();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(17, 37).append(pId).append(collectorId).toHashCode();
 	}
 
 }
