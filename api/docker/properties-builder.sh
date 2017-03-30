@@ -27,5 +27,9 @@ dbusername=${SPRING_DATA_MONGODB_USERNAME:-db}
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
+corsEnabled=${CORS_ENABLED:-false}
+
+corsWhitelist=${CORS_WHITELIST:-http://domain1.com:port,http://domain2.com:port}
+
 feature.dynamicPipeline=${FEATURE_DYNAMIC_PIPELINE:-disabled}
 EOF
