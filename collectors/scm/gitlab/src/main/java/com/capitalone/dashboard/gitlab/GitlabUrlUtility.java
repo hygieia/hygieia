@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collecteur;
+package com.capitalone.dashboard.gitlab;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.capitalone.dashboard.collector.GitlabSettings;
 import com.capitalone.dashboard.model.GitlabGitRepo;
 
 @Component
@@ -51,9 +52,13 @@ public class GitlabUrlUtility {
 		String date = getDateForCommits(repo, firstRun);
 
 		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+		
+		if(StringUtils.isNotBlank(gitlabSettings.getPort())) {
+		    builder.port(gitlabSettings.getPort());
+		}
+		
 		URI uri = builder.scheme(protocol)
 				.host(host)
-				.port(gitlabSettings.getPort())
 				.path(SEGMENT_API)
 				.path(repoName)
 				.path(COMMITS_API)
