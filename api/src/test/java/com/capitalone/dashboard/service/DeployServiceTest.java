@@ -10,10 +10,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -22,6 +27,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
@@ -280,6 +287,7 @@ public class DeployServiceTest {
         EnvironmentComponent co = new EnvironmentComponent();
         ObjectId id = new ObjectId();
         co.setId(id);
+        setUpCollector(id);
         when(environmentComponentRepository.save((EnvironmentComponent)any()))
             .thenReturn(co);
         String output = deployService.create(request);
@@ -313,6 +321,37 @@ public class DeployServiceTest {
         assertThat(envs.getResult().isEmpty(), is(true));
     }
 
+    @Test
+    public void rundeckDocumentCreatesValidDeployRequest() throws Exception {
+        InputStream body = DeployServiceTest.class.getResourceAsStream("rundeck_request.xml");
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new InputSource(body));
+        String executionId = "22";
+        String status = "success";
+        ObjectId id = new ObjectId();
+        setUpCollector(id);
+        ArgumentCaptor<EnvironmentComponent> captor = ArgumentCaptor.forClass(EnvironmentComponent.class);
+        String output = deployService.createRundeckBuild(doc, new HashMap<>(), executionId, status);
+        assertEquals(id.toString(), output);
+        verify(environmentComponentRepository, times(1)).save(captor.capture());
+        EnvironmentComponent value = captor.getValue();
+        assertEquals(true, value.isDeployed());
+        assertEquals("http://localhost:4440/project/Test/execution/follow/22", value.getJobUrl());
+        assertEquals(1481001727759L, value.getDeployTime());
+    }
+
+    private void setUpCollector(ObjectId id) {
+        Collector expectedCollector = makeCollector();
+        when(collectorService.createCollector(any())).thenReturn(expectedCollector);
+        CollectorItem expectedItem = makeCollectorItem();
+        when(collectorService.createCollectorItem(any())).thenReturn(expectedItem);
+        EnvironmentComponent co = new EnvironmentComponent();
+        co.setId(id);
+        when(environmentComponentRepository.save((EnvironmentComponent)any()))
+            .thenReturn(co);        
+    }
+    
     private EnvironmentComponent makeEnvComponent(String envName, String name, String version, boolean deployed) {
         EnvironmentComponent comp = new EnvironmentComponent();
         comp.setEnvironmentName(envName);
