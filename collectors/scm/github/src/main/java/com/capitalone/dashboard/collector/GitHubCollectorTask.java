@@ -130,8 +130,9 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         	if (repo.getLastUpdated() == 0) firstRun = true;
         	repo.setLastUpdated(System.currentTimeMillis());
             repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
+            repo.setBranches(gitHubClient.getBranches(repo));
             gitHubRepoRepository.save(repo);
-            LOG.debug(repo.getOptions().toString()+"::"+repo.getBranch());
+            LOG.debug(repo.getOptions().toString()+"::"+repo.getDefaultBranch());
             for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
             	LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
                 if (isNewCommit(repo, commit)) {

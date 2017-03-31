@@ -21,4 +21,6 @@ public interface GitHubClient {
 
 	List<Commit> getCommits(GitHubRepo repo, boolean firstRun);
 
+    List<String> getBranches(GitHubRepo repo);
+
 }

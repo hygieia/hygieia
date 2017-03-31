@@ -20,13 +20,13 @@ public class GitHubRepoTests {
     public void init() {
 		githubRepo1 = new GitHubRepo();
 		githubRepo1.setRepoUrl("https://github.com/capitalone/Hygiea.git");
-		githubRepo1.setBranch("master");
+		githubRepo1.setDefaultBranch("master");
 		githubRepo2 = new GitHubRepo();
 		githubRepo2.setRepoUrl("https://github.com/capitalone/Hygiea.git");
-        githubRepo2.setBranch("master");
+        githubRepo2.setDefaultBranch("master");
         githubRepo3=new GitHubRepo();
         githubRepo3.setRepoUrl("https://github.com/capitalone/Hygieas.git");
-        githubRepo3.setBranch("master");
+        githubRepo3.setDefaultBranch("master");
         }
 	
 	

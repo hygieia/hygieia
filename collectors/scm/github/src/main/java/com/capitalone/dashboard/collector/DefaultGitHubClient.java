@@ -60,12 +60,101 @@ public class DefaultGitHubClient implements GitHubClient {
 
 	@Override
 	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
+	//TODO get commits for all branches
 	public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) {
 
 		List<Commit> commits = new ArrayList<>();
 
 		// format URL
-		String repoUrl = (String) repo.getOptions().get("url");
+		String apiUrl = formatAPIURL((String) repo.getOptions().get("url"));
+
+		Date dt;
+		if (firstRun) {
+			int firstRunDaysHistory = settings.getFirstRunHistoryDays();
+			if (firstRunDaysHistory > 0) {
+				dt = getDate(new Date(), -firstRunDaysHistory, 0);
+			} else {
+				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
+			}
+		} else {
+			dt = getDate(new Date(repo.getLastUpdated()), 0, -10);
+		}
+		Calendar calendar = new GregorianCalendar();
+		TimeZone timeZone = calendar.getTimeZone();
+		Calendar cal = Calendar.getInstance(timeZone);
+		cal.setTime(dt);
+		String thisMoment = String.format("%tFT%<tRZ", cal);
+
+		String queryUrl = apiUrl.concat("/commits?sha=" + repo.getDefaultBranch()
+				+ "&since=" + thisMoment);
+		/*
+		 * Calendar cal = Calendar.getInstance(); cal.setTime(dateInstance);
+		 * cal.add(Calendar.DATE, -30); Date dateBefore30Days = cal.getTime();
+		 */
+
+		// decrypt password
+		String decryptedPassword = "";
+		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
+			try {
+				decryptedPassword = Encryption.decryptString(
+						repo.getPassword(), settings.getKey());
+			} catch (EncryptionException e) {
+				LOG.error(e.getMessage());
+			}
+		}
+		boolean lastPage = false;
+		int pageNumber = 1;
+		String queryUrlPage = queryUrl;
+		while (!lastPage) {
+			try {
+				ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+				JSONArray jsonArray = parseAsArray(response);
+				for (Object item : jsonArray) {
+					JSONObject jsonObject = (JSONObject) item;
+					String sha = str(jsonObject, "sha");
+					JSONObject commitObject = (JSONObject) jsonObject.get("commit");
+					JSONObject authorObject = (JSONObject) commitObject.get("author");
+					String message = str(commitObject, "message");
+					String author = str(authorObject, "name");
+					long timestamp = new DateTime(str(authorObject, "date"))
+							.getMillis();
+                    JSONArray parents = (JSONArray) jsonObject.get("parents");
+					List<String> parentShas = new ArrayList<>();
+					if (parents != null) {
+						for (Object parentObj : parents) {
+							parentShas.add(str((JSONObject)parentObj, "sha"));
+						}
+					}
+                    
+					Commit commit = new Commit();
+					commit.setTimestamp(System.currentTimeMillis());
+					commit.setScmUrl(repo.getRepoUrl());
+                    commit.setScmBranch(repo.getDefaultBranch());
+					commit.setScmRevisionNumber(sha);
+					commit.setScmParentRevisionNumbers(parentShas);
+					commit.setScmAuthor(author);
+					commit.setScmCommitLog(message);
+					commit.setScmCommitTimestamp(timestamp);
+					commit.setNumberOfChanges(1);
+                    commit.setType(getCommitType(CollectionUtils.size(parents), message));
+					commits.add(commit);
+				}
+				if (CollectionUtils.isEmpty(jsonArray)) {
+					lastPage = true;
+				} else {
+					lastPage = isThisLastPage(response);
+					pageNumber++;
+					queryUrlPage = queryUrl + "&page=" + pageNumber;
+				}
+			} catch (RestClientException re) {
+				LOG.error(re.getMessage() + ":" + queryUrl);
+				lastPage = true;
+			}
+		}
+		return commits;
+	}
+
+	private String formatAPIURL(String repoUrl){
 		if (repoUrl.endsWith(".git")) {
 			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
 		}
@@ -89,29 +178,15 @@ public class DefaultGitHubClient implements GitHubClient {
 			apiUrl = protocol + "://" + hostName + SEGMENT_API + repoName;
 			LOG.debug("API URL IS:"+apiUrl);
 		}
-		Date dt;
-		if (firstRun) {
-			int firstRunDaysHistory = settings.getFirstRunHistoryDays();
-			if (firstRunDaysHistory > 0) {
-				dt = getDate(new Date(), -firstRunDaysHistory, 0);
-			} else {
-				dt = getDate(new Date(), -FIRST_RUN_HISTORY_DEFAULT, 0);
-			}
-		} else {
-			dt = getDate(new Date(repo.getLastUpdated()), 0, -10);
-		}
-		Calendar calendar = new GregorianCalendar();
-		TimeZone timeZone = calendar.getTimeZone();
-		Calendar cal = Calendar.getInstance(timeZone);
-		cal.setTime(dt);
-		String thisMoment = String.format("%tFT%<tRZ", cal);
+		return apiUrl;
+	}
 
-		String queryUrl = apiUrl.concat("/commits?sha=" + repo.getBranch()
-				+ "&since=" + thisMoment);
-		/*
-		 * Calendar cal = Calendar.getInstance(); cal.setTime(dateInstance);
-		 * cal.add(Calendar.DATE, -30); Date dateBefore30Days = cal.getTime();
-		 */
+	public List<String> getBranches(GitHubRepo repo){
+
+		List<String> branches = new ArrayList<String>();
+
+		String apiUrl = formatAPIURL((String) repo.getOptions().get("url"));
+		String queryUrl = apiUrl.concat("/branches");
 
 		// decrypt password
 		String decryptedPassword = "";
@@ -123,58 +198,15 @@ public class DefaultGitHubClient implements GitHubClient {
 				LOG.error(e.getMessage());
 			}
 		}
-		boolean lastPage = false;
-		int pageNumber = 1;
-		String queryUrlPage = queryUrl;
-		while (!lastPage) {
-			try {
-				ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-				JSONArray jsonArray = paresAsArray(response);
-				for (Object item : jsonArray) {
-					JSONObject jsonObject = (JSONObject) item;
-					String sha = str(jsonObject, "sha");
-					JSONObject commitObject = (JSONObject) jsonObject.get("commit");
-					JSONObject authorObject = (JSONObject) commitObject.get("author");
-					String message = str(commitObject, "message");
-					String author = str(authorObject, "name");
-					long timestamp = new DateTime(str(authorObject, "date"))
-							.getMillis();
-                    JSONArray parents = (JSONArray) jsonObject.get("parents");
-					List<String> parentShas = new ArrayList<>();
-					if (parents != null) {
-						for (Object parentObj : parents) {
-							parentShas.add(str((JSONObject)parentObj, "sha"));
-						}
-					}
-                    
-					Commit commit = new Commit();
-					commit.setTimestamp(System.currentTimeMillis());
-					commit.setScmUrl(repo.getRepoUrl());
-                    commit.setScmBranch(repo.getBranch());
-					commit.setScmRevisionNumber(sha);
-					commit.setScmParentRevisionNumbers(parentShas);
-					commit.setScmAuthor(author);
-					commit.setScmCommitLog(message);
-					commit.setScmCommitTimestamp(timestamp);
-					commit.setNumberOfChanges(1);
-                    commit.setType(getCommitType(CollectionUtils.size(parents), message));
-					commits.add(commit);
-				}
-				if (CollectionUtils.isEmpty(jsonArray)) {
-					lastPage = true;
-				} else {
-					lastPage = isThisLastPage(response);
-					pageNumber++;
-					queryUrlPage = queryUrl + "&page=" + pageNumber;
-				}
 
-			} catch (RestClientException re) {
-				LOG.error(re.getMessage() + ":" + queryUrl);
-				lastPage = true;
-
-			}
+		ResponseEntity<String> response = makeRestCall(queryUrl, repo.getUserId(), decryptedPassword);
+		JSONArray jsonArray = parseAsArray(response);
+		for(Object item : jsonArray){
+			JSONObject jsonObject = (JSONObject) item;
+			branches.add((String) jsonObject.get("name"));
 		}
-		return commits;
+
+		return branches;
 	}
 
 	private CommitType getCommitType (int parentSize, String commitMessage ) {
@@ -237,7 +269,7 @@ public class DefaultGitHubClient implements GitHubClient {
 		return headers;
 	}
 
-	private JSONArray paresAsArray(ResponseEntity<String> response) {
+	private JSONArray parseAsArray(ResponseEntity<String> response) {
 		try {
 			return (JSONArray) new JSONParser().parse(response.getBody());
 		} catch (ParseException pe) {
