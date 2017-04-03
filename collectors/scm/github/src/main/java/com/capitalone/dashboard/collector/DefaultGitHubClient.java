@@ -181,6 +181,7 @@ public class DefaultGitHubClient implements GitHubClient {
 		return apiUrl;
 	}
 
+	@Override
 	public List<String> getBranches(GitHubRepo repo){
 
 		List<String> branches = new ArrayList<String>();
@@ -199,11 +200,15 @@ public class DefaultGitHubClient implements GitHubClient {
 			}
 		}
 
-		ResponseEntity<String> response = makeRestCall(queryUrl, repo.getUserId(), decryptedPassword);
-		JSONArray jsonArray = parseAsArray(response);
-		for(Object item : jsonArray){
-			JSONObject jsonObject = (JSONObject) item;
-			branches.add((String) jsonObject.get("name"));
+		try{
+			ResponseEntity<String> response = makeRestCall(queryUrl,  repo.getUserId(), decryptedPassword);
+			JSONArray jsonArray = parseAsArray(response);
+			for(Object item : jsonArray){
+				JSONObject jsonObject = (JSONObject) item;
+				branches.add((String) jsonObject.get("name"));
+			}
+		} catch (RestClientException re) {
+			LOG.error(re.getMessage() + ":" + queryUrl);
 		}
 
 		return branches;
