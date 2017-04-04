@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collecteur;
+package com.capitalone.dashboard.collector;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -13,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.capitalone.dashboard.collector.GitlabSettings;
+import com.capitalone.dashboard.gitlab.GitlabUrlUtility;
 import com.capitalone.dashboard.model.GitlabGitRepo;
 
 @RunWith(MockitoJUnitRunner.class)
