@@ -38,6 +38,13 @@ public class GitlabUriUtilityTest {
 	}
 	
 	@Test
+	public void shouldBuildTeamUriWithNoPort() {
+		when(settings.getPort()).thenReturn("");
+		URI result = urlUtility.buildTeamsUri(); 
+		assertEquals("http://gitlab.com/api/v3/groups?per_page=100", result.toString());
+	}
+	
+	@Test
 	public void shouldBuildBoardsUriWithCustomProtocol() {
 		when(settings.getProtocol()).thenReturn("https");
 		URI result = urlUtility.buildBoardsUri("23"); 
