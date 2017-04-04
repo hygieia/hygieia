@@ -59,6 +59,7 @@ public class GitlabUrlUtility {
 		
 		URI uri = builder.scheme(protocol)
 				.host(host)
+				.path(gitlabSettings.getPath())
 				.path(SEGMENT_API)
 				.path(repoName)
 				.path(COMMITS_API)
