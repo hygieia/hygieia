@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collecteur;
+package com.capitalone.dashboard.gitlab;
 
 import java.util.List;
 

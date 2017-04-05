@@ -1,5 +1,33 @@
 package com.capitalone.dashboard.rest;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.bson.types.ObjectId;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.w3c.dom.Document;
+
 import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.config.WebMVCConfig;
 import com.capitalone.dashboard.model.DataResponse;
@@ -8,25 +36,6 @@ import com.capitalone.dashboard.model.deploy.DeployableUnit;
 import com.capitalone.dashboard.model.deploy.Environment;
 import com.capitalone.dashboard.model.deploy.Server;
 import com.capitalone.dashboard.service.DeployService;
-import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
@@ -75,5 +84,28 @@ public class DeployControllerTest {
                 .andExpect(jsonPath("$result[0].units[0].servers", hasSize(1)))
                 .andExpect(jsonPath("$result[0].units[0].servers[0].name", is(server.getName())))
                 .andExpect(jsonPath("$result[0].units[0].servers[0].online", is(server.isOnline())));
+    }
+    
+    @Test
+    public void rundeckPostEndpointFailsToParseNonXMLDocument() throws Exception {
+        mockMvc.perform(post("/deploy/rundeck")
+                .content("failtoparse this because itsnot XML")
+                .contentType(MediaType.TEXT_XML_VALUE)
+                .header("X-Rundeck-Notification-Execution-ID", "test")
+                .header("X-Rundeck-Notification-Trigger", "success"))
+            .andExpect(status().isNotModified());           
+    }
+    
+    @Test
+    public void rundeckPostEndpointParsesXmlIntoDocument() throws Exception {
+        when(deployService.createRundeckBuild(any(Document.class), any(), eq("test"), eq("success")))
+            .thenReturn("8675309");
+        mockMvc.perform(post("/deploy/rundeck")
+                .content("<valid></valid>")
+                .contentType(MediaType.TEXT_XML_VALUE)
+                .header("X-Rundeck-Notification-Execution-ID", "test")
+                .header("X-Rundeck-Notification-Trigger", "success"))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));        
     }
 }
