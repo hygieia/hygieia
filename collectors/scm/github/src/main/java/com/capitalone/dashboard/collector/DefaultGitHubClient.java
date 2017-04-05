@@ -200,15 +200,28 @@ public class DefaultGitHubClient implements GitHubClient {
 			}
 		}
 
-		try{
-			ResponseEntity<String> response = makeRestCall(queryUrl,  repo.getUserId(), decryptedPassword);
-			JSONArray jsonArray = parseAsArray(response);
-			for(Object item : jsonArray){
-				JSONObject jsonObject = (JSONObject) item;
-				branches.add((String) jsonObject.get("name"));
+		boolean lastPage = false;
+		int pageNumber = 1;
+		String queryUrlPage = queryUrl;
+		while (!lastPage) {
+			try{
+				ResponseEntity<String> response = makeRestCall(queryUrlPage,  repo.getUserId(), decryptedPassword);
+				JSONArray jsonArray = parseAsArray(response);
+				for(Object item : jsonArray){
+					JSONObject jsonObject = (JSONObject) item;
+					branches.add((String) jsonObject.get("name"));
+				}
+				if (CollectionUtils.isEmpty(jsonArray)) {
+					lastPage = true;
+				} else {
+					lastPage = isThisLastPage(response);
+					pageNumber++;
+					queryUrlPage = queryUrl + "?page=" + pageNumber;
+				}
+			} catch (RestClientException re) {
+				LOG.error(re.getMessage() + ":" + queryUrlPage);
+				lastPage = true;
 			}
-		} catch (RestClientException re) {
-			LOG.error(re.getMessage() + ":" + queryUrl);
 		}
 
 		return branches;
