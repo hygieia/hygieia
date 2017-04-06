@@ -155,14 +155,15 @@ public class DefaultGitHubClient implements GitHubClient {
 	}
 
 	private String formatAPIURL(String repoUrl){
-		if (repoUrl.endsWith(".git")) {
-			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
+		String modifiedRepoURL = repoUrl;
+		if (modifiedRepoURL.endsWith(".git")) {
+			modifiedRepoURL = modifiedRepoURL.substring(0, modifiedRepoURL.lastIndexOf(".git"));
 		}
 		URL url;
 		String hostName = "";
 		String protocol = "";
 		try {
-			url = new URL(repoUrl);
+			url = new URL(modifiedRepoURL);
 			hostName = url.getHost();
 			protocol = url.getProtocol();
 		} catch (MalformedURLException e) {
@@ -170,7 +171,7 @@ public class DefaultGitHubClient implements GitHubClient {
 			LOG.error(e.getMessage());
 		}
 		String hostUrl = protocol + "://" + hostName + "/";
-		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
+		String repoName = modifiedRepoURL.substring(hostUrl.length(), modifiedRepoURL.length());
 		String apiUrl;
 		if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
 			apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + repoName;
