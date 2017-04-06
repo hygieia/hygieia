@@ -101,7 +101,7 @@ public class DeployBuilder {
                     artifactVersion = HygieiaUtils.guessVersionNumber(f.getName());
                 }
               
-                String artifactName = HygieiaUtils.determineArtifactName(f, artifactVersion);
+                String artifactName = HygieiaUtils.getFileNameMinusVersion(f, artifactVersion);
                 
                 bac.setArtifactVersion(artifactVersion);
                 bac.setArtifactName(artifactName);

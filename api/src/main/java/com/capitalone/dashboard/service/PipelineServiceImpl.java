@@ -54,12 +54,14 @@ public class PipelineServiceImpl implements PipelineService {
     }
 
     private PipelineResponse buildPipelineResponse(Pipeline pipeline, Long beginDate, Long endDate){
-
+        Long lowerBound = beginDate;
         if(beginDate == null){
             Calendar cal = new GregorianCalendar();
             cal.setTime(new Date());
             cal.add(Calendar.DAY_OF_MONTH, PROD_COMMIT_DATE_RANGE_DEFAULT);
+            lowerBound = cal.getTime().getTime();
         }
+        Long upperBound = endDate != null ? endDate : new Date().getTime();
         /**
          * get the collector item and dashboard
          */
@@ -81,10 +83,76 @@ public class PipelineServiceImpl implements PipelineService {
         for(PipelineStage stage : pipelineStageList){
             List<PipelineResponseCommit> commitsForStage = findNotPropagatedCommits(dashboard, pipeline, stage,pipelineStageList);
             pipelineResponse.setStageCommits(stage, commitsForStage);
+            /**
+             * remove prod commits outside of filter date range
+             */
+            Iterator<PipelineResponseCommit> commitIterator = commitsForStage.iterator();
+            // Treat our last system stage as "prod"
+            if(stage.equals(pipelineResponse.getProdStage())) {
+                while(commitIterator.hasNext()){
+                    PipelineResponseCommit commit = commitIterator.next();
+                    if(!isBetween(commit.getProcessedTimestamps().get(stage.getName()), lowerBound, upperBound)){
+                        commitIterator.remove();
+                    }
+                }
+            }
+
         }
+        pipelineResponse.setUnmappedStages(findUnmappedStages(dashboard,pipelineStageList)
+                .stream().map(it -> it.getName()).collect(Collectors.toList()));
+
         return pipelineResponse;
     }
 
+    /**
+     * finds any stages for a dashboard that aren't mapped.
+     * @param dashboard
+     * @return a list of deploy PipelineStages that are not mapped
+     */
+    private List<PipelineStage> findUnmappedStages(Dashboard dashboard,List<PipelineStage> pipelineStageList){
+        List<PipelineStage> unmappedStages = new ArrayList<>();
+
+        Map<PipelineStage, String> stageToEnvironmentNameMap = PipelineUtils.getStageToEnvironmentNameMap(dashboard);
+
+        for (PipelineStage systemStage : pipelineStageList) {
+            if (PipelineStageType.DEPLOY.equals(systemStage.getType())) {
+                String mappedName = stageToEnvironmentNameMap.get(systemStage);
+                if (mappedName == null || mappedName.isEmpty()) {
+                    unmappedStages.add(systemStage);
+                }
+            }
+        }
+
+        return unmappedStages;
+    }
+
+    /**
+     * Finds a map of commits for all stages after the current stage
+     * @param stage
+     * @param pipeline
+     * @param dashboard
+     * @return
+     */
+    private Map<String, PipelineCommit> getCommitsAfterStage(PipelineStage stage, Pipeline pipeline, Dashboard dashboard,List<PipelineStage> pipelineStageList){
+        int stageOrdinal = pipelineStageList.indexOf(stage);
+
+        Map<String, PipelineCommit> unionOfAllSets = new HashMap<>();
+
+        for (int systemStageOrdinal = 0; systemStageOrdinal < pipelineStageList.size(); ++systemStageOrdinal) {
+            PipelineStage systemStage = pipelineStageList.get(systemStageOrdinal);
+
+            if (systemStageOrdinal > stageOrdinal) {
+                Map<String, PipelineCommit> commits = findCommitsForStage(dashboard, pipeline, systemStage);
+                unionOfAllSets.putAll(commits);
+            }
+        }
+        return unionOfAllSets;
+    }
+
+
+    private boolean isBetween(Long commitTimestamp, Long lowerBound, Long upperBound){
+        return (lowerBound <= commitTimestamp && commitTimestamp <= upperBound);
+    }
 
     /**
      * For a given commit, will traverse the pipeline and find the time it entered in each stage of the pipeline
@@ -139,10 +207,14 @@ public class PipelineServiceImpl implements PipelineService {
      */
     public List<PipelineResponseCommit> findNotPropagatedCommits(Dashboard dashboard, Pipeline pipeline, PipelineStage stage,List<PipelineStage> pipelineStageList){
         Map<String, PipelineCommit> startingStage = findCommitsForStage(dashboard, pipeline, stage);
+        Map<String, PipelineCommit> commitsInLaterStages = getCommitsAfterStage(stage, pipeline, dashboard,pipelineStageList);
+
         List<PipelineResponseCommit> notPropagatedCommits = new ArrayList<>();
         for(Map.Entry<String,PipelineCommit> entry : startingStage.entrySet()){
-            PipelineResponseCommit commit = applyStageTimestamps(new PipelineResponseCommit((PipelineCommit)entry.getValue()), dashboard, pipeline,pipelineStageList);
-            notPropagatedCommits.add(commit);
+            if(!commitsInLaterStages.containsKey(entry.getKey())) {
+                PipelineResponseCommit commit = applyStageTimestamps(new PipelineResponseCommit((PipelineCommit) entry.getValue()), dashboard, pipeline, pipelineStageList);
+                notPropagatedCommits.add(commit);
+            }
         }
         return notPropagatedCommits;
     }

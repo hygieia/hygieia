@@ -75,13 +75,13 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
         System.getProperties().put("https.proxyPort", settings.getProxyPort());
         System.getProperties().put("http.nonProxyHosts", settings.getNonProxy());
 
-        ec2Client = new AmazonEC2Client(new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(),
-                new ProfileCredentialsProvider(settings.getProfile())));
+        ec2Client = new AmazonEC2Client(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
+                new InstanceProfileCredentialsProvider()));
 
-        cloudWatchClient = new AmazonCloudWatchClient(new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(),
-                new ProfileCredentialsProvider(settings.getProfile())));
-        autoScalingClient = new AmazonAutoScalingClient(new AWSCredentialsProviderChain(new InstanceProfileCredentialsProvider(),
-                new ProfileCredentialsProvider(settings.getProfile())));
+        cloudWatchClient = new AmazonCloudWatchClient(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
+                new InstanceProfileCredentialsProvider()));
+        autoScalingClient = new AmazonAutoScalingClient(new AWSCredentialsProviderChain(new ProfileCredentialsProvider(settings.getProfile()),
+                new InstanceProfileCredentialsProvider()));
     }
 
     /**

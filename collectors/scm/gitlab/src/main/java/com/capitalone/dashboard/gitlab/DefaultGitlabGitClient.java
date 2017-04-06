@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.collecteur;
+package com.capitalone.dashboard.gitlab;
 
 import java.net.URI;
 import java.security.cert.CertificateException;
@@ -21,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
+import com.capitalone.dashboard.collector.GitlabSettings;
+import com.capitalone.dashboard.gitlab.model.GitlabCommit;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitlabGitRepo;
 import com.capitalone.dashboard.util.Supplier;
@@ -45,7 +47,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
     @Autowired
     public DefaultGitlabGitClient(GitlabUrlUtility gitlabUrlUtility, 
     								   GitlabSettings gitlabSettings,
-                                       Supplier<RestOperations> restOperationsSupplier, 
+                                       Supplier<RestOperations> restOperationsSupplier,
                                        GitlabCommitsResponseMapper responseMapper) {
         this.gitlabUrlUtility = gitlabUrlUtility;
         this.gitlabSettings = gitlabSettings;
@@ -64,7 +66,7 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
 		boolean hasMorePages = true;
 		int nextPage = 1;
 		while (hasMorePages) {
-			ResponseEntity<String> response = makeRestCall(apiUrl, apiToken);
+			ResponseEntity<GitlabCommit[]> response = makeRestCall(apiUrl, apiToken);
 			List<Commit> pageOfCommits = responseMapper.map(response.getBody(), repo.getRepoUrl(), repo.getBranch());
 			commits.addAll(pageOfCommits);
 			if (pageOfCommits.size() < RESULTS_PER_PAGE) {
@@ -78,13 +80,13 @@ public class DefaultGitlabGitClient implements  GitlabGitClient {
         return commits;
     }
 
-	private ResponseEntity<String> makeRestCall(URI url, String apiToken) {
+	private ResponseEntity<GitlabCommit[]> makeRestCall(URI url, String apiToken) {
 		if(gitlabSettings.isSelfSignedCertificate()) {
 			trustSelfSignedSSL();
 		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("PRIVATE-TOKEN", apiToken);
-		return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+		return restOperations.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), GitlabCommit[].class);
 	}
 
 	private void trustSelfSignedSSL() {
