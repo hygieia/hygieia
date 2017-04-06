@@ -60,6 +60,9 @@ gitlab.protocol=http
 
 #Gitlab port (optional, defaults to protocol default port)
 gitlab.port=80
+
+#Gitlab path (optional, if your instance of gitlab requires a path)
+gitlab.path=/gitlab/resides/here
   
 #Gitlab API Token (required, collector will have permission of user associated to the token)
 #If token is from admin account, will be able to view all teams, and can collect all issues

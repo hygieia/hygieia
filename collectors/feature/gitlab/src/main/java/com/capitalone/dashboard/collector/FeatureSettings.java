@@ -15,6 +15,7 @@ public class FeatureSettings {
 	private String protocol;
 	private String host;
 	private String port;
+	private String path;
 	private String apiToken;
 
 	public String getCron() {
@@ -48,6 +49,14 @@ public class FeatureSettings {
 	public void setPort(String port) {
 		this.port = port;
 	}
+	
+	public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getPath() {
+        return path;
+    }
 
 	public String getApiToken() {
 		return apiToken;
@@ -56,4 +65,5 @@ public class FeatureSettings {
 	public void setApiToken(String apiToken) {
 		this.apiToken = apiToken;
 	}
+
 }
