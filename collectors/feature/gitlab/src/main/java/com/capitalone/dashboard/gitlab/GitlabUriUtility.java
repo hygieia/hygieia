@@ -95,6 +95,7 @@ public class GitlabUriUtility {
 		
 		return builder.scheme(protocol)
 				.host(host)
+				.path(settings.getPath())
 				.pathSegment(API_PATH_SEGMENT)
 				.pathSegment(VERSION_PATH_SEGMENT)
 				.queryParam(RESULT_PER_PAGE_QUERY_PARAM_KEY, RESULTS_PER_PAGE);
