@@ -34,10 +34,16 @@ server.port=[Web server port - default is 8080]
 corsEnabled=false
 corsWhitelist=http://domain1.com:port,http://domain2.com:port
 version.number=@application.version.number@
+monitor.proxy.host=[hostname of proxy server]
+monitor.proxy.type=[http|socks|direct]
+monitor.proxy.port=[port enabled on proxy server]
+monitor.proxy.username=[proxy username]
+monitor.proxy.password=[proxy password]
 ```
 
 All the above values are optional. Even without the property file you must be able to run the api (assuming you have mongodb installed with no authorization).
 **Note:** When `dbusername` is not present or the value is empty then it skips the mongodb authorization part.
+**Note:** When enabling proxy support for the monitor widget, if the host is not supplied the rest of the monitor.proxy args are ignored. If running with Docker, the port and type will be defaulted to 80 and HTTP. When running locally, these must be supplied.
 
 ## Run the API
 
