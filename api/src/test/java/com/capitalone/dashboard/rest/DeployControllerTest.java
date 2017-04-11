@@ -74,16 +74,16 @@ public class DeployControllerTest {
 
         mockMvc.perform(get("/deploy/status/" + componentId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$result", hasSize(1)))
-                .andExpect(jsonPath("$result[0].name", is(e.getName())))
-                .andExpect(jsonPath("$result[0].units", hasSize(1)))
-                .andExpect(jsonPath("$result[0].units[0].name", is(unit.getName())))
-                .andExpect(jsonPath("$result[0].units[0].version", is(unit.getVersion())))
-                .andExpect(jsonPath("$result[0].units[0].deployed", is(unit.isDeployed())))
-                .andExpect(jsonPath("$result[0].units[0].lastUpdated", is((int) unit.getLastUpdated())))
-                .andExpect(jsonPath("$result[0].units[0].servers", hasSize(1)))
-                .andExpect(jsonPath("$result[0].units[0].servers[0].name", is(server.getName())))
-                .andExpect(jsonPath("$result[0].units[0].servers[0].online", is(server.isOnline())));
+                .andExpect(jsonPath("$.result", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].name", is(e.getName())))
+                .andExpect(jsonPath("$.result[0].units", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].units[0].name", is(unit.getName())))
+                .andExpect(jsonPath("$.result[0].units[0].version", is(unit.getVersion())))
+                .andExpect(jsonPath("$.result[0].units[0].deployed", is(unit.isDeployed())))
+                .andExpect(jsonPath("$.result[0].units[0].lastUpdated", is((int) unit.getLastUpdated())))
+                .andExpect(jsonPath("$.result[0].units[0].servers", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].units[0].servers[0].name", is(server.getName())))
+                .andExpect(jsonPath("$.result[0].units[0].servers[0].online", is(server.isOnline())));
     }
     
     @Test

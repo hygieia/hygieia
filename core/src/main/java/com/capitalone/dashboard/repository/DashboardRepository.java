@@ -1,13 +1,15 @@
 package com.capitalone.dashboard.repository;
 
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
+import java.util.Collection;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import java.util.Collection;
-import java.util.List;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Owner;
 
 /**
  * {@link Dashboard} repository.
@@ -15,6 +17,7 @@ import java.util.List;
 public interface DashboardRepository extends PagingAndSortingRepository<Dashboard, ObjectId> {
 	
 	List<Dashboard> findByOwner(String owner);
+	List<Dashboard> findByOwners(Owner owner);
 	List<Dashboard> findByTitle(String title);
 
     List<Dashboard> findByApplicationComponentsIn(Collection<Component> components);
