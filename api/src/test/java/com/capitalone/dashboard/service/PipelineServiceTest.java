@@ -1,31 +1,42 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.CollectorItemRepository;
-import com.capitalone.dashboard.repository.DashboardRepository;
-import com.capitalone.dashboard.repository.PipelineRepository;
-import com.capitalone.dashboard.request.PipelineSearchRequest;
-import com.capitalone.dashboard.util.PipelineUtils;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.bson.types.ObjectId;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.*;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertEquals;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.Pipeline;
+import com.capitalone.dashboard.model.PipelineCommit;
+import com.capitalone.dashboard.model.PipelineResponse;
+import com.capitalone.dashboard.model.PipelineResponseCommit;
+import com.capitalone.dashboard.model.PipelineStage;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.repository.PipelineRepository;
+import com.capitalone.dashboard.request.PipelineSearchRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PipelineServiceTest {
@@ -143,7 +154,7 @@ public class PipelineServiceTest {
             app.addComponent(new Component(compName));
         }
 
-        Dashboard dashboard = new Dashboard(template, title, app, owner, DashboardType.Team);
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team);
         return dashboard;
     }
 

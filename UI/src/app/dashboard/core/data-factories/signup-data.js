@@ -10,7 +10,7 @@
 
     function signupData($http) {
         var testDetailRoute = 'test-data/signup_detail.json';
-        var SignupDetailRoute = '/api/registerUser/';
+        var SignupDetailRoute = '/api/registerUser';
 
         return {
             signup: signup
@@ -41,9 +41,7 @@
           }
           else
           {
-        return $http.post(SignupDetailRoute,postData).then(function (response) {
-            return response.data;
-        });
+        return $http.post(SignupDetailRoute,postData);
       }
     }
   }
