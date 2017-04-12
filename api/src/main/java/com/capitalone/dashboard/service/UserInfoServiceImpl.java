@@ -13,6 +13,7 @@ import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Component
 public class UserInfoServiceImpl implements UserInfoService {
@@ -44,6 +45,35 @@ public class UserInfoServiceImpl implements UserInfoService {
 		
 		return userInfo;
 	}
+	
+    @Override
+    public Collection<UserInfo> getUsers() {
+        return Sets.newHashSet(userInfoRepository.findAll());
+    }
+    
+    @Override
+    public UserInfo addAuthorityToUser(AuthType authType, String username, UserRole role) {
+        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
+        if (user == null) {
+            return null;
+        }
+        
+        user.getAuthorities().add(role);
+        UserInfo savedUser = userInfoRepository.save(user);
+        return savedUser;
+    }
+    
+    @Override
+    public UserInfo removeAuthorityFromUser(AuthType authType, String username, UserRole role) {
+        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
+        if (user == null) {
+            return null;
+        }
+        
+        user.getAuthorities().remove(role);
+        UserInfo savedUser = userInfoRepository.save(user);
+        return savedUser;
+    }
 
 	private UserInfo createUserInfo(String username, AuthType authType) {
 		UserInfo userInfo = new UserInfo();
@@ -68,5 +98,5 @@ public class UserInfoServiceImpl implements UserInfoService {
 		
 		return grantedAuthorities;
 	}
-	
+
 }
