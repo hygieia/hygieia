@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$location','$uibModal', 'userService', 'authService'];
-    function AdminController(dashboardData, $location, $uibModal, userService, authService) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location','$uibModal', 'userService', 'authService', 'userData'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -27,6 +27,8 @@
         ctrl.login = login;
         ctrl.logout = logout;
         ctrl.renameDashboard=renameDashboard;
+
+        $scope.tab="dashboards";
 
         // list of available themes. Must be updated manually
         ctrl.themes = [
@@ -62,6 +64,7 @@
 
         // request dashboards
         dashboardData.search().then(processResponse);
+        userData.getAllUsers().then(processUserResponse);
 
 
         //implementation of logout
@@ -122,5 +125,42 @@
                 });
             }
         }
+
+        function processUserResponse(response) {
+            $scope.users = response.data;
+        }
+
+        $scope.navigateToTab = function(tab) {
+          $scope.tab=tab;
+        }
+
+        $scope.isAdmin = function(user) {
+          return user.authorities.indexOf("ROLE_ADMIN") != -1;
+        }
+
+        $scope.promoteUserToAdmin = function(user) {
+          userData.promoteUserToAdmin(user).then(
+            function(response) {
+              var index = $scope.users.indexOf(user);
+              $scope.users[index] = response.data;
+            },
+            function(error) {
+              console.log(error);
+            }
+        );
+        }
+
+        $scope.demoteUserFromAdmin = function(user) {
+          userData.demoteUserFromAdmin(user).then(
+            function(response) {
+              var index = $scope.users.indexOf(user);
+              $scope.users[index] = response.data;
+            },
+            function(error) {
+              console.log(error);
+            }
+        );
+        }
+
     }
 })();

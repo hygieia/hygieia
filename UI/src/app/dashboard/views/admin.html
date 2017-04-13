@@ -1,34 +1,108 @@
 <ng-include src="ctrl.templateUrl"></ng-include>
 
 <div id="admin">
-    <div class="container-fluid">
-        <div class="col-md-8 col-md-push-2">
-            <div class="widget-modal">
-                <div class="widget-modal-heading">
-                    Rename/Delete Dashboard
-                </div>
-                <div class="widget-modal-body">
-                    <div class="row">
-                        <div class="col-xs-push-2 col-xs-8">
-                            <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
 
-                            <div class="list-animate">
+    <div class="col-md-2">
+      <ul class="nav nav-pills nav-stacked">
+        <li role="presentation" ng-class="{active:tab === 'dashboards'}"><a href ng-click="navigateToTab('dashboards')">Edit Dashboards</a></li>
+        <li role="presentation" ng-class="{active:tab === 'users'}"><a href ng-click="navigateToTab('users')">Edit Users</a></li>
+      </ul>
+    </div>
+
+    <div class="container-fluid">
+        <div class="col-md-8">
+          <div ng-show="tab === 'dashboards'">
+              <div class="widget-modal">
+                  <div class="widget-modal-heading">
+                      Rename/Delete Dashboard
+                  </div>
+                  <div class="widget-modal-body">
+                      <div class="row">
+                          <div class="col-xs-push-2 col-xs-8">
+                              <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
+
+                              <div class="list-animate">
+                                  <div class="dash-modal-row delete-dashboard-row clearfix"
+                                      ng-repeat="item in ctrl.dashboards | orderBy:'name'">
+                                      <div class="btn-block">{{item.name}}
+                                          <dash-trash class="clickable pull-right" ng-click="ctrl.deleteDashboard(item.id)"></dash-trash>
+                                          <dash-edit class="clickable pull-right" ng-click="ctrl.renameDashboard(item)"></dash-edit>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <div class="text-center" ng-show="ctrl.dashboards && !ctrl.dashboards.length">
+                                  No results
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+
+            <div ng-show="tab === 'users'">
+                <div class="widget-modal">
+                    <div class="widget-modal-heading">
+                        Edit User Permissions
+                        <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch">
+                    </div>
+                    <div class="widget-modal-body">
+                        <div class="row">
+                            <div class="col-xs-push-2 col-xs-8">
+                                <div class="text-center" ng-hide="users">Loading Users...</div>
+
                                 <div class="dash-modal-row delete-dashboard-row clearfix"
-                                    ng-repeat="item in ctrl.dashboards | orderBy:'name'">
-                                    <div class="btn-block">{{item.name}}
-                                        <dash-trash class="clickable pull-right" ng-click="ctrl.deleteDashboard(item.id)"></dash-trash>
-                                        <dash-edit class="clickable pull-right" ng-click="ctrl.renameDashboard(item)"></dash-edit>
+                                    ng-repeat="user in users | filter:{username:userSearch} | orderBy:'username'">
+                                    <div class="btn-block">{{user.username}}
+                                      <div title="Demote User" ng-show="isAdmin(user)" class="clickable pull-right" ng-click="demoteUserFromAdmin(user)">
+                                        <span class="clickable fa fa-stack">
+                                            <span class="fa-circle-thin fa-stack-2x text-danger"></span>
+                                            <span class="fa-angle-double-down fa-stack-1x text-danger"></span>
+                                        </span>
+                                      </div>
+                                      <div title="Promote User" ng-show="!isAdmin(user)" class="clickable pull-right" ng-click="promoteUserToAdmin(user)">
+                                        <span class="clickable fa fa-stack">
+                                            <span class="fa-circle-thin fa-stack-2x text-success"></span>
+                                            <span class="fa-angle-double-up fa-stack-1x text-success"></span>
+                                        </span>
+                                      </div>
                                     </div>
                                 </div>
-                            </div>
+                                <!-- <div class="list-animate">
+                                  Admins
+                                    <div class="dash-modal-row delete-dashboard-row clearfix"
+                                        ng-repeat="item in ctrl.users | filter:{authorities:'ROLE_ADMIN'} | orderBy:'username'">
+                                        <div class="btn-block">{{item.username}}
+                                          <div class="clickable pull-right" ng-click="ctrl.demoteUser(item)">
+                                            <span class="clickable fa fa-stack">
+                                                <span class="fa-circle-thin fa-stack-2x text-danger"></span>
+                                                <span class="fa-angle-double-down fa-stack-1x text-danger"></span>
+                                            </span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    Users
+                                    <div class=" delete-dashboard-row clearfix"
+                                        ng-repeat="item in ctrl.users | filter:{authorities:'!ROLE_ADMIN'} | orderBy:'username'">
+                                        <div class="btn-block">{{item.username}}
+                                          <div class="clickable pull-right" ng-click="ctrl.promoteUser(item)">
+                                            <span class="clickable fa fa-stack">
+                                                <span class="fa-circle-thin fa-stack-2x text-success"></span>
+                                                <span class="fa-angle-double-up fa-stack-1x text-success"></span>
+                                            </span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                </div> -->
 
-                            <div class="text-center" ng-show="ctrl.dashboards && !ctrl.dashboards.length">
-                                No results
+                                <div class="text-center" ng-show="users && !users.length">
+                                    No results
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+              </div>
         </div>
     </div>
 

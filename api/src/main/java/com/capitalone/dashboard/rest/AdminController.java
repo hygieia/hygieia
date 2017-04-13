@@ -43,8 +43,8 @@ public class AdminController {
         return new ResponseEntity<UserInfo>(user, HttpStatus.CREATED);
     }
     
-    @RequestMapping(path = "/users/{authType}/{username}/authorities", method = RequestMethod.DELETE)
-    public ResponseEntity<UserInfo> removeAuthorityFromUser(@PathVariable AuthType authType, @PathVariable String username, @RequestBody UserRole role) {
+    @RequestMapping(path = "/users/{authType}/{username}/authorities/{role}", method = RequestMethod.DELETE)
+    public ResponseEntity<UserInfo> removeAuthorityFromUser(@PathVariable AuthType authType, @PathVariable String username, @PathVariable UserRole role) {
         UserInfo user = userInfoService.removeAuthorityFromUser(authType, username, role);
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
