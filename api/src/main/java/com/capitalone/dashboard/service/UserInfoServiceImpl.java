@@ -39,10 +39,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 			userInfo = createUserInfo(username, authType);
 			userInfoRepository.save(userInfo);
 		}
-		// TODO: this will be refactored
-		// basing admin role on admin username
-		// plan to have a ui to select new / additional admin
-		setAdditionalRoles(userInfo);
+		
+		// TODO: This will give the standard "admin" user admin privledges, might want
+		// to bootstrap in an admin user, or something better than this.
+		addAdminRoleToStandardAdminUser(userInfo);
 		
 		return userInfo;
 	}
@@ -89,8 +89,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfo;
 	}
 
-	private void setAdditionalRoles(UserInfo userInfo) {
-		if ("admin".equals(userInfo.getUsername())) {
+	private void addAdminRoleToStandardAdminUser(UserInfo userInfo) {
+		if ("admin".equals(userInfo.getUsername()) && AuthType.STANDARD == userInfo.getAuthType()) {
 			userInfo.getAuthorities().add(UserRole.ROLE_ADMIN);
 		}
 	}
