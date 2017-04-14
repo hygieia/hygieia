@@ -51,49 +51,36 @@
                             <div class="col-xs-push-2 col-xs-8">
                                 <div class="text-center" ng-hide="users">Loading Users...</div>
 
-                                <div class="dash-modal-row delete-dashboard-row clearfix"
-                                    ng-repeat="user in users | filter:{username:userSearch} | orderBy:'username'">
-                                    <div class="btn-block">{{user.username}}
-                                      <div title="Demote User" ng-show="isAdmin(user)" class="clickable pull-right" ng-click="demoteUserFromAdmin(user)">
-                                        <span class="clickable fa fa-stack">
-                                            <span class="fa-circle-thin fa-stack-2x text-danger"></span>
-                                            <span class="fa-angle-double-down fa-stack-1x text-danger"></span>
-                                        </span>
-                                      </div>
-                                      <div title="Promote User" ng-show="!isAdmin(user)" class="clickable pull-right" ng-click="promoteUserToAdmin(user)">
-                                        <span class="clickable fa fa-stack">
-                                            <span class="fa-circle-thin fa-stack-2x text-success"></span>
-                                            <span class="fa-angle-double-up fa-stack-1x text-success"></span>
-                                        </span>
-                                      </div>
-                                    </div>
-                                </div>
-                                <!-- <div class="list-animate">
-                                  Admins
+                                <div class="row">
+                                  <div class="col-xs-5">
+                                    <h3>Users</h3>
                                     <div class="dash-modal-row delete-dashboard-row clearfix"
-                                        ng-repeat="item in ctrl.users | filter:{authorities:'ROLE_ADMIN'} | orderBy:'username'">
-                                        <div class="btn-block">{{item.username}}
-                                          <div class="clickable pull-right" ng-click="ctrl.demoteUser(item)">
-                                            <span class="clickable fa fa-stack">
-                                                <span class="fa-circle-thin fa-stack-2x text-danger"></span>
-                                                <span class="fa-angle-double-down fa-stack-1x text-danger"></span>
-                                            </span>
-                                          </div>
-                                        </div>
-                                    </div>
-                                    Users
-                                    <div class=" delete-dashboard-row clearfix"
-                                        ng-repeat="item in ctrl.users | filter:{authorities:'!ROLE_ADMIN'} | orderBy:'username'">
-                                        <div class="btn-block">{{item.username}}
-                                          <div class="clickable pull-right" ng-click="ctrl.promoteUser(item)">
+                                        ng-repeat="user in users | filter:{username:userSearch, authorities:'!ROLE_ADMIN'} | orderBy:'username'">
+                                        <div class="btn-block">{{user.username}} <span class="badge">{{user.authType}}</span>
+                                          <div title="Promote User" ng-show="!isAdmin(user)" class="clickable pull-right" ng-click="promoteUserToAdmin(user)">
                                             <span class="clickable fa fa-stack">
                                                 <span class="fa-circle-thin fa-stack-2x text-success"></span>
-                                                <span class="fa-angle-double-up fa-stack-1x text-success"></span>
+                                                <span class="fa-angle-right fa-stack-1x text-success"></span>
                                             </span>
                                           </div>
                                         </div>
                                     </div>
-                                </div> -->
+                                  </div>
+                                  <div class="col-xs-push-2 col-xs-5">
+                                    <h3>Admins</h3>
+                                    <div class="dash-modal-row delete-dashboard-row clearfix"
+                                        ng-repeat="user in users | filter:{username:userSearch, authorities:'ROLE_ADMIN'} | orderBy:'username'">
+                                        <div class="btn-block">{{user.username}} <span class="badge">{{user.authType}}</span>
+                                          <div title="Demote User" ng-show="isAdmin(user)" class="clickable pull-right" ng-click="demoteUserFromAdmin(user)">
+                                            <span class="clickable fa fa-stack">
+                                                <span class="fa-circle-thin fa-stack-2x text-danger"></span>
+                                                <span class="fa-angle-left fa-stack-1x text-danger"></span>
+                                            </span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
 
                                 <div class="text-center" ng-show="users && !users.length">
                                     No results

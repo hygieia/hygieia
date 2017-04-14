@@ -5,16 +5,13 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitalone.dashboard.auth.access.Admin;
-import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserInfo;
-import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.service.UserInfoService;
 
 @RestController
@@ -34,21 +31,21 @@ public class AdminController {
         return userInfoService.getUsers();
     }
     
-    @RequestMapping(path = "/users/{authType}/{username}/authorities", method = RequestMethod.POST)
-    public ResponseEntity<UserInfo> addAuthorityToUser(@PathVariable AuthType authType, @PathVariable String username, @RequestBody UserRole role) {
-        UserInfo user = userInfoService.addAuthorityToUser(authType, username, role);
-        if (user == null) {
+    @RequestMapping(path = "/users/addAdmin", method = RequestMethod.POST)
+    public ResponseEntity<UserInfo> addAdmin(@RequestBody UserInfo user) {
+        UserInfo savedUser = userInfoService.promoteToAdmin(user.getUsername(), user.getAuthType());
+        if (savedUser == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<UserInfo>(user, HttpStatus.CREATED);
+        return new ResponseEntity<UserInfo>(savedUser, HttpStatus.CREATED);
     }
     
-    @RequestMapping(path = "/users/{authType}/{username}/authorities/{role}", method = RequestMethod.DELETE)
-    public ResponseEntity<UserInfo> removeAuthorityFromUser(@PathVariable AuthType authType, @PathVariable String username, @PathVariable UserRole role) {
-        UserInfo user = userInfoService.removeAuthorityFromUser(authType, username, role);
-        if (user == null) {
+    @RequestMapping(path = "/users/removeAdmin", method = RequestMethod.POST)
+    public ResponseEntity<UserInfo> removeAuthorityFromUser(@RequestBody UserInfo user) {
+        UserInfo savedUser = userInfoService.demoteFromAdmin(user.getUsername(), user.getAuthType());
+        if (savedUser == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<UserInfo>(user, HttpStatus.OK);
+        return new ResponseEntity<UserInfo>(savedUser, HttpStatus.OK);
     }
 }

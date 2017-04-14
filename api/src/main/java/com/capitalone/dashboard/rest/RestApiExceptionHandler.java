@@ -22,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.capitalone.dashboard.Application;
+import com.capitalone.dashboard.auth.DeleteLastAdminException;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ErrorResponse;
 import com.capitalone.dashboard.util.UnsafeDeleteException;
@@ -103,5 +104,10 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDenied(AccessDeniedException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body((Object) "Access Denied.");
+    }
+    
+    @ExceptionHandler(DeleteLastAdminException.class)
+    public ResponseEntity<Object> handleDeletingLastAdmin(DeleteLastAdminException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }

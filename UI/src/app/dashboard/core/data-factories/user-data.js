@@ -38,14 +38,13 @@
     }
 
     function promoteUserToAdmin(user) {
-        var route = adminRoute + "/users/" + user.authType + "/" + user.username + "/authorities";
-        var postData = "\"ROLE_ADMIN\"";
-        return $http.post(route, postData);
+        var route = adminRoute + "/users/addAdmin";
+        return $http.post(route, user);
     }
 
     function demoteUserFromAdmin(user) {
-      var route = adminRoute + "/users/" + user.authType + "/" + user.username + "/authorities/ROLE_ADMIN";
-      return $http.delete(route);
+      var route = adminRoute + "/users/removeAdmin";
+      return $http.post(route, user);
     }
 
   }

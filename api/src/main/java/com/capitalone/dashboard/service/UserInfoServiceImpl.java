@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.auth.DeleteLastAdminException;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.UserRole;
@@ -52,25 +53,29 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
     
     @Override
-    public UserInfo addAuthorityToUser(AuthType authType, String username, UserRole role) {
+    public UserInfo promoteToAdmin(String username, AuthType authType) {
         UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
         if (user == null) {
             return null;
         }
         
-        user.getAuthorities().add(role);
+        user.getAuthorities().add(UserRole.ROLE_ADMIN);
         UserInfo savedUser = userInfoRepository.save(user);
         return savedUser;
     }
     
     @Override
-    public UserInfo removeAuthorityFromUser(AuthType authType, String username, UserRole role) {
+    public UserInfo demoteFromAdmin(String username, AuthType authType) {
+        int numberOfAdmins = userInfoRepository.findByAuthoritiesIn(UserRole.ROLE_ADMIN).size();
+        if(numberOfAdmins <= 1) {
+            throw new DeleteLastAdminException();
+        }
         UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
         if (user == null) {
             return null;
         }
         
-        user.getAuthorities().remove(role);
+        user.getAuthorities().remove(UserRole.ROLE_ADMIN);
         UserInfo savedUser = userInfoRepository.save(user);
         return savedUser;
     }
