@@ -24,6 +24,7 @@
         ctrl.showAuthentication = userService.isAuthenticated();
         ctrl.templateUrl = "app/dashboard/views/navheader.html";
         ctrl.username = userService.getUsername();
+        ctrl.authType = userService.getAuthType();
         ctrl.login = login;
         ctrl.logout = logout;
         ctrl.renameDashboard=renameDashboard;
@@ -132,6 +133,13 @@
 
         $scope.navigateToTab = function(tab) {
           $scope.tab=tab;
+        }
+
+        $scope.isActiveUser = function(user) {
+          if(user.authType === ctrl.authType && user.username === ctrl.username) {
+            return true;
+          }
+          return false;
         }
 
         $scope.promoteUserToAdmin = function(user) {
