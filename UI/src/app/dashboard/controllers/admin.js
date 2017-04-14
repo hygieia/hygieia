@@ -134,10 +134,6 @@
           $scope.tab=tab;
         }
 
-        $scope.isAdmin = function(user) {
-          return user.authorities.indexOf("ROLE_ADMIN") != -1;
-        }
-
         $scope.promoteUserToAdmin = function(user) {
           userData.promoteUserToAdmin(user).then(
             function(response) {
@@ -157,7 +153,7 @@
               $scope.users[index] = response.data;
             },
             function(error) {
-              console.log(error);
+              $scope.error = error;
             }
         );
         }

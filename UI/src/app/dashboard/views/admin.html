@@ -39,25 +39,28 @@
                   </div>
               </div>
             </div>
-
             <div ng-show="tab === 'users'">
                 <div class="widget-modal">
                     <div class="widget-modal-heading">
                         Edit User Permissions
-                        <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch">
                     </div>
                     <div class="widget-modal-body">
                         <div class="row">
                             <div class="col-xs-push-2 col-xs-8">
                                 <div class="text-center" ng-hide="users">Loading Users...</div>
+                                <div ng-show="error">
+                                  {{error.data}}
+                                </div>
 
                                 <div class="row">
                                   <div class="col-xs-5">
                                     <h3>Users</h3>
+                                    <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch">
+                                
                                     <div class="dash-modal-row delete-dashboard-row clearfix"
                                         ng-repeat="user in users | filter:{username:userSearch, authorities:'!ROLE_ADMIN'} | orderBy:'username'">
                                         <div class="btn-block">{{user.username}} <span class="badge">{{user.authType}}</span>
-                                          <div title="Promote User" ng-show="!isAdmin(user)" class="clickable pull-right" ng-click="promoteUserToAdmin(user)">
+                                          <div title="Promote User" class="clickable pull-right" ng-click="promoteUserToAdmin(user)">
                                             <span class="clickable fa fa-stack">
                                                 <span class="fa-circle-thin fa-stack-2x text-success"></span>
                                                 <span class="fa-angle-right fa-stack-1x text-success"></span>
@@ -69,9 +72,9 @@
                                   <div class="col-xs-push-2 col-xs-5">
                                     <h3>Admins</h3>
                                     <div class="dash-modal-row delete-dashboard-row clearfix"
-                                        ng-repeat="user in users | filter:{username:userSearch, authorities:'ROLE_ADMIN'} | orderBy:'username'">
+                                        ng-repeat="user in users | orderBy:'username' | filter:{authorities:'ROLE_ADMIN'} as filteredAdmins">
                                         <div class="btn-block">{{user.username}} <span class="badge">{{user.authType}}</span>
-                                          <div title="Demote User" ng-show="isAdmin(user)" class="clickable pull-right" ng-click="demoteUserFromAdmin(user)">
+                                          <div title="Demote User" ng-show="filteredAdmins.length > 1" class="clickable pull-right" ng-click="demoteUserFromAdmin(user)">
                                             <span class="clickable fa fa-stack">
                                                 <span class="fa-circle-thin fa-stack-2x text-danger"></span>
                                                 <span class="fa-angle-left fa-stack-1x text-danger"></span>
