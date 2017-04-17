@@ -8,7 +8,7 @@ mongodb:
    - ./mongo:/data/db:rw
   volume_driver: local
 hygieia-api:
-  image: hygieia-api:latest
+  image: capitaloneio/hygieia-api:latest
   container_name: hygieia-api
   ports:
   - "8080:8080"
@@ -17,7 +17,7 @@ hygieia-api:
   links:
   - mongodb:mongo
 hygieia-ui:
-  image: hygieia-ui:latest
+  image: capitaloneio/hygieia-ui:latest
   container_name: hygieia-ui
   ports:
   - "8088:80"
