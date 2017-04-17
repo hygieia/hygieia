@@ -11,7 +11,7 @@
 
 ### What is Hygieia℠
 
-#####Pronunciation:      hi-gee-ya (origin Greek)
+##### Pronunciation:      hi-gee-ya (origin Greek)
 Hygieia℠ is a single, configurable, easy to use dashboard to visualize near real-time status of the entire delivery pipeline.
 
 Please view a video below to see Hygieia℠ in action
