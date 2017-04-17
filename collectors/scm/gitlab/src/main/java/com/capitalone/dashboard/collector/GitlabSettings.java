@@ -18,6 +18,7 @@ public class GitlabSettings {
     private String protocol;
     private String host;
     private String port;
+    private String path;
     private String apiToken;
 	private int firstRunHistoryDays;
 	private boolean selfSignedCertificate;
@@ -62,7 +63,15 @@ public class GitlabSettings {
 		this.port = port;
 	}
 
-	public int getFirstRunHistoryDays() {
+	public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public int getFirstRunHistoryDays() {
 		return firstRunHistoryDays;
 	}
 

@@ -36,7 +36,7 @@
 
                 <div class="row gap">
                     <div class="col-sm-4 col-sm-push-8 text-center">
-                        <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.createDashboard()">
+                        <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.createDashboard()" ng-show="ctrl.showAuthentication">
                             <span class="fa fa-stack fa-lg">
                                 <span class="fa-circle-thin fa-stack-2x"></span>
                                 <span class="fa-plus fa-stack-1x"></span>
@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="col-sm-8 col-sm-pull-4">
-                        <div>
+                        <div ng-show="ctrl.showAuthentication">
                             <div class="text-2x">My Dashboards <span class="label label-default"></span></div>
 
                             <div class="text-center" ng-hide="ctrl.mydash">Loading Your Dashboards...</div>
@@ -103,4 +103,3 @@
         </div>
     </div>
 </div>
-
