@@ -37,7 +37,7 @@ public class AdminController {
         if (savedUser == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<UserInfo>(savedUser, HttpStatus.CREATED);
+        return new ResponseEntity<UserInfo>(savedUser, HttpStatus.OK);
     }
     
     @RequestMapping(path = "/users/removeAdmin", method = RequestMethod.POST)
