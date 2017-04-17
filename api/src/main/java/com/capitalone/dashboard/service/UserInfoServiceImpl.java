@@ -13,7 +13,6 @@ import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.repository.UserInfoRepository;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @Component
@@ -84,7 +83,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		UserInfo userInfo = new UserInfo();
 		userInfo.setUsername(username);
 		userInfo.setAuthType(authType);
-		userInfo.setAuthorities(Lists.newArrayList(UserRole.ROLE_USER));
+		userInfo.setAuthorities(Sets.newHashSet(UserRole.ROLE_USER));
 		
 		return userInfo;
 	}
