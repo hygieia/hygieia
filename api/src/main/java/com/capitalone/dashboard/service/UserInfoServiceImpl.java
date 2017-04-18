@@ -55,7 +55,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     public UserInfo promoteToAdmin(String username, AuthType authType) {
         UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
         if (user == null) {
-            return null;
+            throw new UserNotFoundException(username, authType);
         }
         
         user.getAuthorities().add(UserRole.ROLE_ADMIN);
@@ -71,7 +71,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
         UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
         if (user == null) {
-            return null;
+            throw new UserNotFoundException(username, authType);
         }
         
         user.getAuthorities().remove(UserRole.ROLE_ADMIN);

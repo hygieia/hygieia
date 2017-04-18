@@ -34,18 +34,14 @@ public class AdminController {
     @RequestMapping(path = "/users/addAdmin", method = RequestMethod.POST)
     public ResponseEntity<UserInfo> addAdmin(@RequestBody UserInfo user) {
         UserInfo savedUser = userInfoService.promoteToAdmin(user.getUsername(), user.getAuthType());
-        if (savedUser == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+
         return new ResponseEntity<UserInfo>(savedUser, HttpStatus.OK);
     }
     
     @RequestMapping(path = "/users/removeAdmin", method = RequestMethod.POST)
     public ResponseEntity<UserInfo> removeAuthorityFromUser(@RequestBody UserInfo user) {
         UserInfo savedUser = userInfoService.demoteFromAdmin(user.getUsername(), user.getAuthType());
-        if (savedUser == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+
         return new ResponseEntity<UserInfo>(savedUser, HttpStatus.OK);
     }
 }

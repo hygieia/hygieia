@@ -61,18 +61,7 @@ public class AdminControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new Gson().toJson(user))).andExpect(status().isOk());
     }
-    
-    @Test
-    public void shouldReturnNotFoundWhenTryingToMakeAdminOnNotExistantUser() throws Exception{
-        UserInfo user = new UserInfo();
-        user.setAuthType(AuthType.STANDARD);
-        user.setUsername("admin");
-        when(userInfoService.promoteToAdmin("admin", AuthType.STANDARD)).thenReturn(null);
-        mockMvc.perform(post("/admin/users/addAdmin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new Gson().toJson(user))).andExpect(status().isNotFound());
-    }
-    
+  
     @Test
     public void shouldRemoveAdmin() throws Exception{
         UserInfo user = new UserInfo();
@@ -82,17 +71,6 @@ public class AdminControllerTest {
         mockMvc.perform(post("/admin/users/removeAdmin")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new Gson().toJson(user))).andExpect(status().isOk());
-    }
-    
-    @Test
-    public void shouldReturnNotFoundWhenTryingToRemoveAdminOnNotExistantUser() throws Exception{
-        UserInfo user = new UserInfo();
-        user.setAuthType(AuthType.STANDARD);
-        user.setUsername("admin");
-        when(userInfoService.demoteFromAdmin("admin", AuthType.STANDARD)).thenReturn(null);
-        mockMvc.perform(post("/admin/users/removeAdmin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new Gson().toJson(user))).andExpect(status().isNotFound());
     }
 
 }

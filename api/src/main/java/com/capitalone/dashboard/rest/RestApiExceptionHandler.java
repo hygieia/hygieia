@@ -25,6 +25,7 @@ import com.capitalone.dashboard.Application;
 import com.capitalone.dashboard.auth.DeleteLastAdminException;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ErrorResponse;
+import com.capitalone.dashboard.service.UserNotFoundException;
 import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
@@ -108,6 +109,11 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
     
     @ExceptionHandler(DeleteLastAdminException.class)
     public ResponseEntity<Object> handleDeletingLastAdmin(DeleteLastAdminException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+    
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFound(UserNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }

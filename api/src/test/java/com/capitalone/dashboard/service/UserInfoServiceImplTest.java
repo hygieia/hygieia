@@ -3,7 +3,6 @@ package com.capitalone.dashboard.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -105,7 +104,7 @@ public class UserInfoServiceImplTest {
         assertTrue(result.size() == 1);
     }
     
-    @Test
+    @Test(expected=UserNotFoundException.class)
     public void shouldNotPromoteNonExistingUserToAdmin() {
         String username = "user";
         AuthType authType = AuthType.STANDARD;
@@ -113,7 +112,7 @@ public class UserInfoServiceImplTest {
         
         UserInfo result = service.promoteToAdmin(username, authType);
         
-        assertNull(result);
+        fail("Exception should have been thrown.");
     }
     
     @Test
@@ -145,7 +144,7 @@ public class UserInfoServiceImplTest {
         
     }
     
-    @Test
+    @Test(expected=UserNotFoundException.class)
     public void shouldNotRemoveAdminFromNonExistingUSer() {
         String username = "user";
         AuthType authType = AuthType.STANDARD;
@@ -153,7 +152,9 @@ public class UserInfoServiceImplTest {
         when(userInfoRepository.findByAuthoritiesIn(UserRole.ROLE_ADMIN)).thenReturn(users);
         when(userInfoRepository.findByUsernameAndAuthType(username, authType)).thenReturn(null);
         
-        assertNull(service.demoteFromAdmin(username, authType));
+        service.demoteFromAdmin(username, authType);
+        
+        fail("Exception should have been thrown.");
     }
     
     @Test
