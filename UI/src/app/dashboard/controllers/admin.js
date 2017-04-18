@@ -149,7 +149,7 @@
               $scope.users[index] = response.data;
             },
             function(error) {
-              console.log(error);
+              $scope.error = error;
             }
         );
         }
