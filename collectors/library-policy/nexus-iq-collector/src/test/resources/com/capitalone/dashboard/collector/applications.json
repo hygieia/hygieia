@@ -1,0 +1,62 @@
+{
+  "applications": [
+    {
+      "id": "65df87ab0cd04810b18562146b6083bf",
+      "publicId": "Innovation-Challenge-picket",
+      "name": "Innovation-Challenge-picket",
+      "organizationId": "53a7723d9a7d4872ab59dcf79aca8269",
+      "contactUserName": "XYZ123",
+      "applicationTags": [
+        {
+          "id": "c86b9e9e17824734ac5a4989cd2c6445",
+          "tagId": "2a786b76b0d94888b7e8ceb5e8b049b3",
+          "applicationId": "65df87ab0cd04810b18562146b6083bf"
+        },
+        {
+          "id": "93ba374170704193a7f1576fdc028270",
+          "tagId": "69d939dc667b497ab864884c30d71d36",
+          "applicationId": "65df87ab0cd04810b18562146b6083bf"
+        },
+        {
+          "id": "09c01389dbed40b2953a7bd9145e84d8",
+          "tagId": "99ddc968af46489084a978f45013cfd6",
+          "applicationId": "65df87ab0cd04810b18562146b6083bf"
+        },
+        {
+          "id": "9b1efe4df9d84faf98864cbfbeb3eb30",
+          "tagId": "edf7f8c3a41145848535841b6bf2b850",
+          "applicationId": "65df87ab0cd04810b18562146b6083bf"
+        }
+      ]
+    },
+    {
+      "id": "d50b407aeb21480f8bbce3d46f1a5574",
+      "publicId": "ABCD4567",
+      "name": "ABCD4567",
+      "organizationId": "53a7723d9a7d4872ab59dcf79aca8269",
+      "contactUserName": "ABC123",
+      "applicationTags": [
+        {
+          "id": "db85755b6a874507aa5cf4486b299624",
+          "tagId": "2a786b76b0d94888b7e8ceb5e8b049b3",
+          "applicationId": "d50b407aeb21480f8bbce3d46f1a5574"
+        },
+        {
+          "id": "45cb325fbafd4d3e9ce81206be7b9dda",
+          "tagId": "69d939dc667b497ab864884c30d71d36",
+          "applicationId": "d50b407aeb21480f8bbce3d46f1a5574"
+        },
+        {
+          "id": "1a27cca85e1646408742462ffa1651cc",
+          "tagId": "7517cea823764b8286b3d54516b73ed0",
+          "applicationId": "d50b407aeb21480f8bbce3d46f1a5574"
+        },
+        {
+          "id": "3732c6422e094faaa7237580d608e1b8",
+          "tagId": "edf7f8c3a41145848535841b6bf2b850",
+          "applicationId": "d50b407aeb21480f8bbce3d46f1a5574"
+        }
+      ]
+    }
+  ]
+}

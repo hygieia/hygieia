@@ -220,6 +220,7 @@
         <module>collectors/scm/github</module>
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
+        <module>collectors/library-policy/nexus-iq-collector</module>
      	<module>UI</module>
  </modules>
       <build>
