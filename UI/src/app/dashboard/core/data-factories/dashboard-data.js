@@ -51,9 +51,9 @@
         }
 
         //gets dashboard owner from dashboard title
-        function myowner(title)
+        function myowner(id)
         {
-            return getPromise(HygieiaConfig.local ? testOwnedRoute : myownerRoute + "/" + title );
+            return getPromise(HygieiaConfig.local ? testOwnedRoute : myownerRoute + "/" + id );
         }
 
         // gets info for a single dashboard including available widgets

@@ -30,7 +30,7 @@
                  ng-repeat="team in ctrl.configuredTeams">
 
                 <div class="product-table-td team-name-cell" as-sortable-item-handle>
-                    <span class="fa fa-cog" ng-click="ctrl.editTeam(team.collectorItemId)"></span>
+                    <span class="fa fa-cog" ng-show="hasPermission()" ng-click="ctrl.editTeam(team.collectorItemId)"></span>
 
                     <a title="{{item.customName || item.name}}"
                        class="team-name"
@@ -183,9 +183,10 @@
             </div>
 
             <div
-                    class="product-table-tr new-team-row"
-                    ng-class="{'no-teams': !ctrl.configuredTeams.length}"
-                    ng-click="ctrl.addTeam()">
+                class="product-table-tr new-team-row"
+                ng-class="{'no-teams': !ctrl.configuredTeams.length}"
+                ng-click="ctrl.addTeam()"
+                ng-show="hasPermission()">
                 <div class="product-table-td">
                     <span class="fa fa-plus fa-thin-border"></span>
                     <div>Add a team</div>

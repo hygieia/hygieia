@@ -60,3 +60,35 @@
 .modal-view-status-input {
     resize: none;
 }
+
+.icon-legend-link {
+    cursor: pointer;
+    color: @dash-dashboard-text;
+    .transition(color .2s linear);
+
+    &:hover {
+        color: @white;
+    }
+}
+
+.icon-legend-container {
+	width: 100%;
+	font-size: @font-size-base;
+	color: @dash-text !important;
+	
+	.icon-legend-header {
+		.icon-legend-text;
+		font-weight: 700;
+		padding-bottom: 5px;
+		margin-bottom: 1rem;
+		border-bottom: 1px solid @dash-modal-divider;
+	}
+	
+	.dash-status-fail {
+		color: @dash-status-fail-text !important;
+	}
+	
+	.icon-legend-text {
+		font-family: @font-family-base;
+	}
+}
