@@ -22,10 +22,10 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.capitalone.dashboard.Application;
-import com.capitalone.dashboard.auth.DeleteLastAdminException;
+import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
+import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.ErrorResponse;
-import com.capitalone.dashboard.service.UserNotFoundException;
 import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 

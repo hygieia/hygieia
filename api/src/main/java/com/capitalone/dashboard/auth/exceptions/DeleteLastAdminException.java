@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.auth;
+package com.capitalone.dashboard.auth.exceptions;
 
 public class DeleteLastAdminException extends RuntimeException {
 

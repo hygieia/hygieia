@@ -21,7 +21,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.capitalone.dashboard.auth.DeleteLastAdminException;
+import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
+import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.UserRole;

@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.service;
+package com.capitalone.dashboard.auth.exceptions;
 
 import com.capitalone.dashboard.model.AuthType;
 
