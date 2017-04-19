@@ -1,0 +1,77 @@
+<widget-modal class="monitor-config form-horizontal" widget-modal-title="Monitor Configuration">
+    <form ng-submit="ctrl.save()">
+        <section>
+            <header>Our Services</header>
+            <div class="list-animate clearfix">
+                <!--current services-->
+                <div class="dash-modal-row clearfix" ng-repeat="service in ctrl.dashboardServices">
+                    <label>{{service.name}}</label>
+
+                    <dash-trash class="pull-right fa-lg" ng-click="ctrl.deleteDashboardService($index)"></dash-trash>
+                </div>
+
+                <!--new services-->
+                <div class="dash-modal-row clearfix form-horizontal" ng-repeat="service in ctrl.newDashboardServices">
+                    <dash-trash class="pull-right fa-lg" ng-click="ctrl.deleteNewDashboardService($index)"></dash-trash>
+                    <label class="control-label pull-left">
+                        {{::ctrl.appName}}&nbsp;:&nbsp;
+                    </label>
+                    <span class="form-control-inline-container">
+                        <input class="form-control" type="text" ng-model="service.name" placeholder="Service Name"/>
+                    </span>
+                </div>
+
+            </div>
+
+            <br/>
+            <button type="button" class="btn btn-default" ng-click="ctrl.addNewDashboardService()">
+                <span class="fa fa-stack">
+                    <span class="fa-circle-thin fa-stack-2x"></span>
+                    <span class="fa-plus fa-stack-1x"></span>
+                </span>
+                Add service
+            </button>
+        </section>
+        <br/><br/>
+        <section class="dependent-services" ng-if="ctrl.allServices.length">
+            <header>Dependent Services</header>
+            <div class="list-animate clearfix">
+                <!--dependent services-->
+                <div class="dash-modal-row clearfix" ng-repeat="service in ctrl.dependentServices">
+                    <dash-trash class="pull-right fa-lg" ng-click="ctrl.deleteDependentService($index)"></dash-trash>
+
+                    <label class="control-label">{{service.name}}</label>
+                </div>
+
+                <!--new dependent services-->
+                <div class="dash-modal-row clearfix form-horizontal" ng-repeat="service in ctrl.newDependentServices">
+                    <dash-trash class="pull-right fa-lg" ng-click="ctrl.deleteNewDependentService($index)"></dash-trash>
+
+                    <span class="form-control-inline-container">
+                        <select name="templateName"
+                                class="form-control"
+                                ng-model="service.selectedItem"
+                                ng-options="item.name for item in ctrl.allServices track by item.id">
+                            <option value="">Select Dependent Service</option>
+                        </select>
+                    </span>
+                </div>
+            </div>
+
+            <br/>
+            <button type="button" class="btn btn-default" ng-click="ctrl.addNewDependentService()" ng-if="ctrl.allServices.length">
+                <span class="fa fa-stack">
+                    <span class="fa-circle-thin fa-stack-2x"></span>
+                    <span class="fa-plus fa-stack-1x"></span>
+                </span>
+                Add service
+            </button>
+        </section>
+
+
+        <div class="row text-center">
+            <br/><br/>
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+</widget-modal>

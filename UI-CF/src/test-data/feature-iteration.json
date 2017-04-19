@@ -1,0 +1,16 @@
+{
+  "result": [{
+    "id": "574dbe958b0c9a1cf3ab2b1c",
+    "sSprintEndDate": "2016-06-30T11:54:00.0000000",
+    "sSprintBeginDate": "2015-12-30T11:54:55.0600000",
+    "sSprintName": "Sprint 3 Brave",
+    "sSprintID": "1526"
+  }, {
+    "id": "574dbe968b0c9a1cf3ab2b1e",
+    "sSprintEndDate": "2016-07-16T14:37:00.0000000",
+    "sSprintBeginDate": "2015-06-23T14:37:00.0000000",
+    "sSprintName": "Sprint 1",
+    "sSprintID": "615"
+  }],
+  "lastUpdated": 1464717445568
+}

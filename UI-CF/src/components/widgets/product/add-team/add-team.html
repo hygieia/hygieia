@@ -1,0 +1,36 @@
+<widget-modal widget-modal-title="Add team" class="add-team-modal" id="add-team">
+    <form name="addTeamForm"
+          ng-submit="ctrl.submit(addTeamForm.$valid)"
+          novalidate="novalidate">
+
+        <form-group input="collectorItemId" class="has-feedback typeahead-dropdown" errors="{'required': 'Please select a team'}">
+            <input placeholder="Select a team dashboard"
+                   type="text"
+                   name="collectorItemId"
+                   class="form-control"
+                   autocomplete="off"
+                   ng-model="ctrl.collectorItemId"
+                   select-on-click
+                   typeahead="item.id as item.title for item in items = (ctrl.dashboards | filter:ctrl.filterDashboards($viewValue)) | orderBy: 'title'"
+                   typeahead-input-formatter="ctrl.formatLabel($model)"
+                   typeahead-editable="false"
+                   typeahead-focus
+                   ng-blur="ctrl.onBlur(addTeamForm)"
+                   required />
+
+            <span class="fa fa-sort-down form-control-feedback" aria-hidden="true"></span>
+        </form-group>
+
+        <div class="form-group">
+            <input class="form-control"
+                   type="text"
+                   name="teamName"
+                   ng-model="ctrl.customName"
+                   placeholder="Custom team name (optional)"
+                   autocomplete="off" />
+        </div>
+        <div class="button-row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Add this team</button>
+        </div>
+    </form>
+</widget-modal>

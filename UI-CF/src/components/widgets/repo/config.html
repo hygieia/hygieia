@@ -1,0 +1,55 @@
+<widget-modal widget-modal-title="Configure Code Repo Widget">
+<form name="configForm"
+	ng-submit="repoConfig.submit(configForm.$valid, repoConfig.repoUrl, repoConfig.repoOption)"
+	novalidate="novalidate">
+
+	<form-group input="repoOption"
+				class="text-center"
+				errors="{required:'Please select a repository type'}">
+		<label class="modal-label">Repo Type</label>
+
+		<select name="repoOption"
+				class="form-control text-center"
+				ng-model="repoConfig.repoOption"
+				ng-options="repoOption.value for repoOption in repoConfig.repoOptions"
+				required>
+			<option value="" disabled>Select a type</option>
+		</select>
+	</form-group>
+
+	<form-group input="repoUrl"
+				class="text-center"
+				errors="{required:'Repository URL is required', url: 'Please enter a valid URL'}">
+
+		<label class="modal-label">Repo URL</label>
+		<input type="url"
+			   name="repoUrl"
+			   class="form-control text-center"
+			   ng-model="repoConfig.repoUrl"
+			   placeholder="Enter URL"
+			   autocomplete="off"
+			   required />
+	</form-group>
+
+	<form-group ng-if="repoConfig.repoOption.name == 'GitHub (public)' || repoConfig.repoOption.name == 'GitHub'  || repoConfig.repoOption.name == 'Stash'"
+				errors="{required:'Branch is required'}"
+				input="gitBranch"
+				class="text-center">
+
+		<label class="modal-label" id="repoLabel">Branch</label>
+
+		<input
+			type="text"
+			name="gitBranch"
+			class="form-control text-center"
+			ng-model="repoConfig.gitBranch"
+			placeholder="Enter Branch"
+			required />
+
+	</form-group>
+
+	<div class="button-row row text-center">
+		<button type="submit" class="btn btn-primary btn-wide">Save</button>
+	</div>
+</form>
+</widget-modal>

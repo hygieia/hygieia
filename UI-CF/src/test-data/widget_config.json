@@ -1,0 +1,20 @@
+[
+    {
+        "name": "build",
+        "title": "My build widget",
+        "componentId": "54b82510036424717345cccf",
+        "options": {
+            "id": "build0",
+            "buildDurationThreshold": 3,
+            "consecutiveFailureThreshold": 10
+        }
+    },
+    {
+        "name": "repo",
+        "title": "Code Repo",
+        "componentId": "54b82510036424717345cccf",
+        "options": {
+            "id": "repo1"
+        }
+    }
+]

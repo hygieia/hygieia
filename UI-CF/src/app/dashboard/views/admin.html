@@ -1,0 +1,51 @@
+<ng-include src="ctrl.templateUrl"></ng-include>
+
+<div id="admin">
+    <div class="container-fluid">
+        <div class="col-md-8 col-md-push-2">
+            <div class="widget-modal">
+                <div class="widget-modal-heading">
+                    Delete Existing Dashboard
+                </div>
+                <div class="widget-modal-body">
+                    <div class="row">
+                        <div class="col-xs-push-2 col-xs-8">
+                            <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
+
+                            <div class="list-animate">
+                                <div class="dash-modal-row delete-dashboard-row clearfix"
+                                    ng-repeat="item in ctrl.dashboards | orderBy:'name'">
+                                    <div class="btn-block">{{item.name}}
+                                        <dash-trash class="clickable pull-right" ng-click="ctrl.deleteDashboard(item.id)"></dash-trash>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center" ng-show="ctrl.dashboards && !ctrl.dashboards.length">
+                                No results
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="themes" ng-show="::ctrl.storageAvailable">
+        <div class="btn-group" dropdown is-open="status.isopen">
+            <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle>
+                Themes <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                <li
+                    ng-class="{'active': ctrl.theme == theme.filename}"
+                    ng-repeat="theme in ctrl.themes">
+
+                    <a class="clickable btn-block" ng-click="ctrl.applyTheme(theme.filename)">
+                        {{theme.name}}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

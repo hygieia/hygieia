@@ -1,0 +1,271 @@
+@import '../../app/css/common.less';
+/** insert:widgets **/
+
+// Google fonts is blocked by vpn so the files are downloaded locally.
+// On the google fonts site you can only download formats for your current
+// browser so instead pulled the formats from a helper service.
+// https://google-webfonts-helper.herokuapp.com/fonts/open-sans?subsets=latin
+//.register-font(Open Sans, open-sans-regular, 1);
+//.register-font(Open Sans, open-sans-600, 1, 600);
+
+// keyframes
+.blink-keyframe();
+
+
+// LOCAL VARIABLES FOR THIS THEME
+// ========================================
+@white: #fff;
+@chart-green: #05ac45;
+@chart-red: #d8514d;
+@bg-replacement: rgba(0, 0, 0, .75);
+
+// BOOTSTRAP VARIABLES
+// ========================================
+@grid-gutter-width: 20px;
+@font-family-base: 'Open Sans', sans-serif;
+@btn-primary-bg: #152131;
+@btn-default-bg: #80868e;
+@btn-primary-border: @btn-primary-bg;
+@btn-default-border: @btn-default-bg;
+@btn-primary-color: rgba(255, 255, 255, .9);
+@btn-default-color: rgba(255, 255, 255, .8);
+
+@btn-info-bg: #303e4e;
+
+@tooltip-bg: @white;
+@tooltip-arrow-color: @white;
+
+@dropdown-link-active-bg: @btn-default-bg;
+
+@navbar-default-bg: @white;
+
+
+// BOOTSTRAP OVERRIDES
+// ========================================
+
+// custom primary button with gradients
+.btn-primary {
+    font-weight: 700;
+    #gradient > .vertical(#384250, @btn-primary-bg);
+    .box-shadow(0 2px 6px rgba(0, 0, 0, .35));
+
+    .transition(color 200ms linear);
+
+    &:hover {
+        color: @white;
+        background: @btn-primary-bg;
+        border-color: @btn-primary-bg;
+    }
+}
+
+// custom default button with gradients and hover
+.btn-default {
+    #gradient > .vertical(#8d929a, @btn-default-bg);
+    .box-shadow(0 2px 6px rgba(0, 0, 0, .35));
+
+    .transition(color 200ms linear);
+
+    &:hover {
+        color: @white;
+        background-color: @btn-default-bg;
+        border-color: @btn-default-bg;
+    }
+}
+
+.btn-link {
+    color: rgba(255, 255, 255, .7);
+    line-height: 2em;
+    .transition(color .2s linear);
+
+    &:hover {
+        color: @white;
+    }
+}
+
+.btn-primary {
+    .btn-lg;
+    .btn-wide;
+    font-weight: 600;
+}
+
+// since popover is white and popovers are placed on the dashboard
+// which has a white text default the text needs to be darker
+.popover, .tooltip-inner {
+    color: @dash-text;
+}
+
+// DASH VARIABLES
+// ========================================
+@dash-text: #152131;
+@dash-dashboard-bg: #060610;
+@dash-dashboard-text: rgba(255, 255, 255, .8);
+@dash-dashboard-text-hover: @white;
+
+@dash-dashboard-text-light: rgba(180, 180, 180, .7);
+
+@dash-divider: rgba(255, 255, 255, .50);
+@dash-divider-light: rgba(0, 0, 0, .1);
+@dash-widget-section-highlight: rgba(255, 255, 255, .15);
+
+@dash-header-bg: @white;
+@dash-header-text: @dash-text;
+@dash-widget-heading-border: rgba(255, 255, 255, .5);
+@dash-widget-sub-heading-border: rgba(255, 255, 255, .25);
+
+@dash-modal-bg: #ececec;
+@dash-modal-heading-text: @dash-text;
+@dash-modal-heading-border: rgba(0, 0, 0, .35);
+@dash-modal-divider: rgba(0, 0, 0, .25);
+@dash-modal-icon-text: rgba(0, 0, 0, .5);
+
+@dash-detail-heading-text: @dash-text;
+@dash-detail-heading-border: rgba(0, 0, 0, .35);
+@dash-detail-icon-text: rgba(0, 0, 0, .5);
+@dash-detail-divider: rgba(0, 0, 0, .25);
+
+@dash-widget-alert-bg: #ff5d56;
+@dash-widget-alert-text: #000;
+@dash-widget-alert-heading-border: rgba(0, 0, 0, .5);
+
+@dash-status-pass: rgb(0, 204, 75);
+@dash-status-warn: rgb(255, 189, 53);
+@dash-status-fail: rgb(255, 93, 86);
+@dash-status-fail-border: #000;
+@dash-status-fail-text: #333;
+
+@dash-status-alert-pass: #00a33c;
+@dash-status-alert-fail: #cc4a45;
+
+@dash-state-config-text: rgba(255, 255, 255, .6);
+@dash-state-config-text-hover: rgba(255, 255, 255, .8);
+@dash-state-config-bg: rgba(255, 255, 255, .15);
+@dash-state-config-bg-hover: rgba(255, 255, 255, .30);
+
+@ct-series-colors: @chart-green, @chart-red, @dash-status-warn, @white;
+@dash-chart-alt-color: #dffaff;
+@dash-chart-alt-fill: #65b7c9;
+@dash-chart-halo-color: @white;
+@dash-chart-area-opacity: 1;
+@dash-chart-point-size: 5px;
+@dash-chart-grid: @dash-divider;
+
+@state-danger-text: @dash-status-alert-fail;
+@state-success-text: @dash-status-alert-pass;
+
+// SITE
+// ========================================
+#site {
+    .list-group-item:hover {
+        background-color: #ececec;
+    }
+}
+
+// DASHBOARD
+// ========================================
+#dashboard {
+    background-image: url('@{dash-image-path}bg-forest.jpg');
+    background-size: cover;
+
+    .dashboard-widgets {
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+
+        .alert {
+            text-shadow: none;
+        }
+
+        // exceptions
+        .popover, .tooltip, .dash-status-fail {
+            text-shadow: none;
+        }
+    }
+
+    .ct-grid {
+        stroke-dasharray: 2px;
+    }
+
+    // chart overrides
+    .ct-grid-right-y {
+        stroke: @white;
+        stroke-width: 1px;
+        stroke-dasharray: none;
+    }
+
+    .ct-grid-bottom-x {
+        stroke: @dash-widget-sub-heading-border;
+        stroke-dasharray: none;
+    }
+    
+    .ct-grid-top-x {
+        display: none;
+    }
+
+    .ct-chart:not(.dash-chart-alt) .ct-series {
+        // chartist uses ct-series-colors for lines, but we
+        // want to further customize those colors
+        &.ct-series-a .ct-line {
+            stroke: #d9f7e4;
+        }
+
+        &.ct-series-b .ct-line {
+            stroke: #ffe7e6;
+        }
+    }
+
+    // replace the normal point with a black one so the halo stands out
+    .ct-chart .ct-series .ct-point {
+        stroke: @bg-replacement !important;
+
+        // the last point is the most recent date so increase its size
+        &:nth-last-child(2) {
+            stroke-width: @dash-chart-point-size * 2;
+
+            .animation(blink 1.5s ease-in-out infinite);
+        }
+    }
+
+    // halos are put in reverse order so get the first one to make it bigger
+    .ct-chart .ct-point-halo:first-of-type {
+        stroke-width: @dash-chart-halo-size * 2.5;
+    }
+
+    // override the basic alert state values
+    .widget.alert {
+        @black: #000;
+        #gradient > .vertical(#ffb1ae, #ffa09c);
+        .widget-heading, .environment-name, .deploy-view td:not(.servers-up):not(:first-child):not(.servers-down) {
+            color: black;
+        }
+    }
+
+    // add a halo around the alert icon
+    .dash-status-fail {
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, .5);
+    }
+
+    // the widget uses @dash-dashboard-bg to style between header arrows
+    // so override the value to use a black
+    .pipeline-view .pipeline-environment-header span:before {
+        border-left-color: @bg-replacement;
+    }
+
+    .server-count {
+        color: #777;
+    }
+}
+
+// DETAIL OVERRIDES
+.widget-detail .detail-close:hover {
+    color: #000000;
+}
+
+// WIDGET OVERRIDES
+.monitor-modal-buttons {
+    .btn {
+        background-color: rgba(255, 255, 255, .8);
+        border-color: rgba(0, 0, 0, .2);
+    }
+
+    .selected {
+        text-shadow: 0 1px 4px rgba(0, 0, 0, .5);
+    }
+}

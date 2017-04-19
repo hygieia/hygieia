@@ -1,0 +1,88 @@
+@import (reference) '../../../app/css/variables.less';
+@import (reference) '../../../app/css/mixins.less';
+
+#dashboard .ca-view {
+    td {
+        padding: 0 .5rem 0 0;
+        border: none !important;
+        white-space: nowrap;
+
+        .text-lg;
+
+        &:first-of-type {
+            min-width: 3rem;
+        }
+    }
+
+    .percent {
+        font-size: 50%;
+        display: inline-block;
+        vertical-align: super;
+    }
+
+    .ca-status-Warning {
+        color: @dash-status-warn;
+    }
+    .ca-status-Alert {
+        color: @dash-status-fail;
+    }
+
+    .ca-coverage {
+        .panel-body {
+            padding-top: .5rem;
+        }
+        .ca-value {
+            .text-lg;
+            text-align: center;
+            margin-top: .5rem;
+        }
+
+        .ct-chart.ct-chart-Alert {
+            .ct-series-a {
+                .ct-donut {
+                    stroke: @dash-status-fail;
+                }
+            }
+        }
+
+        .ct-chart.ct-chart-Warning {
+            .ct-series-a {
+                .ct-donut {
+                    stroke: @dash-status-warn;
+                }
+            }
+        }
+
+        .ct-series-b {
+            .ct-donut {
+                stroke: @dash-widget-section-highlight;
+            }
+        }
+    }
+
+    .ca-version {
+        .ca-label {
+            .text-standard;
+            text-align: center;
+        }
+        .ca-value {
+            .text-lg;
+            text-align: center;
+            margin-top: .5rem;
+        }
+    }
+
+    .ca-issues, .ca-tests, .ca-security {
+        td:first-child {
+            width: 1rem;
+        }
+        .ca-name {
+            max-width: 8rem;
+            text-overflow: ellipsis;
+            overflow:hidden;
+        }
+        .ca-value {
+            text-align: right;
+        }
+    }
+}

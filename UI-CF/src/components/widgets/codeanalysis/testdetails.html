@@ -1,0 +1,137 @@
+<widget-modal widget-modal-close="true">
+    <div class="widget-detail test-detail">
+        <div class="widget-detail-heading">
+            <div class="row">
+                <div class="col-md-3 build-desc">
+                    <span class="build-number">Run# {{testDetails.testResult.executionId}}</span>
+                </div>
+                <div class="col-md-3 build-time">
+                    <span>{{testDetails.testResult.endTime | date:'MMM d, HH:mm:ss'}}</span>
+                </div>
+                <div class="col-md-3 build-duration">
+                    <span>Duration: {{testDetails.duration | duration}}</span>
+                </div>
+                <div class="col-md-3 view-in-tool">
+                    <a ng-href="{{::testDetails.testResult.url}}" target="_blank">
+                        View Test Job <span class="fa fa-angle-right"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="widget-detail-body">
+            <table class="table">
+                <div class="dash-row">
+                    <tbody ng-repeat="capability in testDetails.testResult.testCapabilities" ng-class-odd="'alt'">
+                    <tr id="capability.description" class="clickableRow"
+                        ng-click="(capability.testSuites.length > 0) ? showCapabilityDetail(capability): null">
+                        <td class="pull-left" ng-class="{'widget-font-bold' : (activeCapability==capability.description)}">
+                            {{capability.description}}
+                        </td>
+                        <td>{{capability.totalTestSuiteCount}}</td>
+                        <td ng-class="{'widget-font-pass': capability.successTestSuiteCount > 0}">
+                            {{capability.successTestSuiteCount}}
+                        </td>
+                        <td ng-class="{'widget-font-fail': capability.failedTestSuiteCount > 0}">
+                            {{capability.failedTestSuiteCount}}
+                        </td>
+                        <!--
+                        <td ng-if="capability.duration == 0">-</td>
+                        <td ng-if="capability.duration > 0">{{capability.duration | date:'hh:mm:ss'}}</td>
+                        -->
+                        <td ng-hide="(activeCapability==capability.description) || (capability.testSuites.length ==0)"
+                            class="fa fa-plus fa-x clickable pull-right"></td>
+                        <td ng-show="activeCapability==capability.description"
+                            class="fa fa-minus fa-x clickable pull-right"></td>
+                    </tr>
+                    <tr ng-show="activeCapability==capability.description">
+                        <td colspan="12">
+                            <div class="dash-row">
+                                <table class="table table-striped">
+                                    <tbody ng-repeat="testSuite in capability.testSuites">
+                                    <tr id="testSuite.description" class="clickableRow"
+                                        ng-click="(testSuite.testCases.length > 0) ? showTestSuiteDetail(testSuite): null">
+                                        <td class="pull-left"
+                                            ng-class="{'widget-font-bold' : (activeSuite==testSuite.description)}"
+                                            colspan="5">{{testSuite.description}}
+                                        </td>
+                                        <td ng-if="testSuite.duration == 0">-</td>
+                                        <td ng-if="testSuite.duration > 0">{{testSuite.duration | date:'hh:mm:ss'}}</td>
+                                        <td>{{testSuite.totalTestCaseCount}}</td>
+                                        <td ng-class="{'widget-font-pass': testSuite.successTestCaseCount > 0}">
+                                            {{testSuite.successTestCaseCount}}
+                                        </td>
+                                        <td ng-class="{'widget-font-fail': testSuite.failedTestCaseCount > 0}">
+                                            {{testSuite.failedTestCaseCount}}
+                                        </td>
+
+                                        <td ng-hide="(activeSuite==testSuite.description) || (testSuite.testCases.length ==0)"
+                                            class="fa fa-plus fa-x clickable pull-right"></td>
+                                        <td ng-show="activeSuite==testSuite.description"
+                                            class="fa fa-minus fa-x clickable pull-right"></td>
+                                    </tr>
+                                    <tr ng-show="activeSuite==testSuite.description">
+                                        <td colspan="10">
+                                            <div class="dash-row">
+                                                <table class="table table-striped">
+                                                    <tbody ng-repeat="testCase in testSuite.testCases">
+                                                    <tr id="testCase.description" class="clickableRow"
+                                                        ng-click="(testSuite.testCases.length > 0) ? showTestCaseDetail(testSuite): null">
+                                                        <td>{{testCase.description}}</td>
+                                                        <!--
+                                                        <td>{{testCase.totalTestStepCount}}</td>
+                                                        <td ng-class="{'widget-font-pass': testCase.successTestStepCount > 0}">
+                                                            {{testCase.successTestStepCount}}
+                                                        </td>
+                                                        <td ng-class="{'widget-font-fail': testCase.failedTestStepCount > 0}">
+                                                            {{testCase.failedTestStepCount}}
+                                                        </td>
+                                                        <td ng-class="{'widget-font-warn': testCase.skippedTestStepCount > 0}">
+                                                            {{testCase.skippedTestStepCount}}
+                                                        </td>
+                                                        <td ng-if="testCase.duration == 0">-</td>
+                                                        <td ng-if="testCase.duration > 0">{{testCase.duration |
+                                                            date:'hh:mm:ss'}}
+                                                        </td>
+                                                        -->
+                                                    </tr>
+                                                    <tr ng-show="activeSuite==testSuite.description">
+                                                        <td>
+                                                            <div class="dash-row">
+                                                                <table class="table">
+                                                                    <tbody ng-repeat="testStep in testCase.testSteps">
+                                                                    <tr id="testStep.description">
+                                                                        <td ng-if="testStep.status == 'Success'">
+                                                                            <span dash-status='ok'></span>
+                                                                        </td>
+                                                                        <td ng-if="testStep.status == 'Failure'">
+                                                                            <span dash-status='alert'></span>
+                                                                        </td>
+                                                                        <td ng-if="testStep.status == 'Skipped'">
+                                                                            <span dash-status='warning'></span>
+                                                                        </td>
+                                                                        <td>{{testStep.description}}</td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </div>
+            </table>
+        </div>
+    </div>
+</widget-modal>

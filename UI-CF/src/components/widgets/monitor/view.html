@@ -1,0 +1,76 @@
+<div class="monitor-view">
+    <div class="widget" ng-if="ctrl.services && ctrl.services.length">
+        <div class="widget-heading">
+            Our Services
+        </div>
+        <div class="widget-body">
+            <div class="monitor-row dash-row clickable"
+                 ng-repeat="service in ctrl.services | orderBy: ['-status', 'name']"
+                 ng-click="ctrl.openStatusWindow(service)">
+                <span class="pull-left" dash-status="{{service.status}}"></span>
+                <span class="fa fa-comment-o pull-right" ng-if="ctrl.hasMessage(service)"></span>
+                <div class="dash-overflow">{{service.name}}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="widget" ng-if="ctrl.dependencies && ctrl.dependencies.length">
+        <div class="widget-heading">
+            Dependent Services
+        </div>
+        <div class="widget-body">
+            <div class="monitor-row dash-row"
+                 ng-repeat="service in ctrl.dependencies | orderBy: ['-status', 'name']"
+                 ng-class="{'clickable': ctrl.hasMessage(service)}"
+                 popover="{{service.message}}"
+                 popover-trigger="focus"
+                 popover-placement="left"
+                 tabindex="0"
+                    >
+                <span class="pull-left" dash-status="{{service.status}}"></span>
+                <span class="fa fa-comment-o pull-right monitor-has-comment" ng-if="ctrl.hasMessage(service)"></span>
+                <div class="dash-overflow">{{service.name}}</div>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-center" ng-if="!ctrl.services.length && !ctrl.dependencies.length">
+        No services configured
+    </p>
+</div>
+
+<!--A monitor modal used for the status popup-->
+<script type="text/ng-template" id="monitorStatus.html">
+    <widget-modal widget-modal-title="Status">
+        <form role="form" ng-submit="ctrl.submit()" novalidate="novalidate">
+            <div class="form-group">
+                <label class="control-label">{{::ctrl.service.name}}</label>
+                <textarea class="form-control modal-view-status-input" rows="3" ng-model="ctrl.service.message" placeholder="Add a message"></textarea>
+            </div>
+
+            <div class="form-group clearfix">
+                <div class="monitor-modal-buttons fa fa-2x pull-left">
+                    <span class="btn monitor-button-fail"
+                          ng-class="{'selected':ctrl.service.status == ctrl.statuses.FAIL}"
+                          ng-click="ctrl.setStatus(ctrl.statuses.FAIL)">
+                        <span class="fa-exclamation-circle"></span>
+                    </span>
+
+                    <span class="btn monitor-button-warn"
+                          ng-class="{'selected':ctrl.service.status == ctrl.statuses.WARN}"
+                          ng-click="ctrl.setStatus(ctrl.statuses.WARN)">
+                        <span class="fa-exclamation-triangle"></span>
+                    </span>
+
+                    <span class="btn monitor-button-pass"
+                          ng-class="{'selected':ctrl.service.status == ctrl.statuses.PASS}"
+                          ng-click="ctrl.setStatus(ctrl.statuses.PASS)">
+                        <span class="fa-check"></span>
+                    </span>
+                </div>
+
+                <button class="btn btn-primary pull-right" ng-click="ctrl.updateStatus()">Update</button>
+            </div>
+        </form>
+    </widget-modal>
+</script>

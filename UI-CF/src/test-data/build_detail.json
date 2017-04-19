@@ -1,0 +1,332 @@
+{
+    "lastUpdated": 1454492174613,
+    "result": [
+        {
+            "id": "54bd1e890364d6231d777afe",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216265971,
+            "number": "378",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/378/",
+            "startTime": 1453212420781,
+            "endTime": 1453212730860,
+            "duration": 310079,
+            "buildStatus": "Success",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8a0364d6231d777b00",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216266998,
+            "number": "376",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/376/",
+            "startTime": 1453039620000,
+            "endTime": 1453039936692,
+            "duration": 316692,
+            "buildStatus": "Fail",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8c0364d6231d777b03",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216268422,
+            "number": "373",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/373/",
+            "startTime": 1452780420000,
+            "endTime": 1452780774107,
+            "duration": 354107,
+            "buildStatus": "Success",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8d0364d6231d777b05",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216269022,
+            "number": "371",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/371/",
+            "startTime": 1452607621000,
+            "endTime": 1452608225586,
+            "duration": 604586,
+            "buildStatus": "Aborted",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8d0364d6231d777b06",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216269316,
+            "number": "370",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/370/",
+            "startTime": 1452521220000,
+            "endTime": 1452521531026,
+            "duration": 311026,
+            "buildStatus": "Success",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8d0364d6231d777b07",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216269596,
+            "number": "369",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/369/",
+            "startTime": 1452434821000,
+            "endTime": 1452435135498,
+            "duration": 314498,
+            "buildStatus": "Success",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8d0364d6231d777b08",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216269866,
+            "number": "368",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/368/",
+            "startTime": 1452348420000,
+            "endTime": 1452348739724,
+            "duration": 319724,
+            "buildStatus": "F",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8e0364d6231d777b09",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216270149,
+            "number": "367",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/367/",
+            "startTime": 1452262020000,
+            "endTime": 1452262334388,
+            "duration": 314388,
+            "buildStatus": "Success",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8e0364d6231d777b0a",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216270529,
+            "number": "366",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/366/",
+            "startTime": 1452175620000,
+            "endTime": 1452175950824,
+            "duration": 330824,
+            "buildStatus": "Success",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8e0364d6231d777b0b",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216270837,
+            "number": "365",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/365/",
+            "startTime": 1452089220000,
+            "endTime": 1452089533764,
+            "duration": 313764,
+            "buildStatus": "Success",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8f0364d6231d777b0c",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216271137,
+            "number": "364",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/364/",
+            "startTime": 1452002820000,
+            "endTime": 1452003132756,
+            "duration": 312756,
+            "buildStatus": "Success",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8f0364d6231d777b0d",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216271467,
+            "number": "363",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/363/",
+            "startTime": 1451916420000,
+            "endTime": 1451916736137,
+            "duration": 316137,
+            "buildStatus": "Success",
+            "sourceChangeSet": []
+        },
+        {
+            "id": "54bd1e8a0364d6231d777aff",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216266508,
+            "number": "377",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/377/",
+            "startTime": 1453126020846,
+            "endTime": 1453126317832,
+            "duration": 296986,
+            "buildStatus": "Success",
+            "startedBy": "chandan.v.a",
+            "sourceChangeSet": [
+                {
+                    "scmRevisionNumber": "f37322567aa2f83c7ee6b280fb7480e17e585c6b",
+                    "scmCommitLog": "[OLINGO-411] Fix for handling JPA self joins",
+                    "scmAuthor": "chandan.v.a",
+                    "scmCommitTimestamp": 1421570890000,
+                    "numberOfChanges": 5
+                }
+            ]
+        },
+        {
+            "id": "54bd1e8b0364d6231d777b01",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216267610,
+            "number": "375",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/375/",
+            "startTime": 1452953220000,
+            "endTime": 1452953540908,
+            "duration": 320908,
+            "buildStatus": "Success",
+            "startedBy": "chandan.v.a",
+            "sourceChangeSet": [
+                {
+                    "scmRevisionNumber": "9d63ef43219eeafc9ab2f2de8270333952258aa5",
+                    "scmCommitLog": "[OLINGO-537] - Fix for ignoring EntityListeners getting added to",
+                    "scmAuthor": "chandan.v.a",
+                    "scmCommitTimestamp": 1421381792000,
+                    "numberOfChanges": 1
+                },
+                {
+                    "scmRevisionNumber": "1ade40dea19770091edcd12eae97013aa47cb9fa",
+                    "scmCommitLog": "[OLINGO-537] - Fix Type cast issue with generics",
+                    "scmAuthor": "chandan.v.a",
+                    "scmCommitTimestamp": 1421393481000,
+                    "numberOfChanges": 1
+                },
+                {
+                    "scmRevisionNumber": "c9db4f5300b12dd98215bd501ca7bb06a65b77c1",
+                    "scmCommitLog": "[OLINGO-539] Fixed wrong exception message and javadoc",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1421395003000,
+                    "numberOfChanges": 2
+                }
+            ]
+        },
+        {
+            "id": "54bd1e8c0364d6231d777b02",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216268104,
+            "number": "374",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/374/",
+            "startTime": 1452866820000,
+            "endTime": 1452867140344,
+            "duration": 320344,
+            "buildStatus": "Success",
+            "startedBy": "chrisam",
+            "sourceChangeSet": [
+                {
+                    "scmRevisionNumber": "b6a7d54aefeb5527b0b8f34d6b232fe8c164f470",
+                    "scmCommitLog": "[OLINGO-535] Fix splitPath method for servlet",
+                    "scmAuthor": "chrisam",
+                    "scmCommitTimestamp": 1421317340000,
+                    "numberOfChanges": 1
+                },
+                {
+                    "scmRevisionNumber": "5c6af747ecab3cecf6b5b5ffd5012d3ccab8ad8a",
+                    "scmCommitLog": "[OLINGO-536] Catcfh Exception in servlet",
+                    "scmAuthor": "chrisam",
+                    "scmCommitTimestamp": 1421323095000,
+                    "numberOfChanges": 1
+                }
+            ]
+        },
+        {
+            "id": "54bd1e8c0364d6231d777b04",
+            "collectorItemId": "54bd1d970364d503eb606979",
+            "timestamp": 1453216268755,
+            "number": "372",
+            "buildUrl": "https://builds.apache.org/job/olingo-odata2-cobertura/372/",
+            "startTime": 1455307175767,
+            "endTime": 1455307195767,
+            "duration": 340508,
+            "buildStatus": "Success",
+            "startedBy": "chandan.v.a",
+            "log": "Line 1\nLine2\nLine3\nLine 4\nLine 5\nLine 6\nThis is another line and it is longer than the other lines but I'm not sure how long I need to make it before it will break. How about here?",
+            "sourceChangeSet": [
+                {
+                    "scmRevisionNumber": "5a93f4cc4e7c14759b1f3e8d1022c02978573646",
+                    "scmCommitLog": "Added support for Spring",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1415856957000,
+                    "numberOfChanges": 9
+                },
+                {
+                    "scmRevisionNumber": "dd98b32d395f51da7ab0c1eac194cd2e25f9ad6a",
+                    "scmCommitLog": "[OLINGO-193] Moved the Spring integration to the level above lib",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1415950735000,
+                    "numberOfChanges": 14
+                },
+                {
+                    "scmRevisionNumber": "ee0798736eaff71a377d704067032c3add145567",
+                    "scmCommitLog": "[OLINGO-193] Minor code and license clean up",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1415951212000,
+                    "numberOfChanges": 6
+                },
+                {
+                    "scmRevisionNumber": "fe1be5e92ff3575b4192ae3b827cce1116ee3b71",
+                    "scmCommitLog": "[OLINGO-193] Added unit tests",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1416988279000,
+                    "numberOfChanges": 9
+                },
+                {
+                    "scmRevisionNumber": "a339d2956d7dd892acd2f67893c1a608e796ad0e",
+                    "scmCommitLog": "[OLINGO-193] Reuse as much code as possible between the spring and non-spring root locators.",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1416989999000,
+                    "numberOfChanges": 3
+                },
+                {
+                    "scmRevisionNumber": "1ee1ff4334f5f3d993aa1e772c0e9b4e55c7dc82",
+                    "scmCommitLog": "Minor fix in combination with Spring/CXFServlet",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1419329386000,
+                    "numberOfChanges": 2
+                },
+                {
+                    "scmRevisionNumber": "986b1c4b4c45bfa0b156928108f2fe5ae6410236",
+                    "scmCommitLog": "[OLINGO-193] Moved all spring related into spring extension module",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1419339395000,
+                    "numberOfChanges": 8
+                },
+                {
+                    "scmRevisionNumber": "7a596e207e0292419447f11b1df792f1824ca432",
+                    "scmCommitLog": "[OLINGO-193] Adapted RAT check for odata2-spring module",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1419340233000,
+                    "numberOfChanges": 1
+                },
+                {
+                    "scmRevisionNumber": "5b632779b992c151478d8333c19489740c8255b9",
+                    "scmCommitLog": "[OLINGO-193] Reuse as much code as possible in the spring extension (Extend the core ODataRootLocator and override the setters)",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1420638744000,
+                    "numberOfChanges": 2
+                },
+                {
+                    "scmRevisionNumber": "92531140bb369a98a12c6a85f3f8aac08fb803bc",
+                    "scmCommitLog": "[OLINGO-193] Renamed artifact and minor code clean up",
+                    "scmAuthor": "michael.bolz",
+                    "scmCommitTimestamp": 1420638882000,
+                    "numberOfChanges": 3
+                },
+                {
+                    "scmRevisionNumber": "297c3949222e50de4a6c266e4a221564ad2d9b08",
+                    "scmCommitLog": "[OLINGO-531] Fix: ODataServlet response contains content-length header",
+                    "scmAuthor": "chrisam",
+                    "scmCommitTimestamp": 1421149858000,
+                    "numberOfChanges": 2
+                },
+                {
+                    "scmRevisionNumber": "bdd755cb987feac46bb2148161ca5246b88d54a2",
+                    "scmCommitLog": "[OLINGO-532] Expose JPAEdmMappingImpl via Factory",
+                    "scmAuthor": "chandan.v.a",
+                    "scmCommitTimestamp": 1421152618000,
+                    "numberOfChanges": 2
+                }
+            ]
+        }
+    ]
+}

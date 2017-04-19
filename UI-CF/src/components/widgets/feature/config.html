@@ -1,0 +1,43 @@
+<widget-modal widget-modal-title="Configure Feature Widget">
+<form name="configForm"
+	ng-submit="ctrl.submit(configForm.$valid, ctrl.collectorItemId)"
+	novalidate="novalidate">
+	<div class="form-group clearfix"
+		ng-class="{'has-error': configForm.collectorItemId.$invalid && ctrl.submitted}">
+
+		<div class="col-sm-push-2 col-sm-8">
+			<label class="modal-label">Agile Content Tool Type:</label> <select
+				name="collectorId" class="form-control" ng-model="ctrl.collectorId"
+				ng-init="ctrl.collectorId"
+				ng-change="ctrl.evaluateTypeSelection()"
+				ng-options="featureTypeOption.value for featureTypeOption in ctrl.featureTypeOptions | orderBy: 'value' track by featureTypeOption.id"
+				required>
+				<option value="">{{ctrl.typeDropdownPlaceholder}}</option>
+			</select>
+
+			<p class="help-block"
+				ng-if="configForm.collectorItemId.$error.required">Please select
+				a valid feature data source</p>
+		</div>
+
+		<div ng-hide="ctrl.hideScopeOwnerDropDown" class="col-sm-push-2 col-sm-8">
+			<label class="modal-label">Team/Project Name:</label> <select
+				name="collectorItemId" class="form-control"
+				ng-model="ctrl.collectorItemId"
+				ng-options="item.teamName for item in ctrl.scopeOwners | orderBy: 'teamName' track by item.value"
+				ng-disabled="ctrl.toolsDropdownDisabled"
+				required>
+				<option value="">{{ctrl.toolsDropdownPlaceholder}}</option>
+			</select>
+
+			<p class="help-block"
+				ng-if="configForm.collectorItemId.$error.required">Please select
+				a valid team / project</p>
+		</div>
+	</div>
+
+	<div class="button-row row text-center">
+		<button type="submit" class="btn btn-primary btn-wide">Save</button>
+	</div>
+</form>
+</widget-modal>

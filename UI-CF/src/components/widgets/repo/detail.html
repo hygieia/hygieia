@@ -1,0 +1,25 @@
+<widget-modal widget-modal-close="true">
+    <div class="widget-detail repo-detail">
+        <div class="widget-detail-body">
+            <span class="no-changesets" ng-hide="detail.commits.length">No Changes</span>
+            <table class="table" ng-show="detail.commits.length">
+                <thead>
+                <tr>
+                    <th>Revision</th>
+                    <th>Author</th>
+                    <th>Message</th>
+                    <th>Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="commit in detail.commits">
+                    <td>{{::commit.scmRevisionNumber | limitTo:8}}</td>
+                    <td>{{::commit.scmAuthor}}</td>
+                    <td>{{::commit.scmCommitLog}}</td>
+                    <td>{{::commit.scmCommitTimestamp | date:'MMM d, HH:mm:ss'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</widget-modal>

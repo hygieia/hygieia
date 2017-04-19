@@ -1,0 +1,64 @@
+<widget-modal widget-modal-close="true">
+    <div class="widget-detail deploy-detail">
+        <div class="widget-detail-heading">
+            <div class="row">
+                <div class="col-md-4">
+                    <span class="dash-status-lg"
+                          dash-status="{{detail.environment.failedComponents > 0 ? detail.statuses.FAIL : detail.statuses.PASS}}"
+                          dash-status-fail-text="{{detail.environment.failedComponents}}"></span>
+                    <span class="environment-name">{{::detail.environment.name}}</span>
+                </div>
+
+                <div class="col-md-3 last-updated">
+                    <span>{{::detail.environment.lastUpdated | date:'MMM d, HH:mm:ss'}}</span>
+                </div>
+
+                <div class="col-md-2 server-count">
+                    <span ng-class="{'servers-up' : detail.environment.serverUpCount > 0}">
+                        {{detail.environment.serverUpCount}}<span class="fa fa-arrow-up"></span>
+                    </span>
+                    <span ng-class="{'servers-down' : detail.environment.serverDownCount > 0}">
+                        {{detail.environment.serverDownCount}}<span class="fa fa-arrow-down"></span>
+                    </span>
+                </div>
+                <div class="col-md-3 view-in-tool">
+                    <a ng-href="{{::detail.environment.url}}" target="_blank">
+                        View in {{::detail.collectorName }} <span class="fa fa-angle-right"></span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Close button -->
+        </div>
+        <div class="widget-detail-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th colspan="2">Component</th>
+                        <th>Time</th>
+                        <th>Version</th>
+                        <th colspan="2">Resource</th>
+                    </tr>
+                </thead>
+                <tbody ng-repeat="unit in detail.environment.units | orderBy:['deployed', 'name'] track by $index">
+                    <tr ng-repeat="server in unit.servers | orderBy:['online', 'name'] track by $index">
+                        <td dash-status="{{unit.deployed}}"></td>
+                        <td>{{::unit.name}}</td>
+                        <td>{{::unit.lastUpdated | date:'MMM d, HH:mm:ss'}}</td>
+                        <td>{{::unit.version}}</td>
+                        <td>{{::server.name}}</td>
+                        <td ng-show="server.online" class="servers-up"><span class="fa fa-arrow-up"></span></td>
+                        <td ng-hide="server.online" class="servers-down"><span class="fa fa-arrow-down"></span></td>
+                    </tr>
+                    <tr ng-if="!unit.servers || unit.servers.length === 0">
+                        <td dash-status="{{unit.deployed}}"></td>
+                        <td>{{::unit.name}}</td>
+                        <td>{{::unit.lastUpdated | date:'MMM d, HH:mm:ss'}}</td>
+                        <td>{{::unit.version}}</td>
+                        <td colspan="2">N/A</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</widget-modal>

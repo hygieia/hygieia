@@ -1,0 +1,68 @@
+<div id="auth">
+    <ng-include src="signup.templateUrl"></ng-include>
+    <div class="col-md-8 col-md-push-2">
+
+        <div class="auth-modal-heading">
+            Please Signup
+        </div>
+        <div class="auth-modal-body">
+            <form class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2"
+                  name="suf"
+                  class="form"
+                  ng-submit="signup.doSignup(suf.$valid)"
+                  role="form"
+                  novalidate>
+
+                <div class="alert alert-success" ng-if="signup.userCreated">
+                    User created successfully
+                </div>
+
+                <form-group input="id" errors="{exists:'User already exists', required:'Username is required'}">
+                    <input type="text"
+                           class="form-control text-center"
+                           ng-model="signup.id"
+                           name="id"
+                           placeholder="Enter your username"
+                           autocomplete="off"
+                           required />
+                </form-group>
+
+                <form-group input="password" errors="{required: 'Password is required', minlength: 'Password should be a min length of 6 characters'}">
+                    <input type="password" class="form-control text-center"
+                           ng-model="signup.password"
+                           minLength=6
+                           name="password"
+                           placeholder="Enter your password"
+                           required />
+
+                </form-group>
+
+                <form-group input="confirm" errors="{match: 'Passwords do not match!'}">
+                    <input type="password"
+                           class="form-control text-center"
+                           ng-model="signup.confirm"
+                           required
+                           match="signup.password"
+                           name="confirm"
+                           placeholder="Confirm password"/>
+                </form-group>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-default btn-wide">
+                        <i class="fa fa-lg fa fa-thumbs-o-up"></i>
+                        Sign up
+                    </button>
+                </div>
+
+                <div class="gap text-center">
+                    <p>Already have an account?</p>
+
+                    <div class="btn btn-link btn-wide" ng-click="signup.doLogin()">
+                        <span class="fa fa-lg fa-key"></span>
+                        Log in
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

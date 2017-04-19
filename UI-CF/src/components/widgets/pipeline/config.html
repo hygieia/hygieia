@@ -1,0 +1,23 @@
+<widget-modal class="pipeline-config form-horizontal" widget-modal-title="Configure Delivery Pipeline">
+    <div class="text-center form-group">Map your environments to the following pipeline stages:</div>
+
+    <div class="form-group clearfix" ng-repeat="map in pipelineConfig.environmentMappings">
+        <div class="col-sm-3">
+            <label class="control-label pull-right">
+                {{map.key}}:
+            </label>
+        </div>
+        <div class="col-sm-9">
+            <select class="form-control"
+                    ng-model="pipelineConfig.mappings[map.key]"
+                    ng-options="item.value as item.name for item in pipelineConfig.environments | orderBy: 'name'"
+                    ng-disabled="pipelineConfig.environmentsDropdownDisabled">
+                <option value="">Select an environment</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="button-row row text-center">
+        <button class="btn btn-primary" ng-click="pipelineConfig.save()">Save</button>
+    </div>
+</widget-modal>

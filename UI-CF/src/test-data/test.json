@@ -1,0 +1,69 @@
+{
+    "passed": [
+        12,
+        14,
+        13,
+        5,
+        6,
+        8,
+        14,
+        11,
+        10,
+        9,
+        8,
+        10,
+        17
+    ],
+    "failed": [
+        1,
+        4,
+        2,
+        4,
+        6,
+        12,
+        3,
+        2,
+        0,
+        14,
+        15,
+        5,
+        4
+    ],
+    "builds": [
+        {
+            "number": "6429",
+            "passed": true,
+            "time": "10s ago"
+        },
+        {
+            "number": "6428",
+            "passed": false,
+            "time": "32s ago"
+        },
+        {
+            "number": "6427",
+            "passed": true,
+            "time": "1m ago"
+        },
+        {
+            "number": "6426",
+            "passed": true,
+            "time": "5m ago"
+        },
+        {
+            "number": "6425",
+            "passed": false,
+            "time": "8m ago"
+        },
+        {
+            "number": "6424",
+            "passed": true,
+            "time": "24m ago"
+        },
+        {
+            "number": "6423",
+            "passed": true,
+            "time": "28m ago"
+        }
+    ]
+}

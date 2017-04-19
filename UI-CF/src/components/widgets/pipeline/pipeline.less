@@ -1,0 +1,133 @@
+@import (reference) '../../../app/css/variables.less';
+@import (reference) '../../../app/css/mixins.less';
+@import (reference) '../../../../bower_components/bootstrap/less/mixins/gradients.less';
+
+.pipeline-config {
+
+    label {
+        text-transform: uppercase;
+        min-width: 6rem;
+        font-weight: normal;
+    }
+}
+
+#dashboard {
+    .pipeline-view {
+        .version {
+            .text-lg;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dash-status {
+            margin-top: .5rem;
+        }
+
+        .col-xs-fifths {
+            float: left;
+            display: inline;
+            width: 20%;
+        }
+
+        .pipeline-environment-header {
+            padding: 2rem .5rem;
+            span {
+                @th-height: 6rem;
+                @arrow-size: @th-height/2;
+
+                color: @text-color;
+
+                text-align: center;
+                font-size: 2rem;
+                line-height: @th-height;
+                margin-left: -2rem;
+                padding-left: 2rem;
+                display: block;
+                width: 100%;
+                position: relative;
+
+                @pass-light: lighten(@dash-status-pass, 5%);
+                #gradient > .horizontal(darken(@dash-status-pass, 5%), @pass-light);
+
+                &:before, &:after {
+                    content: '';
+                    width: 0;
+                    height: 0;
+                    display: inline-block;
+                    position: absolute;
+
+                    top: 0;
+
+                    border-top: @arrow-size solid transparent;
+                    border-bottom: @arrow-size solid transparent;
+                    border-left: @arrow-size solid @pass-light;
+                }
+
+                &:before {
+                    left: 0;
+                    border-left-color: @dash-dashboard-bg;
+                }
+
+                &:after {
+                    right: -@arrow-size;
+                    z-index: 1;
+                }
+            }
+
+            &:nth-child(1) span:before {
+                display: none;
+            }
+
+            &.down span {
+                @fail-light: lighten(@dash-status-fail, 5%);
+                #gradient > .horizontal(darken(@dash-status-fail, 5%), @fail-light);
+
+                &:after {
+                    border-left-color: @fail-light;
+                }
+            }
+
+            &:last-of-type span:after {
+                border: .1rem solid #eee;
+                width: 2.7rem;
+                right: -2.7rem;
+                height: 100%;
+                display: inline-block;
+
+                background-color: #eee;
+                background-image: linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
+                background-size: 2.5rem 2.5rem;
+                background-position:0 0, 1.25rem 1.25rem;
+            }
+        }
+
+        .pipeline-row {
+            border-top: 1px solid @dash-divider;
+            vertical-align: middle;
+
+            &:nth-child(even) {
+                background: @dash-widget-section-highlight;
+            }
+
+            .pipeline-unit-name {
+                border-right: 1px solid @dash-divider;
+                .text-lg;
+                line-height: 6rem;
+                padding-left: 1.5rem;
+            }
+
+            .pipeline-data-cell {
+                padding: .5rem 1rem .5rem 3.5rem;
+                position: relative;
+
+                .dash-status {
+                    position: absolute;
+                    top: .75rem;
+                    left: .25rem;
+                }
+            }
+        }
+    }
+}

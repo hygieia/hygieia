@@ -1,0 +1,100 @@
+<div id="site" class="main-content">
+    <ng-include src="ctrl.templateUrl"></ng-include>
+
+    <div class="col-md-8 col-md-push-2">
+        <div class="widget-modal r">
+            <div class="widget-modal-heading">
+                Select Your Dashboard
+            </div>
+            <div class="widget-modal-body">
+                <div class="text-center">
+                    <div class="btn-group dashboard-type-list" role="group" aria-label="Basic example">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                ng-class="{'btn-info': ctrl.dashboardType == undefined}"
+                                ng-click="ctrl.setType()">All dashboards</button>
+
+                        <button type="button"
+                                class="btn btn-secondary"
+                                ng-repeat="item in ctrl.dashboardTypes"
+                                ng-class="{'btn-info': ctrl.dashboardType == item.id}"
+                                ng-click="ctrl.setType(item.id)">
+                            <span class="fa {{item.icon}}" ng-if="item.icon"></span>
+
+                            {{item.name}} dashboards
+                        </button>
+                    </div>
+                </div>
+
+                <div class="gap">
+                    <input type="search"
+                           id="filter"
+                           class="form-control text-center"
+                           ng-model="ctrl.search"
+                           placeholder="Type to find dashboard" />
+                </div>
+
+                <div class="row gap">
+                    <div class="col-sm-4 col-sm-push-8 text-center">
+                        <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.createDashboard()">
+                            <span class="fa fa-stack fa-lg">
+                                <span class="fa-circle-thin fa-stack-2x"></span>
+                                <span class="fa-plus fa-stack-1x"></span>
+                            </span>
+                            <br/>
+                            Create a new<br/>dashboard
+                        </div>
+                    </div>
+                    <div class="col-sm-8 col-sm-pull-4">
+                        <div>
+                            <div class="text-2x">My Dashboards <span class="label label-default"></span></div>
+
+                            <div class="text-center" ng-hide="ctrl.mydash">Loading Your Dashboards...</div>
+                            <div class="text-center" ng-show="ctrl.mydash && !mydashboards.length">
+                                No results
+                            </div>
+
+                            <ul class="list-animate list-group text-left">
+                                <li class="list-group-item" ng-repeat="myitem in mydashboards = (ctrl.mydash | filter:ctrl.filterDashboards | orderBy: 'name')">
+                                    <span class="pull-right">
+                                       <a href ng-click="ctrl.deleteDashboard(myitem)">
+                                           <span class="fa fa-lg fa-trash text-danger"></span>
+                                       </a>
+                                    </span>
+
+                                    <a class="btn-block clickable" ng-click="ctrl.open(myitem.id)">
+                                        <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : myitem.isProduct}"></span>
+                                        {{ myitem.name }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="gap">
+                            <div class="text-2x">All Dashboards</span></div>
+
+                            <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
+
+                            <ul class="list-animate list-group text-left">
+                                <li class="list-group-item clickable" ng-click="ctrl.open(item.id)"
+                                    ng-repeat="item in filteredDashboards = (ctrl.dashboards | filter: ctrl.filterDashboards | orderBy:'name')">
+                                    <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : item.isProduct}"></span>
+
+                                    <span class="fa fa-angle-right list-group-item-right"></span>
+
+                                </span>
+                                    {{item.name}}
+                                </li>
+                            </ul>
+
+                            <div class="text-center" ng-show="ctrl.dashboards && !filteredDashboards.length">
+                                No results
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

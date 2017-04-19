@@ -1,0 +1,88 @@
+{"lastUpdated": 1422924638613, "result": [
+  {
+    "id": "54c90b07d4c6b3ab4c092a46",
+    "collectorItemId": "54bd1d970364d503eb606979",
+    "timestamp": 1453991426000,
+    "name": "Hudson Collector",
+    "url": "http://vantage.kdc.capitalone.com:11300/sonar/dashboard/index/113501",
+    "type": "StaticAnalysis",
+    "version": "0.1.1-SNAPSHOT",
+    "metrics": [
+      {
+        "name": "blocker_violations",
+        "value": 10,
+        "formattedValue": "10",
+        "status": "Alert",
+        "statusMessage": "Blocker > 1"
+      },
+      {
+        "name": "test_failures",
+        "value": 0,
+        "formattedValue": "0",
+        "status": "Ok"
+      },
+      {
+        "name": "test_success_density",
+        "value": 100,
+        "formattedValue": "100.0%",
+        "status": "Ok"
+      },
+      {
+        "name": "tests",
+        "value": 10,
+        "formattedValue": "10",
+        "status": "Ok"
+      },
+      {
+        "name": "major_violations",
+        "value": 4,
+        "formattedValue": "4",
+        "status": "Ok"
+      },
+      {
+        "name": "violations_density",
+        "value": 93.1,
+        "formattedValue": "93.1%",
+        "status": "Warning",
+        "statusMessage": "Rules compliance < 95"
+      },
+      {
+        "name": "ncloc",
+        "value": 433,
+        "formattedValue": "433",
+        "status": "Ok"
+      },
+      {
+        "name": "violations",
+        "value": 22,
+        "formattedValue": "22",
+        "status": "Ok"
+      },
+      {
+        "name": "test_errors",
+        "value": 1,
+        "formattedValue": "1",
+        "status": "Warning",
+        "statusMessage": "Errors > 0"
+      },
+      {
+        "name": "sqale_index",
+        "value": 400,
+        "formattedValue": "6h 40min",
+        "status": "Ok"
+      },
+      {
+        "name": "critical_violations",
+        "value": 0,
+        "formattedValue": "0",
+        "status": "Ok"
+      },
+      {
+        "name": "line_coverage",
+        "value": 66.5,
+        "formattedValue": "86.5%",
+        "status": "Warning"
+      }
+    ]
+  }
+]}
