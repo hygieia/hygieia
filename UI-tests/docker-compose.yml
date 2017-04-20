@@ -50,7 +50,7 @@ services:
         image: $TEST_IMAGE
         command: echo 'UI Test container started'
         volumes:
-        - ..:/usr/src/app
+        - ..:/
         - ~/.m2:/root/.m2
         links:
         - hygieia-ui

@@ -18,6 +18,7 @@
 		<serenity.jbehave.version>1.21.0</serenity.jbehave.version>
 		<serenity-maven.version>1.2.2</serenity-maven.version>
 		<freemarker.version>2.3.23</freemarker.version>
+		<uitest.baseImage>maven:3.3.9-jdk-8-alpine</uitest.baseImage>
 	</properties>
 
 	<dependencies>
@@ -58,42 +59,10 @@
 					</execution>
 				</executions>
 				<configuration>
-					<skipDockerBuild>false</skipDockerBuild>
 					<imageName>hygieia-${project.build.finalName}</imageName>
-					<dockerDirectory>${project.basedir}/docker</dockerDirectory>
+					<baseImage>${uitest.baseImage}</baseImage>
+					<workdir>/usr/src/app/</workdir>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>serenity</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target>
-								<exec executable="./uitests.sh" />
-							</target>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>net.serenity-bdd.maven.plugins</groupId>
-				<artifactId>serenity-maven-plugin</artifactId>
-				<version>${serenity-maven.version}</version>
-				<executions>
-					<execution>
-						<id>serenity-reports</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>aggregate</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -121,11 +90,46 @@
 						<executions>
 							<execution>
 								<id>serenity</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
 								<configuration>
 									<target>
-										<exec executable="sh">
+										<exec executable="sh" failonerror="true">
 											<arg value="uitests.sh" />
 										</exec>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>nix</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>serenity</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<exec executable="./uitests.sh" failonerror="true" />
 									</target>
 								</configuration>
 							</execution>
