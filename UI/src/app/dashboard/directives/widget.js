@@ -25,8 +25,8 @@
         })
         .directive('widget', widgetDirective);
 
-    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$uibModal', 'WidgetState', 'DisplayState', '$interval', 'dashboardData','$cookies'];
-    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $uibModal, WidgetState, DisplayState, $interval, dashboardData,$cookies) {
+    widgetDirective.$inject = ['$controller', '$http', '$templateCache', '$compile', 'widgetManager', '$uibModal', 'WidgetState', 'DisplayState', '$interval', 'dashboardData','userService'];
+    function widgetDirective($controller, $http, $templateCache, $compile, widgetManager, $uibModal, WidgetState, DisplayState, $interval, dashboardData, userService) {
         return {
             templateUrl: 'app/dashboard/views/widget.html',
             require: '^widgetContainer',
@@ -107,32 +107,9 @@
 
             // public methods
             $scope.configModal = configModal;
+            $scope.hasPermission = hasPermission;
             $scope.setState = setState;
             $scope.init = init;
-            $scope.checkPermission=checkPermission;
-
-            function checkPermission(){
-
-                dashboardData.myowner($scope.dashboard.title).then(processmyownerresponse);
-
-
-            }
-
-            function processmyownerresponse(data)
-            {
-
-                $scope.owner=data;
-                if ($scope.owner == $cookies.get('username') || $cookies.get('username') == 'admin')
-                {
-                    configModal();
-                }
-                else
-                {
-                    if($scope.alerts.length==0){
-                        $scope.alerts.push({type: 'info', msg: 'You are not authorized'});
-                    }
-                }
-            }
 
             // method implementations
             function configModal() {
@@ -153,6 +130,12 @@
                 // when the widget closes if an object is passed we'll assume it's an updated
                 // widget configuration so try and send it to the api or update the existing one
                 $uibModal.open(modalConfig).result.then(upsertWidget);
+            }
+
+            function hasPermission() {
+            	var dashboard = $scope.dashboard;
+
+            	return userService.hasDashboardConfigPermission(dashboard.owner, dashboard.owners);
             }
 
             function upsertWidget(newWidgetConfig) {

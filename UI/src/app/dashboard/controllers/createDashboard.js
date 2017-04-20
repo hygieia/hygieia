@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('CreateDashboardController', CreateDashboardController);
 
-    CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', '$cookies', 'DashboardType'];
-    function CreateDashboardController($location, $uibModalInstance, dashboardData, $cookies, DashboardType) {
+    CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', 'userService', 'DashboardType'];
+    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType) {
         var ctrl = this;
 
         // public variables
@@ -89,7 +89,6 @@
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
-                        owner: $cookies.get('username')
                     };
 
                 dashboardData
@@ -103,6 +102,9 @@
                     .error(function (data) {
                         // display error message
                         form.dashboardTitle.$setValidity('createError', false);
+                        if(data.status === 401) {
+                          $modalInstance.close();
+                        }
                     });
             }
         }

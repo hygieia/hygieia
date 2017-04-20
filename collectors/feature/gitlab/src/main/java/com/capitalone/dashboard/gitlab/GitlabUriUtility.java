@@ -88,9 +88,14 @@ public class GitlabUriUtility {
 		String host = StringUtils.isBlank(settings.getHost()) ? DEFAULT_HOST : settings.getHost();
 		
 		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+		
+		if(StringUtils.isNotBlank(settings.getPort())) {
+			builder.port(settings.getPort());
+		}
+		
 		return builder.scheme(protocol)
 				.host(host)
-				.port(settings.getPort())
+				.path(settings.getPath())
 				.pathSegment(API_PATH_SEGMENT)
 				.pathSegment(VERSION_PATH_SEGMENT)
 				.queryParam(RESULT_PER_PAGE_QUERY_PARAM_KEY, RESULTS_PER_PAGE);
