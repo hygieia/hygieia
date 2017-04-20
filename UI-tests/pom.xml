@@ -57,7 +57,7 @@
 						</goals>
 						<configuration>
 							<target>
-								<exec executable="uitests.sh" />
+								<exec executable="./uitests.sh" />
 							</target>
 						</configuration>
 					</execution>
@@ -95,6 +95,7 @@
 			</plugin>
 		</plugins>
 	</build>
+	
 	<profiles>
 		<profile>
 			<id>Windows</id>
