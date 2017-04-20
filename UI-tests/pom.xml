@@ -47,18 +47,19 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<configuration>
-					<includes>
-						<include>**/UITestRunner.java</include>
-					</includes>
-				</configuration>
+				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>serenity</id>
+						<phase>integration-test</phase>
 						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
+							<goal>run</goal>
 						</goals>
+						<configuration>
+									<target>
+										<exec executable="uitests.sh" />
+									</target>
+								</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -84,15 +85,60 @@
 				</configuration>
 			</plugin>
 			<plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <configuration>
-                    <skipDockerBuild>false</skipDockerBuild>
-                    <imageName>hygieia-${project.build.finalName}</imageName>
-                    <dockerDirectory>${project.basedir}/docker</dockerDirectory>
-                </configuration>
-            </plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<configuration>
+					<skipDockerBuild>false</skipDockerBuild>
+					<imageName>hygieia-${project.build.finalName}</imageName>
+					<dockerDirectory>${project.basedir}/docker</dockerDirectory>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>Windows</id>
+			<activation>
+				<os>
+					<family>Windows</family>
+				</os>
+			</activation>
+			<properties>
+				<script.extension>.bat</script.extension>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>serenity</id>
+								<configuration>
+									<target>
+										<exec executable="sh">
+											<arg value="uitests.sh" />
+										</exec>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>unix</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<properties>
+				<script.extension>.sh</script.extension>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
