@@ -1,7 +1,5 @@
 package com.capitalone.dashboard.model;
 
-import java.util.Collection;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -17,7 +15,6 @@ public class UserInfo {
 	@Id
 	private ObjectId id;
 	private String username;
-	private Collection<UserRole> authorities;
 	private AuthType authType;
 	
 	public ObjectId getId() {
@@ -36,15 +33,6 @@ public class UserInfo {
 		this.username = username;
 	}
 	
-	public Collection<UserRole> getAuthorities() {
-		
-		return authorities;
-	}
-	
-	public void setAuthorities(Collection<UserRole> authorities) {
-		this.authorities = authorities;
-	}
-
 	public AuthType getAuthType() {
 		return authType;
 	}

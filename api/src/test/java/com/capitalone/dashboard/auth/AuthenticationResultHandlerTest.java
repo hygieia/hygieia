@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 
+import com.capitalone.dashboard.auth.standard.AuthenticationResultHandler;
+
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticationResultHandlerTest {
 	

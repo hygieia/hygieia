@@ -16,8 +16,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.capitalone.dashboard.auth.AuthProperties;
-import com.capitalone.dashboard.auth.AuthenticationResultHandler;
+import com.capitalone.dashboard.auth.ldap.LdapAuthenticationResultHandler;
 import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
+import com.capitalone.dashboard.auth.standard.AuthenticationResultHandler;
 import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
 import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
 
@@ -32,6 +33,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private AuthenticationResultHandler authenticationResultHandler;
+	
+	@Autowired
+	private LdapAuthenticationResultHandler ldapAuthenticationResultHandler;
 
 	@Autowired
 	private AuthenticationProvider standardAuthenticationProvider;
@@ -73,7 +77,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
 			auth.ldapAuthentication()
 			.userDnPatterns(ldapUserDnPattern)
-			.contextSource().url(ldapServerUrl);
+			.groupSearchBase(authProperties.getLdapGroupSearchBase())
+			.contextSource().managerDn(authProperties.getManagerDn()).managerPassword(authProperties.getManagerPassword()).url(ldapServerUrl);
 		}
 	}
 	
@@ -84,7 +89,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Bean
 	protected LdapLoginRequestFilter ldapLoginRequestFilter() throws Exception {
-		return new LdapLoginRequestFilter("/login/ldap", authenticationManager(), authenticationResultHandler);
+		return new LdapLoginRequestFilter("/login/ldap", authenticationManager(), ldapAuthenticationResultHandler);
 	}
 	
 }

@@ -1,27 +1,26 @@
-package com.capitalone.dashboard.auth;
+package com.capitalone.dashboard.auth.standard;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.capitalone.dashboard.auth.token.TokenAuthenticationResultHandler;
+import com.capitalone.dashboard.auth.token.TokenAuthenticationService;
+
 @Component
-public class AuthenticationResultHandler implements AuthenticationSuccessHandler {
+public class AuthenticationResultHandler extends TokenAuthenticationResultHandler {
 
-	@Autowired
-	private AuthenticationResponseService authenticationResponseService;
-	
-	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-		authenticationResponseService.handle(response, authentication);
-	}
-	
-	
+    @Autowired
+	public AuthenticationResultHandler(TokenAuthenticationService tokenService) {
+        super(tokenService);
+    }
 
+    @Override
+    protected Authentication beforeTokenCreate(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        return authentication;
+    }
+	
 }

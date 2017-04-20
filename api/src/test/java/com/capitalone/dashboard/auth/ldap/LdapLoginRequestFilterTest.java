@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.authentication.AuthenticationManager;
 
-import com.capitalone.dashboard.auth.AuthenticationResultHandler;
+import com.capitalone.dashboard.auth.standard.AuthenticationResultHandler;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LdapLoginRequestFilterTest {

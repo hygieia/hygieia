@@ -17,7 +17,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 
-import com.capitalone.dashboard.auth.AuthenticationResultHandler;
 import com.capitalone.dashboard.model.AuthType;
 
 @RunWith(MockitoJUnitRunner.class)
