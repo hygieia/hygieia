@@ -16,16 +16,18 @@ The tests incorporate a set of images produced by Selenium, known as the Seleniu
 
 ## Running the UI Tests (With Docker)
 
+`mvn clean install`
+
+If you need a different base image for your UI Tests, use the -Duitest.baseImage flag to specify the image name. The default image is maven:3.3.9-jdk-8-alpine.
+
 **NOTE:** In order to run the UI tests with the included mechanism, **the machine running the tests needs to have a version of docker compatible with docker-compose**.
 
 Included in the UI-test folder is a uitests.sh script. By changing the exported fields in this file, the script can be run on a nix based machine to run the UI tests in a dockerized manner. The included docker-compose file will create all the dependent images, run your set of acceptance tests, and finally the script will clean up all of the artifacts created during your suite. The only files that will be persisted in the process will be those that reside in your parent project - the test results will be modified in place in the UI-Test folder. *For running the UI tests as a maven build and not part of docker, see the section below.*
 
-**NOTE:** The UI-test image must be created before the uitests.sh script is run. See the included docker/Dockerfile.
-
 
 ## Personalizing the uitests.sh file
 
-In the case where your organization is using different images to test/deploy your instance of Hygieia, you may put your specific image tag in its correspoding spot in the uitests.sh script. This is helpful if you have an internal private registry, are working off of a local built image, etc. The image tags should be entered in the form below:
+In the case where your organization is using different images to test/deploy your instance of Hygieia, you may put your specific image tag in its corresponding spot in the uitests.sh script. This is helpful if you have an internal private registry, are working off of a locally built image, etc. The image tags should be entered in the form below:
 
 ```bash
 export MONGO_IMAGE=[ mongo image (mongo:latest)]
@@ -34,7 +36,6 @@ export UI_IMAGE=[ ui image (my.internal.registry:5000/devteam/hygieia-ui) ]
 export HUB_IMAGE=[ hub image** ]
 export NODE1_IMAGE=[ browser node image** ]
 export NODE1_DRIVER=[ browser driver name (chrome, firefox, phantomjs, etc) ]
-export TEST_IMAGE=[ ui test image ]
 ```
 **NOTE:** The Hub image used in the development of this suite was selenium/hub:3.1.0
 
@@ -45,12 +46,6 @@ If you are running the Hygieia UI on an SSL enabled server, ensure that the foll
 ```bash
 export SSL_UI=[ true | false ]
 ```
-
-## Running the UI Tests locally
-
-On an OSX/Nix system, simply put the image names into the uitests.sh script, and mark if the UI is running on an SSL enabled server or not. Run the script with the following command from the UI-Tests folder (Using GIT Bash if on a Windows machine). If choosing to run the tests locally without docker, the user takes the responsibility of ensuring the workstation is equipped with the necessary Selenium drivers, the proper networking configured, all application/database nodes configured correctly, and all system environments set in the script/docker-compose.yml file accordingly.
-
-`./uitests.sh`
 
 ## Test Data Results
 
