@@ -56,10 +56,10 @@
 							<goal>run</goal>
 						</goals>
 						<configuration>
-									<target>
-										<exec executable="uitests.sh" />
-									</target>
-								</configuration>
+							<target>
+								<exec executable="uitests.sh" />
+							</target>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -95,7 +95,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<profiles>
 		<profile>
 			<id>Windows</id>
@@ -104,9 +103,6 @@
 					<family>Windows</family>
 				</os>
 			</activation>
-			<properties>
-				<script.extension>.bat</script.extension>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -127,17 +123,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
-			<id>unix</id>
-			<activation>
-				<os>
-					<family>unix</family>
-				</os>
-			</activation>
-			<properties>
-				<script.extension>.sh</script.extension>
-			</properties>
 		</profile>
 	</profiles>
 
