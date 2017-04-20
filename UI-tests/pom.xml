@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>ui-tests</artifactId>
-	<name>Hygieia UI Tests</name>
+	<name>${project.groupId}:${project.artifactId}</name>
 	<description>UI Tests using JBehave and Selenium for the Hygieia Continuous Delivery Dashboard</description>
 
 	<parent>
