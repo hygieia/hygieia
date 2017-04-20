@@ -207,19 +207,19 @@ docker port hygieia-ui
 ```
 
 ## How to setup test data
-###1. Setup GIT -  by configuring it to point to the github master branch for Hygieia
+### 1. Setup GIT -  by configuring it to point to the github master branch for Hygieia
 	a. In the SCM panel, select 'git'
 	b. Enter the URL: 'https://github.com/capitalone/Hygieia.git' (without the quotes)
 	c. Set the branch to 'master' (without the quotes)
 	ote: For this to work you will need to have set your credentials on the ID that the collectors is running under, the best way to do this is first clone the repo to set your credentials.
 
-###2. Setup Sonar -  by running a test instance of sonar
+### 2. Setup Sonar -  by running a test instance of sonar
 	a. docker-compose -f test-servers/sonar/sonar.yml up -d
 	b. Fill it with data from the Hygieia project
 mvn sonar:sonar -Dsonar.host.url=http://$(docker-machine ip default):9000 -Dsonar.jdbc.url="jdbc:h2:tcp://$(docker-machine ip default)/sonar"
 	c. You can now go in and configure the quality panel in the UI.
 
-###3. Setup Jenkins w/cucumber output - by starting a test jenkins master
+### 3. Setup Jenkins w/cucumber output - by starting a test jenkins master
 	a. docker-compose -f test-servers/jenkins/jenkins.yml up -d
 	b. Run the job: http://192.168.99.100:9100/job/Hygieia_Example_Job/build
 	c. Configure the Jenkins Build and Jenkins Cucumber panels using this jobs output.

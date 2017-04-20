@@ -1,6 +1,6 @@
-##Hygieia New Features Released##
+## Hygieia New Features Released ##
 
-###Basic Http Monitoring###
+### Basic Http Monitoring ###
  Hygieia Monitoring widget now supports basic http monitoring.
  
  
