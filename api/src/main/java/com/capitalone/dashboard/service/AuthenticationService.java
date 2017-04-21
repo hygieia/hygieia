@@ -57,4 +57,10 @@ public interface AuthenticationService {
 	 * @return
 	 */
 	org.springframework.security.core.Authentication authenticate(String username, String password);
+
+
+    Authentication promoteToAdmin(String username);
+
+
+    Authentication demoteFromAdmin(String username);
 }

@@ -11,6 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
+import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Authentication;
 import com.capitalone.dashboard.model.UserRole;
@@ -29,8 +31,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Iterable<Authentication> all() {
-        // TODO Auto-generated method stub
-        return null;
+        return authenticationRepository.findAll();
     }
 
     @Override
@@ -99,6 +100,30 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
         }
 
         throw new BadCredentialsException("Login Failed: Invalid credentials for user " + username);
+    }
+    
+    @Override
+    public Authentication promoteToAdmin(String username) {
+        Authentication user = authenticationRepository.findByUsername(username);
+
+        if (user == null) { throw new UserNotFoundException(username, AuthType.STANDARD); }
+
+        user.getRoles().add(UserRole.ROLE_ADMIN);
+        Authentication savedUser = authenticationRepository.save(user);
+        
+        return savedUser;
+    }
+
+    @Override
+    public Authentication demoteFromAdmin(String username) {
+        int numberOfAdmins = authenticationRepository.findByRolesIn(UserRole.ROLE_ADMIN).size();
+        if (numberOfAdmins <= 1) { throw new DeleteLastAdminException(); }
+        Authentication user = authenticationRepository.findByUsername(username);
+        if (user == null) { throw new UserNotFoundException(username, AuthType.STANDARD); }
+
+        user.getRoles().remove(UserRole.ROLE_ADMIN);
+        Authentication savedUser = authenticationRepository.save(user);
+        return savedUser;
     }
 
     private Collection<GrantedAuthority> convertRolesToAuthorities(Collection<UserRole> roles) {

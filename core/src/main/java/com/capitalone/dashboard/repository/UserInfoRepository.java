@@ -9,5 +9,5 @@ import com.capitalone.dashboard.model.UserInfo;
 public interface UserInfoRepository extends CrudRepository<UserInfo, ObjectId>{
 
 	UserInfo findByUsernameAndAuthType(String username, AuthType authType);
-	
+
 }

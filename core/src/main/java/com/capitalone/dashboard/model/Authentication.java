@@ -25,6 +25,9 @@ public class Authentication extends BaseModel {
     
     private Collection<UserRole> roles;
 
+    public Authentication() {
+        this.roles = Sets.newHashSet();
+    }
 
     public Authentication(String username, String password) {
         this.username = username;
