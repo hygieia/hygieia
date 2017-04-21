@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Arrays;
+
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +42,6 @@ import com.capitalone.dashboard.repository.AuthenticationRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.capitalone.dashboard.service.DashboardService;
-import com.google.common.collect.Lists;
  
  @RunWith(SpringJUnit4ClassRunner.class)
  @SpringApplicationConfiguration(classes = {TestDefaultAuthConfig.class, WebMVCConfig.class, WebSecurityConfig.class})
@@ -142,10 +143,10 @@ import com.google.common.collect.Lists;
      
  	private String authenticateAs(String username, String password, UserRole... roles) throws Exception {
  		Authentication authentication = new Authentication(username, password);
+ 		authentication.setRoles(Arrays.asList(roles));
      	when(authenticationTestRepository.findByUsername(username)).thenReturn(authentication);
      	
      	UserInfo userInfo = new UserInfo();
-     	userInfo.setAuthorities(Lists.newArrayList(roles));
      	
      	when(userInfoRepository.findByUsernameAndAuthType(username, AuthType.STANDARD)).thenReturn(userInfo);
      	
