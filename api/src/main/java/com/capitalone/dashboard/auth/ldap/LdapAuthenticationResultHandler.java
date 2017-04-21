@@ -41,7 +41,7 @@ public class LdapAuthenticationResultHandler extends TokenAuthenticationResultHa
     private Collection<? extends GrantedAuthority> standardizeAuthorities(Collection<? extends GrantedAuthority> authorities) {
         Collection<GrantedAuthority> standardizedAuthorities = Sets.newHashSet();
         authorities.forEach(authority -> {
-            if(authority.getAuthority().equals(authProperties.getAdminLdapGroup())) {
+            if(authority.getAuthority().equals(authProperties.getLdapAdminGroup())) {
                 standardizedAuthorities.add(new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()));
             }
         });

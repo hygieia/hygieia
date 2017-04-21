@@ -52,7 +52,7 @@ public class LdapAuthenticationResultHandlerTest {
     public void shouldStandardizeRolesForAdmin() throws IOException, ServletException {
         Collection<? extends GrantedAuthority> authorities = Lists.newArrayList(new SimpleGrantedAuthority("ROLE_HYGIEIA_ADMIN"));
         Authentication auth = new UsernamePasswordAuthenticationToken("admin", "password", authorities);
-        when(authProps.getAdminLdapGroup()).thenReturn("ROLE_HYGIEIA_ADMIN");
+        when(authProps.getLdapAdminGroup()).thenReturn("ROLE_HYGIEIA_ADMIN");
         
         ldapResultHandler.onAuthenticationSuccess(request, response, auth);
         
@@ -64,7 +64,7 @@ public class LdapAuthenticationResultHandlerTest {
     public void shouldStandardizeRolesForNonAdmin() throws IOException, ServletException {
         Collection<? extends GrantedAuthority> authorities = Lists.newArrayList(new SimpleGrantedAuthority("ROLE_HYGIEIA_USER"));
         Authentication auth = new UsernamePasswordAuthenticationToken("admin", "password", authorities);
-        when(authProps.getAdminLdapGroup()).thenReturn("ROLE_HYGIEIA_ADMIN");
+        when(authProps.getLdapAdminGroup()).thenReturn("ROLE_HYGIEIA_ADMIN");
         
         ldapResultHandler.onAuthenticationSuccess(request, response, auth);
         

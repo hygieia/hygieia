@@ -23,9 +23,9 @@ public class AuthProperties {
 	private String ldapUserDnPattern;
 	private String ldapServerUrl;
 	private String ldapGroupSearchBase;
-	private String adminLdapGroup;
-	private String managerDn;
-	private String managerPassword;
+	private String ldapAdminGroup;
+	private String ldapManagerDn;
+	private String ldapManagerPassword;
 	
 	public void setExpirationTime(Long expirationTime) {
 		this.expirationTime = expirationTime;
@@ -67,28 +67,28 @@ public class AuthProperties {
         this.ldapGroupSearchBase = ldapGroupSearchBase;
     }
 
-    public String getAdminLdapGroup() {
-        return adminLdapGroup;
+    public String getLdapAdminGroup() {
+        return ldapAdminGroup;
     }
 
-    public void setAdminLdapGroup(String adminLdapGroup) {
-        this.adminLdapGroup = adminLdapGroup;
+    public void setLdapAdminGroup(String ldapAdminGroup) {
+        this.ldapAdminGroup = ldapAdminGroup;
     }
 
-    public String getManagerDn() {
-        return managerDn;
+    public String getLdapManagerDn() {
+        return ldapManagerDn;
     }
 
-    public void setManagerDn(String managerDn) {
-        this.managerDn = managerDn;
+    public void setLdapManagerDn(String ldapManagerDn) {
+        this.ldapManagerDn = ldapManagerDn;
     }
 
-    public String getManagerPassword() {
-        return managerPassword;
+    public String getLdapManagerPassword() {
+        return ldapManagerPassword;
     }
 
-    public void setManagerPassword(String managerPassword) {
-        this.managerPassword = managerPassword;
+    public void setLdapManagerPassword(String ldapManagerPassword) {
+        this.ldapManagerPassword = ldapManagerPassword;
     }
     
     @PostConstruct
@@ -103,9 +103,17 @@ public class AuthProperties {
             setExpirationTime((long) 1000*60*60*24);
         }
         
-        if(StringUtils.isBlank(getManagerDn())) {
-            setManagerDn(null);
+        if(StringUtils.isBlank(getLdapManagerDn())) {
+            setLdapManagerDn(null);
         }
+        
+        standardizeAdminLdapGroup();
+    }
+
+    private void standardizeAdminLdapGroup() {
+        String standardizedGroup = StringUtils.upperCase(getLdapAdminGroup());
+        standardizedGroup = StringUtils.prependIfMissing(standardizedGroup, "ROLE_");
+        setLdapAdminGroup(standardizedGroup);
     }
 
 }

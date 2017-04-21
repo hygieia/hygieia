@@ -78,7 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			auth.ldapAuthentication()
 			.userDnPatterns(ldapUserDnPattern)
 			.groupSearchBase(authProperties.getLdapGroupSearchBase())
-			.contextSource().managerDn(authProperties.getManagerDn()).managerPassword(authProperties.getManagerPassword()).url(ldapServerUrl);
+			.contextSource().managerDn(authProperties.getLdapManagerDn()).managerPassword(authProperties.getLdapManagerPassword()).url(ldapServerUrl);
 		}
 	}
 	
