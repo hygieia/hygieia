@@ -16,7 +16,10 @@ The tests incorporate a set of images produced by Selenium, known as the Seleniu
 
 ## Running the UI Tests (With Docker)
 
-`mvn clean install`
+`mvn clean install -Puitests` for 'nix based operating systems.
+
+`mvn clean install -Puitest-windows` for windows based operating systems.
+
 
 If you need a different base image for your UI Tests, use the -Duitest.baseImage flag to specify the image name. The default image is maven:3.3.9-jdk-8-alpine.
 
@@ -39,7 +42,7 @@ export NODE1_DRIVER=[ browser driver name (chrome, firefox, phantomjs, etc) ]
 ```
 **NOTE:** The Hub image used in the development of this suite was selenium/hub:3.1.0
 
-**NOTE:** The Node iamge used in the development of this suite was selenium/node-chrome:3.1.0
+**NOTE:** The Node image used in the development of this suite was selenium/node-chrome:3.1.0
 
 If you are running the Hygieia UI on an SSL enabled server, ensure that the following export is set to true. This will point the hub/node combo to use https://host:443 instead of http://host.
 
