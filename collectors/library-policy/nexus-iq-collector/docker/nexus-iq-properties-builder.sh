@@ -7,10 +7,10 @@ if [ "$TEST_SCRIPT" != "" ]
 then
         #for testing locally
         PROP_FILE=application.properties
-else 
-	PROP_FILE=hygieia-gitlab-feature-collector.properties
+else
+	PROP_FILE=hygieia-nexus-iq-collector.properties
 fi
-  
+
 if [ "$MONGO_PORT" != "" ]; then
 	# Sample: MONGO_PORT=tcp://172.17.0.20:27017
 	MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
@@ -24,6 +24,19 @@ fi
 echo "MONGODB_HOST: $MONGODB_HOST"
 echo "MONGODB_PORT: $MONGODB_PORT"
 
+#update local host to bridge ip if used for a URL
+NEXUSIQ_LOCALHOST=
+echo $NEXUSIQ_URL|egrep localhost >>/dev/null
+if [ $? -ne 1 ]
+then
+        #this seems to give a access to the VM of the docker-machine
+        #LOCALHOST=`ip route|egrep '^default via'|cut -f3 -d' '`
+        #see http://superuser.com/questions/144453/virtualbox-guest-os-accessing-local-server-on-host-os
+        NEXUSIQ_LOCALHOST=10.0.2.2
+        MAPPED_URL=`echo "$NEXUSIQ_URL"|sed "s|localhost|$NEXUSIQ_LOCALHOST|"`
+        echo "Mapping localhost -> $MAPPED_URL"
+        NEXUSIQ_URL=$MAPPED_URL
+fi
 
 cat > $PROP_FILE <<EOF
 #Database Name
@@ -42,25 +55,15 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
 #Collector schedule (required)
-gitlab.cron=${GITLAB_CRON:-0 0/5 * * * *}
+nexusiq.cron=${NEXUSIQ_CRON:-0 0/5 * * * *}
 
-#Gitlab host (optional, defaults to "gitlab.com")
-gitlab.host=${GITLAB_HOST:-}
+nexusiq.servers[0]=${NEXUSIQ_URL:-http://localhost:9000}
 
-#Gitlab protocol (optional, defaults to "http")
-gitlab.protocol=${GITLAB_PROTOCOL:-}
+#NEXUS IQ Authentication Username - default is blank
+nexusiq.username=$NEXUSIQ_USERNAME
 
-#Gitlab port (optional, defaults to protocol default port)
-gitlab.port=${GITLAB_PORT:-}
-
-#Gitlab path (optional, defaults to no path)
-gitlab.path=${GITLAB_PATH:-}
-  
-#Gitlab API Token (required, must be an admin account to retrieve all teams for the instance of gitlab.  If not admin, will only retrieve teams the user belongs to)
-gitlab.apiToken=${GITLAB_API_TOKEN:-}
-
-#Gitlab selfSignedCertificate (optional, defaults to false, set to true if your instance of gitlab is running on https without a trusted certificate
-gitlab.selfSignedCertificate=${GITLAB_SELF_SIGNED_CERTIFICATE:-false}
+#Nexus IQ Authentication Password - default is blank
+nexusiq.password=$NEXUSIQ_PASSWORD
 
 EOF
 
