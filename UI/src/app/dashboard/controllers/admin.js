@@ -9,12 +9,11 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$cookies', '$cookieStore', '$location','$modal'];
-    function AdminController(dashboardData, $cookies, $cookieStore, $location,$modal) {
+    AdminController.$inject = ['dashboardData', '$location','$uibModal', 'userService', 'authService'];
+    function AdminController(dashboardData, $location, $uibModal, userService, authService) {
         var ctrl = this;
-        if ($cookies.username == 'admin') {
+        if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
-
         }
         else {
             console.log("Not authenticated redirecting");
@@ -22,8 +21,10 @@
         }
 
         ctrl.storageAvailable = localStorageSupported;
+        ctrl.showAuthentication = userService.isAuthenticated();
         ctrl.templateUrl = "app/dashboard/views/navheader.html";
-        ctrl.username = $cookies.username;
+        ctrl.username = userService.getUsername();
+        ctrl.login = login;
         ctrl.logout = logout;
         ctrl.renameDashboard=renameDashboard;
 
@@ -65,9 +66,12 @@
 
         //implementation of logout
         function logout() {
-            $cookieStore.remove("username");
-            $cookieStore.remove("authenticated");
-            $location.path("/");
+            authService.logout();
+            $location.path("/login");
+        }
+
+        function login() {
+          $location.path("/login")
         }
 
         // method implementations
@@ -88,7 +92,7 @@
         {
             console.log("Rename Dashboard in Admin");
 
-            var mymodalInstance=$modal.open({
+            var mymodalInstance=$uibModal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',

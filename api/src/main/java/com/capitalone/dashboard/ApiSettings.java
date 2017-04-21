@@ -12,16 +12,10 @@ public class ApiSettings {
      * encryptionKey to be specific. For now (for backwards compatibility) keeping it as it was.
      */
     private String key;
+    @Value("${corsEnabled:false}")
+    private boolean corsEnabled;
+    private String corsWhitelist;
     private boolean logRequest;
-    
-    // Start global config
-    /**
-     * Location to place configurations that are consumed by the UI and API. May be moved into a separate location
-     * (such as a collection in mongo) in the future.
-     */
-    @Value("${systemConfig.multipleDeploymentServers:false}")
-    private boolean multipleDeploymentServers;
-    // End global config
     
     public String getKey() {
         return key;
@@ -31,15 +25,27 @@ public class ApiSettings {
         this.key = key;
     }
 
+    public boolean isCorsEnabled() {
+        return corsEnabled;
+    }
+
+    public void setCorsEnabled(boolean corsEnabled) {
+        this.corsEnabled = corsEnabled;
+    }
+
+    public String getCorsWhitelist() {
+        return corsWhitelist;
+    }
+
+    public void setCorsWhitelist(String corsWhitelist) {
+        this.corsWhitelist = corsWhitelist;
+    }
+
     public boolean isLogRequest() {
         return logRequest;
     }
 
     public void setLogRequest(boolean logRequest) {
         this.logRequest = logRequest;
-    }
-    
-    public boolean isMultipleDeploymentServers() {
-    	return multipleDeploymentServers;
     }
 }

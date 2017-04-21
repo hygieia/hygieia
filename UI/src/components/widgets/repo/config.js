@@ -7,9 +7,9 @@
 	angular.module(HygieiaConfig.module).controller('RepoConfigController',
 			RepoConfigController);
 
-	RepoConfigController.$inject = [ 'modalData', '$modalInstance',
+	RepoConfigController.$inject = [ 'modalData', '$uibModalInstance',
 			'collectorData' ];
-	function RepoConfigController(modalData, $modalInstance, collectorData) {
+	function RepoConfigController(modalData, $uibModalInstance, collectorData) {
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
 
@@ -80,7 +80,7 @@
 						ctrl.gitBranch === widgetConfig.options.branch &&
 						ctrl.repouser === widgetConfig.options.userID &&
 						ctrl.repopass === widgetConfig.options.password) {
-						$modalInstance.close();
+						$uibModalInstance.close();
 						return;
 					}
 				}
@@ -89,7 +89,7 @@
 					if (ctrl.repopass === widgetConfig.options.password) {
 						//password is unchanged in the form so don't encrypt it again
 						try {
-							createCollectorItem().then(processCollectorItemResponse);
+							createCollectorItem().then(processCollectorItemResponse, handleError);
 						} catch (e) {
 							console.log(e);
 						}
@@ -101,14 +101,14 @@
 							}
 							ctrl.repopass = response;
 							try {
-								createCollectorItem().then(processCollectorItemResponse);
+								createCollectorItem().then(processCollectorItemResponse, handleError);
 							} catch (e) {
 								console.log(e);
 							}
 						});
 					}
 				} else {
-					createCollectorItem().then(processCollectorItemResponse);
+					createCollectorItem().then(processCollectorItemResponse, handleError);
 				}
 			}
 		}
@@ -173,6 +173,12 @@
 			return collectorData.createCollectorItem(item);
 		}
 
+		function handleError(response) {
+			if(response.status === 401) {
+				$modalInstance.close();
+			}
+		}
+
 		function processCollectorItemResponse(response) {
 			var postObj = {
 				name : "repo",
@@ -189,7 +195,7 @@
 			};
 
 			// pass this new config to the modal closing so it's saved
-			$modalInstance.close(postObj);
+			$uibModalInstance.close(postObj);
 		}
 	}
 })();

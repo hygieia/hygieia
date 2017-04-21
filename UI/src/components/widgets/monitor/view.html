@@ -1,7 +1,8 @@
 <div class="monitor-view">
     <div class="widget" ng-if="ctrl.services && ctrl.services.length">
         <div class="widget-heading">
-            Our Services
+            <span>Our Services</span>
+            <span class="pull-right icon-legend-link" ng-click="ctrl.showIconLegend()">Icon Legend</span>
         </div>
         <div class="widget-body">
             <div class="monitor-row dash-row clickable"

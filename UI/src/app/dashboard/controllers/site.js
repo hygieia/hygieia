@@ -8,15 +8,17 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
-    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
+    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService'];
+    function SiteController($scope, $q, $uibModal, dashboardData, $location, DashboardType, userService, authService) {
         var ctrl = this;
 
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
-        ctrl.username = $cookies.username;
-        ctrl.showAuthentication = $cookies.authenticated;
+
+        ctrl.username = userService.getUsername();
+        ctrl.showAuthentication = userService.isAuthenticated();
+
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
@@ -24,6 +26,7 @@
         ctrl.createDashboard = createDashboard;
         ctrl.deleteDashboard = deleteDashboard;
         ctrl.open = open;
+        ctrl.login = login;
         ctrl.logout = logout;
         ctrl.admin = admin;
         ctrl.setType = setType;
@@ -31,10 +34,9 @@
         ctrl.filterDashboards = filterDashboards;
         ctrl.renameDashboard = renameDashboard;
 
-         if (ctrl.username === 'admin') {
+        if (userService.isAdmin()) {
             ctrl.myadmin = true;
         }
-        checkPassThrough();
 
         (function() {
             // set up the different types of dashboards with a custom icon
@@ -71,30 +73,24 @@
             return matchesSearch;
         }
 
-        function checkPassThrough(){
-            if(angular.isUndefined(ctrl.username) || angular.isUndefined(ctrl.showAuthentication) || ctrl.showAuthentication == false){
-                console.log('Authentication failed, redirecting to login page');
-                $location.path('/login');
-            }
-
-        }
-
         function admin() {
             console.log('sending to admin page');
             $location.path('/admin');
         }
 
-        function logout()
-        {
-            $cookieStore.remove("username");
-            $cookieStore.remove("authenticated");
-            $location.path('/');
+        function login() {
+          $location.path('/login');
+        }
+
+        function logout() {
+            authService.logout();
+            $location.path('/login');
         }
 
         // method implementations
         function createDashboard() {
             // open modal for creating a new dashboard
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'app/dashboard/views/createDashboard.html',
                 controller: 'CreateDashboardController',
                 controllerAs: 'ctrl'
@@ -103,9 +99,8 @@
 
         function renameDashboard(item)
         {
-            console.log("Rename Dashboard");
             // open modal for renaming dashboard
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',
@@ -209,5 +204,3 @@
 
 
 })();
-
-

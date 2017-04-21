@@ -57,6 +57,9 @@ gitlab.protocol=http
 #Gitlab port (optional, defaults to protocol default port)
 gitlab.port=80
 
+#Gitlab path (optional, if your instance of gitlab requires a path)
+gitlab.path=/gitlab/resides/here
+
 #If your instance of Gitlab is using a self signed certificate, set to true, default is false
 gitlab.selfSignedCertificate=false
 

@@ -3,6 +3,7 @@ package com.capitalone.dashboard.model;
 import com.capitalone.dashboard.util.PipelineUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.*;
 
@@ -17,9 +18,11 @@ public class Pipeline extends BaseModel{
     private ObjectId collectorItemId;
 
     /**
-     * Map of environment name and stage object
+     * Map of environment names to EnvironmentStage objects. "Build" and "Commit" are
+     * treated as environments.
      * */
-    private Map<String, EnvironmentStage> stages = new HashMap<>();
+    @Field("stages") 
+    private Map<String, EnvironmentStage> environmentStageMap = new HashMap<>();
 
     /**
      * not including this in the map above because the enum allows us to
@@ -35,24 +38,24 @@ public class Pipeline extends BaseModel{
         this.collectorItemId = collectorItemId;
     }
 
-    public Map<String, EnvironmentStage> getStages() {
-        return stages;
+    public Map<String, EnvironmentStage> getEnvironmentStageMap() {
+        return environmentStageMap;
     }
 
-    public void setStages(Map<String, EnvironmentStage> stages) {
-        this.stages = stages;
+    public void setEnvironmentStageMap(Map<String, EnvironmentStage> environmentStageMap) {
+        this.environmentStageMap = environmentStageMap;
     }
 
     /**
-     * Adds a commit to a given stage.  Will create a new stage if it doesn't exist.
-     * @param stage
+     * Adds a commit to a given environment.  Will create a new stage if it doesn't exist.
+     * @param environmentName the environment name including the pseudo environments "Build" and "Commit"
      * @param commit
      */
-    public void addCommit(String stage, PipelineCommit commit){
-        if(!this.getStages().containsKey(stage)){
-            this.getStages().put(stage, new EnvironmentStage());
+    public void addCommit(String environmentName, PipelineCommit commit){
+        if(!this.getEnvironmentStageMap().containsKey(environmentName)){
+            this.getEnvironmentStageMap().put(environmentName, new EnvironmentStage());
         }
-        this.getStages().get(stage).getCommits().add(commit);
+        this.getEnvironmentStageMap().get(environmentName).getCommits().add(commit);
     }
 
     public Set<Build> getFailedBuilds() {
@@ -72,14 +75,14 @@ public class Pipeline extends BaseModel{
      *
      * uses a case insensitive map of the pipeline stage names due tot he way the UI currently stores mapped environments
      * with lowercase for the stage type and the canonical name
-     * @param stage
+     * @param environmentName the environment name including the pseudo environments "Build" and "Commit"
      * @return
      */
-    public Map<String, PipelineCommit> getCommitsByStage(String stage){
+    public Map<String, PipelineCommit> getCommitsByEnvironmentName(String environmentName){
 
         Map<String, EnvironmentStage> caseInsensitiveMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        caseInsensitiveMap.putAll(stages);
-        EnvironmentStage pipelineStage = caseInsensitiveMap.get(stage);
+        caseInsensitiveMap.putAll(environmentStageMap);
+        EnvironmentStage pipelineStage = caseInsensitiveMap.get(environmentName);
         if(pipelineStage == null) {
             return new HashMap<>();
         }

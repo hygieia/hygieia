@@ -1,24 +1,43 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.DashboardRepository;
-import com.capitalone.dashboard.repository.ServiceRepository;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import org.bson.types.ObjectId;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.*;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
+
+import com.capitalone.dashboard.model.Service;
+import com.capitalone.dashboard.model.ServiceStatus;
+import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.repository.ServiceRepository;
+import com.capitalone.dashboard.util.URLConnectionFactory;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceServiceTest {
 
     @Mock DashboardRepository dashboardRepository;
     @Mock ServiceRepository serviceRepository;
+    @Mock URLConnectionFactory urlConnectionFactory;
     @InjectMocks ServiceServiceImpl serviceService;
 
     @Test
@@ -54,7 +73,7 @@ public class ServiceServiceTest {
         final ObjectId id = ObjectId.get();
         final String name = "service";
         final String url = "https://abc123456.com";
-        final Dashboard dashboard = new Dashboard("template", "title", new Application("app"), "amit", DashboardType.Team);
+        final Dashboard dashboard = new Dashboard("template", "title", new Application("app"), new Owner("amit", AuthType.STANDARD), DashboardType.Team);
         when(dashboardRepository.findOne(id)).thenReturn(dashboard);
 
         Service service=serviceService.create(id, name,url);
@@ -74,14 +93,23 @@ public class ServiceServiceTest {
     }
 
     @Test
-    public void update() {
+    public void update() throws IOException {
         ObjectId dashId = ObjectId.get();
         Service service = new Service();
         service.setDashboardId(dashId);
         service.setLastUpdated(0l);
+        String url = "http://some.url";
+        service.setUrl(url);
 
+        MockURLConnection spy = Mockito.spy(new MockURLConnection(new URL(url)));
+        when(urlConnectionFactory.get(any(URL.class))).thenReturn(spy);
+        
         serviceService.update(dashId, service);
 
+        verify(urlConnectionFactory).get(any(URL.class));
+        verify(spy).connect();
+        verify(spy).getResponseCode();
+        
         verify(serviceRepository).save(argThat(new ArgumentMatcher<Service>() {
 
             @Override
@@ -142,4 +170,25 @@ public class ServiceServiceTest {
         }));
     }
 
+    class MockURLConnection extends HttpURLConnection {
+
+		protected MockURLConnection(URL u) {
+			super(u);
+		}
+
+		@Override
+		public void disconnect() {
+		}
+
+		@Override
+		public boolean usingProxy() {
+			return false;
+		}
+
+		@Override
+		public void connect() throws IOException {
+		}
+    	
+    }
+    
 }

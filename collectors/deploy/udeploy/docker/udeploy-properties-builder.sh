@@ -54,6 +54,9 @@ udeploy.username=${UDEPLOY_USERNAME:-bobama}
 #UDeploy password (required)
 udeploy.password=${UDEPLOY_PASSWORD:-s3cr3t}
 
+# UDeploy token can be used instead of username and password
+udeploy.token=${UDEPLOY_TOKEN:-theudeploytoken}
+
 EOF
 
 echo "

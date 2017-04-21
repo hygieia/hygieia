@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('CodeAnalysisViewController', CodeAnalysisViewController);
 
-    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', '$q', '$filter', '$modal'];
-    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, $q, $filter, $modal) {
+    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', '$q', '$filter', '$uibModal'];
+    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, $q, $filter, $uibModal) {
         var ctrl = this;
 
         ctrl.pieOptions = {
@@ -42,11 +42,12 @@
                 testSuiteData.details(testRequest).then(processTestResponse)
             ]);
         };
-
+        
         function processCaResponse(response) {
             var deferred = $q.defer();
             var caData = _.isEmpty(response.result) ? {} : response.result[0];
 
+            ctrl.reportUrl = caData.url;
             ctrl.versionNumber = caData.version;
 
             ctrl.rulesCompliance = getMetric(caData.metrics, 'violations_density');
@@ -189,7 +190,7 @@
 
 
         function showDetail(test) {
-            $modal.open({
+            $uibModal.open({
                 controller: 'TestDetailsController',
                 controllerAs: 'testDetails',
                 templateUrl: 'components/widgets/codeanalysis/testdetails.html',
