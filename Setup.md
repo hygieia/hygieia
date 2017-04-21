@@ -1,8 +1,8 @@
-:<img src="https://pbs.twimg.com/profile_images/461570480298663937/N78Jgl-f_400x400.jpeg" width="150";height="50"/>![Image](/UI/src/assets/img/hygieia_b.png)
+![Image](/UI/src/assets/img/hygieia_b.png)
 --
 
 ### Build Hygieia℠
-Need Java 1.8.
+Needs Java 1.8.
 
 ```bash
 mvn clean install package
@@ -22,8 +22,7 @@ The following components are required to run Hygieia℠:
       * Run the following commands as shown below at mongodb command prompt
         <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongo </code>
           
- ```
-       
+ ```   
          $ mongo  
          MongoDB shell version: 3.0.4
          connecting to: test  
@@ -51,17 +50,17 @@ The following components are required to run Hygieia℠:
                   }
                   ]
                 }  
-                
-
-
-We recommend that you download  MongoDB clients(RoboMongo etc) to connect to your local
-running Database and make sure that database: dashboard is created and you are successfully able to connect to it.
-
-##### To execute the above via script in an automate fashion, we have provide a script titled mongosrc.js to execute the script just execute the command below
-
 ```
-  mongo < mongosrc.js
 
+We recommend that you download MongoDB clients (RoboMongo etc) to connect to your locally
+running database and make sure that database: dashboard is created, and you are able to connect to it.
+
+
+##### Executing via a script
+To execute the above via a script in an automated fashion, use `mongosrc.js`:
+
+```bash
+  mongo < mongosrc.js
 ```
 
 #### API Layer
@@ -69,7 +68,7 @@ Please click on the link below to learn about how to build and run the API layer
 * [API](/api)
 
 #### Tool Collectors
-In general all the collectors can be run using the following command
+In general, all the collectors can be run using the following command
 ```bash
 java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>
 ```
@@ -83,10 +82,10 @@ Please click on the link below to learn about how to build and run the UI layer
  * [UI](/UI)
 
 #### Plugin / Webhook
-You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia. Currently, you can publish build, artifact info, sonar results, deployment results and cucumber test results. You may not need to run corresponding collectors if you use Jenkins for build, deploy, sonar analysis and running cucumber tests.
+You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia. Currently, you can publish build, artifact info, sonar results, deployment results and Cucumber test results. You may not need to run corresponding collectors if you use Jenkins for build, deploy, sonar analysis and running cucumber tests.
 * [Hygieia Jenkins Plugin](/hygieia-jenkins-plugin)
 
-You can use GitHub webhook to publish commit information to Hygieia. If you use webhook, you will not need to run github collector.
+You can use GitHub webhooks to publish commit information to Hygieia. If you use webhooks, you will not need to run the github collector.
 * Your Github webhook's payload url should be set to: http://hygieia-base-url/api/commit/github/v3
 * Select to publish just the "push" events
 
@@ -134,7 +133,7 @@ Tests should now run/pass when built from behind a corporate proxy, even if it i
 
 ##### Proxy Config: Deployment / Operations
 
-Only the above proxy settings (non authentication) may required to be set on your deployment instance.  Additionally, please updated all property files for each collector/API configuration with their specific proxy setting property.
+Only the above proxy settings (non-authentication) may required to be set on your deployment instance.  Additionally, please update all property files for each collector/API configuration with their specific proxy setting property.
 
 ### Build Docker images and setup id for mongodb
 
@@ -150,7 +149,7 @@ mvn docker:build
 docker-compose up -d
 ```
 
-* Create user in mongo (if you log into the container then you dont have to install mongo locally)
+* Create a user in Mongo (if you log into the container then you don't have to install Mongo locally)
 
 ```bash
 docker exec -t -i mongodb2 bash
@@ -159,7 +158,7 @@ docker exec -t -i mongodb2 bash
 mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
 ```
 
-## Create a docker-compose.override.yml to configure your environment
+## Create a `docker-compose.override.yml` to configure your environment
 These are the most common entries, the uncommented ones are mandatory if you want the collector to work.
 For dev/testing you will find it useful to change the CRON entries to ``"0 * * * * *"``
 ```
@@ -194,7 +193,7 @@ hygieia-sonar-codequality-collector:
   - SONAR_CRON=0 * * * * *
 ```
 
-* Make sure everything is restarted _it may fail if the user doesn't exist at start up time_
+* Make sure everything is restarted - _it may fail if the user doesn't exist at start-up_
 
 ```bash
 docker-compose restart
@@ -206,27 +205,29 @@ docker-compose restart
 docker port hygieia-ui
 ```
 
-## How to setup test data
-### 1. Setup GIT -  by configuring it to point to the github master branch for Hygieia
-	a. In the SCM panel, select 'git'
-	b. Enter the URL: 'https://github.com/capitalone/Hygieia.git' (without the quotes)
-	c. Set the branch to 'master' (without the quotes)
+## How to set up test data
+### 1. Set up Git - by configuring it to point to the Github master branch for Hygieia
+	a. In the SCM panel, select _git_
+	b. Enter the URL: `https://github.com/capitalone/Hygieia.git`
+	c. Set the branch to `master`
 	ote: For this to work you will need to have set your credentials on the ID that the collectors is running under, the best way to do this is first clone the repo to set your credentials.
 
 ### 2. Setup Sonar -  by running a test instance of sonar
-	a. docker-compose -f test-servers/sonar/sonar.yml up -d
+	a. `docker-compose -f test-servers/sonar/sonar.yml up -d`
 	b. Fill it with data from the Hygieia project
+```bash
 mvn sonar:sonar -Dsonar.host.url=http://$(docker-machine ip default):9000 -Dsonar.jdbc.url="jdbc:h2:tcp://$(docker-machine ip default)/sonar"
+```
 	c. You can now go in and configure the quality panel in the UI.
 
-### 3. Setup Jenkins w/cucumber output - by starting a test jenkins master
-	a. docker-compose -f test-servers/jenkins/jenkins.yml up -d
+### 3. Set up Jenkins w/cucumber output - by starting a test jenkins master
+	a. `docker-compose -f test-servers/jenkins/jenkins.yml up -d`
 	b. Run the job: http://192.168.99.100:9100/job/Hygieia_Example_Job/build
 	c. Configure the Jenkins Build and Jenkins Cucumber panels using this jobs output.
 
 
 ## Start Collectors in the background (optional as they are all running in containers by default)
-* To start individual collector as a background process please run the command in below format
+* To start individual collector as background processes, use this format:
   * On linux platform
 ```bash
 nohup java -jar <collector-name>.jar --spring.config.name=<property file name> & >/dev/null
