@@ -38,7 +38,11 @@ version.number=@application.version.number@
 auth.expirationTime=[JWT expiration time in milliseconds]
 auth.secret=[Secret Key used to validate the JWT tokens]
 auth.ldapServerUrl=[LDAP Server Url, including port of your LDAP server]
-auth.ldapUserDnPattern=[LDAP User Dn Pattern, where the username is replaced with '{0}']
+auth.ldapUserDnPattern=[LDAP User Dn Pattern, where the username is replaced with '{0}', ex: uid={0},ou=enterpriseusers,ou=enterprise,o=company,c=us]
+auth.ldapGroupSearchBase=[LDAP Groups Dn Pattern, example: ou=groups,ou=enterprise,o=company,c=us
+auth.ldapManagerDn=[Optional, will use anonymous authentication if not provided.]
+auth.ldapManagerPassword=[Only required if managerDn is provided]
+auth.ldapAdminGroup=[LDAP group which contains Hygieia Admin users, example: hygieia_admins]
 
 monitor.proxy.host=[hostname of proxy server]
 monitor.proxy.type=[http|socks|direct]
