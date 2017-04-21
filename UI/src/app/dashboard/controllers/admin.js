@@ -136,7 +136,7 @@
         }
 
         $scope.isActiveUser = function(user) {
-          if(user.authType === ctrl.authType && user.username === ctrl.username) {
+          if("STANDARD" === ctrl.authType && user.username === ctrl.username) {
             return true;
           }
           return false;
