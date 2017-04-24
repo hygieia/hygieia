@@ -10,7 +10,7 @@
     <!-- <file>/prod/msp/logs/jmssp_logs/jssp-app-log</file> -->
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- rollover daily -->
-      <fileNamePattern>gitlabfeaturecollector-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <fileNamePattern>logs/gitlabfeaturecollector-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <timeBasedFileNamingAndTriggeringPolicy
             class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
         <!-- or whenever the file size reaches 100MB -->
