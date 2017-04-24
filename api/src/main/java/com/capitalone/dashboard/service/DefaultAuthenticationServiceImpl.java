@@ -103,27 +103,38 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
     }
     
     @Override
-    public Authentication promoteToAdmin(String username) {
+    public Authentication addRole(String username, UserRole userRole) {
         Authentication user = authenticationRepository.findByUsername(username);
 
         if (user == null) { throw new UserNotFoundException(username, AuthType.STANDARD); }
 
-        user.getRoles().add(UserRole.ROLE_ADMIN);
+        user.getRoles().add(userRole);
         Authentication savedUser = authenticationRepository.save(user);
         
         return savedUser;
     }
-
+    
     @Override
-    public Authentication demoteFromAdmin(String username) {
-        int numberOfAdmins = authenticationRepository.findByRolesIn(UserRole.ROLE_ADMIN).size();
-        if (numberOfAdmins <= 1) { throw new DeleteLastAdminException(); }
+    public Authentication removeRole(String username, UserRole userRole) {
         Authentication user = authenticationRepository.findByUsername(username);
-        if (user == null) { throw new UserNotFoundException(username, AuthType.STANDARD); }
-
-        user.getRoles().remove(UserRole.ROLE_ADMIN);
+        if (user == null) { 
+            throw new UserNotFoundException(username, AuthType.STANDARD); 
+        }
+        
+        if (UserRole.ROLE_ADMIN.equals(userRole)) {
+            checkLastAdmin();
+        }
+        
+        user.getRoles().remove(userRole);
         Authentication savedUser = authenticationRepository.save(user);
         return savedUser;
+    }
+
+    private void checkLastAdmin() {
+        int numberOfAdmins = authenticationRepository.findByRolesIn(UserRole.ROLE_ADMIN).size();
+        if (numberOfAdmins <= 1) { 
+            throw new DeleteLastAdminException(); 
+        }
     }
 
     private Collection<GrantedAuthority> convertRolesToAuthorities(Collection<UserRole> roles) {

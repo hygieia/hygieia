@@ -7,7 +7,8 @@
 
     function userData($http) {
         var testDetailRoute = 'test-data/signup_detail.json';
-        var adminRoute = '/api/admin';
+        var usersRoute = '/api/users/';
+        var adminRole = 'ROLE_ADMIN';
 
         return {
             getAllUsers: getAllUsers,
@@ -33,18 +34,19 @@
           }
           else
           {
-        return $http.get(adminRoute + "/users");
+        return $http.get(usersRoute);
       }
     }
 
     function promoteUserToAdmin(user) {
-        var route = adminRoute + "/users/addAdmin";
-        return $http.post(route, user);
+        var route = usersRoute + user.username + "/roles";
+        var postData = {"userRole":adminRole};
+        return $http.post(route, postData);
     }
 
     function demoteUserFromAdmin(user) {
-      var route = adminRoute + "/users/removeAdmin";
-      return $http.post(route, user);
+      var route = usersRoute + user.username + "/roles/" + adminRole;
+      return $http.delete(route);
     }
 
   }

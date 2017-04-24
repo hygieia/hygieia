@@ -66,7 +66,7 @@ public class AuthenticationServiceTest {
         String username = "user";
         when(authRepo.findByUsername(username)).thenReturn(null);
         
-        authService.promoteToAdmin(username);
+        authService.addRole(username, UserRole.ROLE_ADMIN);
         
         fail("Exception should have been thrown.");
     }
@@ -78,7 +78,7 @@ public class AuthenticationServiceTest {
         user.setUsername(username);
         when(authRepo.findByUsername(username)).thenReturn(user);
         when(authRepo.save(isA(Authentication.class))).thenReturn(user);
-        Authentication result = authService.promoteToAdmin(username);
+        Authentication result = authService.addRole(username, UserRole.ROLE_ADMIN);
         
         assertNotNull(result);
         assertTrue(result.getRoles().contains(UserRole.ROLE_ADMIN));
@@ -88,10 +88,12 @@ public class AuthenticationServiceTest {
     @Test(expected=DeleteLastAdminException.class)
     public void shouldNotDeleteLastAdmin() {
         String username = "user";
+        Authentication user = new Authentication(username, "password");
         Collection<Authentication> users = new ArrayList<>();
         when(authRepo.findByRolesIn(UserRole.ROLE_ADMIN)).thenReturn(users);
+        when(authRepo.findByUsername(username)).thenReturn(user);
         
-        authService.demoteFromAdmin(username);
+        authService.removeRole(username, UserRole.ROLE_ADMIN);
         
         fail("Should have thrown an exception");
         
@@ -104,7 +106,7 @@ public class AuthenticationServiceTest {
         when(authRepo.findByRolesIn(UserRole.ROLE_ADMIN)).thenReturn(users);
         when(authRepo.findByUsername(username)).thenReturn(null);
         
-        authService.demoteFromAdmin(username);
+        authService.removeRole(username, UserRole.ROLE_ADMIN);
         
         fail("Exception should have been thrown.");
     }
@@ -119,7 +121,7 @@ public class AuthenticationServiceTest {
         when(authRepo.findByUsername(username)).thenReturn(user);
         when(authRepo.save(isA(Authentication.class))).thenReturn(user);
         
-        Authentication result = authService.demoteFromAdmin(username);
+        Authentication result = authService.removeRole(username, UserRole.ROLE_ADMIN);
         
         assertNotNull(result);
         assertFalse(result.getRoles().contains(UserRole.ROLE_ADMIN));
