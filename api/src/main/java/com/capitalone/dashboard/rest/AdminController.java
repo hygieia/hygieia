@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitalone.dashboard.auth.access.Admin;
 import com.capitalone.dashboard.model.Authentication;
+import com.capitalone.dashboard.request.AdminRoleRequest;
 import com.capitalone.dashboard.service.AuthenticationService;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -38,15 +39,15 @@ public class AdminController {
     }
 
     @RequestMapping(path = "/users/addAdmin", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> addAdmin(@RequestBody Authentication user) {
-        Authentication savedUser = authService.promoteToAdmin(user.getUsername());
+    public ResponseEntity<Map<String, Object>> promteToAdmin(@RequestBody AdminRoleRequest request) {
+        Authentication savedUser = authService.promoteToAdmin(request.getUsername());
         
         return new ResponseEntity<Map<String, Object>>(scrubUser(savedUser), HttpStatus.OK);
     }
     
     @RequestMapping(path = "/users/removeAdmin", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> removeAuthorityFromUser(@RequestBody Authentication user) {
-        Authentication savedUser = authService.demoteFromAdmin(user.getUsername());
+    public ResponseEntity<Map<String, Object>> demoteFromAdmin(@RequestBody AdminRoleRequest request) {
+        Authentication savedUser = authService.demoteFromAdmin(request.getUsername());
 
         return new ResponseEntity<Map<String, Object>>(scrubUser(savedUser), HttpStatus.OK);
     }

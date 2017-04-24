@@ -5,8 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Collection;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,9 +19,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.UserInfo;
-import com.capitalone.dashboard.service.UserInfoService;
+import com.capitalone.dashboard.model.Authentication;
+import com.capitalone.dashboard.request.AuthenticationRequest;
+import com.capitalone.dashboard.service.AuthenticationService;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
@@ -37,7 +35,7 @@ public class AdminControllerTest {
     @Autowired
     private WebApplicationContext wac;
     @Autowired
-    private UserInfoService userInfoService;
+    private AuthenticationService authService;
 
     @Before
     public void before() {
@@ -46,31 +44,31 @@ public class AdminControllerTest {
     
     @Test
     public void shouldGetAllUsers() throws Exception {
-        Collection<UserInfo> users = Lists.newArrayList();
-        when(userInfoService.getUsers()).thenReturn(users);
+        Iterable<Authentication> users = Lists.newArrayList();
+        when(authService.all()).thenReturn(users);
         mockMvc.perform(get("/admin/users")).andExpect(status().isOk());
     }
     
     @Test
     public void shouldAddAdmin() throws Exception{
-        UserInfo user = new UserInfo();
-        user.setAuthType(AuthType.STANDARD);
-        user.setUsername("admin");
-        when(userInfoService.promoteToAdmin("admin", AuthType.STANDARD)).thenReturn(user);
+        AuthenticationRequest request = new AuthenticationRequest();
+        request.setUsername("admin");
+        Authentication user = new Authentication("admin", "password");
+        when(authService.promoteToAdmin("admin")).thenReturn(user);
         mockMvc.perform(post("/admin/users/addAdmin")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new Gson().toJson(user))).andExpect(status().isOk());
+                .content(new Gson().toJson(request))).andExpect(status().isOk());
     }
   
     @Test
     public void shouldRemoveAdmin() throws Exception{
-        UserInfo user = new UserInfo();
-        user.setAuthType(AuthType.STANDARD);
-        user.setUsername("admin");
-        when(userInfoService.demoteFromAdmin("admin", AuthType.STANDARD)).thenReturn(user);
+        AuthenticationRequest request = new AuthenticationRequest();
+        request.setUsername("admin");
+        Authentication user = new Authentication("admin", "password");
+        when(authService.demoteFromAdmin("admin")).thenReturn(user);
         mockMvc.perform(post("/admin/users/removeAdmin")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new Gson().toJson(user))).andExpect(status().isOk());
+                .content(new Gson().toJson(request))).andExpect(status().isOk());
     }
 
 }

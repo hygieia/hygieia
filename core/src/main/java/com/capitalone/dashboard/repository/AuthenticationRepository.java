@@ -13,6 +13,6 @@ public interface AuthenticationRepository extends PagingAndSortingRepository<Aut
 	
 	 Authentication findByUsername(String username);
 
-    Collection<UserRole> findByRolesIn(UserRole roleAdmin);
+	 Collection<Authentication> findByRolesIn(UserRole role);
 
 }
