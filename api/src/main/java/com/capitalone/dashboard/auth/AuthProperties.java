@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.auth;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
@@ -9,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import com.capitalone.dashboard.model.AuthType;
 
 @Component
 @EnableConfigurationProperties
@@ -21,7 +24,16 @@ public class AuthProperties {
 	private String secret;
 	private String ldapUserDnPattern;
 	private String ldapServerUrl;
+	private List<AuthType> authTypes;
 	
+	public List<AuthType> getAuthTypes() {
+		return authTypes;
+	}
+
+	public void setAuthTypes(List<AuthType> authTypes) {
+		this.authTypes = authTypes;
+	}
+
 	public void setExpirationTime(Long expirationTime) {
 		this.expirationTime = expirationTime;
 	}

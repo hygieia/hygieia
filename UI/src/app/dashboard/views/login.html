@@ -3,8 +3,8 @@
     <div class="col-md-8 col-md-push-2">
       <div class="col-md-12">
         <ul class="col-md-8 col-md-push-2 nav nav-tabs">
-          <li role="presentation" class="auth-modal-tab" ng-class="{active: isStandardLogin}"><a href ng-click="showStandard()">Standard</a></li>
-          <li role="presentation" class="auth-modal-tab" ng-class="{active: !isStandardLogin}"><a href ng-click="showLdap()">LDAP</a></li>
+          <li role="presentation" ng-show="showStandardTab" class="auth-modal-tab" ng-class="{active: isStandardLogin}"><a href ng-click="showStandard()">Standard</a></li>
+          <li role="presentation" ng-show="showLDAPTab" class="auth-modal-tab" ng-class="{active: !isStandardLogin}"><a href ng-click="showLdap()">LDAP</a></li>
         </ul>
       </div>
       <div ng-show="isStandardLogin">
