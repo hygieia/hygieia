@@ -8,7 +8,7 @@
     "angular-route": "~1.5.9",
     "angular-cookies": "~1.5.9",
     "angular": "~1.5.9",
-    "angular-ui-router": "~0.2.13",
+    "angular-ui-router": "~0.4.2",
     "angular-bootstrap": "~2.3.0",
     "angular-validation-match": "~1.5.0",
     "bootstrap-sweetalert": "~0.4.5",

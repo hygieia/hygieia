@@ -10,6 +10,7 @@
             return;
         }
         var login = this;
+        $scope.login = login;
         $scope.isStandardLogin = true;
         login.templateUrl = 'app/dashboard/views/navheader.html';
         login.invalidUsernamePassword = false;

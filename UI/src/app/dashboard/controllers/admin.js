@@ -9,9 +9,11 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$location','$uibModal', 'userService', 'authService'];
-    function AdminController(dashboardData, $location, $uibModal, userService, authService) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location','$uibModal', 'userService', 'authService'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService) {
         var ctrl = this;
+        $scope.ctrl = ctrl;
+
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
         }

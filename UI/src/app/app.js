@@ -37,7 +37,7 @@ var localStorageSupported = (function () {
     angular.module(HygieiaConfig.module, [
         'ngAnimate',
         'ngSanitize',
-        'ngRoute',
+        'ui.router',
         HygieiaConfig.module + '.core',
         'ui.bootstrap',
         'fitText',
@@ -78,51 +78,50 @@ var localStorageSupported = (function () {
                 };
             });
         }])
-    .config(function ($routeProvider) {
-            $routeProvider
-                // main dashboard page
-                .when('/dashboard/:id', {
-                    templateUrl: 'app/dashboard/views/dashboard.html',
-                    controller: 'DashboardController',
-                    controllerAs: 'ctrl',
-                    resolve: {
-                        dashboard: function ($route, dashboardData) {
-                            return dashboardData.detail($route.current.params.id);
-                        }
-                    }
-                })
-                // administrative functionality
-                .when('/admin', {
-                    templateUrl: 'app/dashboard/views/admin.html',
-                    controller: 'AdminController',
-                    controllerAs: 'ctrl'
-                })
-                // dashboard selection/creation
-                .when('/', {
-                    templateUrl: 'app/dashboard/views/site.html',
-                    controller: 'SiteController',
-                    controllerAs: 'ctrl'
-                })
-                //login
+    .config(function($stateProvider, $urlRouterProvider) {
 
-                .when('/login',{
-                  templateUrl: 'app/dashboard/views/login.html',
-                  controller: 'LoginController',
-                  controllerAs: 'login'
-                })
+      $urlRouterProvider.otherwise('/');
 
-                .when('/signup',{
-                  templateUrl:'app/dashboard/views/signup.html',
-                  controller: 'SignupController',
-                  controllerAs: 'signup'
-                })
-                .otherwise({
-                    redirectTo: '/'
-                });
-        })
-        .run(function ($rootScope, loginRedirectService) {
-          $rootScope.$on('$locationChangeStart', function (event, nextPath, currentPath) {
-            loginRedirectService.saveCurrentPath(currentPath);
-          });
-        });
+      $stateProvider
+      .state('login', {
+          url: '/login',
+          controller: 'LoginController',
+          templateUrl: 'app/dashboard/views/login.html'
+      })
+
+      .state('site', {
+        url: '/',
+        controller: 'SiteController',
+        templateUrl: 'app/dashboard/views/site.html'
+      })
+
+      .state('signup', {
+        url: '/signup',
+        controller: 'SignupController',
+        templateUrl: 'app/dashboard/views/signup.html'
+      })
+
+      .state('adminState', {
+        url: '/admin',
+        controller: 'AdminController',
+        templateUrl: 'app/dashboard/views/admin.html'
+      })
+
+      .state('dashboardState', {
+        url: '/dashboard/:id',
+        controller: 'DashboardController',
+        templateUrl: 'app/dashboard/views/dashboard.html',
+        resolve: {
+          dashboard: function ($stateParams, dashboardData) {
+            return dashboardData.detail($stateParams.id);
+          }
+        }
+      });
+
+    })
+    .run(function ($rootScope, loginRedirectService) {
+      $rootScope.$on('$locationChangeStart', function (event, nextPath, currentPath) {
+        loginRedirectService.saveCurrentPath(currentPath);
+      });
+    });
 })();

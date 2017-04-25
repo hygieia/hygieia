@@ -9,9 +9,11 @@
         .module(HygieiaConfig.module)
         .controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['dashboard', '$location'];
-    function DashboardController(dashboard, $location) {
+    DashboardController.$inject = ['$scope', 'dashboard', '$location'];
+    function DashboardController($scope, dashboard, $location) {
         var ctrl = this;
+        $scope.ctrl = ctrl;
+
 
         // if dashboard isn't available through resolve it may have been deleted
         // so redirect to the home screen
