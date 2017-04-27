@@ -30,7 +30,7 @@ public class AuthenticationControllerTest {
 	private AuthenticationController authController;
 
 	@Test
-	public void testAuthTypes() throws Exception {
+	public void multipleAuthTypes() throws Exception {
 		List<AuthType> expectedReturn = new ArrayList<AuthType>();
 		
 		expectedReturn.add(standardAuthType);
@@ -44,5 +44,34 @@ public class AuthenticationControllerTest {
 		assertTrue(result.equals(expectedReturn));
 		verify(authProperties).getAuthTypes();
 	}
+	
+	@Test
+	public void oneType() throws Exception {
+		List<AuthType> expectedReturn = new ArrayList<AuthType>();
 
+		expectedReturn.add(ldapAuthType);
+
+		when(authProperties.getAuthTypes()).thenReturn(expectedReturn);
+		
+		List<AuthType> result = authController.getAuthTypes();
+		
+		assertNotNull(result);
+		assertTrue(result.equals(expectedReturn));
+		verify(authProperties).getAuthTypes();
+	}
+	
+	@Test
+	public void zeroTypes() throws Exception {
+		List<AuthType> expectedReturn = new ArrayList<AuthType>();
+
+		when(authProperties.getAuthTypes()).thenReturn(expectedReturn);
+		
+		List<AuthType> result = authController.getAuthTypes();
+		
+		assertNotNull(result);
+		assertTrue(result.equals(expectedReturn));
+		verify(authProperties).getAuthTypes();
+	}
+	
+	
 }

@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.model.AuthType;
+import com.google.common.collect.Lists;
 
 @Component
 @EnableConfigurationProperties
@@ -24,7 +25,7 @@ public class AuthProperties {
 	private String secret;
 	private String ldapUserDnPattern;
 	private String ldapServerUrl;
-	private List<AuthType> authTypes;
+	private List<AuthType> authTypes = Lists.newArrayList(AuthType.STANDARD);
 	
 	public List<AuthType> getAuthTypes() {
 		return authTypes;
