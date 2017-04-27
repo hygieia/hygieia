@@ -1,9 +1,11 @@
 package com.capitalone.dashboard.rest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitalone.dashboard.auth.AuthProperties;
 import com.capitalone.dashboard.auth.AuthenticationResponseService;
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.request.AuthenticationRequest;
 import com.capitalone.dashboard.service.AuthenticationService;
 
@@ -31,10 +35,13 @@ public class AuthenticationController {
     
     private final AuthenticationResponseService authenticationResponseService;
     
+    private final AuthProperties authProperties;
+    
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService, AuthenticationResponseService authenticationResponseService) {
+    public AuthenticationController(AuthenticationService authenticationService, AuthenticationResponseService authenticationResponseService, AuthProperties authProperties) {
         this.authenticationService = authenticationService;
         this.authenticationResponseService = authenticationResponseService;
+        this.authProperties = authProperties;
     }
 
     @RequestMapping(value = "/registerUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -54,5 +61,10 @@ public class AuthenticationController {
         // TODO: should validate revalidate current password before allowing changes?
     	// TODO: should update based on security context and not passed in user and password
         return ResponseEntity.status(HttpStatus.OK).body(authenticationService.update(request.getUsername(), request.getPassword()));
+    }
+    
+    @RequestMapping(value = "/authType", method = GET, produces = APPLICATION_JSON_VALUE)
+    public List<AuthType> getAuthTypes() {
+        return authProperties.getAuthTypes();
     }
 }
