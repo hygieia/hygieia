@@ -18,6 +18,7 @@ public enum CollectorType {
     CodeQuality,
     Test,
     StaticSecurityScan,
+    LibraryPolicy,
     ChatOps,
     Cloud,
     Product;

@@ -1,0 +1,20 @@
+[
+  {
+    "stage": "build",
+    "applicationId": "65df87ab0cd04810b18562146b6083bf",
+    "evaluationDate": "2017-03-23T15:31:39.680-04:00",
+    "reportHtmlUrl": "ui/links/application/Innovation-Challenge-picket/report/967635a9cdc54d2cb30cf6f87f3a8943",
+    "embeddableReportHtmlUrl": "ui/links/application/Innovation-Challenge-picket/report/967635a9cdc54d2cb30cf6f87f3a8943/embeddable",
+    "reportPdfUrl": "ui/links/application/Innovation-Challenge-picket/report/967635a9cdc54d2cb30cf6f87f3a8943/pdf",
+    "reportDataUrl": "api/v2/applications/Innovation-Challenge-picket/reports/967635a9cdc54d2cb30cf6f87f3a8943"
+  },
+  {
+    "stage": "stage-release",
+    "applicationId": "65df87ab0cd04810b18562146b6083bf",
+    "evaluationDate": "2017-02-17T10:12:06.960-05:00",
+    "reportHtmlUrl": "ui/links/application/Innovation-Challenge-picket/report/0cd22cb55c27407592dc98f2265ddc9e",
+    "embeddableReportHtmlUrl": "ui/links/application/Innovation-Challenge-picket/report/0cd22cb55c27407592dc98f2265ddc9e/embeddable",
+    "reportPdfUrl": "ui/links/application/Innovation-Challenge-picket/report/0cd22cb55c27407592dc98f2265ddc9e/pdf",
+    "reportDataUrl": "api/v2/applications/Innovation-Challenge-picket/reports/0cd22cb55c27407592dc98f2265ddc9e"
+  }
+]
