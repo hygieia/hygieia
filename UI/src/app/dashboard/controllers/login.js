@@ -36,10 +36,12 @@
         	}).then(function successCallback(response) {
         		if(response.data.includes("LDAP")){
         			$scope.showLDAPTab = true;
+        			$scope.isStandardLogin = false;
         		}
         		if(response.data.includes("STANDARD")){
         			$scope.showStandardTab = true;
-        		}
+        			$scope.isStandardLogin = true;
+        		} 
         	  }, function errorCallback(response) {
         	    
         	  });
