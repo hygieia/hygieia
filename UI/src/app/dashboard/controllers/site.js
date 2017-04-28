@@ -8,15 +8,17 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$modal', 'dashboardData', '$location', '$cookies', '$cookieStore', 'DashboardType'];
-    function SiteController($scope, $q, $modal, dashboardData, $location, $cookies, $cookieStore, DashboardType) {
+    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService'];
+    function SiteController($scope, $q, $uibModal, dashboardData, $location, DashboardType, userService, authService) {
         var ctrl = this;
 
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
-        ctrl.username = $cookies.username;
-        ctrl.showAuthentication = $cookies.authenticated;
+
+        ctrl.username = userService.getUsername();
+        ctrl.showAuthentication = userService.isAuthenticated();
+
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
@@ -24,13 +26,15 @@
         ctrl.createDashboard = createDashboard;
         ctrl.deleteDashboard = deleteDashboard;
         ctrl.open = open;
+        ctrl.login = login;
         ctrl.logout = logout;
         ctrl.admin = admin;
         ctrl.setType = setType;
         ctrl.filterNotOwnedList = filterNotOwnedList;
         ctrl.filterDashboards = filterDashboards;
+        ctrl.renameDashboard = renameDashboard;
 
-        if (ctrl.username === 'admin') {
+        if (userService.isAdmin()) {
             ctrl.myadmin = true;
         }
 
@@ -74,22 +78,43 @@
             $location.path('/admin');
         }
 
-        function logout()
-        {
-            $cookieStore.remove("username");
-            $cookieStore.remove("authenticated");
-            $location.path('/');
+        function login() {
+          $location.path('/login');
+        }
+
+        function logout() {
+            authService.logout();
+            $location.path('/login');
         }
 
         // method implementations
         function createDashboard() {
             // open modal for creating a new dashboard
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'app/dashboard/views/createDashboard.html',
                 controller: 'CreateDashboardController',
                 controllerAs: 'ctrl'
             });
         }
+
+        function renameDashboard(item)
+        {
+            // open modal for renaming dashboard
+            $uibModal.open({
+                templateUrl: 'app/dashboard/views/renameDashboard.html',
+                controller: 'RenameDashboardController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    dashboardId: function() {
+                        return item.id;
+                    },
+                    dashboardName: function() {
+                        return item.name;
+                    }
+                }
+            });
+        }
+
 
         function open(dashboardId) {
             $location.path('/dashboard/' + dashboardId);
@@ -107,7 +132,7 @@
                 };
 
                 if(board.isProduct) {
-                    console.log(board);
+                    //console.log(board);
                 }
                 dashboards.push(board);
             }
@@ -140,6 +165,8 @@
         function processMyDashboardError(data) {
             ctrl.mydash = [];
         }
+
+
 
 
         function deleteDashboard(item) {
@@ -177,5 +204,3 @@
 
 
 })();
-
-

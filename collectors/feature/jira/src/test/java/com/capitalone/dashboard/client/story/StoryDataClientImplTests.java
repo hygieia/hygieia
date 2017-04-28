@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.capitalone.dashboard.model.Team;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.joda.time.DateTime;
@@ -42,6 +43,7 @@ import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.FeatureStatus;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 import com.capitalone.dashboard.repository.FeatureRepository;
+import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.CoreFeatureSettings;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
@@ -51,7 +53,6 @@ public class StoryDataClientImplTests {
 	private static final ObjectId JIRA_COLLECTORID = new ObjectId("ABCDEF0123456789ABCDEF01");
 	
 	private static final BasicProject PROJECT1 = new BasicProject(URI.create("http://my.jira.com/rest/api/2/project/100"), "project1", Long.valueOf(100L), "projectname1");
-	
 	
 	private static final User USER1 = new User(URI.create("http://my.jira.com/rest/api/2/user?username=billy"), "Billy", "Billy Bob", "Billy@foo.com", null, getAvatarUris(), null);
 	
@@ -64,6 +65,7 @@ public class StoryDataClientImplTests {
 	CoreFeatureSettings coreFeatureSettings;
 	FeatureSettings featureSettings;
 	@Mock FeatureRepository featureRepo;
+	@Mock TeamRepository teamRepo;
 	@Mock FeatureCollectorRepository featureCollectorRepository;
 	@Mock JiraClient jiraClient;
 	@Captor ArgumentCaptor<List<Feature>> captor;
@@ -79,16 +81,17 @@ public class StoryDataClientImplTests {
 		coreFeatureSettings.setDoingStatuses(Arrays.asList("IN PROGRESS"));
 		coreFeatureSettings.setDoneStatuses(Arrays.asList("CLOSED"));
 		
-		featureSettings.setJiraIssueTypeId("Story");
+		featureSettings.setJiraIssueTypeNames(new String[] {"Story"});
 		featureSettings.setJiraSprintDataFieldName("custom_sprint");
 		featureSettings.setJiraEpicIdFieldName("custom_epic");
 		featureSettings.setJiraStoryPointsFieldName("custom_storypoints");
+		featureSettings.setJiraTeamFieldName("custom_teamname");
 		featureSettings.setDeltaStartDate("2016-03-01T00:00:00.000000");
 		featureSettings.setPageSize(25);
 		featureSettings.setJiraBaseUrl("https://jira.atlassian.com/");
 		featureSettings.setJiraQueryEndpoint("rest/api/latest/");
 		
-		storyDataClient = new StoryDataClientImpl(coreFeatureSettings, featureSettings, featureRepo, featureCollectorRepository, jiraClient);
+		storyDataClient = new StoryDataClientImpl(coreFeatureSettings, featureSettings, featureRepo, featureCollectorRepository, teamRepo, jiraClient);
 		
 		FeatureCollector jira = new FeatureCollector();
 		jira.setId(JIRA_COLLECTORID);
@@ -112,10 +115,17 @@ public class StoryDataClientImplTests {
 		
 		List<Issue> jiraClientResponse = Arrays.asList(
 				createIssue(1001, 10000000, STATUS_TODO, createTimeTracking(5 * 60, 4 * 60, 1 * 60), 
-						Arrays.asList(createField("custom_sprint", "List", jsonA), createField("custom_storypoints", "Integer", 3)))
+						Arrays.asList(createField("custom_sprint", "List", jsonA), 
+						                createField("custom_storypoints", "Integer", 3),
+						                createField("custom_teamname", "String", "1534")))
 				);
 		
 		Mockito.when(jiraClient.getIssues(Mockito.anyLong(), Mockito.eq(0))).thenReturn(jiraClientResponse);
+		
+		Team scopeOwner = new Team("", "");
+		scopeOwner.setName("warriors");
+		scopeOwner.setTeamId("1534");
+		Mockito.when(teamRepo.findByTeamId(Mockito.anyString())).thenReturn(scopeOwner);
 		
 		int cnt = storyDataClient.updateStoryInformation();
 		Mockito.verify(featureRepo).save(captor.capture());
@@ -133,7 +143,7 @@ public class StoryDataClientImplTests {
 		assertEquals("3", feature1.getsEstimate());
 		assertEquals(Integer.valueOf(5 * 60), feature1.getsEstimateTime());
 		assertEquals("False", feature1.getIsDeleted());
-		assertEquals("project1", feature1.getsProjectID());
+		assertEquals("100", feature1.getsProjectID());
 		assertEquals("projectname1", feature1.getsProjectName());
 		assertNotNull(feature1.getsProjectBeginDate());
 		assertNotNull(feature1.getsProjectEndDate());
@@ -141,8 +151,8 @@ public class StoryDataClientImplTests {
 		assertNotNull(feature1.getsProjectState());
 		assertEquals("False", feature1.getsProjectIsDeleted());
 		assertNotNull(feature1.getsProjectPath());
-		assertEquals("100", feature1.getsTeamID());
-		assertEquals("projectname1", feature1.getsTeamName());
+		assertEquals("1534", feature1.getsTeamID());
+		assertEquals("warriors", feature1.getsTeamName());
 		assertNotNull(feature1.getsTeamChangeDate());
 		assertNotNull(feature1.getsTeamAssetState());
 		assertEquals("False", feature1.getsTeamIsDeleted());

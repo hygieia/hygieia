@@ -1,0 +1,35 @@
+{
+	"globalProperties": {
+		"multipleDeploymentServers": false
+	},
+	"systemStages": [
+		{
+			"name": "Commit",
+			"type": "COMMIT"
+		},
+		{
+			"name": "Build",
+			"type": "BUILD"
+		},
+		{
+			"name": "DEV",
+			"type": "DEPLOY"
+		},
+		{
+			"name": "QA",
+			"type": "DEPLOY"
+		},
+		{
+			"name": "INT",
+			"type": "DEPLOY"
+		},
+		{
+			"name": "PERF",
+			"type": "DEPLOY"
+		},
+		{
+			"name": "PROD",
+			"type": "DEPLOY"
+		}
+	]
+}

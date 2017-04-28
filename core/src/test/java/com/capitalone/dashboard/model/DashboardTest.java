@@ -1,13 +1,15 @@
 package com.capitalone.dashboard.model;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import static org.junit.Assert.assertEquals;
+
+import com.capitalone.dashboard.util.PipelineUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardTest {
@@ -16,20 +18,31 @@ public class DashboardTest {
     public void findEnvironmentMappings(){
         Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
         dashboard.getWidgets().add(makePipelineWidget("DEV", "QA", null, null, "PROD"));
-        Map<PipelineStageType, String> expected = new HashMap<>();
-        expected.put(PipelineStageType.Dev, "DEV");
-        expected.put(PipelineStageType.QA, "QA");
-        expected.put(PipelineStageType.Prod, "PROD");
+        Widget buildWidget = new Widget();
+        buildWidget.setName("build");
+        dashboard.getWidgets().add(buildWidget);
 
-        Map<PipelineStageType, String> actual = dashboard.findEnvironmentMappings();
+        Widget commitWidget = new Widget();
+        commitWidget.setName("repo");
+        dashboard.getWidgets().add(commitWidget);
+
+        Map<PipelineStage, String> expected = new HashMap<>();
+        expected.put(PipelineStage.valueOf("COMMIT"), "Commit");
+        expected.put(PipelineStage.valueOf("BUILD"), "Build");
+        expected.put(PipelineStage.valueOf("DEV"), "DEV");
+        expected.put(PipelineStage.valueOf("QA"), "QA");
+        expected.put(PipelineStage.valueOf("PROD"), "PROD");
+
+        Map<PipelineStage, String> actual = PipelineUtils.getStageToEnvironmentNameMap(dashboard);
         assertEquals(expected, actual);
     }
 
     @Test
     public void findEnvironmentMappings_no_mappings_configured(){
         Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
-        Map<PipelineStageType, String> expected = new HashMap<>();
-        Map<PipelineStageType, String> actual = dashboard.findEnvironmentMappings();
+        Map<PipelineStage, String> expected = new HashMap<>();
+
+        Map<PipelineStage, String> actual = PipelineUtils.getStageToEnvironmentNameMap(dashboard);
         assertEquals(expected, actual);
     }
 
@@ -39,7 +52,7 @@ public class DashboardTest {
             app.addComponent(new Component(compName));
         }
 
-        Dashboard dashboard = new Dashboard(template, title, app, owner, DashboardType.Team);
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team);
         return dashboard;
     }
 
@@ -49,19 +62,19 @@ public class DashboardTest {
         Map<String, String> environmentMap = new HashMap<>();
 
         if(devName != null){
-            environmentMap.put(PipelineStageType.Dev.name(), devName);
+            environmentMap.put("DEV", devName);
         }
         if(qaName != null) {
-            environmentMap.put(PipelineStageType.QA.name(), qaName);
+            environmentMap.put("QA", qaName);
         }
         if(intName != null) {
-            environmentMap.put(PipelineStageType.Int.name(), intName);
+            environmentMap.put("INT", intName);
         }
         if(perfName != null) {
-            environmentMap.put(PipelineStageType.Perf.name(), perfName);
+            environmentMap.put("PERF", perfName);
         }
         if(prodName != null) {
-            environmentMap.put(PipelineStageType.Prod.name(), prodName);
+            environmentMap.put("PROD", prodName);
         }
 
         pipelineWidget.getOptions().put("mappings", environmentMap);

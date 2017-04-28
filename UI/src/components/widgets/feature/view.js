@@ -11,26 +11,34 @@
     var ctrl = this;
     var today = new Date(_.now());
     var filterTeamId = $scope.widgetConfig.options.teamId;
-    var estimateMetricType = $scope.widgetConfig.options.estimateMetricType;
+    var filterProjectId = $scope.widgetConfig.options.projectId;
     ctrl.teamName = $scope.widgetConfig.options.teamName;
+    ctrl.projectName = $scope.widgetConfig.options.projectName
     // Scrum
     ctrl.iterations = [];
     ctrl.totalStoryPoints = null;
+    ctrl.openStoryPoints = null;
     ctrl.wipStoryPoints = null;
     ctrl.doneStoryPoints = null;
     ctrl.epicStoryPoints = null;
+    ctrl.issueStoryPoints = [];
     // Kanban
     ctrl.iterationsKanban = [];
     ctrl.totalStoryPointsKanban = null;
+    ctrl.openStoryPointsKanban = null;
     ctrl.wipStoryPointsKanban = null;
     ctrl.doneStoryPointsKanban = null;
     ctrl.epicStoryPointsKanban = null;
+    ctrl.issueStoryPointsKanban = [];
 
     // Public Evaluators
     ctrl.setFeatureLimit = setFeatureLimit;
     ctrl.showStatus = $scope.widgetConfig.options.showStatus;
     ctrl.animateAgileView = animateAgileView;
-    ctrl.intervalOff = $scope.widgetConfig.options.intervalOff;
+    ctrl.numberOfSprintTypes = $scope.widgetConfig.options.sprintType === "scrumkanban" ? 2 : 1;
+    ctrl.listType = $scope.widgetConfig.options.listType === undefined ? "epics" : $scope.widgetConfig.options.listType;
+    ctrl.estimateMetricType = $scope.widgetConfig.options.estimateMetricType === undefined ? "storypoints" : $scope.widgetConfig.options.estimateMetricType;
+    
     var timeoutPromise = null;
     ctrl.changeDetect = null;
     ctrl.pauseAgileView = pauseAgileView;
@@ -46,76 +54,44 @@
     ctrl.load = function() {
       var deferred = $q.all([
         // Scrum
-        featureData.total($scope.widgetConfig.componentId, filterTeamId, estimateMetricType)
-          .then(processTotalResponse),
-        featureData.wip($scope.widgetConfig.componentId, filterTeamId, estimateMetricType)
-          .then(processWipResponse),
-        featureData.done($scope.widgetConfig.componentId, filterTeamId, estimateMetricType)
-          .then(processDoneResponse),
-        featureData.featureWip($scope.widgetConfig.componentId,
-          filterTeamId, estimateMetricType).then(processFeatureWipResponse),
-        featureData.sprint($scope.widgetConfig.componentId, filterTeamId)
-          .then(processSprintResponse),
+        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "scrum").then(processSprintEstimateResponse),
+        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "scrum").then(processFeatureWipResponse),
+        featureData.sprint($scope.widgetConfig.componentId, filterTeamId, filterProjectId, "scrum")
+          .then(function(data) { processSprintResponse(data, false) }),
 
         // Kanban
-        featureData.totalKanban($scope.widgetConfig.componentId, filterTeamId, estimateMetricType)
-          .then(processTotalKanbanResponse),
-        featureData.wipKanban($scope.widgetConfig.componentId, filterTeamId, estimateMetricType)
-          .then(processWipKanbanResponse),
-        featureData.featureWipKanban($scope.widgetConfig.componentId,
-          filterTeamId, estimateMetricType).then(processFeatureWipKanbanResponse),
-        featureData.sprintKanban($scope.widgetConfig.componentId, filterTeamId)
-          .then(processSprintKanbanResponse)
+        featureData.sprintMetrics($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "kanban").then(processSprintEstimateKanbanResponse),
+        featureData.featureWip($scope.widgetConfig.componentId, filterTeamId, filterProjectId, ctrl.estimateMetricType, "kanban").then(processFeatureWipKanbanResponse),
+        featureData.sprint($scope.widgetConfig.componentId, filterTeamId, filterProjectId, "kanban")
+          .then(function(data) { processSprintResponse(data, true) })
       ]);
 
       deferred.then(function(){
         detectIterationChange();
       });
+      return deferred;
     };
 
-    /**
-     * Processor for total feature estimate totals
-     *
-     * @param data
-     */
-    function processTotalResponse(data) {
-      ctrl.totalStoryPoints = data.result[0].sEstimate;
+    function getLastUpdated(data){
+      var deferred = $q.defer();
+      deferred.resolve(data.lastUpdated);
+      return deferred.promise;
     }
 
-    /**
-     * Processor for total feature estimate totals for kanban only
-     *
-     * @param data
-     */
-    function processTotalKanbanResponse(data) {
-      ctrl.totalStoryPointsKanban = data.result[0].sEstimate;
+    function processSprintEstimateResponse(data) {
+        ctrl.totalStoryPoints = data.result.totalEstimate;
+        ctrl.openStoryPoints = data.result.openEstimate;
+        ctrl.wipStoryPoints = data.result.inProgressEstimate;
+        ctrl.doneStoryPoints = data.result.completeEstimate;
+      return getLastUpdated(data);
     }
-
-    /**
-     * Processor for in progress feature estimate in-progress
-     *
-     * @param data
-     */
-    function processWipResponse(data) {
-      ctrl.wipStoryPoints = data.result[0].sEstimate;
-    }
-
-    /**
-     * Processor for in progress feature estimate in-progress for kanban only
-     *
-     * @param data
-     */
-    function processWipKanbanResponse(data) {
-      ctrl.wipStoryPointsKanban = data.result[0].sEstimate;
-    }
-
-    /**
-     * Processor for done feature estimate in-progress
-     *
-     * @param data
-     */
-    function processDoneResponse(data) {
-      ctrl.doneStoryPoints = data.result[0].sEstimate;
+    
+    function processSprintEstimateKanbanResponse(data) {
+        ctrl.totalStoryPointsKanban = data.result.totalEstimate;
+        ctrl.openStoryPointsKanban = data.result.openEstimate;
+        ctrl.wipStoryPointsKanban = data.result.inProgressEstimate;
+        ctrl.doneStoryPointsKanban = data.result.completeEstimate;
+      return getLastUpdated(data);
     }
 
     /**
@@ -128,16 +104,15 @@
       var epicCollection = [];
 
       for (var i = 0; i < data.result.length; i++) {
-        epicCollection.push(data.result[i]);
+          epicCollection.push(data.result[i]);
       }
 
-      if (data.result.length <= 4) {
-        ctrl.showFeatureLimitButton = false;
-      } else {
-        ctrl.showFeatureLimitButton = true;
+      if (ctrl.listType === 'epics') {
+        ctrl.showFeatureLimitButton = data.result.length <= 4 ? false : true;
       }
 
-      ctrl.epicStoryPoints = epicCollection.sort(compare).reverse();
+      ctrl.epicStoryPoints = epicCollection.sort(compareEpics).reverse();
+      return getLastUpdated(data);
     }
 
     /**
@@ -151,16 +126,15 @@
       var epicCollection = [];
 
       for (var i = 0; i < data.result.length; i++) {
-        epicCollection.push(data.result[i]);
+          epicCollection.push(data.result[i]);
       }
 
-      if (data.result.length <= 4) {
-        ctrl.showFeatureLimitButton = false;
-      } else {
-        ctrl.showFeatureLimitButton = true;
+      if (ctrl.listType === 'epics') {
+        ctrl.showFeatureLimitButton = data.result.length <= 4 ? false : true;
       }
 
-      ctrl.epicStoryPointsKanban = epicCollection.sort(compare).reverse();
+      ctrl.epicStoryPointsKanban = epicCollection.sort(compareEpics).reverse();
+      return getLastUpdated(data);
     }
 
     /**
@@ -168,189 +142,124 @@
      *
      * @param data
      */
-    function processSprintResponse(data) {
+    function processSprintResponse(data, isKanban) {
       /*
        * Sprint Name
        */
       var sprintID = null;
       var sprintName = null;
+      var sprintUrl = null;
       var daysTilEnd = null;
       var iteration = null;
+      var issue = null;
       var dupes = true;
       // Reset on every processing
       ctrl.showStatus = $scope.widgetConfig.options.showStatus;
-      ctrl.intervalOff = $scope.widgetConfig.options.intervalOff;
 
-
-      for (var i = 0; i < data.result.length; i++) {
+      var iterations = isKanban? ctrl.iterationsKanban : ctrl.iterations;
+      var issueCollection = isKanban? ctrl.issueStoryPointsKanban : ctrl.issueStoryPoints;
+      
+      if (ctrl.listType === 'issues') {
+          ctrl.showFeatureLimitButton = data.result.length <= 4 ? false : true;
+      }
+      
+      for (var i = 0; i < data.result.length; i++) {          
+        // Add features only if there are no duplicates
+        if (isInIssuesArray(data.result[i].sNumber, issueCollection) === false) {
+            issue = {
+              sNumber: data.result[i].sNumber,
+              sName: data.result[i].sName,
+              sUrl: data.result[i].sUrl,
+              changeDate: data.result[i].changeDate,
+              sEstimate: data.result[i].sEstimate,
+              sEstimateTime: data.result[i].sEstimateTime !== null ? (parseInt(data.result[i].sEstimateTime)/60).toString() : null,
+              sStatus: (data.result[i].sStatus !== null && data.result[i].sStatus !== undefined) ? data.result[i].sStatus.toLowerCase() : null
+            };
+            issueCollection.push(issue);
+        }
+          
         if (data.result[i].sSprintID === undefined) {
-          sprintID = "[No Sprint Available]"
+          sprintID = "[No Sprint Available]";
           sprintName = "[No Sprint Available]";
+          sprintUrl = null;
         } else {
           sprintID = data.result[i].sSprintID;
           sprintName = data.result[i].sSprintName;
+          sprintUrl = data.result[i].sSprintUrl;
+        }
+        
+        if (isKanban && (sprintID == null || sprintID === "" )) {
+        	sprintID = "KANBAN"
+        	sprintName = "KANBAN"
         }
 
         /*
          * Days Until Sprint Expires
          */
         if (data.result[i].sSprintID === undefined) {
-          daysTilEnd = moment(today).dash();
           daysTilEnd = "[N/A]";
-        } else if (data.result[i].sSprintID === "KANBAN") {
+        } else if (isKanban) {
           daysTilEnd = "[Unlimited]";
         } else {
-          var nativeSprintEndDate = new Date(
-            data.result[i].sSprintEndDate);
+          var nativeSprintEndDate = new Date(data.result[i].sSprintEndDate);
           if (nativeSprintEndDate < today) {
             daysTilEnd = "[Ended]";
           } else {
-            var nativeDaysTilEnd = moment(nativeSprintEndDate)
-              .fromNow();
+            var nativeDaysTilEnd = moment(nativeSprintEndDate).fromNow();
             daysTilEnd = nativeDaysTilEnd.substr(3);
           }
         }
-
-        // Fill one iteration object at a time, starting with the first
-        if (ctrl.iterations.length <= 0) {
-          iteration = {
-            id: sprintID,
-            name: sprintName,
-            tilEnd: daysTilEnd
-          };
-          ctrl.iterations.push(iteration);
-        }
-
+        
         // Add iterations only if there are no duplicates
-        if (isInArray(sprintID, ctrl.iterations) === false) {
+        if (isInArray(sprintID, iterations) === false) {
           iteration = {
             id: sprintID,
             name: sprintName,
+            url: sprintUrl,
             tilEnd: daysTilEnd
           };
-          ctrl.iterations.push(iteration);
+          iterations.push(iteration);
         }
-
+        
         // Clean-up
         sprintID = null;
         sprintName = null;
         daysTilEnd = null;
         iteration = null;
-
-        /*
-         * Checks iterations array for existing elements
-         */
-        function isInArray(timebox, iterations) {
-          var dupe = false;
-
-          iterations.forEach(function(timebox) {
-            if (timebox.id === sprintID) {
-              dupe = true;
-            }
-          });
-
-          return dupe;
-        }
       }
-
-      // Check if iteration switching is needed
-      if (ctrl.iterations.length < 1) {
-        ctrl.showStatus.scrum = false;
-        ctrl.intervalOff --;
-      }
+      
+      issueCollection.sort(compareIssues).reverse();
+      return getLastUpdated(data);
     }
-
-    /**
-     * Processor for sprint-based data for kanban
-     *
-     * @param data
+    
+    /*
+     * Checks iterations array for existing elements
      */
-    function processSprintKanbanResponse(data) {
-      /*
-       * Sprint Name
-       */
-      var sprintID = null;
-      var sprintName = null;
-      var daysTilEnd = null;
-      var iteration = null;
-      var dupes = true;
+    function isInArray(sprintID, iterations) {
+      var dupe = false;
 
-      for (var i = 0; i < data.result.length; i++) {
-        if (data.result[i].sSprintID === undefined) {
-          sprintID = "[No Sprint Available]"
-          sprintName = "[No Sprint Available]";
-        } else {
-          sprintID = data.result[i].sSprintID;
-          sprintName = data.result[i].sSprintName;
+      iterations.forEach(function(timebox) {
+        if (timebox.id === sprintID) {
+          dupe = true;
         }
+      });
 
-        /*
-         * Days Until Sprint Expires
-         */
-        if (data.result[i].sSprintID === undefined) {
-          daysTilEnd = moment(today).dash();
-          daysTilEnd = "[N/A]";
-        } else if (data.result[i].sSprintID === "KANBAN") {
-          daysTilEnd = "[Unlimited]";
-        } else {
-          var nativeSprintEndDate = new Date(
-            data.result[i].sSprintEndDate);
-          if (nativeSprintEndDate < today) {
-            daysTilEnd = "[Ended]";
-          } else {
-            var nativeDaysTilEnd = moment(nativeSprintEndDate)
-              .fromNow();
-            daysTilEnd = nativeDaysTilEnd.substr(3);
-          }
+      return dupe;
+    }
+    
+    /*
+     * Checks features array for existing elements
+     */
+    function isInIssuesArray(issueID, issues) {
+      var dupe = false;
+
+      issues.forEach(function(issue) {
+        if (issue.sNumber === issueID) {
+          dupe = true;
         }
+      });
 
-        // Fill one iteration object at a time, starting with the first
-        if (ctrl.iterationsKanban.length <= 0) {
-          iteration = {
-            id: sprintID,
-            name: sprintName,
-            tilEnd: daysTilEnd
-          };
-          ctrl.iterationsKanban.push(iteration);
-        }
-
-        // Add iterations only if there are no duplicates
-        if (isInArray(sprintID, ctrl.iterationsKanban) === false) {
-          iteration = {
-            id: sprintID,
-            name: sprintName,
-            tilEnd: daysTilEnd
-          };
-          ctrl.iterationsKanban.push(iteration);
-        }
-
-        // Clean-up
-        sprintID = null;
-        sprintName = null;
-        daysTilEnd = null;
-        iteration = null;
-
-        /*
-         * Checks iterations array for existing elements
-         */
-        function isInArray(timebox, iterations) {
-          var dupe = false;
-
-          iterations.forEach(function(timebox) {
-            if (timebox.id === sprintID) {
-              dupe = true;
-            }
-          });
-
-          return dupe;
-        }
-      }
-
-      // Check if iteration switching is needed
-      if (ctrl.iterationsKanban.length < 1) {
-        ctrl.showStatus.kanban = false;
-        ctrl.intervalOff --;
-      }
+      return dupe;
     }
 
     /**
@@ -363,12 +272,30 @@
      * @param b
      *            Object containing sEstimate string value
      */
-    function compare(a, b) {
-      if (parseInt(a.sEstimate) < parseInt(b.sEstimate))
+    function compareEpics(a, b) {
+      if (parseInt(a.sEstimate) < parseInt(b.sEstimate)) {
         return -1;
-      if (parseInt(a.sEstimate) > parseInt(b.sEstimate))
+      } else if (parseInt(a.sEstimate) > parseInt(b.sEstimate)) {
         return 1;
+      } else if (a.sEpicID < b.sEpicID) {
+        return -1;
+      } else if (a.sEpicID > b.sEpicID) {
+        return 1;
+      }
       return 0;
+    }
+    
+    function compareIssues(a, b) {
+        if (a.changeDate < b.changeDate) {
+          return -1;
+        } else if (a.changeDate > b.changeDate) {
+          return 1;
+        } else if (a.sNumber < b.sNumber) {
+          return -1;
+        } else if (a.sNumber > b.sNumber) {
+          return 1;
+        }
+        return 0;
     }
 
     /**
@@ -395,11 +322,7 @@
       ctrl.stopTimeout();
 
       timeoutPromise = $interval(function() {
-        if (ctrl.intervalOff === 2) {
-          animateAgileView(true);
-        } else if (ctrl.intervalOff === 1) {
           animateAgileView(false);
-        }
       }, 7000);
     }
 
@@ -427,43 +350,31 @@
     /**
      * Animates agile view switching
      */
-    function animateAgileView(multipleDetects) {
-      switch (multipleDetects) {
-        case true:
-          // Swap Kanban
-          if (ctrl.showStatus.kanban === false) {
-            ctrl.showStatus.kanban = true;
-          } else if (ctrl.showStatus.kanban === true) {
-            ctrl.showStatus.kanban = false;
-          }
+	function animateAgileView(resetTimer) {
+		if (ctrl.numberOfSprintTypes > 1) {
+			if (ctrl.showStatus.kanban === false) {
+				ctrl.showStatus.kanban = true;
+			} else if (ctrl.showStatus.kanban === true) {
+				ctrl.showStatus.kanban = false;
+			}
 
-          // Swap Scrum
-          if (ctrl.showStatus.scrum === false) {
-            ctrl.showStatus.scrum = true;
-          } else if (ctrl.showStatus.scrum === true) {
-            ctrl.showStatus.scrum = false;
-          }
-          break;
-        case false:
-          // Use case for clean up and one time loads
-          if (ctrl.iterationsKanban.length >= 1) {
-            ctrl.showStatus.kanban = true;
-            ctrl.showStatus.scrum = false;
-          } else if (ctrl.iterations.length >= 1) {
-            ctrl.showStatus.scrum = true;
-            ctrl.showStatus.kanban = false;
-          }
-          break;
-        default:
-          ctrl.showStatus.scrum = false;
-          ctrl.showStatus.kanban = false;
-          console.log("This shouldn't happen!  Please raise an issue on GitHub.");
-      }
-    }
+			// Swap Scrum
+			if (ctrl.showStatus.scrum === false) {
+				ctrl.showStatus.scrum = true;
+			} else if (ctrl.showStatus.scrum === true) {
+				ctrl.showStatus.scrum = false;
+			}
+		}
+		
+		if (resetTimer && timeoutPromise.$$state.value != "canceled") {
+			ctrl.stopTimeout();
+			ctrl.startTimeout();
+		}
+	}
 
     /**
-     * Pauses agile view switching via manual button from user interaction
-     */
+	 * Pauses agile view switching via manual button from user interaction
+	 */
     function pauseAgileView() {
       if (timeoutPromise.$$state.value === "canceled") {
         ctrl.pausePlaySymbol = "||";
@@ -475,3 +386,4 @@
     };
   }
 })();
+

@@ -284,3 +284,51 @@ hygieia-udeploy-collector:
   - UDEPLOY_PASSWORD:-s3cr3t
 #Collector schedule (required)
 #  - UDEPLOY_CRON:-0 0/5 * * * *
+
+hygieia-xldeploy-collector:
+  image: hygieia-xldeploy-collector:latest
+  container_name: hygieia-xldeploy
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - mongodb:mongo
+  - hygieia-api
+  environment:
+#XLDeploy server (required) - Can provide multiple
+  - XLDEPLOY_URL:-http://xldeploy.company.com
+#XLDeploy user name (required)
+  - XLDEPLOY_USERNAME:-bobama
+#XLDeploy password (required)
+  - XLDEPLOY_PASSWORD:-s3cr3t
+#Collector schedule (required)
+#  - XLDEPLOY_CRON:-0 0/5 * * * *
+
+hygieia-artifactory-artifact-collector:
+  image: hygieia-artifactory-artifact-collector:latest
+  container_name: hygieia-artifactory
+  volumes:
+  - ./logs:/hygieia/logs
+  links:
+  - hygieia-api
+  environment:
+#JFrog Artifactory server (required) - Can provide multiple 
+  - ARTIFACTORY_URL=https://www.jfrog.com
+# Matches maven artifacts of the form [org]/[module]/[version]/[module]-[version]([-classifier])(.[ext])
+  - ARTIFACTORY_PATTERN0=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>\\k<module>)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?
+# Matches ivy files of the form [org]/[module]/[revision]/ivy-[revision](-[classifier]).xml 
+  - ARTIFACTORY_PATTERN1=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<artifact>ivy)-\\k<version>(-(?<classifier>[^\\.]+))?\\.(?<ext>xml)
+# Matches ivy artifact files of the form [org]/[module]/[revision]/[type]/[artifact]-[revision](-[classifier])(.[ext])
+  - ARTIFACTORY_PATTERN2=(?<group>.+)/(?<module>[^/]+)/(?<version>[^/]+)/(?<type>[^/]+)/(?<artifact>[^\\.-/]+)-\\k<version>(-(?<classifier>[^\\.]+))?(\\.(?<ext>.+))?
+
+  
+# Artifactory user name (required)
+#  - ARTIFACTORY_USERNAME=bobama
+# Artifactory API key (required)
+#  - ARTIFACTORY_API_KEY=s3cr3t
+#  - ARTIFACTORY_CRON=0 0/1 * * * *
+# The repo to collect artifacts from (required) - Can provide multiple (comma separated for each server)
+#  - ARTIFACTORY_REPO=prerelease,release
+# Artifactory REST endpoint
+#  - ARTIFACTORY_ENDPOINT=artifactory/
+
+

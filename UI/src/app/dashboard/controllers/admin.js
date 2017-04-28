@@ -9,15 +9,11 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$cookies', '$cookieStore', '$location'];
-    function AdminController(dashboardData, $cookies, $cookieStore, $location) {
+    AdminController.$inject = ['dashboardData', '$location','$uibModal', 'userService', 'authService'];
+    function AdminController(dashboardData, $location, $uibModal, userService, authService) {
         var ctrl = this;
-
-        console.log("I am in admin page run scope");
-        if ($cookies.username == 'admin') {
-            console.log("I am admin");
+        if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
-
         }
         else {
             console.log("Not authenticated redirecting");
@@ -25,9 +21,12 @@
         }
 
         ctrl.storageAvailable = localStorageSupported;
+        ctrl.showAuthentication = userService.isAuthenticated();
         ctrl.templateUrl = "app/dashboard/views/navheader.html";
-        ctrl.username = $cookies.username;
+        ctrl.username = userService.getUsername();
+        ctrl.login = login;
         ctrl.logout = logout;
+        ctrl.renameDashboard=renameDashboard;
 
         // list of available themes. Must be updated manually
         ctrl.themes = [
@@ -67,9 +66,12 @@
 
         //implementation of logout
         function logout() {
-            $cookieStore.remove("username");
-            $cookieStore.remove("authenticated");
-            $location.path("/");
+            authService.logout();
+            $location.path("/login");
+        }
+
+        function login() {
+          $location.path("/login")
         }
 
         // method implementations
@@ -85,6 +87,31 @@
                 _.remove(ctrl.dashboards, {id: id});
             });
         }
+
+        function renameDashboard(item)
+        {
+            console.log("Rename Dashboard in Admin");
+
+            var mymodalInstance=$uibModal.open({
+                templateUrl: 'app/dashboard/views/renameDashboard.html',
+                controller: 'RenameDashboardController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    dashboardId: function() {
+                        return item.id;
+                    },
+                    dashboardName: function() {
+                        return item.name;
+                    }
+                }
+            });
+
+            mymodalInstance.result.then(function(condition) {
+                window.location.reload(false);
+            });
+
+        }
+
 
         function processResponse(data) {
             ctrl.dashboards = [];

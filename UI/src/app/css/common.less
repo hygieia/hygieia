@@ -656,6 +656,18 @@ tr.dash-row > td {
         line-height: 1.75rem;
         .border-radius(50%);
     }
+
+    .dash-status-ignore {
+        display: inline-block;
+        font-weight: bold;
+        width: 2rem;
+        height: 2rem;
+        background: @dash-status-ignore;
+        border: .2rem solid @dash-status-ignore-border;
+        color: @dash-status-ignore-text;
+        line-height: 1.75rem;
+        .border-radius(50%);
+    }
 }
 
 .dash-status-lg {
@@ -781,6 +793,17 @@ tr.dash-row > td {
     background-image: url('@{dash-image-path}bg-forest.jpg');
     color: @dash-dashboard-text;
     padding-top: 50px;
+
+    .auth-modal-tab {
+      a {
+        color: white;
+      }
+
+      &:hover a, &.active a {
+        color: black;
+      }
+    }
+
 
     .auth-modal-heading {
 

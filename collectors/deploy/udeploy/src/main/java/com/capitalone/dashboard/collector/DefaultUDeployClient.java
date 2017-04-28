@@ -234,6 +234,7 @@ public class DefaultUDeployClient implements UDeployClient {
     }
 
 
+    @SuppressWarnings("unchecked")
     private JSONArray getLowestLevelChildren(JSONObject topParent, JSONArray returnArray) {
         JSONArray jsonChildren = (JSONArray) topParent.get("children");
 
@@ -274,11 +275,20 @@ public class DefaultUDeployClient implements UDeployClient {
     }
 
     protected HttpHeaders createHeaders() {
-        String auth = uDeploySettings.getUsername() + ":"
-                + uDeploySettings.getPassword();
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(
-                StandardCharsets.US_ASCII));
-        String authHeader = "Basic " + new String(encodedAuth);
+        String authHeader = null;
+        String token = uDeploySettings.getToken();
+        if (StringUtils.isEmpty(token)) {
+            String auth = uDeploySettings.getUsername() + ":"
+                    + uDeploySettings.getPassword();
+            byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(
+                    StandardCharsets.US_ASCII));
+            authHeader = "Basic " + new String(encodedAuth);
+        } else {
+            String passwordIsAuthToken = "PasswordIsAuthToken:{\"token\":\"" + token + "\"}";
+            byte[] encodedAuth = Base64.encodeBase64(passwordIsAuthToken.getBytes(
+                    StandardCharsets.US_ASCII));
+            authHeader = "Basic " + new String(encodedAuth);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", authHeader);

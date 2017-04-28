@@ -1,0 +1,37 @@
+{
+  "jobs": [
+    {
+      "_class":"org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject",
+      "name": "job1",
+      "url": "http://server/job/job1/",
+      "builds": [
+        {
+          "_class": "hudson.model.FreeStyleBuild",
+          "number": 2,
+          "url": "http://server/job/job1/2/"
+        },
+        {
+          "_class": "hudson.model.FreeStyleBuild",
+          "number": 1,
+          "url": "http://server/job/job1/1/"
+        }],
+      "jobs": [
+        {
+          "name": "master",
+          "url": "http://server/job/job1/job/master",
+          "builds": [
+            {
+              "_class": "hudson.model.FreeStyleBuild",
+              "number": 1,
+              "url": "http://server/job/master/1/"
+            },
+            {
+              "_class": "hudson.model.FreeStyleBuild",
+              "number": 2,
+              "url": "http://server/job/master/2/"
+            }]
+        }
+      ]
+    }
+  ]
+}

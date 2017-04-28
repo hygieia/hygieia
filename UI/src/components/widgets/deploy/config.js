@@ -5,8 +5,10 @@
         .module(HygieiaConfig.module)
         .controller('deployConfigController', deployConfigController);
 
-    deployConfigController.$inject = ['modalData', 'collectorData','$modalInstance'];
-    function deployConfigController(modalData, collectorData, $modalInstance) {
+    deployConfigController.$inject = ['modalData', 'collectorData', '$uibModalInstance', '$q', '$scope'];
+  
+    function deployConfigController(modalData, collectorData, $uibModalInstance, $q, $scope) {
+
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -14,31 +16,79 @@
 
         // public variables
         // ctrl.deployJob;
-        ctrl.deployJobs = [];
+        ctrl.deployJobs = [ ];
         ctrl.jobDropdownDisabled = true;
         ctrl.jobDropdownPlaceholder = 'Loading...';
         ctrl.submitted = false;
+        ctrl.aggregateServers = false;
+        ctrl.currentData = null;
+        // set values from config
+        if (widgetConfig) {
+            if (widgetConfig.options.aggregateServers) {
+                ctrl.aggregateServers = widgetConfig.options.aggregateServers;
+            }
+        }
+      
+        ctrl.ignoreRegex = '';
+        if (widgetConfig.options.ignoreRegex !== undefined && widgetConfig.options.ignoreRegex !== null) {
+            ctrl.ignoreRegex=widgetConfig.options.ignoreRegex;
+        }
 
         // public methods
         ctrl.submit = submit;
 
-        collectorData.itemsByType('deployment').then(processResponse);
+        $q.all([collectorData.itemsByType('deployment')]).then(processResponse);
+        
+        function processResponse(dataA) {
+        	var data = dataA[0];
+        	ctrl.currentData = dataA;
+        	
 
-        function processResponse(data) {
             var worker = {
                 getDeploys: getDeploys
             };
-
-            function getDeploys(data, currentCollectorId, cb) {
+            
+            function getDeploys(data, currentCollectorItemIds, cb) {
                 var selectedIndex = null;
+                
+                // If true we ignore instanceUrls and treat applications with the same id spread across 
+                // multiple servers as equivalent. This allows us to fully track an application across
+                // all environments in the case that servers are split by function (prod deployment servers
+                // vs nonprod deployment servers)
+                var multiServerEquality = ctrl.aggregateServers;
 
-                var deploys = _(data).map(function(deploy, idx) {
-                    if(deploy.id == currentCollectorId) {
-                        selectedIndex = idx;
+                var dataGrouped = _(data)
+                    .groupBy(function(d) { return (!multiServerEquality ? d.options.instanceUrl + "#" : "" ) + d.options.applicationName + d.options.applicationId; })
+                    .map(function(d) { return d; });
+
+                var deploys = _(dataGrouped).map(function(deploys, idx) {
+                	var firstDeploy = deploys[0];
+                	
+                	var name = "";
+                	var group = "";
+                	var ids = new Array(deploys.length);
+                	for (var i = 0; i < deploys.length; ++i) {
+                		var deploy = deploys[i];
+                		
+                		ids[i] = deploy.id;
+                		
+                		if (_.contains(currentCollectorItemIds, deploy.id)) {
+                            selectedIndex = idx;
+                        }
+                		
+                		if (i > 0) {
+                			name += ', ';
+                		}
+                		name += ((deploy.niceName != null) && (deploy.niceName != "") ? deploy.niceName : deploy.collector.name);
                     }
+                	
+                	group = name;
+                	name += '-' + firstDeploy.options.applicationName;
+                	
                     return {
-                        value: deploy.id,
-                        name: deploy.options.applicationName
+                        value: ids,
+                        name: name,
+                        group: group
                     };
                 }).value();
 
@@ -48,9 +98,13 @@
                 });
             }
 
-            var deployCollector = modalData.dashboard.application.components[0].collectorItems.Deployment;
-            var deployCollectorId = deployCollector ? deployCollector[0].id : null;
-            worker.getDeploys(data, deployCollectorId, getDeploysCallback);
+            var deployCollectorItems = modalData.dashboard.application.components[0].collectorItems.Deployment;
+            var selectedIds = [];
+            if (deployCollectorItems) {
+            	selectedIds = _.map(deployCollectorItems, function(ci) { return ci.id } )
+            }
+            
+            worker.getDeploys(data, selectedIds, getDeploysCallback);
         }
 
         function getDeploysCallback(data) {
@@ -74,14 +128,20 @@
                 var postObj = {
                     name: 'deploy',
                     options: {
-                        id: widgetConfig.options.id
+                        id: widgetConfig.options.id,
+                        aggregateServers: form.aggregateServers.checked,
+                        ignoreRegex: ctrl.ignoreRegex
                     },
                     componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: job.value
+                    collectorItemIds: job.value
                 };
 
-                $modalInstance.close(postObj);
+                $uibModalInstance.close(postObj);
             }
         }
+
+        $scope.reload = function() {
+            processResponse(ctrl.currentData);
+        };
     }
 })();

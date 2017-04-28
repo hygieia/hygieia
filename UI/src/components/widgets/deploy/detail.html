@@ -4,8 +4,10 @@
             <div class="row">
                 <div class="col-md-4">
                     <span class="dash-status-lg"
-                          dash-status="{{detail.environment.failedComponents > 0 ? detail.statuses.FAIL : detail.statuses.PASS}}"
-                          dash-status-fail-text="{{detail.environment.failedComponents}}"></span>
+                          dash-status="{{detail.environment.failedComponents > 0 ? 
+                        	(detail.environment.ignoreFailure? detail.statuses.IGNORE : detail.statuses.FAIL) : detail.statuses.PASS}}"
+                          dash-status-fail-text="{{detail.environment.failedComponents}}"
+                          dash-status-ignore-text="{{detail.environment.failedComponents}}"></span>
                     <span class="environment-name">{{::detail.environment.name}}</span>
                 </div>
 
@@ -42,8 +44,13 @@
                 </thead>
                 <tbody ng-repeat="unit in detail.environment.units | orderBy:['deployed', 'name'] track by $index">
                     <tr ng-repeat="server in unit.servers | orderBy:['online', 'name'] track by $index">
-                        <td dash-status="{{unit.deployed}}"></td>
-                        <td>{{::unit.name}}</td>
+                        <td dash-status="{{unit.deployed? detail.statuses.PASS : (detail.environment.ignoreFailure? detail.statuses.IGNORE : detail.statuses.FAIL)}}"></td>
+                        <td ng-if="unit.jobUrl">
+                            <a ng-href="{{::unit.jobUrl}}" target="_blank">
+                                {{::unit.name}} <span class="fa fa-angle-right"></span>
+                            </a>
+                        </td>
+                        <td ng-if="!unit.jobUrl">{{::unit.name}}</td>
                         <td>{{::unit.lastUpdated | date:'MMM d, HH:mm:ss'}}</td>
                         <td>{{::unit.version}}</td>
                         <td>{{::server.name}}</td>
@@ -52,7 +59,13 @@
                     </tr>
                     <tr ng-if="!unit.servers || unit.servers.length === 0">
                         <td dash-status="{{unit.deployed}}"></td>
-                        <td>{{::unit.name}}</td>
+                        <td dash-status="{{unit.deployed? detail.statuses.PASS : (detail.environment.ignoreFailure? detail.statuses.IGNORE : detail.statuses.FAIL)}}"></td>
+                        <td ng-if="unit.jobUrl">
+                            <a ng-href="{{::unit.jobUrl}}" target="_blank">
+                                {{::unit.name}} <span class="fa fa-angle-right"></span>
+                            </a>
+                        </td>
+                        <td ng-if="!unit.jobUrl">{{::unit.name}}</td>
                         <td>{{::unit.lastUpdated | date:'MMM d, HH:mm:ss'}}</td>
                         <td>{{::unit.version}}</td>
                         <td colspan="2">N/A</td>

@@ -6,8 +6,8 @@
         .controller('monitorViewController', monitorViewController)
         .controller('monitorStatusController', monitorStatusController);
 
-    monitorViewController.$inject = ['$scope', 'monitorData', 'DashStatus', '$modal', '$q'];
-    function monitorViewController($scope, monitorData, DashStatus, $modal, $q) {
+    monitorViewController.$inject = ['$scope', 'monitorData', 'DashStatus', '$uibModal', '$q', '$interval'];
+    function monitorViewController($scope, monitorData, DashStatus, $uibModal, $q, $interval) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -30,6 +30,15 @@
             return deferred.promise;
         };
 
+        $interval(function () {
+           ctrl.load();
+            for (var i = 0; i < ctrl.services.length; i++) {
+                monitorData.refreshService($scope.dashboard.id, ctrl.services[i]);
+              }
+
+        }, 60000);
+
+
 
         // method implementations
         function hasMessage(service) {
@@ -38,7 +47,7 @@
 
         function openStatusWindow(service) {
             // open up a new modal window for the user to set the status
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'monitorStatus.html',
                 controller: 'monitorStatusController',
                 controllerAs: 'ctrl',
@@ -52,7 +61,9 @@
                     service: function () {
                         return {
                             id: service.id,
+                            name: service.name,
                             status: service.status,
+                            url: service.url,
                             message: service.message
                         };
                     }
@@ -76,6 +87,12 @@
                 });
         }
 
+        ctrl.showIconLegend = function() {
+        	$uibModal.open({
+        		templateUrl: 'components/widgets/monitor/icon-legend.html'
+        	})
+        }
+        
         function processResponse(response) {
             var worker = {
                     doWork: workerDoWork
@@ -109,6 +126,9 @@
                         case 'warning':
                             item.status = statuses.WARN;
                             break;
+                        case 'unauth':
+                        	item.status = statuses.UNAUTH;
+                        	break;
                         case 'alert':
                             item.status = statuses.FAIL;
                             break;
@@ -117,6 +137,7 @@
                     return {
                         id: item.id,
                         name: name,
+                        url: item.url,
                         status: item.status,
                         message: item.message
                     };
@@ -132,8 +153,8 @@
         }
     }
 
-    monitorStatusController.$inject = ['service', 'statuses', '$modalInstance'];
-    function monitorStatusController(service, statuses, $modalInstance) {
+    monitorStatusController.$inject = ['service', 'statuses', '$uibModalInstance'];
+    function monitorStatusController(service, statuses, $uibModalInstance) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -151,7 +172,7 @@
 
         function submit() {
             // pass the service back so the widget can update
-            $modalInstance.close(ctrl.service);
+            $uibModalInstance.close(ctrl.service);
         }
     }
 })();

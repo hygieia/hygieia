@@ -18,36 +18,55 @@ java -JAR gitlab-collector.jar
 
 ## application.properties
 
-You will need to provide an **application.properties** file that contains information about how to connect to the Dashboard MongoDB database instance, as well as properties the Github collector requires. See the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files) for information about sourcing this properties file.
+You will need to provide an **application.properties** file that contains information about how to connect to the Dashboard MongoDB database instance, as well as properties the Gitlab collector requires. See the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files) for information about sourcing this properties file.
 
 ### Sample application.properties file
 
-```#Database Name 
-database=dashboard
+``` 
+# Database Name
+dbname=dashboard
 
-#Database HostName - default is IP docker container mongodb
+# Database HostName - default is localhost
 dbhost=localhost
 
-#Database Port - default is 27017
+# Database Port - default is 27017
 dbport=27017
 
-#Database Username - default is blank
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+
+# Database Username - default is blank
 dbusername=db
 
-#Database Password - default is blank
+# Database Password - default is blank
 dbpassword=dbpass
+
+# Logging File location
+logging.file=./logs/gitlab.log
 
 #Collector schedule (required)
 gitlab.cron=0 0/1 * * * *
 
-#Gitlab server (optional)
-gitlab.server=https://gitlab.company.com/
+#Gitlab host (optional, defaults to "gitlab.com")
+gitlab.host=gitlab.company.com
 
-gitlab.branche=master
+#Gitlab protocol (optional, defaults to "http")
+gitlab.protocol=http
 
-#set apiKey to use HTTPS Auth
+#Gitlab port (optional, defaults to protocol default port)
+gitlab.port=80
+
+#Gitlab path (optional, if your instance of gitlab requires a path)
+gitlab.path=/gitlab/resides/here
+
+#If your instance of Gitlab is using a self signed certificate, set to true, default is false
+gitlab.selfSignedCertificate=false
+
+#Gitlab API Token (required, token of user the collector will use by default, can be overriden on a per repo basis from the UI. API token provided by Gitlab)
 gitlab.apiToken=
 
-gitlab.saveLog=true
+#Maximum number of days to go back in time when fetching commits
+gitlab.commitThresholdDays=15
 ```
 

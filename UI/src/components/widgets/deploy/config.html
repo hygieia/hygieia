@@ -16,17 +16,35 @@
                        ng-disabled="deployConfig.jobDropdownDisabled" required>
                 <ui-select-match placeholder={{deployConfig.jobDropdownPlaceholder}}>{{$select.selected.name}}
                 </ui-select-match>
-                <ui-select-choices
+                <ui-select-choices group-by="'group'"
                         repeat="job in (deployConfig.deployJobs| orderBy: 'name' | filter: $select.search) track by job.value">
                     <div ng-bind-html="job.name | highlight: $select.search"></div>
                 </ui-select-choices>
                 <ui-select-no-choice>
-                    No teams were found
+                    No deployment job was found
                 </ui-select-no-choice>
             </ui-select>
-
-
+            
         </form-group>
+        
+        <form-group input="ignoreRegex" errors="{validregex:'Please enter a valid Regular Expression'}">
+	
+	        <label class="modal-label">Ignore Environment Failures Pattern:</label>
+	        <input type="text"
+	               name="ignoreRegex"
+	               class="form-control text-center"
+	               ng-model="deployConfig.ignoreRegex"
+	               placeholder="Enter Regex"
+	               autocomplete="on"
+	               validregex />
+	    </form-group>
+
+        <div class="form-group checkbox">
+            <label>
+                <input type="checkbox" name="aggregateServers" ng-model="deployConfig.aggregateServers" ng-change="reload()">
+                Aggregate Servers
+            </label>
+        </div>
 
         <hr/>
 

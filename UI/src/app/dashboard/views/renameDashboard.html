@@ -1,0 +1,23 @@
+<widget-modal widget-modal-title="Rename Your Dashboard">
+    <form name="cdf" class="form" ng-submit="ctrl.submit(cdf)" novalidate>
+        <form-group input="dashboardTitle" errors="{required: 'New Dashboard name is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters', renameError: 'Error renaming dashboard. Change title and try again.', pattern : 'Special character(s) found. Please enter only letters, numbers or spaces.'}">
+        	<input
+                    type="text"
+                    name="dashboardTitle"
+                    class="form-control"
+                    placeholder="Dashboard title"
+                    ng-model="ctrl.dashboardTitle"
+                    required
+                    maxlength="50"
+                    autocomplete="off"
+                    minlength="6"
+                    ng-pattern="/^[a-zA-Z0-9 ]*$/"/>
+            <span class="text-danger"></span>
+        </form-group>
+
+
+       <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Rename</button>
+        </div>
+    </form>
+</widget-modal>
