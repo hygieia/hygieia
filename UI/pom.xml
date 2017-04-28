@@ -96,7 +96,7 @@
               <goal>bower</goal>
             </goals>
             <configuration>
-              <arguments>install</arguments>
+              <arguments>install --proxy=http://localhost:8099 --https-proxy=https://localhost:8099 -g</arguments>
             </configuration>
           </execution>
 
