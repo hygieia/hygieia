@@ -114,6 +114,7 @@ public class DefaultXLDeployClient implements XLDeployClient {
 	}
 	
 	@Override
+	@SuppressWarnings({"PMD.NPathComplexity"})
 	public List<XLDeployApplicationHistoryItem> getApplicationHistory(List<XLDeployApplication> applications, Date startDate, Date endDate) {
 		if (applications == null || applications.isEmpty()) {
 			return Collections.<XLDeployApplicationHistoryItem>emptyList();
