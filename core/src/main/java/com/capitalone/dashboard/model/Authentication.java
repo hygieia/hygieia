@@ -1,10 +1,13 @@
 package com.capitalone.dashboard.model;
 
-import com.google.common.hash.Hashing;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.nio.charset.StandardCharsets;
+import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
 
 /**
  * This class serves as the model for storing credential used for login & Signup.
@@ -19,11 +22,13 @@ public class Authentication extends BaseModel {
     private String username;
 
     private String password;
-
+    
+    private Collection<UserRole> roles;
 
     public Authentication(String username, String password) {
         this.username = username;
         this.password = hash(password);
+        this.roles = Sets.newHashSet();
     }
 
     public String getUsername() {
@@ -41,7 +46,14 @@ public class Authentication extends BaseModel {
     public void setPassword(String password) {
         this.password = hash(password);
     }
+    
+    public Collection<UserRole> getRoles() {
+        return roles;
+    }
 
+    public void setRoles(Collection<UserRole> roles) {
+        this.roles = roles;
+    }
 
     static String hash(String password) {
         if (!password.startsWith(HASH_PREFIX)) {
@@ -62,4 +74,5 @@ public class Authentication extends BaseModel {
     public String toString() {
         return "Authentication [username=" + username + ", password=" + password + "]";
     }
+
 }

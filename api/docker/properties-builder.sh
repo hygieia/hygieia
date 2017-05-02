@@ -33,6 +33,16 @@ corsWhitelist=${CORS_WHITELIST:-http://domain1.com:port,http://domain2.com:port}
 
 feature.dynamicPipeline=${FEATURE_DYNAMIC_PIPELINE:-disabled}
 
+#Authentication Settings
+auth.expirationTime=${AUTH_EXPIRATION_TIME:-}
+auth.secret=${AUTH_SECRET:-}
+auth.ldapServerUrl=${AUTH_LDAP_SERVER_URL:-}
+auth.ldapUserDnPattern=${AUTH_LDAP_USER_DN_PATTERN:-}
+auth.ldapGroupSearchBase=${AUTH_LDAP_GROUP_SEARCH_BASE:-}
+auth.ldapManagerDn=${AUTH_LDAP_MANAGER_DN:-}
+auth.ldapManagerPassword=${AUTH_LDAP_MANAGER_PASSWORD:-}
+auth.ldapAdminGroup=${AUTH_LDAP_ADMIN_GROUP:-}
+
 #Monitor Widget proxy credentials
 monitor.proxy.username=${MONITOR_PROXY_USERNAME:-}
 monitor.proxy.password=${MONITOR_PROXY_PASSWORD:-}

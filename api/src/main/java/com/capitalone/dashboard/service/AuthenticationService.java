@@ -3,6 +3,7 @@ package com.capitalone.dashboard.service;
 import org.bson.types.ObjectId;
 
 import com.capitalone.dashboard.model.Authentication;
+import com.capitalone.dashboard.model.UserRole;
 
 public interface AuthenticationService {
 	
@@ -57,4 +58,10 @@ public interface AuthenticationService {
 	 * @return
 	 */
 	org.springframework.security.core.Authentication authenticate(String username, String password);
+
+
+    Authentication addRole(String username, UserRole userRole);
+
+
+    Authentication removeRole(String username, UserRole userRole);
 }

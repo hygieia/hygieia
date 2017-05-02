@@ -9,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.capitalone.dashboard.auth.AuthenticationResultHandler;
 import com.capitalone.dashboard.model.AuthType;
 
 public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {

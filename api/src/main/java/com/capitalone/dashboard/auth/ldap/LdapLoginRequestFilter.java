@@ -1,13 +1,12 @@
 package com.capitalone.dashboard.auth.ldap;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.capitalone.dashboard.auth.AuthenticationResultHandler;
 
 public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
 
-	public LdapLoginRequestFilter(String path, AuthenticationManager authenticationManager, AuthenticationResultHandler authenticationResultHandler) {
+	public LdapLoginRequestFilter(String path, AuthenticationManager authenticationManager, AuthenticationSuccessHandler authenticationResultHandler) {
 		super();
 		setAuthenticationSuccessHandler(authenticationResultHandler);
 		setAuthenticationManager(authenticationManager);

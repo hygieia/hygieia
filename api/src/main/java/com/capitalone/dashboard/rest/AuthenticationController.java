@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,13 +16,20 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitalone.dashboard.auth.AuthenticationResponseService;
+import com.capitalone.dashboard.auth.access.Admin;
+import com.capitalone.dashboard.auth.token.TokenAuthenticationService;
+import com.capitalone.dashboard.model.UserResponse;
+import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.request.AuthenticationRequest;
+import com.capitalone.dashboard.request.RoleRequest;
 import com.capitalone.dashboard.service.AuthenticationService;
+import com.google.common.collect.Sets;
 
 
 @RestController
@@ -29,19 +37,19 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     
-    private final AuthenticationResponseService authenticationResponseService;
+    private final TokenAuthenticationService tokenService;
     
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService, AuthenticationResponseService authenticationResponseService) {
+    public AuthenticationController(AuthenticationService authenticationService, TokenAuthenticationService tokenService) {
         this.authenticationService = authenticationService;
-        this.authenticationResponseService = authenticationResponseService;
+        this.tokenService = tokenService;
     }
 
     @RequestMapping(value = "/registerUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> registerUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @Valid @RequestBody AuthenticationRequest request) throws IOException, ServletException {
 	    	try {
 		    	Authentication authentication = authenticationService.create(request.getUsername(), request.getPassword());
-		    	authenticationResponseService.handle(httpServletResponse, authentication);
+		    	tokenService.addAuthentication(httpServletResponse, authentication);
 		    	return ResponseEntity.ok().build();
 	    	} catch (DuplicateKeyException dke) {
 	    		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
@@ -54,5 +62,33 @@ public class AuthenticationController {
         // TODO: should validate revalidate current password before allowing changes?
     	// TODO: should update based on security context and not passed in user and password
         return ResponseEntity.status(HttpStatus.OK).body(authenticationService.update(request.getUsername(), request.getPassword()));
+    }
+    
+    @Admin
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    public ResponseEntity<Collection<UserResponse>> getUsers() {
+        Collection<UserResponse> users = Sets.newHashSet();
+        Iterable<com.capitalone.dashboard.model.Authentication> auths = authenticationService.all();
+        auths.forEach(auth -> {
+            users.add(new UserResponse(auth.getUsername(), auth.getRoles()));
+        });
+        
+        return ResponseEntity.ok().body(users);
+    }
+    
+    @Admin
+    @RequestMapping(value = "/users/{username}/roles", method = POST)
+    public ResponseEntity<UserResponse> addRole(@PathVariable String username, @RequestBody RoleRequest request) {
+        com.capitalone.dashboard.model.Authentication user = authenticationService.addRole(username, request.getUserRole());
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponse(user.getUsername(), user.getRoles()));
+    }
+    
+    @Admin
+    @RequestMapping(value = "/users/{username}/roles/{userRole}", method = RequestMethod.DELETE)
+    public ResponseEntity<UserResponse> removeRole(@PathVariable String username, @PathVariable UserRole userRole) {
+        com.capitalone.dashboard.model.Authentication user = authenticationService.removeRole(username, userRole);
+        
+        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user.getUsername(), user.getRoles()));
     }
 }
