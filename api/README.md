@@ -34,10 +34,26 @@ server.port=[Web server port - default is 8080]
 corsEnabled=false
 corsWhitelist=http://domain1.com:port,http://domain2.com:port
 version.number=@application.version.number@
+
+auth.expirationTime=[JWT expiration time in milliseconds]
+auth.secret=[Secret Key used to validate the JWT tokens]
+auth.ldapServerUrl=[LDAP Server Url, including port of your LDAP server]
+auth.ldapUserDnPattern=[LDAP User Dn Pattern, where the username is replaced with '{0}']
+
+monitor.proxy.host=[hostname of proxy server]
+monitor.proxy.type=[http|socks|direct]
+monitor.proxy.port=[port enabled on proxy server]
+monitor.proxy.username=[proxy username]
+monitor.proxy.password=[proxy password]
 ```
 
 All the above values are optional. Even without the property file you must be able to run the api (assuming you have mongodb installed with no authorization).
 **Note:** When `dbusername` is not present or the value is empty then it skips the mongodb authorization part.
+**Note:** If the expiration time is left blank, the token will can be thought of as permanently expired. This will cause the users to never see any content. While leaving this value blank will not terminate application start up, this is a mandatory field if you wish users to see any content.
+**Note:** If the secret is left blank, a random key will be generated.  To allow multiple instances of the API to validate the same JWT token, provide the same key to each instance of the API running.  
+**Note:** If both LDAP parameters are not provided, LDAP will not be an available authentication provider.
+**Note:** When enabling proxy support for the monitor widget, if the host is not supplied the rest of the monitor.proxy args are ignored. If running with Docker, the port and type will be defaulted to 80 and HTTP. When running locally, these must be supplied.
+
 
 ## Run the API
 
@@ -196,10 +212,10 @@ For the required fields, if the methods to locate values have been exhausted, th
 
 ### Encrypted Properties
 
-Properties that are recommended to not be stored in plain text can be encrypted/decrypted using jasypt. 
+Properties that are recommended to not be stored in plain text can be encrypted/decrypted using jasypt.
 Encrypted properties are enclosed in keyword ENC(), i.e. ENC(thisisanencryptedproperty).
 To generate an encrypted property, run
-`java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar  org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="dbpass" password=hygieiasecret algorithm=PBEWithMD5AndDES` where dbpass is the property value being encrypted and hygieiasecret is the secret. When starting the collector, this secret has to be passed as a System property via `-Djasypt.encryptor.password=hygieiasecret` in order to decrypt the property. 
+`java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar  org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="dbpass" password=hygieiasecret algorithm=PBEWithMD5AndDES` where dbpass is the property value being encrypted and hygieiasecret is the secret. When starting the collector, this secret has to be passed as a System property via `-Djasypt.encryptor.password=hygieiasecret` in order to decrypt the property.
 
 Via docker, pass as an environment variable `docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -e "JASYPT_ENCRYPTOR_PASSWORD=hygieiasecret" -i hygieia-api:latest`.
 

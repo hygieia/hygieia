@@ -12,7 +12,7 @@
         <options>
           <option name='environment' value='DEV' />
           <option name='artifactGroup' value='group' />
-          <option name='artifactId' value='my-artifact' />
+          <option name='artifactName' value='my-artifact' />
           <option name='version' value='0.0.1-SNAPSHOT' />
         </options>
       </job>

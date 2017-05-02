@@ -52,9 +52,15 @@ gitlab.protocol=${GITLAB_PROTOCOL:-}
 
 #Gitlab port (optional, defaults to protocol default port)
 gitlab.port=${GITLAB_PORT:-}
+
+#Gitlab path (optional, defaults to no path)
+gitlab.path=${GITLAB_PATH:-}
   
 #Gitlab API Token (required, must be an admin account to retrieve all teams for the instance of gitlab.  If not admin, will only retrieve teams the user belongs to)
 gitlab.apiToken=${GITLAB_API_TOKEN:-}
+
+#Gitlab selfSignedCertificate (optional, defaults to false, set to true if your instance of gitlab is running on https without a trusted certificate
+gitlab.selfSignedCertificate=${GITLAB_SELF_SIGNED_CERTIFICATE:-false}
 
 EOF
 
