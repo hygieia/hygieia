@@ -70,4 +70,7 @@ gitlab.path=/gitlab/resides/here
 #We recommend creating a Gitlab account for the collector, using it's Access Token, and adding that user to teams you want to see issues for
 gitlab.apiToken=
 
+#Gitlab selfSignedCertificate (optional, defaults to false, set to true if your instance of gitlab is running on https without a trusted certificate
+gitlab.selfSignedCertificate=false
+
 ```
