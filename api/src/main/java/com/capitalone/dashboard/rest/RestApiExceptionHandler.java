@@ -1,16 +1,17 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.Application;
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.ErrorResponse;
-import com.capitalone.dashboard.util.UnsafeDeleteException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,9 +21,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
+import com.capitalone.dashboard.Application;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.ErrorResponse;
+import com.capitalone.dashboard.util.UnsafeDeleteException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 /**
  * Controller advice to handle exceptions globally.
@@ -95,5 +98,10 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
             default:
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((Object) ("Internal error. " + e.getMessage() + "Error code=: " + e.getErrorCode()));
         }
+    }
+    
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDenied(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body((Object) "Access Denied.");
     }
 }

@@ -25,6 +25,21 @@
                    </span>
                 </div>
             </div>
+
+            <div ng-hide="ctrl.showAuthentication">
+                <div class="pull-right">
+                    <span class="welcome-header">
+                    Login
+                       <span class="fa-stack fa-lg" ng-click="ctrl.login()">
+                           <i class="fa fa-circle fa-stack-2x"></i>
+                           <i class="fa fa-power-off fa-stack-1x"></i>
+                       </span>
+
+                        <div class="divider"></div>
+                   </span>
+                </div>
+            </div>
+
         </div>
     </nav>
 </div>

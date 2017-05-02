@@ -167,6 +167,10 @@
                     }
                 };
                 $uibModalInstance.close(responses.length ? widgetResponse : null);
+            }, function (response) {
+              if(response.status === 401) {
+                $uibModalInstance.close();
+              }
             });
         }
     }

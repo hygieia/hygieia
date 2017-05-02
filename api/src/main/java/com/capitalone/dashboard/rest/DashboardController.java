@@ -19,9 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
@@ -70,7 +70,7 @@ public class DashboardController {
         return dashboardService.get(id);
     }
 
-
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateDashboard(@PathVariable ObjectId id,
                                                   @RequestBody DashboardRequest request) {
@@ -84,7 +84,7 @@ public class DashboardController {
         }
     }
 
-
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/rename/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> renameDashboard(@PathVariable ObjectId id,
     		@Valid @RequestBody DashboardRequestTitle request) {
@@ -122,13 +122,14 @@ public class DashboardController {
         }
     }
 
-
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}", method = DELETE)
     public ResponseEntity<Void> deleteDashboard(@PathVariable ObjectId id) {
         dashboardService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}/widget", method = POST,
             consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<WidgetResponse> addWidget(@PathVariable ObjectId id, @RequestBody WidgetRequest request) {
@@ -143,6 +144,7 @@ public class DashboardController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new WidgetResponse(component, widget));
     }
 
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}/widget/{widgetId}", method = PUT,
             consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<WidgetResponse> updateWidget(@PathVariable ObjectId id,
@@ -160,19 +162,16 @@ public class DashboardController {
 
     @RequestMapping(value = "/dashboard/mydashboard", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public List<Dashboard> getOwnedDashboards(@RequestParam String username) {
-        List<Dashboard> myDashboard = dashboardService.getOwnedDashboards(username);
+    public List<Dashboard> getOwnedDashboards() {
+    	List<Dashboard> myDashboard = dashboardService.getOwnedDashboards();
         return myDashboard;
 
     }
 
-    @RequestMapping(value = "/dashboard/myowner/{dashboardtitle}", method = GET,
+    @Deprecated
+    @RequestMapping(value = "/dashboard/myowner/{id}", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public String getDashboardOwner(@PathVariable String dashboardtitle) {
-        String dashboardOwner = "No Owner defined";
-        if (null != dashboardtitle) {
-            dashboardOwner = dashboardService.getDashboardOwner(dashboardtitle);
-        }
-        return dashboardOwner;
+    public String getDashboardOwner(@PathVariable ObjectId id) {
+    	return "Authorized";
     }
 }

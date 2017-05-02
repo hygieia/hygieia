@@ -87,6 +87,12 @@
                 });
         }
 
+        ctrl.showIconLegend = function() {
+        	$uibModal.open({
+        		templateUrl: 'components/widgets/monitor/icon-legend.html'
+        	})
+        }
+        
         function processResponse(response) {
             var worker = {
                     doWork: workerDoWork
@@ -120,6 +126,9 @@
                         case 'warning':
                             item.status = statuses.WARN;
                             break;
+                        case 'unauth':
+                        	item.status = statuses.UNAUTH;
+                        	break;
                         case 'alert':
                             item.status = statuses.FAIL;
                             break;
