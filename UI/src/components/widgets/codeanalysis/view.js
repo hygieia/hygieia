@@ -47,10 +47,14 @@
             var deferred = $q.defer();
             var caData = _.isEmpty(response.result) ? {} : response.result[0];
 
+
             ctrl.reportUrl = caData.url;
             ctrl.versionNumber = caData.version;
 
             ctrl.rulesCompliance = getMetric(caData.metrics, 'violations_density');
+            ctrl.qualityGate = getMetric(caData.metrics, 'alert_status');
+
+            ctrl.showQualityGate = angular.isUndefined(ctrl.rulesCompliance.value)
 
             ctrl.technicalDebt = getMetric(caData.metrics, 'sqale_index');
 
