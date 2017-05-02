@@ -8,6 +8,7 @@ import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityCollectorRepository;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityJobRepository;
 import com.capitalone.dashboard.utils.CodeQualityService;
+import org.assertj.core.api.Condition;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,10 +17,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 
 import javax.xml.datatype.DatatypeFactory;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -221,9 +219,55 @@ public class JenkinsCodeQualityCollectorTaskTest {
         ArgumentCaptor<JenkinsCodeQualityJob> newJobCaptor = ArgumentCaptor.forClass(JenkinsCodeQualityJob.class);
         verify(this.mockJobRepository, times(1)).save(newJobCaptor.capture());
         JenkinsCodeQualityJob capturedJob = newJobCaptor.getValue();
-        JenkinsCodeQualityJob expectedNewJob = JenkinsCodeQualityJob.newBuilder().collectorId(collectorId).jobName("myNewJob").jenkinsServer("http://myBuildServer/myNewJob").build();
+        JenkinsCodeQualityJob expectedNewJob = JenkinsCodeQualityJob.newBuilder().collectorId(collectorId).jobName("myNewJob").jenkinsServer("http://myBuildServer/myNewJob").description("myNewJob (http://myBuildServer/myNewJob)").build();
         assertThat(capturedJob).isEqualToComparingFieldByField(expectedNewJob);
         assertThat(capturedJob.getNiceName()).isEqualTo("myNewJob");
+    }
+
+    @Test
+    public void flattensJenkinsJobsToFlatMapBeforeFilter() {
+        JenkinsCodeQualityCollector mockCollector = mock(JenkinsCodeQualityCollector.class);
+
+        ObjectId collectorId = new ObjectId();
+        when(mockCollector.getId()).thenReturn(collectorId);
+
+        when(mockCollector.getBuildServers()).thenReturn(Arrays.asList("http://myBuildServer"));
+        List<JenkinsJob> jobsWithNewJob = new ArrayList<>();
+        jobsWithNewJob.add(JenkinsJob.newBuilder().jobName("job1").url("http://myBuildServer/job1")
+            .job(
+                JenkinsJob.newBuilder().jobName("subJob").url("http://myBuildServer/job1/subJob")
+                    .lastSuccessfulBuild(
+                        JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("junit.xml").build()).build()
+                    ).build())
+            .job(
+                JenkinsJob.newBuilder().jobName("subJob2").url("http://myBuildServer/job1/subJob2").job(
+                    JenkinsJob.newBuilder().jobName("subJob3").url("http://myBuildServer/job1/subJob2/subJob3")
+                        .lastSuccessfulBuild(
+                            JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("junit.xml").build()).build()
+                        ).build()
+                ).build()
+            )
+            .build());
+        when(mockJenkinsHelper.getJobs(anyList())).thenReturn(jobsWithNewJob);
+
+
+
+        // test
+        this.testee.collect(mockCollector);
+
+        //
+        ArgumentCaptor<JenkinsCodeQualityJob> newJobCaptor = ArgumentCaptor.forClass(JenkinsCodeQualityJob.class);
+        verify(this.mockJobRepository, times(2)).save(newJobCaptor.capture());
+        List<JenkinsCodeQualityJob> capturedJobs = newJobCaptor.getAllValues();
+        final List<String> expectedJobNames = Arrays.asList("subJob","subJob3");
+        Condition<JenkinsCodeQualityJob> jobNamesThatMatch = new Condition<JenkinsCodeQualityJob>("job names match") {
+            @Override
+            public boolean matches(JenkinsCodeQualityJob value) {
+                return expectedJobNames.contains(value.getJobName());
+            }
+        };
+        assertThat(capturedJobs).have(jobNamesThatMatch);
+
     }
 
 

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @Component
 public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQualityCollector> {
 
+    private static final String DESCRIPTION_FORMAT= "%s (%s)";
 
     private JenkinsCodeQualityCollectorRepository collectorRepository;
     private JenkinsCodeQualityJobRepository jobRepository;
@@ -81,7 +82,7 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
                 )
         );
 
-        List<JenkinsJob> interestingJobs = jobs.stream().filter(JenkinsPredicate.artifactInJobContaining(matchingJobPatterns)).collect(Collectors.toList());
+        List<JenkinsJob> interestingJobs = jobs.stream().flatMap(JenkinsJob::streamJobs).filter(JenkinsPredicate.artifactInJobContaining(matchingJobPatterns)).collect(Collectors.toList());
 
         this.createAnyNewJobs(collector, interestingJobs);
 
@@ -128,7 +129,8 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
 
         newJobs.forEach(job -> {
             JenkinsCodeQualityJob newJob = JenkinsCodeQualityJob.newBuilder().
-                    collectorId(collector.getId()).jobName(job.getName()).jenkinsServer(job.getUrl()).build();
+                    collectorId(collector.getId()).jobName(job.getName()).jenkinsServer(job.getUrl()).
+                    description(String.format(DESCRIPTION_FORMAT,job.getName(),job.getUrl())).build();
             this.jobRepository.save(newJob);
         });
     }

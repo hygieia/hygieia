@@ -20,6 +20,7 @@ public class JenkinsSettings {
     private String username;
     private String apiKey;
     private String dockerLocalHostIP;
+    private int jobDepth;
 
     public String getCron() {
         return cron;
@@ -67,5 +68,13 @@ public class JenkinsSettings {
 
     public void setDockerLocalHostIP(String dockerLocalHostIP) {
         this.dockerLocalHostIP = dockerLocalHostIP;
+    }
+
+    public int getJobDepth() {
+        return jobDepth;
+    }
+
+    public void setJobDepth(int jobDepth) {
+        this.jobDepth = jobDepth;
     }
 }

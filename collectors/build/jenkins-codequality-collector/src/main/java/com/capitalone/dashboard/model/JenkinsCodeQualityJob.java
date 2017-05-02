@@ -16,6 +16,7 @@ public class JenkinsCodeQualityJob extends CollectorItem {
         this.getOptions().put(JENKINS_SERVER, builder.jenkinsServer);
         this.setCollectorId(builder.collectorId);
         this.setNiceName(builder.jobName);
+        this.setDescription(builder.description);
     }
 
     public String getJobName() {
@@ -37,6 +38,7 @@ public class JenkinsCodeQualityJob extends CollectorItem {
     public static class Builder {
         private String jobName;
         private String jenkinsServer;
+        private String description;
         private ObjectId collectorId;
 
         public Builder jobName(String jobName) {
@@ -48,6 +50,12 @@ public class JenkinsCodeQualityJob extends CollectorItem {
             this.jenkinsServer = jenkinsServer;
             return this;
         }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
 
         public JenkinsCodeQualityJob build() {
             return new JenkinsCodeQualityJob(this);

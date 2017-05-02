@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,10 @@ public class HttpJenkinsClient implements JenkinsClient {
 
     private RestTemplate restTemplate;
     private JenkinsSettings settings;
-    private static final String JENKINS_JOB_URL = "%s/api/json?tree=jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]]";
+    private static final String JOBS_SEP=",";
+    private static final String JOBS_PARAM="jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]";
+    private static final String JOBS_CLOSE="]";
+    private static final String JENKINS_JOB_BASE_URL = "%s/api/json?tree=";
     private static final String JENKINS_ARTIFACT_URL = "%s/lastSuccessfulBuild/artifact/%s";
 
     @Autowired
@@ -37,8 +42,28 @@ public class HttpJenkinsClient implements JenkinsClient {
     public List<JenkinsJob> getJobs(List<String> servers) {
         List<JenkinsJob> jobs = new ArrayList<>();
         servers.forEach(server -> {
-            final ResponseEntity<JobContainer> jobsOnServer = restTemplate.exchange(String.format(JENKINS_JOB_URL, server), HttpMethod.GET, createSecureRequestEntity(), JobContainer.class);
-            jobs.addAll(jobsOnServer.getBody().getJobs());
+            // TODO get the job depth stuff in place
+            StringBuilder jobDepth = new StringBuilder();
+            jobDepth.append(JENKINS_JOB_BASE_URL);
+            int maxJobDepth = this.settings.getJobDepth();
+            for (int i = 0; i < maxJobDepth ; i++) {
+                if (i > 0) {
+                    jobDepth.append(JOBS_SEP);
+                }
+                jobDepth.append(JOBS_PARAM);
+            }
+            for (int i = 0; i < maxJobDepth; i++) {
+                jobDepth.append(JOBS_CLOSE);
+            }
+
+            String url = String.format(jobDepth.toString(), server);
+            final ResponseEntity<JobContainer> jobsOnServer;
+            try {
+                jobsOnServer = restTemplate.exchange(new URI(url), HttpMethod.GET, createSecureRequestEntity(), JobContainer.class);
+                jobs.addAll(jobsOnServer.getBody().getJobs());
+            } catch (URISyntaxException e) {
+                // silently swallow
+            }
         });
         return jobs;
     }
@@ -50,8 +75,13 @@ public class HttpJenkinsClient implements JenkinsClient {
 
         List<T> xmlReports = new ArrayList<>();
         allMatchingArtifacts.forEach(artifact -> {
-            ResponseEntity<T> response = restTemplate.exchange(String.format(JENKINS_ARTIFACT_URL, job.getUrl(), artifact.getRelativePath()), HttpMethod.GET, createSecureRequestEntity(), type);
-            xmlReports.add(response.getBody());
+            ResponseEntity<T> response = null;
+            try {
+                response = restTemplate.exchange(new URI(String.format(JENKINS_ARTIFACT_URL, job.getUrl(), artifact.getRelativePath())), HttpMethod.GET, createSecureRequestEntity(), type);
+                xmlReports.add(response.getBody());
+            } catch (URISyntaxException e) {
+                // silently fail
+            }
         });
 
         return xmlReports;

@@ -11,9 +11,9 @@ public class JenkinsPredicate {
 
     public static Predicate<JenkinsJob> artifactInJobContaining(List<Pattern> patterns) {
         return job ->
-                null != job.getLastSuccessfulBuild() && job.getLastSuccessfulBuild().getArtifacts().stream().anyMatch(
+            null != job.getLastSuccessfulBuild() && job.getLastSuccessfulBuild().getArtifacts().stream().anyMatch(
                         JenkinsPredicate.artifactContaining(patterns)
-                );
+            );
     }
 
     public static Predicate<Artifact> artifactContaining(List<Pattern> patterns) {

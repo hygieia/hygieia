@@ -31,6 +31,26 @@ public class JenkinsPredicateTest {
     }
 
     @Test
+    public void artefactsInSubJobsAreNotReturnedAsMatched() throws Exception {
+        List<JenkinsJob> jenkinsJobs1 = new ArrayList<>();
+        jenkinsJobs1.add(JenkinsJob.newBuilder().url("http://jenkins0/").jobName("job1").job(
+            JenkinsJob.newBuilder().jobName("job3").lastSuccessfulBuild(
+                JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("something.xml").build()).build()).build())
+            .build());
+        jenkinsJobs1.add(JenkinsJob.newBuilder().url("http://jenkins0/").jobName("job").lastSuccessfulBuild(JenkinsBuild.newBuilder().build()).build());
+        jenkinsJobs1.add(JenkinsJob.newBuilder().url("http://jenkins1/").jobName("job2")
+                .lastSuccessfulBuild(JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("someting.war").build()).build()).build());
+        jenkinsJobs1.add(JenkinsJob.newBuilder().url("http://jenkins2/").jobName("job")
+                .lastSuccessfulBuild(JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("someting.xml").build()).build()).build());
+        List<JenkinsJob> jenkinsJobs = jenkinsJobs1;
+
+        List<JenkinsJob> allMatching = jenkinsJobs.stream().filter(JenkinsPredicate.artifactInJobContaining(Collections.singletonList(Pattern.compile(".*\\.xml")))).collect(Collectors.toList());
+
+      // do not recurse into the job structure
+        assertThat(allMatching).hasSize(1).is(new Condition<JenkinsJob>(jenkinsJob -> jenkinsJob.getName().equals("job"), "job name is %s", "job"), atIndex(0));
+    }
+
+    @Test
     public void multiplePatternsMatched() throws Exception {
         List<JenkinsJob> jenkinsJobs = jenkinsJobs();
 
@@ -76,5 +96,6 @@ public class JenkinsPredicateTest {
         assertThat(filteredArtifacts).hasSize(1);
         assertThat(filteredArtifacts.get(0)).hasFieldOrPropertyWithValue("fileName", "yName.xml");
     }
+
 
 }
