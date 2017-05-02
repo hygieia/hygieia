@@ -2,10 +2,11 @@
     <div class="col-lg-4 col-sm-12">
         <div class="widget ca-issues">
             <div class="widget-heading">
-            <span class="">Static Analysis</span>
-            	<a href="{{caWidget.reportUrl}}" target="_blank">
-            		<span class="report-link pull-right">View All <i class="fa fa-arrow-right" aria-hidden="true"></i></span>
-            	</a>
+                <span class="">Static Analysis</span>
+                <a href="{{caWidget.reportUrl}}" target="_blank">
+                    <span class="report-link pull-right">View All <i class="fa fa-arrow-right"
+                                                                     aria-hidden="true"></i></span>
+                </a>
             </div>
             <div class="widget-body">
                 <table class="table">
@@ -57,7 +58,17 @@
             </div>
             <div class="widget-body">
                 <div class="clearfix" fit-text=".ca-value span" fit-text-max="99px">
-                    <div class="col-sm-6">
+                    <div ng-if="caWidget.showQualityGate" class="col-sm-6">
+                        <div class="ca-value ca-status-{{ caWidget.qualityGate.value || 'OK'}}">
+                            <span ng-show="caWidget.qualityGate.value">
+                                <span ng-if = "caWidget.qualityGate.value ==='ERROR'" class="fa fa-exclamation-triangle fa-3x widget-font-fail"></span>
+                                <span ng-if = "caWidget.qualityGate.value !=='ERROR'" class="fa fa-check-square fa-3x widget-font-pass"></span>
+                            </span>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="ca-label">Quality<br/>Gate</div>
+                    </div>
+                    <div ng-if="!caWidget.showQualityGate" class="col-sm-6">
                         <div class="ca-value ca-status-{{ caWidget.rulesCompliance.status || 'Ok'}}"
                              ng-class="{'clickable': !!caWidget.rulesCompliance.statusMessage}"
                              popover-html-unsafe="{{caWidget.rulesCompliance.statusMessage}}"
@@ -154,7 +165,8 @@
                         <td><span dash-status="{{ test.status }}" ng-if="caWidget.showStatusIcon(test)"></span></td>
                         <td class="ca-name">{{test.name}}</td>
                         <td></td>
-                        <td class="ca-value" ng-class="{'widget-font-fail': (test.failureCount > 0) || (test.successCount == 0)}">
+                        <td class="ca-value"
+                            ng-class="{'widget-font-fail': (test.failureCount > 0) || (test.successCount == 0)}">
                             {{test.successPercent}}
                         </td>
                         <td class="text-small-date">{{test.details.endTime | fromNow |limitTo:3}}</td>
