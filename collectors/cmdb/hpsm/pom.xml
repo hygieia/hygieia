@@ -4,7 +4,7 @@
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>
-    Github Collector Microservice collecting stats from Github
+    HPSM Collector Microservice collecting ci information from HPSM
   </description>
   <url>https://github.com/capitalone/Hygieia</url>
   <packaging>jar</packaging>

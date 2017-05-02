@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
  * Bean to hold settings specific to the UDeploy collector.
  */
 @Component
-@ConfigurationProperties(prefix = "github")
-public class GitHubSettings {
+@ConfigurationProperties(prefix = "hpsm")
+public class HpsmSettings {
     private String cron;
     private String host;
     private String key;
