@@ -1,12 +1,26 @@
 package com.capitalone.dashboard.service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -17,16 +31,7 @@ import com.capitalone.dashboard.repository.ServiceRepository;
 import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.Lists;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -254,11 +259,18 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
 	@Override
-	public List<Dashboard> getOwnedDashboards(String owner) {
+	public List<Dashboard> getOwnedDashboards() {
+		Set<Dashboard> myDashboards = new HashSet<Dashboard>();
 		
-		List<Dashboard> myDashboard=dashboardRepository.findByOwner(owner);
+		Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+		myDashboards.addAll(dashboardRepository.findByOwners(owner));
 		
-		return myDashboard;
+		// TODO: This if check is to ensure backwards compatibility for dashboards created before AuthenticationTypes were introduced.
+		if (AuthenticationUtil.getAuthTypeFromContext() == AuthType.STANDARD) {
+			myDashboards.addAll(dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext()));
+		}
+		
+		return Lists.newArrayList(myDashboards);
 	}
 
 	@Override

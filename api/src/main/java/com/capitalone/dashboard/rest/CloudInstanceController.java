@@ -1,12 +1,14 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.CloudInstance;
-import com.capitalone.dashboard.model.CloudInstanceHistory;
-import com.capitalone.dashboard.model.NameValue;
-import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
-import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
-import com.capitalone.dashboard.service.CloudInstanceService;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
+import java.util.Collection;
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,13 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.Collection;
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.CloudInstance;
+import com.capitalone.dashboard.model.CloudInstanceHistory;
+import com.capitalone.dashboard.model.NameValue;
+import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
+import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
+import com.capitalone.dashboard.service.CloudInstanceService;
 
 @RestController
 public class CloudInstanceController {
@@ -38,14 +40,14 @@ public class CloudInstanceController {
             produces = APPLICATION_JSON_VALUE)
 
     public ResponseEntity<Collection<String>> refreshInstances(
-            @Valid @RequestBody CloudInstanceListRefreshRequest request) {
+            @Valid @RequestBody(required = false) CloudInstanceListRefreshRequest request) {
         return ResponseEntity.ok().body(cloudInstanceService.refreshInstances(request));
     }
 
     @RequestMapping(value = "/cloud/instance/create", method = POST, consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> upsertInstance(
-            @Valid @RequestBody List<CloudInstanceCreateRequest> request) throws HygieiaException {
+            @Valid @RequestBody(required = false) List<CloudInstanceCreateRequest> request) throws HygieiaException {
         return ResponseEntity.ok().body(cloudInstanceService.upsertInstance(request));
     }
 

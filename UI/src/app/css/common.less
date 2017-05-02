@@ -656,7 +656,7 @@ tr.dash-row > td {
         line-height: 1.75rem;
         .border-radius(50%);
     }
-    
+
     .dash-status-ignore {
         display: inline-block;
         font-weight: bold;
@@ -793,6 +793,17 @@ tr.dash-row > td {
     background-image: url('@{dash-image-path}bg-forest.jpg');
     color: @dash-dashboard-text;
     padding-top: 50px;
+
+    .auth-modal-tab {
+      a {
+        color: white;
+      }
+
+      &:hover a, &.active a {
+        color: black;
+      }
+    }
+
 
     .auth-modal-heading {
 

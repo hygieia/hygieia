@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.2.5.RELEASE</version>
+    <version>1.3.0.RELEASE</version>
   </parent>
 
   <licenses>
@@ -59,7 +59,7 @@
     <spring-data-releasetrain.version>Gosling-RELEASE</spring-data-releasetrain.version>
     <mongodb.version>3.0.2</mongodb.version>
     <mongo>3.0.2</mongo>
-    <spring.version>4.1.7.RELEASE</spring.version>
+    <spring.version>4.2.5.RELEASE</spring.version>
     <jackson.version>2.5.0</jackson.version>
     <guava.version>16.0.1</guava.version>
     <pmd.version>3.6</pmd.version>
@@ -220,6 +220,7 @@
         <module>collectors/scm/github</module>
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
+        <module>collectors/library-policy/nexus-iq-collector</module>
      	<module>UI</module>
  </modules>
       <build>

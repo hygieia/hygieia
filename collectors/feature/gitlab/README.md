@@ -60,11 +60,17 @@ gitlab.protocol=http
 
 #Gitlab port (optional, defaults to protocol default port)
 gitlab.port=80
+
+#Gitlab path (optional, if your instance of gitlab requires a path)
+gitlab.path=/gitlab/resides/here
   
 #Gitlab API Token (required, collector will have permission of user associated to the token)
 #If token is from admin account, will be able to view all teams, and can collect all issues
 #If token is from standard user, will show only teams that user is apart of, and can only collect issues that user could view
 #We recommend creating a Gitlab account for the collector, using it's Access Token, and adding that user to teams you want to see issues for
 gitlab.apiToken=
+
+#Gitlab selfSignedCertificate (optional, defaults to false, set to true if your instance of gitlab is running on https without a trusted certificate
+gitlab.selfSignedCertificate=false
 
 ```
