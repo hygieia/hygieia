@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitalone.dashboard.auth.AuthenticationResponseService;
+import com.capitalone.dashboard.auth.token.TokenAuthenticationService;
 import com.capitalone.dashboard.request.AuthenticationRequest;
 import com.capitalone.dashboard.service.AuthenticationService;
 
@@ -29,19 +29,19 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     
-    private final AuthenticationResponseService authenticationResponseService;
+    private final TokenAuthenticationService tokenService;
     
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService, AuthenticationResponseService authenticationResponseService) {
+    public AuthenticationController(AuthenticationService authenticationService, TokenAuthenticationService tokenService) {
         this.authenticationService = authenticationService;
-        this.authenticationResponseService = authenticationResponseService;
+        this.tokenService = tokenService;
     }
 
     @RequestMapping(value = "/registerUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> registerUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @Valid @RequestBody AuthenticationRequest request) throws IOException, ServletException {
 	    	try {
 		    	Authentication authentication = authenticationService.create(request.getUsername(), request.getPassword());
-		    	authenticationResponseService.handle(httpServletResponse, authentication);
+		    	tokenService.addAuthentication(httpServletResponse, authentication);
 		    	return ResponseEntity.ok().build();
 	    	} catch (DuplicateKeyException dke) {
 	    		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();

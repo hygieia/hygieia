@@ -1,16 +1,19 @@
 package com.capitalone.dashboard.service;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Authentication;
+import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.repository.AuthenticationRepository;
 
 @Service
@@ -39,8 +42,15 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public org.springframework.security.core.Authentication create(String username, String password) {
-        Authentication authentication = authenticationRepository.save(new Authentication(username, password));
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(), new ArrayList<GrantedAuthority>());
+        Authentication user = new Authentication(username, password);
+        
+        user.getRoles().add(UserRole.ROLE_USER);
+        
+        //TODO: Remove when there is a better solution for admin user.
+        if(user.getUsername().equals("admin")) user.getRoles().add(UserRole.ROLE_ADMIN);
+        
+        Authentication authentication = authenticationRepository.save(user);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(), convertRolesToAuthorities(authentication.getRoles()));
         token.setDetails(AuthType.STANDARD);
         return token;
     }
@@ -79,11 +89,24 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
     public org.springframework.security.core.Authentication authenticate(String username, String password) {
         Authentication authentication = authenticationRepository.findByUsername(username);
 
+        //TODO: Remove when better solution for first admin
+        if(authentication.getUsername().equals("admin")) authentication.getRoles().add(UserRole.ROLE_ADMIN);
+        
         if (authentication != null && authentication.checkPassword(password)) {
-        	return new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(), new ArrayList<GrantedAuthority>());
+        	Collection<GrantedAuthority> authorities = convertRolesToAuthorities(authentication.getRoles());
+        	
+            return new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(), authorities);
         }
 
         throw new BadCredentialsException("Login Failed: Invalid credentials for user " + username);
+    }
+
+    private Collection<GrantedAuthority> convertRolesToAuthorities(Collection<UserRole> roles) {
+        Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        roles.forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.name()));
+        });
+        return authorities;
     }
     
 }

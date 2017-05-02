@@ -4,7 +4,7 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.capitalone.dashboard.auth.AuthenticationResponseService;
+import com.capitalone.dashboard.auth.token.TokenAuthenticationService;
 import com.capitalone.dashboard.service.AuthenticationService;
 import com.capitalone.dashboard.service.BinaryArtifactService;
 import com.capitalone.dashboard.service.BuildService;
@@ -37,11 +37,6 @@ public class TestConfig {
 		return Mockito.mock(AuthenticationService.class);
 	}
 	
-	@Bean
-	public AuthenticationResponseService authenticationResponseService() {
-		return Mockito.mock(AuthenticationResponseService.class);
-	}
-
 	@Bean
 	public DashboardService dashboardService() {
 		return Mockito.mock(DashboardService.class);
@@ -140,5 +135,10 @@ public class TestConfig {
 	@Bean
 	public TeamService teamService() {
 		return Mockito.mock(TeamService.class);
+	}
+	
+	@Bean
+	public TokenAuthenticationService tokenService() {
+	    return Mockito.mock(TokenAuthenticationService.class);
 	}
 }
