@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,15 +26,7 @@ public class AuthProperties {
 	private String secret;
 	private String ldapUserDnPattern;
 	private String ldapServerUrl;
-	private List<AuthType> authTypes = Lists.newArrayList(AuthType.STANDARD);
-	
-	public List<AuthType> getAuthTypes() {
-		return authTypes;
-	}
-
-	public void setAuthTypes(List<AuthType> authTypes) {
-		this.authTypes = authTypes;
-	}
+	private List<AuthType> authenticationProviders = Lists.newArrayList();
 
 	public void setExpirationTime(Long expirationTime) {
 		this.expirationTime = expirationTime;
@@ -66,6 +59,14 @@ public class AuthProperties {
 	public void setLdapServerUrl(String ldapServerUrl) {
 		this.ldapServerUrl = ldapServerUrl;
 	}
+	
+    public List<AuthType> getAuthenticationProviders() {
+        return authenticationProviders;
+    }
+
+    public void setAuthenticationProviders(List<AuthType> authenticationProviders) {
+        this.authenticationProviders = authenticationProviders;
+    }
 
 	@PostConstruct
 	public void applyDefaultsIfNeeded() {
@@ -77,6 +78,10 @@ public class AuthProperties {
 		if (getExpirationTime() == null) {
 			LOGGER.info("No JWT expiration time found in configuration, setting to one day.");
 			setExpirationTime((long) 1000*60*60*24);
+		}
+		
+		if (CollectionUtils.isEmpty(authenticationProviders)) {
+		    authenticationProviders.add(AuthType.STANDARD);
 		}
 	}
 

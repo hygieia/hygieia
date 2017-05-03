@@ -36,13 +36,13 @@ public class AuthenticationControllerTest {
 		expectedReturn.add(standardAuthType);
 		expectedReturn.add(ldapAuthType);
 
-		when(authProperties.getAuthTypes()).thenReturn(expectedReturn);
+		when(authProperties.getAuthenticationProviders()).thenReturn(expectedReturn);
 		
 		List<AuthType> result = authController.getAuthTypes();
 		
 		assertNotNull(result);
 		assertTrue(result.equals(expectedReturn));
-		verify(authProperties).getAuthTypes();
+		verify(authProperties).getAuthenticationProviders();
 	}
 	
 	@Test
@@ -51,26 +51,26 @@ public class AuthenticationControllerTest {
 
 		expectedReturn.add(ldapAuthType);
 
-		when(authProperties.getAuthTypes()).thenReturn(expectedReturn);
+		when(authProperties.getAuthenticationProviders()).thenReturn(expectedReturn);
 		
 		List<AuthType> result = authController.getAuthTypes();
 		
 		assertNotNull(result);
 		assertTrue(result.equals(expectedReturn));
-		verify(authProperties).getAuthTypes();
+		verify(authProperties).getAuthenticationProviders();
 	}
 	
 	@Test
 	public void zeroTypes() throws Exception {
 		List<AuthType> expectedReturn = new ArrayList<AuthType>();
 
-		when(authProperties.getAuthTypes()).thenReturn(expectedReturn);
+		when(authProperties.getAuthenticationProviders()).thenReturn(expectedReturn);
 		
 		List<AuthType> result = authController.getAuthTypes();
 		
 		assertNotNull(result);
 		assertTrue(result.equals(expectedReturn));
-		verify(authProperties).getAuthTypes();
+		verify(authProperties).getAuthenticationProviders();
 	}
 	
 	

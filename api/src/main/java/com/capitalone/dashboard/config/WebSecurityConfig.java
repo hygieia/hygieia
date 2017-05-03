@@ -1,5 +1,7 @@
 package com.capitalone.dashboard.config;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
@@ -20,6 +22,7 @@ import com.capitalone.dashboard.auth.AuthenticationResultHandler;
 import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
 import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
 import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
+import com.capitalone.dashboard.model.AuthType;
 
 @Configuration
 @EnableWebSecurity
@@ -66,15 +69,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
     @Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(standardAuthenticationProvider);
+        List<AuthType> authenticationProviders = authProperties.getAuthenticationProviders();
+        
+        if(authenticationProviders.contains(AuthType.STANDARD)) {
+            auth.authenticationProvider(standardAuthenticationProvider);
+        }
 		
-		String ldapServerUrl = authProperties.getLdapServerUrl();
-		String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
-		if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
-			auth.ldapAuthentication()
-			.userDnPatterns(ldapUserDnPattern)
-			.contextSource().url(ldapServerUrl);
-		}
+        if(authenticationProviders.contains(AuthType.LDAP)) {
+            String ldapServerUrl = authProperties.getLdapServerUrl();
+            String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
+            if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
+                auth.ldapAuthentication()
+                .userDnPatterns(ldapUserDnPattern)
+                .contextSource().url(ldapServerUrl);
+            }
+        }
+		
 	}
 	
 	@Bean

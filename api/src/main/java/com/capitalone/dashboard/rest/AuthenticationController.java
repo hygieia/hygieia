@@ -65,6 +65,6 @@ public class AuthenticationController {
     
     @RequestMapping(value = "/authType", method = GET, produces = APPLICATION_JSON_VALUE)
     public List<AuthType> getAuthTypes() {
-        return authProperties.getAuthTypes();
+        return authProperties.getAuthenticationProviders();
     }
 }
