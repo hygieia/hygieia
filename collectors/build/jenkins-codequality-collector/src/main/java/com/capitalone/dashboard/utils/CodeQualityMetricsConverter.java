@@ -10,9 +10,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * Created by fzd332 on 10/12/16.
- */
 @Component
 public class CodeQualityMetricsConverter implements CodeQualityVisitor {
 
@@ -25,6 +22,13 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
     private static final String CRITICAL_VIOLATIONS = "critical_violations";
     private static final String MAJOR_VIOLCATIONS = "major_violations";
     private static final String VIOLATIONS = "violations";
+
+    private static final String COVERAGE = "coverage";
+    private static final String LINE_COVERAGE = "line_coverage";
+    private static final String TOTAL_LINES_COVERED = "total_lines_covered";
+    private static final String TOTAL_LINES_MISSED = "total_lines_missed";
+    private static final String TOTAL_INSTRUCTIONS_COVERED = "total_instructions_covered";
+    private static final String TOTAL_INSTRUCTIONS_MISSED = "total_instructions_missed";
 
     private final CodeQuality quality = new CodeQuality();
 

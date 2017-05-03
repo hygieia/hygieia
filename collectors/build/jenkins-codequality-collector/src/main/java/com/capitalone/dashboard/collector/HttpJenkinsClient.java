@@ -17,9 +17,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * Created by plv163 on 12/10/2016.
- */
 @Component
 public class HttpJenkinsClient implements JenkinsClient {
 

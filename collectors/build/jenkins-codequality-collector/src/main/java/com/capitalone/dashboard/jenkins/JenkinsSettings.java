@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by plv163 on 13/10/2016.
- */
 @Component
 @ConfigurationProperties(prefix = "jenkins-codequality")
 public class JenkinsSettings {

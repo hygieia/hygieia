@@ -13,9 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/**
- * Created by plv163 on 19/10/2016.
- */
 @Component
 public class CodeQualityDataService implements CodeQualityService {
 

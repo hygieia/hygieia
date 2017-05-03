@@ -3,9 +3,6 @@ package com.capitalone.dashboard.jenkins;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by plv163 on 13/10/2016.
- */
 public class JenkinsBuild {
     private List<Artifact> artifacts;
     private long timestamp;

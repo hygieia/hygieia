@@ -3,9 +3,6 @@ package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
 
-/**
- * Created by stephengalbraith on 11/10/2016.
- */
 public class JenkinsCodeQualityJob extends CollectorItem {
 
     private static final String JOB_NAME = "jobName";

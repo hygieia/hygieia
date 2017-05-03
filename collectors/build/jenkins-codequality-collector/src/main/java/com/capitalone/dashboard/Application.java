@@ -7,9 +7,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.HttpsURLConnection;
 
-/**
- * Created by plv163 on 13/10/2016.
- */
 @SpringBootApplication
 public class Application {
     public static void main(String[] args) {

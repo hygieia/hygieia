@@ -5,9 +5,6 @@ import org.bson.types.ObjectId;
 
 import java.util.List;
 
-/**
- * Created by stephengalbraith on 11/10/2016.
- */
 public interface JenkinsCodeQualityJobRepository extends BaseCollectorItemRepository<JenkinsCodeQualityJob> {
     List<JenkinsCodeQualityJob> findAllByCollectorId(ObjectId collectorId);
 }

@@ -19,9 +19,6 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * Created by stephengalbraith on 10/10/2016.
- */
 @Component
 public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQualityCollector> {
 

@@ -1,8 +1,5 @@
 package com.capitalone.dashboard.jenkins;
 
-/**
- * Created by stephengalbraith on 10/10/2016.
- */
 public class Artifact {
   private String relativePath;
   private String fileName;

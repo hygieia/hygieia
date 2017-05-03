@@ -7,9 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-/**
- * Created by stephengalbraith on 10/10/2016.
- */
 public class JenkinsJob extends CollectorItem {
 
     private String url;
