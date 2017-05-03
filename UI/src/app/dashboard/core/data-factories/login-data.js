@@ -12,7 +12,7 @@
         var testDetailRoute = 'test-data/login_detail.json';
         var LoginDetailRoute = '/api/login';
         var LdapLoginDetailRoute = '/api/login/ldap';
-        var authenticationProvidersRoute = '/api/authType';
+        var authenticationProvidersRoute = '/api/authenticationProviders';
 
         return {
             login: login,

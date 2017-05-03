@@ -63,8 +63,8 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body(authenticationService.update(request.getUsername(), request.getPassword()));
     }
     
-    @RequestMapping(value = "/authType", method = GET, produces = APPLICATION_JSON_VALUE)
-    public List<AuthType> getAuthTypes() {
+    @RequestMapping(value = "/authenticationProviders", method = GET, produces = APPLICATION_JSON_VALUE)
+    public List<AuthType> getAuthenticationProviders() {
         return authProperties.getAuthenticationProviders();
     }
 }

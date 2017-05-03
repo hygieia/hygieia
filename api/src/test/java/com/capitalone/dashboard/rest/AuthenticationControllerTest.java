@@ -38,7 +38,7 @@ public class AuthenticationControllerTest {
 
 		when(authProperties.getAuthenticationProviders()).thenReturn(expectedReturn);
 		
-		List<AuthType> result = authController.getAuthTypes();
+		List<AuthType> result = authController.getAuthenticationProviders();
 		
 		assertNotNull(result);
 		assertTrue(result.equals(expectedReturn));
@@ -53,7 +53,7 @@ public class AuthenticationControllerTest {
 
 		when(authProperties.getAuthenticationProviders()).thenReturn(expectedReturn);
 		
-		List<AuthType> result = authController.getAuthTypes();
+		List<AuthType> result = authController.getAuthenticationProviders();
 		
 		assertNotNull(result);
 		assertTrue(result.equals(expectedReturn));
@@ -66,7 +66,7 @@ public class AuthenticationControllerTest {
 
 		when(authProperties.getAuthenticationProviders()).thenReturn(expectedReturn);
 		
-		List<AuthType> result = authController.getAuthTypes();
+		List<AuthType> result = authController.getAuthenticationProviders();
 		
 		assertNotNull(result);
 		assertTrue(result.equals(expectedReturn));

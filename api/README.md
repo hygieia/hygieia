@@ -37,6 +37,7 @@ version.number=@application.version.number@
 
 auth.expirationTime=[JWT expiration time in milliseconds]
 auth.secret=[Secret Key used to validate the JWT tokens]
+auth.authenticationProviders=[Authentication types you would like to enable, defaults to STANDARD, ex: STANDARD,LDAP]
 auth.ldapServerUrl=[LDAP Server Url, including port of your LDAP server]
 auth.ldapUserDnPattern=[LDAP User Dn Pattern, where the username is replaced with '{0}']
 
