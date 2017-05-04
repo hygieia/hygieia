@@ -22,7 +22,7 @@ Clone Hygieia root, `cd` to `core`, and do `mvn clean install` before building t
 # Important
 This plugin uses the Hygieia core package. The main project is JDK 1.8 compiled, if you have Jenkins running on previous Java versions, make sure to recompile core package with that previous version and then build this Jenkins plugin.
 
-#Brief Instruction
+# Brief Instruction
 ## Jenkins 2.0 w/ pipeline 
 1. Install the plugin by using "Advanced" option in Jenkins Plugin Management option to manually upload the file from local disk.
 2. Restart jenkins.
