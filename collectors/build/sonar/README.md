@@ -45,7 +45,12 @@ sonar.cron=0 0/5 * * * *
 
 # Sonar server(s) (required) - Can provide multiple
 sonar.servers[0]=http://sonar.company.com
+# Sonar version, match array index to the server. If not set, will default to version prior to 6.
+sonar.versions[0]=6.31
+# Sonar Metrics - Required. 
+#Sonar versions lesser than 5.4
+sonar.metrics[0]=ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,violations_density,sqale_index,test_success_density,test_failures,test_errors,tests
+#for Sonar 5.4 and above
+sonar.metrics[0]=ncloc,violations,new_vulnerabilities,critical_violations,major_violations,blocker_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,alert_status,quality_gate_details
 
-# Sonar Metrics
-sonar.metrics=ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,sqale_index,test_success_density,test_failures,test_errors,tests
 ```
