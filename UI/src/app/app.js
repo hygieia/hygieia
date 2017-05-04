@@ -108,7 +108,7 @@ var localStorageSupported = (function () {
       })
 
       .state('dashboardState', {
-        url: '/dashboard/:id',
+        url: '/dashboard/:id?delete&reset',
         controller: 'DashboardController as ctrl',
         templateUrl: 'app/dashboard/views/dashboard.html',
         resolve: {
