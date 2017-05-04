@@ -49,9 +49,7 @@
         db.open();
 
         // clear out any collection data if there is a reset parameter
-        debugger;
         if($stateParams.delete) {
-          debugger;
             db.delete().then(function() {
                 // redirect to this page without the parameter
                 window.location.href = '/#/dashboard/' + $stateParams.id;
@@ -59,7 +57,6 @@
         }
 
         // remove any data from the existing tables
-        debugger;
         if($stateParams.reset || HygieiaConfig.local) {
             db.lastRequest.clear();
             db.codeAnalysis.clear();
