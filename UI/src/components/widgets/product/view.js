@@ -14,7 +14,6 @@
     function productViewController($scope, $document, $uibModal, $location, $q, $stateParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
         /*jshint validthis:true */
         var ctrl = this;
-        $scope.ctrl = ctrl;
 
         //region Dexie configuration
         // setup our local db

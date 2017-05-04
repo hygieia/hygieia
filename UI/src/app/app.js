@@ -85,31 +85,31 @@ var localStorageSupported = (function () {
       $stateProvider
       .state('login', {
           url: '/login',
-          controller: 'LoginController',
+          controller: 'LoginController as login',
           templateUrl: 'app/dashboard/views/login.html'
       })
 
       .state('site', {
         url: '/',
-        controller: 'SiteController',
+        controller: 'SiteController as ctrl',
         templateUrl: 'app/dashboard/views/site.html'
       })
 
       .state('signup', {
         url: '/signup',
-        controller: 'SignupController',
+        controller: 'SignupController as signup',
         templateUrl: 'app/dashboard/views/signup.html'
       })
 
       .state('adminState', {
         url: '/admin',
-        controller: 'AdminController',
+        controller: 'AdminController as ctrl',
         templateUrl: 'app/dashboard/views/admin.html'
       })
 
       .state('dashboardState', {
         url: '/dashboard/:id',
-        controller: 'DashboardController',
+        controller: 'DashboardController as ctrl',
         templateUrl: 'app/dashboard/views/dashboard.html',
         resolve: {
           dashboard: function ($stateParams, dashboardData) {

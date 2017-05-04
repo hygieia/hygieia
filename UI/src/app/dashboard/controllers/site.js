@@ -11,7 +11,6 @@
     SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService'];
     function SiteController($scope, $q, $uibModal, dashboardData, $location, DashboardType, userService, authService) {
         var ctrl = this;
-        $scope.ctrl = ctrl;
 
         // public variables
         ctrl.search = '';
