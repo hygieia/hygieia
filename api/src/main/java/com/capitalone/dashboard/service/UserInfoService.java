@@ -11,5 +11,8 @@ public interface UserInfoService {
 
 	Collection<? extends GrantedAuthority> getAuthorities(String username, AuthType authType);
 	UserInfo getUserInfo(String username, AuthType authType);
+	Collection<UserInfo> getUsers();
+    UserInfo promoteToAdmin(String username, AuthType authType);
+    UserInfo demoteFromAdmin(String username, AuthType authType);
 	
 }
