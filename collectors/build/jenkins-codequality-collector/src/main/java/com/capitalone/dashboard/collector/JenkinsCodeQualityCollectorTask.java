@@ -3,7 +3,12 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.JenkinsPredicate;
 import com.capitalone.dashboard.jenkins.JenkinsSettings;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.ArtifactType;
+import com.capitalone.dashboard.model.CodeQualityVisitee;
+import com.capitalone.dashboard.model.FindBugsXmlReport;
+import com.capitalone.dashboard.model.JacocoXmlReport;
+import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
+import com.capitalone.dashboard.model.JunitXmlReport;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityCollectorRepository;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityJobRepository;
 import com.capitalone.dashboard.utils.CodeQualityService;
@@ -22,7 +27,7 @@ import java.util.stream.Collectors;
 @Component
 public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQualityCollector> {
 
-    private static final String DESCRIPTION_FORMAT= "%s (%s)";
+    private static final String DESCRIPTION_FORMAT = "%s (%s)";
 
     private JenkinsCodeQualityCollectorRepository collectorRepository;
     private JenkinsCodeQualityJobRepository jobRepository;
@@ -91,10 +96,19 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
                 this.log("found an job of interest matching the artifact pattern.");
                 List<CodeQualityVisitee> allTypes = new ArrayList<>();
                 artifactTypePatternMap.forEach((type, pattern) -> {
-                            if (ArtifactType.junit == type) {
-                                allTypes.addAll(this.jenkinsClient.getLatestArtifacts(JunitXmlReport.class, job, pattern));
-                            } else if (ArtifactType.findbugs == type) {
-                                allTypes.addAll(this.jenkinsClient.getLatestArtifacts(FindBubsXmlReport.class, job, pattern));
+                            switch (type) {
+                                case junit:
+                                    allTypes.addAll(this.jenkinsClient.getLatestArtifacts(JunitXmlReport.class, job, pattern));
+                                    break;
+                                case findbugs:
+                                    allTypes.addAll(this.jenkinsClient.getLatestArtifacts(FindBugsXmlReport.class, job, pattern));
+                                    break;
+                                case jacoco:
+                                    allTypes.addAll(this.jenkinsClient.getLatestArtifacts(JacocoXmlReport.class,job,pattern));
+                                    break;
+                                default:
+                                    this.log("not collecting data for "+type+ " yet");
+                                    break;
                             }
                         }
                 );
@@ -118,16 +132,16 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
         List<JenkinsCodeQualityJob> allRepoJobs = new ArrayList<>(this.jobRepository.findAllByCollectorId(collector.getId()));
 
         List<JenkinsJob> newJobs = new ArrayList<>(buildServerJobs).stream().filter(jenkinsJob ->
-                        !allRepoJobs.stream().anyMatch(
-                                repoJob ->
-                                        repoJob.getJenkinsServer().equals(jenkinsJob.getUrl())
-                        )
+                !allRepoJobs.stream().anyMatch(
+                        repoJob ->
+                                repoJob.getJenkinsServer().equals(jenkinsJob.getUrl())
+                )
         ).collect(Collectors.toList());
 
         newJobs.forEach(job -> {
             JenkinsCodeQualityJob newJob = JenkinsCodeQualityJob.newBuilder().
                     collectorId(collector.getId()).jobName(job.getName()).jenkinsServer(job.getUrl()).
-                    description(String.format(DESCRIPTION_FORMAT,job.getName(),job.getUrl())).build();
+                    description(String.format(DESCRIPTION_FORMAT, job.getName(), job.getUrl())).build();
             this.jobRepository.save(newJob);
         });
     }

@@ -1,6 +1,12 @@
 package com.capitalone.dashboard.utils;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityMetricStatus;
+import com.capitalone.dashboard.model.CodeQualityType;
+import com.capitalone.dashboard.model.FindBugsXmlReport;
+import com.capitalone.dashboard.model.JacocoXmlReport;
+import com.capitalone.dashboard.model.JunitXmlReport;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
@@ -52,36 +58,13 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
         }
         quality.setType(CodeQualityType.StaticAnalysis);
 
-        Set<CodeQualityMetric> existingMetrics = quality.getMetrics();
-        final Map<String, CodeQualityMetric> mapOfExistingMetrics = existingMetrics.stream().collect(Collectors.toMap(CodeQualityMetric::getName, Function.identity()));
-
-        metricsMap.forEach((key, value) -> {
-
-            CodeQualityMetric currentValue = mapOfExistingMetrics.get(key);
-            CodeQualityMetric newValue = null;
-            if (null == currentValue) {
-                CodeQualityMetric codeQualityMetric = new CodeQualityMetric();
-                codeQualityMetric.setName(key);
-                codeQualityMetric.setFormattedValue(String.valueOf(value.getLeft()));
-                codeQualityMetric.setValue(value.getLeft());
-                codeQualityMetric.setStatus(value.getRight());
-                newValue = codeQualityMetric;
-            } else {
-                // do the sum
-                quality.getMetrics().remove(currentValue);
-                newValue = new CodeQualityMetric(key);
-                newValue.setValue((int) currentValue.getValue() + value.getLeft());
-                newValue.setFormattedValue(String.valueOf((int) currentValue.getValue() + value.getLeft()));
-                int newOrdinal = Math.max(value.getRight().ordinal(), currentValue.getStatus().ordinal());
-                newValue.setStatus(CodeQualityMetricStatus.values()[newOrdinal]);
-            }
-            quality.addMetric(newValue);
-        });
+        // finally produce the result
+        this.sumMetrics(metricsMap);
 
     }
 
     @Override
-    public void visit(FindBubsXmlReport findBugReport) {
+    public void visit(FindBugsXmlReport findBugReport) {
         Map<String, Pair<Integer, CodeQualityMetricStatus>> metricsMap = new HashMap<>();
         metricsMap.put(BLOCKER_VIOLATIONS, Pair.of(0, CodeQualityMetricStatus.Ok));
         metricsMap.put(CRITICAL_VIOLATIONS, Pair.of(0, CodeQualityMetricStatus.Ok));
@@ -129,6 +112,10 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
 
 
         // finally produce the result
+        this.sumMetrics(metricsMap);
+    }
+
+    public void sumMetrics(Map<String,Pair<Integer, CodeQualityMetricStatus>> metricsMap) {
         Set<CodeQualityMetric> existingMetrics = quality.getMetrics();
         final Map<String, CodeQualityMetric> mapOfExistingMetrics = existingMetrics.stream().collect(Collectors.toMap(CodeQualityMetric::getName, Function.identity()));
 
@@ -154,6 +141,56 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
             }
             quality.addMetric(newValue);
         });
+    }
+
+    @Override
+    public void visit(JacocoXmlReport jacocoXmlReport) {
+        Map<String, Pair<Integer, CodeQualityMetricStatus>> metricsMap = new HashMap<>();
+        metricsMap.put(TOTAL_LINES_COVERED, Pair.of(0, CodeQualityMetricStatus.Ok));
+        metricsMap.put(TOTAL_LINES_MISSED, Pair.of(0, CodeQualityMetricStatus.Ok));
+        metricsMap.put(TOTAL_INSTRUCTIONS_COVERED, Pair.of(0, CodeQualityMetricStatus.Ok));
+        metricsMap.put(TOTAL_INSTRUCTIONS_MISSED, Pair.of(0, CodeQualityMetricStatus.Ok));
+
+        for (JacocoXmlReport.Counter counter:jacocoXmlReport.getCounters()) {
+            switch (counter.getType()) {
+                case LINE:
+                    metricsMap.put(TOTAL_LINES_COVERED,Pair.of(counter.getCovered(),CodeQualityMetricStatus.Ok));
+                    metricsMap.put(TOTAL_LINES_MISSED,Pair.of(counter.getMissed(),CodeQualityMetricStatus.Ok));
+                    break;
+                case INSTRUCTION:
+                    metricsMap.put(TOTAL_INSTRUCTIONS_COVERED,Pair.of(counter.getCovered(),CodeQualityMetricStatus.Ok));
+                    metricsMap.put(TOTAL_INSTRUCTIONS_MISSED, Pair.of(counter.getMissed(),CodeQualityMetricStatus.Ok));
+                    break;
+                default:
+                    // no impl
+                    break;
+            }
+        }
+        this.sumMetrics(metricsMap);
+        // now add in the missing one
+        Map<String, CodeQualityMetric> codeQualityMetricMap = quality.getMetrics()
+                .stream().collect(Collectors.toMap(CodeQualityMetric::getName, Function.identity()));
+        codeQualityMetricMap.remove(LINE_COVERAGE);
+        quality.addMetric(
+                computeCoveragePercent(LINE_COVERAGE,
+                        codeQualityMetricMap.get(TOTAL_LINES_COVERED),
+                        codeQualityMetricMap.get(TOTAL_LINES_MISSED)));
+        codeQualityMetricMap.remove(COVERAGE);
+        quality.addMetric(
+                computeCoveragePercent(COVERAGE,
+                        codeQualityMetricMap.get(TOTAL_INSTRUCTIONS_COVERED),
+                        codeQualityMetricMap.get(TOTAL_INSTRUCTIONS_MISSED)));
+
+
+    }
+
+    private CodeQualityMetric computeCoveragePercent(String metricName, CodeQualityMetric covered,CodeQualityMetric missed) {
+        double percentageCovered = ((Integer)covered.getValue()).doubleValue()*100.0/(((Integer)covered.getValue()).doubleValue() + ((Integer)missed.getValue()).doubleValue());
+        CodeQualityMetric metric = new CodeQualityMetric(metricName);
+        metric.setFormattedValue(String.format("%.3f",percentageCovered));
+        metric.setValue(percentageCovered);
+        metric.setStatus(CodeQualityMetricStatus.Ok);
+        return metric;
     }
 
     @Override

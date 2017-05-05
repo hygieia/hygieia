@@ -1,7 +1,8 @@
 package com.capitalone.dashboard.utils;
 
 import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.FindBubsXmlReport;
+import com.capitalone.dashboard.model.FindBugsXmlReport;
+import com.capitalone.dashboard.model.JacocoXmlReport;
 import com.capitalone.dashboard.model.JunitXmlReport;
 
 public interface CodeQualityVisitor {
@@ -10,5 +11,7 @@ public interface CodeQualityVisitor {
 
     void visit(JunitXmlReport junitXmlReport);
 
-    void visit(FindBubsXmlReport findBubsXmlReport);
+    void visit(FindBugsXmlReport findBugsXmlReport);
+
+    void visit(JacocoXmlReport jacocoXmlReport);
 }

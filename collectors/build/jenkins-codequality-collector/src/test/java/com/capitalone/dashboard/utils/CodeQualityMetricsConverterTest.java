@@ -3,14 +3,14 @@ package com.capitalone.dashboard.utils;
 import com.capitalone.dashboard.model.*;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
+import org.assertj.core.data.Percentage;
 import org.junit.Test;
 
 import javax.xml.datatype.DatatypeFactory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 import static org.assertj.core.api.Assertions.tuple;
 
 /**
@@ -117,12 +117,12 @@ public class CodeQualityMetricsConverterTest {
     public void handlesFindbugsFiles() throws Exception {
 
         //set up 2 files each with 2 bugs of different priorties
-        FindBubsXmlReport findBubsXmlReport = produceFindbugsReport();
+        FindBugsXmlReport findBugsXmlReport = produceFindbugsReport();
 
 
         // do the test... dispatch vistor to both reports
         CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
-        findBubsXmlReport.accept(testee);
+        findBugsXmlReport.accept(testee);
 
         CodeQuality calculatedCodeQuality = testee.produceResult();
         AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
@@ -135,41 +135,41 @@ public class CodeQualityMetricsConverterTest {
 
     }
 
-    private FindBubsXmlReport produceFindbugsReport() {
-        FindBubsXmlReport findBubsXmlReport = new FindBubsXmlReport();
-        List<FindBubsXmlReport.BugFile> files = new ArrayList<>();
-        FindBubsXmlReport.BugFile bugFile = new FindBubsXmlReport.BugFile();
-        List<FindBubsXmlReport.BugInstance> bugCollection = new ArrayList<FindBubsXmlReport.BugInstance>();
+    private FindBugsXmlReport produceFindbugsReport() {
+        FindBugsXmlReport findBugsXmlReport = new FindBugsXmlReport();
+        List<FindBugsXmlReport.BugFile> files = new ArrayList<>();
+        FindBugsXmlReport.BugFile bugFile = new FindBugsXmlReport.BugFile();
+        List<FindBugsXmlReport.BugInstance> bugCollection = new ArrayList<FindBugsXmlReport.BugInstance>();
 
-        FindBubsXmlReport.BugInstance bugInstance = createBugInstance(FindBubsXmlReport.BugPriority.Normal);
-        FindBubsXmlReport.BugInstance bugInstance2 = createBugInstance(FindBubsXmlReport.BugPriority.Blocker);
+        FindBugsXmlReport.BugInstance bugInstance = createBugInstance(FindBugsXmlReport.BugPriority.Normal);
+        FindBugsXmlReport.BugInstance bugInstance2 = createBugInstance(FindBugsXmlReport.BugPriority.Blocker);
         bugCollection.add(bugInstance);
         bugCollection.add(bugInstance2);
         bugFile.setBugCollection(bugCollection);
         files.add(bugFile);
 
-        FindBubsXmlReport.BugFile bugFile2 = new FindBubsXmlReport.BugFile();
-        List<FindBubsXmlReport.BugInstance> bugCollection2 = new ArrayList<FindBubsXmlReport.BugInstance>();
+        FindBugsXmlReport.BugFile bugFile2 = new FindBugsXmlReport.BugFile();
+        List<FindBugsXmlReport.BugInstance> bugCollection2 = new ArrayList<FindBugsXmlReport.BugInstance>();
 
-        FindBubsXmlReport.BugInstance bugInstance3 = createBugInstance(FindBubsXmlReport.BugPriority.Low);
-        FindBubsXmlReport.BugInstance bugInstance4 = createBugInstance(FindBubsXmlReport.BugPriority.Blocker);
-        FindBubsXmlReport.BugInstance bugInstance5 = createBugInstance(FindBubsXmlReport.BugPriority.Critical);
+        FindBugsXmlReport.BugInstance bugInstance3 = createBugInstance(FindBugsXmlReport.BugPriority.Low);
+        FindBugsXmlReport.BugInstance bugInstance4 = createBugInstance(FindBugsXmlReport.BugPriority.Blocker);
+        FindBugsXmlReport.BugInstance bugInstance5 = createBugInstance(FindBugsXmlReport.BugPriority.Critical);
         bugCollection2.add(bugInstance3);
         bugCollection2.add(bugInstance4);
         bugCollection2.add(bugInstance5);
         bugFile2.setBugCollection(bugCollection2);
         files.add(bugFile2);
 
-        findBubsXmlReport.setFiles(files);
-        return findBubsXmlReport;
+        findBugsXmlReport.setFiles(files);
+        return findBugsXmlReport;
     }
 
     @Test
     public void findBugsReportAllOkayIfNoViolations() {
-        FindBubsXmlReport findBubsXmlReport = new FindBubsXmlReport();
+        FindBugsXmlReport findBugsXmlReport = new FindBugsXmlReport();
 
         CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
-        findBubsXmlReport.accept(testee);
+        findBugsXmlReport.accept(testee);
 
         CodeQuality calculatedCodeQuality = testee.produceResult();
         AssertionsForInterfaceTypes.assertThat(calculatedCodeQuality.getMetrics())
@@ -184,14 +184,14 @@ public class CodeQualityMetricsConverterTest {
     @Test
     public void sumsFindbugsOverMultipleFiles() {
         //set up 2 files each with 2 bugs of different priorties
-        FindBubsXmlReport findBubsXmlReport = produceFindbugsReport();
-        FindBubsXmlReport findBubsXmlReport2 = produceFindbugsReport();
+        FindBugsXmlReport findBugsXmlReport = produceFindbugsReport();
+        FindBugsXmlReport findBugsXmlReport2 = produceFindbugsReport();
 
 
         // do the test... dispatch vistor to both reports
         CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
-        findBubsXmlReport.accept(testee);
-        findBubsXmlReport2.accept(testee);
+        findBugsXmlReport.accept(testee);
+        findBugsXmlReport2.accept(testee);
 
         CodeQuality calculatedCodeQuality = testee.produceResult();
 
@@ -204,13 +204,106 @@ public class CodeQualityMetricsConverterTest {
                         tuple("violations", "2", 2, CodeQualityMetricStatus.Warning));
     }
 
-    private FindBubsXmlReport.BugInstance createBugInstance(FindBubsXmlReport.BugPriority priority) {
-        FindBubsXmlReport.BugInstance bugInstance = new FindBubsXmlReport.BugInstance();
-        bugInstance.setCategory(FindBubsXmlReport.BugCategory.BAD_PRACTICE);
+    private FindBugsXmlReport.BugInstance createBugInstance(FindBugsXmlReport.BugPriority priority) {
+        FindBugsXmlReport.BugInstance bugInstance = new FindBugsXmlReport.BugInstance();
+        bugInstance.setCategory(FindBugsXmlReport.BugCategory.BAD_PRACTICE);
         bugInstance.setLineNumber(12);
         bugInstance.setMessage("this is slow");
         bugInstance.setPriority(priority);
         bugInstance.setType("somthing");
         return bugInstance;
+    }
+
+    @Test
+    public void coverageStatsFromJacocoXml() {
+        JacocoXmlReport jacocoXmlReport = produceJacocoXmlReport();
+
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        jacocoXmlReport.accept(testee);
+
+        CodeQuality calculatedCodeQuality = testee.produceResult();
+
+        assertThat(calculatedCodeQuality.getMetrics()).extracting("name","formattedValue","value","status")
+                .contains(
+                        tuple("total_lines_covered","15",15,CodeQualityMetricStatus.Ok),
+                        tuple("total_lines_missed","6",6,CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_covered","10",10,CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_missed","1",1,CodeQualityMetricStatus.Ok));
+
+        Optional<CodeQualityMetric> coverage = calculatedCodeQuality.getMetrics().stream().filter(codeQualityMetric -> codeQualityMetric.getName().equals("coverage")).findFirst();
+        assertThat(coverage.get().getFormattedValue()).isEqualTo("90.909");
+        assertThat(coverage.get().getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+        assertThat(((Double)coverage.get().getValue()).doubleValue()).isCloseTo(90.0909, Percentage.withPercentage(1));
+        Optional<CodeQualityMetric> lineCoverage = calculatedCodeQuality.getMetrics().stream().filter(codeQualityMetric -> codeQualityMetric.getName().equals("line_coverage")).findFirst();
+        assertThat(lineCoverage.get().getFormattedValue()).isEqualTo("71.429");
+        assertThat(lineCoverage.get().getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+        assertThat(((Double)lineCoverage.get().getValue()).doubleValue()).isCloseTo(71.429, Percentage.withPercentage(1));
+
+    }
+
+    @Test
+    public void sumsCoverageStatsFromJacocoXml() {
+        JacocoXmlReport jacocoXmlReport1 = produceJacocoXmlReport();
+        JacocoXmlReport jacocoXmlReport2 = produceJacocoXmlReport();
+
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        jacocoXmlReport1.accept(testee);
+        jacocoXmlReport2.accept(testee);
+
+        CodeQuality calculatedCodeQuality = testee.produceResult();
+
+        assertThat(calculatedCodeQuality.getMetrics()).extracting("name","formattedValue","value","status")
+                .contains(
+                        tuple("total_lines_covered","30",30,CodeQualityMetricStatus.Ok),
+                        tuple("total_lines_missed","12",12,CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_covered","20",20,CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_missed","2",2,CodeQualityMetricStatus.Ok));
+
+        Optional<CodeQualityMetric> coverage = calculatedCodeQuality.getMetrics().stream().filter(codeQualityMetric -> codeQualityMetric.getName().equals("coverage")).findFirst();
+        assertThat(coverage.get().getFormattedValue()).isEqualTo("90.909");
+        assertThat(coverage.get().getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+        assertThat(((Double)coverage.get().getValue()).doubleValue()).isCloseTo(90.0909, Percentage.withPercentage(1));
+        Optional<CodeQualityMetric> lineCoverage = calculatedCodeQuality.getMetrics().stream().filter(codeQualityMetric -> codeQualityMetric.getName().equals("line_coverage")).findFirst();
+        assertThat(lineCoverage.get().getFormattedValue()).isEqualTo("71.429");
+        assertThat(lineCoverage.get().getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+        assertThat(((Double)lineCoverage.get().getValue()).doubleValue()).isCloseTo(71.429, Percentage.withPercentage(1));
+
+    }
+
+    private JacocoXmlReport produceJacocoXmlReport() {
+        JacocoXmlReport report = new JacocoXmlReport();
+        JacocoXmlReport.Counter instructions = new JacocoXmlReport.Counter();
+        instructions.setType(JacocoXmlReport.CounterType.INSTRUCTION);
+        instructions.setCovered(10);
+        instructions.setMissed(1);
+
+        JacocoXmlReport.Counter method = new JacocoXmlReport.Counter();
+        method.setType(JacocoXmlReport.CounterType.METHOD);
+        method.setCovered(11);
+        method.setMissed(2);
+
+        JacocoXmlReport.Counter complexity = new JacocoXmlReport.Counter();
+        complexity.setType(JacocoXmlReport.CounterType.COMPLEXITY);
+        complexity.setCovered(12);
+        complexity.setMissed(3);
+
+        JacocoXmlReport.Counter clazz = new JacocoXmlReport.Counter();
+        clazz.setType(JacocoXmlReport.CounterType.CLASS);
+        clazz.setCovered(13);
+        clazz.setMissed(4);
+
+        JacocoXmlReport.Counter branch = new JacocoXmlReport.Counter();
+        branch.setType(JacocoXmlReport.CounterType.BRANCH);
+        branch.setCovered(14);
+        branch.setMissed(5);
+
+        JacocoXmlReport.Counter line = new JacocoXmlReport.Counter();
+        line.setType(JacocoXmlReport.CounterType.LINE);
+        line.setCovered(15);
+        line.setMissed(6);
+
+        List<JacocoXmlReport.Counter> counters = Arrays.asList(instructions,method,complexity,clazz,branch,line);
+        report.setCounters(counters);
+        return report;
     }
 }

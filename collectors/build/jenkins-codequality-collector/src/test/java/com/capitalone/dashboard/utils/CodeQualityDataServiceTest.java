@@ -112,7 +112,7 @@ public class CodeQualityDataServiceTest {
         testXmlReport.setTests(25);
         reportList.add(testXmlReport);
         // and a findbugs report
-        FindBubsXmlReport bugsXmlReport = new FindBubsXmlReport();
+        FindBugsXmlReport bugsXmlReport = new FindBugsXmlReport();
         reportList.add(bugsXmlReport);
 
         CodeQualityVisitor mockVistor = mock(CodeQualityVisitor.class);

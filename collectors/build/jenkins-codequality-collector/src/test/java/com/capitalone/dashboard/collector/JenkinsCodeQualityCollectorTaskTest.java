@@ -328,9 +328,9 @@ public class JenkinsCodeQualityCollectorTaskTest {
         List<JunitXmlReport> junitList = new ArrayList<>();
         junitList.add(new JunitXmlReport());
         when(mockJenkinsHelper.getLatestArtifacts(same(JunitXmlReport.class), any(JenkinsJob.class), any(Pattern.class))).thenReturn(junitList);
-        List<FindBubsXmlReport> findBugsList = new ArrayList<>();
-        findBugsList.add(new FindBubsXmlReport());
-        when(mockJenkinsHelper.getLatestArtifacts(same(FindBubsXmlReport.class), any(JenkinsJob.class), any(Pattern.class))).thenReturn(findBugsList);
+        List<FindBugsXmlReport> findBugsList = new ArrayList<>();
+        findBugsList.add(new FindBugsXmlReport());
+        when(mockJenkinsHelper.getLatestArtifacts(same(FindBugsXmlReport.class), any(JenkinsJob.class), any(Pattern.class))).thenReturn(findBugsList);
 
         JenkinsCodeQualityJob dbJob = JenkinsCodeQualityJob.newBuilder().jenkinsServer("http://buildserver2/job1").jobName("job1").build();
         ObjectId dbJobId = new ObjectId();
@@ -345,6 +345,45 @@ public class JenkinsCodeQualityCollectorTaskTest {
         ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(this.mockDataService).storeJob(same(job1), eq(dbJob), captor.capture());
         assertThat(captor.getValue()).hasSize(2);
+    }
+
+    @Test
+    public void configuredToCollectJacocoXml() {
+        JenkinsSettings settings = new JenkinsSettings();
+        settings.setCron("0 * * * * *");
+        settings.setServers(Arrays.asList("server1", "server2"));
+        settings.setArtifactRegex(ArtifactType.jacoco, Arrays.asList("jacocoXml.xml"));
+        this.testee = new JenkinsCodeQualityCollectorTask(mockScheduler, mockRepo, mockJobRepository, settings, mockJenkinsHelper, mockDataService);
+
+
+        JenkinsCodeQualityCollector mockCollector = mock(JenkinsCodeQualityCollector.class);
+        List<String> buildServers = new ArrayList<>();
+        buildServers.add("http://buildserver");
+        buildServers.add("http://buildserver2");
+        when(mockCollector.getBuildServers()).thenAnswer(invocationOnMock -> buildServers);
+
+        JenkinsJob job1 = JenkinsJob.newBuilder().url("http://buildserver2/job1").jobName("job1").lastSuccessfulBuild(
+                JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("jacocoXml.xml").build()).build()).build();
+        List<JenkinsJob> allJobs = Collections.singletonList(job1);
+
+        when(mockJenkinsHelper.getJobs(anyList())).thenReturn(allJobs);
+        List<JacocoXmlReport> jacocoList = new ArrayList<>();
+        jacocoList.add(new JacocoXmlReport());
+        when(mockJenkinsHelper.getLatestArtifacts(same(JacocoXmlReport.class), any(JenkinsJob.class), any(Pattern.class))).thenReturn(jacocoList);
+
+        JenkinsCodeQualityJob dbJob = JenkinsCodeQualityJob.newBuilder().jenkinsServer("http://buildserver2/job1").jobName("job1").build();
+        ObjectId dbJobId = new ObjectId();
+        dbJob.setId(dbJobId);
+
+        ObjectId collectorId = new ObjectId();
+        when(mockCollector.getId()).thenReturn(collectorId);
+        when(this.mockJobRepository.findAllByCollectorId(eq(collectorId))).thenReturn(Arrays.asList(dbJob));
+
+        this.testee.collect(mockCollector);
+
+        ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(this.mockDataService).storeJob(same(job1), eq(dbJob), captor.capture());
+        assertThat(captor.getValue()).hasSize(1);
     }
 
 }
