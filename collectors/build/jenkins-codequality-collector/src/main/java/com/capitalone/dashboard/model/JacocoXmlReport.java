@@ -26,6 +26,7 @@ public class JacocoXmlReport implements CodeQualityVisitee{
         this.counters = counters;
     }
 
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class Counter {
         @XmlAttribute(name="type")
         private CounterType type;

@@ -3,6 +3,7 @@ package com.capitalone.dashboard;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -17,6 +18,13 @@ public class Application {
 
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        RestTemplate template = new RestTemplate();
+        template.getMessageConverters().forEach(httpMessageConverter ->
+        {
+            if (httpMessageConverter instanceof  Jaxb2RootElementHttpMessageConverter) {
+                ((Jaxb2RootElementHttpMessageConverter)httpMessageConverter).setSupportDtd(true);
+            }
+        });
+        return template;
     }
 }

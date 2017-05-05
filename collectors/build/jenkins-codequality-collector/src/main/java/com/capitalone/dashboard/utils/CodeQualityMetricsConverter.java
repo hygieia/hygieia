@@ -170,12 +170,14 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
         // now add in the missing one
         Map<String, CodeQualityMetric> codeQualityMetricMap = quality.getMetrics()
                 .stream().collect(Collectors.toMap(CodeQualityMetric::getName, Function.identity()));
-        codeQualityMetricMap.remove(LINE_COVERAGE);
+        final CodeQualityMetric lineCoverage = codeQualityMetricMap.remove(LINE_COVERAGE);
+        quality.getMetrics().remove(lineCoverage);
         quality.addMetric(
                 computeCoveragePercent(LINE_COVERAGE,
                         codeQualityMetricMap.get(TOTAL_LINES_COVERED),
                         codeQualityMetricMap.get(TOTAL_LINES_MISSED)));
-        codeQualityMetricMap.remove(COVERAGE);
+        final CodeQualityMetric coverage = codeQualityMetricMap.remove(COVERAGE);
+        quality.getMetrics().remove(coverage);
         quality.addMetric(
                 computeCoveragePercent(COVERAGE,
                         codeQualityMetricMap.get(TOTAL_INSTRUCTIONS_COVERED),

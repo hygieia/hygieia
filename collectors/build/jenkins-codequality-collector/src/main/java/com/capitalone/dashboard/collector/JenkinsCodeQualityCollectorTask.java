@@ -69,7 +69,8 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
             return;
         }
 
-        this.cleanupPreviousJobsFromRepo(collector, jobs);
+        List<JenkinsJob> allJobsOnServer = jobs.stream().flatMap(JenkinsJob::streamJobs).collect(Collectors.toList());
+        this.cleanupPreviousJobsFromRepo(collector, allJobsOnServer);
 
 
         List<Pattern> matchingJobPatterns = new ArrayList<>();
@@ -121,7 +122,10 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
     private void cleanupPreviousJobsFromRepo(JenkinsCodeQualityCollector collector, List<JenkinsJob> jobs) {
         List<String> configuredServers = jobs.stream().map(job -> job.getUrl()).collect(Collectors.toList());
         List<JenkinsCodeQualityJob> allRepoJobs = new ArrayList(this.jobRepository.findAllByCollectorId(collector.getId()));
-        List<JenkinsCodeQualityJob> jobsToKeep = allRepoJobs.stream().filter(job -> configuredServers.contains(job.getJenkinsServer())).collect(Collectors.toList());
+        List<JenkinsCodeQualityJob> jobsToKeep = allRepoJobs.stream().filter(
+            job ->
+                configuredServers.contains(job.getJenkinsServer())
+        ).collect(Collectors.toList());
         allRepoJobs.removeAll(jobsToKeep);
         allRepoJobs.forEach(job -> {
             this.jobRepository.delete(job);
