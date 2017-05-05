@@ -33,7 +33,6 @@ corsWhitelist=${CORS_WHITELIST:-http://domain1.com:port,http://domain2.com:port}
 
 feature.dynamicPipeline=${FEATURE_DYNAMIC_PIPELINE:-disabled}
 
-
 #Authentication Settings
 auth.expirationTime=${AUTH_EXPIRATION_TIME:-}
 auth.secret=${AUTH_SECRET:-}
