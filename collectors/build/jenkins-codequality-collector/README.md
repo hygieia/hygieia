@@ -52,6 +52,7 @@ jenkins-codequality.artifactRegex.junit=TEST-.*\\.xml
 jenkins-codequality.artifactRegex.findbugs=findbugsXml.xml
 jenkins-codequality.artifactRegex.pmd=pmd.xml
 jenkins-codequality.artifactRegex.checkstyle=checkstyle.xml
+jenkins-codequality.artifactRegex.jacoco=jacoco.xml
 
 # Collector job depth (required) should be set to at least 1, and more if you use folder jobs etc
 jenkins-codequality.jobDepth=4
