@@ -270,6 +270,52 @@ public class JenkinsCodeQualityCollectorTaskTest {
 
     }
 
+    @Test
+    public void flattensJenkinsMapBeforeFindingNewJobs() {
+        JenkinsCodeQualityCollector mockCollector = mock(JenkinsCodeQualityCollector.class);
+
+        ObjectId collectorId = new ObjectId();
+        when(mockCollector.getId()).thenReturn(collectorId);
+
+        when(mockCollector.getBuildServers()).thenReturn(Arrays.asList("http://myBuildServer"));
+        List<JenkinsJob> jobsWithNewJob = new ArrayList<>();
+        jobsWithNewJob.add(JenkinsJob.newBuilder().jobName("job1").url("http://myBuildServer/job1")
+                .job(
+                        JenkinsJob.newBuilder().jobName("subJob").url("http://myBuildServer/job1/subJob")
+                                .lastSuccessfulBuild(
+                                        JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("junit.xml").build()).build()
+                                ).build())
+                .job(
+                        JenkinsJob.newBuilder().jobName("subJob2").url("http://myBuildServer/job1/subJob2").job(
+                                JenkinsJob.newBuilder().jobName("subJob3").url("http://myBuildServer/job1/subJob2/subJob3")
+                                        .lastSuccessfulBuild(
+                                                JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("junit.xml").build()).build()
+                                        ).build()
+                        ).build()
+                )
+                .build());
+        when(mockJenkinsHelper.getJobs(anyList())).thenReturn(jobsWithNewJob);
+
+        List<JenkinsCodeQualityJob> jobs = new ArrayList<>();
+        for (String url: Arrays.asList("http://buildserver1/job1","http://myBuildServer/job1/subJob","http://myBuildServer/job1/subJob2","http://myBuildServer/job1/subJob2/subJob3")) {
+            JenkinsCodeQualityJob dbJob1 = JenkinsCodeQualityJob.newBuilder().jenkinsServer(url).build();
+            ObjectId dbJobId1 = new ObjectId();
+            dbJob1.setId(dbJobId1);
+            jobs.add(dbJob1);
+        }
+
+        when(mockJobRepository.findAllByCollectorId(any(ObjectId.class))).thenReturn(jobs);
+
+
+
+        // test
+        this.testee.collect(mockCollector);
+
+        // should not have saved anything
+        verify(mockJobRepository,times(0)).save(any(JenkinsCodeQualityJob.class));
+
+    }
+
 
     private List<JenkinsJob> getJenkinsJobs() {
         List<JenkinsJob> allJenkinsJobs = new ArrayList<>();
