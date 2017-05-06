@@ -306,4 +306,114 @@ public class CodeQualityMetricsConverterTest {
         report.setCounters(counters);
         return report;
     }
+
+    @Test
+    public void pmdReport(){
+        PmdReport report = this.producePmdReport();
+
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        report.accept(testee);
+
+        CodeQuality codeQualityMetrics = testee.produceResult();
+
+        assertThat(codeQualityMetrics.getMetrics()).extracting("name","formattedValue","value","status")
+                .contains(
+                        tuple("blocker_violations","10",10,CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations","12",12,CodeQualityMetricStatus.Alert),
+                        tuple("major_violations","2",2,CodeQualityMetricStatus.Warning),
+                        tuple("violations","2",2,CodeQualityMetricStatus.Warning));
+    }
+
+    @Test
+    public void sumsMultiplePmdReports() {
+        PmdReport report1 = this.producePmdReport();
+        PmdReport report2 = this.producePmdReport();
+
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        report1.accept(testee);
+        report2.accept(testee);
+
+        CodeQuality codeQualityMetrics = testee.produceResult();
+
+        assertThat(codeQualityMetrics.getMetrics()).extracting("name","formattedValue","value","status")
+                .contains(
+                        tuple("blocker_violations","20",20,CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations","24",24,CodeQualityMetricStatus.Alert),
+                        tuple("major_violations","4",4,CodeQualityMetricStatus.Warning),
+                        tuple("violations","4",4,CodeQualityMetricStatus.Warning));
+    }
+
+    private PmdReport producePmdReport(){
+        PmdReport report = new PmdReport();
+        PmdReport.PmdFile file = new PmdReport.PmdFile();
+        List<PmdReport.PmdViolation> violations = new ArrayList<>();
+        for (int i=0;i<10;i++) {
+            PmdReport.PmdViolation violation = new PmdReport.PmdViolation();
+            violation.setPriority(1);
+            violations.add(violation);
+        }
+        for (int i=0;i<12;i++) {
+            PmdReport.PmdViolation violation = new PmdReport.PmdViolation();
+            violation.setPriority(2);
+            violations.add(violation);
+        }
+        for (int i=0;i<2;i++) {
+            PmdReport.PmdViolation violation = new PmdReport.PmdViolation();
+            violation.setPriority(3);
+            violations.add(violation);
+        }
+        PmdReport.PmdViolation violation4 = new PmdReport.PmdViolation();
+        violation4.setPriority(4);
+        violations.add(violation4);
+        PmdReport.PmdViolation violation5 = new PmdReport.PmdViolation();
+        violation5.setPriority(5);
+        violations.add(violation5);
+        file.setViolations(violations);
+        report.setFiles(Arrays.asList(file));
+        return report;
+    }
+
+    @Test
+    public void checkStyleReports() {
+        CheckstyleReport report = produceCheckStyleReport();
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        report.accept(testee);
+
+        CodeQuality codeQualityMetrics = testee.produceResult();
+
+        assertThat(codeQualityMetrics.getMetrics()).extracting("name","formattedValue","value","status")
+                .contains(
+                        tuple("blocker_violations","9",9,CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations","11",11,CodeQualityMetricStatus.Alert),
+                        tuple("major_violations","2",2,CodeQualityMetricStatus.Warning),
+                        tuple("violations","1",1,CodeQualityMetricStatus.Warning));
+    }
+
+    private CheckstyleReport produceCheckStyleReport(){
+        CheckstyleReport report = new CheckstyleReport();
+        CheckstyleReport.CheckstyleFile file = new CheckstyleReport.CheckstyleFile();
+        List<CheckstyleReport.CheckstyleError> errors = new ArrayList<>();
+        for (int i=0;i<9;i++) {
+            CheckstyleReport.CheckstyleError violation = new CheckstyleReport.CheckstyleError();
+            violation.setSeverity(CheckstyleReport.CheckstyleSeverity.error);
+            errors.add(violation);
+        }
+        for (int i=0;i<11;i++) {
+            CheckstyleReport.CheckstyleError violation = new CheckstyleReport.CheckstyleError();
+            violation.setSeverity(CheckstyleReport.CheckstyleSeverity.warning);
+            errors.add(violation);
+        }
+        for (int i=0;i<2;i++) {
+            CheckstyleReport.CheckstyleError violation = new CheckstyleReport.CheckstyleError();
+            violation.setSeverity(CheckstyleReport.CheckstyleSeverity.info);
+            errors.add(violation);
+        }
+        CheckstyleReport.CheckstyleError violation4 = new CheckstyleReport.CheckstyleError();
+        violation4.setSeverity(CheckstyleReport.CheckstyleSeverity.ignore);
+        errors.add(violation4);
+        file.setErrors(errors);
+        report.setFiles(Arrays.asList(file));
+        return report;
+    }
+
 }

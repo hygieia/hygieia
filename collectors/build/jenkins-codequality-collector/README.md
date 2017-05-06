@@ -1,7 +1,7 @@
 # Hygieia Build Collectors / Junit/Findbugs/PMD/Jacoco
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
-It assumes that the junut/findbugs/pmd/jacoco artefacts are archived
+It assumes that the junit/findbugs/pmd/checkstyle/jacoco artefacts are archived in the job
 
 ## Building and Deploying
 
@@ -50,6 +50,8 @@ jenkins-codequality.servers[0]=https://jenkins
 # Collector types (note not required, but the regex should be match only the type specified)
 jenkins-codequality.artifactRegex.junit=TEST-.*\\.xml
 jenkins-codequality.artifactRegex.findbugs=findbugsXml.xml
+jenkins-codequality.artifactRegex.pmd=pmd.xml
+jenkins-codequality.artifactRegex.checkstyle=checkstyle.xml
 
 # Collector job depth (required) should be set to at least 1, and more if you use folder jobs etc
 jenkins-codequality.jobDepth=4

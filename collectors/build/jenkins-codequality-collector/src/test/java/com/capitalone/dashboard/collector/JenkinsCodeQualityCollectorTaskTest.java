@@ -13,6 +13,8 @@ import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 
@@ -395,10 +397,24 @@ public class JenkinsCodeQualityCollectorTaskTest {
 
     @Test
     public void configuredToCollectJacocoXml() {
+        doConfiureTest(ArtifactType.jacoco,"jacoco.xml","jacoco.xml", new JacocoXmlReport());
+    }
+
+    @Test
+    public void configuredToCollectPmdXml() {
+        doConfiureTest(ArtifactType.pmd,"pmd.xml","pmd.xml", new PmdReport());
+    }
+
+    @Test
+    public void configuredToCollectCheckStyleXml() {
+        doConfiureTest(ArtifactType.checkstyle,"checkstyle.xml","checkstyle.xml", new CheckstyleReport());
+    }
+
+    private <T>  void doConfiureTest(ArtifactType type, String pattern, String artefactName, T report) {
         JenkinsSettings settings = new JenkinsSettings();
         settings.setCron("0 * * * * *");
         settings.setServers(Arrays.asList("server1", "server2"));
-        settings.setArtifactRegex(ArtifactType.jacoco, Arrays.asList("jacocoXml.xml"));
+        settings.setArtifactRegex(type, Arrays.asList(pattern));
         this.testee = new JenkinsCodeQualityCollectorTask(mockScheduler, mockRepo, mockJobRepository, settings, mockJenkinsHelper, mockDataService);
 
 
@@ -409,13 +425,19 @@ public class JenkinsCodeQualityCollectorTaskTest {
         when(mockCollector.getBuildServers()).thenAnswer(invocationOnMock -> buildServers);
 
         JenkinsJob job1 = JenkinsJob.newBuilder().url("http://buildserver2/job1").jobName("job1").lastSuccessfulBuild(
-                JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName("jacocoXml.xml").build()).build()).build();
+                JenkinsBuild.newBuilder().artifact(Artifact.newBuilder().fileName(artefactName).build()).build()).build();
         List<JenkinsJob> allJobs = Collections.singletonList(job1);
 
         when(mockJenkinsHelper.getJobs(anyList())).thenReturn(allJobs);
-        List<JacocoXmlReport> jacocoList = new ArrayList<>();
-        jacocoList.add(new JacocoXmlReport());
-        when(mockJenkinsHelper.getLatestArtifacts(same(JacocoXmlReport.class), any(JenkinsJob.class), any(Pattern.class))).thenReturn(jacocoList);
+        List<T> reports = new ArrayList<>();
+        reports.add(report);
+        when(mockJenkinsHelper.getLatestArtifacts(same(report.getClass()), any(JenkinsJob.class), any(Pattern.class))).thenAnswer(
+                new Answer<List<T>>() {
+                    @Override
+                    public List<T> answer(InvocationOnMock invocationOnMock) throws Throwable {
+                        return reports;
+                    }
+                });
 
         JenkinsCodeQualityJob dbJob = JenkinsCodeQualityJob.newBuilder().jenkinsServer("http://buildserver2/job1").jobName("job1").build();
         ObjectId dbJobId = new ObjectId();

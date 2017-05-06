@@ -3,12 +3,7 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.JenkinsPredicate;
 import com.capitalone.dashboard.jenkins.JenkinsSettings;
-import com.capitalone.dashboard.model.ArtifactType;
-import com.capitalone.dashboard.model.CodeQualityVisitee;
-import com.capitalone.dashboard.model.FindBugsXmlReport;
-import com.capitalone.dashboard.model.JacocoXmlReport;
-import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
-import com.capitalone.dashboard.model.JunitXmlReport;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityCollectorRepository;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityJobRepository;
 import com.capitalone.dashboard.utils.CodeQualityService;
@@ -106,6 +101,12 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
                                     break;
                                 case jacoco:
                                     allTypes.addAll(this.jenkinsClient.getLatestArtifacts(JacocoXmlReport.class,job,pattern));
+                                    break;
+                                case pmd:
+                                    allTypes.addAll(this.jenkinsClient.getLatestArtifacts(PmdReport.class,job,pattern));
+                                    break;
+                                case checkstyle:
+                                    allTypes.addAll(this.jenkinsClient.getLatestArtifacts(CheckstyleReport.class,job,pattern));
                                     break;
                                 default:
                                     this.log("not collecting data for "+type+ " yet");

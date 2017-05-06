@@ -1,12 +1,6 @@
 package com.capitalone.dashboard.utils;
 
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CodeQualityMetric;
-import com.capitalone.dashboard.model.CodeQualityMetricStatus;
-import com.capitalone.dashboard.model.CodeQualityType;
-import com.capitalone.dashboard.model.FindBugsXmlReport;
-import com.capitalone.dashboard.model.JacocoXmlReport;
-import com.capitalone.dashboard.model.JunitXmlReport;
+import com.capitalone.dashboard.model.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
@@ -193,6 +187,101 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
         metric.setValue(percentageCovered);
         metric.setStatus(CodeQualityMetricStatus.Ok);
         return metric;
+    }
+
+
+    @Override
+    public void visit(PmdReport pmdReport) {
+        Map<String, Pair<Integer, CodeQualityMetricStatus>> metricsMap = new HashMap<>();
+        metricsMap.put(BLOCKER_VIOLATIONS, Pair.of(0, CodeQualityMetricStatus.Ok));
+        metricsMap.put(CRITICAL_VIOLATIONS, Pair.of(0, CodeQualityMetricStatus.Ok));
+        metricsMap.put(MAJOR_VIOLCATIONS, Pair.of(0, CodeQualityMetricStatus.Ok));
+        metricsMap.put(VIOLATIONS, Pair.of(0, CodeQualityMetricStatus.Ok));
+
+        // loop over all the stuff in the report and accumulate violations.
+        if (null != pmdReport.getFiles()) {
+            pmdReport.getFiles().stream().forEach(violationFile -> {
+                violationFile.getViolations().stream().forEach(
+                        violation -> {
+                            switch (violation.getPriority()) {
+                                case 1: {
+                                    final Pair<Integer, CodeQualityMetricStatus> metricStatusPair = metricsMap.get(BLOCKER_VIOLATIONS);
+                                    final Pair newPair = Pair.of(metricStatusPair.getLeft().intValue() + 1, CodeQualityMetricStatus.Alert);
+                                    metricsMap.put(BLOCKER_VIOLATIONS, newPair);
+                                    break;
+                                }
+                                case 2: {
+                                    final Pair<Integer, CodeQualityMetricStatus> metricStatusPair = metricsMap.get(CRITICAL_VIOLATIONS);
+                                    final Pair newPair = Pair.of(metricStatusPair.getLeft().intValue() + 1, CodeQualityMetricStatus.Alert);
+                                    metricsMap.put(CRITICAL_VIOLATIONS, newPair);
+                                    break;
+                                }
+                                case 3: {
+                                    final Pair<Integer, CodeQualityMetricStatus> metricStatusPair = metricsMap.get(MAJOR_VIOLCATIONS);
+                                    final Pair newPair = Pair.of(metricStatusPair.getLeft().intValue() + 1, CodeQualityMetricStatus.Warning);
+                                    metricsMap.put(MAJOR_VIOLCATIONS, newPair);
+                                    break;
+                                }
+                                default:
+                                    final Pair<Integer, CodeQualityMetricStatus> metricStatusPair = metricsMap.get(VIOLATIONS);
+                                    final Pair newPair = Pair.of(metricStatusPair.getLeft().intValue() + 1, CodeQualityMetricStatus.Warning);
+                                    metricsMap.put(VIOLATIONS, newPair);
+                                    break;
+                            }
+                        }
+                );
+            });
+        }
+
+        // finally produce the result
+        this.sumMetrics(metricsMap);
+    }
+
+    @Override
+    public void visit(CheckstyleReport checkstyleReport) {
+        Map<String, Pair<Integer, CodeQualityMetricStatus>> metricsMap = new HashMap<>();
+        metricsMap.put(BLOCKER_VIOLATIONS, Pair.of(0, CodeQualityMetricStatus.Ok));
+        metricsMap.put(CRITICAL_VIOLATIONS, Pair.of(0, CodeQualityMetricStatus.Ok));
+        metricsMap.put(MAJOR_VIOLCATIONS, Pair.of(0, CodeQualityMetricStatus.Ok));
+        metricsMap.put(VIOLATIONS, Pair.of(0, CodeQualityMetricStatus.Ok));
+
+        // loop over all the stuff in the report and accumulate violations.
+        if (null != checkstyleReport.getFiles()) {
+            checkstyleReport.getFiles().stream().forEach(violationFile -> {
+                violationFile.getErrors().stream().forEach(
+                        violation -> {
+                            switch (violation.getSeverity()) {
+                                case error: {
+                                    final Pair<Integer, CodeQualityMetricStatus> metricStatusPair = metricsMap.get(BLOCKER_VIOLATIONS);
+                                    final Pair newPair = Pair.of(metricStatusPair.getLeft().intValue() + 1, CodeQualityMetricStatus.Alert);
+                                    metricsMap.put(BLOCKER_VIOLATIONS, newPair);
+                                    break;
+                                }
+                                case warning: {
+                                    final Pair<Integer, CodeQualityMetricStatus> metricStatusPair = metricsMap.get(CRITICAL_VIOLATIONS);
+                                    final Pair newPair = Pair.of(metricStatusPair.getLeft().intValue() + 1, CodeQualityMetricStatus.Alert);
+                                    metricsMap.put(CRITICAL_VIOLATIONS, newPair);
+                                    break;
+                                }
+                                case info: {
+                                    final Pair<Integer, CodeQualityMetricStatus> metricStatusPair = metricsMap.get(MAJOR_VIOLCATIONS);
+                                    final Pair newPair = Pair.of(metricStatusPair.getLeft().intValue() + 1, CodeQualityMetricStatus.Warning);
+                                    metricsMap.put(MAJOR_VIOLCATIONS, newPair);
+                                    break;
+                                }
+                                default:
+                                    final Pair<Integer, CodeQualityMetricStatus> metricStatusPair = metricsMap.get(VIOLATIONS);
+                                    final Pair newPair = Pair.of(metricStatusPair.getLeft().intValue() + 1, CodeQualityMetricStatus.Warning);
+                                    metricsMap.put(VIOLATIONS, newPair);
+                                    break;
+                            }
+                        }
+                );
+            });
+        }
+
+        // finally produce the result
+        this.sumMetrics(metricsMap);
     }
 
     @Override
