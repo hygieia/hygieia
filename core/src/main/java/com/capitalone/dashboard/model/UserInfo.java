@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.google.common.collect.Sets;
+
 @Document(collection="user_info")
 @CompoundIndexes({
     @CompoundIndex(name = "username_authType", def = "{'username' : 1, 'authType': 1}")
@@ -19,6 +21,10 @@ public class UserInfo {
 	private String username;
 	private Collection<UserRole> authorities;
 	private AuthType authType;
+	
+	public UserInfo() {
+	    authorities = Sets.newHashSet();
+	}
 	
 	public ObjectId getId() {
 		return id;
