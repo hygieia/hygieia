@@ -47,7 +47,7 @@ public class UserInfoServiceImplTest {
         user.setAuthorities(Lists.newArrayList(UserRole.ROLE_ADMIN));
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_ADMIN");
         when(userInfoRepository.findByUsernameAndAuthType("user", AuthType.STANDARD)).thenReturn(user);
-        Collection<? extends GrantedAuthority> authorities = service.getAuthorities("user", AuthType.STANDARD);
+        Collection<? extends GrantedAuthority> authorities = service.getAuthorities("user", "", "", "", "", "", AuthType.STANDARD);
         
         assertTrue(authorities.contains(authority));
     }
@@ -60,7 +60,7 @@ public class UserInfoServiceImplTest {
         
         when(userInfoRepository.findByUsernameAndAuthType("user", AuthType.STANDARD)).thenReturn(user);
         
-        UserInfo result = service.getUserInfo("user", AuthType.STANDARD);
+        UserInfo result = service.getUserInfo("user", "", "", "", "", "", AuthType.STANDARD);
         
         assertSame(result, user);
     }
@@ -71,7 +71,7 @@ public class UserInfoServiceImplTest {
         AuthType authType = AuthType.STANDARD;
         when(userInfoRepository.findByUsernameAndAuthType(username, authType)).thenReturn(null);
         
-        UserInfo result = service.getUserInfo(username, authType);
+        UserInfo result = service.getUserInfo(username, "", "", "", "", "", authType);
         
         assertEquals(username, result.getUsername());
         assertEquals(authType, result.getAuthType());
@@ -85,7 +85,7 @@ public class UserInfoServiceImplTest {
         AuthType authType = AuthType.STANDARD;
         when(userInfoRepository.findByUsernameAndAuthType(username, authType)).thenReturn(null);
         
-        UserInfo result = service.getUserInfo(username, authType);
+        UserInfo result = service.getUserInfo(username, "", "", "", "", "", authType);
         
         assertEquals(username, result.getUsername());
         assertEquals(authType, result.getAuthType());

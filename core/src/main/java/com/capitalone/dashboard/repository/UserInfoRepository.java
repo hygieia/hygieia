@@ -15,4 +15,6 @@ public interface UserInfoRepository extends CrudRepository<UserInfo, ObjectId>{
 
     Collection<UserInfo> findByAuthoritiesIn(UserRole roleAdmin);
 
+    Iterable<UserInfo> findByOrderByUsernameAsc();
+
 }

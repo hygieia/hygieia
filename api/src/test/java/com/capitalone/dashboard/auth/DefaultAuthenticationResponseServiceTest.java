@@ -54,7 +54,7 @@ public class DefaultAuthenticationResponseServiceTest {
 		httpServletResponse = new MockHttpServletResponse();
 		authentication = createAuthentication();
 		Collection<? extends GrantedAuthority> authorities = Sets.newHashSet(new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()), new SimpleGrantedAuthority(UserRole.ROLE_USER.name()));
-		Mockito.doReturn(authorities).when(userInfoService).getAuthorities(USERNAME, AuthType.STANDARD);
+		Mockito.doReturn(authorities).when(userInfoService).getAuthorities(USERNAME, "", "", "", "", "", AuthType.STANDARD);
 	}
 	
 	@Test
