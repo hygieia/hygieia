@@ -21,6 +21,8 @@ public class AuthProperties {
 	private String secret;
 	private String ldapUserDnPattern;
 	private String ldapServerUrl;
+	private String adDomain;
+	private String adRootDn;
 	
 	public void setExpirationTime(Long expirationTime) {
 		this.expirationTime = expirationTime;
@@ -52,6 +54,22 @@ public class AuthProperties {
 
 	public void setLdapServerUrl(String ldapServerUrl) {
 		this.ldapServerUrl = ldapServerUrl;
+	}
+
+	public String getAdDomain() {
+		return adDomain;
+	}
+
+	public void setAdDomain(String adDomain) {
+		this.adDomain = adDomain;
+	}
+
+	public String getAdRootDn() {
+		return adRootDn;
+	}
+
+	public void setAdRootDn(String adRootDn) {
+		this.adRootDn = adRootDn;
 	}
 
 	@PostConstruct
