@@ -5,8 +5,11 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.Widget;
 
 
@@ -94,6 +97,14 @@ public interface DashboardService {
      */
     
     List<Dashboard> getOwnedDashboards();
+
+    Iterable<UserInfo> getAllUsers();
+
+    Iterable<Owner> getOwners(ObjectId id);
+
+    UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType);
+
+    UserInfo demoteFromOwner(ObjectId dashboardId, String username, AuthType authType);
     
     /**
      * Get owner of dashboard on supplying dashboard Title
