@@ -1,5 +1,6 @@
 package jenkins.plugins.hygieia.workflow;
 
+import junit.framework.TestCase;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -84,6 +85,15 @@ public class HygieiaCodeQualityPublisherStepTest {
         step.setJacocoFilePattern("**/target/checkstyle-result.xml");
 
         assertThat(step.getJacocoFilePattern(),is("**/target/checkstyle-result.xml"));
+    }
+
+    @Test
+    public void executionDoesSomething() throws Exception {
+        HygieiaCodeQualityPublisherStep.HygieiaCodeQualityPublisherStepExecution execution = new HygieiaCodeQualityPublisherStep.HygieiaCodeQualityPublisherStepExecution();
+
+        execution.run();
+
+        TestCase.fail("no written yet");
     }
 
 }
