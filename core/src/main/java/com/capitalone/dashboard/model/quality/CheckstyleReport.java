@@ -1,6 +1,4 @@
-package com.capitalone.dashboard.model;
-
-import com.capitalone.dashboard.utils.CodeQualityVisitor;
+package com.capitalone.dashboard.model.quality;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;

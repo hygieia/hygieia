@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.utils;
 
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.quality.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 

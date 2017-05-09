@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.utils;
 
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.quality.*;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.assertj.core.data.Percentage;
@@ -13,9 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.in;
 import static org.assertj.core.api.Assertions.tuple;
 
-/**
- * Created by fzd332 on 10/12/16.
- */
 public class CodeQualityMetricsConverterTest {
 
     @Test

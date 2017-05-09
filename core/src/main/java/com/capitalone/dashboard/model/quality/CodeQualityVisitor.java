@@ -1,6 +1,6 @@
-package com.capitalone.dashboard.utils;
+package com.capitalone.dashboard.model.quality;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.CodeQuality;
 
 public interface CodeQualityVisitor {
 

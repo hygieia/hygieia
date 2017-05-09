@@ -13,9 +13,6 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.atIndex;
 
-/**
- * Created by stephengalbraith on 10/10/2016.
- */
 public class JenkinsPredicateTest {
 
 

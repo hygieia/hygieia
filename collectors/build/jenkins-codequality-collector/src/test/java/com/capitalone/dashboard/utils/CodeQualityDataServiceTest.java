@@ -2,7 +2,12 @@ package com.capitalone.dashboard.utils;
 
 import com.capitalone.dashboard.jenkins.JenkinsBuild;
 import com.capitalone.dashboard.jenkins.JenkinsJob;
+import com.capitalone.dashboard.jenkins.model.JenkinsCodeQualityJob;
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.quality.CodeQualityVisitee;
+import com.capitalone.dashboard.model.quality.CodeQualityVisitor;
+import com.capitalone.dashboard.model.quality.FindBugsXmlReport;
+import com.capitalone.dashboard.model.quality.JunitXmlReport;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -17,9 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
 
-/**
- * Created by plv163 on 19/10/2016.
- */
 public class CodeQualityDataServiceTest {
 
     private CodeQualityRepository mockCodeQualityRepository;

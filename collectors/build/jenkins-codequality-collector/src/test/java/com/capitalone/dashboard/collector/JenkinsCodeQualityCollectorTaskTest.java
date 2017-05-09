@@ -4,7 +4,9 @@ import com.capitalone.dashboard.jenkins.Artifact;
 import com.capitalone.dashboard.jenkins.JenkinsBuild;
 import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.JenkinsSettings;
+import com.capitalone.dashboard.jenkins.model.JenkinsCodeQualityJob;
 import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.quality.*;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityCollectorRepository;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityJobRepository;
 import com.capitalone.dashboard.utils.CodeQualityService;
@@ -28,9 +30,6 @@ import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
 
 
-/**
- * Created by stephengalbraith on 10/10/2016.
- */
 public class JenkinsCodeQualityCollectorTaskTest {
 
     private JenkinsCodeQualityCollectorTask testee;

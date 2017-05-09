@@ -1,8 +1,7 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.jenkins.*;
-import com.capitalone.dashboard.model.JunitXmlReport;
-import junit.framework.TestCase;
+import com.capitalone.dashboard.model.quality.JunitXmlReport;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -26,9 +25,6 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
-/**
- * Created by plv163 on 12/10/2016.
- */
 public class HttpJenkinsClientTest {
 
     private RestTemplate mockRestTemplate;

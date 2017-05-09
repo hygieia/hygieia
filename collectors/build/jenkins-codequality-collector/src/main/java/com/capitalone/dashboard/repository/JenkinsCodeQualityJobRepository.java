@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.repository;
 
-import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
+import com.capitalone.dashboard.jenkins.model.JenkinsCodeQualityJob;
 import org.bson.types.ObjectId;
 
 import java.util.List;

@@ -1,10 +1,11 @@
 package com.capitalone.dashboard.utils;
 
 import com.capitalone.dashboard.jenkins.JenkinsJob;
+import com.capitalone.dashboard.jenkins.model.JenkinsCodeQualityJob;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityType;
-import com.capitalone.dashboard.model.CodeQualityVisitee;
-import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
+import com.capitalone.dashboard.model.quality.CodeQualityVisitee;
+import com.capitalone.dashboard.model.quality.CodeQualityVisitor;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

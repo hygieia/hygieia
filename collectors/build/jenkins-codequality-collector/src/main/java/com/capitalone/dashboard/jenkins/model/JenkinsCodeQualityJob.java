@@ -1,6 +1,7 @@
-package com.capitalone.dashboard.model;
+package com.capitalone.dashboard.jenkins.model;
 
 
+import com.capitalone.dashboard.model.CollectorItem;
 import org.bson.types.ObjectId;
 
 public class JenkinsCodeQualityJob extends CollectorItem {

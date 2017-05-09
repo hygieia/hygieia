@@ -1,8 +1,8 @@
 package com.capitalone.dashboard.utils;
 
 import com.capitalone.dashboard.jenkins.JenkinsJob;
-import com.capitalone.dashboard.model.CodeQualityVisitee;
-import com.capitalone.dashboard.model.JenkinsCodeQualityJob;
+import com.capitalone.dashboard.jenkins.model.JenkinsCodeQualityJob;
+import com.capitalone.dashboard.model.quality.CodeQualityVisitee;
 
 import java.util.List;
 

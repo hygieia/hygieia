@@ -1,6 +1,4 @@
-package com.capitalone.dashboard.model;
-
-import com.capitalone.dashboard.utils.CodeQualityVisitor;
+package com.capitalone.dashboard.model.quality;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
@@ -126,7 +124,7 @@ public class JunitXmlReport implements CodeQualityVisitee {
 
     @XmlElement(required = true)
     protected JunitXmlReport.Properties properties;
-    protected List<JunitXmlReport.Testcase> testcase;
+    protected List<Testcase> testcase;
     @XmlElement(name = "system-out", required = true)
     protected String systemOut;
     @XmlElement(name = "system-err", required = true)
@@ -188,9 +186,9 @@ public class JunitXmlReport implements CodeQualityVisitee {
      * Objects of the following type(s) are allowed in the list
      * {@link JunitXmlReport.Testcase }
      */
-    public List<JunitXmlReport.Testcase> getTestcase() {
+    public List<Testcase> getTestcase() {
         if (testcase == null) {
-            testcase = new ArrayList<JunitXmlReport.Testcase>();
+            testcase = new ArrayList<Testcase>();
         }
         return this.testcase;
     }
@@ -398,7 +396,7 @@ public class JunitXmlReport implements CodeQualityVisitee {
     @XmlType(name = "", propOrder = {"property"})
     public static class Properties {
 
-        protected List<JunitXmlReport.Properties.Property> property;
+        protected List<Property> property;
 
         /**
          * Gets the value of the property property.
@@ -420,9 +418,9 @@ public class JunitXmlReport implements CodeQualityVisitee {
          * Objects of the following type(s) are allowed in the list
          * {@link JunitXmlReport.Properties.Property }
          */
-        public List<JunitXmlReport.Properties.Property> getProperty() {
+        public List<Property> getProperty() {
             if (property == null) {
-                property = new ArrayList<JunitXmlReport.Properties.Property>();
+                property = new ArrayList<Property>();
             }
             return this.property;
         }
