@@ -248,7 +248,8 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
         // loop over all the stuff in the report and accumulate violations.
         if (null != checkstyleReport.getFiles()) {
             checkstyleReport.getFiles().stream().forEach(violationFile -> {
-                violationFile.getErrors().stream().forEach(
+                if (null != violationFile.getErrors()) {
+                    violationFile.getErrors().stream().forEach(
                         violation -> {
                             switch (violation.getSeverity()) {
                                 case error: {
@@ -276,7 +277,8 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
                                     break;
                             }
                         }
-                );
+                    );
+                }
             });
         }
 

@@ -389,6 +389,26 @@ public class CodeQualityMetricsConverterTest {
                         tuple("violations","1",1,CodeQualityMetricStatus.Warning));
     }
 
+    @Test
+    public void checkstyleHandlesNoErrors() {
+        CheckstyleReport report = new CheckstyleReport();
+        CheckstyleReport.CheckstyleFile file = new CheckstyleReport.CheckstyleFile();
+        report.setFiles(Arrays.asList(file));
+
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        report.accept(testee);
+
+        CodeQuality codeQualityMetrics = testee.produceResult();
+
+        assertThat(codeQualityMetrics.getMetrics()).extracting("name","formattedValue","value","status")
+            .contains(
+                tuple("blocker_violations","0",0,CodeQualityMetricStatus.Ok),
+                tuple("critical_violations","0",0,CodeQualityMetricStatus.Ok),
+                tuple("major_violations","0",0,CodeQualityMetricStatus.Ok),
+                tuple("violations","0",0,CodeQualityMetricStatus.Ok));
+
+    }
+
     private CheckstyleReport produceCheckStyleReport(){
         CheckstyleReport report = new CheckstyleReport();
         CheckstyleReport.CheckstyleFile file = new CheckstyleReport.CheckstyleFile();
