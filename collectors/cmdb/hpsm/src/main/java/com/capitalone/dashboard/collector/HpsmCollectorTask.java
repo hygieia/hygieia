@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.HpsmCollector;
 import com.capitalone.dashboard.repository.HpsmRepository;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import org.apache.commons.logging.Log;
@@ -10,6 +11,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * CollectorTask that fetches Commit information from GitHub
@@ -21,7 +24,7 @@ public class HpsmCollectorTask extends CollectorTask<Collector> {
 //    private final BaseCollectorRepository<Collector> collectorRepository;
  //     private final HpsmRepository HpsmRepository;
 //    private final CommitRepository commitRepository;
-//    private final HpsmClient gitHubClient;
+      private final HpsmClient hpsmClient;
       private final HpsmSettings hpsmSettings;
     //    private final ComponentRepository dbComponentRepository;
 
@@ -34,16 +37,16 @@ public class HpsmCollectorTask extends CollectorTask<Collector> {
 //                                    HpsmSettings hpsmSettings,
 //                                   ComponentRepository dbComponentRepository) {
 @Autowired
-public HpsmCollectorTask(TaskScheduler taskScheduler, HpsmSettings hpsmSettings, BaseCollectorRepository<Collector> collectorRepository) {
+public HpsmCollectorTask(TaskScheduler taskScheduler, HpsmSettings hpsmSettings, BaseCollectorRepository<Collector> collectorRepository, HpsmClient hpsmClient) {
         super(taskScheduler, "hpsm");
 
         this.hpsmSettings = hpsmSettings;
 //        this.HpsmRepository = HpsmRepository;
-//    super(taskScheduler, "Hpsm");
+
     this.collectorRepository = collectorRepository;
 //    this.gitHubRepoRepository = gitHubRepoRepository;
 //    this.commitRepository = commitRepository;
-//    this.gitHubClient = gitHubClient;
+      this.hpsmClient = hpsmClient;
 //    this.hpsmSettings = hpsmSettings;
 //    this.dbComponentRepository = dbComponentRepository;
     }
@@ -53,7 +56,7 @@ public HpsmCollectorTask(TaskScheduler taskScheduler, HpsmSettings hpsmSettings,
 
         Collector protoType = new Collector();
         protoType.setName("Hpsm");
-        protoType.setCollectorType(CollectorType.SCM);
+        protoType.setCollectorType(CollectorType.CMDB);
         protoType.setOnline(true);
         protoType.setEnabled(true);
         return protoType;
@@ -114,10 +117,9 @@ public HpsmCollectorTask(TaskScheduler taskScheduler, HpsmSettings hpsmSettings,
 
     @Override
     public void collect(Collector collector) {
-        LOG.debug("inside here");
-        System.out.println("Calling Collector");
         logBanner("Starting...");
         long start = System.currentTimeMillis();
+        List<HpsmCollector> appList = hpsmClient.getApps();
 
 //        gitHubClient.toString();
 //        int repoCount = 0;

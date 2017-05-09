@@ -37,7 +37,9 @@ public class HpsmCollectorTaskTest {
     @InjectMocks private HpsmCollectorTask task;
     @Test
     public void collect_testCollect1() {
-
+        //task.collect(new Collector());
+        List<HpsmCollector> model = hpsmClient.getApps();
+        System.out.println("model" + model);
     }
     //@Test
     public void collect_testCollect() {

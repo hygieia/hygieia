@@ -16,6 +16,6 @@ public interface HpsmClient {
      * @return all Apps in HPSM
      */
 
-	List<String> getApps();
+	List<HpsmCollector> getApps();
 
 }
