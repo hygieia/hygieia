@@ -122,6 +122,14 @@ public class TestConfig {
     public CloudSubnetService cloudSubnetService() {
         return Mockito.mock(CloudSubnetService.class);
     }
+	@Bean
+	public PullService pullService() {
+		return Mockito.mock(PullService.class);
+	}
+	@Bean
+	public IssueService issueService() {
+		return Mockito.mock(IssueService.class);
+	}
 
     @Bean
     public CloudVirtualNetworkService cloudVirtualNetworkService() {

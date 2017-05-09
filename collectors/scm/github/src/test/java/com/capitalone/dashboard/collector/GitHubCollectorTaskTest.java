@@ -7,10 +7,12 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.Pull;
 import com.capitalone.dashboard.repository.BaseCollectorItemRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitHubRepoRepository;
+import com.capitalone.dashboard.repository.PullRepository;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,11 +40,13 @@ public class GitHubCollectorTaskTest {
     @Mock private GitHubSettings gitHubSettings;
     @Mock private ComponentRepository dbComponentRepository;
     @Mock private CommitRepository commitRepository;
+    @Mock private PullRepository pullRepository;
 
     @Mock private GitHubRepo repo1;
     @Mock private GitHubRepo repo2;
 
     @Mock private Commit commit;
+    @Mock private Pull pull;
 
     @InjectMocks private GitHubCollectorTask task;
 
@@ -62,8 +66,11 @@ public class GitHubCollectorTaskTest {
         when(gitHubRepoRepository.findEnabledGitHubRepos(collector.getId())).thenReturn(getEnabledRepos());
 
         when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
+        when(gitHubClient.getPulls(repo1, true,pullRepository)).thenReturn(getPulls());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
+                repo1.getId(), "1")).thenReturn(null);
+        when(pullRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo1.getId(), "1")).thenReturn(null);
 
         task.collect(collector);
@@ -78,6 +85,8 @@ public class GitHubCollectorTaskTest {
 
         //verify that save is called once for the commit item
         Mockito.verify(commitRepository, times(1)).save(commit);
+        Mockito.verify(pullRepository, times(1)).save(pull);
+
     }
 
     private ArrayList<Commit> getCommits() {
@@ -95,6 +104,21 @@ public class GitHubCollectorTaskTest {
         commit.setType(CommitType.New);
         commits.add(commit);
         return commits;
+    }
+    private ArrayList<Pull> getPulls() {
+        ArrayList<Pull> pulls = new ArrayList<Pull>();
+        pull = new Pull();
+        pull.setTimestamp(System.currentTimeMillis());
+        pull.setScmUrl("http://testcurrenturl");
+        pull.setScmBranch("master");
+        pull.setScmRevisionNumber("1");
+        pull.setScmParentRevisionNumbers(Collections.singletonList("2"));
+        pull.setScmAuthor("author");
+        pull.setScmCommitLog("This is a test commit");
+        pull.setScmCommitTimestamp(System.currentTimeMillis());
+        pull.setNumberOfChanges(1);
+        pulls.add(pull);
+        return pulls;
     }
 
     private List<GitHubRepo> getEnabledRepos() {

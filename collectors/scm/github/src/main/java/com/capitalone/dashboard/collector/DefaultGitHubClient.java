@@ -1,8 +1,13 @@
 package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.Issue;
+import com.capitalone.dashboard.model.Pull;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.Pull;
+import com.capitalone.dashboard.repository.IssueRepository;
+import com.capitalone.dashboard.repository.PullRepository;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
@@ -33,6 +38,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
+
+import static com.capitalone.dashboard.model.QPull.pull;
 
 /**
  * GitHubClient implementation that uses SVNKit to fetch information about
@@ -146,7 +153,7 @@ public class DefaultGitHubClient implements GitHubClient {
 							parentShas.add(str((JSONObject)parentObj, "sha"));
 						}
 					}
-                    
+
 					Commit commit = new Commit();
 					commit.setTimestamp(System.currentTimeMillis());
 					commit.setScmUrl(repo.getRepoUrl());
@@ -177,6 +184,264 @@ public class DefaultGitHubClient implements GitHubClient {
 		return commits;
 	}
 
+	@Override
+	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
+	public List<Pull> getPulls(GitHubRepo repo, boolean firstRun, PullRepository pullRepository) {
+
+		List<Pull> pulls = new ArrayList<>();
+
+		// format URL
+		String repoUrl = (String) repo.getOptions().get("url");
+		if (repoUrl.endsWith(".git"))
+			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
+
+		URL url;
+		String hostName = "";
+		String protocol = "";
+		try {
+			url = new URL(repoUrl);
+			hostName = url.getHost();
+			protocol = url.getProtocol();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			LOG.error(e.getMessage());
+		}
+		String hostUrl = protocol + "://" + hostName + "/";
+		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
+		String apiUrl;
+		if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
+			apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + repoName;
+		} else {
+			apiUrl = protocol + "://" + hostName + SEGMENT_API + repoName;
+		}
+		LOG.debug("API URL IS:"+apiUrl);
+
+		String branch = "master";
+		if (repo.getBranch() != null)
+			branch = repo.getBranch();
+		String pageUrl = apiUrl.concat("/pulls?state=all&base="+branch);
+
+		// decrypt password
+		String decryptedPassword = "";
+		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
+			try {
+				decryptedPassword = Encryption.decryptString(
+						repo.getPassword(), settings.getKey());
+			} catch (EncryptionException e) {
+				LOG.error(e.getMessage());
+			}
+		}
+
+		try {
+			ResponseEntity<String> response = makeRestCall(pageUrl, repo.getUserId(), decryptedPassword);
+
+			HttpHeaders headers = response.getHeaders();
+			List<String> pagevalues = headers.get("Link");
+			int pageCount = 0;
+
+			/*
+<https://github.kdc.capitalone.com/api/v3/repositories/11436/pulls?state=all&base=master&page=2>; rel="next",
+<https://github.kdc.capitalone.com/api/v3/repositories/11436/pulls?state=all&base=master&page=20>; rel="last"			 */
+			if (pagevalues == null) {
+				pageCount = 1;
+			} else {
+				String[] splited1 = pagevalues.get(0).split(";");
+				String[] splited2 = splited1[1].split("=");
+				String[] splitted3 = splited2[4].split(">");
+				String lastPageCount = splitted3[0];
+				pageCount = Integer.parseInt(lastPageCount);
+			}
+
+			int pageNumber = 1;
+			while (pageNumber <= pageCount) {
+				try {
+					String queryUrl = pageUrl + "&page=" + pageNumber;
+					LOG.info("Executing [" + queryUrl);
+					response = makeRestCall(queryUrl, repo.getUserId(), decryptedPassword);
+					JSONArray jsonArray = paresAsArray(response);
+					for (Object item : jsonArray) {
+						JSONObject jsonObject = (JSONObject) item;
+						String message = str(jsonObject, "title");
+						String number = str(jsonObject, "number");
+
+						JSONObject userObject = (JSONObject) jsonObject.get("user");
+						String name = str(userObject, "login");
+						String created = str(jsonObject, "created_at");
+						String merged = str(jsonObject, "merged_at");
+						String closed = str(jsonObject, "closed_at");
+						long createdTimestamp = new DateTime(created).getMillis();
+
+						Pull pull = new Pull();
+
+						if (merged != null && merged.length() >= 10) {
+							long mergedTimestamp = new DateTime(merged).getMillis();
+							pull.setScmCommitTimestamp(mergedTimestamp);
+							pull.setResolutiontime((mergedTimestamp - createdTimestamp) / (24 * 3600000));
+						}
+						pull.setUserId(name);
+						pull.setScmUrl(repo.getRepoUrl());
+						pull.setTimestamp(createdTimestamp);
+						pull.setScmRevisionNumber(number);
+						pull.setScmCommitLog(message);
+						pull.setCreatedAt(created);
+						pull.setClosedAt(closed);
+						pull.setMergedAt(merged);
+						pull.setNumber(number);
+						String reponameArray[] = pageUrl.split("/");
+
+						Pull preExistingPull = pullRepository.findByOrgNameAndRepoNameAndNumber(
+								reponameArray[6], reponameArray[7], number);
+						if ( preExistingPull!= null) {
+							pullRepository.delete(preExistingPull);
+						}
+						pull.setOrgName(reponameArray[6]);
+						pull.setRepoName(reponameArray[7]);
+						pulls.add(pull);
+					}
+
+					if (pageNumber == pageCount)
+						break;
+					if (jsonArray == null || jsonArray.isEmpty()) {
+						pageNumber = pageCount;
+						break;
+					}
+				} catch (Exception re) {
+					LOG.error(re.getMessage());
+					pageNumber = pageCount;
+				}
+				pageNumber++;
+			}
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+		}
+		return pulls;
+	}
+
+	@Override
+	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
+	public List<Issue> getIssues(GitHubRepo repo, boolean firstRun, IssueRepository issueRepository) {
+
+		List<Issue> issues = new ArrayList<>();
+
+		// format URL
+		String repoUrl = (String) repo.getOptions().get("url");
+		if (repoUrl.endsWith(".git"))
+			repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
+
+		URL url;
+		String hostName = "";
+		String protocol = "";
+		try {
+			url = new URL(repoUrl);
+			hostName = url.getHost();
+			protocol = url.getProtocol();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			LOG.error(e.getMessage());
+		}
+		String hostUrl = protocol + "://" + hostName + "/";
+		String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
+		String apiUrl;
+		if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
+			apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + repoName;
+		} else {
+			apiUrl = protocol + "://" + hostName + SEGMENT_API + repoName;
+		}
+		LOG.debug("API URL IS:"+apiUrl);
+
+
+		String pageUrl = apiUrl.concat("/issues?state=all");
+
+		// decrypt password
+		String decryptedPassword = "";
+		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
+			try {
+				decryptedPassword = Encryption.decryptString(
+						repo.getPassword(), settings.getKey());
+			} catch (EncryptionException e) {
+				LOG.error(e.getMessage());
+			}
+		}
+
+		try {
+			ResponseEntity<String> response = makeRestCall(pageUrl, repo.getUserId(), decryptedPassword);
+
+			HttpHeaders headers = response.getHeaders();
+			List<String> pagevalues = headers.get("Link");
+			int pageCount = 0;
+
+			if (pagevalues == null) {
+				pageCount = 1;
+			} else {
+				String[] splited1 = pagevalues.get(0).split(";");
+				String[] splited2 = splited1[1].split("=");
+				String[] splitted3 = splited2[3].split(">");
+				String lastPageCount = splitted3[0];
+				pageCount = Integer.parseInt(lastPageCount);
+			}
+
+			int pageNumber = 1;
+			while (pageNumber <= pageCount) {
+				try {
+					String queryUrl = pageUrl + "&page=" + pageNumber;
+					LOG.info("Executing [" + queryUrl);
+					response = makeRestCall(queryUrl, repo.getUserId(), decryptedPassword);
+					JSONArray jsonArray = paresAsArray(response);
+					for (Object item : jsonArray) {
+						JSONObject jsonObject = (JSONObject) item;
+						String message = str(jsonObject, "title");
+						String number = str(jsonObject, "number");
+
+						JSONObject userObject = (JSONObject) jsonObject.get("user");
+						String name = str(userObject, "login");
+						String created = str(jsonObject, "created_at");
+						String closed = str(jsonObject, "closed_at");
+						long createdTimestamp = new DateTime(created).getMillis();
+
+						Issue issue = new Issue();
+
+						if (closed != null && closed.length() >= 10) {
+							long mergedTimestamp = new DateTime(closed).getMillis();
+							issue.setScmCommitTimestamp(mergedTimestamp);
+							issue.setResolutiontime((mergedTimestamp - createdTimestamp) / (24 * 3600000));
+						}
+						issue.setUserId(name);
+						issue.setScmUrl(repo.getRepoUrl());
+						issue.setTimestamp(createdTimestamp);
+						issue.setScmRevisionNumber(number);
+						issue.setScmCommitLog(message);
+						issue.setCreatedAt(created);
+						issue.setClosedAt(closed);
+						issue.setNumber(number);
+						String reponameArray[] = pageUrl.split("/");
+
+						Issue preExistingIssue = issueRepository.findByOrgNameAndRepoNameAndNumber(
+								reponameArray[6], reponameArray[7], number);
+						if ( preExistingIssue!= null) {
+							issueRepository.delete(preExistingIssue);
+						}
+						issue.setOrgName(reponameArray[6]);
+						issue.setRepoName(reponameArray[7]);
+						issues.add(issue);
+					}
+
+					if (pageNumber == pageCount)
+						break;
+					if (jsonArray == null || jsonArray.isEmpty()) {
+						pageNumber = pageCount;
+						break;
+					}
+				} catch (Exception re) {
+					LOG.error(re.getMessage());
+					pageNumber = pageCount;
+				}
+				pageNumber++;
+			}
+		} catch (Exception e) {
+			LOG.error(e.getMessage());
+		}
+		return issues;
+	}
 	private CommitType getCommitType (int parentSize, String commitMessage ) {
 	    if (parentSize > 1) return CommitType.Merge;
         if (settings.getNotBuiltCommits() == null) return CommitType.New;
