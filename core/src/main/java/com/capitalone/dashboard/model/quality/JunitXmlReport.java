@@ -119,7 +119,7 @@ import java.util.List;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "testsuite", propOrder = {"properties", "testcase", "systemOut", "systemErr"})
+@XmlRootElement(name = "testsuite")
 public class JunitXmlReport implements CodeQualityVisitee {
 
     @XmlElement(required = true)

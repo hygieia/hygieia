@@ -1,12 +1,31 @@
 package jenkins.plugins.hygieia.workflow;
 
 
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.quality.*;
+import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.Extension;
+import hudson.FilePath;
+import hudson.model.Run;
+import hudson.model.TaskListener;
+import jenkins.model.Jenkins;
+import jenkins.plugins.hygieia.DefaultHygieiaService;
+import jenkins.plugins.hygieia.HygieiaPublisher;
+import jenkins.plugins.hygieia.HygieiaService;
+import jenkins.plugins.hygieia.utils.CodeQualityMetricsConverter;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
+import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
+
+import javax.inject.Inject;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
 
 
 public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
@@ -16,10 +35,23 @@ public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
     private String pmdFilePattern;
     private String checkstyleFilePattern;
     private String jacocoFilePattern;
+    private JAXBContext context;
+    private HygieiaService service;
 
     @DataBoundConstructor
-    public HygieiaCodeQualityPublisherStep() {
+    public HygieiaCodeQualityPublisherStep() throws JAXBException {
+        context = JAXBContext.newInstance(JunitXmlReport.class, JacocoXmlReport.class,
+                FindBugsXmlReport.class, CheckstyleReport.class, PmdReport.class);
+        if (null!=Jenkins.getInstance()) {
+            HygieiaPublisher.DescriptorImpl hygieiaDesc = Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
+            service = new DefaultHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
+                    hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
+        }
 
+    }
+
+    public JAXBContext getContext() {
+        return context;
     }
 
     @DataBoundSetter
@@ -67,10 +99,18 @@ public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
         return jacocoFilePattern;
     }
 
+    public HygieiaService getService() {
+        return service;
+    }
+
+    public void setService(HygieiaService service) {
+        this.service = service;
+    }
+
     @Extension
     public static class DescriptorImpl extends AbstractStepDescriptorImpl {
 
-        public DescriptorImpl(){
+        public DescriptorImpl() {
             super(HygieiaCodeQualityPublisherStepExecution.class);
         }
 
@@ -88,9 +128,46 @@ public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
 
     public static class HygieiaCodeQualityPublisherStepExecution extends AbstractSynchronousNonBlockingStepExecution<Void> {
 
+        private static final long serialVersionUID = 1L;
+
+        @Inject
+        transient HygieiaCodeQualityPublisherStep step;
+
+        @StepContextParameter
+        transient TaskListener listener;
+
+        @StepContextParameter
+        transient Run run;
+
+        @StepContextParameter
+        transient FilePath filepath;
+
         @Override
         protected Void run() throws Exception {
+            CodeQualityMetricsConverter converter = new CodeQualityMetricsConverter();
+            FilePath[] filePaths = filepath.list(step.getJunitFilePattern());
+            Unmarshaller unmarshaller = step.getContext().createUnmarshaller();
+            for (FilePath junit : filePaths) {
+                JunitXmlReport report = unmarshall(unmarshaller, junit);
+                report.accept(converter);
+            }
+            CodeQuality codeQuality = converter.produceResult();
+            HygieiaService service = step.getService();
+
+            service.publishSonarResults(convertToRequest(codeQuality));
             return null;
+        }
+
+        private CodeQualityCreateRequest convertToRequest(CodeQuality quality) {
+            CodeQualityCreateRequest request = new CodeQualityCreateRequest();
+            for (CodeQualityMetric metric: quality.getMetrics()) {
+                request.getMetrics().add(metric);
+            }
+            return request;
+        }
+
+        private <T> T unmarshall(Unmarshaller unmarshaller, FilePath path) throws IOException, InterruptedException, JAXBException {
+            return (T) unmarshaller.unmarshal(path.read());
         }
     }
 }

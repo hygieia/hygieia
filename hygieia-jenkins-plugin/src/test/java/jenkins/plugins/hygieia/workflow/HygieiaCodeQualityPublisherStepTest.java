@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import javax.xml.bind.JAXBException;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
@@ -33,7 +35,7 @@ public class HygieiaCodeQualityPublisherStepTest {
 
 
     @Test
-    public void configurationInOuterDoesNotRequireAnything() {
+    public void configurationInOuterDoesNotRequireAnything() throws JAXBException {
         HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
 
         assertThat(step,is(CoreMatchers.<HygieiaCodeQualityPublisherStep>notNullValue()));
@@ -41,7 +43,7 @@ public class HygieiaCodeQualityPublisherStepTest {
     }
 
     @Test
-    public void configurationCanSetJunitFilePattern() {
+    public void configurationCanSetJunitFilePattern() throws JAXBException {
 
         HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
 
@@ -52,7 +54,7 @@ public class HygieiaCodeQualityPublisherStepTest {
     }
 
     @Test
-    public void configurationCanSetFindbugsFilePattern() {
+    public void configurationCanSetFindbugsFilePattern() throws JAXBException {
         HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
 
         step.setFindbugsFilePattern("**/target/findbugs.xml");
@@ -61,7 +63,7 @@ public class HygieiaCodeQualityPublisherStepTest {
     }
 
     @Test
-    public void configurationCanSetPmdFilePattern() {
+    public void configurationCanSetPmdFilePattern() throws JAXBException {
         HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
 
         step.setPmdFilePattern("**/target/pmd.xml");
@@ -70,7 +72,7 @@ public class HygieiaCodeQualityPublisherStepTest {
     }
 
     @Test
-    public void configurationCanSetCheckstyleFilePattern(){
+    public void configurationCanSetCheckstyleFilePattern() throws JAXBException {
         HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
 
         step.setCheckstyleFilePattern("**/target/checkstyle-result.xml");
@@ -79,21 +81,12 @@ public class HygieiaCodeQualityPublisherStepTest {
     }
 
     @Test
-    public void configurationCanSetJacocoFilePattern() {
+    public void configurationCanSetJacocoFilePattern() throws JAXBException {
         HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
 
         step.setJacocoFilePattern("**/target/checkstyle-result.xml");
 
         assertThat(step.getJacocoFilePattern(),is("**/target/checkstyle-result.xml"));
-    }
-
-    @Test
-    public void executionDoesSomething() throws Exception {
-        HygieiaCodeQualityPublisherStep.HygieiaCodeQualityPublisherStepExecution execution = new HygieiaCodeQualityPublisherStep.HygieiaCodeQualityPublisherStepExecution();
-
-        execution.run();
-
-        TestCase.fail("no written yet");
     }
 
 }
