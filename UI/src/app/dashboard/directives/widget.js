@@ -104,10 +104,13 @@
             };
 
             $scope.lastUpdatedDisplay = '';
+            $scope.collectorItems = null;
+            $scope.collectionError = false;
 
             // public methods
             $scope.configModal = configModal;
             $scope.hasPermission = hasPermission;
+            $scope.collectorItemStatus = collectorItemStatus;
             $scope.setState = setState;
             $scope.init = init;
 
@@ -138,6 +141,9 @@
             	return userService.hasDashboardConfigPermission(dashboard.owner, dashboard.owners);
             }
 
+            function collectorItemStatus() {
+            }
+
             function upsertWidget(newWidgetConfig) {
                 if (newWidgetConfig) {
                     // use existing values if they're not defined
@@ -149,7 +155,6 @@
                         delete $scope.widgetConfig.collectorItemId;
                     }
 
-                    console.log('New Widget Config', $scope.widgetConfig);
                     dashboardData
                         .upsertWidget($scope.dashboard.id, $scope.widgetConfig)
                         .then(function (response) {
@@ -242,7 +247,14 @@
                 if (load && load.then) {
                     load.then(function(result) {
                         var lastUpdated = angular.isArray(result) ? _.max(result) : result;
+                        var collectorItems = result.collectorItem;
                         $scope.lastUpdatedDisplay = moment(lastUpdated).dash('ago');
+                        $scope.collectorItems = collectorItems;
+                        if (collectorItems) {
+                            for (var i = 0; (i < collectorItems.length) && !$scope.collectionError ; i++ ) {
+                                $scope.collectionError = collectorItems[i].errors.length > 0;
+                            }
+                        }
                     });
                 }
             }

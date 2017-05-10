@@ -60,7 +60,7 @@ public class DefaultGitHubClient implements GitHubClient {
 
 	@Override
 	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
-	public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) {
+	public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) throws RestClientException{
 
 		List<Commit> commits = new ArrayList<>();
 
@@ -127,7 +127,7 @@ public class DefaultGitHubClient implements GitHubClient {
 		int pageNumber = 1;
 		String queryUrlPage = queryUrl;
 		while (!lastPage) {
-			try {
+//			try {
 				ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
 				JSONArray jsonArray = paresAsArray(response);
 				for (Object item : jsonArray) {
@@ -168,11 +168,12 @@ public class DefaultGitHubClient implements GitHubClient {
 					queryUrlPage = queryUrl + "&page=" + pageNumber;
 				}
 
-			} catch (RestClientException re) {
-				LOG.error(re.getMessage() + ":" + queryUrl);
-				lastPage = true;
-
-			}
+//			}
+//			catch (RestClientException re) {
+//				LOG.error(re.getMessage() + ":" + queryUrl);
+//				lastPage = true;
+//				throw re;
+//			}
 		}
 		return commits;
 	}

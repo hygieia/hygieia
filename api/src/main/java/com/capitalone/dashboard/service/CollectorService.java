@@ -76,4 +76,12 @@ public interface CollectorService {
      * @return created Collector
      */
     Collector createCollector(Collector collector);
+
+
+    /**
+     * Gets a list of collectorItems for a given component id
+     * @param id
+     * @return List of collectorItems
+     */
+    List<CollectorItem> getCollectorItemForComponent (String id, String type);
 }

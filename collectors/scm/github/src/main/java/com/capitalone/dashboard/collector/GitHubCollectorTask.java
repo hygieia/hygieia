@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.collector;
 
 
+import com.capitalone.dashboard.model.CollectionError;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -16,6 +17,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -126,21 +129,38 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
         clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
-        	boolean firstRun = false;
-        	if (repo.getLastUpdated() == 0) firstRun = true;
-        	repo.setLastUpdated(System.currentTimeMillis());
-            repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
-            gitHubRepoRepository.save(repo);
-            LOG.debug(repo.getOptions().toString()+"::"+repo.getBranch());
-            for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
-            	LOG.debug(commit.getTimestamp()+":::"+commit.getScmCommitLog());
-                if (isNewCommit(repo, commit)) {
-                    commit.setCollectorItemId(repo.getId());
-                    commitRepository.save(commit);
-                    commitCount++;
-                }
-            }
+            if (repo.getErrorCount() <= gitHubSettings.getErrorThreshold()) {
+                boolean firstRun = false;
+                if (repo.getLastUpdated() == 0) firstRun = true;
 
+                repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
+
+                LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
+                try {
+                    for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
+                        LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
+                        if (isNewCommit(repo, commit)) {
+                            commit.setCollectorItemId(repo.getId());
+                            commitRepository.save(commit);
+                            commitCount++;
+                        }
+                    }
+                    repo.setLastUpdated(System.currentTimeMillis());
+                } catch (RestClientException re) {
+                    LOG.error(re);
+                    CollectionError error;
+
+                    if (re instanceof HttpStatusCodeException) {
+                        error = new CollectionError(((HttpStatusCodeException) re).getStatusCode().toString(), re.getMessage());
+                    } else {
+                        error = new CollectionError(CollectionError.UNKNOWN_ERROR_CODE, "Error fetching commits");
+                    }
+                    if (error != null) {
+                        repo.getErrors().add(error);
+                    }
+                }
+                gitHubRepoRepository.save(repo);
+            }
             repoCount++;
         }
         log("Repo Count", start, repoCount);
@@ -153,6 +173,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     private List<GitHubRepo> enabledRepos(Collector collector) {
         return gitHubRepoRepository.findEnabledGitHubRepos(collector.getId());
     }
+
 
     private boolean isNewCommit(GitHubRepo repo, Commit commit) {
         return commitRepository.findByCollectorItemIdAndScmRevisionNumber(

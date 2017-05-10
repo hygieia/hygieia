@@ -76,6 +76,12 @@ public class CollectorController {
         return ResponseEntity.ok(collectorService.getCollectorItem(id));
     }
 
+    @RequestMapping(value = "/collector/item/component/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<CollectorItem>> getCollectorItemByComponentId(@PathVariable String id,
+                                                                             @RequestParam(value="type", required = true) String type) {
+        return ResponseEntity.ok(collectorService.getCollectorItemForComponent(id, type));
+    }
+
     @RequestMapping(value = "/collector/item/type/{collectorType}", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<CollectorItem>> collectorItemsByType(@PathVariable CollectorType collectorType, @RequestParam(value="search", required=false, defaultValue="") String descriptionFilter, @PageableDefault(size=Integer.MAX_VALUE) Pageable pageable) {

@@ -155,7 +155,6 @@
 
                 var oneInterval = instances.filter(function(value) {
                     return conversion(value.time) ==element;
-                    console.log("Element:"+element);
                 });
 
 
@@ -403,7 +402,6 @@
                     var hourlyTotals = [];
 
                     hourlyAvg.forEach(function(value){
-                        console.log("Totals:"+Math.round(value.avg));
                         hourlyTimeSeries.push(value.interval);
                         hourlyTotals.push(Math.round(value.avg));
                     })

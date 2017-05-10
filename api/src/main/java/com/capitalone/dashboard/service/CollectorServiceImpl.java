@@ -1,9 +1,12 @@
 package com.capitalone.dashboard.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,14 +30,16 @@ public class CollectorServiceImpl implements CollectorService {
 
     private final CollectorRepository collectorRepository;
     private final CollectorItemRepository collectorItemRepository;
+    private final ComponentRepository componentRepository;
     private final DashboardRepository dashboardRepository;
 
     @Autowired
     public CollectorServiceImpl(CollectorRepository collectorRepository,
                                 CollectorItemRepository collectorItemRepository,
-                                DashboardRepository dashboardRepository) {
+                                ComponentRepository componentRepository, DashboardRepository dashboardRepository) {
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
+        this.componentRepository = componentRepository;
         this.dashboardRepository = dashboardRepository;
     }
 
@@ -140,6 +145,23 @@ public class CollectorServiceImpl implements CollectorService {
             collector.setId(existing.getId());
         }
         return collectorRepository.save(collector);
+    }
+
+    @Override
+    public List<CollectorItem> getCollectorItemForComponent(String id, String type) {
+        ObjectId oid = new ObjectId(id);
+        CollectorType ctype = CollectorType.fromString(type);
+        Component component = componentRepository.findOne(oid);
+
+        List<CollectorItem> items =  component.getCollectorItems(ctype);
+
+        // the collector items from component are not updated for collector run. We need to
+        // get the 'live' collector items from the collectorItemRepository
+        List<ObjectId> ids = new ArrayList<>();
+        for (CollectorItem item : items) {
+            ids.add(item.getId());
+        }
+        return (List<CollectorItem>) collectorItemRepository.findAll(ids);
     }
 
     private Collector collectorById(ObjectId collectorId, List<Collector> collectors) {
