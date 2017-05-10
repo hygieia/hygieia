@@ -7,6 +7,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import jenkins.plugins.hygieia.HygieiaService;
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +57,7 @@ public class HygieiaCodeQualityPublisherStepExecutionTest {
     }
 
     @Test
-    public void runCollectsResultFromJob() throws Throwable {
+    public void runCollectsJunitResultFromJob() throws Throwable {
         when(mockStep.getJunitFilePattern()).thenReturn("**/target/junit.xml");
         FilePath[] files = new FilePath[]{new FilePath(new File(this.getClass().getResource("/junit.xml").toURI()))};
 
@@ -72,6 +73,19 @@ public class HygieiaCodeQualityPublisherStepExecutionTest {
         verify(mockHygieiaService).publishSonarResults(captor.capture());
 
         assertThat(captor.getValue().getMetrics()).hasSize(4);
+    }
+
+    @Test
+    public void copesWithJunitNotDefined() throws Exception {
+        when(mockStep.getJunitFilePattern()).thenReturn(null);
+
+        subject.run();
+
+    }
+
+    @Test
+    public void ignoresFileIncorrectlyIdentified() throws Exception {
+        TestCase.fail("not done yet");
     }
 
 }
