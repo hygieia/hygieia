@@ -11,12 +11,13 @@ public class Cmdb {
     private ObjectId id;
     private ObjectId collectorItemId;
     private long timestamp;
-    private String ConfigurationItem;
-    private String AssignmentGroup;
-    private String AppServiceOwner;
-    private String BusinessOwner;
-    private String SupportOwner;
-    private String DevelopmentOwner;
+    private String configurationItem;
+    private String assignmentGroup;
+    private String appServiceOwner;
+    private String businessOwner;
+    private String supportOwner;
+    private String developmentOwner;
+    private String ownerDept;
 
     public ObjectId getId() {
         return id;
@@ -43,50 +44,95 @@ public class Cmdb {
     }
 
     public String getConfigurationItem() {
-        return ConfigurationItem;
+        return configurationItem;
     }
 
     public void setConfigurationItem(String configurationItem) {
-        ConfigurationItem = configurationItem;
+        this.configurationItem = configurationItem;
     }
 
     public String getAssignmentGroup() {
-        return AssignmentGroup;
+        return assignmentGroup;
     }
 
     public void setAssignmentGroup(String assignmentGroup) {
-        AssignmentGroup = assignmentGroup;
+        this.assignmentGroup = assignmentGroup;
     }
 
     public String getAppServiceOwner() {
-        return AppServiceOwner;
+        return appServiceOwner;
     }
 
     public void setAppServiceOwner(String appServiceOwner) {
-        AppServiceOwner = appServiceOwner;
+        this.appServiceOwner = appServiceOwner;
     }
 
     public String getBusinessOwner() {
-        return BusinessOwner;
+        return businessOwner;
     }
 
     public void setBusinessOwner(String businessOwner) {
-        BusinessOwner = businessOwner;
+        this.businessOwner = businessOwner;
     }
 
     public String getSupportOwner() {
-        return SupportOwner;
+        return supportOwner;
     }
 
     public void setSupportOwner(String supportOwner) {
-        SupportOwner = supportOwner;
+        this.supportOwner = supportOwner;
     }
 
     public String getDevelopmentOwner() {
-        return DevelopmentOwner;
+        return developmentOwner;
     }
 
     public void setDevelopmentOwner(String developmentOwner) {
-        DevelopmentOwner = developmentOwner;
+        this.developmentOwner = developmentOwner;
+    }
+
+    public String getOwnerDept() {
+        return ownerDept;
+    }
+
+    public void setOwnerDept(String ownerDept) {
+        this.ownerDept = ownerDept;
+    }
+
+    @Override
+    public boolean equals(Object compareTo){
+        boolean doesEqual = true;
+
+        if(compareTo == null || !compareTo.getClass().isAssignableFrom(Cmdb.class)){
+            doesEqual = false;
+        }else {
+            Cmdb newCmdb = (Cmdb) compareTo;
+
+            if(!newCmdb.toString().equals(toString())){
+                doesEqual = false;
+            }
+        }
+
+        return doesEqual;
+    }
+
+    /**
+     *  Returns human readable string of the Cmdb Object.
+     *  * equals(Object object) depends on this method. Changing this method could alter the return of the equals method.
+     * @return object to string
+     */
+    @Override
+    public String toString() {
+
+        StringBuffer buf = new StringBuffer();
+        buf.append("configurationItem: " + configurationItem);
+        buf.append("\nassignmentGroup: " + assignmentGroup);
+        buf.append("\nappServiceOwner: " + appServiceOwner);
+        buf.append("\nbusinessOwner: " + businessOwner);
+        buf.append("\nsupportOwner: " + supportOwner);
+        buf.append("\ndevelopmentOwner: " + developmentOwner);
+        buf.append("\nownerDept: " + ownerDept);
+
+        return buf.toString();
     }
 }

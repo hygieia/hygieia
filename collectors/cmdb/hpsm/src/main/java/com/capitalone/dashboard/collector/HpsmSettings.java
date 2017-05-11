@@ -3,8 +3,6 @@ package com.capitalone.dashboard.collector;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
  * Bean to hold settings specific to the HPSM collector.
  */
@@ -22,13 +20,14 @@ public class HpsmSettings {
     private String key;
     private String appSubType;
     private String appType;
-    private String appRequestType;
-    private String appSoapAction;
 	private String compSubType;
 	private String compType;
-	private String compRequestType;
-	private String compSoapAction;
-	private List<String> fieldList;
+
+	private String appRequestType;
+	private String appSoapAction;
+	private String detailsRequestType;
+	private String detailsSoapAction;
+
 	private int apiPort;
     private int firstRunHistoryDays;
 
@@ -145,28 +144,20 @@ public class HpsmSettings {
 		this.compType = compType;
 	}
 
-	public String getCompRequestType() {
-		return compRequestType;
+	public String getDetailsRequestType() {
+		return detailsRequestType;
 	}
 
-	public void setCompRequestType(String compRequestType) {
-		this.compRequestType = compRequestType;
+	public void setDetailsRequestType(String detailsRequestType) {
+		this.detailsRequestType = detailsRequestType;
 	}
 
-	public String getCompSoapAction() {
-		return compSoapAction;
+	public String getDetailsSoapAction() {
+		return detailsSoapAction;
 	}
 
-	public void setCompSoapAction(String compSoapAction) {
-		this.compSoapAction = compSoapAction;
-	}
-
-	public List<String> getFieldList() {
-		return fieldList;
-	}
-
-	public void setFieldList(List<String> fieldList) {
-		this.fieldList = fieldList;
+	public void setDetailsSoapAction(String detailsSoapAction) {
+		this.detailsSoapAction = detailsSoapAction;
 	}
 
 	public String getCron() {

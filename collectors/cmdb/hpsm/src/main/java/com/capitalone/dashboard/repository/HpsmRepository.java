@@ -1,7 +1,9 @@
 package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.HpsmCollector;
-
-public interface HpsmRepository extends BaseCollectorItemRepository<HpsmCollector> {
+/**
+ * Repository for {@link HpsmCollector}.
+ */
+public interface HpsmRepository extends BaseCollectorRepository<HpsmCollector> {
 
 }

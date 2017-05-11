@@ -1,7 +1,6 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.HpsmCollector;
+import com.capitalone.dashboard.model.Cmdb;
 
 import java.util.List;
 
@@ -16,6 +15,6 @@ public interface HpsmClient {
      * @return all Apps in HPSM
      */
 
-	List<HpsmCollector> getApps();
+	List<Cmdb> getApps();
 
 }
