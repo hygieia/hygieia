@@ -8,6 +8,9 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -37,8 +40,8 @@ import org.springframework.web.client.RestOperations;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.TeamCityJob;
-//import com.capitalone.dashboard.model.RepoBranch;
-//import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.util.Supplier;
 
 
@@ -54,16 +57,13 @@ public class DefaultTeamCityClient implements TeamCityClient {
     private final TeamCitySettings settings;
 
     private static final String API_SUFFIX = "/app/rest";
-    private static final String JOB_QUERY = ")&fields=buildType(projectId,name,builds($locator(running:false,canceled:false),build(id,href,branchName)))";
 
     private static final String JOBS_URL_SUFFIX = "/app/rest/projects";
+    
+    private static final String JOB_QUERY = ")&fields=buildType(projectId,name,builds($locator(running:false,canceled:false,branch:default:any),build(id,href)))";
 
-   /* private static final String[] BUILD_DETAILS_TREE = new String[]{
-            "id"
-    };
-*/
     private static final String BUILD_TYPES_URL_SUFFIX = "/buildTypes?locator=affectedProject:(id:";
-
+    
     @Autowired
     public DefaultTeamCityClient(Supplier<RestOperations> restOperationsSupplier, TeamCitySettings settings) {
         this.rest = restOperationsSupplier.get();
@@ -188,7 +188,6 @@ public class DefaultTeamCityClient implements TeamCityClient {
             // A basic Build object. This will be fleshed out later if this is a new Build.
             String dockerLocalHostIP = settings.getDockerLocalHostIP();
             String ProjectLocator = jsonJob.get("id").toString();
-            LOG.error(" Project Locator: " + ProjectLocator);
             if (StringUtils.isNotEmpty(ProjectLocator)) 
             {
                 String buildURL="";
@@ -221,38 +220,38 @@ public class DefaultTeamCityClient implements TeamCityClient {
 			                        for(Object buildTypeObj : buildTypes)
 			                        {
 			                        	JSONObject JbuildTypeObj = (JSONObject) buildTypeObj;
-			                        	if(getString(JbuildTypeObj,"projectId").equals(jobName))
+			                        	if((getString(JbuildTypeObj,"projectId").equals(jobName))&& (getString(JbuildTypeObj,"name").contains("Build")))
 			                        	{
 				    	                    teamcityJob.setJobName(jobName);
 				    	                    teamcityJob.setJobUrl(jobURL);
 			                        		JSONObject buildsObj = (JSONObject) JbuildTypeObj.get("builds");
 					                        JSONArray buildsList = getJsonArray(buildsObj, "build");
-					    	                for (Object buildObj : buildsList) {
+					    	                for (Object buildObj : buildsList) 
+					    	                {
 					    	                    JSONObject JbuildsObj = (JSONObject) buildObj;	
-					    	                    String branchName = getString(JbuildsObj,"branchName");
-					    	                    if(StringUtils.endsWithIgnoreCase("develop",branchName) || StringUtils.endsWithIgnoreCase("master",branchName))
-					    	                    {						    	                    
-						    	                    String buildId = JbuildsObj.get("id").toString();
 						    	                    
-						    	                    if (!"0".equals(buildId)) {
-								                        Build teamcityBuild = new Build();
-						    	                        teamcityBuild.setNumber(buildId);
-						    	                        String buildDetailsURL="";
-						    	        				try {
-						    	        					buildDetailsURL = joinURL(instanceUrl, "/app/rest/builds","/?locator=id:"+buildId+"&fields=build(id,number,state,status,startDate,finishDate,triggered(user),buildType(id,name,projectName),changes,statistics(property(name,value)))");
-						    	        				} catch (MalformedURLException e) {
-						    	        					e.printStackTrace();
-						    	        				}
-						    	                        if (!dockerLocalHostIP.isEmpty()) {
-						    	                        	buildDetailsURL = buildDetailsURL.replace("localhost", dockerLocalHostIP);
-						    	                            LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildDetailsURL);
-						    	                        } else {
-						    	                            LOG.debug(" Adding Build: " + buildURL);
-						    	                        }
-	
-						    	                        teamcityBuild.setBuildUrl(buildDetailsURL);
-						    	                        builds.add(teamcityBuild);
-						    	                    }					    	                    	
+					    	                    String buildId = JbuildsObj.get("id").toString();
+					    	                    
+					    	                    if (!"0".equals(buildId)) 
+					    	                    {
+							                        Build teamcityBuild = new Build();
+					    	                        teamcityBuild.setNumber(buildId);
+					    	                        String buildDetailsURL="";
+					    	        				try {
+					    	        					buildDetailsURL = joinURL(instanceUrl, "/app/rest/builds","/?locator=id:"+buildId+"&fields=build(id,number,state,status,startDate,finishDate,triggered(user),buildType(id,name,projectName),properties(property(name,value)),changes(change(id,username,date,comment)),statistics(property(name,value)))");
+					    	        				} catch (MalformedURLException e) {
+					    	        					e.printStackTrace();
+					    	        				}
+					    	                        if (!dockerLocalHostIP.isEmpty()) {
+					    	                        	buildDetailsURL = buildDetailsURL.replace("localhost", dockerLocalHostIP);
+					    	                            LOG.debug("Adding build & Updated URL to map LocalHost for Docker: " + buildDetailsURL);
+					    	                        } else {
+					    	                            LOG.debug(" Adding Build: " + buildURL);
+					    	                        }
+
+					    	                        teamcityBuild.setBuildUrl(buildDetailsURL);
+					    	                        builds.add(teamcityBuild);
+					    	                    	
 					    	                    }
 					    	                }			                        		
 			                        	}
@@ -302,32 +301,30 @@ public class DefaultTeamCityClient implements TeamCityClient {
                 JSONObject buildJson = (JSONObject) parser.parse(resultJSON);
                 JSONArray buildJSONArray =  getJsonArray(buildJson,"build");
                 Build build = new Build();
-                for(Object obj : buildJSONArray)
-                {
-                	JSONObject buildDetails = (JSONObject) obj;
-                    String building = getString(buildDetails,"state");
-                    // Ignore jobs that are building
-                    if (!building.equalsIgnoreCase("running") || !building.equalsIgnoreCase("cancelled")) {
-                        
-                        build.setNumber(buildDetails.get("id").toString());
-                        build.setBuildUrl(buildUrl);
-                        build.setTimestamp(System.currentTimeMillis());
-                        build.setStartTime(getMilliSeconds(buildDetails.get("startDate").toString()));
-						build.setEndTime(getMilliSeconds(buildDetails.get("finishDate").toString()));
-                        JSONObject statisticsObj = (JSONObject)buildDetails.get("statistics");
-                        JSONArray properties = getJsonArray(statisticsObj,"property");
-                        for(Object property : properties)
-                        {
-                        	if(getString((JSONObject) property, "name").contains("BuildDurationNetTime"))
-                			{
-                        		build.setDuration(Long.parseLong(((JSONObject) property).get("value").toString()));	                       		
-                        		break;
-                			}
-                        }
-                        build.setBuildStatus(getBuildStatus(buildDetails));
-                        build.setStartedBy(firstCulprit(buildDetails));
-                       
-                }
+	                for(Object obj : buildJSONArray)
+	                {
+	                	JSONObject buildDetails = (JSONObject) obj;
+	                    String building = getString(buildDetails,"state");
+	                    // Ignore jobs that are running or cancelled
+	                    if (!building.equalsIgnoreCase("running") || !building.equalsIgnoreCase("cancelled")) {
+	                        build.setNumber(buildDetails.get("id").toString());
+	                        build.setBuildUrl(buildUrl);
+	                        build.setTimestamp(System.currentTimeMillis());
+	                        build.setStartTime(getMilliSeconds(buildDetails.get("startDate").toString()));
+							build.setEndTime(getMilliSeconds(buildDetails.get("finishDate").toString()));
+	                        JSONObject statisticsObj = (JSONObject)buildDetails.get("statistics");
+	                        
+	                        build.setDuration(Long.parseLong(getPropertyValue(statisticsObj, "BuildDurationNetTime")));
+	                        build.setBuildStatus(getBuildStatus(buildDetails));
+	                        build.setStartedBy(firstCulprit(buildDetails));	  
+	                        if (settings.isSaveLog()) {
+	                            build.setLog(getLog(buildUrl));
+	                        }	                        
+	                                                
+	                        Set<String> commitIds = new HashSet<>();
+
+                            addChangeSet(build, buildDetails, commitIds);                    	                        
+	                }
                    
                 }
                 return build;
@@ -365,39 +362,54 @@ public class DefaultTeamCityClient implements TeamCityClient {
         URI newUri = new URI(instanceProtocol, userInfo, host, port, buildPath, buildUrl.getQuery(), null);
         return newUri.toString();
     }
-
-    private String removeGitExtensionFromUrl(String url) {
-    	String sUrl = url;
-    	//remove .git from the urls
-    	if (sUrl.endsWith(".git")) {
-            sUrl = sUrl.substring(0, sUrl.lastIndexOf(".git"));
-        }
-    	return sUrl;
-    }
-    
+  
     /**
-     * Gets the unqualified branch name given the qualified one of the following forms:
-     * 1. refs/remotes/<remote name>/<branch name>
-     * 2. remotes/<remote name>/<branch name>
-     * 3. origin/<branch name>
-     * 4. <branch name>
-     * @param qualifiedBranch
-     * @return the unqualified branch name
+     * Grabs changeset information for the given build.
+     *
+     * @param build     a Build
+     * @param changeSet the build JSON object
+     * @param commitIds the commitIds
+     * @param revisions the revisions
      */
-        
-   private String getUnqualifiedBranch(String qualifiedBranch) {
-    	String branchName = qualifiedBranch;
-    	Pattern pattern = Pattern.compile("(refs/)?remotes/[^/]+/(.*)|(origin[0-9]*/)?(.*)");
-    	Matcher matcher = pattern.matcher(branchName);
-    	if(matcher.matches()) {
-    		if (matcher.group(2) != null) {
-    			branchName = matcher.group(2);
-    		} else if (matcher.group(4) != null) {
-    			branchName = matcher.group(4);
-    		}
-    	}
-    	return branchName;
+    private void addChangeSet(Build build, JSONObject buildDetails, Set<String> commitIds) {        
+        String scmType = "GIT";
+        Map<String, RepoBranch> commitsToUrl = new HashMap<>();
+        JSONObject changeSet = (JSONObject) buildDetails.get("changes");
+        JSONObject properties = (JSONObject) buildDetails.get("properties");
+        RepoBranch rb = new RepoBranch();
+        String Company = getPropertyValue(properties,"fetchURLCompanyName");
+        String URLRoot = getPropertyValue(properties,"fetchURLRoot");
+        String CompanyUrl = URLRoot.replace("%fetchURLCompanyName%", Company);
+        String FetchURL = getPropertyValue(properties,"fetchURL").replaceAll("%fetchURLRoot%", CompanyUrl);
+        rb.setUrl(FetchURL);
+        rb.setBranch(getPropertyValue(properties, "defaultBranch"));
+        rb.setType(RepoBranch.RepoType.fromString(scmType));
+        build.getCodeRepos().add(rb);
+
+        for (Object change : getJsonArray(changeSet, "change")) {
+            JSONObject json = (JSONObject) change;
+            String changeId = json.get("id").toString();
+            if (StringUtils.isNotEmpty(changeId) && !commitIds.contains(changeId)) {
+                commitsToUrl.put(changeId, rb);
+                SCM scm = new SCM();
+                scm.setScmAuthor(getString(json,"username"));
+                scm.setScmCommitLog(getString(json, "comment"));
+                scm.setScmCommitTimestamp(getCommitTimestamp(json));
+                scm.setScmRevisionNumber(changeId);
+                RepoBranch repoBranch = commitsToUrl.get(scm.getScmRevisionNumber());  
+                if (repoBranch != null) {
+                    scm.setScmUrl(repoBranch.getUrl());
+                    scm.setScmBranch(repoBranch.getBranch());
+                }  
+                scm.setNumberOfChanges(getJsonArray(changeSet, "change").size());
+                build.getSourceChangeSet().add(scm);
+                commitIds.add(changeId);                  
+                
+            }
+        }
     }
+
+ 
 
     private long getCommitTimestamp(JSONObject jsonItem) {
         if (jsonItem.get("timestamp") != null) {
@@ -405,9 +417,9 @@ public class DefaultTeamCityClient implements TeamCityClient {
         } else if (jsonItem.get("date") != null) {
             String dateString = (String) jsonItem.get("date");
             try {
-                return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(dateString).getTime();
-            } catch (java.text.ParseException e) {
                 // Try an alternate date format...looks like this one is used by Git
+                return new SimpleDateFormat("yyyyMMdd'T'HHmmss-hhmm").parse(dateString).getTime();
+            } catch (java.text.ParseException e) {
                 try {
                     return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(dateString).getTime();
                 } catch (java.text.ParseException e1) {
@@ -418,6 +430,19 @@ public class DefaultTeamCityClient implements TeamCityClient {
         return 0;
     }
 
+    private String getPropertyValue(JSONObject json,String name){
+        JSONArray properties = getJsonArray(json,"property");
+        for(Object property : properties)
+        {
+        	if(getString((JSONObject) property, "name").contains(name))
+			{
+        		LOG.error("Duration property value"+((JSONObject) property).get("value").toString());
+        		return ((JSONObject) property).get("value").toString();	                       		
+			}
+        }
+        return null;
+    }
+    
     private String getString(JSONObject json, String key) {
         return (String) json.get(key);
     }
