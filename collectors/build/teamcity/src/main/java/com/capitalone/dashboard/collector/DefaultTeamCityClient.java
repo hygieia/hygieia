@@ -436,7 +436,6 @@ public class DefaultTeamCityClient implements TeamCityClient {
         {
         	if(getString((JSONObject) property, "name").contains(name))
 			{
-        		LOG.error("Duration property value"+((JSONObject) property).get("value").toString());
         		return ((JSONObject) property).get("value").toString();	                       		
 			}
         }
