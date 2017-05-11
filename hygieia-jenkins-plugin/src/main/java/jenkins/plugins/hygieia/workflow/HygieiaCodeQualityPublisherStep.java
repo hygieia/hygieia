@@ -42,7 +42,7 @@ public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
     public HygieiaCodeQualityPublisherStep() throws JAXBException {
         context = JAXBContext.newInstance(JunitXmlReport.class, JacocoXmlReport.class,
                 FindBugsXmlReport.class, CheckstyleReport.class, PmdReport.class);
-        if (null!=Jenkins.getInstance()) {
+        if (null != Jenkins.getInstance()) {
             HygieiaPublisher.DescriptorImpl hygieiaDesc = Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
             service = new DefaultHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
@@ -145,12 +145,55 @@ public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
         @Override
         protected Void run() throws Exception {
             CodeQualityMetricsConverter converter = new CodeQualityMetricsConverter();
-            FilePath[] filePaths = filepath.list(step.getJunitFilePattern());
             Unmarshaller unmarshaller = step.getContext().createUnmarshaller();
-            for (FilePath junit : filePaths) {
-                JunitXmlReport report = unmarshall(unmarshaller, junit);
-                report.accept(converter);
+
+            // junit
+            if (null!=step.getJunitFilePattern() && !step.getJunitFilePattern().isEmpty()) {
+                FilePath[] filePaths = filepath.list(step.getJunitFilePattern());
+                for (FilePath junit : filePaths) {
+                    JunitXmlReport report = unmarshall(unmarshaller, junit);
+                    report.accept(converter);
+                }
             }
+
+            // pmd
+            if (null!=step.getPmdFilePattern() && !step.getPmdFilePattern().isEmpty()) {
+                FilePath[] filePaths = filepath.list(step.getPmdFilePattern());
+                for (FilePath pmd : filePaths) {
+                    PmdReport report = unmarshall(unmarshaller, pmd);
+                    report.accept(converter);
+                }
+            }
+
+            // findbugs
+            if (null!=step.getFindbugsFilePattern() && !step.getFindbugsFilePattern().isEmpty()) {
+                FilePath[] filePaths = filepath.list(step.getFindbugsFilePattern());
+                for (FilePath findbugs : filePaths) {
+                    FindBugsXmlReport report = unmarshall(unmarshaller, findbugs);
+                    report.accept(converter);
+                }
+            }
+
+            // checkstyle
+            if (null!=step.getCheckstyleFilePattern() && !step.getCheckstyleFilePattern().isEmpty()) {
+                FilePath[] filePaths = filepath.list(step.getCheckstyleFilePattern());
+                for (FilePath checkstyle : filePaths) {
+                    CheckstyleReport report = unmarshall(unmarshaller, checkstyle);
+                    report.accept(converter);
+                }
+            }
+
+            //jacoco
+            if (null!=step.getJacocoFilePattern() && !step.getJacocoFilePattern().isEmpty()) {
+                FilePath[] filePaths = filepath.list(step.getJacocoFilePattern());
+                for (FilePath checkstyle : filePaths) {
+                    JacocoXmlReport report = unmarshall(unmarshaller, checkstyle);
+                    report.accept(converter);
+                }
+            }
+
+
+            // results
             CodeQuality codeQuality = converter.produceResult();
             HygieiaService service = step.getService();
 
@@ -160,13 +203,14 @@ public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
 
         private CodeQualityCreateRequest convertToRequest(CodeQuality quality) {
             CodeQualityCreateRequest request = new CodeQualityCreateRequest();
-            for (CodeQualityMetric metric: quality.getMetrics()) {
+            for (CodeQualityMetric metric : quality.getMetrics()) {
                 request.getMetrics().add(metric);
             }
             return request;
         }
 
         private <T> T unmarshall(Unmarshaller unmarshaller, FilePath path) throws IOException, InterruptedException, JAXBException {
+            //TODO prevent malicious xml attack, or ignore? (https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet#SAXTransformerFactory)
             return (T) unmarshaller.unmarshal(path.read());
         }
     }

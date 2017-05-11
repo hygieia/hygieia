@@ -369,6 +369,45 @@ public class CodeQualityMetricsConverterTest {
                         tuple("violations", "4", 4, CodeQualityMetricStatus.Warning));
     }
 
+    @Test
+    public void jacocoEmpty(){
+        JacocoXmlReport jacocoXmlReport1 = new JacocoXmlReport();
+
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        jacocoXmlReport1.accept(testee);
+
+        CodeQuality calculatedCodeQuality = testee.produceResult();
+
+        assertThat(calculatedCodeQuality.getMetrics()).extracting("name", "formattedValue", "value", "status")
+                .contains(
+                        tuple("total_lines_covered", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("total_lines_missed", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_covered", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_missed", "0", 0, CodeQualityMetricStatus.Ok));
+
+        boolean coverageDone = false;
+        boolean lineCoverageDone = false;
+        for (CodeQualityMetric codeQuality : calculatedCodeQuality.getMetrics()) {
+            if (codeQuality.getName().equals("coverage")) {
+                assertThat(codeQuality.getFormattedValue()).isEqualTo("100.000");
+                assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(100, Percentage.withPercentage(1));
+                coverageDone = true;
+            }
+
+            if (codeQuality.getName().equals("line_coverage")) {
+                assertThat(codeQuality.getFormattedValue()).isEqualTo("100.000");
+                assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(100, Percentage.withPercentage(1));
+                lineCoverageDone=true;
+            }
+
+        }
+
+        assertThat(coverageDone).isTrue();
+        assertThat(lineCoverageDone).isTrue();
+    }
+
     private PmdReport producePmdReport() {
         PmdReport report = new PmdReport();
         PmdReport.PmdFile file = new PmdReport.PmdFile();

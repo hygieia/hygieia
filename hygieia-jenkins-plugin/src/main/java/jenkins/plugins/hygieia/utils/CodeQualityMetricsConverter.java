@@ -153,19 +153,21 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
         metricsMap.put(TOTAL_INSTRUCTIONS_COVERED, Pair.of(0, CodeQualityMetricStatus.Ok));
         metricsMap.put(TOTAL_INSTRUCTIONS_MISSED, Pair.of(0, CodeQualityMetricStatus.Ok));
 
-        for (JacocoXmlReport.Counter counter : jacocoXmlReport.getCounters()) {
-            switch (counter.getType()) {
-                case LINE:
-                    metricsMap.put(TOTAL_LINES_COVERED, Pair.of(counter.getCovered(), CodeQualityMetricStatus.Ok));
-                    metricsMap.put(TOTAL_LINES_MISSED, Pair.of(counter.getMissed(), CodeQualityMetricStatus.Ok));
-                    break;
-                case INSTRUCTION:
-                    metricsMap.put(TOTAL_INSTRUCTIONS_COVERED, Pair.of(counter.getCovered(), CodeQualityMetricStatus.Ok));
-                    metricsMap.put(TOTAL_INSTRUCTIONS_MISSED, Pair.of(counter.getMissed(), CodeQualityMetricStatus.Ok));
-                    break;
-                default:
-                    // no impl
-                    break;
+        if (null!=jacocoXmlReport.getCounters()) {
+            for (JacocoXmlReport.Counter counter : jacocoXmlReport.getCounters()) {
+                switch (counter.getType()) {
+                    case LINE:
+                        metricsMap.put(TOTAL_LINES_COVERED, Pair.of(counter.getCovered(), CodeQualityMetricStatus.Ok));
+                        metricsMap.put(TOTAL_LINES_MISSED, Pair.of(counter.getMissed(), CodeQualityMetricStatus.Ok));
+                        break;
+                    case INSTRUCTION:
+                        metricsMap.put(TOTAL_INSTRUCTIONS_COVERED, Pair.of(counter.getCovered(), CodeQualityMetricStatus.Ok));
+                        metricsMap.put(TOTAL_INSTRUCTIONS_MISSED, Pair.of(counter.getMissed(), CodeQualityMetricStatus.Ok));
+                        break;
+                    default:
+                        // no impl
+                        break;
+                }
             }
         }
         this.sumMetrics(metricsMap);
@@ -191,7 +193,10 @@ public class CodeQualityMetricsConverter implements CodeQualityVisitor {
     }
 
     private CodeQualityMetric computeCoveragePercent(String metricName, CodeQualityMetric covered, CodeQualityMetric missed) {
-        double percentageCovered = ((Integer) covered.getValue()).doubleValue() * 100.0 / (((Integer) covered.getValue()).doubleValue() + ((Integer) missed.getValue()).doubleValue());
+        double percentageCovered = 100.0;
+        if ( ((Integer)covered.getValue()).intValue() + ((Integer)missed.getValue()).intValue() >0) {
+            percentageCovered = ((Integer) covered.getValue()).doubleValue() * 100.0 / (((Integer) covered.getValue()).doubleValue() + ((Integer) missed.getValue()).doubleValue());
+        }
         CodeQualityMetric metric = new CodeQualityMetric(metricName);
         metric.setFormattedValue(String.format("%.3f", percentageCovered));
         metric.setValue(percentageCovered);
