@@ -7,7 +7,6 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import jenkins.plugins.hygieia.HygieiaService;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,10 +28,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class HygieiaCodeQualityPublisherStepExecutionTest {
+public class HygieiaCodeQualityPublishStepExecutionTest {
 
     @Mock
-    private HygieiaCodeQualityPublisherStep mockStep;
+    private HygieiaCodeQualityPublishStep mockStep;
 
     @Mock
     private TaskListener listener;
@@ -47,7 +46,7 @@ public class HygieiaCodeQualityPublisherStepExecutionTest {
 
 
     @InjectMocks
-    private HygieiaCodeQualityPublisherStep.HygieiaCodeQualityPublisherStepExecution subject;
+    private HygieiaCodeQualityPublishStep.HygieiaCodeQualityPublisherStepExecution subject;
 
     @Before
     public void setup() throws JAXBException {

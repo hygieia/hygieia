@@ -32,8 +32,9 @@ public class CodeQualityDataService implements CodeQualityService {
 
 
     @Override
-    public void storeJob(JenkinsJob jobName, JenkinsCodeQualityJob job, List<? extends CodeQualityVisitee> xmlReportList) {
+    public boolean storeJob(JenkinsJob jobName, JenkinsCodeQualityJob job, List<? extends CodeQualityVisitee> xmlReportList) {
 
+        boolean stored=false;
         // not quite how it works. This should collect all the jobs together to form static analysis and unit test
         // results into one thing. The Functional test are collected in the jenkins-cucumber-test-collector (json output)
 
@@ -50,8 +51,10 @@ public class CodeQualityDataService implements CodeQualityService {
             if (null == this.codeQualityRepository.findByCollectorItemIdAndTimestamp(job.getId(), currentJobQuality.getTimestamp())) {
                 LOGGER.info("storing new job at timestamp ", currentJobQuality.getTimestamp());
                 codeQualityRepository.save(currentJobQuality);
+                stored=true;
             }
         }
+        return stored;
     }
 
     private CodeQuality computeMetricsForJob(List<? extends CodeQualityVisitee> reportArtifacts) {

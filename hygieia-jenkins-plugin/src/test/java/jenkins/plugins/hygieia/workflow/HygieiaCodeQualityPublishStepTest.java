@@ -1,6 +1,5 @@
 package jenkins.plugins.hygieia.workflow;
 
-import junit.framework.TestCase;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -10,25 +9,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 
-public class HygieiaCodeQualityPublisherStepTest {
+public class HygieiaCodeQualityPublishStepTest {
 
     @Test
     public void descriptorImplDescribesCorrectStep() {
-        HygieiaCodeQualityPublisherStep.DescriptorImpl description = new HygieiaCodeQualityPublisherStep.DescriptorImpl();
+        HygieiaCodeQualityPublishStep.DescriptorImpl description = new HygieiaCodeQualityPublishStep.DescriptorImpl();
 
-        assertThat(description.getExecutionType(),is(HygieiaCodeQualityPublisherStep.HygieiaCodeQualityPublisherStepExecution.class.getClass()));
+        assertThat(description.getExecutionType(),is(HygieiaCodeQualityPublishStep.HygieiaCodeQualityPublisherStepExecution.class.getClass()));
     }
 
     @Test
     public void descriptorImplHasDefinedFunction() {
-        HygieiaCodeQualityPublisherStep.DescriptorImpl description = new HygieiaCodeQualityPublisherStep.DescriptorImpl();
+        HygieiaCodeQualityPublishStep.DescriptorImpl description = new HygieiaCodeQualityPublishStep.DescriptorImpl();
 
         assertThat(description.getFunctionName(),is("hygieiaCodeQualityPublishStep"));
     }
 
     @Test
     public void descriptorImplHasDisplayName() {
-        HygieiaCodeQualityPublisherStep.DescriptorImpl description = new HygieiaCodeQualityPublisherStep.DescriptorImpl();
+        HygieiaCodeQualityPublishStep.DescriptorImpl description = new HygieiaCodeQualityPublishStep.DescriptorImpl();
 
         assertThat(description.getDisplayName(),is("Hygieia CodeQuality Publish Step"));
     }
@@ -36,16 +35,16 @@ public class HygieiaCodeQualityPublisherStepTest {
 
     @Test
     public void configurationInOuterDoesNotRequireAnything() throws JAXBException {
-        HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
+        HygieiaCodeQualityPublishStep step = new HygieiaCodeQualityPublishStep();
 
-        assertThat(step,is(CoreMatchers.<HygieiaCodeQualityPublisherStep>notNullValue()));
+        assertThat(step,is(CoreMatchers.<HygieiaCodeQualityPublishStep>notNullValue()));
 
     }
 
     @Test
     public void configurationCanSetJunitFilePattern() throws JAXBException {
 
-        HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
+        HygieiaCodeQualityPublishStep step = new HygieiaCodeQualityPublishStep();
 
         step.setJunitFilePattern("**/target/junit.xml");
 
@@ -55,7 +54,7 @@ public class HygieiaCodeQualityPublisherStepTest {
 
     @Test
     public void configurationCanSetFindbugsFilePattern() throws JAXBException {
-        HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
+        HygieiaCodeQualityPublishStep step = new HygieiaCodeQualityPublishStep();
 
         step.setFindbugsFilePattern("**/target/findbugs.xml");
 
@@ -64,7 +63,7 @@ public class HygieiaCodeQualityPublisherStepTest {
 
     @Test
     public void configurationCanSetPmdFilePattern() throws JAXBException {
-        HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
+        HygieiaCodeQualityPublishStep step = new HygieiaCodeQualityPublishStep();
 
         step.setPmdFilePattern("**/target/pmd.xml");
 
@@ -73,7 +72,7 @@ public class HygieiaCodeQualityPublisherStepTest {
 
     @Test
     public void configurationCanSetCheckstyleFilePattern() throws JAXBException {
-        HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
+        HygieiaCodeQualityPublishStep step = new HygieiaCodeQualityPublishStep();
 
         step.setCheckstyleFilePattern("**/target/checkstyle-result.xml");
 
@@ -82,7 +81,7 @@ public class HygieiaCodeQualityPublisherStepTest {
 
     @Test
     public void configurationCanSetJacocoFilePattern() throws JAXBException {
-        HygieiaCodeQualityPublisherStep step = new HygieiaCodeQualityPublisherStep();
+        HygieiaCodeQualityPublishStep step = new HygieiaCodeQualityPublishStep();
 
         step.setJacocoFilePattern("**/target/checkstyle-result.xml");
 

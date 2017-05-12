@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface CodeQualityService {
 
-    void storeJob(JenkinsJob job, JenkinsCodeQualityJob codeQualityJob, List<? extends CodeQualityVisitee> report);
+    boolean storeJob(JenkinsJob job, JenkinsCodeQualityJob codeQualityJob, List<? extends CodeQualityVisitee> report);
 
 }

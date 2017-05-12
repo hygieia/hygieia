@@ -20,15 +20,20 @@ import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepEx
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
+import org.xml.sax.*;
 
 import javax.inject.Inject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.transform.sax.SAXSource;
 import java.io.IOException;
 
 
-public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
+public class HygieiaCodeQualityPublishStep extends AbstractStepImpl {
 
     private String junitFilePattern;
     private String findbugsFilePattern;
@@ -39,7 +44,7 @@ public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
     private HygieiaService service;
 
     @DataBoundConstructor
-    public HygieiaCodeQualityPublisherStep() throws JAXBException {
+    public HygieiaCodeQualityPublishStep() throws JAXBException {
         context = JAXBContext.newInstance(JunitXmlReport.class, JacocoXmlReport.class,
                 FindBugsXmlReport.class, CheckstyleReport.class, PmdReport.class);
         if (null != Jenkins.getInstance()) {
@@ -131,7 +136,7 @@ public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
         private static final long serialVersionUID = 1L;
 
         @Inject
-        transient HygieiaCodeQualityPublisherStep step;
+        transient HygieiaCodeQualityPublishStep step;
 
         @StepContextParameter
         transient TaskListener listener;
@@ -209,9 +214,18 @@ public class HygieiaCodeQualityPublisherStep extends AbstractStepImpl {
             return request;
         }
 
-        private <T> T unmarshall(Unmarshaller unmarshaller, FilePath path) throws IOException, InterruptedException, JAXBException {
+        private <T> T unmarshall(Unmarshaller unmarshaller, FilePath path) throws IOException, InterruptedException, JAXBException, SAXException, ParserConfigurationException {
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            spf.setFeature("http://xml.org/sax/features/validation", false);
+
+            XMLReader xmlReader = spf.newSAXParser().getXMLReader();
+            InputSource inputSource = new InputSource(
+                    path.read());
+            SAXSource source = new SAXSource(xmlReader, inputSource);
+
             //TODO prevent malicious xml attack, or ignore? (https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet#SAXTransformerFactory)
-            return (T) unmarshaller.unmarshal(path.read());
+            return (T) unmarshaller.unmarshal(source);
         }
     }
 }
