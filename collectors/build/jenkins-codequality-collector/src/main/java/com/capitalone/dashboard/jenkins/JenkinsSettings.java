@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.jenkins;
 
-import com.capitalone.dashboard.model.ArtifactType;
+import com.capitalone.dashboard.model.quality.ArtifactType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 

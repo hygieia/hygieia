@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.utils;
 
+import com.capitalone.dashboard.model.quality.CodeQualityVisitor;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

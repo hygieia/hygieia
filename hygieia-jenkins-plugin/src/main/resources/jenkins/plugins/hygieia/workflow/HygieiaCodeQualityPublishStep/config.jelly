@@ -1,0 +1,18 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+         <f:entry field="junitFilePattern" title="Junit File Pattern" >
+              <f:textbox name="junitFilePattern" default="**/*/TEST-.*-test.xml"/>
+         </f:entry>
+         <f:entry field="findbugsFilePattern" title="Findbugs File Pattern" >
+              <f:textbox name="findbugsFilePattern" default="**/*/Findbugs.xml"/>
+         </f:entry>
+         <f:entry field="pmdFilePattern" title="Pmd File Pattern" >
+              <f:textbox name="pmdFilePattern" default="**/*/PMD.xml"/>
+         </f:entry>
+         <f:entry field="checkstyleFilePattern" title="Checkstyle File Pattern" >
+              <f:textbox name="checkstyleFilePattern" default="**/*/checkstyle-result.xml"/>
+         </f:entry>
+         <f:entry field="jacocoFilePattern" title="Jacoco File Pattern" >
+              <f:textbox name="jacocoFilePattern" default="**/*/jacoco.xml"/>
+         </f:entry>
+</j:jelly>

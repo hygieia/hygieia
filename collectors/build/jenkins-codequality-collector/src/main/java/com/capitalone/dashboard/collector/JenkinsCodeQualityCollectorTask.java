@@ -3,7 +3,8 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.jenkins.JenkinsJob;
 import com.capitalone.dashboard.jenkins.JenkinsPredicate;
 import com.capitalone.dashboard.jenkins.JenkinsSettings;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.jenkins.model.JenkinsCodeQualityJob;
+import com.capitalone.dashboard.model.quality.*;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityCollectorRepository;
 import com.capitalone.dashboard.repository.JenkinsCodeQualityJobRepository;
 import com.capitalone.dashboard.utils.CodeQualityService;
@@ -85,11 +86,11 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
         this.createAnyNewJobs(collector, interestingJobs);
 
         List<JenkinsCodeQualityJob> allJobs = this.jobRepository.findAllByCollectorId(collector.getId());
+        int storedJobs =0;
         if (null != allJobs) {
             final Map<String, JenkinsCodeQualityJob> jenkinsCodeQualityJobMap = allJobs.stream().collect(Collectors.toMap(JenkinsCodeQualityJob::getJenkinsServer, Function.identity()));
 
             for (JenkinsJob job : interestingJobs) {
-                this.log("found an job of interest matching the artifact pattern.");
                 List<CodeQualityVisitee> allTypes = new ArrayList<>();
                 artifactTypePatternMap.forEach((type, pattern) -> {
                             switch (type) {
@@ -114,9 +115,16 @@ public class JenkinsCodeQualityCollectorTask extends CollectorTask<JenkinsCodeQu
                             }
                         }
                 );
-                this.codeQualityService.storeJob(job, jenkinsCodeQualityJobMap.get(job.getUrl()), allTypes);
+                boolean stored = this.codeQualityService.storeJob(job, jenkinsCodeQualityJobMap.get(job.getUrl()), allTypes);
+                if (stored) {
+                    storedJobs++;
+                }
             }
         }
+
+        log("examined jobs",System.currentTimeMillis(),null==allJobs?0:allJobs.size());
+        log("new data",System.currentTimeMillis(),storedJobs);
+        log("Finished",System.currentTimeMillis());
 
     }
 

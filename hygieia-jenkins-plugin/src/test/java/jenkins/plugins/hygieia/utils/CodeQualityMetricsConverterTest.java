@@ -1,6 +1,9 @@
-package com.capitalone.dashboard.utils;
+package jenkins.plugins.hygieia.utils;
 
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityMetricStatus;
+import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.model.quality.*;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
@@ -11,11 +14,10 @@ import javax.xml.datatype.DatatypeFactory;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
-import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Java6Assertions.tuple;
+
 
 public class CodeQualityMetricsConverterTest {
-
     @Test
     public void validCodeQualityMetricsIsCreatedBasedOnJunitXmlReport() throws Exception {
         CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
@@ -221,21 +223,34 @@ public class CodeQualityMetricsConverterTest {
 
         CodeQuality calculatedCodeQuality = testee.produceResult();
 
-        assertThat(calculatedCodeQuality.getMetrics()).extracting("name","formattedValue","value","status")
+        assertThat(calculatedCodeQuality.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("total_lines_covered","15",15,CodeQualityMetricStatus.Ok),
-                        tuple("total_lines_missed","6",6,CodeQualityMetricStatus.Ok),
-                        tuple("total_instructions_covered","10",10,CodeQualityMetricStatus.Ok),
-                        tuple("total_instructions_missed","1",1,CodeQualityMetricStatus.Ok));
+                        tuple("total_lines_covered", "15", 15, CodeQualityMetricStatus.Ok),
+                        tuple("total_lines_missed", "6", 6, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_covered", "10", 10, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_missed", "1", 1, CodeQualityMetricStatus.Ok));
 
-        Optional<CodeQualityMetric> coverage = calculatedCodeQuality.getMetrics().stream().filter(codeQualityMetric -> codeQualityMetric.getName().equals("coverage")).findFirst();
-        assertThat(coverage.get().getFormattedValue()).isEqualTo("90.909");
-        assertThat(coverage.get().getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
-        assertThat(((Double)coverage.get().getValue()).doubleValue()).isCloseTo(90.0909, Percentage.withPercentage(1));
-        Optional<CodeQualityMetric> lineCoverage = calculatedCodeQuality.getMetrics().stream().filter(codeQualityMetric -> codeQualityMetric.getName().equals("line_coverage")).findFirst();
-        assertThat(lineCoverage.get().getFormattedValue()).isEqualTo("71.429");
-        assertThat(lineCoverage.get().getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
-        assertThat(((Double)lineCoverage.get().getValue()).doubleValue()).isCloseTo(71.429, Percentage.withPercentage(1));
+        boolean coverageDone = false;
+        boolean lineCoverageDone = false;
+        for (CodeQualityMetric codeQuality : calculatedCodeQuality.getMetrics()) {
+            if (codeQuality.getName().equals("coverage")) {
+                assertThat(codeQuality.getFormattedValue()).isEqualTo("90.909");
+                assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(90.0909, Percentage.withPercentage(1));
+                coverageDone = true;
+            }
+
+            if (codeQuality.getName().equals("line_coverage")) {
+                assertThat(codeQuality.getFormattedValue()).isEqualTo("71.429");
+                assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(71.429, Percentage.withPercentage(1));
+                lineCoverageDone=true;
+            }
+
+        }
+
+        assertThat(coverageDone).isTrue();
+        assertThat(lineCoverageDone).isTrue();
 
     }
 
@@ -250,21 +265,34 @@ public class CodeQualityMetricsConverterTest {
 
         CodeQuality calculatedCodeQuality = testee.produceResult();
 
-        assertThat(calculatedCodeQuality.getMetrics()).extracting("name","formattedValue","value","status")
+        assertThat(calculatedCodeQuality.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("total_lines_covered","30",30,CodeQualityMetricStatus.Ok),
-                        tuple("total_lines_missed","12",12,CodeQualityMetricStatus.Ok),
-                        tuple("total_instructions_covered","20",20,CodeQualityMetricStatus.Ok),
-                        tuple("total_instructions_missed","2",2,CodeQualityMetricStatus.Ok));
+                        tuple("total_lines_covered", "30", 30, CodeQualityMetricStatus.Ok),
+                        tuple("total_lines_missed", "12", 12, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_covered", "20", 20, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_missed", "2", 2, CodeQualityMetricStatus.Ok));
 
-        Optional<CodeQualityMetric> coverage = calculatedCodeQuality.getMetrics().stream().filter(codeQualityMetric -> codeQualityMetric.getName().equals("coverage")).findFirst();
-        assertThat(coverage.get().getFormattedValue()).isEqualTo("90.909");
-        assertThat(coverage.get().getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
-        assertThat(((Double)coverage.get().getValue()).doubleValue()).isCloseTo(90.0909, Percentage.withPercentage(1));
-        Optional<CodeQualityMetric> lineCoverage = calculatedCodeQuality.getMetrics().stream().filter(codeQualityMetric -> codeQualityMetric.getName().equals("line_coverage")).findFirst();
-        assertThat(lineCoverage.get().getFormattedValue()).isEqualTo("71.429");
-        assertThat(lineCoverage.get().getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
-        assertThat(((Double)lineCoverage.get().getValue()).doubleValue()).isCloseTo(71.429, Percentage.withPercentage(1));
+        boolean coverageDone = false;
+        boolean lineCoverageDone = false;
+        for (CodeQualityMetric codeQuality : calculatedCodeQuality.getMetrics()) {
+            if (codeQuality.getName().equals("coverage")) {
+                assertThat(codeQuality.getFormattedValue()).isEqualTo("90.909");
+                assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(90.0909, Percentage.withPercentage(1));
+                coverageDone = true;
+            }
+
+            if (codeQuality.getName().equals("line_coverage")) {
+                assertThat(codeQuality.getFormattedValue()).isEqualTo("71.429");
+                assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(71.429, Percentage.withPercentage(1));
+                lineCoverageDone=true;
+            }
+
+        }
+
+        assertThat(coverageDone).isTrue();
+        assertThat(lineCoverageDone).isTrue();
 
     }
 
@@ -300,13 +328,13 @@ public class CodeQualityMetricsConverterTest {
         line.setCovered(15);
         line.setMissed(6);
 
-        List<JacocoXmlReport.Counter> counters = Arrays.asList(instructions,method,complexity,clazz,branch,line);
+        List<JacocoXmlReport.Counter> counters = Arrays.asList(instructions, method, complexity, clazz, branch, line);
         report.setCounters(counters);
         return report;
     }
 
     @Test
-    public void pmdReport(){
+    public void pmdReport() {
         PmdReport report = this.producePmdReport();
 
         CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
@@ -314,12 +342,12 @@ public class CodeQualityMetricsConverterTest {
 
         CodeQuality codeQualityMetrics = testee.produceResult();
 
-        assertThat(codeQualityMetrics.getMetrics()).extracting("name","formattedValue","value","status")
+        assertThat(codeQualityMetrics.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("blocker_violations","10",10,CodeQualityMetricStatus.Alert),
-                        tuple("critical_violations","12",12,CodeQualityMetricStatus.Alert),
-                        tuple("major_violations","2",2,CodeQualityMetricStatus.Warning),
-                        tuple("violations","2",2,CodeQualityMetricStatus.Warning));
+                        tuple("blocker_violations", "10", 10, CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations", "12", 12, CodeQualityMetricStatus.Alert),
+                        tuple("major_violations", "2", 2, CodeQualityMetricStatus.Warning),
+                        tuple("violations", "2", 2, CodeQualityMetricStatus.Warning));
     }
 
     @Test
@@ -333,29 +361,68 @@ public class CodeQualityMetricsConverterTest {
 
         CodeQuality codeQualityMetrics = testee.produceResult();
 
-        assertThat(codeQualityMetrics.getMetrics()).extracting("name","formattedValue","value","status")
+        assertThat(codeQualityMetrics.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("blocker_violations","20",20,CodeQualityMetricStatus.Alert),
-                        tuple("critical_violations","24",24,CodeQualityMetricStatus.Alert),
-                        tuple("major_violations","4",4,CodeQualityMetricStatus.Warning),
-                        tuple("violations","4",4,CodeQualityMetricStatus.Warning));
+                        tuple("blocker_violations", "20", 20, CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations", "24", 24, CodeQualityMetricStatus.Alert),
+                        tuple("major_violations", "4", 4, CodeQualityMetricStatus.Warning),
+                        tuple("violations", "4", 4, CodeQualityMetricStatus.Warning));
     }
 
-    private PmdReport producePmdReport(){
+    @Test
+    public void jacocoEmpty(){
+        JacocoXmlReport jacocoXmlReport1 = new JacocoXmlReport();
+
+        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
+        jacocoXmlReport1.accept(testee);
+
+        CodeQuality calculatedCodeQuality = testee.produceResult();
+
+        assertThat(calculatedCodeQuality.getMetrics()).extracting("name", "formattedValue", "value", "status")
+                .contains(
+                        tuple("total_lines_covered", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("total_lines_missed", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_covered", "0", 0, CodeQualityMetricStatus.Ok),
+                        tuple("total_instructions_missed", "0", 0, CodeQualityMetricStatus.Ok));
+
+        boolean coverageDone = false;
+        boolean lineCoverageDone = false;
+        for (CodeQualityMetric codeQuality : calculatedCodeQuality.getMetrics()) {
+            if (codeQuality.getName().equals("coverage")) {
+                assertThat(codeQuality.getFormattedValue()).isEqualTo("100.000");
+                assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(100, Percentage.withPercentage(1));
+                coverageDone = true;
+            }
+
+            if (codeQuality.getName().equals("line_coverage")) {
+                assertThat(codeQuality.getFormattedValue()).isEqualTo("100.000");
+                assertThat(codeQuality.getStatus()).isEqualTo(CodeQualityMetricStatus.Ok);
+                assertThat(((Double) codeQuality.getValue()).doubleValue()).isCloseTo(100, Percentage.withPercentage(1));
+                lineCoverageDone=true;
+            }
+
+        }
+
+        assertThat(coverageDone).isTrue();
+        assertThat(lineCoverageDone).isTrue();
+    }
+
+    private PmdReport producePmdReport() {
         PmdReport report = new PmdReport();
         PmdReport.PmdFile file = new PmdReport.PmdFile();
         List<PmdReport.PmdViolation> violations = new ArrayList<>();
-        for (int i=0;i<10;i++) {
+        for (int i = 0; i < 10; i++) {
             PmdReport.PmdViolation violation = new PmdReport.PmdViolation();
             violation.setPriority(1);
             violations.add(violation);
         }
-        for (int i=0;i<12;i++) {
+        for (int i = 0; i < 12; i++) {
             PmdReport.PmdViolation violation = new PmdReport.PmdViolation();
             violation.setPriority(2);
             violations.add(violation);
         }
-        for (int i=0;i<2;i++) {
+        for (int i = 0; i < 2; i++) {
             PmdReport.PmdViolation violation = new PmdReport.PmdViolation();
             violation.setPriority(3);
             violations.add(violation);
@@ -379,49 +446,29 @@ public class CodeQualityMetricsConverterTest {
 
         CodeQuality codeQualityMetrics = testee.produceResult();
 
-        assertThat(codeQualityMetrics.getMetrics()).extracting("name","formattedValue","value","status")
+        assertThat(codeQualityMetrics.getMetrics()).extracting("name", "formattedValue", "value", "status")
                 .contains(
-                        tuple("blocker_violations","9",9,CodeQualityMetricStatus.Alert),
-                        tuple("critical_violations","11",11,CodeQualityMetricStatus.Alert),
-                        tuple("major_violations","2",2,CodeQualityMetricStatus.Warning),
-                        tuple("violations","1",1,CodeQualityMetricStatus.Warning));
+                        tuple("blocker_violations", "9", 9, CodeQualityMetricStatus.Alert),
+                        tuple("critical_violations", "11", 11, CodeQualityMetricStatus.Alert),
+                        tuple("major_violations", "2", 2, CodeQualityMetricStatus.Warning),
+                        tuple("violations", "1", 1, CodeQualityMetricStatus.Warning));
     }
 
-    @Test
-    public void checkstyleHandlesNoErrors() {
-        CheckstyleReport report = new CheckstyleReport();
-        CheckstyleReport.CheckstyleFile file = new CheckstyleReport.CheckstyleFile();
-        report.setFiles(Arrays.asList(file));
-
-        CodeQualityMetricsConverter testee = new CodeQualityMetricsConverter();
-        report.accept(testee);
-
-        CodeQuality codeQualityMetrics = testee.produceResult();
-
-        assertThat(codeQualityMetrics.getMetrics()).extracting("name","formattedValue","value","status")
-            .contains(
-                tuple("blocker_violations","0",0,CodeQualityMetricStatus.Ok),
-                tuple("critical_violations","0",0,CodeQualityMetricStatus.Ok),
-                tuple("major_violations","0",0,CodeQualityMetricStatus.Ok),
-                tuple("violations","0",0,CodeQualityMetricStatus.Ok));
-
-    }
-
-    private CheckstyleReport produceCheckStyleReport(){
+    private CheckstyleReport produceCheckStyleReport() {
         CheckstyleReport report = new CheckstyleReport();
         CheckstyleReport.CheckstyleFile file = new CheckstyleReport.CheckstyleFile();
         List<CheckstyleReport.CheckstyleError> errors = new ArrayList<>();
-        for (int i=0;i<9;i++) {
+        for (int i = 0; i < 9; i++) {
             CheckstyleReport.CheckstyleError violation = new CheckstyleReport.CheckstyleError();
             violation.setSeverity(CheckstyleReport.CheckstyleSeverity.error);
             errors.add(violation);
         }
-        for (int i=0;i<11;i++) {
+        for (int i = 0; i < 11; i++) {
             CheckstyleReport.CheckstyleError violation = new CheckstyleReport.CheckstyleError();
             violation.setSeverity(CheckstyleReport.CheckstyleSeverity.warning);
             errors.add(violation);
         }
-        for (int i=0;i<2;i++) {
+        for (int i = 0; i < 2; i++) {
             CheckstyleReport.CheckstyleError violation = new CheckstyleReport.CheckstyleError();
             violation.setSeverity(CheckstyleReport.CheckstyleSeverity.info);
             errors.add(violation);
