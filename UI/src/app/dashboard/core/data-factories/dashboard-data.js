@@ -16,15 +16,23 @@
         var testSearchRoute = 'test-data/dashboard_search.json';
         var testDetailRoute = 'test-data/dashboard_detail.json';
         var testOwnedRoute='test-data/dashboard_owned.json';
+        var testAllUsersRoute= 'test-data/all_users.json';
+        var testOwnersRoute = 'test-data/owners.json';
 
         var dashboardRoute = '/api/dashboard';
         var mydashboardRoute = "/api/dashboard/mydashboard";
         var myownerRoute = "/api/dashboard/myowner";
+        var dashboardAllUsersRoute= '/api/dashboard/allUsers';
+        var dashboardOwnersRoute = '/api/dashboard/owners';
 
         return {
             search: search,
             mydashboard: mydashboard,
             myowner: myowner,
+            allUsers: allUsers,
+            owners: owners,
+            promoteUserToOwner: promoteUserToOwner,
+            demoteUserFromOwner: demoteUserFromOwner,
             detail: detail,
             create: create,
             delete: deleteDashboard,
@@ -54,6 +62,14 @@
         function myowner(id)
         {
             return getPromise(HygieiaConfig.local ? testOwnedRoute : myownerRoute + "/" + id );
+        }
+
+        function allUsers(id) {
+            return getPromise(HygieiaConfig.local ? testAllUsersRoute : dashboardAllUsersRoute + "/" + id);
+        }
+
+        function owners(id) {
+            return getPromise(HygieiaConfig.local ? testOwnersRoute : dashboardOwnersRoute + "/" + id);
         }
 
         // gets info for a single dashboard including available widgets
@@ -87,6 +103,32 @@
                 })
                 .error (function (response) {
                     console.log("Error Occured while renaming Dashboard in Data layer:"+JSON.stringify(response));
+                    return response.data;
+                });
+        }
+
+        function promoteUserToOwner(id, user) {
+            var route = dashboardRoute + "/addOwner/"+id, user;
+            return $http.put(route, user)
+                .success(
+                    function (response) {
+                        return response.data;
+                    })
+                .error (function (response) {
+                    console.log("Error Occured while promoting user to owner :"+JSON.stringify(response));
+                    return response.data;
+                });
+        }
+
+        function demoteUserFromOwner(id, user) {
+            var route = dashboardRoute + "/removeOwner/"+id, user;
+            return $http.put(route, user)
+                .success(
+                    function (response) {
+                        return response.data;
+                    })
+                .error (function (response) {
+                    console.log("Error Occured while demoting user from owner:"+JSON.stringify(response));
                     return response.data;
                 });
         }

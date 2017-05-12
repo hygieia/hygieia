@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.capitalone.dashboard.auth.ldap.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,7 +26,20 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	
 	@Override
 	public void handle(HttpServletResponse response, Authentication authentication) {
-		Collection<? extends GrantedAuthority> authorities = userInfoService.getAuthorities(authentication.getName(), (AuthType)authentication.getDetails());
+		String firstName = "";
+		String middleName = "";
+		String lastName = "";
+		String displayName = "";
+		String emailAddress = "";
+		if (authentication.getPrincipal() instanceof CustomUserDetails) {
+			firstName = ((CustomUserDetails) authentication.getPrincipal()).getFirstName();
+			middleName = ((CustomUserDetails) authentication.getPrincipal()).getMiddleName();
+			lastName = ((CustomUserDetails) authentication.getPrincipal()).getLastName();
+			displayName = ((CustomUserDetails) authentication.getPrincipal()).getDisplayName();
+			emailAddress = ((CustomUserDetails) authentication.getPrincipal()).getEmailAddress();
+		}
+		Collection<? extends GrantedAuthority> authorities =
+				userInfoService.getAuthorities(authentication.getName(), firstName, middleName, lastName, displayName, emailAddress, (AuthType)authentication.getDetails());
 		UsernamePasswordAuthenticationToken authenticationWithAuthorities = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), authorities);
 		authenticationWithAuthorities.setDetails(authentication.getDetails());
 		

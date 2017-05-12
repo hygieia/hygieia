@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.config;
 
+import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.capitalone.dashboard.auth.AuthProperties;
@@ -38,6 +40,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private AuthProperties authProperties;
+
+	@Bean
+	protected ActiveDirectoryLdapAuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
+		ActiveDirectoryLdapAuthenticationProvider provider =
+				new ActiveDirectoryLdapAuthenticationProvider(authProperties.getAdDomain(),
+						authProperties.getLdapServerUrl(),
+						authProperties.getAdRootDn());
+		provider.setConvertSubErrorCodesToExceptions(true);
+		provider.setUseAuthenticationRequestCredentials(true);
+		provider.setUserDetailsContextMapper(new CustomUserDetailsContextMapper());
+		return provider;
+	}
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -67,13 +81,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(standardAuthenticationProvider);
-		
-		String ldapServerUrl = authProperties.getLdapServerUrl();
-		String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
-		if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
-			auth.ldapAuthentication()
-			.userDnPatterns(ldapUserDnPattern)
-			.contextSource().url(ldapServerUrl);
+
+		if (StringUtils.isEmpty(authProperties.getAdDomain())) {
+			String ldapServerUrl = authProperties.getLdapServerUrl();
+			String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
+			if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
+				auth.ldapAuthentication()
+				.userDnPatterns(ldapUserDnPattern)
+				.contextSource().url(ldapServerUrl);
+			}
+		} else {
+			auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider());
 		}
 	}
 	
