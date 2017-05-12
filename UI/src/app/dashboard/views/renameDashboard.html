@@ -1,6 +1,7 @@
-<widget-modal widget-modal-title="Rename Your Dashboard">
+<widget-modal widget-modal-title="Administer Your Dashboard">
     <form name="cdf" class="form" ng-submit="ctrl.submit(cdf)" novalidate>
         <form-group input="dashboardTitle" errors="{required: 'New Dashboard name is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters', renameError: 'Error renaming dashboard. Change title and try again.', pattern : 'Special character(s) found. Please enter only letters, numbers or spaces.'}">
+            <label class="modal-label">Rename</label>
         	<input
                     type="text"
                     name="dashboardTitle"
@@ -15,9 +16,64 @@
             <span class="text-danger"></span>
         </form-group>
 
+        <label class="modal-label">Add/Remove Owners</label>
+        <div class="widget-modal-body" style="width: 500px;height: 300px;overflow: auto;">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="text-center" ng-hide="users">Loading Users...</div>
+                    <div ng-show="error">
+                        {{error.data}}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <h3>Users</h3>
+                            <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch">
+
+                            <div class="dash-modal-row delete-dashboard-row clearfix"
+                                 ng-repeat="user in users | filter:{username:userSearch, authorities:'!ROLE_ADMIN'} | orderBy:'username'">
+
+                                <div class="btn-block">
+                                    <span class="label label-primary" ng-show="isActiveUser(user)">You</span>
+                                    {{user.username}}
+                                    <span class="badge">{{user.authType}}</span>
+                                    <div title="Promote User" class="clickable pull-right" ng-click="promoteUserToAdmin(user)">
+                                            <span class="clickable fa fa-stack">
+                                                <span class="fa-circle-thin fa-stack-2x text-success"></span>
+                                                <span class="fa-angle-right fa-stack-1x text-success"></span>
+                                            </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-push-2 col-xs-5">
+                            <h3>Admins</h3>
+                            <div class="dash-modal-row delete-dashboard-row clearfix"
+                                 ng-repeat="user in users | orderBy:'username' | filter:{authorities:'ROLE_ADMIN'} as filteredAdmins">
+                                <div class="btn-block">
+                                    <span class="label label-primary" ng-show="isActiveUser(user)">You</span>
+                                    {{user.username}}
+                                    <span class="badge">{{user.authType}}</span>
+                                    <div title="Demote User" ng-show="filteredAdmins.length > 1" class="clickable pull-right" ng-click="demoteUserFromAdmin(user)">
+                                            <span class="clickable fa fa-stack">
+                                                <span class="fa-circle-thin fa-stack-2x text-danger"></span>
+                                                <span class="fa-angle-left fa-stack-1x text-danger"></span>
+                                            </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center" ng-show="users && !users.length">
+                        No results
+                    </div>
+                </div>
+            </div>
+        </div>
 
        <div class="button-row row text-center">
-            <button type="submit" class="btn btn-primary btn-wide">Rename</button>
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
         </div>
     </form>
 </widget-modal>

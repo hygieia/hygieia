@@ -1,10 +1,18 @@
 package com.capitalone.dashboard.service;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
+import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
+import com.capitalone.dashboard.model.UserInfo;
+import com.capitalone.dashboard.model.UserRole;
+import com.capitalone.dashboard.repository.UserInfoRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -43,6 +51,7 @@ public class DashboardServiceImpl implements DashboardService {
 	@SuppressWarnings("unused")
 	private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
+    private UserInfoRepository userInfoRepository;
 
     @Autowired
     public DashboardServiceImpl(DashboardRepository dashboardRepository,
@@ -50,13 +59,15 @@ public class DashboardServiceImpl implements DashboardService {
                                 CollectorRepository collectorRepository,
                                 CollectorItemRepository collectorItemRepository,
                                 ServiceRepository serviceRepository,
-                                PipelineRepository pipelineRepository) {
+                                PipelineRepository pipelineRepository,
+                                UserInfoRepository userInfoRepository) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
         this.serviceRepository = serviceRepository;
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
+        this.userInfoRepository = userInfoRepository;
     }
 
     @Override
@@ -272,6 +283,62 @@ public class DashboardServiceImpl implements DashboardService {
 		
 		return Lists.newArrayList(myDashboards);
 	}
+
+    @Override
+    public Iterable<UserInfo> getAllUsers() {
+        return userInfoRepository.findByOrderByUsernameAsc();
+    }
+
+    @Override
+    public Iterable<Owner> getOwners(ObjectId id) {
+        Dashboard dashboard = get(id);
+        return dashboard.getOwners();
+    }
+
+    @Override
+    public UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType) {
+        Dashboard dashboard = dashboardRepository.findOne(dashboardId);
+        List<Owner> owners = dashboard.getOwners();
+        Owner promotedOwner = new Owner(username, authType);
+        owners.add(promotedOwner);
+        dashboardRepository.save(dashboard);
+
+        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
+        if (user == null) {
+            throw new UserNotFoundException(username, authType);
+        }
+        user.getAuthorities().add(UserRole.ROLE_ADMIN);
+
+        return user;
+    }
+
+    @Override
+    public UserInfo demoteFromOwner(ObjectId dashboardId, String username, AuthType authType) {
+        Dashboard dashboard = dashboardRepository.findOne(dashboardId);
+        int numberOfOwners = dashboard.getOwners().size();
+
+        //get admin users
+        Collection<UserInfo> adminUsers = userInfoRepository.findByAuthoritiesIn(UserRole.ROLE_ADMIN);
+
+        numberOfOwners += adminUsers.size();
+
+        if(numberOfOwners <= 1) {
+            throw new DeleteLastAdminException();
+        }
+
+        Owner demotedOwner = new Owner(username, authType);
+        dashboard.getOwners().remove(demotedOwner);
+        dashboardRepository.save(dashboard);
+
+        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
+        if (user == null) {
+            throw new UserNotFoundException(username, authType);
+        }
+
+        user.getAuthorities().remove(UserRole.ROLE_ADMIN);
+        return user;
+
+    }
 
 	@Override
 	public String getDashboardOwner(String dashboardTitle) {

@@ -27,16 +27,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 	
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities(String username, AuthType authType) {
-		Collection<UserRole> roles = getUserInfo(username, authType).getAuthorities();
+	public Collection<? extends GrantedAuthority> getAuthorities(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType) {
+		Collection<UserRole> roles = getUserInfo(username, firstName, middleName, lastName, displayName, emailAddress, authType).getAuthorities();
 		return createAuthorities(roles);
 	}
 	
 	@Override
-	public UserInfo getUserInfo(String username, AuthType authType) {
+	public UserInfo getUserInfo(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType) {
 		UserInfo userInfo = userInfoRepository.findByUsernameAndAuthType(username, authType);
 		if(userInfo == null) {
-			userInfo = createUserInfo(username, authType);
+			userInfo = createUserInfo(username, firstName, middleName, lastName, displayName, emailAddress, authType);
 			userInfoRepository.save(userInfo);
 		}
 		
@@ -51,7 +51,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     public Collection<UserInfo> getUsers() {
         return Sets.newHashSet(userInfoRepository.findAll());
     }
-    
+
     @Override
     public UserInfo promoteToAdmin(String username, AuthType authType) {
         UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
@@ -80,9 +80,14 @@ public class UserInfoServiceImpl implements UserInfoService {
         return savedUser;
     }
 
-	private UserInfo createUserInfo(String username, AuthType authType) {
+	private UserInfo createUserInfo(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType) {
 		UserInfo userInfo = new UserInfo();
 		userInfo.setUsername(username);
+		userInfo.setFirstName(firstName);
+		userInfo.setMiddleName(middleName);
+		userInfo.setLastName(lastName);
+		userInfo.setDisplayName(displayName);
+		userInfo.setEmailAddress(emailAddress);
 		userInfo.setAuthType(authType);
 		userInfo.setAuthorities(Sets.newHashSet(UserRole.ROLE_USER));
 		
