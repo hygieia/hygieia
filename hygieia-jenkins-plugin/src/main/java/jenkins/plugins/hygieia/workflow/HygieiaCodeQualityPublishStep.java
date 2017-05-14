@@ -1,17 +1,21 @@
 package jenkins.plugins.hygieia.workflow;
 
 
+import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.model.quality.*;
 import com.capitalone.dashboard.request.CodeQualityCreateRequest;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hygieia.builder.BuildBuilder;
 import jenkins.model.Jenkins;
 import jenkins.plugins.hygieia.DefaultHygieiaService;
 import jenkins.plugins.hygieia.HygieiaPublisher;
+import jenkins.plugins.hygieia.HygieiaResponse;
 import jenkins.plugins.hygieia.HygieiaService;
 import jenkins.plugins.hygieia.utils.CodeQualityMetricsConverter;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
@@ -42,17 +46,22 @@ public class HygieiaCodeQualityPublishStep extends AbstractStepImpl {
     private String jacocoFilePattern;
     private JAXBContext context;
     private HygieiaService service;
+    private HygieiaPublisher.DescriptorImpl hygieiaDesc;
 
     @DataBoundConstructor
     public HygieiaCodeQualityPublishStep() throws JAXBException {
         context = JAXBContext.newInstance(JunitXmlReport.class, JacocoXmlReport.class,
                 FindBugsXmlReport.class, CheckstyleReport.class, PmdReport.class);
         if (null != Jenkins.getInstance()) {
-            HygieiaPublisher.DescriptorImpl hygieiaDesc = Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
+            hygieiaDesc = Jenkins.getInstance().getDescriptorByType(HygieiaPublisher.DescriptorImpl.class);
             service = new DefaultHygieiaService(hygieiaDesc.getHygieiaAPIUrl(), hygieiaDesc.getHygieiaToken(),
                     hygieiaDesc.getHygieiaJenkinsName(), hygieiaDesc.isUseProxy());
         }
 
+    }
+
+    public HygieiaPublisher.DescriptorImpl getHygieiaDesc() {
+        return hygieiaDesc;
     }
 
     public JAXBContext getContext() {
@@ -149,6 +158,11 @@ public class HygieiaCodeQualityPublishStep extends AbstractStepImpl {
 
         @Override
         protected Void run() throws Exception {
+            HygieiaService service = step.getService();
+
+
+            BuildBuilder buildBuilder = new BuildBuilder(run, step.getHygieiaDesc().getHygieiaJenkinsName(), listener, BuildStatus.Success, false);
+            HygieiaResponse buildResponse = service.publishBuildData(buildBuilder.getBuildData());
             CodeQualityMetricsConverter converter = new CodeQualityMetricsConverter();
             Unmarshaller unmarshaller = step.getContext().createUnmarshaller();
 
@@ -200,9 +214,19 @@ public class HygieiaCodeQualityPublishStep extends AbstractStepImpl {
 
             // results
             CodeQuality codeQuality = converter.produceResult();
-            HygieiaService service = step.getService();
 
-            service.publishSonarResults(convertToRequest(codeQuality));
+            CodeQualityCreateRequest request = convertToRequest(codeQuality);
+            request.setProjectName(run.getParent().getFullName());
+            request.setProjectUrl(run.getParent().getUrl());
+            request.setNiceName(step.getHygieiaDesc().getHygieiaJenkinsName());
+            request.setType(CodeQualityType.StaticAnalysis);
+            request.setTimestamp(run.getTimeInMillis());
+            request.setProjectVersion(run.getId());
+            request.setHygieiaId(buildResponse.getResponseValue());
+            request.setProjectId(run.getParent().getFullName());
+            request.setServerUrl(run.getParent().getAbsoluteUrl());
+
+            service.publishSonarResults(request);
             return null;
         }
 
@@ -211,6 +235,7 @@ public class HygieiaCodeQualityPublishStep extends AbstractStepImpl {
             for (CodeQualityMetric metric : quality.getMetrics()) {
                 request.getMetrics().add(metric);
             }
+
             return request;
         }
 
