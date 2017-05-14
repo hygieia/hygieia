@@ -24,6 +24,7 @@ import com.capitalone.dashboard.service.ScopeService;
 import com.capitalone.dashboard.service.ServiceService;
 import com.capitalone.dashboard.service.TeamService;
 import com.capitalone.dashboard.service.TestResultService;
+import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
 
 /**
@@ -140,5 +141,10 @@ public class TestConfig {
 	@Bean
 	public TeamService teamService() {
 		return Mockito.mock(TeamService.class);
+	}
+	
+	@Bean
+	public UserInfoService userInfoService() {
+	    return Mockito.mock(UserInfoService.class);
 	}
 }
