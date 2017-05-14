@@ -7,7 +7,7 @@ public class CollectionError {
     private String errorMessage;
     private long timestamp;
 
-    public static final String UNKNOWN_ERROR_CODE = "Unknown";
+    public static final String UNKNOWN_HOST = "Unreachable";
 
     public CollectionError(String errorCode, String errorMessage) {
         this.errorCode = errorCode;
@@ -19,23 +19,14 @@ public class CollectionError {
         return errorCode;
     }
 
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-    }
 
     public String getErrorMessage() {
         return errorMessage;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
 
     public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
 }

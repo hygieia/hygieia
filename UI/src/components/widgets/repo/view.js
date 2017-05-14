@@ -52,7 +52,6 @@
                 componentId: $scope.widgetConfig.componentId,
                 numberOfDays: 14
             };
-            ctrl.lastUpdated;
 
             codeRepoData.details(params).then(function (data) {
                 processResponse(data.result, params.numberOfDays);
@@ -139,7 +138,7 @@
                 if (commit.scmCommitTimestamp >= today.getTime()) {
                     lastDayCount++;
 
-                    if (lastDayContributors.indexOf(commit.scmAuthor) == -1) {
+                    if (lastDayContributors.indexOf(commit.scmAuthor) === -1) {
                         lastDayContributors.push(commit.scmAuthor);
                     }
                 }
@@ -147,7 +146,7 @@
                 if (commit.scmCommitTimestamp >= sevenDays.getTime()) {
                     lastSevenDayCount++;
 
-                    if (lastSevenDaysContributors.indexOf(commit.scmAuthor) == -1) {
+                    if (lastSevenDaysContributors.indexOf(commit.scmAuthor) === -1) {
                         lastSevenDaysContributors.push(commit.scmAuthor);
                     }
                 }
@@ -155,7 +154,7 @@
                 if (commit.scmCommitTimestamp >= fourteenDays.getTime()) {
                     lastFourteenDayCount++;
                     ctrl.commits.push(commit);
-                    if (lastFourteenDaysContributors.indexOf(commit.scmAuthor) == -1) {
+                    if (lastFourteenDaysContributors.indexOf(commit.scmAuthor) === -1) {
                         lastFourteenDaysContributors.push(commit.scmAuthor);
                     }
                 }

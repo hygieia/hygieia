@@ -1,29 +1,30 @@
 package com.capitalone.dashboard.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.CustomRepositoryQuery;
+import com.capitalone.dashboard.repository.DashboardRepository;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.repository.CollectorItemRepository;
-import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.repository.DashboardRepository;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CollectorServiceImpl implements CollectorService {
@@ -32,15 +33,17 @@ public class CollectorServiceImpl implements CollectorService {
     private final CollectorItemRepository collectorItemRepository;
     private final ComponentRepository componentRepository;
     private final DashboardRepository dashboardRepository;
+    private final CustomRepositoryQuery customRepositoryQuery;
 
     @Autowired
     public CollectorServiceImpl(CollectorRepository collectorRepository,
                                 CollectorItemRepository collectorItemRepository,
-                                ComponentRepository componentRepository, DashboardRepository dashboardRepository) {
+                                ComponentRepository componentRepository, DashboardRepository dashboardRepository, CustomRepositoryQuery customRepositoryQuery) {
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
         this.componentRepository = componentRepository;
         this.dashboardRepository = dashboardRepository;
+        this.customRepositoryQuery = customRepositoryQuery;
     }
 
     @Override
@@ -48,9 +51,9 @@ public class CollectorServiceImpl implements CollectorService {
         return collectorRepository.findByCollectorType(collectorType);
     }
 
-	@Override
-	public Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String descriptionFilter, Pageable pageable) {
-		List<Collector> collectors = collectorRepository.findByCollectorType(collectorType);
+    @Override
+    public Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String descriptionFilter, Pageable pageable) {
+        List<Collector> collectors = collectorRepository.findByCollectorType(collectorType);
 
         List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorId()));
 
@@ -61,12 +64,12 @@ public class CollectorServiceImpl implements CollectorService {
         }
 
         return collectorItems;
-	}
-	
+    }
+
     /**
      * We want to initialize the Quasi-product collector when the API starts up
      * so that any existing Team dashboards will be added as CollectorItems.
-     *
+     * <p>
      * TODO - Is this the best home for this method??
      */
     @PostConstruct
@@ -105,6 +108,20 @@ public class CollectorServiceImpl implements CollectorService {
         if (existing != null) {
             item.setId(existing.getId());
         }
+        return collectorItemRepository.save(item);
+    }
+
+    // This is to handle scenarios where the option contains user credentials etc. We do not want to create a new collector item -
+    // just update the new credentials.
+    @Override
+    public CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> selecOptions) {
+        List<CollectorItem> existing = customRepositoryQuery.findCollectorItemsBySubsetOptions(
+                item.getCollectorId(), allOptions, selecOptions);
+
+        if (!CollectionUtils.isEmpty(existing)) {
+            item.setId(existing.get(0).getId());   //
+        }
+
         return collectorItemRepository.save(item);
     }
 
@@ -153,7 +170,7 @@ public class CollectorServiceImpl implements CollectorService {
         CollectorType ctype = CollectorType.fromString(type);
         Component component = componentRepository.findOne(oid);
 
-        List<CollectorItem> items =  component.getCollectorItems(ctype);
+        List<CollectorItem> items = component.getCollectorItems(ctype);
 
         // the collector items from component are not updated for collector run. We need to
         // get the 'live' collector items from the collectorItemRepository

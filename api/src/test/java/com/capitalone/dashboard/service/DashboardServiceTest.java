@@ -153,6 +153,34 @@ public class DashboardServiceTest {
     }
 
     @Test
+    public void associateCollectorToComponentWithDiabledCollectorItem() {
+        ObjectId compId = ObjectId.get();
+        ObjectId collId = ObjectId.get();
+        ObjectId collItemId = ObjectId.get();
+        List<ObjectId> collItemIds = Arrays.asList(collItemId);
+
+        CollectorItem item = new CollectorItem();
+        item.setCollectorId(collId);
+        item.setEnabled(false);
+        Collector collector = new Collector();
+        collector.setCollectorType(CollectorType.Build);
+        Component component = new Component();
+        HashSet<CollectorItem> set = new HashSet<>();
+        set.add(item);
+
+        when(collectorItemRepository.findOne(collItemId)).thenReturn(item);
+        when(collectorRepository.findOne(collId)).thenReturn(collector);
+        when(componentRepository.findOne(compId)).thenReturn(component);
+
+        dashboardService.associateCollectorToComponent(compId, collItemIds);
+
+        assertThat(component.getCollectorItems().get(CollectorType.Build), contains(item));
+
+        verify(componentRepository).save(component);
+        verify(collectorItemRepository).save(set);
+    }
+
+    @Test
     public void associateCollectorToComponent_collectorItemDisabled_willBecomeEnabled() {
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
@@ -207,6 +235,7 @@ public class DashboardServiceTest {
         CollectorItem item2 = new CollectorItem();
         item2.setCollectorId(collId);
         item2.setId(collItemId2);
+        item2.setEnabled(true);
         set.add(item2);
 
 

@@ -110,7 +110,6 @@
             // public methods
             $scope.configModal = configModal;
             $scope.hasPermission = hasPermission;
-            $scope.collectorItemStatus = collectorItemStatus;
             $scope.setState = setState;
             $scope.init = init;
 
@@ -141,9 +140,6 @@
             	return userService.hasDashboardConfigPermission(dashboard.owner, dashboard.owners);
             }
 
-            function collectorItemStatus() {
-            }
-
             function upsertWidget(newWidgetConfig) {
                 if (newWidgetConfig) {
                     // use existing values if they're not defined
@@ -165,7 +161,7 @@
 
                             // add or update the widget from the response.
                             // required when a new widget id is created
-                            if(response.widget !== null && typeof response.widget == 'object') {
+                            if(response.widget !== null && typeof response.widget === 'object') {
                                 angular.extend($scope.widgetConfig, response.widget);
                             }
 
@@ -187,7 +183,7 @@
                 stopInterval();
 
                 // don't request if widget is not in the read state
-                if ($scope.state != WidgetState.READY) {
+                if ($scope.state !== WidgetState.READY) {
                     return;
                 }
 
