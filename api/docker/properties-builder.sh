@@ -50,6 +50,8 @@ auth.ldapUserDnPattern=${AUTH_LDAP_USER_DN_PATTERN:-}
 auth.adDomain=${AUTH_AD_DOMAIN:-}
 # This will be your root dn
 auth.adRootDn=${AUTH_AD_ROOT_DN:-}
+# This is your active directory url
+auth.adUrl=${AUTH_AD_URL:-}
 
 #Monitor Widget proxy credentials
 monitor.proxy.username=${MONITOR_PROXY_USERNAME:-}
