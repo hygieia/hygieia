@@ -91,17 +91,12 @@ public class DefaultHpsmClient implements HpsmClient {
         hpsmSoapModel.setSoapAction(hpsmSettings.getDetailsSoapAction());
         hpsmSoapModel.setStatus(hpsmSettings.getAppStatus());
 
-        String soapString = getDefaultSoapMessage(hpsmSoapModel);
-
-		String response = makeSoapCall(soapString, hpsmSoapModel);
-
-		appList = responseToDetailsList(response);
+		appList = getConfigurationItemList(hpsmSoapModel);
 
 		return appList;
 	}
 
 	/**
-	 * Takes HpsmSoapModel and sets model settings based on properties file
 	 *
 	 * @return  Returns List<Cmdb> of Components
 	 */
@@ -115,41 +110,33 @@ public class DefaultHpsmClient implements HpsmClient {
         hpsmSoapModel.setRequestTypeName(hpsmSettings.getDetailsRequestType());
         hpsmSoapModel.setStatus(hpsmSettings.getAppStatus());
 
-		String soapString = getDefaultSoapMessage(hpsmSoapModel);
-
-		String response  = makeSoapCall(soapString, hpsmSoapModel);
-
-        componentList = responseToDetailsList(response);
+		componentList = getConfigurationItemList(hpsmSoapModel);
 
         return componentList;
 	}
 
 	/**
-	 *  Going from response to List<Cmdb> of APPs
-	 * @param response SOAP response required for creation of List<Cmdb>
-	 * @return List<Cmdb>
+	 * Takes hpsmSoapModel with settings set. Makes SOAP call and returns  List <Cmdb> with details
+	 * @param hpsmSoapModel
+	 * @return
 	 */
-	private List<Cmdb> responseToList(String response) {
+	private List<Cmdb> getConfigurationItemList(HpsmSoapModel hpsmSoapModel){
+		List<Cmdb> configurationItemList;
 
-		Document doc = responseToDoc(response);
-		List <Cmdb> returnList = new ArrayList<>();
+		String soapString = getDefaultSoapMessage(hpsmSoapModel);
 
-    	NodeList nodeList = doc.getElementsByTagName("ConfigurationItem");
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Cmdb cmdb = new Cmdb();
-			Node node = nodeList.item(i);
-			if (node.getNodeType() == Node.ELEMENT_NODE) {
-				Element elem = (Element) node;
-				String name = elem.getTextContent();
-					cmdb.setConfigurationItem(name);
-			}
-			returnList.add(cmdb);
-		}
+		String response  = makeSoapCall(soapString, hpsmSoapModel);
 
+		configurationItemList = responseToDetailsList(response);
 
-		return returnList;
+		return configurationItemList;
 	}
 
+	/**
+	 *  Takes SOAP response and creates List <Cmdb> with details
+	 * @param response
+	 * @return List <Cmdb>
+	 */
 
 	private List <Cmdb> responseToDetailsList(String response) {
         List <Cmdb> returnList = new ArrayList<>();
@@ -229,12 +216,12 @@ public class DefaultHpsmClient implements HpsmClient {
 	 *  Start SOAP connection
 	 */
 	private void startHttpConnection(){
-		server = hpsmSettings.getApiServer();
-		port = hpsmSettings.getApiPort();
-		protocol = hpsmSettings.getApiProtocol();
-		resource = hpsmSettings.getApiResource();
-		userName = hpsmSettings.getApiUser();
-		password = hpsmSettings.getApiPass();
+		server = hpsmSettings.getServer();
+		port = hpsmSettings.getPort();
+		protocol = hpsmSettings.getProtocol() + "://";
+		resource = hpsmSettings.getResource();
+		userName = hpsmSettings.getUser();
+		password = hpsmSettings.getPass();
 
 		if(!usedClient){
 			strURL = protocol + server + ":" + port + "/"
@@ -291,8 +278,8 @@ public class DefaultHpsmClient implements HpsmClient {
 
         String requestAction = hpsmSoapModel.getSoapAction();
         String response = "";
-        contentType = hpsmSettings.getApiContentType();
-        charset = hpsmSettings.getApiCharset();
+        contentType = hpsmSettings.getContentType();
+        charset = hpsmSettings.getCharset();
 
         try {
             startHttpConnection();
@@ -348,8 +335,7 @@ public class DefaultHpsmClient implements HpsmClient {
             SOAPBody body = envelope.getBody();
 
             SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
-            QName name1 = new QName("count");
-			requestType.addAttribute(name1,"10");
+
             SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
 
             SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
@@ -374,10 +360,10 @@ public class DefaultHpsmClient implements HpsmClient {
 				keysTag.addChildElement(configItem);
 
             }
-            if(item != null && !item.isEmpty() ){
+            if(status != null && !status.isEmpty() ){
 
                 SOAPBodyElement configItemStatus= body.addBodyElement(envelope.createName("Status","ns", ""));
-                configItemStatus.addTextNode(item);
+                configItemStatus.addTextNode(status);
 				keysTag.addChildElement(configItemStatus);
 
             }

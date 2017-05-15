@@ -1,6 +1,4 @@
-# Hygieia SCM Collectors / Github
-
-Collect source code details from GitHub based on URL and branch
+# Hygieia CMDB Collectors / HPSM
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
 
@@ -13,12 +11,12 @@ mvn install
 
 Copy this file to your server and launch it using:
 ```
-java -JAR github-collector.jar
+java -JAR hpsm-collector.jar
 ```
 
 ## application.properties
 
-You will need to provide an **application.properties** file that contains information about how to connect to the Dashboard MongoDB database instance, as well as properties the Github collector requires. See the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files) for information about sourcing this properties file.
+You will need to provide an **application.properties** file that contains information about how to connect to the Dashboard MongoDB database instance, as well as properties the HPSM collector requires. See the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files) for information about sourcing this properties file.
 
 ### Sample application.properties file
 
@@ -43,13 +41,33 @@ dbusername=db
 dbpassword=dbpass
 
 # Logging File location
-logging.file=./logs/github.log
+logging.file=./logs/hpsm.log
 
-# Collector schedule (required)
-github.cron=0 0/5 * * * *
+#Collector schedule (required)
+hpsm.cron=* * 23 * * *
 
-github.host=github.com
+#Api Details
+hpsm.server=[Your server URL]
+hpsm.port=[Your server port]
+hpsm.protocol=http
+hpsm.resource=SM/7/ws/
+hpsm.contentType=text/xml
+hpsm.charset=UTF-8
 
-# Maximum number of days to go back in time when fetching commits
-github.commitThresholdDays=15
+#Api User/ Pass
+hpsm.user=[Your WSDL Username]
+hpsm.pass=[You WSDL Password]
+
+#Api App Query settings
+hpsm.appSubType=[Your APP configuration Subtype]
+hpsm.appType= [Your APP configuration Type. Leave empty if not required]
+hpsm.appStatus=[Status of APPs]
+
+#Api Component Query settings
+hpsm.compSubType=[Your Component Subtype]
+hpsm.compType=[Your Component Type]
+
+#API app details
+hpsm.detailsRequestType=RetrieveDeviceListRequest
+hpsm.detailsSoapAction=RetrieveList
 ```

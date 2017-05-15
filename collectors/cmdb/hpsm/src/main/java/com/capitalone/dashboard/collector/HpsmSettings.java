@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "hpsm")
 public class HpsmSettings {
     private String cron;
-    private String apiServer;
-	private String apiProtocol;
-	private String apiResource;
-	private String apiContentType;
-	private String apiCharset;
-	private String apiUser;
-	private String apiPass;
+    private String server;
+	private String protocol;
+	private String resource;
+	private String contentType;
+	private String charset;
+	private String user;
+	private String pass;
     private String key;
     private String appSubType;
     private String appType;
@@ -27,72 +27,71 @@ public class HpsmSettings {
 	private String detailsRequestType;
 	private String detailsSoapAction;
 
-	private int apiPort;
+	private int port;
     private int firstRunHistoryDays;
 
-
-	public String getApiServer() {
-		return apiServer;
+	public String getServer() {
+		return server;
 	}
 
-	public void setApiServer(String apiServer) {
-		this.apiServer = apiServer;
+	public void setServer(String server) {
+		this.server = server;
 	}
 
-	public int getApiPort() {
-		return apiPort;
+	public String getProtocol() {
+		return protocol;
 	}
 
-	public void setApiPort(int apiPort) {
-		this.apiPort = apiPort;
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
 	}
 
-	public String getApiProtocol() {
-		return apiProtocol;
+	public String getResource() {
+		return resource;
 	}
 
-	public void setApiProtocol(String apiProtocol) {
-		this.apiProtocol = apiProtocol;
+	public void setResource(String resource) {
+		this.resource = resource;
 	}
 
-	public String getApiResource() {
-		return apiResource;
+	public String getContentType() {
+		return contentType;
 	}
 
-	public void setApiResource(String apiResource) {
-		this.apiResource = apiResource;
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 
-	public String getApiContentType() {
-		return apiContentType;
+	public String getCharset() {
+		return charset;
 	}
 
-	public void setApiContentType(String apiContentType) {
-		this.apiContentType = apiContentType;
+	public void setCharset(String charset) {
+		this.charset = charset;
 	}
 
-	public String getApiUser() {
-		return apiUser;
+	public String getUser() {
+		return user;
 	}
 
-	public void setApiUser(String apiUser) {
-		this.apiUser = apiUser;
+	public void setUser(String user) {
+		this.user = user;
 	}
 
-	public String getApiPass() {
-		return apiPass;
+	public String getPass() {
+		return pass;
 	}
 
-	public void setApiPass(String apiPass) {
-		this.apiPass = apiPass;
+	public void setPass(String pass) {
+		this.pass = pass;
 	}
 
-	public String getApiCharset() {
-		return apiCharset;
+	public int getPort() {
+		return port;
 	}
 
-	public void setApiCharset(String apiCharset) {
-		this.apiCharset = apiCharset;
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	public String getAppSubType() {

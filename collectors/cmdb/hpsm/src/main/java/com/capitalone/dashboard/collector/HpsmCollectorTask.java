@@ -68,11 +68,11 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         logBanner("Starting...");
         List<Cmdb> cmdbList;
         long start = System.currentTimeMillis();
+        int updatedCount = 0;
+        int insertCount = 0;
 
-       
-       cmdbList = hpsmClient.getApps();
+        cmdbList = hpsmClient.getApps();
 
-        int updateCount = 0;
         for(Cmdb cmdb: cmdbList){
 
             String configItem = cmdb.getConfigurationItem();
@@ -82,15 +82,17 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                cmdb.setId(cmdbDbItem.getId());
                cmdb.setCollectorItemId(collector.getId());
                cmdbRepository.save(cmdb);
-               updateCount++;
+               updatedCount++;
            }else if(cmdbDbItem == null){
                cmdb.setCollectorItemId(collector.getId());
                cmdbRepository.save(cmdb);
+               insertCount++;
            }
 
 
         }
-        LOG.info("updateCount: " + updateCount);
+        LOG.info("Inserted Item Count" + insertCount);
+        LOG.info("Updated Item Count" +  updatedCount);
         log("Finished", start);
     }
 }
