@@ -9,6 +9,10 @@
               ng-if="hasPermission() && widgetDefinition && widgetDefinition.config && state == widget_state.READY"
               ng-click="configModal()"></span>
 
+        <span ng-if = "collectionError" uib-tooltip-html = "'<b>Error collecting data:</b> <p>{{collectorItems[collectorItems.length-1].errors[collectorItems[collectorItems.length-1].errors.length-1].errorMessage}}</p>'"
+              tooltip-trigger="focus" tooltip-placement="bottom" class="fa fa-ban widget-font-fail">
+        </span>
+
         <span class="pull-right last-updated">
             {{lastUpdatedDisplay}}
         </span>
