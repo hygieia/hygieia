@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.model.CollectionError;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -61,6 +62,8 @@ public class GitHubCollectorTaskTest {
 
         when(gitHubRepoRepository.findEnabledGitHubRepos(collector.getId())).thenReturn(getEnabledRepos());
 
+        when(gitHubSettings.getErrorThreshold()).thenReturn(1);
+
         when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
@@ -78,6 +81,115 @@ public class GitHubCollectorTaskTest {
 
         //verify that save is called once for the commit item
         Mockito.verify(commitRepository, times(1)).save(commit);
+    }
+
+
+    @Test
+    public void collect_testCollect_with_Threshold_0() {
+        when(dbComponentRepository.findAll()).thenReturn(components());
+
+        Set<ObjectId> gitID = new HashSet<>();
+        gitID.add(new ObjectId("111ca42a258ad365fbb64ecc"));
+        when(gitHubRepoRepository.findByCollectorIdIn(gitID)).thenReturn(getGitHubs());
+
+        Collector collector = new Collector();
+        collector.setEnabled(true);
+        collector.setName("collector");
+        collector.setId(new ObjectId("111ca42a258ad365fbb64ecc"));
+
+        when(gitHubRepoRepository.findEnabledGitHubRepos(collector.getId())).thenReturn(getEnabledRepos());
+
+        when(gitHubSettings.getErrorThreshold()).thenReturn(0);
+
+        when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
+
+        when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
+                repo1.getId(), "1")).thenReturn(null);
+
+        task.collect(collector);
+
+        //verify that orphaned repo is disabled
+        assertEquals("repo2.no.collectoritem", repo2.getNiceName());
+        assertEquals(false, repo2.isEnabled());
+
+        //verify that repo1 is enabled
+        assertEquals("repo1-ci1", repo1.getNiceName());
+        assertEquals(true, repo1.isEnabled());
+
+        //verify that save is called once for the commit item
+        Mockito.verify(commitRepository, times(0)).save(commit);
+    }
+
+    @Test
+    public void collect_testCollect_with_Threshold_1() {
+        when(dbComponentRepository.findAll()).thenReturn(components());
+
+        Set<ObjectId> gitID = new HashSet<>();
+        gitID.add(new ObjectId("111ca42a258ad365fbb64ecc"));
+        when(gitHubRepoRepository.findByCollectorIdIn(gitID)).thenReturn(getGitHubs());
+
+        Collector collector = new Collector();
+        collector.setEnabled(true);
+        collector.setName("collector");
+        collector.setId(new ObjectId("111ca42a258ad365fbb64ecc"));
+
+        when(gitHubRepoRepository.findEnabledGitHubRepos(collector.getId())).thenReturn(getEnabledRepos());
+
+        when(gitHubSettings.getErrorThreshold()).thenReturn(1);
+
+        when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
+
+        when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
+                repo1.getId(), "1")).thenReturn(null);
+
+        task.collect(collector);
+
+        //verify that orphaned repo is disabled
+        assertEquals("repo2.no.collectoritem", repo2.getNiceName());
+        assertEquals(false, repo2.isEnabled());
+
+        //verify that repo1 is enabled
+        assertEquals("repo1-ci1", repo1.getNiceName());
+        assertEquals(true, repo1.isEnabled());
+
+        //verify that save is called once for the commit item
+        Mockito.verify(commitRepository, times(1)).save(commit);
+    }
+
+    @Test
+    public void collect_testCollect_with_Threshold_1_Error_1() {
+        when(dbComponentRepository.findAll()).thenReturn(components());
+
+        Set<ObjectId> gitID = new HashSet<>();
+        gitID.add(new ObjectId("111ca42a258ad365fbb64ecc"));
+        when(gitHubRepoRepository.findByCollectorIdIn(gitID)).thenReturn(getGitHubs());
+
+        Collector collector = new Collector();
+        collector.setEnabled(true);
+        collector.setName("collector");
+        collector.setId(new ObjectId("111ca42a258ad365fbb64ecc"));
+
+        when(gitHubRepoRepository.findEnabledGitHubRepos(collector.getId())).thenReturn(getEnabledReposWithErrorCount1());
+
+        when(gitHubSettings.getErrorThreshold()).thenReturn(1);
+
+        when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
+
+        when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
+                repo1.getId(), "1")).thenReturn(null);
+
+        task.collect(collector);
+
+        //verify that orphaned repo is disabled
+        assertEquals("repo2.no.collectoritem", repo2.getNiceName());
+        assertEquals(false, repo2.isEnabled());
+
+        //verify that repo1 is enabled
+        assertEquals("repo1-ci1", repo1.getNiceName());
+        assertEquals(true, repo1.isEnabled());
+
+        //verify that save is called once for the commit item
+        Mockito.verify(commitRepository, times(0)).save(commit);
     }
 
     private ArrayList<Commit> getCommits() {
@@ -105,6 +217,20 @@ public class GitHubCollectorTaskTest {
         repo1.setCollectorId(new ObjectId("111ca42a258ad365fbb64ecc"));
         repo1.setNiceName("repo1-ci1");
         repo1.setRepoUrl("http://current");
+        gitHubs.add(repo1);
+        return gitHubs;
+    }
+
+    private List<GitHubRepo> getEnabledReposWithErrorCount1() {
+        List<GitHubRepo> gitHubs = new ArrayList<GitHubRepo>();
+        repo1 = new GitHubRepo();
+        repo1.setEnabled(true);
+        repo1.setId(new ObjectId("1c1ca42a258ad365fbb64ecc"));
+        repo1.setCollectorId(new ObjectId("111ca42a258ad365fbb64ecc"));
+        repo1.setNiceName("repo1-ci1");
+        repo1.setRepoUrl("http://current");
+        CollectionError error = new CollectionError("Error","Error");
+        repo1.getErrors().add(error);
         gitHubs.add(repo1);
         return gitHubs;
     }
