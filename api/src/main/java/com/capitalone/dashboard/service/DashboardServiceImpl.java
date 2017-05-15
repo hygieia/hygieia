@@ -1,18 +1,5 @@
 package com.capitalone.dashboard.service;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
 import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuthType;
@@ -27,6 +14,7 @@ import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.repository.ServiceRepository;
@@ -34,6 +22,17 @@ import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -42,6 +41,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
     private final CollectorItemRepository collectorItemRepository;
+    private final CustomRepositoryQuery customRepositoryQuery;
     @SuppressWarnings("unused")
     private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
@@ -51,12 +51,13 @@ public class DashboardServiceImpl implements DashboardService {
                                 ComponentRepository componentRepository,
                                 CollectorRepository collectorRepository,
                                 CollectorItemRepository collectorItemRepository,
-                                ServiceRepository serviceRepository,
+                                CustomRepositoryQuery customRepositoryQuery, ServiceRepository serviceRepository,
                                 PipelineRepository pipelineRepository) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
+        this.customRepositoryQuery = customRepositoryQuery;
         this.serviceRepository = serviceRepository;
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
     }
@@ -172,7 +173,8 @@ public class DashboardServiceImpl implements DashboardService {
                 // Save all collector items as disabled for now
                 if (!CollectionUtils.isEmpty(cItems)) {
                     for (CollectorItem ci : cItems) {
-                        ci.setEnabled(false);
+                        //if item is orphaned, disable it. Otherwise keep it enabled.
+                        ci.setEnabled(!isLonely(ci, collector, component));
                         toSaveCollectorItems.put(ci.getId(), ci);
                     }
                 }
@@ -200,6 +202,17 @@ public class DashboardServiceImpl implements DashboardService {
         collectorItemRepository.save(deleteSet);
         componentRepository.save(component);
         return component;
+    }
+
+
+    private boolean isLonely(CollectorItem item, Collector collector, Component component) {
+        List<Component> components = customRepositoryQuery.findComponents(collector, item);
+        //if item is not attached to any component, it is orphaned.
+        if (CollectionUtils.isEmpty(components)) return true;
+        //if item is attached to more than 1 component, it is NOT orphaned
+        if (components.size() > 1) return false;
+        //if item is attached to ONLY 1 component it is the current one, it is going to be orphaned after this
+        return (components.get(0).getId().equals(component.getId()));
     }
 
     @Override
