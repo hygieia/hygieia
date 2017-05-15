@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.config;
 
 import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.logging.LoggingFilter;
 import com.capitalone.dashboard.model.RequestLog;
 import com.capitalone.dashboard.repository.RequestLogRepository;
 import org.apache.log4j.Logger;

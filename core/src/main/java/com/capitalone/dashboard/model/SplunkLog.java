@@ -1,12 +1,10 @@
-package com.capitalone.dashboard.config;
+package com.capitalone.dashboard.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.capitalone.dashboard.model.LogEntry;
-
-public class SplunkLog extends LogEntry {
+public class SplunkLog {
     
     private static final char SEPERATOR = ' ';
     private static final char EQUALS = '=';
