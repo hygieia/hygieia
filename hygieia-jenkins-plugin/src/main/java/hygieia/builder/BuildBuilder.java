@@ -17,6 +17,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -96,7 +97,9 @@ public class BuildBuilder {
             request.setEndTime(build.getStartTimeInMillis() + build.getDuration());
             if (buildChangeSet) {
                 request.setCodeRepos(getRepoBranch(build));
-                request.setSourceChangeSet(getCommitList(build.getChangeSets()));
+                ChangeLogSet<? extends ChangeLogSet.Entry> sets = ((AbstractBuild) run).getChangeSet();
+                List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets = sets.isEmptySet() ? Collections.<ChangeLogSet<? extends ChangeLogSet.Entry>>emptyList() : Collections.<ChangeLogSet<? extends ChangeLogSet.Entry>>singletonList(sets);
+                request.setSourceChangeSet(getCommitList(changeLogSets));
             }
         } else {
             request.setBuildStatus(BuildStatus.InProgress.toString());
