@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.config;
 
-import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
@@ -19,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.capitalone.dashboard.auth.AuthProperties;
 import com.capitalone.dashboard.auth.AuthenticationResultHandler;
+import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
 import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
 import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
 import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
@@ -40,18 +40,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private AuthProperties authProperties;
-
-	@Bean
-	protected ActiveDirectoryLdapAuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
-		ActiveDirectoryLdapAuthenticationProvider provider =
-				new ActiveDirectoryLdapAuthenticationProvider(authProperties.getAdDomain(),
-						authProperties.getLdapServerUrl(),
-						authProperties.getAdRootDn());
-		provider.setConvertSubErrorCodesToExceptions(true);
-		provider.setUseAuthenticationRequestCredentials(true);
-		provider.setUserDetailsContextMapper(new CustomUserDetailsContextMapper());
-		return provider;
-	}
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -81,19 +69,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(standardAuthenticationProvider);
+		configureLdap(auth);
+		configureActiveDirectory(auth);
 
-		if (StringUtils.isEmpty(authProperties.getAdDomain())) {
-			String ldapServerUrl = authProperties.getLdapServerUrl();
-			String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
-			if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
-				auth.ldapAuthentication()
-				.userDnPatterns(ldapUserDnPattern)
-				.contextSource().url(ldapServerUrl);
-			}
-		} else {
-			auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider());
-		}
 	}
+
+    private void configureActiveDirectory(AuthenticationManagerBuilder auth) {
+        ActiveDirectoryLdapAuthenticationProvider adProvider = activeDirectoryLdapAuthenticationProvider();
+        if(adProvider != null) auth.authenticationProvider(adProvider);
+    }
+
+    private void configureLdap(AuthenticationManagerBuilder auth) throws Exception {
+        String ldapServerUrl = authProperties.getLdapServerUrl();
+		String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
+		if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
+			auth.ldapAuthentication()
+			.userDnPatterns(ldapUserDnPattern)
+			.contextSource().url(ldapServerUrl);
+		}
+    }
 	
 	@Bean
 	protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
@@ -104,5 +98,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected LdapLoginRequestFilter ldapLoginRequestFilter() throws Exception {
 		return new LdapLoginRequestFilter("/login/ldap", authenticationManager(), authenticationResultHandler);
 	}
+	
+    @Bean
+    protected ActiveDirectoryLdapAuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
+        if(StringUtils.isBlank(authProperties.getAdUrl())) return null;
+        
+        ActiveDirectoryLdapAuthenticationProvider provider = new ActiveDirectoryLdapAuthenticationProvider(authProperties.getAdDomain(), authProperties.getAdUrl(),
+                authProperties.getAdRootDn());
+        provider.setConvertSubErrorCodesToExceptions(true);
+        provider.setUseAuthenticationRequestCredentials(true);
+        provider.setUserDetailsContextMapper(new CustomUserDetailsContextMapper());
+        return provider;
+    }
 	
 }
