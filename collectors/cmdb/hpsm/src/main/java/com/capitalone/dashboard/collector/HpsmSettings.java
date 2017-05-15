@@ -20,11 +20,10 @@ public class HpsmSettings {
     private String key;
     private String appSubType;
     private String appType;
+    private String appStatus;
 	private String compSubType;
 	private String compType;
 
-	private String appRequestType;
-	private String appSoapAction;
 	private String detailsRequestType;
 	private String detailsSoapAction;
 
@@ -112,20 +111,12 @@ public class HpsmSettings {
 		this.appType = appType;
 	}
 
-	public String getAppRequestType() {
-		return appRequestType;
+	public String getAppStatus() {
+		return appStatus;
 	}
 
-	public void setAppRequestType(String appRequestType) {
-		this.appRequestType = appRequestType;
-	}
-
-	public String getAppSoapAction() {
-		return appSoapAction;
-	}
-
-	public void setAppSoapAction(String appSoapAction) {
-		this.appSoapAction = appSoapAction;
+	public void setAppStatus(String appStatus) {
+		this.appStatus = appStatus;
 	}
 
 	public String getCompSubType() {

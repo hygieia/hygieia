@@ -2,7 +2,6 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.HpsmSoapModel;
-import com.capitalone.dashboard.util.Supplier;
 import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -17,13 +16,13 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.client.RestOperations;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -66,14 +65,14 @@ public class DefaultHpsmClient implements HpsmClient {
 
     /**
      *
-     * @return Combind List<Cmdb> of APPs and Components
+     * @return Combined List<Cmdb> of APPs and Components
      */
 	@Override
 	public List<Cmdb> getApps() {
 
 		List<Cmdb> cmdbList;
         cmdbList = getAppList();
-        //cmdbList.addAll(getComponentList());
+        cmdbList.addAll(getComponentList());
 
 		return cmdbList;
 	}
@@ -86,30 +85,17 @@ public class DefaultHpsmClient implements HpsmClient {
 	private List<Cmdb> getAppList(){
 		List<Cmdb> appList;
 
-		HpsmSoapModel model = new HpsmSoapModel();
-		model.setConfigurationItemSubType(hpsmSettings.getAppSubType());
-		model.setRequestTypeName(hpsmSettings.getDetailsRequestType());
-		model.setSoapAction(hpsmSettings.getDetailsSoapAction());
+		HpsmSoapModel hpsmSoapModel = new HpsmSoapModel();
+        hpsmSoapModel.setConfigurationItemSubType(hpsmSettings.getAppSubType());
+        hpsmSoapModel.setRequestTypeName(hpsmSettings.getDetailsRequestType());
+        hpsmSoapModel.setSoapAction(hpsmSettings.getDetailsSoapAction());
+        hpsmSoapModel.setStatus(hpsmSettings.getAppStatus());
 
-		String soapString = getDefaultSoapMessage(model);
+        String soapString = getDefaultSoapMessage(hpsmSoapModel);
 
-		String response = makeSoapCall(soapString, model);
+		String response = makeSoapCall(soapString, hpsmSoapModel);
 
 		appList = responseToDetailsList(response);
-
-//        Cmdb cmdb = new Cmdb();
-//
-//        cmdb.setConfigurationItem("ASVWEAVE");
-//
-//        appList.add(cmdb);
-//
-//        cmdb = new Cmdb();
-//        cmdb.setConfigurationItem("ASVHYGIEIA");
-//        appList.add(cmdb);
-//        cmdb = new Cmdb();
-//        cmdb.setConfigurationItem("ASVJAMBOX");
-//        appList.add(cmdb);
-
 
 		return appList;
 	}
@@ -125,14 +111,15 @@ public class DefaultHpsmClient implements HpsmClient {
 
 		hpsmSoapModel.setConfigurationItemSubType(hpsmSettings.getCompSubType());
         hpsmSoapModel.setConfigurationItemType(hpsmSettings.getCompType());
-        hpsmSoapModel.setSoapAction(hpsmSettings.getAppSoapAction());
-        hpsmSoapModel.setRequestTypeName(hpsmSettings.getAppRequestType());
+        hpsmSoapModel.setSoapAction(hpsmSettings.getDetailsSoapAction());
+        hpsmSoapModel.setRequestTypeName(hpsmSettings.getDetailsRequestType());
+        hpsmSoapModel.setStatus(hpsmSettings.getAppStatus());
 
 		String soapString = getDefaultSoapMessage(hpsmSoapModel);
 
 		String response  = makeSoapCall(soapString, hpsmSoapModel);
 
-        componentList = responseToList(response);
+        componentList = responseToDetailsList(response);
 
         return componentList;
 	}
@@ -203,7 +190,6 @@ public class DefaultHpsmClient implements HpsmClient {
 			result = ReflectionUtils.invokeMethod(put, target, args);
 		}
 		else{
-		   // LOG.warn("Method Not Found for: " + methodName);
             result = null;
 		}
 		return result;
@@ -282,7 +268,6 @@ public class DefaultHpsmClient implements HpsmClient {
 			}
 		}
 		catch(Throwable t){
-			t.printStackTrace();
 			LOG.error("Error while trying to close http Connection: " + t);
 		}
 		usedClient = false;
@@ -328,7 +313,7 @@ public class DefaultHpsmClient implements HpsmClient {
 
             stopHttpConnection();
         } catch (java.io.IOException e) {
-            e.printStackTrace();
+            LOG.error("Error while trying to make soap call: " + e);
         }
         return response;
 
@@ -342,10 +327,12 @@ public class DefaultHpsmClient implements HpsmClient {
 
         String strMsg = "";
         SOAPMessage soapMsg;
+        String status = hpsmSoapModel.getStatus();
         String itemType = hpsmSoapModel.getConfigurationItemType();
         String itemSubType = hpsmSoapModel.getConfigurationItemSubType();
         String item = hpsmSoapModel.getConfigurationItem();
         String requestTypeName = hpsmSoapModel.getRequestTypeName();
+
         try {
             MessageFactory factory = MessageFactory.newInstance();
 
@@ -361,37 +348,43 @@ public class DefaultHpsmClient implements HpsmClient {
             SOAPBody body = envelope.getBody();
 
             SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
-//            QName name1 = new QName("count");
-            //requestType.addAttribute(name1,"5");
-            SOAPBodyElement model = body.addBodyElement(envelope.createName("model","ns", ""));
+            QName name1 = new QName("count");
+			requestType.addAttribute(name1,"10");
+            SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
 
+            SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
 
-            SOAPBodyElement keys = body.addBodyElement(envelope.createName("keys","ns", ""));
-
-            SOAPBodyElement instance = body.addBodyElement(envelope.createName("instance","ns", ""));
+            SOAPBodyElement instanceTag = body.addBodyElement(envelope.createName("instance","ns", ""));
 
             if(itemType != null && !itemType.isEmpty() ){
                 SOAPBodyElement configItemType= body.addBodyElement(envelope.createName("ConfigerationItemType","ns", ""));
                 configItemType.addTextNode(itemType);
-                keys.addChildElement(configItemType);
+				keysTag.addChildElement(configItemType);
 
             }
             if(itemSubType != null && !itemSubType.isEmpty() ){
                 SOAPBodyElement configItemSubType= body.addBodyElement(envelope.createName("ConfigurationItemSubType","ns", ""));
                 configItemSubType.addTextNode(itemSubType);
-                keys.addChildElement(configItemSubType);
+				keysTag.addChildElement(configItemSubType);
             }
             if(item != null && !item.isEmpty() ){
 
                 SOAPBodyElement configItem= body.addBodyElement(envelope.createName("ConfigurationItem","ns", ""));
                 configItem.addTextNode(item);
-                keys.addChildElement(configItem);
+				keysTag.addChildElement(configItem);
+
+            }
+            if(item != null && !item.isEmpty() ){
+
+                SOAPBodyElement configItemStatus= body.addBodyElement(envelope.createName("Status","ns", ""));
+                configItemStatus.addTextNode(item);
+				keysTag.addChildElement(configItemStatus);
 
             }
 
-            model.addChildElement(keys);
-            model.addChildElement(instance);
-            requestType.addChildElement(model);
+            modelTag.addChildElement(keysTag);
+            modelTag.addChildElement(instanceTag);
+            requestType.addChildElement(modelTag);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             soapMsg.writeTo(out);

@@ -5,6 +5,7 @@ public class HpsmSoapModel {
     private String configurationItem;
     private String configurationItemType;
     private String configurationItemSubType;
+    private String status;
     private String requestTypeName;
     private String soapAction;
 
@@ -30,6 +31,14 @@ public class HpsmSoapModel {
 
     public void setConfigurationItemSubType(String configurationItemSubType) {
         this.configurationItemSubType = configurationItemSubType;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getRequestTypeName() {

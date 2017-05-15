@@ -10,12 +10,10 @@ import com.capitalone.dashboard.repository.HpsmRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -71,8 +69,8 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         List<Cmdb> cmdbList;
         long start = System.currentTimeMillis();
 
-
-        cmdbList = hpsmClient.getApps();
+       
+       cmdbList = hpsmClient.getApps();
 
         int updateCount = 0;
         for(Cmdb cmdb: cmdbList){
@@ -95,5 +93,4 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         LOG.info("updateCount: " + updateCount);
         log("Finished", start);
     }
-
 }
