@@ -11,4 +11,5 @@
   </root>
 
   <logger name="com.mongodb.FongoDBCollection" level="INFO"/>
+  <logger name="com.github.fakemongo.impl.ExpressionParser" level="INFO"/>
 </configuration>
