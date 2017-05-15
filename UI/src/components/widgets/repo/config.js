@@ -127,17 +127,17 @@
 				scm: scm,
 				url: ctrl.repoUrl,
 				branch: getNonNullString(ctrl.gitBranch),
-				userId: getNonNullString(ctrl.repouser),
+                userID: getNonNullString(ctrl.repouser),
                 password: getNonNullString(ctrl.repopass)
 			}
 		}
 
-		function getUniqueOotions (scm) {
+		function getUniqueOptions (scm) {
 			return {
                 scm: scm,
                 url: ctrl.repoUrl,
                 branch: ctrl.gitBranch,
-                userId: getNonNullString(ctrl.repouser)
+                userID: getNonNullString(ctrl.repouser)
             }
 		}
 
@@ -149,26 +149,26 @@
 				item = {
 					collectorId: _.findWhere(ctrl.collectors, {name: 'GitHub'}).id,
 					options: getOptions('Github'),
-					uniqueOptions: getUniqueOotions('Github')
+					uniqueOptions: getUniqueOptions('Github')
 				};
 			} else if (ctrl.repoOption.name.indexOf("Bitbucket") !== -1) {
 
 				item = {
 					collectorId: _.findWhere(ctrl.collectors, {name: 'Bitbucket'}).id,
 					options: getOptions('Bitbucket'),
-                    uniqueOptions: getUniqueOotions('Bitbucket')
+                    uniqueOptions: getUniqueOptions('Bitbucket')
 				};
 			} else if  (ctrl.repoOption.name.indexOf("Subversion") !== -1) {
 				item = {
 					collectorId : _.findWhere(ctrl.collectors, { name: 'Subversion' }).id,
                     options: getOptions('Subversion'),
-                    uniqueOptions: getUniqueOotions('Subversion')
+                    uniqueOptions: getUniqueOptions('Subversion')
 				};
 			} else if (ctrl.repoOption.name.indexOf("Gitlab") !== -1) {
 				item = {
 					collectorId : _.findWhere(ctrl.collectors, { name: 'Gitlab' }).id,
                     options: getOptions('Gitlab'),
-                    uniqueOptions: getUniqueOotions('Gitlab')
+                    uniqueOptions: getUniqueOptions('Gitlab')
 				};
 			}
 			return collectorData.createCollectorItem(item);
