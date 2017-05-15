@@ -181,6 +181,7 @@
         <module>collectors/scm/github</module>
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
+        <module>hygieia-jenkins-plugin</module>
         <module>UI</module>
         <module>UI-tests</module>
       </modules>

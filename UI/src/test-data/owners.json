@@ -1,0 +1,14 @@
+[
+    {
+        "username" : "newuser",
+        "authType" : "STANDARD"
+    },
+    {
+        "username" : "someuser",
+        "authType" : "STANDARD"
+    },
+    {
+        "username" : "ldapuser",
+        "authType" : "LDAP"
+    }
+]
