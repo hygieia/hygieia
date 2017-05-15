@@ -1,5 +1,23 @@
 package com.capitalone.dashboard.service;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
+import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
+import com.capitalone.dashboard.model.UserInfo;
+import com.capitalone.dashboard.model.UserRole;
+import com.capitalone.dashboard.repository.UserInfoRepository;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuthType;
@@ -22,17 +40,6 @@ import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -45,14 +52,17 @@ public class DashboardServiceImpl implements DashboardService {
     @SuppressWarnings("unused")
     private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
+    private final UserInfoRepository userInfoRepository;
 
     @Autowired
     public DashboardServiceImpl(DashboardRepository dashboardRepository,
                                 ComponentRepository componentRepository,
                                 CollectorRepository collectorRepository,
                                 CollectorItemRepository collectorItemRepository,
-                                CustomRepositoryQuery customRepositoryQuery, ServiceRepository serviceRepository,
-                                PipelineRepository pipelineRepository) {
+                                CustomRepositoryQuery customRepositoryQuery,
+                                ServiceRepository serviceRepository,
+                                PipelineRepository pipelineRepository,
+                                UserInfoRepository userInfoRepository) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
@@ -60,6 +70,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.customRepositoryQuery = customRepositoryQuery;
         this.serviceRepository = serviceRepository;
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
+        this.userInfoRepository = userInfoRepository;
     }
 
     @Override
@@ -269,25 +280,84 @@ public class DashboardServiceImpl implements DashboardService {
         }).orNull();
     }
 
+	@Override
+	public List<Dashboard> getOwnedDashboards() {
+		Set<Dashboard> myDashboards = new HashSet<Dashboard>();
+		
+		Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+		myDashboards.addAll(dashboardRepository.findByOwners(owner));
+		
+		// TODO: This if check is to ensure backwards compatibility for dashboards created before AuthenticationTypes were introduced.
+		if (AuthenticationUtil.getAuthTypeFromContext() == AuthType.STANDARD) {
+			myDashboards.addAll(dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext()));
+		}
+		
+		return Lists.newArrayList(myDashboards);
+	}
+
     @Override
-    public List<Dashboard> getOwnedDashboards() {
-        Set<Dashboard> myDashboards = new HashSet<>();
+    public Iterable<UserInfo> getAllUsers() {
+        return userInfoRepository.findByOrderByUsernameAsc();
+    }
 
-        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-        myDashboards.addAll(dashboardRepository.findByOwners(owner));
+    @Override
+    public Iterable<Owner> getOwners(ObjectId id) {
+        Dashboard dashboard = get(id);
+        return dashboard.getOwners();
+    }
 
-        // TODO: This if check is to ensure backwards compatibility for dashboards created before AuthenticationTypes were introduced.
-        if (AuthenticationUtil.getAuthTypeFromContext() == AuthType.STANDARD) {
-            myDashboards.addAll(dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext()));
+    @Override
+    public UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType) {
+        Dashboard dashboard = dashboardRepository.findOne(dashboardId);
+        List<Owner> owners = dashboard.getOwners();
+        Owner promotedOwner = new Owner(username, authType);
+        owners.add(promotedOwner);
+        dashboardRepository.save(dashboard);
+
+        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
+        if (user == null) {
+            throw new UserNotFoundException(username, authType);
+        }
+        user.getAuthorities().add(UserRole.ROLE_ADMIN);
+
+        return user;
+    }
+
+    @Override
+    public UserInfo demoteFromOwner(ObjectId dashboardId, String username, AuthType authType) {
+        Dashboard dashboard = dashboardRepository.findOne(dashboardId);
+        int numberOfOwners = dashboard.getOwners().size();
+
+        //get admin users
+        Collection<UserInfo> adminUsers = userInfoRepository.findByAuthoritiesIn(UserRole.ROLE_ADMIN);
+
+        numberOfOwners += adminUsers.size();
+
+        if(numberOfOwners <= 1) {
+            throw new DeleteLastAdminException();
         }
 
-        return Lists.newArrayList(myDashboards);
+        Owner demotedOwner = new Owner(username, authType);
+        dashboard.getOwners().remove(demotedOwner);
+        dashboardRepository.save(dashboard);
+
+        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
+        if (user == null) {
+            throw new UserNotFoundException(username, authType);
+        }
+
+        user.getAuthorities().remove(UserRole.ROLE_ADMIN);
+        return user;
+
     }
 
-    @Override
-    public String getDashboardOwner(String dashboardTitle) {
-        return dashboardRepository.findByTitle(dashboardTitle).get(0).getOwner();
-    }
+	@Override
+	public String getDashboardOwner(String dashboardTitle) {
+
+		String dashboardOwner=dashboardRepository.findByTitle(dashboardTitle).get(0).getOwner();
+		
+		return dashboardOwner;
+	}
 
     @SuppressWarnings("unused")
     private DashboardType getDashboardType(Dashboard dashboard) {

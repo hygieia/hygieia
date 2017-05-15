@@ -6,10 +6,16 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.UserInfo;
+import com.capitalone.dashboard.model.UserRole;
+import com.google.common.collect.Lists;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +90,20 @@ public class DashboardController {
         }
     }
 
+    @RequestMapping(path = "/dashboard/addOwner/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserInfo> addOwner(@PathVariable ObjectId id, @RequestBody UserInfo user) {
+        UserInfo savedUser = dashboardService.promoteToOwner(id, user.getUsername(), user.getAuthType());
+
+        return new ResponseEntity<UserInfo>(savedUser, HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "/dashboard/removeOwner/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserInfo> removeOwner(@PathVariable ObjectId id, @RequestBody UserInfo user) {
+        UserInfo savedUser = dashboardService.demoteFromOwner(id, user.getUsername(), user.getAuthType());
+
+        return new ResponseEntity<UserInfo>(savedUser, HttpStatus.OK);
+    }
+
     @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/rename/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> renameDashboard(@PathVariable ObjectId id,
@@ -91,11 +111,23 @@ public class DashboardController {
 
 
         Dashboard dashboard = getDashboard(id);
+        String existingTitle = dashboard.getTitle();
+        String newTitle = request.getTitle();
+
+        //no change to title is ok
+        if (existingTitle.equalsIgnoreCase(newTitle)) {
+            return ResponseEntity.ok("Unchanged");
+        }
+
         Iterable<Dashboard> allDashboard = dashboards();
         boolean titleExist = false;
 
         for(Dashboard l :allDashboard)
         {
+            if (id.compareTo(l.getId()) == 0) {
+                //skip the current dashboard
+                continue;
+            }
             if(l.getTitle().equals(request.getTitle()))
             {
                 titleExist=true;
@@ -166,6 +198,32 @@ public class DashboardController {
     	List<Dashboard> myDashboard = dashboardService.getOwnedDashboards();
         return myDashboard;
 
+    }
+
+    @RequestMapping(value = "/dashboard/allUsers/{id}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public Iterable<UserInfo> getAllUsers(@PathVariable ObjectId id) {
+
+        Iterable<UserInfo> allUsers = dashboardService.getAllUsers();
+
+        ArrayList<Owner> owners = Lists.newArrayList(getOwners(id));
+        for(UserInfo user: allUsers) {
+            if (owners.contains(new Owner(user.getUsername(), user.getAuthType()))) {
+                Collection<UserRole> roles = user.getAuthorities();
+                //here ROLE_ADMIN = owner of dashboard
+                //this is only to display on the UI and we don't update the user_info collection
+                roles.add(UserRole.ROLE_ADMIN);
+                user.setAuthorities(roles);
+            }
+        }
+
+        return allUsers;
+    }
+
+    @RequestMapping(value = "/dashboard/owners/{id}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public Iterable<Owner> getOwners(@PathVariable ObjectId id) {
+        return dashboardService.getOwners(id);
     }
 
     @Deprecated
