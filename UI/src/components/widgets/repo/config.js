@@ -27,9 +27,6 @@
 			value: 'Gitlab'
 		}];
 
-//console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
-//		console.log(JSON.stringify(widgetConfig.options.id));
-
 		if (!widgetConfig.options.scm) {
 			ctrl.repoOption="";
 		}
@@ -38,7 +35,7 @@
 			var myindex;
 
 			for (var v = 0; v < ctrl.repoOptions.length; v++) {
-				if (ctrl.repoOptions[v].name == widgetConfig.options.scm.name) {
+				if (ctrl.repoOptions[v].name === widgetConfig.options.scm.name) {
 					myindex = v;
 				}
 			}
@@ -121,53 +118,57 @@
 		 * collectorData.createCollectorItem(item); }
 		 */
 
+		function getNonNullString(value) {
+			return _.isEmpty(value)||_.isUndefined(value)?"":value
+		}
+
+		function getOptions(scm) {
+			return {
+				scm: scm,
+				url: ctrl.repoUrl,
+				branch: getNonNullString(ctrl.gitBranch),
+                userID: getNonNullString(ctrl.repouser),
+                password: getNonNullString(ctrl.repopass)
+			}
+		}
+
+		function getUniqueOptions (scm) {
+			return {
+                scm: scm,
+                url: ctrl.repoUrl,
+                branch: ctrl.gitBranch,
+                userID: getNonNullString(ctrl.repouser)
+            }
+		}
+
 		function createCollectorItem() {
 			var item = {};
 
-			if (ctrl.repoOption.name.indexOf("GitHub") != -1) {
+			if (ctrl.repoOption.name.indexOf("GitHub") !== -1) {
 
 				item = {
 					collectorId: _.findWhere(ctrl.collectors, {name: 'GitHub'}).id,
-					options: {
-						scm: 'Github',
-						url: ctrl.repoUrl,
-						branch: ctrl.gitBranch,
-						userID: ctrl.repouser,
-						password: ctrl.repopass
-					}
+					options: getOptions('Github'),
+					uniqueOptions: getUniqueOptions('Github')
 				};
-			} else if (ctrl.repoOption.name.indexOf("Bitbucket") != -1) {
+			} else if (ctrl.repoOption.name.indexOf("Bitbucket") !== -1) {
 
 				item = {
 					collectorId: _.findWhere(ctrl.collectors, {name: 'Bitbucket'}).id,
-					options: {
-						scm: 'Bitbucket',
-						url: ctrl.repoUrl,
-						branch: ctrl.gitBranch,
-						userID: ctrl.repouser,
-						password: ctrl.repopass
-					}
+					options: getOptions('Bitbucket'),
+                    uniqueOptions: getUniqueOptions('Bitbucket')
 				};
-			} else if  (ctrl.repoOption.name.indexOf("Subversion") != -1) {
+			} else if  (ctrl.repoOption.name.indexOf("Subversion") !== -1) {
 				item = {
 					collectorId : _.findWhere(ctrl.collectors, { name: 'Subversion' }).id,
-					options: {
-						scm: 'Subversion',
-						url: ctrl.repoUrl,
-						userID: ctrl.repouser,
-						password: ctrl.repopass
-					}
+                    options: getOptions('Subversion'),
+                    uniqueOptions: getUniqueOptions('Subversion')
 				};
-			} else if (ctrl.repoOption.name.indexOf("Gitlab") != -1) {
+			} else if (ctrl.repoOption.name.indexOf("Gitlab") !== -1) {
 				item = {
 					collectorId : _.findWhere(ctrl.collectors, { name: 'Gitlab' }).id,
-					options: {
-						scm: 'Gitlab',
-						url: ctrl.repoUrl,
-						branch: ctrl.gitBranch,
-						userID: ctrl.repouser,
-						password: ctrl.repopass
-					}
+                    options: getOptions('Gitlab'),
+                    uniqueOptions: getUniqueOptions('Gitlab')
 				};
 			}
 			return collectorData.createCollectorItem(item);
@@ -187,13 +188,12 @@
 					scm : ctrl.repoOption,
 					url : ctrl.repoUrl,
 					branch : ctrl.gitBranch,
-					userID : ctrl.repouser,
-					password : ctrl.repopass
+					userID : getNonNullString(ctrl.repouser),
+					password: getNonNullString(ctrl.repopass)
 				},
 				componentId : modalData.dashboard.application.components[0].id,
 				collectorItemId : response.data.id
 			};
-
 			// pass this new config to the modal closing so it's saved
 			$uibModalInstance.close(postObj);
 		}

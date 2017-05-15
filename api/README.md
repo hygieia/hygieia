@@ -50,6 +50,8 @@ auth.ldapUserDnPattern=[uid={0},OU=Users,dc=your,dc=company,dc=com]
 auth.adDomain=[company.com]
 # This will be your root dn
 auth.adRootDn=[dc=your,dc=company,dc=com]
+# This will be your active directory url (required for AD)
+auth.adUrl=[Need an example]
 
 monitor.proxy.host=[hostname of proxy server]
 monitor.proxy.type=[http|socks|direct]
