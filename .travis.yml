@@ -9,6 +9,8 @@ cache:
     - $HOME/.m2
     - $HOME/UI/node_modules
 
+script: mvn clean install -q
+
 notifications:
   webhooks:
     urls:

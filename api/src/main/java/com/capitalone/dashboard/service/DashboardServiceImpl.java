@@ -1,15 +1,24 @@
 package com.capitalone.dashboard.service;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
+import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
+import com.capitalone.dashboard.model.UserInfo;
+import com.capitalone.dashboard.model.UserRole;
+import com.capitalone.dashboard.repository.UserInfoRepository;
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.misc.HygieiaException;
@@ -25,6 +34,7 @@ import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.repository.ServiceRepository;
@@ -40,23 +50,29 @@ public class DashboardServiceImpl implements DashboardService {
     private final ComponentRepository componentRepository;
     private final CollectorRepository collectorRepository;
     private final CollectorItemRepository collectorItemRepository;
-	@SuppressWarnings("unused")
-	private final PipelineRepository pipelineRepository; //NOPMD
+    private final CustomRepositoryQuery customRepositoryQuery;
+    @SuppressWarnings("unused")
+    private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
+    private final UserInfoRepository userInfoRepository;
 
     @Autowired
     public DashboardServiceImpl(DashboardRepository dashboardRepository,
                                 ComponentRepository componentRepository,
                                 CollectorRepository collectorRepository,
                                 CollectorItemRepository collectorItemRepository,
+                                CustomRepositoryQuery customRepositoryQuery,
                                 ServiceRepository serviceRepository,
-                                PipelineRepository pipelineRepository) {
+                                PipelineRepository pipelineRepository,
+                                UserInfoRepository userInfoRepository) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
         this.collectorItemRepository = collectorItemRepository;
+        this.customRepositoryQuery = customRepositoryQuery;
         this.serviceRepository = serviceRepository;
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
+        this.userInfoRepository = userInfoRepository;
     }
 
     @Override
@@ -104,8 +120,8 @@ public class DashboardServiceImpl implements DashboardService {
     public void delete(ObjectId id) {
         Dashboard dashboard = dashboardRepository.findOne(id);
 
-        if(!isSafeDelete(dashboard)){
-            throw new UnsafeDeleteException("Cannot delete team dashboard "+dashboard.getTitle()+" as it is referenced by program dashboards.");
+        if (!isSafeDelete(dashboard)) {
+            throw new UnsafeDeleteException("Cannot delete team dashboard " + dashboard.getTitle() + " as it is referenced by program dashboards.");
         }
 
         componentRepository.delete(dashboard.getApplication().getComponents());
@@ -120,21 +136,14 @@ public class DashboardServiceImpl implements DashboardService {
         dashboardRepository.delete(dashboard);
     }
 
-    private boolean isSafeDelete(Dashboard dashboard){
-        boolean isSafe = false;
-
-        if(dashboard.getType() == null || dashboard.getType().equals(DashboardType.Team)){
-            isSafe = isSafeTeamDashboardDelete(dashboard);
-        }else {
-            isSafe = true;
-        }
-        return isSafe;
+    private boolean isSafeDelete(Dashboard dashboard) {
+        return !(dashboard.getType() == null || dashboard.getType().equals(DashboardType.Team)) || isSafeTeamDashboardDelete(dashboard);
     }
 
-    private boolean isSafeTeamDashboardDelete(Dashboard dashboard){
+    private boolean isSafeTeamDashboardDelete(Dashboard dashboard) {
         boolean isSafe = false;
         List<Collector> productCollectors = collectorRepository.findByCollectorType(CollectorType.Product);
-        if(productCollectors.isEmpty()){
+        if (productCollectors.isEmpty()) {
             return true;
         }
 
@@ -143,11 +152,11 @@ public class DashboardServiceImpl implements DashboardService {
         CollectorItem teamDashboardCollectorItem = collectorItemRepository.findTeamDashboardCollectorItemsByCollectorIdAndDashboardId(productCollector.getId(), dashboard.getId().toString());
 
         //// TODO: 1/21/16 Is this safe? What if we add a new team dashbaord and quickly add it to a product and then delete it?
-        if(teamDashboardCollectorItem == null){
+        if (teamDashboardCollectorItem == null) {
             return true;
         }
-        
-        if(dashboardRepository.findProductDashboardsByTeamDashboardCollectorItemId(teamDashboardCollectorItem.getId().toString()).isEmpty()) {
+
+        if (dashboardRepository.findProductDashboardsByTeamDashboardCollectorItemId(teamDashboardCollectorItem.getId().toString()).isEmpty()) {
             isSafe = true;
         }
         return isSafe;
@@ -167,19 +176,22 @@ public class DashboardServiceImpl implements DashboardService {
         //First: disable all collectorItems of the Collector TYPEs that came in with the request.
         //Second: remove all the collectorItem association of the Collector Type  that came in
         HashSet<CollectorType> incomingTypes = new HashSet<>();
-        HashSet<CollectorItem> toSaveCollectorItemList = new HashSet<>();
+        HashMap<ObjectId, CollectorItem> toSaveCollectorItems = new HashMap<>();
         for (ObjectId collectorItemId : collectorItemIds) {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
             if (!incomingTypes.contains(collector.getCollectorType())) {
                 incomingTypes.add(collector.getCollectorType());
                 List<CollectorItem> cItems = component.getCollectorItems(collector.getCollectorType());
+                // Save all collector items as disabled for now
                 if (!CollectionUtils.isEmpty(cItems)) {
                     for (CollectorItem ci : cItems) {
-                        ci.setEnabled(false);
-                        toSaveCollectorItemList.add(ci);
+                        //if item is orphaned, disable it. Otherwise keep it enabled.
+                        ci.setEnabled(!isLonely(ci, collector, component));
+                        toSaveCollectorItems.put(ci.getId(), ci);
                     }
                 }
+                // remove all collector items of a type
                 component.getCollectorItems().remove(collector.getCollectorType());
             }
         }
@@ -187,21 +199,33 @@ public class DashboardServiceImpl implements DashboardService {
         //Last step: add collector items that came in
         for (ObjectId collectorItemId : collectorItemIds) {
             CollectorItem collectorItem = collectorItemRepository.findOne(collectorItemId);
+            //the new collector items must be set to true
+            collectorItem.setEnabled(true);
             Collector collector = collectorRepository.findOne(collectorItem.getCollectorId());
             component.addCollectorItem(collector.getCollectorType(), collectorItem);
-
-            if (!collectorItem.isEnabled()) {
-                toSaveCollectorItemList.remove(collectorItem);
-                collectorItem.setEnabled(true);
-                toSaveCollectorItemList.add(collectorItem);
-            }
-
+            toSaveCollectorItems.put(collectorItemId, collectorItem);
             // set transient collector property
             collectorItem.setCollector(collector);
         }
-        collectorItemRepository.save(toSaveCollectorItemList);
+
+        Set<CollectorItem> deleteSet = new HashSet<>();
+        for (ObjectId id : toSaveCollectorItems.keySet()) {
+            deleteSet.add(toSaveCollectorItems.get(id));
+        }
+        collectorItemRepository.save(deleteSet);
         componentRepository.save(component);
         return component;
+    }
+
+
+    private boolean isLonely(CollectorItem item, Collector collector, Component component) {
+        List<Component> components = customRepositoryQuery.findComponents(collector, item);
+        //if item is not attached to any component, it is orphaned.
+        if (CollectionUtils.isEmpty(components)) return true;
+        //if item is attached to more than 1 component, it is NOT orphaned
+        if (components.size() > 1) return false;
+        //if item is attached to ONLY 1 component it is the current one, it is going to be orphaned after this
+        return (components.get(0).getId().equals(component.getId()));
     }
 
     @Override
@@ -273,6 +297,62 @@ public class DashboardServiceImpl implements DashboardService {
 		return Lists.newArrayList(myDashboards);
 	}
 
+    @Override
+    public Iterable<UserInfo> getAllUsers() {
+        return userInfoRepository.findByOrderByUsernameAsc();
+    }
+
+    @Override
+    public Iterable<Owner> getOwners(ObjectId id) {
+        Dashboard dashboard = get(id);
+        return dashboard.getOwners();
+    }
+
+    @Override
+    public UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType) {
+        Dashboard dashboard = dashboardRepository.findOne(dashboardId);
+        List<Owner> owners = dashboard.getOwners();
+        Owner promotedOwner = new Owner(username, authType);
+        owners.add(promotedOwner);
+        dashboardRepository.save(dashboard);
+
+        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
+        if (user == null) {
+            throw new UserNotFoundException(username, authType);
+        }
+        user.getAuthorities().add(UserRole.ROLE_ADMIN);
+
+        return user;
+    }
+
+    @Override
+    public UserInfo demoteFromOwner(ObjectId dashboardId, String username, AuthType authType) {
+        Dashboard dashboard = dashboardRepository.findOne(dashboardId);
+        int numberOfOwners = dashboard.getOwners().size();
+
+        //get admin users
+        Collection<UserInfo> adminUsers = userInfoRepository.findByAuthoritiesIn(UserRole.ROLE_ADMIN);
+
+        numberOfOwners += adminUsers.size();
+
+        if(numberOfOwners <= 1) {
+            throw new DeleteLastAdminException();
+        }
+
+        Owner demotedOwner = new Owner(username, authType);
+        dashboard.getOwners().remove(demotedOwner);
+        dashboardRepository.save(dashboard);
+
+        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
+        if (user == null) {
+            throw new UserNotFoundException(username, authType);
+        }
+
+        user.getAuthorities().remove(UserRole.ROLE_ADMIN);
+        return user;
+
+    }
+
 	@Override
 	public String getDashboardOwner(String dashboardTitle) {
 
@@ -282,8 +362,8 @@ public class DashboardServiceImpl implements DashboardService {
 	}
 
     @SuppressWarnings("unused")
-	private DashboardType getDashboardType(Dashboard dashboard){
-        if(dashboard.getType() != null){
+    private DashboardType getDashboardType(Dashboard dashboard) {
+        if (dashboard.getType() != null) {
             return dashboard.getType();
         }
         return DashboardType.Team;

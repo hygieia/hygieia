@@ -13,10 +13,12 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.capitalone.dashboard.auth.AuthProperties;
 import com.capitalone.dashboard.auth.AuthenticationResultHandler;
+import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
 import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
 import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
 import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
@@ -67,15 +69,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(standardAuthenticationProvider);
-		
-		String ldapServerUrl = authProperties.getLdapServerUrl();
+		configureLdap(auth);
+		configureActiveDirectory(auth);
+
+	}
+
+    private void configureActiveDirectory(AuthenticationManagerBuilder auth) {
+        ActiveDirectoryLdapAuthenticationProvider adProvider = activeDirectoryLdapAuthenticationProvider();
+        if(adProvider != null) auth.authenticationProvider(adProvider);
+    }
+
+    private void configureLdap(AuthenticationManagerBuilder auth) throws Exception {
+        String ldapServerUrl = authProperties.getLdapServerUrl();
 		String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
 		if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
 			auth.ldapAuthentication()
 			.userDnPatterns(ldapUserDnPattern)
 			.contextSource().url(ldapServerUrl);
 		}
-	}
+    }
 	
 	@Bean
 	protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
@@ -86,5 +98,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected LdapLoginRequestFilter ldapLoginRequestFilter() throws Exception {
 		return new LdapLoginRequestFilter("/login/ldap", authenticationManager(), authenticationResultHandler);
 	}
+	
+    @Bean
+    protected ActiveDirectoryLdapAuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
+        if(StringUtils.isBlank(authProperties.getAdUrl())) return null;
+        
+        ActiveDirectoryLdapAuthenticationProvider provider = new ActiveDirectoryLdapAuthenticationProvider(authProperties.getAdDomain(), authProperties.getAdUrl(),
+                authProperties.getAdRootDn());
+        provider.setConvertSubErrorCodesToExceptions(true);
+        provider.setUseAuthenticationRequestCredentials(true);
+        provider.setUserDetailsContextMapper(new CustomUserDetailsContextMapper());
+        return provider;
+    }
 	
 }
