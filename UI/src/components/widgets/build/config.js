@@ -48,7 +48,6 @@
         }
 
         function submitForm(valid, collector) {
-            console.log("Collector" + JSON.stringify(collector));
             if (valid) {
                 var form = document.buildConfigForm;
                 var postObj = {
