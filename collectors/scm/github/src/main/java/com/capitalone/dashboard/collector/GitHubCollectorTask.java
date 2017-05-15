@@ -20,8 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -131,7 +129,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
         clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
-            if (repo.getErrorCount() <= gitHubSettings.getErrorThreshold()) {
+            if (repo.getErrorCount() < gitHubSettings.getErrorThreshold()) {
                 boolean firstRun = ((repo.getLastUpdated() == 0) || ((start - repo.getLastUpdated()) > FOURTEEN_DAYS_MILLISECONDS));
 
                 repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
