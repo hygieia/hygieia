@@ -6,7 +6,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 public class DatabaseLoggingCondition implements Condition {
 
-    private static final String LOG_REQUEST = "logRequest";
+    protected static final String LOG_REQUEST = "logRequest";
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {

@@ -6,7 +6,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 public class SplunkLoggingCondition implements Condition {
 
-    private static final String LOG_SPLUNK_REQUEST = "logSplunkRequest";
+    protected static final String LOG_SPLUNK_REQUEST = "logSplunkRequest";
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
