@@ -25,7 +25,11 @@ import com.capitalone.dashboard.service.ScopeService;
 import com.capitalone.dashboard.service.ServiceService;
 import com.capitalone.dashboard.service.TeamService;
 import com.capitalone.dashboard.service.TestResultService;
+import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
+import com.capitalone.dashboard.service.Monitor2Service;
+import com.capitalone.dashboard.service.PerformanceService;
+import com.capitalone.dashboard.service.SystemConfigService;
 
 /**
  * Spring context configuration for Testing purposes
@@ -146,5 +150,23 @@ public class TestConfig {
 	@Bean
 	public LibraryPolicyService libraryPolicyService() {
 		return Mockito.mock(LibraryPolicyService.class);
+
+	public PerformanceService performanceService(){
+		return Mockito.mock(PerformanceService.class);
+	}
+
+	@Bean
+	public Monitor2Service monitor2Service(){
+		return Mockito.mock(Monitor2Service.class);
+	}
+
+	@Bean
+	public SystemConfigService systemConfigService(){
+		return Mockito.mock(SystemConfigService.class);
+  }
+	
+	@Bean
+	public UserInfoService userInfoService() {
+	    return Mockito.mock(UserInfoService.class);
 	}
 }

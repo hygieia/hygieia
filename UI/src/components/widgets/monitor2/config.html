@@ -1,0 +1,41 @@
+<widget-modal class="monitor2-config form-horizontal" widget-modal-title="Monitor2 Configuration">
+    <form ng-submit="ctrl.save()">
+        <section>
+            <header>Our Monitored Instances</header>
+            <div class="list-animate clearfix">
+                <!--current instances-->
+                <div class="dash-modal-row clearfix" ng-repeat="monitor2 in ctrl.dashboardMonitor2es">
+                    <label>Name: </label>{{monitor2.name}}<br/>
+                    <label>Url: </label>{{monitor2.url}}<br />
+                    <dash-trash class="pull-right fa-lg" ng-click="ctrl.deleteDashboardMonitor2($index)"></dash-trash>
+                </div>
+
+                <!--new services-->
+                <div class="dash-modal-row clearfix form-horizontal" ng-repeat="instance in ctrl.newDashboardMonitor2es">
+                    <dash-trash class="pull-right fa-lg" ng-click="ctrl.deleteDashboardMonitor2($index)"></dash-trash>
+                    <label class="control-label pull-left">{{::ctrl.appName}}&nbsp;&nbsp;</label>
+                    <span class="form-control-inline-container">
+                        <input type="text" class="form-control" ng-model="instance.name" placeholder="Instance Name"/>
+                        <input type="text" class="form-control" ng-model="instance.url" placeholder="Instance URL"/>
+                    </span>
+                </div>
+            </div>
+
+            <br/>
+
+            <button type="button" class="btn btn-default" ng-click="ctrl.addNewDashboardMonitor2()">
+                <span class="fa fa-stack">
+                    <span class="fa fa-stack">
+                        <span class="fa-circle-thin fa-stack-2x"></span>
+                        <span class="fa-plus fa-stack-1x"></span>
+                    </span>
+                </span>
+            </button>
+        </section>
+        <br/><br/>
+        <div class="row text-center">
+            <br/><br/>
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+</widget-modal>
