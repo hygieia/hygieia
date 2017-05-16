@@ -37,8 +37,21 @@ version.number=@application.version.number@
 
 auth.expirationTime=[JWT expiration time in milliseconds]
 auth.secret=[Secret Key used to validate the JWT tokens]
-auth.ldapServerUrl=[LDAP Server Url, including port of your LDAP server]
-auth.ldapUserDnPattern=[LDAP User Dn Pattern, where the username is replaced with '{0}']
+
+# LDAP Server Url, including port of your LDAP server
+auth.ldapServerUrl=[ldap://company.com:389]
+
+# If using standard ldap
+# LDAP User Dn Pattern, where the username is replaced with '{0}'
+auth.ldapUserDnPattern=[uid={0},OU=Users,dc=your,dc=company,dc=com]
+
+# If using ActiveDirectory
+# This will be the domain part of your userPrincipalName
+auth.adDomain=[company.com]
+# This will be your root dn
+auth.adRootDn=[dc=your,dc=company,dc=com]
+# This will be your active directory url (required for AD)
+auth.adUrl=[Need an example]
 
 monitor.proxy.host=[hostname of proxy server]
 monitor.proxy.type=[http|socks|direct]

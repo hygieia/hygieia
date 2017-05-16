@@ -13,9 +13,8 @@ public interface GitHubClient {
     /**
      * Fetch all of the commits for the provided SubversionRepo.
      *
-     * @param repo SubversionRepo
-     * @param firstRun
-     * @param startRevision starting revision number
+     * @param repo Github repo
+     * @param firstRun boolean true if first time running
      * @return all commits in repo
      */
 

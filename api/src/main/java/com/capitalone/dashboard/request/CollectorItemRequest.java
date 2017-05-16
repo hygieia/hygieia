@@ -14,6 +14,8 @@ public class CollectorItemRequest {
     private String description;
     private Map<String,Object> options = new HashMap<>();
 
+    private Map<String, Object> uniqueOptions = new HashMap<>();
+
     public ObjectId getCollectorId() {
         return collectorId;
     }
@@ -36,6 +38,14 @@ public class CollectorItemRequest {
 
     public void setOptions(Map<String, Object> options) {
         this.options = options;
+    }
+
+    public Map<String, Object> getUniqueOptions() {
+        return uniqueOptions;
+    }
+
+    public void setUniqueOptions(Map<String, Object> uniqueOptions) {
+        this.uniqueOptions = uniqueOptions;
     }
 
     public CollectorItem toCollectorItem() {
