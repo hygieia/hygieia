@@ -35,7 +35,7 @@ public class SplunkConnectionLoggingFilter implements Filter {
     protected static final String APPLICATION_NAME = "APPLICATION_NAME";
     protected static final String APPLICATION_VERSION = "APPLICATION_VERSION";
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(SplunkConnectionLoggingFilter.class);
     
     @Value("${application.name}")
     private String appName;
@@ -50,9 +50,7 @@ public class SplunkConnectionLoggingFilter implements Filter {
         
         chain.doFilter(request, response);
         
-        SplunkLog log = getLogEntry(requestWrapper, responseWrapper);
-        
-        logger.info(log.toString());
+        LOGGER.info(getLogEntry(requestWrapper, responseWrapper).toString());
     }
 
     private SplunkLog getLogEntry(HttpServletRequest request, HttpServletResponse response) {
