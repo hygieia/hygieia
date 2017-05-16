@@ -289,7 +289,7 @@
             function setDisplayToErrorState(data, failureThreshold, cb) {
                 // order by end time and limit to last 5
                 data = _.sortBy(data, 'endTime').reverse().slice(0, failureThreshold);
-                data = _.where(data, function (item) {
+                data = _.filter(data, function (item) {
                     return (item.buildStatus.toLowerCase() != 'success') &&  (item.buildStatus.toLowerCase() != 'inprogress') ;
                 });
 

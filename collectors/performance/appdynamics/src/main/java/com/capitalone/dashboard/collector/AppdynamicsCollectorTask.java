@@ -11,8 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -96,14 +98,13 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
         int count = 0;
 
         for (AppdynamicsApplication app : apps) {
-            List<PerformanceMetric> metrics = appdynamicsClient.getPerformanceMetrics(app, instanceURL);
-
+            Map<String,Object> metrics = appdynamicsClient.getPerformanceMetrics(app, instanceURL);
             if (!CollectionUtils.isEmpty(metrics)) {
                 Performance performance = new Performance();
                 performance.setCollectorItemId(app.getId());
                 performance.setTimestamp(System.currentTimeMillis());
                 performance.setType(PerformanceType.ApplicationPerformance);
-                performance.getInstances().put(replaceDot(instanceURL), new HashSet<>(metrics));
+                performance.setMetrics(new HashMap<String,Object>(metrics));
                 if (isNewPerformanceData(app, performance)) {
                     performanceRepository.save(performance);
                     count++;
@@ -118,20 +119,13 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
     private static String replaceDot(String suspect){
 
         if(!suspect.isEmpty()){
-           return suspect.replaceAll("\\.","U+00B7");
+            return suspect.replaceAll("\\.","U+00B7");
         }
 
         return suspect;
     }
 
-//    public static void main(String args[]){
-//        String str = replaceDot("http://appdyn-hqa-c01.kdc.capitalone.com");
-//        System.out.println(str);
-//    }
-
-
     private List<AppdynamicsApplication> enabledApplications(AppdynamicsCollector collector, int instanceID) {
-//        return appDynamicsApplicationRepository.findEnabledAppdynamicsApplications(collector.getId());
         return appDynamicsApplicationRepository.findByCollectorIdAndEnabledAndInstanceID(collector.getId(), true, instanceID);
     }
 
@@ -147,11 +141,9 @@ public class AppdynamicsCollectorTask extends CollectorTask<AppdynamicsCollector
                 app.setAppDashboardUrl(String.format(appdynamicsSettings.getDashboardUrl(instanceURL),app.getAppID()));
                 app.setEnabled(false);
                 app.setinstanceID(instanceID);
-                //app.getOptions().put("instanceID", app.getinstanceID());
                 newApps.add(app);
                 count++;
             }
-
 
         }
         //save all in one shot
