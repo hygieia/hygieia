@@ -63,8 +63,7 @@ public class SplunkConnectionLoggingFilter implements Filter {
             .with(APPLICATION_VERSION, version)
             .with(REQUEST_URL, request.getRequestURL().toString())
             .with(REQUEST_METHOD, request.getMethod())
-            .with(STATUS_CODE, response.getStatus())
-            ;
+            .with(STATUS_CODE, response.getStatus());
         
         HttpSession session = request.getSession(false);
         if(session != null) {
