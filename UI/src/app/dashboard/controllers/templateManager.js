@@ -2,21 +2,21 @@
  * Controller for the template CRUD page
  */
 (function() {
-	'use strict';
+    'use strict';
 
-	angular.module(HygieiaConfig.module)
-            .controller('TemplateController', TemplateController);
+    angular.module(HygieiaConfig.module)
+        .controller('TemplateController', TemplateController);
 
-	TemplateController.$inject = [ '$scope', '$location', '$cookies', '$cookieStore', 'widgetManager', 'DashboardType', 'dashboardData', '$modal' ];
-	function TemplateController($scope, $location, $cookies, $cookieStore, widgetManager, DashboardType, dashboardData, $modal) {
+    TemplateController.$inject = [ '$scope', '$location', 'userService', 'widgetManager', 'DashboardType', 'dashboardData', '$uibModal' ];
+    function TemplateController($scope, $location, userService, widgetManager, DashboardType, dashboardData, $uibModal) {
         var ctrl = this;
 
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
-        ctrl.username = $cookies.username;
-        ctrl.showAuthentication = $cookies.authenticated;
-        ctrl.navUrl = 'app/dashboard/views/navheader.html';
+        ctrl.username = userService.getUsername();
+        ctrl.showAuthentication = userService.isAuthenticated();
+        ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
         // public methods
@@ -40,7 +40,7 @@
 
         $scope.widgets = {};
         ctrl.widgets = widgetManager.getWidgets();
-        
+
         $scope.options = {
             cellHeight: 200,
             verticalMargin: 10
@@ -49,7 +49,7 @@
         function toggleWidget(widget, $event) {
             if (widget in $scope.widgets) removeWidget(widget);
             else addWidget(widget);
-            
+
             $event.target.classList.toggle("added");
         }
 
@@ -58,7 +58,7 @@
             $scope.widgets[widgetTitle] = newWidget;
         };
 
-        function removeWidget(title, $event = null) {
+        function removeWidget(title, $event) {
             if ($event != null) document.getElementById(title + '-button').classList.remove('added');
             delete $scope.widgets[title];
         };
@@ -101,12 +101,6 @@
         function admin() {
             console.log('sending to admin page');
             $location.path('/admin');
-        }
-
-        function logout() {
-            $cookieStore.remove("username");
-            $cookieStore.remove("authenticated");
-            $location.path('/');
         }
 
         // method implementations

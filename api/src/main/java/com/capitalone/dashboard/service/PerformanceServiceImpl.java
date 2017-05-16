@@ -7,7 +7,6 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.Performance;
-import com.capitalone.dashboard.model.PerformanceMetric;
 import com.capitalone.dashboard.model.PerformanceType;
 import com.capitalone.dashboard.model.QPerformance;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -184,10 +183,6 @@ public class PerformanceServiceImpl implements PerformanceService {
         performance.setUrl(request.getProjectUrl());
         performance.setVersion(request.getProjectVersion());
         performance.setTimestamp(System.currentTimeMillis());
-       // for (PerformanceMetric cm : request.getMetrics()) {
-        //    performance.getMetrics().add(cm);
-       // }
-
         return performanceRepository.save(performance); // Save = Update (if ID present) or Insert (if ID not there)
     }
 
