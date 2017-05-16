@@ -21,7 +21,8 @@ public enum CollectorType {
     LibraryPolicy,
     ChatOps,
     Cloud,
-    Product;
+    Product,
+    WLMonitor;
 
     public static CollectorType fromString(String value) {
         for (CollectorType collectorType : values()) {
