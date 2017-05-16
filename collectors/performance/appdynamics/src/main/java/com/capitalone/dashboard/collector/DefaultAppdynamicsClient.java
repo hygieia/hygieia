@@ -381,7 +381,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         return severityMetrics;
     }
 
-    private static String parseMetricName(String metricPath) {
+    private String parseMetricName(String metricPath) {
         String[] arr = metricPath.split(METRIC_PATH_DELIMITER);
         if (arr == null) return "";
         String metricName =   arr[arr.length - 1].replaceAll(" ","");
@@ -391,7 +391,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         return  metricName;
     }
 
-    private static boolean in(String suspect,String ... obj){
+    private boolean in(String suspect,String ... obj){
         for (String string:obj) {
             if(string.equalsIgnoreCase(suspect)){
                 return  true;
