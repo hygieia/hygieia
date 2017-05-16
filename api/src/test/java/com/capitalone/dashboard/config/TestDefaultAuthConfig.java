@@ -1,5 +1,9 @@
 package com.capitalone.dashboard.config;
  
+ import com.capitalone.dashboard.model.Performance;
+ import com.capitalone.dashboard.service.Monitor2Service;
+ import com.capitalone.dashboard.service.PerformanceService;
+ import com.capitalone.dashboard.service.SystemConfigService;
  import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -160,4 +164,19 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
      public PaginationHeaderUtility paginationHeaderUtility() {
          return Mockito.mock(PaginationHeaderUtility.class);
      }
+
+	 @Bean
+	 public PerformanceService performanceService() {
+		 return Mockito.mock(PerformanceService.class);
+	 }
+
+	 @Bean
+	 public Monitor2Service monitor2Service(){
+		 return Mockito.mock(Monitor2Service.class);
+	 }
+
+	 @Bean
+	 public SystemConfigService systemConfigService(){
+		 return Mockito.mock(SystemConfigService.class);
+	 }
  }

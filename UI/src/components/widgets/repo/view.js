@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('RepoViewController', RepoViewController);
 
-    RepoViewController.$inject = ['$q', '$scope','codeRepoData', '$uibModal'];
-    function RepoViewController($q, $scope, codeRepoData, $uibModal) {
+    RepoViewController.$inject = ['$q', '$scope', 'codeRepoData', 'collectorData', '$uibModal'];
+    function RepoViewController($q, $scope, codeRepoData, collectorData, $uibModal) {
         var ctrl = this;
 
         ctrl.commitChartOptions = {
@@ -38,21 +38,28 @@
                 offset: 30,
                 showGrid: true,
                 showLabel: true,
-                labelInterpolationFnc: function(value) { return Math.round(value * 100) / 100; }
+                labelInterpolationFnc: function (value) {
+                    return Math.round(value * 100) / 100;
+                }
             }
         };
 
         ctrl.commits = [];
         ctrl.showDetail = showDetail;
-        ctrl.load = function() {
+        ctrl.load = function () {
             var deferred = $q.defer();
             var params = {
                 componentId: $scope.widgetConfig.componentId,
                 numberOfDays: 14
             };
-            codeRepoData.details(params).then(function(data) {
+
+            codeRepoData.details(params).then(function (data) {
                 processResponse(data.result, params.numberOfDays);
-                deferred.resolve(data.lastUpdated);
+                ctrl.lastUpdated = data.lastUpdated;
+            }).then(function () {
+                collectorData.getCollectorItem($scope.widgetConfig.componentId, 'scm').then(function (data) {
+                    deferred.resolve( {lastUpdated: ctrl.lastUpdated, collectorItem: data});
+                });
             });
             return deferred.promise;
         };
@@ -67,7 +74,7 @@
                 templateUrl: 'components/widgets/repo/detail.html',
                 size: 'lg',
                 resolve: {
-                    commits: function() {
+                    commits: function () {
                         return groupedCommitData[pointIndex];
                     }
                 }
@@ -75,16 +82,17 @@
         }
 
         var groupedCommitData = [];
+
         function processResponse(data, numberOfDays) {
             // get total commits by day
             var commits = [];
             var groups = _(data).sortBy('timestamp')
-                .groupBy(function(item) {
+                .groupBy(function (item) {
                     return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
                 }).value();
 
-            for(var x=-1*numberOfDays+1; x <= 0; x++) {
-                if(groups[x]) {
+            for (var x = -1 * numberOfDays + 1; x <= 0; x++) {
+                if (groups[x]) {
                     commits.push(groups[x].length);
                     groupedCommitData.push(groups[x]);
                 }
@@ -95,10 +103,9 @@
             }
 
             //update charts
-            if(commits.length)
-            {
+            if (commits.length) {
                 var labels = [];
-                _(commits).forEach(function(c) {
+                _(commits).forEach(function (c) {
                     labels.push('');
                 });
 
@@ -128,26 +135,26 @@
             // loop through and add to counts
             _(data).forEach(function (commit) {
 
-                if(commit.scmCommitTimestamp >= today.getTime()) {
+                if (commit.scmCommitTimestamp >= today.getTime()) {
                     lastDayCount++;
 
-                    if(lastDayContributors.indexOf(commit.scmAuthor) == -1) {
+                    if (lastDayContributors.indexOf(commit.scmAuthor) === -1) {
                         lastDayContributors.push(commit.scmAuthor);
                     }
                 }
 
-                if(commit.scmCommitTimestamp >= sevenDays.getTime()) {
+                if (commit.scmCommitTimestamp >= sevenDays.getTime()) {
                     lastSevenDayCount++;
 
-                    if(lastSevenDaysContributors.indexOf(commit.scmAuthor) == -1) {
+                    if (lastSevenDaysContributors.indexOf(commit.scmAuthor) === -1) {
                         lastSevenDaysContributors.push(commit.scmAuthor);
                     }
                 }
 
-                if(commit.scmCommitTimestamp >= fourteenDays.getTime()) {
+                if (commit.scmCommitTimestamp >= fourteenDays.getTime()) {
                     lastFourteenDayCount++;
                     ctrl.commits.push(commit);
-                    if(lastFourteenDaysContributors.indexOf(commit.scmAuthor) == -1) {
+                    if (lastFourteenDaysContributors.indexOf(commit.scmAuthor) === -1) {
                         lastFourteenDaysContributors.push(commit.scmAuthor);
                     }
                 }
@@ -160,6 +167,7 @@
             ctrl.lastSevenDaysContributorCount = lastSevenDaysContributors.length;
             ctrl.lastFourteenDaysCommitCount = lastFourteenDayCount;
             ctrl.lastFourteenDaysContributorCount = lastFourteenDaysContributors.length;
+
 
             function toMidnight(date) {
                 date.setHours(0, 0, 0, 0);

@@ -13,10 +13,7 @@ import jenkins.plugins.hygieia.workflow.HygieiaArtifactPublishStep;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
@@ -102,7 +99,8 @@ public class ArtifactBuilder {
                 if (run instanceof WorkflowRun) {
                     changeLogSets = ((WorkflowRun) run).getChangeSets();
                 } else if (run instanceof AbstractBuild) {
-                    changeLogSets = ((AbstractBuild) run).getChangeSets();
+                    ChangeLogSet<? extends ChangeLogSet.Entry> sets = ((AbstractBuild) run).getChangeSet();
+                    changeLogSets = sets.isEmptySet() ? Collections.<ChangeLogSet<? extends ChangeLogSet.Entry>>emptyList() : Collections.<ChangeLogSet<? extends ChangeLogSet.Entry>>singletonList(sets);
                 }
                 CommitBuilder commitBuilder = new CommitBuilder(changeLogSets);
 

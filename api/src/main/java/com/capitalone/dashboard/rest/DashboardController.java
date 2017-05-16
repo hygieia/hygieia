@@ -232,4 +232,15 @@ public class DashboardController {
     public String getDashboardOwner(@PathVariable ObjectId id) {
     	return "Authorized";
     }
+
+    @RequestMapping(value = "/dashboard/component/{componentId}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public Component getComponentForDashboard(@PathVariable ObjectId componentId) {
+        Component component = new Component();
+        if (null != componentId) {
+            component = dashboardService.getComponent(componentId);
+        }
+        return component;
+    }
+
 }
