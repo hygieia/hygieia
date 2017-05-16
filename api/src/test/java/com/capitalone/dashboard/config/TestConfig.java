@@ -150,7 +150,9 @@ public class TestConfig {
 	@Bean
 	public LibraryPolicyService libraryPolicyService() {
 		return Mockito.mock(LibraryPolicyService.class);
+	}
 
+	@Bean
 	public PerformanceService performanceService(){
 		return Mockito.mock(PerformanceService.class);
 	}
