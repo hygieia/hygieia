@@ -1,8 +1,8 @@
 <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" class="alert alert-info">{{alert.msg}}</alert>
 <div class="widget row"
      ng-class="{'configure' : state == widget_state.CONFIGURE, 'alert': display == display_state.ERROR}">
-    <div class="widget-heading" ng-if="header">
-        {{title}}
+    <div ng-class="(title!='Quality' && title!='Performance') ? 'widget-heading' : 'widget-heading-performance'" ng-if="header">
+        <span ng-if="title!='Quality' && title!='Performance'">{{title}}</span>
 
         <span class="widget-settings-icon clickable pull-right fa fa-cog"
               type="button"
@@ -28,9 +28,9 @@
             </div>
         </div>
         <div class="widget-body-config" ng-hide="hasPermission()">
-          <div>
-              <div>Owner Modification Only</div>
-          </div>
-      </div>
+            <div>
+                <div>Owner Modification Only</div>
+            </div>
+        </div>
     </div>
 </div>
