@@ -368,4 +368,13 @@ public class DashboardServiceImpl implements DashboardService {
         }
         return DashboardType.Team;
     }
+
+    @Override
+    public Component getComponent(ObjectId componentId){
+
+        Component component = componentRepository.findOne(componentId);
+        return component;
+    }
+
+
 }
