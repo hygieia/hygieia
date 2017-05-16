@@ -196,4 +196,19 @@ public class CollectorServiceImpl implements CollectorService {
             return input.getId();
         }
     }
+
+    @Override
+    public List<CollectorItem> collectorItemsByType(CollectorType collectorType) {
+        List<Collector> collectors = collectorRepository.findByCollectorType(collectorType);
+
+        List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorId()));
+
+        List<CollectorItem> collectorItems = collectorItemRepository.findByCollectorIdIn(collectorIds);
+
+        for (CollectorItem options : collectorItems) {
+            options.setCollector(collectorById(options.getCollectorId(), collectors));
+        }
+
+        return collectorItems;
+    }
 }

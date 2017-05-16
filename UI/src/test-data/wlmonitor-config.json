@@ -1,0 +1,35 @@
+{
+  "result": {
+    "environments": [
+      {
+        "id": "57109b4ff622b1156436cbc7",
+        "collectorItemId": "570f6b21f622b116840a16ef",
+        "environmentName": "DEV1",
+        "deployed": "SUCCESS",       
+        "applicationName": "Application_A"
+      },
+      {
+        "id": "57109b4ff622b1156436cbc8",
+        "collectorItemId": "570f6b21f622b116840a16ef",
+        "environmentName": "DEV2",
+        "deployed": "SUCCESS",     
+        "applicationName": "Application_B"
+      },
+      {
+        "id": "57109b4ff622b1156436cbc8",
+        "collectorItemId": "570f6b21f622b116840a16ef",
+        "environmentName": "DEV3",
+        "deployed": "SUCCESS",
+        "applicationName": "Application_C"
+      },
+      {
+        "id": "57109b4ff622b1156436cbc8",
+        "collectorItemId": "570f6b21f622b116840a16ef",
+        "environmentName": "DEV4",
+        "deployed": "FAILURE",
+        "applicationName": "Application_A"
+      }
+    ]
+  },
+  "lastUpdated": 1460706182265
+}

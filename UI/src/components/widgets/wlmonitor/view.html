@@ -1,0 +1,32 @@
+<style>
+.dangerR {
+color : #cd040b !important;
+}
+.successG {
+color : green !important;
+}
+</style>
+<div class="wlmonitor-view" >				
+     <table class="table">
+        <tr class="dash-row clickable" ng-repeat="environment in wlMonitorView.selectedList" ng-click="wlMonitorView.showDetail(environment)">
+            <td>
+                 <span
+                        dash-status="{{environment.failedComponents > 0 ? wlMonitorView.statuses.FAIL : wlMonitorView.statuses.PASS}}"
+                        dash-status-fail-text="{{environment.failedComponents}}"></span>
+            </td>
+            <td class="dash-overflow environment-name">
+                {{environment.description}}
+            </td>
+           
+             <td class="server-count" ng-class="{'servers-up' : environment.serverUpCount > 0}">
+                {{environment.serverUpCount ? environment.serverUpCount : 0}}
+                <span class="fa fa-arrow-up successG"></span>
+            </td>
+            <td class="server-count" ng-class="{'servers-down' : environment.serverDownCount > 0}">
+                {{environment.serverDownCount ? environment.serverDownCount : 0 }}
+                <span class="fa fa-arrow-down dangerR"></span>
+            </td> 
+        </tr>    
+      
+    </table>
+</div>

@@ -1,0 +1,36 @@
+<style>
+.dangerR {
+color : #cd040b !important;
+}
+.successG {
+color : green !important;
+}
+</style>
+<div class="widget-detail vdeploy-detail">
+    <a href="" class="detail-close" ng-click="detail.close()"><span class="fa fa-2x fa-times-circle-o"></span></a>
+    <div class="widget-detail-heading">
+        <div class="row">        
+        </div>
+    </div> 
+    <div class="widget-detail-body">  
+        <table class="table">
+            <thead>
+                <tr>
+                <th>Environment </th>
+                   <th>Server</th>
+                    <th>State</th> 
+                    <th>health</th>                   
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-if="detail.environment.length >0" ng-repeat="env in detail.environment">
+                    <td>{{env.environment}}</td>
+                    <td>{{env.name}}</td>
+                      <td>{{env.state}}</td>
+                    <td>{{env.health}}</td>
+                </tr>
+                <tr ng-if="!detail.environment"><td colspan="7" style="text-align:center;"><span class="no-changesets">No data found.</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
