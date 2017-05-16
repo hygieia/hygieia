@@ -25,6 +25,7 @@
         // public methods
         ctrl.createDashboard = createDashboard;
         ctrl.deleteDashboard = deleteDashboard;
+        ctrl.manageTemplates = manageTemplates;
         ctrl.open = open;
         ctrl.login = login;
         ctrl.logout = logout;
@@ -115,6 +116,9 @@
             });
         }
 
+        function manageTemplates() {
+            $location.path('/templates');
+        }
 
         function open(dashboardId) {
             $location.path('/dashboard/' + dashboardId);
