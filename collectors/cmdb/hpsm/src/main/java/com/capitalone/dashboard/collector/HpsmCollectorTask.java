@@ -2,7 +2,6 @@ package com.capitalone.dashboard.collector;
 
 
 import com.capitalone.dashboard.model.Cmdb;
-import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.HpsmCollector;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
@@ -10,10 +9,12 @@ import com.capitalone.dashboard.repository.HpsmRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +23,6 @@ import java.util.List;
 @Component
 public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     private static final Log LOG = LogFactory.getLog(HpsmCollectorTask.class);
-    private final BaseCollectorRepository<Collector> collectorRepository;
 
     private final HpsmRepository hpsmRepository;
     private final CmdbRepository cmdbRepository;
@@ -31,7 +31,6 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
     @Autowired
     public HpsmCollectorTask(TaskScheduler taskScheduler, HpsmSettings hpsmSettings,
-                                BaseCollectorRepository<Collector> collectorRepository,
                                 HpsmRepository hpsmRepository,
                                 CmdbRepository cmdbRepository,
                                 HpsmClient hpsmClient) {
@@ -39,7 +38,6 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
         this.hpsmSettings = hpsmSettings;
         this.hpsmRepository = hpsmRepository;
-        this.collectorRepository = collectorRepository;
         this.cmdbRepository = cmdbRepository;
         this.hpsmClient = hpsmClient;
 
@@ -65,11 +63,14 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
     @Override
     public void collect(HpsmCollector collector) {
+        //TODO: compare list from soap to list from DB to figure out clean up.
         logBanner("Starting...");
         List<Cmdb> cmdbList;
+        List<String> configurationItemNameList = new ArrayList<>();
         long start = System.currentTimeMillis();
         int updatedCount = 0;
         int insertCount = 0;
+        int removedCount;
 
         cmdbList = hpsmClient.getApps();
 
@@ -77,7 +78,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
             String configItem = cmdb.getConfigurationItem();
             Cmdb cmdbDbItem =  cmdbRepository.findByConfigurationItem(configItem);
-
+            configurationItemNameList.add(configItem);
            if(cmdbDbItem != null && !cmdb.equals(cmdbDbItem)){
                cmdb.setId(cmdbDbItem.getId());
                cmdb.setCollectorItemId(collector.getId());
@@ -90,9 +91,34 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
            }
 
 
+
         }
-        LOG.info("Inserted Item Count" + insertCount);
-        LOG.info("Updated Item Count" +  updatedCount);
+
+        removedCount = cleanUpOldCmdbItems(configurationItemNameList);
+
+
+        LOG.info("Inserted Item Count: " + insertCount);
+        LOG.info("Updated Item Count: " +  updatedCount);
+        LOG.info("Removed Item Count: " +  removedCount);
         log("Finished", start);
     }
+
+    /**
+     *  Takes configurationItemNameList (list of all APP/component names) and List<Cmdb> from client and removes old items from mongo
+     * @param configurationItemNameList
+     * @return return count of items removed
+     */
+    private int cleanUpOldCmdbItems(List<String> configurationItemNameList) {
+        int removedCount = 0;
+        for(Cmdb cmdb:  cmdbRepository.findAll()){
+            String configItem = cmdb.getConfigurationItem();
+
+            if(configurationItemNameList != null && !configurationItemNameList.contains(configItem)){
+                cmdbRepository.delete(cmdb);
+                removedCount++;
+            }
+        }
+        return removedCount;
+    }
+
 }

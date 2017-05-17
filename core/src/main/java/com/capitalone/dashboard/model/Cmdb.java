@@ -5,6 +5,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Objects;
+
 @Document(collection="cmdb")
 public class Cmdb {
     @Id
@@ -127,6 +129,10 @@ public class Cmdb {
     }
 
     @Override
+    public int hashCode(){
+        return Objects.hash(configurationItem,assignmentGroup,appServiceOwner,businessOwner,supportOwner,developmentOwner,ownerDept);
+    }
+    @Override
     public boolean equals(Object compareTo){
         boolean doesEqual = true;
 
@@ -151,14 +157,21 @@ public class Cmdb {
     @Override
     public String toString() {
 
-        StringBuffer buf = new StringBuffer();
-        buf.append("configurationItem: " + configurationItem);
-        buf.append("\nassignmentGroup: " + assignmentGroup);
-        buf.append("\nappServiceOwner: " + appServiceOwner);
-        buf.append("\nbusinessOwner: " + businessOwner);
-        buf.append("\nsupportOwner: " + supportOwner);
-        buf.append("\ndevelopmentOwner: " + developmentOwner);
-        buf.append("\nownerDept: " + ownerDept);
+        StringBuffer buf = new StringBuffer(123);
+        buf.append("configurationItem: ")
+                .append(configurationItem)
+                .append("\nassignmentGroup: ")
+                .append(assignmentGroup)
+            .append("\nappServiceOwner: ")
+            .append(appServiceOwner)
+            .append("\nbusinessOwner: ")
+            .append(businessOwner)
+            .append("\nsupportOwner: ")
+            .append(supportOwner)
+            .append("\ndevelopmentOwner: ")
+            .append(developmentOwner)
+            .append("\nownerDept: ")
+            .append(ownerDept);
 
         return buf.toString();
     }

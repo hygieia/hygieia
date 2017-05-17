@@ -22,7 +22,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,18 +44,18 @@ public class DefaultHpsmClient implements HpsmClient {
 
     private PostMethod post;
     private SimpleHttpConnectionManager manager = new SimpleHttpConnectionManager(true);
-    private HttpClient httpclient = new HttpClient(manager);
-    private boolean usedClient = false;
-    private int port;
+    HttpClient httpclient = new HttpClient(manager);
+    boolean usedClient = false;
+    int port;
 
-    private String strURL;
-    private String protocol;
-    private String server;
-    private String resource;
-    private String contentType;
-    private String charset;
-    private String userName = "";
-    private String password = "";
+    String strURL;
+    String protocol;
+    String server;
+    String resource;
+    String contentType;
+    String charset;
+    String userName = "";
+    String password = "";
 
 	@Autowired
 	public DefaultHpsmClient(HpsmSettings hpsmSettings) {
@@ -89,7 +88,7 @@ public class DefaultHpsmClient implements HpsmClient {
         hpsmSoapModel.setConfigurationItemSubType(hpsmSettings.getAppSubType());
         hpsmSoapModel.setRequestTypeName(hpsmSettings.getDetailsRequestType());
         hpsmSoapModel.setSoapAction(hpsmSettings.getDetailsSoapAction());
-        hpsmSoapModel.setStatus(hpsmSettings.getAppStatus());
+        hpsmSoapModel.setStatus(hpsmSettings.getStatus());
 
 		appList = getConfigurationItemList(hpsmSoapModel);
 
@@ -108,7 +107,7 @@ public class DefaultHpsmClient implements HpsmClient {
         hpsmSoapModel.setConfigurationItemType(hpsmSettings.getCompType());
         hpsmSoapModel.setSoapAction(hpsmSettings.getDetailsSoapAction());
         hpsmSoapModel.setRequestTypeName(hpsmSettings.getDetailsRequestType());
-        hpsmSoapModel.setStatus(hpsmSettings.getAppStatus());
+        hpsmSoapModel.setStatus(hpsmSettings.getStatus());
 
 		componentList = getConfigurationItemList(hpsmSoapModel);
 
@@ -246,16 +245,11 @@ public class DefaultHpsmClient implements HpsmClient {
      * Ends SOAP Connection
      */
 	private void stopHttpConnection() {
-		try{
-			if(post != null && usedClient){
-				post.releaseConnection();
-			}
-			if(manager != null && usedClient){
-				manager.shutdown();
-			}
+		if(post != null && usedClient){
+			post.releaseConnection();
 		}
-		catch(Throwable t){
-			LOG.error("Error while trying to close http Connection: " + t);
+		if(manager != null && usedClient){
+			manager.shutdown();
 		}
 		usedClient = false;
 	}
@@ -299,7 +293,7 @@ public class DefaultHpsmClient implements HpsmClient {
             }
 
             stopHttpConnection();
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             LOG.error("Error while trying to make soap call: " + e);
         }
         return response;

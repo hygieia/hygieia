@@ -20,7 +20,7 @@ public class HpsmSettings {
     private String key;
     private String appSubType;
     private String appType;
-    private String appStatus;
+    private String status;
 	private String compSubType;
 	private String compType;
 
@@ -110,12 +110,12 @@ public class HpsmSettings {
 		this.appType = appType;
 	}
 
-	public String getAppStatus() {
-		return appStatus;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setAppStatus(String appStatus) {
-		this.appStatus = appStatus;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getCompSubType() {
