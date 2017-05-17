@@ -1,0 +1,99 @@
+@import (reference) '../../../app/css/variables.less';
+@import (reference) '../../../app/css/mixins.less';
+
+
+
+.performance-view {
+
+  .violations {
+    .tr {
+      cursor: pointer;
+    }
+  }
+
+  a {
+    color: rgba(255,255,255,.8);
+  }
+
+  .ct-horizontal {
+    text-align: center;
+    white-space: nowrap;
+  }
+  .round-labels {
+    .content {
+      font-size: 4rem;
+      border-bottom: 1px solid @dash-divider;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      span {
+        font-size: 2rem;
+      }
+    }
+  }
+  .ct-chart.ct-chart-Warning {
+    .ct-series-a {
+      .ct-donut {
+        stroke: @dash-status-fail;
+      }
+    }
+  }
+  table {
+    width: 100%;
+    td {
+      padding-bottom: 10px;
+      font-family: @dash-text;
+      vertical-align: middle;
+      text-align: center;
+    }
+  }
+
+}
+
+
+
+.glyphicon-arrow-up {
+  font-size: 10em;
+  color: @dash-status-fail;
+  text-align: center;
+}
+
+.row {
+    .col-xs-4 {
+        text-align: center;
+    }
+}
+
+.topbar {
+    text-align: center;
+}
+
+.arrowbody {
+  .col-sm-6 {
+    height: 100px;
+    background-color: @dash-status-pass;
+  }
+}
+
+.arrowhead {
+  .col-sm-8 {
+    background-color: @dash-status-pass;
+    height: 50px;
+    border-left: 100% solid transparent;
+    border-right: 100% solid transparent;
+    border-bottom: 100% solid black;
+  }
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+
+  color: @dash-widget-heading-text;
+  background-color: transparent;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+  cursor: default;
+}
+
+.textColor-Performance{
+  color: @dash-widget-heading-text;
+}
+

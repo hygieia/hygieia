@@ -1,0 +1,32 @@
+<div class="monitor2-view">
+    <div class="widget">
+        <div class="widget-heading">
+            Our Monitored Instances
+        </div>
+        <div class="widget-body">
+            <div class="monitor2-row dash-row clickable"
+                 ng-repeat="monitor2 in ctrl.monitor2es | orderBy: ['name']"
+                 ng-click="ctrl.openStatusWindow(monitor2)">
+                <span class="pull-left" dash-status="{{monitor2.status}}"></span>
+                <div class="dash-overflow">{{monitor2.name}}</div>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-center" ng-if="!ctrl.monitor2es.length">
+        No Monitored Instances Configured
+    </p>
+</div>
+
+<!-- A modal used to modify-->
+<script type="text/ng-template" id="monitor2Status.html">
+<widget-modal widget-modal-title="Status">
+    <form role="form" ng-submit="ctrl.submit()" novalidate="novalidate">
+        <div class="form-group">
+            <label class="control-label">Name: </label>{{::ctrl.monitor2.name}}<br/>
+            <label class="control-label">Url: </label>{{::ctrl.monitor2.url}}<br/>
+            <button class="btn btn-primary pull-right" ng-click="ctrl.updateStatus()">Ok</button><br/>
+        </div>
+    </form>
+</widget-modal>
+</script>
