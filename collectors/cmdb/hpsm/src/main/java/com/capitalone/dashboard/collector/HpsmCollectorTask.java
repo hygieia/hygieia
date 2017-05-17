@@ -9,7 +9,6 @@ import com.capitalone.dashboard.repository.HpsmRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;

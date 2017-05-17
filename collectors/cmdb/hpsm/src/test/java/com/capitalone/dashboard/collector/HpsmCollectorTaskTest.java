@@ -48,6 +48,7 @@ public class HpsmCollectorTaskTest {
     @Test
     public void collect_testCollect() {
         when(hpsmClient.getApps()).thenReturn(getMockList());
+        when(cmdbRepository.findAll()).thenReturn(getMockList());
 
 
         HpsmCollector collector =collector();
