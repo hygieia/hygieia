@@ -22,7 +22,9 @@ public enum CollectorType {
     LibraryPolicy,
     ChatOps,
     Cloud,
-    Product;
+    Product,
+    AppPerformance,
+    InfraPerformance;
 
     public static CollectorType fromString(String value) {
         for (CollectorType collectorType : values()) {

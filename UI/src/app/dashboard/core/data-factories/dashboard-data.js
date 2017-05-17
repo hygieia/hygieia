@@ -38,7 +38,8 @@
             delete: deleteDashboard,
             rename: renameDashboard,
             upsertWidget: upsertWidget,
-            types: types
+            types: types,
+            getComponent:getComponent
         };
 
         // reusable helper
@@ -62,6 +63,11 @@
         function myowner(id)
         {
             return getPromise(HygieiaConfig.local ? testOwnedRoute : myownerRoute + "/" + id );
+        }
+
+        //gets component from componentId
+        function getComponent(componentId){
+            return getPromise(HygieiaConfig.local ? testOwnedRoute : myComponentRoute+ '/' + componentId);
         }
 
         function allUsers(id) {

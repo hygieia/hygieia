@@ -27,14 +27,37 @@
                     <div class="col-xs-12">
                         <widget name="feature" widget-title="Feature"></widget>
                         <widget name="repo"></widget>
-                    </div>
+                        </div>
                 </div>
-                <!--</div>-->
-            </div>
+             </div>
 
             <div class="col-md-6">
                 <widget name="build"></widget>
-                <widget name="codeanalysis"></widget>
+                <div class="container-fluid">
+                    <ul class="nav nav-tabs">
+                        <li class="text-lg auth-modal-tab" ng-repeat="tab in template.minitabs" ng-click="template.miniToggleView($index)"
+                            ng-class="tab.name == template.miniWidgetView ? 'active' : ''">
+                            <a class="textColor-Performance" data-toggle="tab" >{{tab.name}}</a>
+
+                        </li>
+                        </span>
+                    </ul>
+                </div>
+                <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.miniWidgetView == 'Quality'">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <widget name="codeanalysis" widget-title="Quality"></widget>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.miniWidgetView == 'Performance'">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <widget name="Performance" widget-title="Performance"></widget>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="col-md-3">
@@ -69,6 +92,4 @@
             </div>
         </div>
     </div>
-
-
 </div>
