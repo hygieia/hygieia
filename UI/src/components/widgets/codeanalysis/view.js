@@ -54,7 +54,7 @@
             ctrl.rulesCompliance = getMetric(caData.metrics, 'violations_density');
             ctrl.qualityGate = getMetric(caData.metrics, 'alert_status');
 
-            ctrl.showQualityGate = angular.isUndefined(ctrl.rulesCompliance.value)
+            ctrl.showQualityGate = angular.isUndefined(ctrl.rulesCompliance.value);
 
             ctrl.technicalDebt = getMetric(caData.metrics, 'sqale_index');
 
@@ -89,17 +89,19 @@
             var deferred = $q.defer();
             var saData = _.isEmpty(response.result) ? {} : response.result[0];
 
-            //ctrl.versionNumber = saData.version;
-
-            ctrl.securityIssues = [
-                getMetric(saData.metrics, 'blocker', 'Blocker'),
-                getMetric(saData.metrics, 'critical', 'Critical'),
-                getMetric(saData.metrics, 'major', 'Major'),
-                getMetric(saData.metrics, 'minor', 'Minor')
-            ];
+            ctrl.securityIssues = getSecurityMetricsData(saData);
 
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
+        }
+
+        function getSecurityMetricsData (data) {
+            var issues = [];
+            var totalSize = _.isEmpty(data.metrics) ? 0 : data.metrics.length;
+            for (var index = 0; index < totalSize; ++index) {
+                issues.push({name: data.metrics[index].name, formattedValue : data.metrics[index].formattedValue, status:data.metrics[index].status});
+            }
+            return issues;
         }
 
 
@@ -189,7 +191,7 @@
         }
 
         function showStatusIcon(item) {
-            return item.status && item.status.toLowerCase() != 'ok';
+            return item.status && item.status.toLowerCase() !== 'ok';
         }
 
 
