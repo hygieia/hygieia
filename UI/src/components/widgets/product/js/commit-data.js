@@ -242,7 +242,7 @@
                             // for this current stage, otherwise use the commit timestamp
                             var lastUpdatedDuration = _(stageData.commits).map(function (commit) {
                                     return commit.in[stageName] || moment().valueOf() - commit.timestamp;
-                                }).min().value(),
+                                }).min(),
                                 lastUpdated = moment().add(-1 * lastUpdatedDuration, 'milliseconds');
 
                             return {
