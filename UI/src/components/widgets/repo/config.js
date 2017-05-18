@@ -113,7 +113,7 @@
 		/*
 		 * function createCollectorItem(url) { var item = { // TODO - Remove
 		 * hard-coded subversion reference when mulitple // scm collectors
-		 * become available collectorId : _.findWhere(ctrl.collectors, { name :
+		 * become available collectorId : _.find(ctrl.collectors, { name :
 		 * 'Subversion' }).id, options : { url : url } }; return
 		 * collectorData.createCollectorItem(item); }
 		 */
@@ -147,26 +147,26 @@
 			if (ctrl.repoOption.name.indexOf("GitHub") !== -1) {
 
 				item = {
-					collectorId: _.findWhere(ctrl.collectors, {name: 'GitHub'}).id,
+					collectorId: _.find(ctrl.collectors, {name: 'GitHub'}).id,
 					options: getOptions('Github'),
 					uniqueOptions: getUniqueOptions('Github')
 				};
 			} else if (ctrl.repoOption.name.indexOf("Bitbucket") !== -1) {
 
 				item = {
-					collectorId: _.findWhere(ctrl.collectors, {name: 'Bitbucket'}).id,
+					collectorId: _.find(ctrl.collectors, {name: 'Bitbucket'}).id,
 					options: getOptions('Bitbucket'),
                     uniqueOptions: getUniqueOptions('Bitbucket')
 				};
 			} else if  (ctrl.repoOption.name.indexOf("Subversion") !== -1) {
 				item = {
-					collectorId : _.findWhere(ctrl.collectors, { name: 'Subversion' }).id,
+					collectorId : _.find(ctrl.collectors, { name: 'Subversion' }).id,
                     options: getOptions('Subversion'),
                     uniqueOptions: getUniqueOptions('Subversion')
 				};
 			} else if (ctrl.repoOption.name.indexOf("Gitlab") !== -1) {
 				item = {
-					collectorId : _.findWhere(ctrl.collectors, { name: 'Gitlab' }).id,
+					collectorId : _.find(ctrl.collectors, { name: 'Gitlab' }).id,
                     options: getOptions('Gitlab'),
                     uniqueOptions: getUniqueOptions('Gitlab')
 				};

@@ -97,7 +97,7 @@
                 size: 'lg',
                 resolve: {
                     build: function() {
-                        return _.findWhere(builds, { number: build.number });
+                        return _.find(builds, { number: build.number });
                     },
                     collectorName: function () {
                         return $scope.dashboard.application.components[0].collectorItems.Build[0].collector.name;

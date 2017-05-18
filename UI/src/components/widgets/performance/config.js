@@ -22,7 +22,6 @@
             var paCollectorItemId = _.isEmpty(paCollectorItems) ? null : paCollectorItems[0].id;
             ctrl.paJobs = data;
             ctrl.paCollectorItem = _.isEmpty(paCollectorItems) ? null : paCollectorItems[0];
-            //ctrl.paCollectorItem = paCollectorItemId ? _.findWhere(ctrl.paJobs, {id: paCollectorItemId}) : null;
             ctrl.paToolsDropdownPlaceholder = data.length ? 'Select a Performance Analysis Job' : 'No Performance Analysis Job Found';
         }
 
