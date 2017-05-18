@@ -166,7 +166,7 @@
 
         function getMetric(metrics, metricName, title) {
             title = title || metricName;
-            return angular.extend((_.filter(metrics, { name: metricName }) || { name: title }), { name: title });
+            return angular.extend((_.find(metrics, { name: metricName }) || { name: title }), { name: title });
         }
 
         function calculateTechnicalDebt(value) {
