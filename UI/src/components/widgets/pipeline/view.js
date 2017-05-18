@@ -79,7 +79,7 @@
             _(ctrl.environmentKeys).forEach(function (envKey) {
                 // limit our data to environments in our mappings file
                 var environments =
-                    _(data).where(function(env) {
+                    _(data).filter(function(env) {
                         return mappings[envKey] && mappings[envKey].toLowerCase() == env.name.toLowerCase();
                     })
                         .forEach(function (env) {
@@ -104,7 +104,7 @@
                                 // if it wasn't deployed or one of the servers is down the environment is considered down
                                 var somethingDown = !unit.deployed;
                                 if(!somethingDown) {
-                                    somethingDown = _(unit.servers).where(function (server) {
+                                    somethingDown = _(unit.servers).filter(function (server) {
                                             return !server.online;
                                         }).value().length > 0;
                                 }
