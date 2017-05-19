@@ -29,7 +29,7 @@
                 ng-model="ctrl.configurationItem"
                 class="form-control"
                 placeholder="Select an App (Optional)"
-                uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('configurationItemApp',$viewValue)"
+                uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue)"
                 typeahead-wait-ms="250" autocomplete="off"
                 typeahead-min-length="0"
                 typeahead-no-results="noResults" />
@@ -44,7 +44,14 @@
                     name="componentItem"
                     ng-model="ctrl.componentItem"
                     class="form-control"
-                    placeholder="Select a Component (Optional)"/>
+                    placeholder="Select a Component (Optional)"
+                    uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('component',$viewValue)"
+                    typeahead-wait-ms="250" autocomplete="off"
+                    typeahead-min-length="0"
+                    typeahead-no-results="noResults" />
+            <div class="form-control" ng-show="noResults">
+                No Results Found
+            </div>
         </form-group>
 
         <form-group input="dashboardTitle" errors="{required: 'Dashboard title is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters', createError: 'Error creating dashboard. Change title and try again.', pattern : 'Special character(s) found. Please enter only letters, numbers or spaces.'}">

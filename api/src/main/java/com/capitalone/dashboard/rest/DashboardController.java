@@ -238,15 +238,12 @@ public class DashboardController {
         }
         return component;
     }
-    @RequestMapping(value = "/dashboard/configItem/{configItemType}", method = GET,
+
+    @RequestMapping(value = "/dashboard/configItem/{itemType}", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Cmdb>> getConfigItemByType(@PathVariable String configItemType, @RequestParam(value = "search", required = false, defaultValue = "") String descriptionFilter, @PageableDefault(size = Integer.MAX_VALUE) Pageable pageable) {
-        LOGGER.info("configItemType: " + configItemType);
-        LOGGER.info("descriptionFilter: " + descriptionFilter);
-        LOGGER.info("pageable: " + pageable.getPageSize());
+    public ResponseEntity<List<Cmdb>> getConfigItemByType(@PathVariable String itemType, @RequestParam(value = "search", required = false, defaultValue = "") String descriptionFilter, @PageableDefault(size = Integer.MAX_VALUE) Pageable pageable) {
 
-
-        Page<Cmdb> pageOfConfigurationItems = cmdbService.configurationItemsByTypeWithFilter(configItemType, descriptionFilter,pageable);
+        Page<Cmdb> pageOfConfigurationItems = cmdbService.configurationItemsByTypeWithFilter(itemType, descriptionFilter,pageable);
 
         return ResponseEntity
                 .ok()

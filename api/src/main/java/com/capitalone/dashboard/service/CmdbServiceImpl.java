@@ -12,22 +12,16 @@ public class CmdbServiceImpl implements CmdbService {
 
     private final CmdbRepository cmdbRepository;
 
-
-
     @Autowired
     public CmdbServiceImpl(CmdbRepository cmdbRepository) {
         this.cmdbRepository = cmdbRepository;
 
     }
 
-
     @Override
-    public Page<Cmdb> configurationItemsByTypeWithFilter(String configItemType, String filter, Pageable pageable) {
-        Page<Cmdb> configItemString = cmdbRepository.findAllByConfigurationItemSubTypeAndConfigurationItemContainingIgnoreCase(
-                "Application Service", filter, pageable);
-
-        Page<Cmdb> configItemStringBap = cmdbRepository.findAllByConfigurationItemSubTypeAndConfigurationItemTypeAndConfigurationItemContainingIgnoreCase(
-                "Business","application" ,filter, pageable);
+    public Page<Cmdb> configurationItemsByTypeWithFilter(String itemType, String filter, Pageable pageable) {
+        Page<Cmdb> configItemString = cmdbRepository.findAllByItemTypeAndConfigurationItemContainingIgnoreCase(
+                itemType, filter, pageable);
 
         return configItemString;
     }
