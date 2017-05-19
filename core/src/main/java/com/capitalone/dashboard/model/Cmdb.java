@@ -23,6 +23,7 @@ public class Cmdb {
     private String developmentOwner;
     private String ownerDept;
     private String commonName;
+    private String itemType;
 
     public ObjectId getId() {
         return id;
@@ -128,9 +129,26 @@ public class Cmdb {
         this.commonName = commonName;
     }
 
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
+
     @Override
     public int hashCode(){
-        return Objects.hash(configurationItem,assignmentGroup,appServiceOwner,businessOwner,supportOwner,developmentOwner,ownerDept);
+        return Objects.hash(configurationItem,
+                assignmentGroup,
+                appServiceOwner,
+                businessOwner,
+                supportOwner,
+                developmentOwner,
+                ownerDept,
+                itemType,
+                configurationItemSubType,
+                configurationItemType);
     }
     @Override
     public boolean equals(Object compareTo){
@@ -162,16 +180,22 @@ public class Cmdb {
                 .append(configurationItem)
                 .append("\nassignmentGroup: ")
                 .append(assignmentGroup)
-            .append("\nappServiceOwner: ")
-            .append(appServiceOwner)
-            .append("\nbusinessOwner: ")
-            .append(businessOwner)
-            .append("\nsupportOwner: ")
-            .append(supportOwner)
-            .append("\ndevelopmentOwner: ")
-            .append(developmentOwner)
-            .append("\nownerDept: ")
-            .append(ownerDept);
+                .append("\nappServiceOwner: ")
+                .append(appServiceOwner)
+                .append("\nbusinessOwner: ")
+                .append(businessOwner)
+                .append("\nsupportOwner: ")
+                .append(supportOwner)
+                .append("\ndevelopmentOwner: ")
+                .append(developmentOwner)
+                .append("\nownerDept: ")
+                .append(ownerDept)
+                .append("\nitemType: ")
+                .append(itemType)
+                .append("\nconfigurationItemSubType: ")
+                .append(configurationItemSubType)
+                .append("\nconfigurationItemType: ")
+                .append(configurationItemType);
 
         return buf.toString();
     }

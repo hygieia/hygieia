@@ -22,6 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -156,12 +157,61 @@ public class DefaultHpsmClient implements HpsmClient {
 
                 }
             }
+
+            boolean isApp = isTypeApp(cmdb);
+			if(isApp){
+				cmdb.setItemType("app");
+			}else{
+				cmdb.setItemType("component");
+			}
+
+
             returnList.add(cmdb);
         }
 		return returnList;
 	}
 
-    /**
+	/**
+	 * Checks to see if configuration Item is APP or Component
+	 * @param cmdb
+	 * @return true or false
+	 */
+	private boolean isTypeApp(Cmdb cmdb) {
+		String subType = cmdb.getConfigurationItemSubType();
+		String type = cmdb.getConfigurationItemType();
+
+		String hpsmSettingsSubType = hpsmSettings.getAppSubType();
+		String hpsmSettingsType = hpsmSettings.getAppType();
+		boolean isTypeApp = false;
+
+		boolean typeCheck = false;
+		boolean subTypeCheck = false;
+
+		if(!"".equals(hpsmSettingsType)){
+			typeCheck = true;
+		}
+		if(!"".equals(hpsmSettingsSubType)){
+			subTypeCheck = true;
+		}
+
+		if(!typeCheck && subTypeCheck){
+			if(subType != null && subType.equals(hpsmSettings.getAppSubType())){
+				isTypeApp = true;
+			}
+		}else if(typeCheck && !subTypeCheck){
+			if(type != null && type.equals(hpsmSettings.getAppType())){
+				isTypeApp = true;
+			}
+		}else{
+			if(subType != null && subType.equals(hpsmSettings.getAppSubType()) && type != null && type.equals(hpsmSettings.getAppType())){
+				isTypeApp = true;
+			}
+		}
+
+		return isTypeApp;
+	}
+
+	/**
      *  Takes a model , methodName, value to be set, and value type and uses reflection to excute model methods.
      * @param target model input
      * @param methodName method to run
@@ -329,7 +379,8 @@ public class DefaultHpsmClient implements HpsmClient {
             SOAPBody body = envelope.getBody();
 
             SOAPBodyElement requestType = body.addBodyElement(envelope.createName(requestTypeName,"ns", ""));
-
+            QName name1 = new QName("count");
+			requestType.addAttribute(name1,"30");
             SOAPBodyElement modelTag = body.addBodyElement(envelope.createName("model","ns", ""));
 
             SOAPBodyElement keysTag = body.addBodyElement(envelope.createName("keys","ns", ""));
