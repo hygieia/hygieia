@@ -24,6 +24,10 @@ public class DashboardRequest {
 
     private String componentName;
 
+    private String configurationItemApp;
+
+    private String configurationItemComponent;
+
     @NotNull
     @Size(min=1, message="Please select a type")
     private String type;
@@ -70,7 +74,23 @@ public class DashboardRequest {
 
     public void setType(String type) { this.type = type; }
 
-	public Dashboard toDashboard() {
+    public String getConfigurationItemApp() {
+        return configurationItemApp;
+    }
+
+    public void setConfigurationItemApp(String configurationItemApp) {
+        this.configurationItemApp = configurationItemApp;
+    }
+
+    public String getConfigurationItemComponent() {
+        return configurationItemComponent;
+    }
+
+    public void setConfigurationItemComponent(String configurationItemComponent) {
+        this.configurationItemComponent = configurationItemComponent;
+    }
+
+    public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());

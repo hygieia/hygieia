@@ -17,7 +17,8 @@
         ctrl.dashboardTitle = '';
         ctrl.applicationName = '';
         ctrl.availableTemplates = [];
-        ctrl.configurationItem = [];
+        ctrl.configurationItemApp = '';
+        ctrl.configurationItemComponent = '';
 
         // TODO: dynamically register templates with script
         ctrl.templates = [
@@ -51,6 +52,7 @@
                 ctrl.setAvailableTemplates();
             }
         })();
+
         function getConfigItem(type ,filter) {
             return dashboardData.getConfigItemList(type, {"search": filter, "size": 20}).then(function (response){
                 return response;
@@ -93,6 +95,8 @@
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
+                        configurationItemApp: document.cdf.configurationItemApp.value,
+                        configurationItemComponent: document.cdf.configurationItemComponent.value
                     };
 
                 dashboardData

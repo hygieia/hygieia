@@ -22,11 +22,11 @@
             </select>
         </form-group>
 
-        <form-group>
+        <form-group  input="configurationItemApp" novalidate>
             <input
                 type="text"
-                name="configurationItem"
-                ng-model="ctrl.configurationItem"
+                name="configurationItemApp"
+                ng-model="ctrl.configurationItemApp"
                 class="form-control"
                 placeholder="Select an App (Optional)"
                 uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue)"
@@ -38,14 +38,14 @@
             </div>
         </form-group>
 
-        <form-group>
+        <form-group input="configurationItemComponent" novalidate>
             <input
                     type="text"
-                    name="componentItem"
-                    ng-model="ctrl.componentItem"
+                    name="configurationItemComponent"
+                    ng-model="ctrl.configurationItemComponent"
                     class="form-control"
                     placeholder="Select a Component (Optional)"
-                    uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('component',$viewValue)"
+                    uib-typeahead="configItemComp as configItemComp.configurationItem for configItemComp in ctrl.getConfigItem('component',$viewValue)"
                     typeahead-wait-ms="250" autocomplete="off"
                     typeahead-min-length="0"
                     typeahead-no-results="noResults" />
@@ -87,8 +87,3 @@
 
     </form>
 </widget-modal>
-<script type="text/ng-template" id="test.html">
-    <a title={{match.model.options.instanceUrl}}>
-        <span ng-bind-html="match.label | uibTypeaheadHighlight:query"/>
-    </a>
-</script>
