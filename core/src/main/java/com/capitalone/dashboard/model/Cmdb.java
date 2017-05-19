@@ -21,6 +21,10 @@ public class Cmdb {
     private String businessOwner;
     private String supportOwner;
     private String developmentOwner;
+    private String appServiceOwnerUserName;
+    private String businessOwnerUserName;
+    private String supportOwnerUserName;
+    private String developmentOwnerUserName;
     private String ownerDept;
     private String commonName;
     private String itemType;
@@ -135,6 +139,38 @@ public class Cmdb {
 
     public void setItemType(String itemType) {
         this.itemType = itemType;
+    }
+
+    public String getAppServiceOwnerUserName() {
+        return appServiceOwnerUserName;
+    }
+
+    public void setAppServiceOwnerUserName(String appServiceOwnerUserName) {
+        this.appServiceOwnerUserName = appServiceOwnerUserName;
+    }
+
+    public String getBusinessOwnerUserName() {
+        return businessOwnerUserName;
+    }
+
+    public void setBusinessOwnerUserName(String businessOwnerUserName) {
+        this.businessOwnerUserName = businessOwnerUserName;
+    }
+
+    public String getSupportOwnerUserName() {
+        return supportOwnerUserName;
+    }
+
+    public void setSupportOwnerUserName(String supportOwnerUserName) {
+        this.supportOwnerUserName = supportOwnerUserName;
+    }
+
+    public String getDevelopmentOwnerUserName() {
+        return developmentOwnerUserName;
+    }
+
+    public void setDevelopmentOwnerUserName(String developmentOwnerUserName) {
+        this.developmentOwnerUserName = developmentOwnerUserName;
     }
 
     @Override
