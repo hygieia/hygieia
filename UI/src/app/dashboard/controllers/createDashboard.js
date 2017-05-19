@@ -13,11 +13,11 @@
     function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType) {
         var ctrl = this;
 
-        // public variables
+            // public variables
         ctrl.dashboardTitle = '';
         ctrl.applicationName = '';
         ctrl.availableTemplates = [];
-
+        ctrl.configurationItem = [];
 
         // TODO: dynamically register templates with script
         ctrl.templates = [
@@ -33,7 +33,7 @@
         ctrl.isTeamDashboardSelected = isTeamDashboardSelected;
         ctrl.templateFilter = templateFilter;
         ctrl.setAvailableTemplates = setAvailableTemplates;
-
+        ctrl.getConfigItem = getConfigItem;
 
         (function() {
             var types = dashboardData.types();
@@ -51,7 +51,11 @@
                 ctrl.setAvailableTemplates();
             }
         })();
-
+        function getConfigItem(type ,filter) {
+            return dashboardData.getConfigItemList(type, {"search": filter, "size": 20}).then(function (response){
+                return response;
+            });
+        }
         function templateFilter(item) {
             return !ctrl.dashboardType || item.type == ctrl.dashboardType.id;
         }

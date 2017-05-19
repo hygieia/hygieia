@@ -1,53 +1,49 @@
 package com.capitalone.dashboard.rest;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.request.DashboardRequest;
+import com.capitalone.dashboard.request.DashboardRequestTitle;
+import com.capitalone.dashboard.request.WidgetRequest;
+import com.capitalone.dashboard.service.CmdbService;
+import com.capitalone.dashboard.service.DashboardService;
+import com.capitalone.dashboard.util.PaginationHeaderUtility;
+import com.google.common.collect.Lists;
+import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.validation.Valid;
-
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.UserInfo;
-import com.capitalone.dashboard.model.UserRole;
-import com.google.common.collect.Lists;
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Widget;
-import com.capitalone.dashboard.model.WidgetResponse;
-import com.capitalone.dashboard.request.DashboardRequest;
-import com.capitalone.dashboard.request.DashboardRequestTitle;
-import com.capitalone.dashboard.request.WidgetRequest;
-import com.capitalone.dashboard.service.DashboardService;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 public class DashboardController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
     private final DashboardService dashboardService;
-
+    private final CmdbService cmdbService;
+    private PaginationHeaderUtility paginationHeaderUtility;
 
     @Autowired
-    public DashboardController(DashboardService dashboardService) {
+    public DashboardController(DashboardService dashboardService,CmdbService cmdbService, PaginationHeaderUtility paginationHeaderUtility) {
         this.dashboardService = dashboardService;
+        this.cmdbService = cmdbService;
+        this.paginationHeaderUtility = paginationHeaderUtility;
     }
 
     @RequestMapping(value = "/dashboard", method = GET, produces = APPLICATION_JSON_VALUE)
@@ -241,6 +237,22 @@ public class DashboardController {
             component = dashboardService.getComponent(componentId);
         }
         return component;
+    }
+    @RequestMapping(value = "/dashboard/configItem/{configItemType}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Cmdb>> getConfigItemByType(@PathVariable String configItemType, @RequestParam(value = "search", required = false, defaultValue = "") String descriptionFilter, @PageableDefault(size = Integer.MAX_VALUE) Pageable pageable) {
+        LOGGER.info("configItemType: " + configItemType);
+        LOGGER.info("descriptionFilter: " + descriptionFilter);
+        LOGGER.info("pageable: " + pageable.getPageSize());
+
+
+        Page<Cmdb> pageOfConfigurationItems = cmdbService.configurationItemsByTypeWithFilter(configItemType, descriptionFilter,pageable);
+
+        return ResponseEntity
+                .ok()
+                .headers(paginationHeaderUtility.buildPaginationHeaders(pageOfConfigurationItems))
+                .body(pageOfConfigurationItems.getContent());
+
     }
 
 }

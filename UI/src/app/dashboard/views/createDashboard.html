@@ -22,6 +22,31 @@
             </select>
         </form-group>
 
+        <form-group>
+            <input
+                type="text"
+                name="configurationItem"
+                ng-model="ctrl.configurationItem"
+                class="form-control"
+                placeholder="Select an App (Optional)"
+                uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('configurationItemApp',$viewValue)"
+                typeahead-wait-ms="250" autocomplete="off"
+                typeahead-min-length="0"
+                typeahead-no-results="noResults" />
+            <div class="form-control" ng-show="noResults">
+                No Results Found
+            </div>
+        </form-group>
+
+        <form-group>
+            <input
+                    type="text"
+                    name="componentItem"
+                    ng-model="ctrl.componentItem"
+                    class="form-control"
+                    placeholder="Select a Component (Optional)"/>
+        </form-group>
+
         <form-group input="dashboardTitle" errors="{required: 'Dashboard title is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters', createError: 'Error creating dashboard. Change title and try again.', pattern : 'Special character(s) found. Please enter only letters, numbers or spaces.'}">
             <input
                 type="text"
@@ -55,3 +80,8 @@
 
     </form>
 </widget-modal>
+<script type="text/ng-template" id="test.html">
+    <a title={{match.model.options.instanceUrl}}>
+        <span ng-bind-html="match.label | uibTypeaheadHighlight:query"/>
+    </a>
+</script>
