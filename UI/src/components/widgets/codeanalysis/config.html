@@ -28,13 +28,6 @@
 
         <div class="form-group text-center">
             <div class="text-center modal-label">Security Scan:</div>
-            <!-- <select name="saCollectorItem"
-                     class="form-control"
-                     ng-model="caWidget.saCollectorItem"
-                     ng-options="(item.collector.name + ' - ' + item.options.projectName + '-' + item.options.projectversion) for item in caWidget.saJobs | orderBy:['collector.name','description'] track by item.id"
-                     ng-disabled="caWidget.saJobs.length === 0">
-                 <option value="">{{caWidget.saToolsDropdownPlaceholder}}</option>
-             </select>-->
 
             <ui-select ng-model="caWidget.saCollectorItem" theme="bootstrap" ng-disabled="caWidget.saJobs.length === 0">
                 <ui-select-match placeholder="Select your SecurityAnalysis job">{{$select.selected.description}}
@@ -43,13 +36,12 @@
                         repeat="item in (caWidget.saJobs | orderBy:['item.collector.name','description'] | filter: $select.search ) track by item.id"
                         refresh="refreshPatients($select.search)"
                         refresh-delay="0">
-                    <div ng-bind-html="(item.collector.name + ' - ' + item.options.projectName + '-' + item.options.projectversion) | highlight: $select.search"></div>
+                    <div ng-bind-html="(item.collector.name + ' - ' + item.description) | highlight: $select.search"></div>
                 </ui-select-choices>
                 <ui-select-no-choice>
                     No Jobs were found
                 </ui-select-no-choice>
             </ui-select>
-
         </div>
 
 

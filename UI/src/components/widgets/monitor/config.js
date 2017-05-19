@@ -131,7 +131,7 @@
             var promises = [];
 
             function whereName(data) {
-                return _(data).where(function (item) {
+                return _(data).filter(function (item) {
                     return item.name && item.name.length;
                 });
             }

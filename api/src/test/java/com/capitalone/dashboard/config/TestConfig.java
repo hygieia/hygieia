@@ -28,7 +28,7 @@ import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
 import com.capitalone.dashboard.service.Monitor2Service;
 import com.capitalone.dashboard.service.PerformanceService;
-import com.capitalone.dashboard.service.SystemConfigService;
+
 
 /**
  * Spring context configuration for Testing purposes
@@ -156,11 +156,6 @@ public class TestConfig {
 		return Mockito.mock(Monitor2Service.class);
 	}
 
-	@Bean
-	public SystemConfigService systemConfigService(){
-		return Mockito.mock(SystemConfigService.class);
-  }
-	
 	@Bean
 	public UserInfoService userInfoService() {
 	    return Mockito.mock(UserInfoService.class);
