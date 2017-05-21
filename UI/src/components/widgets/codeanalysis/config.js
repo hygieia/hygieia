@@ -56,7 +56,7 @@
             var saCollectorItemId = _.isEmpty(saCollectorItems) ? null : saCollectorItems[0].id;
 
             ctrl.saJobs = data;
-            ctrl.saCollectorItem = saCollectorItemId ? _.findWhere(ctrl.saJobs, {id: saCollectorItemId}) : null;
+            ctrl.saCollectorItem = saCollectorItemId ? _.find(ctrl.saJobs, {id: saCollectorItemId}) : null;
             ctrl.saToolsDropdownPlaceholder = data.length ? 'Select a Security Analysis Job' : 'No Security Analysis Job Found';
         }
 
@@ -92,7 +92,7 @@
                 }
             }
             for (index = 0; index < testCollectorItemIds.length; ++index) {
-                var testItem = testCollectorItemIds ? _.findWhere(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
+                var testItem = testCollectorItemIds ? _.find(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
                 ctrl.testConfigs.push({
                     testJobName: testJobNamesFromWidget[index],
                     testJob: ctrl.testJobs,

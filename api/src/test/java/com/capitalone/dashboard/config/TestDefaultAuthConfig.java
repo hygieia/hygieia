@@ -181,8 +181,4 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 		 return Mockito.mock(Monitor2Service.class);
 	 }
 
-	 @Bean
-	 public SystemConfigService systemConfigService(){
-		 return Mockito.mock(SystemConfigService.class);
-	 }
  }

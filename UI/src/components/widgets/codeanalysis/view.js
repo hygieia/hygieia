@@ -92,19 +92,12 @@
             var deferred = $q.defer();
             var saData = _.isEmpty(response.result) ? {} : response.result[0];
 
-            //ctrl.versionNumber = saData.version;
-
-            ctrl.securityIssues = [
-                getMetric(saData.metrics, 'blocker', 'Blocker'),
-                getMetric(saData.metrics, 'critical', 'Critical'),
-                getMetric(saData.metrics, 'major', 'Major'),
-                getMetric(saData.metrics, 'minor', 'Minor')
-            ];
+            ctrl.securityIssues = getSecurityMetricsData(saData);
 
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
         }
-
+      
         function processLibraryPolicyResponse(response) {
             if (response !== null) {
                 var deferred = $q.defer();
@@ -123,6 +116,14 @@
                 deferred.resolve(response.lastUpdated);
                 return deferred.promise;
             }
+          
+        function getSecurityMetricsData (data) {
+            var issues = [];
+            var totalSize = _.isEmpty(data.metrics) ? 0 : data.metrics.length;
+            for (var index = 0; index < totalSize; ++index) {
+                issues.push({name: data.metrics[index].name, formattedValue : data.metrics[index].formattedValue, status:data.metrics[index].status});
+            }
+            return issues;
         }
 
 
@@ -200,7 +201,7 @@
 
         function getMetric(metrics, metricName, title) {
             title = title || metricName;
-            return angular.extend((_.findWhere(metrics, {name: metricName}) || {name: title}), {name: title});
+            return angular.extend((_.find(metrics, { name: metricName }) || { name: title }), { name: title });
         }
 
         function calculateTechnicalDebt(value) {
@@ -223,7 +224,7 @@
         }
 
         function showStatusIcon(item) {
-            return item.status && item.status.toLowerCase() != 'ok';
+            return item.status && item.status.toLowerCase() !== 'ok';
         }
 
         ctrl.getDashStatus = function getDashStatus() {
