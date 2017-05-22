@@ -14,5 +14,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./gitlab-properties-builder.sh && \
-  java -jar gitlab-git-collector*.jar --spring.config.location=/hygieia/hygieia-gitlab-git-collector.properties
+  java -jar gitlab-scm-collector*.jar --spring.config.location=/hygieia/hygieia-gitlab-scm-collector.properties
 
