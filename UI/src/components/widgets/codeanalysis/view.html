@@ -49,6 +49,25 @@
                 </table>
             </div>
         </div>
+        <div class="widget ca-tests" ng-if="caWidget.libraryPolicyDetails != null">
+            <div class="widget-heading">
+                Open Source Scan
+            </div>
+            <div class="widget-body">
+                <table class="table">
+                    <tr class="dash-row clickable" ng-click="caWidget.showLibraryPolicyDetails('License', caWidget.libraryPolicyDetails)">
+                        <td><span  dash-status="caWidget.getDashStatus()"></span></td>
+                        <td class="ca-name">License</td>
+                        <td class="ca-value">{{(caWidget.libraryLicenseThreatStatus) ? caWidget.libraryLicenseThreatStatus.count : 0}}</td>
+                    </tr>
+                    <tr class="dash-row clickable" ng-click="caWidget.showLibraryPolicyDetails('Security', caWidget.libraryPolicyDetails)">
+                        <td><span  dash-status="caWidget.getDashStatus()"></span></td>
+                        <td class="ca-name">Security</td>
+                        <td class="ca-value">{{(caWidget.librarySecurityThreatStatus) ? caWidget.librarySecurityThreatStatus.count : 0}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div class="col-lg-4 col-sm-12">
