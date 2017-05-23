@@ -1,0 +1,10 @@
+<div class="row" ng-repeat="d in data">
+  <div class="col-sm-6 col-md-6 col-lg-6 text-right">
+    <h4>{{d.exhibitAs}}:</h4>
+  </div>
+  <div class="col-sm-6 col-md-6 col-lg-6 cicd-gates">
+    <p ng-if="d.value == 'NA'" class="na-gate">NA</p>
+    <img ng-if="d.value == 'pass'" src="./assets/img/checkMark.png" />
+    <img ng-if="d.value == 'fail'" src="./assets/img/cross.png" />
+  </div>
+</div>  
