@@ -119,13 +119,13 @@
 		function initProjectName(widgetConfig) {
 
 			if (widgetConfig.options.projectName != undefined && widgetConfig.options.projectName != null) {
-				ctrl.selectedProject = widgetConfig.options.projectName;
+				ctrl.projectName = widgetConfig.options.projectName;
 			}
 		}
 
 		function initTeamName(widgetConfig) {
 			if (widgetConfig.options.teamName != undefined && widgetConfig.options.teamName != null) {
-				ctrl.selectedTeam = widgetConfig.options.teamName;
+				ctrl.teamName = widgetConfig.options.teamName;
 			}
 		}
 
