@@ -1,14 +1,16 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.request.CommitRequest;
-import com.capitalone.dashboard.service.CommitService;
-import com.capitalone.dashboard.util.TestUtil;
-import com.google.common.io.Resources;
-import com.google.common.primitives.Ints;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -24,16 +26,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.request.CommitRequest;
+import com.capitalone.dashboard.service.CommitService;
+import com.capitalone.dashboard.util.TestUtil;
+import com.google.common.io.Resources;
+import com.google.common.primitives.Ints;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})

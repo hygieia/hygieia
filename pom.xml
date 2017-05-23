@@ -187,12 +187,15 @@
         <module>collectors/deploy/xldeploy</module>
         <module>collectors/feature/jira</module>
         <module>collectors/feature/versionone</module>
+        <module>collectors/feature/gitlab</module>
         <module>collectors/misc/chat-ops</module>
+        <module>collectors/performance/appdynamics</module>
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
         <module>collector-config-server</module>
+        <module>hygieia-jenkins-plugin</module>
         <module>UI</module>
       </modules>
       <build>
@@ -226,12 +229,15 @@
         <module>collectors/deploy/xldeploy</module>
         <module>collectors/feature/jira</module>
         <module>collectors/feature/versionone</module>
+        <module>collectors/feature/gitlab</module>
         <module>collectors/misc/chat-ops</module>
+        <module>collectors/performance/appdynamics</module>
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
         <module>collector-config-server</module>
+        <module>collectors/library-policy/nexus-iq-collector</module>
      	<module>UI</module>
 	 </modules>
       <build>

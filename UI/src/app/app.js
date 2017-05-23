@@ -42,16 +42,26 @@ var localStorageSupported = (function () {
         'ui.bootstrap',
         'fitText',
         'angular-chartist',
+        'gridstack-angular',
         'ngCookies',
         'validation.match',
         'as.sortable',
-        'ui.select'
+        'ui.select',
+        'angular-jwt'
     ])
-    .config(['$httpProvider',
+
+    .config(['$httpProvider', 'jwtOptionsProvider',
         // intercepting the http provider allows us to use relative routes
         // in data providers and then redirect them to a remote api if
         // necessary
-        function ($httpProvider) {
+        function ($httpProvider, jwtOptionsProvider) {
+            jwtOptionsProvider.config({
+              tokenGetter: ['tokenService', function(tokenService) {
+                return tokenService.getToken();
+              }]
+            });
+            $httpProvider.interceptors.push('jwtInterceptor');
+            $httpProvider.interceptors.push('authInterceptor');
             $httpProvider.interceptors.push(function () {
                 return {
                     request: function (config) {
@@ -65,7 +75,7 @@ var localStorageSupported = (function () {
                         }
 
                         return config;
-                    }
+                    },
                 };
             });
         }])
@@ -89,14 +99,25 @@ var localStorageSupported = (function () {
                     controllerAs: 'ctrl'
                 })
                 // dashboard selection/creation
-                .when('/site', {
+                .when('/', {
                     templateUrl: 'app/dashboard/views/site.html',
                     controller: 'SiteController',
                     controllerAs: 'ctrl'
                 })
+                // template management
+                .when('/templates', {
+                    templateUrl: 'app/dashboard/views/templates.html',
+                    controller: 'TemplateController',
+                    controllerAs: 'ctrl'
+                })
+                .when('/templates/create', {
+                    templateUrl: 'app/dashboard/views/templateManager.html',
+                    controller: 'TemplateController',
+                    controllerAs: 'ctrl'
+                })
                 //login
 
-                .when('/',{
+                .when('/login',{
                   templateUrl: 'app/dashboard/views/login.html',
                   controller: 'LoginController',
                   controllerAs: 'login'
@@ -110,5 +131,10 @@ var localStorageSupported = (function () {
                 .otherwise({
                     redirectTo: '/'
                 });
+        })
+        .run(function ($rootScope, loginRedirectService) {
+          $rootScope.$on('$locationChangeStart', function (event, nextPath, currentPath) {
+            loginRedirectService.saveCurrentPath(currentPath);
+          });
         });
 })();

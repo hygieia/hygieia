@@ -46,6 +46,9 @@ jenkins.cron=0 0/5 * * * *
 # The page size
 jenkins.pageSize=1000
 
+# The folder depth - default is 10
+jenkins.folderDepth=10
+
 # Jenkins server (required) - Can provide multiple
 jenkins.servers[0]=http://jenkins.company.com
 

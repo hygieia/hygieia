@@ -5,8 +5,10 @@ import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.deploy.Environment;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import org.bson.types.ObjectId;
+import org.w3c.dom.Document;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DeployService {
 
@@ -22,4 +24,6 @@ public interface DeployService {
     String create(DeployDataCreateRequest request) throws HygieiaException;
 
     DataResponse<List<Environment>> getDeployStatus(String applicationName);
+
+    String createRundeckBuild(Document doc, Map<String, String[]> parameters, String executionId, String status) throws HygieiaException;
 }

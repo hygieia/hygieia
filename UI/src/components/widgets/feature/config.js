@@ -280,9 +280,11 @@
 			var collectorId;
 
 			if (ctrl.collectorId.value === 'Jira') {
-				collectorId = _.findWhere(ctrl.collectors, {name: 'Jira'}).id
+				collectorId = _.find(ctrl.collectors, {name: 'Jira'}).id
 			} else if (ctrl.collectorId.value === 'VersionOne') {
-				collectorId = _.findWhere(ctrl.collectors, {name: 'VersionOne'}).id
+				collectorId = _.find(ctrl.collectors, {name: 'VersionOne'}).id
+			} else if (ctrl.collectorId.value ==='GitlabFeature') {
+				collectorId = _.find(ctrl.collectors, {name: 'GitlabFeature'}).id
 			}
 
 			item = {

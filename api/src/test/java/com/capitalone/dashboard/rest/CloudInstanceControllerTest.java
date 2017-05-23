@@ -1,12 +1,15 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.CloudInstance;
-import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
-import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
-import com.capitalone.dashboard.service.CloudInstanceService;
-import com.capitalone.dashboard.util.TestUtil;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,15 +22,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.model.CloudInstance;
+import com.capitalone.dashboard.request.CloudInstanceCreateRequest;
+import com.capitalone.dashboard.request.CloudInstanceListRefreshRequest;
+import com.capitalone.dashboard.service.CloudInstanceService;
+import com.capitalone.dashboard.util.TestUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
@@ -44,7 +45,9 @@ public class CloudInstanceControllerTest {
 
     @Before
     public void before() {
+//    	SecurityContextHolder.clearContext();
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+//        AuthenticationFixture.createAuthentication("amit");
     }
 
     @Test

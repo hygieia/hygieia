@@ -41,6 +41,9 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 #Database Password - default is blank
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
+#Collector schedule (required)
+feature.cron=${VERSIONONE_CRON:-0 0/5 * * * *}
+
 #Page size for data calls (VersionOne recommended 2000)
 feature.pageSize=${VERSIONONE_PAGE_SIZE:-2000}
 
@@ -54,7 +57,7 @@ feature.projectQuery=${VERSIONONE_PROJECT_QUERY:-projectinfo}
 feature.memberQuery=${VERSIONONE_MEMBBER_QUERY:-memberinfo}
 feature.sprintQuery=${VERSIONONE_SPRINT_QUERY:-sprintinfo}
 feature.teamQuery=${VERSIONONE_TEAM_QUERY:-teaminfo}
-feature.trendingQuery${{VERSIONONE_TRENDING_QUERY:-trendinginfo}
+feature.trendingQuery${VERSIONONE_TRENDING_QUERY:-trendinginfo}
 
 # Trending Query:  Number of days in a sprint (not-required)
 feature.sprintDays=${VERSIONONE_SPRINT_DAYS:-60}

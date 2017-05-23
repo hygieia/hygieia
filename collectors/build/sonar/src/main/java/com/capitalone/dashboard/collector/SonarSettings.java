@@ -16,8 +16,9 @@ public class SonarSettings {
     private String cron;
     private String username;
     private String password;
-    private String metrics;
     private List<String> servers;
+    private List<Double> versions;
+    private List<String> metrics;
 
     public String getCron() {
         return cron;
@@ -43,11 +44,11 @@ public class SonarSettings {
         this.password = password;
     }
 
-    public String getMetrics() {
+    public List<String> getMetrics() {
         return metrics;
     }
 
-    public void setMetrics(String metrics) {
+    public void setMetrics(List<String> metrics) {
         this.metrics = metrics;
     }
 
@@ -57,5 +58,13 @@ public class SonarSettings {
 
     public void setServers(List<String> servers) {
         this.servers = servers;
+    }
+
+    public List<Double> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(List<Double> versions) {
+        this.versions = versions;
     }
 }

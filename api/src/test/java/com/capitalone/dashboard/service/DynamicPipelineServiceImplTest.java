@@ -1,5 +1,9 @@
 package com.capitalone.dashboard.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +28,7 @@ import org.mockito.stubbing.Answer;
 import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.ArtifactIdentifier;
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
@@ -36,6 +41,7 @@ import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.EnvironmentComponent;
 import com.capitalone.dashboard.model.EnvironmentStage;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Pipeline;
 import com.capitalone.dashboard.model.PipelineCommit;
 import com.capitalone.dashboard.model.PipelineResponse;
@@ -55,10 +61,6 @@ import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.capitalone.dashboard.request.CommitRequest;
 import com.capitalone.dashboard.request.PipelineSearchRequest;
 import com.google.common.collect.Lists;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Basic tests to test the functionality of the DynamicPipelineServiceImpl class. See
@@ -617,7 +619,7 @@ public class DynamicPipelineServiceImplTest {
 	}
 
 	private Dashboard setupDashboard(Component component) {
-		Dashboard rt = new Dashboard("foo", "bar", new Application("helloworld", component), "MarkRx", DashboardType.Product);
+		Dashboard rt = new Dashboard("foo", "bar", new Application("helloworld", component), new Owner("MarkRx", AuthType.STANDARD), DashboardType.Product);
 
 		Widget pipelineWidget = new Widget();
 		pipelineWidget.setName("pipeline");

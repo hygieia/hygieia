@@ -1,13 +1,20 @@
 package com.capitalone.dashboard.util;
 
-import com.capitalone.dashboard.model.*;
-import org.bson.types.ObjectId;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import org.bson.types.ObjectId;
+import org.junit.Test;
+
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.Widget;
 
 
 /**
@@ -29,7 +36,7 @@ public class PipelineUtilsTest {
     }
 
     private Dashboard setupDashboard() {
-        Dashboard rt = new Dashboard("Capone", "hygieia", new Application("hygieia", new Component()), "owner", DashboardType.Team);
+        Dashboard rt = new Dashboard("Capone", "hygieia", new Application("hygieia", new Component()), new Owner("owner", AuthType.STANDARD), DashboardType.Team);
 
         Widget pipelineWidget = new Widget();
         pipelineWidget.setName("pipeline");
