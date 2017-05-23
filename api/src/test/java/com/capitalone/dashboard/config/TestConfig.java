@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.config;
 
+import com.capitalone.dashboard.service.LibraryPolicyService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -144,6 +145,11 @@ public class TestConfig {
 	@Bean
 	public TeamService teamService() {
 		return Mockito.mock(TeamService.class);
+	}
+
+	@Bean
+	public LibraryPolicyService libraryPolicyService() {
+		return Mockito.mock(LibraryPolicyService.class);
 	}
 
 	@Bean
