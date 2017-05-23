@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('CodeAnalysisViewController', CodeAnalysisViewController);
 
-    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', '$q', '$filter', '$uibModal'];
-    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, $q, $filter, $uibModal) {
+    CodeAnalysisViewController.$inject = ['$scope', 'codeAnalysisData', 'testSuiteData', 'libraryPolicyData', '$q', '$filter', '$uibModal'];
+    function CodeAnalysisViewController($scope, codeAnalysisData, testSuiteData, libraryPolicyData, $q, $filter, $uibModal) {
         var ctrl = this;
 
         ctrl.pieOptions = {
@@ -19,10 +19,11 @@
 
         ctrl.showStatusIcon = showStatusIcon;
         ctrl.showDetail = showDetail;
+        ctrl.showLibraryPolicyDetails = showLibraryPolicyDetails;
 
         coveragePieChart({});
 
-        ctrl.load = function() {
+        ctrl.load = function () {
             var caRequest = {
                 componentId: $scope.widgetConfig.componentId,
                 max: 1
@@ -36,13 +37,19 @@
                 componentId: $scope.widgetConfig.componentId,
                 max: 1
             };
+            var libraryPolicyRequest = {
+                componentId: $scope.widgetConfig.componentId,
+                max: 1
+            };
             return $q.all([
+                libraryPolicyData.libraryPolicyDetails(libraryPolicyRequest).then(processLibraryPolicyResponse),
                 codeAnalysisData.staticDetails(caRequest).then(processCaResponse),
                 codeAnalysisData.securityDetails(saRequest).then(processSaResponse),
                 testSuiteData.details(testRequest).then(processTestResponse)
+
             ]);
         };
-        
+
         function processCaResponse(response) {
             var deferred = $q.defer();
             var caData = _.isEmpty(response.result) ? {} : response.result[0];
@@ -54,12 +61,9 @@
             ctrl.rulesCompliance = getMetric(caData.metrics, 'violations_density');
             ctrl.qualityGate = getMetric(caData.metrics, 'alert_status');
 
-            ctrl.showQualityGate = angular.isUndefined(ctrl.rulesCompliance.value)
+            ctrl.showQualityGate = angular.isUndefined(ctrl.rulesCompliance.value);
 
             ctrl.technicalDebt = getMetric(caData.metrics, 'sqale_index');
-
-		//the JSON contains the required info in ctrl.technicalDebt.formattedValue, no need to calculate	 
-            //ctrl.technicalDebt.formattedValue = calculateTechnicalDebt(ctrl.technicalDebt.value);
 
             ctrl.linesofCode = getMetric(caData.metrics, 'ncloc');
 
@@ -69,7 +73,6 @@
                 getMetric(caData.metrics, 'major_violations', 'Major'),
                 getMetric(caData.metrics, 'violations', 'Issues')
             ];
-
             ctrl.unitTests = [
                 getMetric(caData.metrics, 'test_success_density', 'Success'),
                 getMetric(caData.metrics, 'test_failures', 'Failures'),
@@ -89,17 +92,38 @@
             var deferred = $q.defer();
             var saData = _.isEmpty(response.result) ? {} : response.result[0];
 
-            //ctrl.versionNumber = saData.version;
-
-            ctrl.securityIssues = [
-                getMetric(saData.metrics, 'blocker', 'Blocker'),
-                getMetric(saData.metrics, 'critical', 'Critical'),
-                getMetric(saData.metrics, 'major', 'Major'),
-                getMetric(saData.metrics, 'minor', 'Minor')
-            ];
+            ctrl.securityIssues = getSecurityMetricsData(saData);
 
             deferred.resolve(response.lastUpdated);
             return deferred.promise;
+        }
+      
+        function processLibraryPolicyResponse(response) {
+            if (response !== null) {
+                var deferred = $q.defer();
+                var libraryData = (response === null) || _.isEmpty(response.result) ? {} : response.result[0];
+                ctrl.libraryPolicyDetails = libraryData;
+                if (libraryData.threats !== null) {
+                    if (libraryData.threats.License !== null) {
+                        ctrl.libraryLicenseThreats = libraryData.threats.License;
+                        ctrl.libraryLicenseThreatStatus = getLibraryPolicyStatus(libraryData.threats.License)
+                    }
+                    if (libraryData.threats.Security !== null) {
+                        ctrl.librarySecurityThreats = libraryData.threats.Security;
+                        ctrl.librarySecurityThreatStatus = getLibraryPolicyStatus(libraryData.threats.Security)
+                    }
+                }
+                deferred.resolve(response.lastUpdated);
+                return deferred.promise;
+            }
+          
+        function getSecurityMetricsData (data) {
+            var issues = [];
+            var totalSize = _.isEmpty(data.metrics) ? 0 : data.metrics.length;
+            for (var index = 0; index < totalSize; ++index) {
+                issues.push({name: data.metrics[index].name, formattedValue : data.metrics[index].formattedValue, status:data.metrics[index].status});
+            }
+            return issues;
         }
 
 
@@ -119,19 +143,11 @@
                 };
                 // Aggregate the counts of all Functional test suites
                 var aggregate = _.reduce(_.filter(testResult.testCapabilities, {type: "Functional"}), function (result, capability) {
-                    //var ind;
-                    //for (ind = 0; ind < testCap.testSuites.length; ++ind) {
-                    //    var testSuite = capability.testSuites[ind];
-                    //    result.failureCount += testSuite.failedTestCaseCount;
-                    //    result.successCount += testSuite.successTestCaseCount;
-                    //    result.skippedCount += testSuite.skippedTestCaseCount;
-                    //    result.totalCount += testSuite.totalTestCaseCount;
-                    //}
                     //New calculation: 3/10/16 - Topo Pal
-                        result.failureCount += capability.failedTestSuiteCount;
-                        result.successCount += capability.successTestSuiteCount;
-                        result.skippedCount += capability.skippedTestSuiteCount;
-                        result.totalCount += capability.totalTestSuiteCount;
+                    result.failureCount += capability.failedTestSuiteCount;
+                    result.successCount += capability.successTestSuiteCount;
+                    result.skippedCount += capability.skippedTestSuiteCount;
+                    result.totalCount += capability.totalTestSuiteCount;
 
                     return result;
                 }, allZeros);
@@ -159,10 +175,29 @@
             lineCoverage.value = lineCoverage.value || 0;
 
             ctrl.unitTestCoverageData = {
-                series: [ lineCoverage.value, (100 - lineCoverage.value) ]
+                series: [lineCoverage.value, (100 - lineCoverage.value)]
             };
         }
 
+        function getLibraryPolicyStatus(threats) {
+            var highest = 0; //ok
+            var highestCount = 0;
+            for (var i = 0; i < threats.length; ++i) {
+                var level = threats[i].level;
+                var count = threats[i].count;
+                if ((level.toLowerCase() === 'high') && (count > 0) && (highest < 3)) {
+                    highest = 3;
+                    highestCount = count;
+                } else if ((level.toLowerCase() === 'medium') && (count > 0) && (highest < 2)) {
+                    highest = 2;
+                    highestCount = count;
+                } else if ((level.toLowerCase() === 'low') && (count > 0) && (highest < 1)) {
+                    highest = 1;
+                    highestCount = count;
+                }
+            }
+            return {level: highest, count: highestCount};
+        }
 
         function getMetric(metrics, metricName, title) {
             title = title || metricName;
@@ -185,13 +220,29 @@
                 factor = 525600;
                 suffix = 'y';
             }
-            return Math.ceil(value/factor) + suffix;
+            return Math.ceil(value / factor) + suffix;
         }
 
         function showStatusIcon(item) {
-            return item.status && item.status.toLowerCase() != 'ok';
+            return item.status && item.status.toLowerCase() !== 'ok';
         }
 
+        ctrl.getDashStatus = function getDashStatus() {
+
+            switch (ctrl.librarySecurityThreatStatus.level) {
+                case 3:
+                    return 'alert';
+
+                case 2:
+                    return 'warning';
+
+                case 1:
+                    return 'ignore';
+
+                default:
+                    return 'ok';
+            }
+        }
 
         function showDetail(test) {
             $uibModal.open({
@@ -200,11 +251,26 @@
                 templateUrl: 'components/widgets/codeanalysis/testdetails.html',
                 size: 'lg',
                 resolve: {
-                    testResult: function() {
+                    testResult: function () {
                         return test;
                     }
                 }
             });
         }
+
+        function showLibraryPolicyDetails(type,data) {
+            $uibModal.open({
+                controller: 'LibraryPolicyDetailsController',
+                controllerAs: 'libraryPolicyDetails',
+                templateUrl: 'components/widgets/codeanalysis/librarypolicydetails.html',
+                size: 'lg',
+                resolve: {
+                    libraryPolicyResult: function () {
+                        return ({type: type,data: data});
+                    }
+                }
+            });
+        }
     }
-})();
+})
+();
