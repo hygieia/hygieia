@@ -32,6 +32,7 @@
                 uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue)"
                 typeahead-wait-ms="250" autocomplete="off"
                 typeahead-min-length="0"
+                typeahead-editable="false"
                 typeahead-no-results="noResults" />
             <div class="form-control" ng-show="noResults">
                 No Results Found
@@ -48,6 +49,7 @@
                     uib-typeahead="configItemComp as configItemComp.configurationItem for configItemComp in ctrl.getConfigItem('component',$viewValue)"
                     typeahead-wait-ms="250" autocomplete="off"
                     typeahead-min-length="0"
+                    typeahead-editable="false"
                     typeahead-no-results="noResults" />
             <div class="form-control" ng-show="noResults">
                 No Results Found
@@ -60,7 +62,6 @@
                 name="dashboardTitle"
                 class="form-control"
                 placeholder="Dashboard title"
-                ng-model="ctrl.dashboardTitle"
                 required
                 maxlength="50"
                 autocomplete="off"

@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('CreateDashboardController', CreateDashboardController);
 
-    CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', 'userService', 'DashboardType'];
-    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType) {
+    CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', 'userService', 'DashboardType','cmdbData'];
+    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType,cmdbData) {
         var ctrl = this;
 
             // public variables
@@ -54,7 +54,7 @@
         })();
 
         function getConfigItem(type ,filter) {
-            return dashboardData.getConfigItemList(type, {"search": filter, "size": 20}).then(function (response){
+            return cmdbData.getConfigItemList(type, {"search": filter, "size": 20}).then(function (response){
                 return response;
             });
         }

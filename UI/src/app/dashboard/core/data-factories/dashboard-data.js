@@ -24,7 +24,6 @@
         var myownerRoute = "/api/dashboard/myowner";
         var dashboardAllUsersRoute= '/api/dashboard/allUsers';
         var dashboardOwnersRoute = '/api/dashboard/owners';
-        var dashboardConfigItemListRoute = '/api/dashboard/configItem';
 
         return {
             search: search,
@@ -40,8 +39,7 @@
             rename: renameDashboard,
             upsertWidget: upsertWidget,
             types: types,
-            getComponent:getComponent,
-            getConfigItemList:getConfigItemList
+            getComponent:getComponent
         };
 
         // reusable helper
@@ -84,11 +82,7 @@
         function detail(id) {
             return getPromise(HygieiaConfig.local ? testDetailRoute : dashboardRoute + '/' + id);
         }
-        function getConfigItemList(type, params){
-            return $http.get(HygieiaConfig.local ? testDetailRoute : dashboardConfigItemListRoute + '/' + type,{params: params}).then(function (response) {
-                return response.data;
-            });
-        }
+
         // creates a new dashboard
         function create(data) {
             return $http.post(dashboardRoute, data)
