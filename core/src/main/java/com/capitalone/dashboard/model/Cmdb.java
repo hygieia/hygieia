@@ -211,7 +211,7 @@ public class Cmdb {
     @Override
     public String toString() {
 
-        StringBuffer buf = new StringBuffer(123);
+        StringBuffer buf = new StringBuffer(188);
         buf.append("configurationItem: ")
                 .append(configurationItem)
                 .append("\nassignmentGroup: ")
