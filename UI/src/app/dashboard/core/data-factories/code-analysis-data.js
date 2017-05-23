@@ -30,6 +30,4 @@
                 .then(function (response) { return response.data; });
         }
     }
-
-
 })();
