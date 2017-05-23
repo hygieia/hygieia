@@ -1,9 +1,7 @@
 package com.capitalone.dashboard.config;
  
-import com.capitalone.dashboard.service.LibraryPolicyService;
+import com.capitalone.dashboard.service.*;
 import com.capitalone.dashboard.model.Performance;
-import com.capitalone.dashboard.service.Monitor2Service;
-import com.capitalone.dashboard.service.PerformanceService;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -12,28 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 import com.capitalone.dashboard.repository.AuthenticationRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
-import com.capitalone.dashboard.service.AuthenticationService;
-import com.capitalone.dashboard.service.BinaryArtifactService;
-import com.capitalone.dashboard.service.BuildService;
-import com.capitalone.dashboard.service.CloudInstanceService;
-import com.capitalone.dashboard.service.CloudSubnetService;
-import com.capitalone.dashboard.service.CloudVirtualNetworkService;
-import com.capitalone.dashboard.service.CloudVolumeService;
-import com.capitalone.dashboard.service.CodeQualityService;
-import com.capitalone.dashboard.service.CollectorService;
-import com.capitalone.dashboard.service.CommitService;
-import com.capitalone.dashboard.service.DashboardService;
-import com.capitalone.dashboard.service.DefaultAuthenticationServiceImpl;
-import com.capitalone.dashboard.service.DeployService;
-import com.capitalone.dashboard.service.EncryptionService;
-import com.capitalone.dashboard.service.FeatureService;
-import com.capitalone.dashboard.service.PipelineService;
-import com.capitalone.dashboard.service.ScopeService;
-import com.capitalone.dashboard.service.ServiceService;
-import com.capitalone.dashboard.service.TeamService;
-import com.capitalone.dashboard.service.TestResultService;
-import com.capitalone.dashboard.service.UserInfoService;
-import com.capitalone.dashboard.service.UserInfoServiceImpl;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
  
  @SpringBootApplication
@@ -178,6 +154,11 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 	 @Bean
 	 public Monitor2Service monitor2Service(){
 		 return Mockito.mock(Monitor2Service.class);
+	 }
+
+	 @Bean
+	 public CmdbService cmdbService() {
+		 return Mockito.mock(CmdbService.class);
 	 }
 
  }

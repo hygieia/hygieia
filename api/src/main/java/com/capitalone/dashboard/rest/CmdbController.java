@@ -3,8 +3,6 @@ package com.capitalone.dashboard.rest;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.service.CmdbService;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +21,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 public class CmdbController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CmdbController.class);
     private final CmdbService cmdbService;
     private PaginationHeaderUtility paginationHeaderUtility;
 
