@@ -21,49 +21,51 @@
 				a valid feature data source</p>
 		</div>
 
-        <div ng-hide="ctrl.hideProjectDropDown" class="col-sm-push-2 col-sm-8">
-            <label class="modal-label">Project Name:</label>
-			<input
-					type="text"
-					name="projectName"
-					class="form-control"
-					placeholder="Search for a project name"
-					ng-model="ctrl.projectName"
-					uib-typeahead="suspect.name as suspect.name for suspect in ctrl.getProjectNames($viewValue)"
-					typeahead-focus
-					typeahead-on-select="ctrl.onSelectProject($item)"
-					typeahead-min-length="0"
-					typeahead-wait-ms="250"
-					autocomplete="off"
-					typeahead-no-results="noResults"
-					typeahead-editable="false"
-					required>
-            <p class="help-block"
-                ng-if="configForm.projectName.$error.required">Please select
-                a valid project</p>
-        </div>
+		<form-group>
+			<div ng-hide="ctrl.hideProjectDropDown" class="col-sm-push-2 col-sm-8">
+				<label class="modal-label">Project Name:</label>
+				<input
+						type="text"
+						name="projectName"
+						class="form-control"
+						placeholder="Search for a project name"
+						ng-model="ctrl.projectName"
+						uib-typeahead="suspect.name as suspect.name for suspect in ctrl.getProjectNames($viewValue)"
+						typeahead-focus
+						typeahead-on-select="ctrl.onSelectProject($item)"
+						typeahead-min-length="0"
+						typeahead-wait-ms="250"
+						autocomplete="off"
+						typeahead-no-results="noResults"
+						typeahead-editable="false"
+						required>
+				<p class="help-block"
+					ng-if="configForm.projectName.$error.required">Please select
+					a valid project</p>
+			</div>
 
-		<div ng-hide="ctrl.hideTeamDropDown" class="col-sm-push-2 col-sm-8">
-			<label class="modal-label">Team Name:</label>
-			<input
-					type="text"
-					name="teamName"
-					class="form-control"
-					placeholder="Search for a team name"
-					ng-model="ctrl.teamName"
-					uib-typeahead="suspect.name as suspect.name for suspect in ctrl.getTeamNames($viewValue)"
-					typeahead-focus
-					typeahead-on-select="ctrl.onSelectTeam($item)"
-					typeahead-min-length="0"
-					typeahead-wait-ms="250"
-					autocomplete="off"
-					typeahead-no-results="noResults"
-					typeahead-editable="false"
-					required>
-			<p class="help-block"
-			   ng-if="configForm.teamName.$error.required">Please select
-				a valid team</p>
-		</div>
+			<div ng-hide="ctrl.hideTeamDropDown" class="col-sm-push-2 col-sm-8">
+				<label class="modal-label">Team Name:</label>
+				<input
+						type="text"
+						name="teamName"
+						class="form-control"
+						placeholder="Search for a team name"
+						ng-model="ctrl.teamName"
+						uib-typeahead="suspect.name as suspect.name for suspect in ctrl.getTeamNames($viewValue)"
+						typeahead-focus
+						typeahead-on-select="ctrl.onSelectTeam($item)"
+						typeahead-min-length="0"
+						typeahead-wait-ms="250"
+						autocomplete="off"
+						typeahead-no-results="noResults"
+						typeahead-editable="false"
+						required>
+				<p class="help-block"
+				   ng-if="configForm.teamName.$error.required">Please select
+					a valid team</p>
+			</div>
+		</form-group>
 
 		<div ng-hide="ctrl.hideEstimateMetricDropDown" class="col-sm-push-2 col-sm-8">
 			<label class="modal-label">Estimate Metric:</label> <select
