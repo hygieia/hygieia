@@ -16,65 +16,57 @@
 				required>
 				<option value="">{{ctrl.typeDropdownPlaceholder}}</option>
 			</select>
-
-			<!--<ui-select id="collectorId" ng-model="ctrl.collectorId" ng-init="ctrl.collectorId" ng-change="ctrl.evaluateTypeSelection()" theme="bootstrap" ng-disabled="ctrl.toolsDropdownDisabled" required>
-				<ui-select-match placeholder={{ctrl.toolsDropdownPlaceholder}} >{{$select.selected.value}}</ui-select-match>
-				<ui-select-choices repeat="featureTypeOption in (ctrl.featureTypeOptions | filter: $select.search) track by featureTypeOption.id"
-								   refresh="refreshPatients($select.search)"
-								   refresh-delay="0">
-					<div ng-bind-html="featureTypeOption.value | highlight: $select.search"></div>
-				</ui-select-choices>
-				<ui-select-no-choice>
-					Dang!  We couldn't find any teams...
-				</ui-select-no-choice>
-			</ui-select>-->
-
-
 			<p class="help-block"
 				ng-if="configForm.collectorItemId.$error.required || configForm.selectedProject.$error.required">Please select
 				a valid feature data source</p>
 		</div>
-        
-        <div ng-hide="ctrl.hideProjectDropDown" class="col-sm-push-2 col-sm-8">
-            <label class="modal-label">Project Name:</label>
-            <ui-select id="selectedProject" ng-model="ctrl.selectedProject" theme="bootstrap"
-                       ng-disabled="ctrl.projectsDropdownDisabled" required>
-                <ui-select-match placeholder={{ctrl.projectsDropdownPlaceholder}}>{{$select.selected.projectName}}
-                </ui-select-match>
-                <ui-select-choices
-                        repeat="item in (ctrl.projects | orderBy: 'projectName' | filter: $select.search)  track by item.projectId">
-                    <div ng-bind-html="item.projectName | highlight: $select.search"></div>
-                </ui-select-choices>
-                <ui-select-no-choice>
-                    No projects were found
-                </ui-select-no-choice>
-            </ui-select>
 
-            <p class="help-block"
-                ng-if="configForm.selectedProject.$error.required">Please select
-                a valid project</p>
-        </div>
-        
-        <div ng-hide="ctrl.hideTeamDropDown" class="col-sm-push-2 col-sm-8">
-            <label class="modal-label">Team Name:</label>
-			<ui-select id="selectedTeam" ng-model="ctrl.selectedTeam" theme="bootstrap"
-                       ng-disabled="ctrl.teamsDropdownDisabled" required>
-                <ui-select-match placeholder={{ctrl.teamsDropdownPlaceholder}}>{{$select.selected.teamName}}
-                </ui-select-match>
-                <ui-select-choices
-                        repeat="item in (ctrl.teams | orderBy: 'teamName' | filter: $select.search)  track by item.teamId">
-                    <div ng-bind-html="item.teamName | highlight: $select.search"></div>
-                </ui-select-choices>
-                <ui-select-no-choice>
-                    No teams were found
-                </ui-select-no-choice>
-            </ui-select>
-            
-            <p class="help-block"
-                ng-if="configForm.selectedTeam.$error.required">Please select
-                a valid team</p>
-        </div>
-		
+		<form-group>
+			<div ng-hide="ctrl.hideProjectDropDown" class="col-sm-push-2 col-sm-8">
+				<label class="modal-label">Project Name:</label>
+				<input
+						type="text"
+						name="projectName"
+						class="form-control"
+						placeholder="Search for a project name"
+						ng-model="ctrl.projectName"
+						uib-typeahead="suspect.name as suspect.name for suspect in ctrl.getProjectNames($viewValue)"
+						typeahead-focus
+						typeahead-on-select="ctrl.onSelectProject($item)"
+						typeahead-min-length="0"
+						typeahead-wait-ms="250"
+						autocomplete="off"
+						typeahead-no-results="noResults"
+						typeahead-editable="false"
+						required>
+				<p class="help-block"
+					ng-if="configForm.projectName.$error.required">Please select
+					a valid project</p>
+			</div>
+
+			<div ng-hide="ctrl.hideTeamDropDown" class="col-sm-push-2 col-sm-8">
+				<label class="modal-label">Team Name:</label>
+				<input
+						type="text"
+						name="teamName"
+						class="form-control"
+						placeholder="Search for a team name"
+						ng-model="ctrl.teamName"
+						uib-typeahead="suspect.name as suspect.name for suspect in ctrl.getTeamNames($viewValue)"
+						typeahead-focus
+						typeahead-on-select="ctrl.onSelectTeam($item)"
+						typeahead-min-length="0"
+						typeahead-wait-ms="250"
+						autocomplete="off"
+						typeahead-no-results="noResults"
+						typeahead-editable="false"
+						required>
+				<p class="help-block"
+				   ng-if="configForm.teamName.$error.required">Please select
+					a valid team</p>
+			</div>
+		</form-group>
+
 		<div ng-hide="ctrl.hideEstimateMetricDropDown" class="col-sm-push-2 col-sm-8">
 			<label class="modal-label">Estimate Metric:</label> <select
 				name="estimateMetricType" class="form-control"
