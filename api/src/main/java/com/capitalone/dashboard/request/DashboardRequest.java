@@ -94,8 +94,8 @@ public class DashboardRequest {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-       // return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type , configurationItemApp, configurationItemComponent);
-        return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type);
+       return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type , configurationItemApp, configurationItemComponent);
+
 
     }
 

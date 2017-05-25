@@ -61,7 +61,7 @@ public class PipelineServiceTest {
         dashboardCollectorItemIds.add(dashboardCollectorItemId);
         request.setCollectorItemId(dashboardCollectorItemIds);
 
-        Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
+        Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2","ASVTEST","BAPTEST");
         dashboard.getWidgets().add(makePipelineWidget("Dev ENV", "QA Env", null, null, "Prod"));
         Widget buildWidget = new Widget();
         buildWidget.setName("build");
@@ -148,13 +148,13 @@ public class PipelineServiceTest {
 
     }
 
-    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, String... compNames) {
+    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, String configItemApp,String configItemComponent, String... compNames) {
         Application app = new Application(appName);
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
 
-        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team);
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemApp, configItemComponent);
         return dashboard;
     }
 

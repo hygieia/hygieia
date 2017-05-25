@@ -50,7 +50,7 @@ public class MethodLevelSecurityHandlerTest {
 	public void testIsOwnerOfDashboard_legacyDashFound() {
 		initiateSecurityContext();
 		
-		Dashboard dashboard = new Dashboard("team", "title", null, null, DashboardType.Team);
+		Dashboard dashboard = new Dashboard("team", "title", null, null, DashboardType.Team, "ASVTEST","BAPTEST");
 		dashboard.setOwner(USERNAME);
 		when(dashboardRepository.findOne(any(ObjectId.class))).thenReturn(dashboard);
 		
@@ -61,7 +61,7 @@ public class MethodLevelSecurityHandlerTest {
 	public void testIsOwnerOfDashboard_newDashFound() {
 		initiateSecurityContext();
 		
-		Dashboard dashboard = new Dashboard("team", "title", null, new Owner(USERNAME, AuthType.STANDARD), DashboardType.Team);
+		Dashboard dashboard = new Dashboard("team", "title", null, new Owner(USERNAME, AuthType.STANDARD), DashboardType.Team, "ASVTEST","BAPTEST");
 		when(dashboardRepository.findOne(any(ObjectId.class))).thenReturn(dashboard);
 		
 		assertTrue(handler.isOwnerOfDashboard(new ObjectId()));
@@ -71,7 +71,7 @@ public class MethodLevelSecurityHandlerTest {
 	public void testIsNotOwnerOfDashboard() {
 		initiateSecurityContext();
 		
-		Dashboard dashboard = new Dashboard("team", "title", null, null, DashboardType.Team);
+		Dashboard dashboard = new Dashboard("team", "title", null, null, DashboardType.Team, "ASVTEST","BAPTEST");
 		dashboard.setOwner(SOME_OTHER_USER);
 		when(dashboardRepository.findOne(any(ObjectId.class))).thenReturn(dashboard);
 		

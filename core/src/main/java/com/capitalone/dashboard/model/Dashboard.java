@@ -34,13 +34,12 @@ public class Dashboard extends BaseModel {
     private String configurationItemComponent;
     Dashboard() {
     }
-    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type) {
 
-    //public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, String configurationItemApp, String configurationItemComponent) {
+    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, String configurationItemApp, String configurationItemComponent) {
         this.template = template;
         this.title = title;
-//        this.configurationItemApp = configurationItemApp;
-//        this.configurationItemComponent = configurationItemComponent;
+        this.configurationItemApp = configurationItemApp;
+        this.configurationItemComponent = configurationItemComponent;
         this.application = application;
         this.type = type;
         this.owners.add(owner);

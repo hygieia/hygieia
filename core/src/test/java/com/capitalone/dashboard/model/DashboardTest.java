@@ -15,7 +15,7 @@ public class DashboardTest {
 
     @Test
     public void findEnvironmentMappings(){
-        Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
+        Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2","ASVTEST","BAPTEST");
         dashboard.getWidgets().add(makePipelineWidget("DEV", "QA", null, null, "PROD"));
         Widget buildWidget = new Widget();
         buildWidget.setName("build");
@@ -38,20 +38,20 @@ public class DashboardTest {
 
     @Test
     public void findEnvironmentMappings_no_mappings_configured(){
-        Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
+        Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2","ASVTEST","BAPTEST");
         Map<PipelineStage, String> expected = new HashMap<>();
 
         Map<PipelineStage, String> actual = PipelineUtils.getStageToEnvironmentNameMap(dashboard);
         assertEquals(expected, actual);
     }
 
-    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, String... compNames) {
+    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, String configItemApp,String configItemComponent, String... compNames) {
         Application app = new Application(appName);
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
 
-        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team);
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team,configItemApp, configItemComponent);
         return dashboard;
     }
 

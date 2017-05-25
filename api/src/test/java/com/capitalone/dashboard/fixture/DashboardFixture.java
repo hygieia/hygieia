@@ -37,7 +37,7 @@ import com.capitalone.dashboard.request.DashboardRequest;
  			application = new Application(appName, component);
  		}
  
- 		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type);
+ 		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type, "ASVTEST","BAPTEST");
  	}
  
  	public static Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {
