@@ -1,10 +1,11 @@
 package com.capitalone.dashboard.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A collection of widgets, collectors and application components that represent a software
@@ -30,16 +31,18 @@ public class Dashboard extends BaseModel {
 
     private Application application;
 
-    private String configurationItemApp;
-    private String configurationItemComponent;
+    private ObjectId configurationItemAppObjectId;
+
+    private ObjectId configurationItemComponentObjectId;
+
     Dashboard() {
     }
 
-    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, String configurationItemApp, String configurationItemComponent) {
+    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, ObjectId configurationItemAppObjectId, ObjectId configurationItemComponentObjectId) {
         this.template = template;
         this.title = title;
-        this.configurationItemApp = configurationItemApp;
-        this.configurationItemComponent = configurationItemComponent;
+        this.configurationItemAppObjectId = configurationItemAppObjectId;
+        this.configurationItemComponentObjectId = configurationItemComponentObjectId;
         this.application = application;
         this.type = type;
         this.owners.add(owner);
@@ -93,19 +96,19 @@ public class Dashboard extends BaseModel {
 
     public void setType(DashboardType type) { this.type = type; }
 
-    public String getConfigurationItemApp() {
-        return configurationItemApp;
+    public ObjectId getConfigurationItemAppObjectId() {
+        return configurationItemAppObjectId;
     }
 
-    public void setConfigurationItemApp(String configurationItemApp) {
-        this.configurationItemApp = configurationItemApp;
+    public void setConfigurationItemAppObjectId(ObjectId configurationItemAppObjectId) {
+        this.configurationItemAppObjectId = configurationItemAppObjectId;
     }
 
-    public String getConfigurationItemComponent() {
-        return configurationItemComponent;
+    public ObjectId getConfigurationItemComponentObjectId() {
+        return configurationItemComponentObjectId;
     }
 
-    public void setConfigurationItemComponent(String configurationItemComponent) {
-        this.configurationItemComponent = configurationItemComponent;
+    public void setConfigurationItemComponentObjectId(ObjectId configurationItemComponentObjectId) {
+        this.configurationItemComponentObjectId = configurationItemComponentObjectId;
     }
 }

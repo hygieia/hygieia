@@ -1,15 +1,12 @@
 package com.capitalone.dashboard.request;
 
+import com.capitalone.dashboard.auth.AuthenticationUtil;
+import com.capitalone.dashboard.model.*;
+import org.bson.types.ObjectId;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import com.capitalone.dashboard.auth.AuthenticationUtil;
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Owner;
 
 public class DashboardRequest {
     @NotNull
@@ -24,9 +21,9 @@ public class DashboardRequest {
 
     private String componentName;
 
-    private String configurationItemApp;
+    private ObjectId configurationItemAppObjectId;
 
-    private String configurationItemComponent;
+    private ObjectId configurationItemComponentObjectId;
 
     @NotNull
     @Size(min=1, message="Please select a type")
@@ -74,27 +71,27 @@ public class DashboardRequest {
 
     public void setType(String type) { this.type = type; }
 
-    public String getConfigurationItemApp() {
-        return configurationItemApp;
+    public ObjectId getConfigurationItemAppObjectId() {
+        return configurationItemAppObjectId;
     }
 
-    public void setConfigurationItemApp(String configurationItemApp) {
-        this.configurationItemApp = configurationItemApp;
+    public void setConfigurationItemAppObjectId(ObjectId configurationItemAppObjectId) {
+        this.configurationItemAppObjectId = configurationItemAppObjectId;
     }
 
-    public String getConfigurationItemComponent() {
-        return configurationItemComponent;
+    public ObjectId getConfigurationItemComponentObjectId() {
+        return configurationItemComponentObjectId;
     }
 
-    public void setConfigurationItemComponent(String configurationItemComponent) {
-        this.configurationItemComponent = configurationItemComponent;
+    public void setConfigurationItemComponentObjectId(ObjectId configurationItemComponentObjectId) {
+        this.configurationItemComponentObjectId = configurationItemComponentObjectId;
     }
 
     public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-       return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type , configurationItemApp, configurationItemComponent);
+       return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type , configurationItemAppObjectId, configurationItemComponentObjectId);
 
 
     }

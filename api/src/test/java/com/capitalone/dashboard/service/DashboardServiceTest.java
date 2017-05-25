@@ -77,7 +77,9 @@ public class DashboardServiceTest {
     @Test
     public void get() {
         ObjectId id = ObjectId.get();
-        Dashboard expected = makeTeamDashboard("template", "title", "AppName", "comp1", "ASVTEST","BAPTEST");
+        ObjectId configItemAppId = ObjectId.get();
+        ObjectId configItemComponentId = ObjectId.get();
+        Dashboard expected = makeTeamDashboard("template", "title", "AppName", "",configItemAppId,configItemComponentId,"comp1");
         when(dashboardRepository.findOne(id)).thenReturn(expected);
 
         assertThat(dashboardService.get(id), is(expected));
@@ -85,7 +87,9 @@ public class DashboardServiceTest {
 
     @Test
     public void create() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "title", "appName", "comp1", "comp2", "ASVTEST","BAPTEST");
+        ObjectId configItemAppId = ObjectId.get();
+        ObjectId configItemComponentId = ObjectId.get();
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "",configItemAppId,configItemComponentId,"comp1", "comp2");
 
         when(dashboardRepository.save(expected)).thenReturn(expected);
 
@@ -95,12 +99,14 @@ public class DashboardServiceTest {
 
     @Test
     public void create_dup_name_dash() throws HygieiaException {
-        Dashboard firstDash = makeTeamDashboard("template", "title", "appName", "johns", "comp1", "comp2", "ASVTEST","BAPTEST");
+        ObjectId configItemAppId = ObjectId.get();
+        ObjectId configItemComponentId = ObjectId.get();
+        Dashboard firstDash = makeTeamDashboard("template", "title", "appName", "johns",configItemAppId,configItemComponentId, "comp1", "comp2");
         when(dashboardRepository.save(firstDash)).thenReturn(firstDash);
         assertThat(dashboardService.create(firstDash), is(firstDash));
         verify(componentRepository, times(1)).save(firstDash.getApplication().getComponents());
 
-        Dashboard secondDash = makeTeamDashboard("template", "title", "appName", "johns", "comp1", "comp2", "ASVTEST","BAPTEST");
+        Dashboard secondDash = makeTeamDashboard("template", "title", "appName", "johns", configItemAppId,configItemComponentId,"comp1", "comp2");
 
         Throwable t = new Throwable();
         RuntimeException excep = new RuntimeException("Failed creating dashboard.", t);
@@ -121,7 +127,9 @@ public class DashboardServiceTest {
 
     @Test
     public void update() throws HygieiaException {
-        Dashboard expected = makeTeamDashboard("template", "title", "appName", "comp1", "comp2", "ASVTEST","BAPTEST");
+        ObjectId configItemAppId = ObjectId.get();
+        ObjectId configItemComponentId = ObjectId.get();
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "",configItemAppId,configItemComponentId,"comp1", "comp2");
 
         when(dashboardRepository.save(expected)).thenReturn(expected);
 
@@ -448,7 +456,9 @@ public class DashboardServiceTest {
     @Test
     public void delete() {
         ObjectId id = ObjectId.get();
-        Dashboard expected = makeTeamDashboard("template", "title", "appName", "comp1", "comp2", "ASVTEST","BAPTEST");
+        ObjectId configItemAppId = ObjectId.get();
+        ObjectId configItemComponentId = ObjectId.get();
+        Dashboard expected = makeTeamDashboard("template", "title", "appName", "",configItemAppId, configItemComponentId,"comp1", "comp2");
         when(dashboardRepository.findOne(id)).thenReturn(expected);
 
         List<Service> services = Arrays.asList(new Service());
@@ -470,7 +480,9 @@ public class DashboardServiceTest {
 
     @Test
     public void addWidget() {
-        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit", "ASVTEST","BAPTEST");
+        ObjectId configItemAppId = ObjectId.get();
+        ObjectId configItemComponentId = ObjectId.get();
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit", configItemAppId, configItemComponentId);
         Widget expected = new Widget();
 
         Widget actual = dashboardService.addWidget(d, expected);
@@ -485,7 +497,9 @@ public class DashboardServiceTest {
     @Test
     public void getWidget() {
         ObjectId widgetId = ObjectId.get();
-        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit", "ASVTEST","BAPTEST");
+        ObjectId configItemAppId = ObjectId.get();
+        ObjectId configItemComponentId = ObjectId.get();
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit", configItemAppId,configItemComponentId);
         Widget expected = new Widget();
         expected.setId(widgetId);
         d.getWidgets().add(expected);
@@ -496,7 +510,11 @@ public class DashboardServiceTest {
     @Test
     public void updateWidget() {
         ObjectId widgetId = ObjectId.get();
-        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit", "ASVTEST","BAPTEST");
+        ObjectId configItemAppId = ObjectId.get();
+        ObjectId configItemComponentId = ObjectId.get();
+
+
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit",configItemAppId, configItemComponentId);
         d.getWidgets().add(makeWidget(widgetId, "existing"));
         Widget expected = makeWidget(widgetId, "updated");
 
@@ -507,12 +525,12 @@ public class DashboardServiceTest {
         verify(dashboardRepository).save(d);
     }
 
-    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, String configItemApp,String configItemComponent, String... compNames) {
+    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, ObjectId configItemAppId,ObjectId configItemComponentId, String... compNames) {
         Application app = new Application(appName);
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemApp, configItemComponent);
+        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemAppId, configItemComponentId);
     }
 
     private Widget makeWidget(ObjectId id, String name) {

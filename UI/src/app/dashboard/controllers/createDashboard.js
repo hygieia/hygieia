@@ -10,7 +10,7 @@
         .controller('CreateDashboardController', CreateDashboardController);
 
     CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', 'userService', 'DashboardType','cmdbData'];
-    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType,cmdbData) {
+    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType, cmdbData) {
         var ctrl = this;
 
             // public variables
@@ -19,7 +19,8 @@
         ctrl.availableTemplates = [];
         ctrl.configurationItemApp = '';
         ctrl.configurationItemComponent = '';
-
+        ctrl.configurationItemAppId = "";
+        ctrl.configurationItemComponentId = "";
         // TODO: dynamically register templates with script
         ctrl.templates = [
             {value: 'capone', name: 'Cap One', type: DashboardType.TEAM},
@@ -35,6 +36,10 @@
         ctrl.templateFilter = templateFilter;
         ctrl.setAvailableTemplates = setAvailableTemplates;
         ctrl.getConfigItem = getConfigItem;
+        ctrl.setConfigItemAppId = setConfigItemAppId;
+        ctrl.setConfigItemComponentId = setConfigItemComponentId;
+        ctrl.getConfigItemAppId = getConfigItemAppId;
+        ctrl.getConfigItemComponentId = getConfigItemComponentId;
 
         (function() {
             var types = dashboardData.types();
@@ -82,6 +87,29 @@
             ctrl.availableTemplates = templates;
         }
 
+        function setConfigItemAppId(id){
+            ctrl.configurationItemAppId = id;
+        }
+
+        function getConfigItemAppId(){
+            var value = "";
+            if(ctrl.configurationItemApp){
+                value = ctrl.configurationItemAppId;
+            }
+            return value;
+        }
+
+        function setConfigItemComponentId(id){
+            ctrl.configurationItemComponentId = id;
+        }
+
+        function getConfigItemComponentId(){
+            var value = "";
+            if(ctrl.configurationItemComponent){
+                value = ctrl.configurationItemComponentId;
+            }
+            return value;
+        }
         // method implementations
         function submit(form) {
 
@@ -91,12 +119,12 @@
                 var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
                     submitData = {
                         template: document.cdf.selectedTemplate.value,
-                        title: document.cdf.dashboardTitle.value,
+                        title:  document.cdf.dashboardTitle.value,
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
-                        configurationItemApp: document.cdf.configurationItemApp.value,
-                        configurationItemComponent: document.cdf.configurationItemComponent.value
+                        configurationItemAppObjectId:  ctrl.getConfigItemAppId(),
+                        configurationItemComponentObjectId:  ctrl.getConfigItemComponentId()
                     };
 
                 dashboardData

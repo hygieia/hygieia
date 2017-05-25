@@ -29,10 +29,11 @@
                 ng-model="ctrl.configurationItemApp"
                 class="form-control"
                 placeholder="Select an App (Optional)"
-                uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue)"
+                uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue) "
                 typeahead-wait-ms="250" autocomplete="off"
                 typeahead-min-length="0"
                 typeahead-editable="false"
+                typeahead-on-select="ctrl.setConfigItemAppId(ctrl.configurationItemApp.id)"
                 typeahead-no-results="noResults" />
             <div class="form-control" ng-show="noResults">
                 No Results Found
@@ -50,6 +51,7 @@
                     typeahead-wait-ms="250" autocomplete="off"
                     typeahead-min-length="0"
                     typeahead-editable="false"
+                    typeahead-on-select="ctrl.setConfigItemComponentId(ctrl.configurationItemComponent.id)"
                     typeahead-no-results="noResults" />
             <div class="form-control" ng-show="noResults">
                 No Results Found
@@ -60,6 +62,7 @@
             <input
                 type="text"
                 name="dashboardTitle"
+                ng-model="ctrl.dashboardTitle"
                 class="form-control"
                 placeholder="Dashboard title"
                 required
