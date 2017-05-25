@@ -1,10 +1,16 @@
 package com.capitalone.dashboard.rest;
 
+
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.service.ScopeService;
+import com.capitalone.dashboard.util.PaginationHeaderUtility;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,10 +30,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 public class ScopeController {
 	private final ScopeService scopeService;
+	private PaginationHeaderUtility paginationHeaderUtility;
 
 	@Autowired
-	public ScopeController(ScopeService featureService) {
+	public ScopeController(ScopeService featureService,PaginationHeaderUtility paginationHeaderUtility) {
 		this.scopeService = featureService;
+		this.paginationHeaderUtility = paginationHeaderUtility;
 	}
 
 	/**
@@ -59,6 +67,7 @@ public class ScopeController {
 		return this.scopeService.getScopesByCollector(new ObjectId(collectorId));
 	}
 
+
 	/**
 	 * REST endpoint for retrieving all features for a given sprint and team
 	 * (the sprint is derived)
@@ -69,4 +78,21 @@ public class ScopeController {
 	public List<Scope> allScopes() {
 		return this.scopeService.getAllScopes();
 	}
+
+	/**
+	 *
+	 * @param collectorId, search criteria, pageable
+	 *
+	 * @return List of scope
+	 */
+	@RequestMapping(value = "/scopecollector/page/{collectorId}", method = GET, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Scope>> teamsByCollectorPage(
+			@PathVariable String collectorId,@RequestParam(value = "search", required = false, defaultValue = "") String descriptionFilter, @PageableDefault(size = Integer.MAX_VALUE) Pageable pageable) {
+		Page<Scope> pageOfScopeItems = scopeService.getScopeByCollectorWithFilter(new ObjectId(collectorId),descriptionFilter,pageable);
+		return ResponseEntity
+				.ok()
+				.headers(paginationHeaderUtility.buildPaginationHeaders(pageOfScopeItems))
+				.body(pageOfScopeItems.getContent());
+	}
+
 }
