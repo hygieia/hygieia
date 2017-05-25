@@ -156,7 +156,7 @@ public class DefaultHpsmClient implements HpsmClient {
 
                 }
             }
-
+			cmdb.setValid(true);
             boolean isApp = isTypeApp(cmdb);
 			if(isApp){
 				cmdb.setItemType("app");

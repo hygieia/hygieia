@@ -69,7 +69,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         long start = System.currentTimeMillis();
         int updatedCount = 0;
         int insertCount = 0;
-        int removedCount;
+        int inValidCount;
 
         cmdbList = hpsmClient.getApps();
 
@@ -93,12 +93,12 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
         }
 
-        removedCount = cleanUpOldCmdbItems(configurationItemNameList);
+        inValidCount = cleanUpOldCmdbItems(configurationItemNameList);
 
 
         LOG.info("Inserted Item Count: " + insertCount);
         LOG.info("Updated Item Count: " +  updatedCount);
-        LOG.info("Removed Item Count: " +  removedCount);
+        LOG.info("Invalid Item Count: " +  inValidCount);
         log("Finished", start);
     }
 
@@ -108,16 +108,17 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
      * @return return count of items removed
      */
     private int cleanUpOldCmdbItems(List<String> configurationItemNameList) {
-        int removedCount = 0;
+        int inValidCount = 0;
         for(Cmdb cmdb:  cmdbRepository.findAll()){
             String configItem = cmdb.getConfigurationItem();
 
             if(configurationItemNameList != null && !configurationItemNameList.contains(configItem)){
-                cmdbRepository.delete(cmdb);
-                removedCount++;
+                cmdb.setValid(false);
+                cmdbRepository.save(cmdb);
+                inValidCount++;
             }
         }
-        return removedCount;
+        return inValidCount;
     }
 
 }
