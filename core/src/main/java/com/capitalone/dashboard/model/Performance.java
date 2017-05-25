@@ -3,30 +3,26 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Document(collection="performance")
 public class Performance extends BaseModel{
 
     private ObjectId collectorItemId;
     private long timestamp;
-    private String url; // url of the tool's server.
+    private String url;
     private PerformanceType type;
-    private String version; // application version, environment version
-    private  ObjectId executionId; // optional: in case we have to tie it to a Jenkins build, for example
+    private String version;
+    private  ObjectId executionId;
+    private Map<String,Object> metrics = new HashMap<>();
 
-    // private Map<String, PerformanceMetric> metrics = new HashMap<>();
-    private Map<String, Set<PerformanceMetric>> instances = new HashMap<>();
-    //private Set<PerformanceMetric> metrics = new HashSet<>();
-
-
-
-    public Map<String, Set<PerformanceMetric>> getInstances() {
-        return instances;
+    public Map<String,Object> getMetrics() {
+        return metrics;
     }
 
-    public void setInstances(Map<String, Set<PerformanceMetric>> instances) {
-        this.instances = instances;
+    public void setMetrics(Map<String,Object> metrics) {
+        this.metrics = metrics;
     }
 
     public ObjectId getCollectorItemId() {
@@ -75,10 +71,6 @@ public class Performance extends BaseModel{
 
     public void setExecutionId(ObjectId executionId) {
         this.executionId = executionId;
-    }
-
-    public Set<PerformanceMetric> getMetrics(String instanceURL ) {
-        return instances.get(instanceURL);
     }
 
 }

@@ -202,7 +202,7 @@ public class NexusIQCollectorTask extends CollectorTask<NexusIQCollector> {
         for (NexusIQApplication application : applications) {
             if (!existingApplications.contains(application)) {
                 application.setCollectorId(collector.getId());
-                application.setEnabled(true);
+                application.setEnabled(false);
                 application.setLastUpdated(System.currentTimeMillis());
                 newApplications.add(application);
                 count++;

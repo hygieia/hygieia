@@ -1,10 +1,10 @@
 package com.capitalone.dashboard.config;
  
- import com.capitalone.dashboard.model.Performance;
- import com.capitalone.dashboard.service.Monitor2Service;
- import com.capitalone.dashboard.service.PerformanceService;
- import com.capitalone.dashboard.service.SystemConfigService;
- import org.mockito.Mockito;
+import com.capitalone.dashboard.service.LibraryPolicyService;
+import com.capitalone.dashboard.model.Performance;
+import com.capitalone.dashboard.service.Monitor2Service;
+import com.capitalone.dashboard.service.PerformanceService;
+import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -166,6 +166,11 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
      }
 
 	 @Bean
+	 public LibraryPolicyService libraryPolicyService() {
+		 return Mockito.mock(LibraryPolicyService.class);
+	 }
+
+	 @Bean
 	 public PerformanceService performanceService() {
 		 return Mockito.mock(PerformanceService.class);
 	 }
@@ -175,8 +180,4 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 		 return Mockito.mock(Monitor2Service.class);
 	 }
 
-	 @Bean
-	 public SystemConfigService systemConfigService(){
-		 return Mockito.mock(SystemConfigService.class);
-	 }
  }

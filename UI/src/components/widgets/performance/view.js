@@ -10,91 +10,91 @@
         var ctrl = this;
 
         ctrl.callsChartOptions = {
-          plugins: [
-            Chartist.plugins.gridBoundaries(),
-            Chartist.plugins.lineAboveArea(),
-            Chartist.plugins.pointHalo(),
-            Chartist.plugins.ctPointClick({
+            plugins: [
+                Chartist.plugins.gridBoundaries(),
+                Chartist.plugins.lineAboveArea(),
+                Chartist.plugins.pointHalo(),
+                Chartist.plugins.ctPointClick({
 
-            }),
-            Chartist.plugins.ctAxisTitle({
-              axisX: {
-                axisTitle: 'Timestamp',
-                axisClass: 'ct-axis-title',
-                offset: {
-                  x: 0,
-                  y: 50
-                },
-                textAnchor: 'middle'
-              }
-            }),
-            Chartist.plugins.ctPointLabels({
-              textAnchor: 'middle'
-            })
-          ],
-          //low: 0,
-          chartPadding: {
-            right: 35,
-            top: 20
-          },
-          showArea: true,
-          lineSmooth: false,
-          fullWidth: true,
-          axisY: {
-            allowDecimals: false,
-            offset: 30,
-            showGrid: true,
-            showLabel: true,
-            labelInterpolationFnc: function(value) {return Math.round(value * 100)/100;}
-          }
+                }),
+                Chartist.plugins.ctAxisTitle({
+                    axisX: {
+                        axisTitle: 'Timestamp',
+                        axisClass: 'ct-axis-title',
+                        offset: {
+                            x: 0,
+                            y: 50
+                        },
+                        textAnchor: 'middle'
+                    }
+                }),
+                Chartist.plugins.ctPointLabels({
+                    textAnchor: 'middle'
+                })
+            ],
+            //low: 0,
+            chartPadding: {
+                right: 35,
+                top: 20
+            },
+            showArea: true,
+            lineSmooth: false,
+            fullWidth: true,
+            axisY: {
+                allowDecimals: false,
+                offset: 30,
+                showGrid: true,
+                showLabel: true,
+                labelInterpolationFnc: function(value) {return Math.round(value * 100)/100;}
+            }
         };
 
         ctrl.errorsChartOptions = {
-          plugins: [
-            Chartist.plugins.gridBoundaries(),
-            Chartist.plugins.lineAboveArea(),
-            Chartist.plugins.pointHalo(),
-            Chartist.plugins.ctPointClick({
+            plugins: [
+                Chartist.plugins.gridBoundaries(),
+                Chartist.plugins.lineAboveArea(),
+                Chartist.plugins.pointHalo(),
+                Chartist.plugins.ctPointClick({
 
-            }),
-            Chartist.plugins.ctAxisTitle({
-              axisX: {
-                axisTitle: 'Timestamp',
-                axisClass: 'ct-axis-title',
-                offset: {
-                  x: 0,
-                  y: 50
-                },
-                textAnchor: 'middle'
-              }
-            }),
-            Chartist.plugins.ctPointLabels({
-              textAnchor: 'middle'
-            })
-          ],
-          //low: 0,
-          chartPadding: {
-            right: 35,
-            top: 20
-          },
-          showArea: true,
-          lineSmooth: false,
-          fullWidth: true,
-          axisY: {
-            allowDecimals: false,
-            offset: 30,
-            showGrid: true,
-            showLabel: true,
-            labelInterpolationFnc: function(value) {return Math.round(value * 100)/100;}
-          }
+                }),
+                Chartist.plugins.ctAxisTitle({
+                    axisX: {
+                        axisTitle: 'Timestamp',
+                        axisClass: 'ct-axis-title',
+                        offset: {
+                            x: 0,
+                            y: 50
+                        },
+                        textAnchor: 'middle'
+                    }
+                }),
+                Chartist.plugins.ctPointLabels({
+                    textAnchor: 'middle'
+                })
+            ],
+            //low: 0,
+            chartPadding: {
+                right: 35,
+                top: 20
+            },
+            showArea: true,
+            lineSmooth: false,
+            fullWidth: true,
+            axisY: {
+                allowDecimals: false,
+                offset: 30,
+                showGrid: true,
+                showLabel: true,
+                labelInterpolationFnc: function(value) {return Math.round(value * 100)/100;}
+            }
         };
 
         ctrl.pieOptions = {
-          donut: true,
-          donutWidth: 20,
-          startAngle: 270,
-          total: 200,
-          showLabel: false
+            donut: true,
+            donutWidth: 20,
+            startAngle: 270,
+            total: 200,
+            showLabel: false
         };
 
         ctrl.load = function() {
@@ -107,22 +107,22 @@
             console.log($scope.widgetConfig.componentId);
             var count =0;
             collectorData.itemsByType('appPerformance').then(function(data){
-              data.forEach(function(element){
-                if (element.enabled){
-                  ctrl.appname = element.description;
-                  ctrl.appID = element.options.appID;
-                  ctrl.appname2 = element.options.appName;
-                    count++;
-                }
+                data.forEach(function(element){
+                    if (element.enabled){
+                        ctrl.appname = element.description;
+                        ctrl.appID = element.options.appID;
+                        ctrl.appname2 = element.options.appName;
+                        count++;
+                    }
 
-              });
+                });
 
 
 
-              performanceData.appPerformance({componentId: $scope.widgetConfig.componentId}).then(function(data) {
-                  processResponse(data.result);
-                  deferred.resolve(data.lastUpdated);
-              });
+                performanceData.appPerformance({componentId: $scope.widgetConfig.componentId}).then(function(data) {
+                    processResponse(data.result);
+                    deferred.resolve(data.lastUpdated);
+                });
             });
             return deferred.promise;
         };
@@ -137,20 +137,20 @@
                 templateUrl: 'components/widgets/performance/detail.html',
                 size: 'lg',
                 resolve: {
-                  index: function(){
-                    return evt;
-                  },
-                  warnings: function(){
-                    return ctrl.warning;
-                  },
-                  good: function(){
-                    return ctrl.good;
-                  },
-                  bad: function(){
-                    return ctrl.bad;
-                  }
+                    index: function(){
+                        return evt;
+                    },
+                    warnings: function(){
+                        return ctrl.warning;
+                    },
+                    good: function(){
+                        return ctrl.good;
+                    },
+                    bad: function(){
+                        return ctrl.bad;
+                    }
                 }
-              });
+            });
         }
 
         function processResponse(data) {
@@ -172,47 +172,40 @@
             var bad = [];
 
 
-            var dart = _(data).sortBy('timeStamp').__wrapped__[0];
-            var inst = dart.instances;
-            var vals=[];
-            for(var key in inst) {
-                if(inst.hasOwnProperty(key)) {
-                    vals = inst[key];
-                }
-            }
+            var metrics = _(data).sortBy('timeStamp').__wrapped__[0].metrics;
             var collectorItemId = data[0];
             var cId = collectorItemId.collectorItemId;
-            collectorData.getCollecterItem(cId).then(function(result) {
+            collectorData.getCollectorItemById(cId).then(function(result) {
                     var res = result;
-                ctrl.appname = res.description;
+                    ctrl.appname = res.description;
                 }
             );
 
-            _(vals).forEach(function(innerelem){
-              if (innerelem.name === 'Business Transaction Health Percent'){
-                ctrl.businessavg = Math.round(innerelem.value*100 *10)/10;
-              }
-              if (innerelem.name === 'Node Health Percent'){
-                ctrl.nodeavg = Math.round(innerelem.value*100 *10)/10;
-              }
-              if (innerelem.name === 'Error Rate Severity'){
-                ctrl.errorvalue = innerelem.value;
-              }
-              if (innerelem.name === 'Response Time Severity'){
-                ctrl.responsevalue = innerelem.value;
-              }
-              if (innerelem.name === 'Violation Object'){
-                ctrl.violations = innerelem.value;
-              }
-            });
+            for(var metric in metrics) {
+                if (metric === 'businessTransactionHealthPercent'){
+                    ctrl.businessavg = Math.round(metrics[metric]*100 *10)/10;
+                }
+                if (metric === 'nodeHealthPercent'){
+                    ctrl.nodeavg = Math.round(metrics[metric]*100 *10)/10;
+                }
+                if (metric === 'errorRateSeverity'){
+                    ctrl.errorvalue = metrics[metric];
+                }
+                if (metric === 'responseTimeSeverity'){
+                    ctrl.responsevalue = metrics[metric];
+                }
+                if (metric === 'violationObject'){
+                    ctrl.violations = metrics[metric];
+                }
+            }
 
             ctrl.violations.forEach(function(element){
-              if (element.severity === "WARNING"){
-                if (element.incidentStatus === "OPEN") warnings.push(element);
-                else good.push(element);
-              }else {
-                bad.push(element);
-              }
+                if (element.severity === "WARNING"){
+                    if (element.incidentStatus === "OPEN") warnings.push(element);
+                    else good.push(element);
+                }else {
+                    bad.push(element);
+                }
             });
 
             ctrl.warning = warnings;
@@ -220,41 +213,38 @@
             ctrl.bad = bad;
 
             _(data).sortBy('timeStamp').reverse().forEach(function(element){
-              var metrictime = element.timestamp;
-              var mins = (metrictime/60000) % 60;
-              var hours = (((metrictime/60/60000) % 24) + 19) % 24;
+                var metrictime = element.timestamp;
+                var mins = (metrictime/60000) % 60;
+                var hours = (((metrictime/60/60000) % 24) + 19) % 24;
 
-                var inst = element.instances;
-                var vals=[];
-                for(var key in inst) {
-                    if(inst.hasOwnProperty(key)) {
-                        vals = inst[key];
+                var metrics = element.metrics;
+
+                for(var metric in metrics) {
+                    if (metric === "violationObject"){
+                        healthruleviolations.push({
+                            metrictime: metrictime,
+                            value: metrics[metric]});
+                    }
+                    if (metric === "errorsperMinute" && metrics[metric]>0){
+                        errorcount++;
+                        errorspm += metrics[metric];
+                        groupedErrorsData.push(metrics[metric]);
+                        errorlabels.push(Math.floor(hours) + ":" + Math.round(mins));
+                    }
+                    if (metric === 'errorRateSeverity'){
+                        ctrl.errorvalue = metrics[metric];
+                    }
+                    if (metric === "callsperMinute" && metrics[metric]>0){
+                        callcount++;
+                        callspm += metrics[metric];
+                        groupedCallsData.push(metrics[metric]);
+                        calllabels.push(Math.floor(hours) + ":" + Math.round(mins));
+                    }
+                    if (metric === "averageResponseTime" && metrics[metric]>0){
+                        responsecount++;
+                        responsetime += metrics[metric];
                     }
                 }
-
-                vals.forEach(function(innerelem){
-                if (innerelem.name === "Violation Object"){
-                  healthruleviolations.push({
-                    metrictime: metrictime,
-                    value: innerelem.value});
-                }
-                if (innerelem.name === "Errors per Minute" && innerelem.value>0){
-                  errorcount++;
-                  errorspm += innerelem.value;
-                  groupedErrorsData.push(innerelem.value);
-                  errorlabels.push(Math.floor(hours) + ":" + Math.round(mins));
-                }
-                if (innerelem.name === "Calls per Minute" && innerelem.value>0){
-                  callcount++;
-                  callspm += innerelem.value;
-                  groupedCallsData.push(innerelem.value);
-                  calllabels.push(Math.floor(hours) + ":" + Math.round(mins));
-                }
-                if (innerelem.name === "Average Response Time (ms)" && innerelem.value>0){
-                  responsecount++;
-                  responsetime += innerelem.value;
-                }
-              });
             });
             ctrl.healthruleviolations = healthruleviolations.slice(healthruleviolations.length-7, healthruleviolations.length);
             ctrl.groupedCallsData = groupedCallsData;
@@ -275,21 +265,21 @@
 
 
             ctrl.transactionHealthData = {
-              series: [ctrl.businessavg, 100-ctrl.businessavg]
+                series: [ctrl.businessavg, 100-ctrl.businessavg]
             };
 
             ctrl.nodeHealthData = {
-              series: [ctrl.nodeavg, 100-ctrl.nodeavg]
+                series: [ctrl.nodeavg, 100-ctrl.nodeavg]
             };
 
             ctrl.callsChartData = {
-              series: [groupedCallsData.slice(groupedCallsData.length-7, groupedCallsData.length)],
-              labels: calllabels.slice(calllabels.length-7, calllabels.length)
+                series: [groupedCallsData.slice(groupedCallsData.length-7, groupedCallsData.length)],
+                labels: calllabels.slice(calllabels.length-7, calllabels.length)
             };
 
             ctrl.errorsChartData = {
-              series: [groupedErrorsData.slice(groupedErrorsData.length-7, groupedErrorsData.length)],
-              labels: errorlabels.slice(errorlabels.length-7, errorlabels.length)
+                series: [groupedErrorsData.slice(groupedErrorsData.length-7, groupedErrorsData.length)],
+                labels: errorlabels.slice(errorlabels.length-7, errorlabels.length)
             };
         }
 

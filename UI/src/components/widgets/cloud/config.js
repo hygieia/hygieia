@@ -23,7 +23,7 @@
 
         function createCloudConfigItem(accountNumber,tagName,tagValue) {
             var item = {
-                collectorId: _.findWhere(ctrl.collectors, {collectorType: 'Cloud'}).id,
+                collectorId: _.filter(ctrl.collectors, {collectorType: 'Cloud'}).id,
                 options: {
                     accountNumber: accountNumber,
                     tagName: tagName,

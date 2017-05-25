@@ -3,6 +3,8 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.Team;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -29,5 +31,14 @@ public interface TeamService {
     DataResponse<Team> getTeam(ObjectId componentId, String teamId);
 
     List<Team> getTeamsByCollector(ObjectId collectorId);
+
+    /**
+     * Finds paged results of team items of a given collectorId, teamName, pageable
+     *
+     * @param  collectorId
+     * @param {@link org.springframework.data.domain.Pageable} object to determine which page to return
+     * @return team items matching the specified name
+     */
+    Page<Team> getTeamByCollectorWithFilter(ObjectId collectorId, String teamName, Pageable pageable);
 
 }

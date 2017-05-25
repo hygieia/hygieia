@@ -25,9 +25,10 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -42,7 +43,18 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
     private static final String METRIC_PATH_DELIMITER = "\\|";
     private final AppdynamicsSettings settings;
     private final RestOperations rest;
-
+    //overall metrics
+    private static final String ERRORS_PER_MINUTE = "errorsperMinute";
+    private static final String AVERAGE_RESPONSE_TIME = "averageResponseTime";
+    private static final String CALLS_PER_MINUTE = "callsperMinute";
+    private static final String RESPONSE_TIME_SEVERITY = "responseTimeSeverity";
+    private static final String BUSINESS_TRANSACTION_HEALTH = "businessTransactionHealthPercent";
+    private static final String NODE_HEALTH_PECENT = "nodeHealthPercent";
+    private static final String TOTAL_CALLS = "totalCalls";
+    private static final String TOTAL_ERRORS = "totalErrors";
+    private static final String VIOLATION_OBJECT = "violationObject";
+    private static final String ERROR_RATE_SEVERITY = "errorRateSeverity";
+    private static final String BUSINESS_TRANSACTION = "BUSINESS_TRANSACTION";
 
     @Autowired
     public DefaultAppdynamicsClient(AppdynamicsSettings settings, Supplier<RestOperations> restOperationsSupplier) {
@@ -116,15 +128,14 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
      * @return List of PerformanceMetrics used to populate the performance database
      */
     @Override
-    public List<PerformanceMetric> getPerformanceMetrics(AppdynamicsApplication application, String instanceUrl ) {
-        List<PerformanceMetric> metrics = new ArrayList<>();
+    public Map<String,Object> getPerformanceMetrics(AppdynamicsApplication application, String instanceUrl ) {
+        Map<String,Object> metrics = new HashMap<>();
 
-        metrics.addAll(getOverallMetrics(application, instanceUrl));
-        metrics.addAll(getCalculatedMetrics(metrics));
-        metrics.addAll(getHealthMetrics(application, instanceUrl));
-        metrics.addAll(getViolations(application, instanceUrl));
-        metrics.addAll(getSeverityMetrics(application, instanceUrl));
-
+        metrics.putAll(getOverallMetrics(application, instanceUrl));
+        metrics.putAll(getCalculatedMetrics(metrics));
+        metrics.putAll(getHealthMetrics(application, instanceUrl));
+        metrics.putAll(getViolations(application, instanceUrl));
+        metrics.putAll(getSeverityMetrics(application, instanceUrl));
         return metrics;
     }
 
@@ -135,8 +146,8 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
      * @param application the current application. Used to provide access to appID/name
      * @return List of PerformanceMetrics used to populate the performance database
      */
-    private List<PerformanceMetric> getOverallMetrics(AppdynamicsApplication application, String instanceUrl) {
-        List<PerformanceMetric> overallMetrics = new ArrayList<>();
+    private Map<String,Long> getOverallMetrics(AppdynamicsApplication application, String instanceUrl) {
+        Map<String,Long> overallMetrics = new HashMap<>();
         try {
             String url = joinURL(instanceUrl, String.format(OVERALL_METRIC_PATH, application.getAppID(), URLEncoder.encode(OVERALL_SUFFIX, "UTF-8"), String.valueOf(settings.getTimeWindow())));
             ResponseEntity<String> responseEntity = makeRestCall(url);
@@ -153,9 +164,12 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                     Long metricValue = getLong(mObj, "value");
 
                     PerformanceMetric metric = new PerformanceMetric();
-                    metric.setName(parseMetricName(metricPath));
-                    metric.setValue(metricValue);
-                    overallMetrics.add(metric);
+                    String metricName = parseMetricName(metricPath);
+                    if(in(metricName,CALLS_PER_MINUTE,ERRORS_PER_MINUTE,AVERAGE_RESPONSE_TIME)){
+                        metric.setName(parseMetricName(metricPath));
+                        metric.setValue(metricValue);
+                        overallMetrics.put(parseMetricName(metricPath),metricValue);
+                    }
                 }
             } catch (ParseException | RestClientException e) {
                 LOG.error("Parsing metrics for : " + instanceUrl + ". Application =" + application.getAppName(), e);
@@ -172,34 +186,30 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
      * @param metrics the already-populated list of metrics. We use this data to calculate new values.
      * @return List of PerformanceMetrics used to populate the performance database
      */
-    private List<PerformanceMetric> getCalculatedMetrics(List<PerformanceMetric> metrics) {
+    private Map<String,Long> getCalculatedMetrics(Map<String,Object> metrics) {
 
         long errorsPerMinVal = 0;
         long callsPerMinVal = 0;
-        List<PerformanceMetric> calculatedMetrics = new ArrayList<>();
-        for (PerformanceMetric cm : metrics) {
-            if (cm.getName().equals("Errors per Minute")) {
-                errorsPerMinVal = (long) cm.getValue();
+        Map<String,Long> calculatedMetrics = new HashMap<>();
+        Iterator it = metrics.keySet().iterator();
+        while(it.hasNext()){
+            String key = (String)it.next();
+            if(key.equals(ERRORS_PER_MINUTE)){
+                errorsPerMinVal = (long) metrics.get(key);
             }
-            if (cm.getName().equals("Calls per Minute")) {
-                callsPerMinVal = (long) cm.getValue();
-            }
-        }
 
+            if(key.equals(CALLS_PER_MINUTE)){
+                callsPerMinVal = (long) metrics.get(key);
+            }
+
+        }
         // Total Errors
-        PerformanceMetric metric = new PerformanceMetric();
-        metric.setName("Total Errors");
         // Right now the timeframe is hard-coded to 15 min. Change this if that changes.
-        metric.setValue(errorsPerMinVal * 15);
-        calculatedMetrics.add(metric);
+        calculatedMetrics.put(TOTAL_ERRORS,errorsPerMinVal * 15);
 
         // Total Calls
-        metric = new PerformanceMetric();
-        metric.setName("Total Calls");
         // Right now the timeframe is hard-coded to 15 min. Change this if that changes.
-        metric.setValue(callsPerMinVal * 15);
-        calculatedMetrics.add(metric);
-
+        calculatedMetrics.put(TOTAL_CALLS,callsPerMinVal * 15);
 
         return calculatedMetrics;
     }
@@ -209,7 +219,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
      * @param application the current application. Used to provide access to appID/name
      * @return List of two PerformanceMetrics that contain info about the health percents
      */
-    private List<PerformanceMetric> getHealthMetrics(AppdynamicsApplication application, String instanceUrl ) {
+    private Map<String,Object> getHealthMetrics(AppdynamicsApplication application, String instanceUrl ) {
         // business health percent
         long numNodeViolations = 0;
         long numBusinessViolations = 0;
@@ -218,7 +228,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         double nodeHealthPercent = 0.0;
         double businessHealthPercent = 0.0;
 
-        List<PerformanceMetric> healthMetrics = new ArrayList<>();
+        Map<String,Object> healthMetrics = new HashMap<>();
 
         try {
             // GET NUMBER OF VIOLATIONS OF EACH TYPE
@@ -243,7 +253,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                 if (entityType.equals("APPLICATION_COMPONENT_NODE")) {
                     numNodeViolations++;
 
-                } else if (entityType.equals("BUSINESS_TRANSACTION")) {
+                } else if (entityType.equals(BUSINESS_TRANSACTION)) {
                     numBusinessViolations++;
 
                 }
@@ -278,20 +288,13 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         if (numNodes != 0)
             nodeHealthPercent = Math.floor(100.0 * (1.0 - ((double) (numNodeViolations) / (double) (numNodes)))) / 100.0;
 
-        PerformanceMetric metric = new PerformanceMetric();
-        metric.setName("Node Health Percent");
         // Right now the timeframe is hard-coded to 15 min. Change this if that changes.
-        metric.setValue(nodeHealthPercent);
-        healthMetrics.add(metric);
+        healthMetrics.put(NODE_HEALTH_PECENT,nodeHealthPercent);
 
         // Business health percent is just 1 - (num business transaction violations / num business transactions)
         if (numBusinessTransactions != 0)
             businessHealthPercent = Math.floor(100.0 * (1.0 - ((double) (numBusinessViolations) / (double) (numBusinessTransactions)))) / 100.0;
-
-        metric = new PerformanceMetric();
-        metric.setName("Business Transaction Health Percent");
-        metric.setValue(businessHealthPercent);
-        healthMetrics.add(metric);
+        healthMetrics.put(BUSINESS_TRANSACTION_HEALTH,businessHealthPercent);
 
         return healthMetrics;
     }
@@ -303,8 +306,8 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
      * @param application the current application. Used to provide access to appID/name
      * @return Single element list, value is the raw JSON object of the health violations
      */
-    private List<PerformanceMetric> getViolations(AppdynamicsApplication application, String instanceUrl ) {
-        List<PerformanceMetric> violationObjects = new ArrayList<>();
+    private Map<String,Object> getViolations(AppdynamicsApplication application, String instanceUrl ) {
+        Map<String,Object> violationObjects = new HashMap<>();
 
         try {
             String url = joinURL(instanceUrl, String.format(HEALTH_VIOLATIONS_PATH, application.getAppID()));
@@ -314,12 +317,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
             JSONArray array = (JSONArray) parser.parse(returnJSON);
 
-            PerformanceMetric violationObject = new PerformanceMetric();
-            violationObject.setName("Violation Object");
-
-            violationObject.setValue(array);
-            violationObjects.add(violationObject);
-
+            violationObjects.put(VIOLATION_OBJECT,array);
         } catch (MalformedURLException e) {
             LOG.error("client exception loading applications", e);
         } catch (ParseException e) {
@@ -339,12 +337,12 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
      * @param application the current application. Used to provide access to appID/name
      * @return List of two PerformanceMetrics that contain info about the severities
      */
-    private List<PerformanceMetric> getSeverityMetrics(AppdynamicsApplication application, String instanceUrl ) {
+    private Map<String,Object> getSeverityMetrics(AppdynamicsApplication application, String instanceUrl ) {
 
         long responseTimeSeverity = 0;
         long errorRateSeverity = 0;
 
-        List<PerformanceMetric> severityMetrics = new ArrayList<>();
+        Map<String,Object> severityMetrics = new HashMap<>();
 
         try {
             // NUMBER OF VIOLATIONS
@@ -355,7 +353,6 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
 
             JSONArray array = (JSONArray) parser.parse(returnJSON);
 
-
             for (Object entry : array) {
                 JSONObject jsonEntry = (JSONObject) entry;
                 JSONObject affEntityObj = (JSONObject) jsonEntry.get("affectedEntityDefinition");
@@ -363,7 +360,7 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
                 String entityType = getString(affEntityObj, "entityType");
 
 
-                if (entityType.equals("BUSINESS_TRANSACTION")) {
+                if (entityType.equals(BUSINESS_TRANSACTION)) {
 
                     long severity = getString(jsonEntry, "severity").equals("CRITICAL") ? 2 : 1;
 
@@ -379,45 +376,48 @@ public class DefaultAppdynamicsClient implements AppdynamicsClient {
         } catch (ParseException e) {
             LOG.error("client exception loading applications", e);
         }
-
-        PerformanceMetric metric = new PerformanceMetric();
-        metric.setName("Error Rate Severity");
-        metric.setValue(errorRateSeverity);
-        severityMetrics.add(metric);
-
-        metric = new PerformanceMetric();
-        metric.setName("Response Time Severity");
-        metric.setValue(responseTimeSeverity);
-        severityMetrics.add(metric);
-
-
+        severityMetrics.put(ERROR_RATE_SEVERITY,errorRateSeverity);
+        severityMetrics.put(RESPONSE_TIME_SEVERITY,responseTimeSeverity);
         return severityMetrics;
-
     }
 
     private String parseMetricName(String metricPath) {
         String[] arr = metricPath.split(METRIC_PATH_DELIMITER);
         if (arr == null) return "";
-        return arr[arr.length - 1];
+        String metricName =   arr[arr.length - 1].replaceAll(" ","");
+        metricName = metricName.replaceAll("\\(ms\\)","");
+        metricName  = StringUtils.capitalize(metricName);
+        metricName = Character.toLowerCase(metricName.charAt(0)) + metricName.substring(1);
+        return  metricName;
+    }
+
+    private boolean in(String suspect,String ... obj){
+        for (String string:obj) {
+            if(string.equalsIgnoreCase(suspect)){
+                return  true;
+            }
+        }
+        return false;
     }
 
     protected ResponseEntity<String> makeRestCall(String sUrl) throws MalformedURLException {
         URI thisuri = URI.create(sUrl);
         String userInfo = thisuri.getUserInfo();
-
+        ResponseEntity<String> response = null;
         //get userinfo from URI or settings (in spring properties)
         if (StringUtils.isEmpty(userInfo) && (this.settings.getUsername() != null) && (this.settings.getPassword() != null)) {
             userInfo = this.settings.getUsername() + ":" + this.settings.getPassword();
         }
         // Basic Auth only.
         if (StringUtils.isNotEmpty(userInfo)) {
-            return rest.exchange(thisuri, HttpMethod.GET,
+            response =  rest.exchange(thisuri, HttpMethod.GET,
                     new HttpEntity<>(createHeaders(userInfo)),
                     String.class);
         } else {
-            return rest.exchange(thisuri, HttpMethod.GET, null,
+            response =  rest.exchange(thisuri, HttpMethod.GET, null,
                     String.class);
         }
+        return response;
 
     }
 
