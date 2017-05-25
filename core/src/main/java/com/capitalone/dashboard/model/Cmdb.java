@@ -28,6 +28,7 @@ public class Cmdb {
     private String ownerDept;
     private String commonName;
     private String itemType;
+    private boolean isValid;
 
     public ObjectId getId() {
         return id;
@@ -171,6 +172,14 @@ public class Cmdb {
 
     public void setDevelopmentOwnerUserName(String developmentOwnerUserName) {
         this.developmentOwnerUserName = developmentOwnerUserName;
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public void setValid(boolean valid) {
+        isValid = valid;
     }
 
     @Override
