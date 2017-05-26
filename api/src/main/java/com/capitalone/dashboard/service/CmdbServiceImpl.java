@@ -36,4 +36,9 @@ public class CmdbServiceImpl implements CmdbService {
         Cmdb cmdb = cmdbRepository.findOne(objectId);
         return cmdb;
     }
+    @Override
+    public Cmdb configurationItemByConfigurationItem(String configItem){
+        Cmdb cmdbItem= cmdbRepository.findAllByConfigurationItemContainingIgnoreCase(configItem);
+        return cmdbItem;
+    }
 }

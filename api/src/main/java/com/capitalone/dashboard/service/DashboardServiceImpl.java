@@ -1,37 +1,22 @@
 package com.capitalone.dashboard.service;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
 import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.UserInfoRepository;
+import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.util.UnsafeDeleteException;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.capitalone.dashboard.auth.AuthenticationUtil;
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.repository.CollectorItemRepository;
-import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.CustomRepositoryQuery;
-import com.capitalone.dashboard.repository.DashboardRepository;
-import com.capitalone.dashboard.repository.PipelineRepository;
-import com.capitalone.dashboard.repository.ServiceRepository;
-import com.capitalone.dashboard.util.UnsafeDeleteException;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import java.util.*;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -92,7 +77,31 @@ public class DashboardServiceImpl implements DashboardService {
 
         return dashboard;
     }
+    @Override
+    public DataResponse<Iterable<Dashboard>> getByApp(String app) {
+        Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(app);
 
+        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemAppObjectId(cmdb.getId());
+
+        return new DataResponse<>(rt, System.currentTimeMillis());
+    }
+    @Override
+    public DataResponse<Iterable<Dashboard>> getByComponent(String component) {
+        Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(component);
+
+        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemComponentObjectId(cmdb.getId());
+
+        return new DataResponse<>(rt, System.currentTimeMillis());
+    }
+    @Override
+    public DataResponse<Iterable<Dashboard>> getByComponentAndApp(String component, String app) {
+        Cmdb cmdbCompItem =  cmdbService.configurationItemByConfigurationItem(component);
+        Cmdb cmdbAppItem =  cmdbService.configurationItemByConfigurationItem(app);
+
+        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemComponentObjectIdAndConfigurationItemAppObjectId(cmdbCompItem.getId(), cmdbAppItem.getId());
+
+        return new DataResponse<>(rt, System.currentTimeMillis());
+    }
     @Override
     public Dashboard create(Dashboard dashboard) throws HygieiaException {
         Iterable<Component> components = componentRepository.save(dashboard.getApplication().getComponents());

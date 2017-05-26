@@ -17,7 +17,18 @@ public interface CmdbService {
     Page<Cmdb> configurationItemsByTypeWithFilter(String configItemType, String filter, Pageable pageable);
 
     String configurationItemNameByObjectId(ObjectId objectId);
-
+    /**
+     *  returns Cmdb object based on object Id
+     * @param objectId App or Component object Id
+     * @return Cmdb
+     */
     Cmdb configurationItemsByObjectId(ObjectId objectId);
+
+    /**
+     *  returns Cmdb object based on Configuration Item name
+     * @param configItem App or Component
+     * @return Cmdb
+     */
+    Cmdb configurationItemByConfigurationItem(String configItem);
 
 }

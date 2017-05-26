@@ -1,25 +1,19 @@
 package com.capitalone.dashboard.rest;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.validation.Valid;
-
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.UserInfo;
-import com.capitalone.dashboard.model.UserRole;
+import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.request.DashboardRequest;
+import com.capitalone.dashboard.request.DashboardRequestTitle;
+import com.capitalone.dashboard.request.WidgetRequest;
+import com.capitalone.dashboard.service.DashboardService;
 import com.google.common.collect.Lists;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,16 +21,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Widget;
-import com.capitalone.dashboard.model.WidgetResponse;
-import com.capitalone.dashboard.request.DashboardRequest;
-import com.capitalone.dashboard.request.DashboardRequestTitle;
-import com.capitalone.dashboard.request.WidgetRequest;
-import com.capitalone.dashboard.service.DashboardService;
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 public class DashboardController {
@@ -76,6 +67,21 @@ public class DashboardController {
         return dashboardService.get(id);
     }
 
+    @RequestMapping(value = "/dashboard/configItemApp/{configItem}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public DataResponse<Iterable<Dashboard>> getDashboardByApp(@PathVariable String configItem) {
+        return dashboardService.getByApp(configItem);
+    }
+    @RequestMapping(value = "/dashboard/configItemComponent/{configItem}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public DataResponse<Iterable<Dashboard>> getDashboardByComp(@PathVariable String configItem) {
+        return dashboardService.getByComponent(configItem);
+    }
+    @RequestMapping(value = "/dashboard/configItemComponentAndApp/{configItemComp}/{configItemApp}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public DataResponse<Iterable<Dashboard>> getDashboardByCompAndApp(@PathVariable String configItemComp,@PathVariable String configItemApp) {
+        return dashboardService.getByComponentAndApp(configItemComp,configItemApp);
+    }
     @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateDashboard(@PathVariable ObjectId id,
