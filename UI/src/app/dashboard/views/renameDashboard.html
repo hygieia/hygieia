@@ -15,7 +15,41 @@
                     ng-pattern="/^[a-zA-Z0-9 ]*$/"/>
             <span class="text-danger"></span>
         </form-group>
+        <form-group  input="configurationItemApp" novalidate>
+            <input
+                    type="text"
+                    name="configurationItemApp"
+                    ng-model="ctrl.configurationItemApp"
+                    class="form-control"
+                    placeholder="Select an App (Optional)"
+                    uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue) "
+                    typeahead-wait-ms="250" autocomplete="off"
+                    typeahead-min-length="0"
+                    typeahead-editable="false"
+                    typeahead-on-select="ctrl.setConfigItemAppId(ctrl.configurationItemApp.id)"
+                    typeahead-no-results="noResults" />
+            <div class="form-control" ng-show="noResults">
+                No Results Found
+            </div>
+        </form-group>
 
+        <form-group input="configurationItemComponent" novalidate>
+            <input
+                    type="text"
+                    name="configurationItemComponent"
+                    ng-model="ctrl.configurationItemComponent"
+                    class="form-control"
+                    placeholder="Select a Component (Optional)"
+                    uib-typeahead="configItemComp as configItemComp.configurationItem for configItemComp in ctrl.getConfigItem('component',$viewValue)"
+                    typeahead-wait-ms="250" autocomplete="off"
+                    typeahead-min-length="0"
+                    typeahead-editable="false"
+                    typeahead-on-select="ctrl.setConfigItemComponentId(ctrl.configurationItemComponent.id)"
+                    typeahead-no-results="noResults" />
+            <div class="form-control" ng-show="noResults">
+                No Results Found
+            </div>
+        </form-group>
         <label class="modal-label">Add/Remove Owners</label>
         <div class="widget-modal-body" style="width: 500px;height: 300px;overflow: auto;">
             <div class="row">

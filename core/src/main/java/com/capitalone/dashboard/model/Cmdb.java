@@ -220,7 +220,7 @@ public class Cmdb {
     @Override
     public String toString() {
 
-        StringBuffer buf = new StringBuffer(188);
+        StringBuffer buf = new StringBuffer(200);
         buf.append("configurationItem: ")
                 .append(configurationItem)
                 .append("\nassignmentGroup: ")
@@ -240,7 +240,9 @@ public class Cmdb {
                 .append("\nconfigurationItemSubType: ")
                 .append(configurationItemSubType)
                 .append("\nconfigurationItemType: ")
-                .append(configurationItemType);
+                .append(configurationItemType)
+                .append("\nisValid: ")
+                .append(isValid);
 
         return buf.toString();
     }

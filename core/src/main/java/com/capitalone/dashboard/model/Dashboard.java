@@ -31,9 +31,17 @@ public class Dashboard extends BaseModel {
 
     private Application application;
 
+    private String configurationItemAppName;
+
+    private String configurationItemCompName;
+
     private ObjectId configurationItemAppObjectId;
 
     private ObjectId configurationItemComponentObjectId;
+
+    private boolean validAppName;
+
+    private boolean validCompName;
 
     Dashboard() {
     }
@@ -96,6 +104,22 @@ public class Dashboard extends BaseModel {
 
     public void setType(DashboardType type) { this.type = type; }
 
+    public String getConfigurationItemAppName() {
+        return configurationItemAppName;
+    }
+
+    public void setConfigurationItemAppName(String configurationItemAppName) {
+        this.configurationItemAppName = configurationItemAppName;
+    }
+
+    public String getConfigurationItemCompName() {
+        return configurationItemCompName;
+    }
+
+    public void setConfigurationItemCompName(String configurationItemCompName) {
+        this.configurationItemCompName = configurationItemCompName;
+    }
+
     public ObjectId getConfigurationItemAppObjectId() {
         return configurationItemAppObjectId;
     }
@@ -110,5 +134,21 @@ public class Dashboard extends BaseModel {
 
     public void setConfigurationItemComponentObjectId(ObjectId configurationItemComponentObjectId) {
         this.configurationItemComponentObjectId = configurationItemComponentObjectId;
+    }
+
+    public boolean isValidAppName() {
+        return validAppName;
+    }
+
+    public void setValidAppName(boolean validAppName) {
+        this.validAppName = validAppName;
+    }
+
+    public boolean isValidCompName() {
+        return validCompName;
+    }
+
+    public void setValidCompName(boolean validCompName) {
+        this.validCompName = validCompName;
     }
 }

@@ -11,8 +11,7 @@ import java.util.Set;
 
 import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
 import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
-import com.capitalone.dashboard.model.UserInfo;
-import com.capitalone.dashboard.model.UserRole;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.UserInfoRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -22,15 +21,6 @@ import org.springframework.stereotype.Service;
 
 import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -55,6 +45,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
     private final UserInfoRepository userInfoRepository;
+    private final CmdbService cmdbService;
 
     @Autowired
     public DashboardServiceImpl(DashboardRepository dashboardRepository,
@@ -64,7 +55,8 @@ public class DashboardServiceImpl implements DashboardService {
                                 CustomRepositoryQuery customRepositoryQuery,
                                 ServiceRepository serviceRepository,
                                 PipelineRepository pipelineRepository,
-                                UserInfoRepository userInfoRepository) {
+                                UserInfoRepository userInfoRepository,
+                                CmdbService cmdbService) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
@@ -73,6 +65,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.serviceRepository = serviceRepository;
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
         this.userInfoRepository = userInfoRepository;
+        this.cmdbService = cmdbService;
     }
 
     @Override
@@ -285,13 +278,18 @@ public class DashboardServiceImpl implements DashboardService {
 	@Override
 	public List<Dashboard> getOwnedDashboards() {
 		Set<Dashboard> myDashboards = new HashSet<Dashboard>();
-		
+
 		Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-		myDashboards.addAll(dashboardRepository.findByOwners(owner));
-		
+        List<Dashboard> findByOwnersList = dashboardRepository.findByOwners(owner);
+		getAppAndComponentNames(findByOwnersList);
+        myDashboards.addAll(findByOwnersList);
+       
 		// TODO: This if check is to ensure backwards compatibility for dashboards created before AuthenticationTypes were introduced.
 		if (AuthenticationUtil.getAuthTypeFromContext() == AuthType.STANDARD) {
-			myDashboards.addAll(dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext()));
+
+            List<Dashboard> findByOwnersListOld = dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext());
+            getAppAndComponentNames(findByOwnersListOld);
+			myDashboards.addAll(findByOwnersListOld);
 		}
 		
 		return Lists.newArrayList(myDashboards);
@@ -376,5 +374,24 @@ public class DashboardServiceImpl implements DashboardService {
         return component;
     }
 
+    private void getAppAndComponentNames(List<Dashboard> findByOwnersList) {
+        for(Dashboard dashboard: findByOwnersList){
+
+
+            ObjectId appObjectId = dashboard.getConfigurationItemAppObjectId();
+            ObjectId compObjectId = dashboard.getConfigurationItemComponentObjectId();
+            if(appObjectId != null && !"".equals(appObjectId)){
+
+                Cmdb cmdb =  cmdbService.configurationItemsByObjectId(appObjectId);
+                dashboard.setConfigurationItemAppName(cmdb.getConfigurationItem());
+                dashboard.setValidAppName(cmdb.isValid());
+            }
+            if(compObjectId != null && !"".equals(compObjectId)){
+                Cmdb cmdb = cmdbService.configurationItemsByObjectId(compObjectId);
+                dashboard.setConfigurationItemCompName(cmdb.getConfigurationItem());
+                dashboard.setValidCompName(cmdb.isValid());
+            }
+        }
+    }
 
 }

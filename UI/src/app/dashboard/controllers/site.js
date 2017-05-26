@@ -34,6 +34,8 @@
         ctrl.filterNotOwnedList = filterNotOwnedList;
         ctrl.filterDashboards = filterDashboards;
         ctrl.renameDashboard = renameDashboard;
+        ctrl.conCatTitle = conCatTitle;
+        ctrl.getInvalidAppOrCompError = getInvalidAppOrCompError;
 
         if (userService.isAdmin()) {
             ctrl.myadmin = true;
@@ -128,6 +130,7 @@
             // add dashboards to list
             ctrl.dashboards = [];
             var dashboards = [];
+
             for (var x = 0; x < data.length; x++) {
                 var board = {
                     id: data[x].id,
@@ -140,7 +143,6 @@
                 }
                 dashboards.push(board);
             }
-
             ctrl.dashboards = dashboards;
         }
 
@@ -153,12 +155,16 @@
             // add dashboards to list
             ctrl.mydash = [];
             var dashboards = [];
+
             for (var x = 0; x < mydata.length; x++) {
 
                 dashboards.push({
                     id: mydata[x].id,
-                    name: mydata[x].title,
+                    name: ctrl.conCatTitle(mydata[x]),
                     type: mydata[x].type,
+                    validAppName:  mydata[x].validAppName,
+                    validCompName: mydata[x].validCompName,
+                    showError: ctrl.getInvalidAppOrCompError(mydata[x]),
                     isProduct: mydata[x].type && mydata[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
                 });
             }
@@ -205,6 +211,20 @@
             ctrl.dashboards = uniqueArray;
         }
     }
+    function conCatTitle(data){
+        var configurationItemAppName = data.configurationItemAppName ?  "-" +data.configurationItemAppName : "";
+        var configurationItemCompName = data.configurationItemCompName ?  "-" +data.configurationItemCompName : "";
+        var title = data.title;
 
+        return title + configurationItemAppName + configurationItemCompName;
+    }
+    function getInvalidAppOrCompError(data){
+        var showError = false;
+
+        if((data.configurationItemAppName != undefined && !data.validAppName) || (data.configurationItemCompName != undefined && !data.validCompName)){
+            showError = true;
+        }
+        return showError;
+    }
 
 })();

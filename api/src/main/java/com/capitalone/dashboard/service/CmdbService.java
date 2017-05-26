@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.Cmdb;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,5 +16,8 @@ public interface CmdbService {
      */
     Page<Cmdb> configurationItemsByTypeWithFilter(String configItemType, String filter, Pageable pageable);
 
+    String configurationItemNameByObjectId(ObjectId objectId);
+
+    Cmdb configurationItemsByObjectId(ObjectId objectId);
 
 }

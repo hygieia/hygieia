@@ -73,7 +73,9 @@
 
                                     <a class="btn-block clickable" ng-click="ctrl.open(myitem.id)">
                                         <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : myitem.isProduct}"></span>
-                                        {{ myitem.name }}
+                                        <span ng-class="{'text-danger' : myitem.showError}">
+                                            {{ myitem.name | trunText:25}}
+                                        </span>
                                     </a>
                                 </li>
                             </ul>

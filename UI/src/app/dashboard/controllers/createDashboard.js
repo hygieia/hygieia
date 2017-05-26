@@ -92,7 +92,7 @@
         }
 
         function getConfigItemAppId(){
-            var value = "";
+            var value = null;
             if(ctrl.configurationItemApp){
                 value = ctrl.configurationItemAppId;
             }
@@ -104,7 +104,7 @@
         }
 
         function getConfigItemComponentId(){
-            var value = "";
+            var value = null;
             if(ctrl.configurationItemComponent){
                 value = ctrl.configurationItemComponentId;
             }

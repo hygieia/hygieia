@@ -2,6 +2,7 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.repository.CmdbRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,5 +26,14 @@ public class CmdbServiceImpl implements CmdbService {
 
         return configItemString;
     }
-
+    @Override
+    public String configurationItemNameByObjectId(ObjectId objectId){
+        Cmdb cmdb = configurationItemsByObjectId(objectId);
+        return cmdb.getConfigurationItem();
+    }
+    @Override
+    public Cmdb configurationItemsByObjectId(ObjectId objectId){
+        Cmdb cmdb = cmdbRepository.findOne(objectId);
+        return cmdb;
+    }
 }
