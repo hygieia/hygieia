@@ -31,8 +31,8 @@ The following components are required to run Hygieia℠:
          switched to db dashboarddb
          > db.createUser(
                   {
-                    user: "dashboarduser",
-                    pwd: "dbpassword",
+                    user: "db",
+                    pwd: "dbpass",
                     roles: [
                        {role: "readWrite", db: "dashboard"}
                             ]
@@ -42,7 +42,7 @@ The following components are required to run Hygieia℠:
                     Output similar to below should be seen in your mongo shell
                     
                 Successfully added user: {
-                  "user" : "dashboarduser",
+                  "user" : "db",
                   "roles" : [
                   {
                     "role" : "readWrite",

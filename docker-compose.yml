@@ -5,8 +5,12 @@ mongodb:
   ports:
    - "27017:27017"
   volumes:
+   - ./mongocf:/data/configdb:rw
    - ./mongo:/data/db:rw
+   - $PWD/mongoInit.js:/docker-entrypoint-initdb.d/mongoInit.js:ro
   volume_driver: local
+  environment:
+   - MONGO_INITDB_DATABASE=dashboarddb
 hygieia-api:
   image: hygieia-api:latest
   container_name: hygieia-api
@@ -16,6 +20,10 @@ hygieia-api:
   - ./logs:/hygieia/logs
   links:
   - mongodb:mongo
+  environment:
+  - AUTH_EXPIRATION_TIME=86400
+  - AUTH_SECRET=yourOwnAuthSecret
+
 hygieia-ui:
   image: hygieia-ui:latest
   container_name: hygieia-ui
