@@ -14,5 +14,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./versionone-properties-builder.sh && \
-  java -jar versionone-feature-collector*.jar --spring.config.location=/hygieia/hygieia-versionone-feature-collector.properties
+  exec java -jar versionone-feature-collector*.jar --spring.config.location=/hygieia/hygieia-versionone-feature-collector.properties
 

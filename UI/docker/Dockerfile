@@ -12,4 +12,4 @@ COPY html /usr/share/nginx/html
 EXPOSE 80 443
 
 CMD conf-builder.sh &&\
-  nginx -g "daemon off;"
+  exec nginx -g "daemon off;"

@@ -14,5 +14,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./nexus-iq-properties-builder.sh && \
-  java -jar nexus-iq-collector*.jar --spring.config.location=/hygieia/hygieia-nexus-iq-collector.properties
+  exec java -jar nexus-iq-collector*.jar --spring.config.location=/hygieia/hygieia-nexus-iq-collector.properties
 

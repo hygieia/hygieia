@@ -14,5 +14,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./bitbucket-properties-builder.sh && \
-  java -jar bitbucket-scm-collector*.jar --spring.config.location=/hygieia/hygieia-bitbucket-scm-collector.properties
+  exec java -jar bitbucket-scm-collector*.jar --spring.config.location=/hygieia/hygieia-bitbucket-scm-collector.properties
 
