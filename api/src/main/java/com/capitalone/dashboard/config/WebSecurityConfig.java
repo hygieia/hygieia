@@ -54,6 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 							    //TODO: Secure with API Key
 								.antMatchers(HttpMethod.POST, "/build").permitAll()
 					            .antMatchers(HttpMethod.POST, "/deploy").permitAll()
+								.antMatchers(HttpMethod.POST, "/performance").permitAll()
 					            .antMatchers(HttpMethod.POST, "/artifact").permitAll()
 					            .antMatchers(HttpMethod.POST, "/quality/test").permitAll()
 					            .antMatchers(HttpMethod.POST, "/quality/static-analysis").permitAll()

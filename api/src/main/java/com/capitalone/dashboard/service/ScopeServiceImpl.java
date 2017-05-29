@@ -8,6 +8,8 @@ import com.mysema.query.BooleanBuilder;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -109,4 +111,19 @@ public class ScopeServiceImpl implements ScopeService {
 
 		return scopes;
 	}
+
+	/**
+	 * Finds paged results of scope items of a given collectorId, projectName, pageable
+	 *
+	 * @param  collectorId
+	 * @param {@link org.springframework.data.domain.Pageable} object to determine which page to return
+	 * @return scope items matching the specified type
+	 */
+	@Override
+	public Page<Scope> getScopeByCollectorWithFilter(ObjectId collectorId, String projectName, Pageable pageable){
+
+		Page<Scope> scopeItems =  scopeRepository.findAllByCollectorIdAndNameContainingIgnoreCase(collectorId,projectName,pageable);
+		return scopeItems;
+	}
+
 }

@@ -65,7 +65,7 @@
             function getIsDefaultState(data, cb) {
                 var isDefaultState = true;
                 _(data).forEach(function (environment) {
-                    var offlineUnits = _(environment.units).where({'deployed': false}).value().length;
+                    var offlineUnits = _(environment.units).filter({'deployed': false}).value().length;
 
                     if(environment.units && environment.units.length == offlineUnits
                     		&& !ignoreEnvironmentFailures(environment)) {
@@ -91,13 +91,13 @@
                     };
 
                     function getFailedComponentCount(units) {
-                        return _(units).where({'deployed':false}).value().length;
+                        return _(units).filter({'deployed':false}).value().length;
                     }
 
                     function getServerOnlineCount(units, isOnline) {
                         var total = 0;
                         _(units).forEach(function (unit) {
-                            total += _(unit.servers).where({'online':isOnline})
+                            total += _(unit.servers).filter({'online':isOnline})
                                 .value()
                                 .length;
                         });
