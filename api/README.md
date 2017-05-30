@@ -236,3 +236,27 @@ For additional information, see jasypt spring boot [documentation](https://githu
 
 Tip: If using GitLab CI Runner, specify the value for JASYPT_ENCRYPTOR_PASSWORD as a secure variable. Secure variables can be added to a Gitlab project by navigating to Project Settings > Variables > Add Variable. 
 A secure variable's value is by default not visible in the build log and can only be configured by an administrator of a project.
+
+### Securing APIs Basic Auth
+
+From the admin menu, generate an "apitoken" for an "apiuser"
+
+Create a POST request with the following 2 headers and retrieve a JWT token for secured API calls.
+
+Add Authorization header
+```
+String passwordIsAuthToken = "PasswordIsAuthToken:{\"apiKey\":\"" + <generated apitoken> + "\"}";
+byte[] encodedAuth = Base64.encodeBase64(passwordIsAuthToken.getBytes(StandardCharsets.US_ASCII));
+String authHeader = "Basic " + new String(encodedAuth);
+Authorization: Basic <authHeader>
+```
+Add apiUser header
+```
+apiUser <apiuser>
+```
+This POST request results in a JWT token in its response.
+
+Create a followup POST request with the following header to invoke secured APIs.
+```
+Authorization: Bearer <JWT token obtained from the response>
+```

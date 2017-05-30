@@ -22,6 +22,8 @@ import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
 import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
 import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
 import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
+import com.capitalone.dashboard.auth.apitoken.ApiTokenAuthenticationProvider;
+import com.capitalone.dashboard.auth.apitoken.ApiTokenLoginRequestFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +39,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private AuthenticationProvider standardAuthenticationProvider;
+
+	@Autowired
+	private ApiTokenAuthenticationProvider apiTokenAuthenticationProvider;
 	
 	@Autowired
 	private AuthProperties authProperties;
@@ -48,6 +53,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests().antMatchers("/appinfo").permitAll()
 								.antMatchers("/registerUser").permitAll()
 								.antMatchers("/login**").permitAll()
+								//TODO: sample call secured with ROLE_API
+								//.antMatchers("/ping**").hasAuthority("ROLE_API")
 								.antMatchers(HttpMethod.GET, "/**").permitAll()
 								
 								// Temporary solution to allow jenkins plugin to send data to the api
@@ -63,6 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 									.and()
 								.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(ldapLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(apiTokenLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
 	}
@@ -72,6 +80,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.authenticationProvider(standardAuthenticationProvider);
 		configureLdap(auth);
 		configureActiveDirectory(auth);
+
+		auth.authenticationProvider(apiTokenAuthenticationProvider);
 
 	}
 
@@ -98,6 +108,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	protected LdapLoginRequestFilter ldapLoginRequestFilter() throws Exception {
 		return new LdapLoginRequestFilter("/login/ldap", authenticationManager(), authenticationResultHandler);
+	}
+
+	@Bean
+	protected ApiTokenLoginRequestFilter apiTokenLoginRequestFilter() throws Exception {
+		return new ApiTokenLoginRequestFilter("/login/apitoken", authenticationManager(), authenticationResultHandler);
 	}
 	
     @Bean

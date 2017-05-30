@@ -31,5 +31,9 @@
         this.logout = function () {
           tokenService.removeToken();
         }
+
+        this.tokens = function () {
+          tokenService.tokens();
+        }
     }
 })();
