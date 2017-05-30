@@ -25,12 +25,12 @@
 
     <div class="dashboard-widgets container-fluid" widget-container dashboard="ctrl.dashboard" ng-if="template.widgetView == 'Widget'">
 		<div class="flex-widget-container col-md-12" ng-hide="template.showEmptyContainerText(ctrl.dashboard)">
-			<widget family="widget" class="removeable widget-wide" name="build"></widget>
-			<widget family="widget" class="removeable widget-wide" name="codeanalysis"></widget>
+			<widget family="widget" class="removeable widget-wide" name="build" widget-title="Build"></widget>
+			<widget family="widget" class="removeable widget-wide" name="codeanalysis" widget-title="Code Analysis"></widget>
 			<widget family="widget" class="removeable widget-narrow" name="feature" widget-title="Feature"></widget>
-			<widget family="widget" class="removeable widget-narrow" name="repo"></widget>
-			<widget family="widget" class="removeable widget-narrow" name="Monitor"></widget>
-			<widget family="widget" class="removeable widget-narrow" name="deploy"></widget>
+			<widget family="widget" class="removeable widget-narrow" name="repo" widget-title="Code Repo"></widget>
+			<widget family="widget" class="removeable widget-narrow" name="Monitor" widget-title="Monitor"></widget>
+			<widget family="widget" class="removeable widget-narrow" name="deploy" widget-title="Deploy"></widget>
 			<widget family="widget" class="removeable widget-narrow" name="chatops" widget-title="ChatOps"></widget>
 		</div>
 		<div ng-show="template.showEmptyContainerText(ctrl.dashboard)">
