@@ -1,13 +1,17 @@
 package com.capitalone.dashboard.repository;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
 import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 
 public class DashboardCreateTests extends FongoBaseRepositoryTest {
@@ -28,7 +32,7 @@ public class DashboardCreateTests extends FongoBaseRepositoryTest {
 
         Application application = new Application("Jay's App", component);
 
-        Dashboard dashboard = new Dashboard("Jays's Dashboard", application,"amit", DashboardType.Team);
+        Dashboard dashboard = new Dashboard("Jays's Dashboard", application, new Owner("amit", AuthType.STANDARD), DashboardType.Team);
 
         Widget build = new Widget();
         build.setName("build");
@@ -50,6 +54,7 @@ public class DashboardCreateTests extends FongoBaseRepositoryTest {
 
         for (Dashboard d : dashboardRepository.findAll(new Sort(Sort.Direction.ASC, "title"))) {
             System.out.println(d.getTitle());
+            assertEquals(d.getTitle(), "Jays's Dashboard");
         }
 
     }

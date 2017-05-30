@@ -1,12 +1,16 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Widget;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
-import java.util.List;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.UserInfo;
+import com.capitalone.dashboard.model.Widget;
 
 
 public interface DashboardService {
@@ -88,12 +92,19 @@ public interface DashboardService {
 
     
     /**
-     * Gets all dashboard belonging to a userId
-     * @Param username
+     * Gets all dashboard belonging to the authenticated user
      * @return List of dashboards
      */
     
-    List<Dashboard> getOwnedDashboards(String username);
+    List<Dashboard> getOwnedDashboards();
+
+    Iterable<UserInfo> getAllUsers();
+
+    Iterable<Owner> getOwners(ObjectId id);
+
+    UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType);
+
+    UserInfo demoteFromOwner(ObjectId dashboardId, String username, AuthType authType);
     
     /**
      * Get owner of dashboard on supplying dashboard Title
@@ -103,6 +114,16 @@ public interface DashboardService {
      */
     
     String getDashboardOwner(String dashboardTitle);
+
+    /**
+     * Get component
+     * @Param component Id
+     * @return Component
+     *
+     */
+
+    Component getComponent(ObjectId componentId);
+
 }
 
 

@@ -19,7 +19,6 @@ public class DashboardRequestTest {
 	private static String TITLE = "title";
 	private static String APP_NAME = "app_name";
 	private static String COMP_NAME = "comp_name";
-	private static String OWNER = "owner";
 	private static String TYPE = "Team";
 
 	private DashboardRequest request;
@@ -50,7 +49,6 @@ public class DashboardRequestTest {
 		request.setTitle(TITLE);
 		request.setApplicationName(APP_NAME);
 		request.setComponentName(COMP_NAME);
-		request.setOwner(OWNER);
 		request.setType(TYPE);
 		request.setActiveWidgetTypes(activeWidgetTypes);
 		request.setWidgets(widgets);
@@ -62,7 +60,6 @@ public class DashboardRequestTest {
 		
 		assertEquals(TITLE, result.getTitle());
 		assertEquals(APP_NAME, result.getApplication().getName());
-		assertEquals(OWNER, result.getOwner());
 		assertEquals(TYPE, result.getType().name());
 		assertEquals(activeWidgetTypes, result.getActiveWidgetTypes());
 		assertEquals(widgets, result.getWidgets());
@@ -81,7 +78,6 @@ public class DashboardRequestTest {
 		Dashboard result = request.copyTo(dash);
 		assertEquals(TITLE, result.getTitle());
 		assertEquals(APP_NAME, result.getApplication().getName());
-		assertEquals(OWNER, result.getOwner());
 		assertEquals(TYPE, result.getType().name());
 		assertEquals(dash.getId(), result.getId());
 		assertEquals(activeWidgetTypes, result.getActiveWidgetTypes());

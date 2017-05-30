@@ -6,6 +6,7 @@ import com.capitalone.dashboard.model.RequestLog;
 import com.capitalone.dashboard.repository.RequestLogRepository;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.output.TeeOutputStream;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -35,9 +36,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -108,6 +111,24 @@ public class LoggingFilter implements Filter {
             }
 
         } else {
+            if (settings.isCorsEnabled()) {
+
+                String clientOrigin = httpServletRequest.getHeader("Origin");
+
+                String corsWhitelist = settings.getCorsWhitelist();
+                if (!StringUtils.isEmpty(corsWhitelist)) {
+                    List<String> incomingURLs = Arrays.asList(corsWhitelist.trim().split(","));
+
+                    if (incomingURLs.contains(clientOrigin)) {
+                        //adds headers to response to allow CORS
+                        httpServletResponse.addHeader("Access-Control-Allow-Origin", clientOrigin);
+                        httpServletResponse.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+                        httpServletResponse.addHeader("Access-Control-Allow-Headers", "Content-Type");
+                        httpServletResponse.addHeader("Access-Control-Max-Age", "1");
+                    }
+                }
+
+            }
             chain.doFilter(request, response);
         }
     }

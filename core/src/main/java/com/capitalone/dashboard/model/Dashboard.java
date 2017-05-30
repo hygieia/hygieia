@@ -20,7 +20,12 @@ public class Dashboard extends BaseModel {
 
     private List<Widget> widgets = new ArrayList<>();
     private Map<WidgetFamily, List<WidgetType>> activeWidgetTypes;
+
+    // multiple owner references for backwards compatibility
+    // TODO: remove once impacts of breaking change are assessed
     private String owner;
+    private List<Owner> owners = new ArrayList<Owner>();
+    
     private DashboardType type;
 
     private Application application;
@@ -28,11 +33,11 @@ public class Dashboard extends BaseModel {
     Dashboard() {
     }
 
-    public Dashboard(String title, Application application,String owner, DashboardType type) {
+    public Dashboard(String title, Application application, Owner owner, DashboardType type) {
         this.title = title;
         this.application = application;
-        this.owner = owner;
         this.type = type;
+        this.owners.add(owner);
     }
 
     public String getTitle() {
@@ -73,6 +78,14 @@ public class Dashboard extends BaseModel {
 
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+	
+	public List<Owner> getOwners() {
+		return owners;
+	}
+
+	public void setOwners(List<Owner> owners) {
+		this.owners = owners;
 	}
 
     public DashboardType getType(){ return this.type; }

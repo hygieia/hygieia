@@ -109,7 +109,7 @@
                 // widget directive handles api updates
                 var foundMatch = false;
                 _($scope.dashboard.widgets)
-                    .where(function(config) {
+                    .filter(function(config) {
                         return config.options.id === newConfig.options.id;
                     }).forEach(function (config, idx) {
                         foundMatch = true;
@@ -132,7 +132,7 @@
             }
 
             _($scope.dashboard.widgets)
-                .where(function (widget) {
+                .filter(function (widget) {
                     return $scope.processedWidgetNames.indexOf(widget.options.id) == -1;
                 })
                 .forEach(function (item, idx) {

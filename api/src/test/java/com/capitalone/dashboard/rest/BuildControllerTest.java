@@ -1,15 +1,16 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.model.SCM;
-import com.capitalone.dashboard.request.BuildDataCreateRequest;
-import com.capitalone.dashboard.request.BuildSearchRequest;
-import com.capitalone.dashboard.service.BuildService;
-import com.capitalone.dashboard.util.TestUtil;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Arrays;
+
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,15 +25,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Arrays;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.request.BuildDataCreateRequest;
+import com.capitalone.dashboard.request.BuildSearchRequest;
+import com.capitalone.dashboard.service.BuildService;
+import com.capitalone.dashboard.util.TestUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, WebMVCConfig.class})
@@ -59,25 +61,26 @@ public class BuildControllerTest {
         when(buildService.search(Mockito.any(BuildSearchRequest.class))).thenReturn(response);
 
         mockMvc.perform(get("/build?componentId=" + ObjectId.get()))
+        		.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$result", hasSize(1)))
-                .andExpect(jsonPath("$result[0].id", is(build.getId().toString())))
-                .andExpect(jsonPath("$result[0].collectorItemId", is(build.getCollectorItemId().toString())))
-                .andExpect(jsonPath("$result[0].timestamp", is(intVal(build.getTimestamp()))))
-                .andExpect(jsonPath("$result[0].number", is(build.getNumber())))
-                .andExpect(jsonPath("$result[0].buildUrl", is(build.getBuildUrl())))
-                .andExpect(jsonPath("$result[0].startTime", is(intVal(build.getStartTime()))))
-                .andExpect(jsonPath("$result[0].endTime", is(intVal(build.getEndTime()))))
-                .andExpect(jsonPath("$result[0].duration", is(intVal(build.getDuration()))))
-                .andExpect(jsonPath("$result[0].buildStatus", is(build.getBuildStatus().toString())))
-                .andExpect(jsonPath("$result[0].startedBy", is(build.getStartedBy())))
-                .andExpect(jsonPath("$result[0].sourceChangeSet", hasSize(1)))
-                .andExpect(jsonPath("$result[0].sourceChangeSet[0].scmUrl", is(scm.getScmUrl())))
-                .andExpect(jsonPath("$result[0].sourceChangeSet[0].scmRevisionNumber", is(scm.getScmRevisionNumber())))
-                .andExpect(jsonPath("$result[0].sourceChangeSet[0].numberOfChanges", is(intVal(scm.getNumberOfChanges()))))
-                .andExpect(jsonPath("$result[0].sourceChangeSet[0].scmCommitTimestamp", is(intVal(scm.getScmCommitTimestamp()))))
-                .andExpect(jsonPath("$result[0].sourceChangeSet[0].scmCommitLog", is(scm.getScmCommitLog())))
-                .andExpect(jsonPath("$result[0].sourceChangeSet[0].scmAuthor", is(scm.getScmAuthor())));
+                .andExpect(jsonPath("$.result", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].id", is(build.getId().toString())))
+                .andExpect(jsonPath("$.result[0].collectorItemId", is(build.getCollectorItemId().toString())))
+                .andExpect(jsonPath("$.result[0].timestamp", is(intVal(build.getTimestamp()))))
+                .andExpect(jsonPath("$.result[0].number", is(build.getNumber())))
+                .andExpect(jsonPath("$.result[0].buildUrl", is(build.getBuildUrl())))
+                .andExpect(jsonPath("$.result[0].startTime", is(intVal(build.getStartTime()))))
+                .andExpect(jsonPath("$.result[0].endTime", is(intVal(build.getEndTime()))))
+                .andExpect(jsonPath("$.result[0].duration", is(intVal(build.getDuration()))))
+                .andExpect(jsonPath("$.result[0].buildStatus", is(build.getBuildStatus().toString())))
+                .andExpect(jsonPath("$.result[0].startedBy", is(build.getStartedBy())))
+                .andExpect(jsonPath("$.result[0].sourceChangeSet", hasSize(1)))
+                .andExpect(jsonPath("$.result[0].sourceChangeSet[0].scmUrl", is(scm.getScmUrl())))
+                .andExpect(jsonPath("$.result[0].sourceChangeSet[0].scmRevisionNumber", is(scm.getScmRevisionNumber())))
+                .andExpect(jsonPath("$.result[0].sourceChangeSet[0].numberOfChanges", is(intVal(scm.getNumberOfChanges()))))
+                .andExpect(jsonPath("$.result[0].sourceChangeSet[0].scmCommitTimestamp", is(intVal(scm.getScmCommitTimestamp()))))
+                .andExpect(jsonPath("$.result[0].sourceChangeSet[0].scmCommitLog", is(scm.getScmCommitLog())))
+                .andExpect(jsonPath("$.result[0].sourceChangeSet[0].scmAuthor", is(scm.getScmAuthor())));
     }
 
     @Test

@@ -151,6 +151,9 @@ public class DynamicPipelineServiceImpl implements PipelineService {
         
         PipelineResponse pipelineResponse = new PipelineResponse();
         pipelineResponse.setCollectorItemId(dashboardCollectorItem.getId());
+        // Fix for 1254
+		pipelineResponse.setProdStage(PipelineUtils.getProdStage(dashboard));
+		pipelineResponse.setOrderMap(PipelineUtils.getOrderForStages(dashboard));
 		Map<PipelineStage, String> stageToEnvironmentNameMap = PipelineUtils.getStageToEnvironmentNameMap(dashboard);
 
 

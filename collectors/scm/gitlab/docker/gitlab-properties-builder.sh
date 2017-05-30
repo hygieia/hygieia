@@ -8,7 +8,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-gitlab-git-collector.properties
+	PROP_FILE=hygieia-gitlab-scm-collector.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then
@@ -52,6 +52,9 @@ gitlab.protocol=${GITLAB_PROTOCOL:-}
 
 #Gitlab port (optional, defaults to protocol default port)
 gitlab.port=${GITLAB_PORT:-}
+
+#Gitlab path (optional, defaults to no path)
+gitlab.path=${GITLAB_PATH:-}
   
 #Gitlab API Token (required, access token can be retrieved through gitlab, collector will have the permissions of the user associated to the token)
 gitlab.apiToken=${GITLAB_API_TOKEN:-}

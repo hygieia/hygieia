@@ -7,10 +7,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.WidgetFamily;
 import com.capitalone.dashboard.model.WidgetType;
@@ -24,9 +26,6 @@ public class DashboardRequest {
     private String applicationName;
 
     private String componentName;
-    
-    @NotNull
-    private String owner;
 
     @NotNull
     @Size(min=1, message="Please select a type")
@@ -69,14 +68,6 @@ public class DashboardRequest {
 
     public void setType(String type) { this.type = type; }
 
-    public String getOwner() {
-		return owner;
-	}
-
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-
 	public Map<WidgetFamily, List<WidgetType>> getActiveWidgetTypes() {
 		return activeWidgetTypes;
 	}
@@ -96,6 +87,7 @@ public class DashboardRequest {
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
         Dashboard dashboard = new Dashboard(dashboardRequestTitle.getTitle(), application, owner, type);
         dashboard.setActiveWidgetTypes(activeWidgetTypes);
         dashboard.setWidgets(widgets);

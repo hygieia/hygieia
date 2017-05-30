@@ -21,6 +21,8 @@
                     <input type="text"
                            class="form-control text-center"
                            ng-model="signup.id"
+                           ng-change="resetUsernameFieldValidity()"
+                           minlength="4"
                            name="id"
                            placeholder="Enter your username"
                            autocomplete="off"

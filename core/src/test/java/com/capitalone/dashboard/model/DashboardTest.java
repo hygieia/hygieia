@@ -1,15 +1,15 @@
 package com.capitalone.dashboard.model;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.capitalone.dashboard.util.PipelineUtils;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardTest {
@@ -52,8 +52,7 @@ public class DashboardTest {
             app.addComponent(new Component(compName));
         }
 
-        Dashboard dashboard = new Dashboard(title, app, owner, DashboardType.Team);
-        return dashboard;
+        return new Dashboard(title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team);
     }
 
     private Widget makePipelineWidget(String devName, String qaName, String intName, String perfName, String prodName){
