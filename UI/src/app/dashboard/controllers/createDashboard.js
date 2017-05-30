@@ -57,7 +57,6 @@
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
-                        owner: userService.getUsername(),
                         activeWidgetTypes: ctrl.widgetsForm
                     };
 
