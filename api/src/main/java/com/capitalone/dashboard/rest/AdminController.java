@@ -1,7 +1,5 @@
 package com.capitalone.dashboard.rest;
 
-import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +22,6 @@ public class AdminController {
     @Autowired
     public AdminController(UserInfoService userInfoService) {
         this.userInfoService = userInfoService;
-    }
-
-    @RequestMapping(path = "/users", method = RequestMethod.GET)
-    public Collection<UserInfo> getUsers() {
-        return userInfoService.getUsers();
     }
     
     @RequestMapping(path = "/users/addAdmin", method = RequestMethod.POST)

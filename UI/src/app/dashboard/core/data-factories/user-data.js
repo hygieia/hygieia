@@ -8,6 +8,7 @@
     function userData($http) {
         var testDetailRoute = 'test-data/signup_detail.json';
         var adminRoute = '/api/admin';
+        var userRoute = '/api/users';
 
         return {
             getAllUsers: getAllUsers,
@@ -33,7 +34,7 @@
           }
           else
           {
-        return $http.get(adminRoute + "/users");
+        return $http.get(userRoute);
       }
     }
 

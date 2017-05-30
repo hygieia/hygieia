@@ -27,7 +27,7 @@
         ctrl.authType = userService.getAuthType();
         ctrl.login = login;
         ctrl.logout = logout;
-        ctrl.renameDashboard=renameDashboard;
+        ctrl.editDashboard = editDashboard;
 
         $scope.tab="dashboards";
 
@@ -92,13 +92,13 @@
             });
         }
 
-        function renameDashboard(item)
+        function editDashboard(item)
         {
-            console.log("Rename Dashboard in Admin");
+            console.log("Edit Dashboard in Admin");
 
             var mymodalInstance=$uibModal.open({
-                templateUrl: 'app/dashboard/views/renameDashboard.html',
-                controller: 'RenameDashboardController',
+                templateUrl: 'app/dashboard/views/editDashboard.html',
+                controller: 'EditDashboardController',
                 controllerAs: 'ctrl',
                 resolve: {
                     dashboardId: function() {
