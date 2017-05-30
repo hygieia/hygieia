@@ -1,7 +1,3 @@
-/**
- * Controller for the modal popup when creating
- * a new dashboard on the startup page
- */
 (function () {
     'use strict';
 
@@ -40,7 +36,6 @@
             $scope.minDate = $scope.minDate ? null : new Date();
         };
         $scope.toggleMin();
-        $scope.maxDate = new Date(2020, 5, 22);
 
         $scope.open = function() {
             $scope.status.opened = true;
