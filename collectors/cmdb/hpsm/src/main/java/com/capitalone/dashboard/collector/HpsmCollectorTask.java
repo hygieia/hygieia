@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CollectorTask that fetches Commit information from GitHub
+ * CollectorTask that fetches configuration item data from HPSM
  */
 @Component
 public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {

@@ -5,7 +5,7 @@ import com.capitalone.dashboard.model.Cmdb;
 import java.util.List;
 
 /**
- * Client for fetching commit history from GitHub
+ * Client for fetching configuration item data from HPSM
  */
 public interface HpsmClient {
 

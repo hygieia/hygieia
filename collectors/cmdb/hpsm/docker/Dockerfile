@@ -7,12 +7,12 @@ RUN \
   mkdir /hygieia
 
 COPY *.jar /hygieia/
-COPY github-properties-builder.sh /hygieia/
+COPY hpsm-properties-builder.sh /hygieia/
 
 WORKDIR /hygieia
 
 VOLUME ["/hygieia/logs"]
 
-CMD ./github-properties-builder.sh && \
-  java -jar github-scm-collector*.jar --spring.config.location=/hygieia/hygieia-github-scm-collector.properties
+CMD ./hpsm-properties-builder.sh && \
+  java -jar hspm-cmdb-collector*.jar --spring.config.location=/hygieia/hpsm.properties
 

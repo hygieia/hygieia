@@ -8,7 +8,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-github-scm-collector.properties
+	PROP_FILE=hpsm.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then
@@ -41,13 +41,36 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 #Database Password - default is blank
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
+# Logging File location
+logging.file=./logs/hpsm.log
+
 #Collector schedule (required)
-github.cron=${GITHUB_CRON:-0 0/5 * * * *}
+hpsm.cron=${HPSM_CRON:-* * 1 * * *}
 
-github.host=${GITHUB_HOST:-github.com}
+#Api Details
+hpsm.server=${HPSM_SERVER:kdcqsmapp01.kdc.capitalone.com}
+hpsm.port=${HPSM_PORT:13116}
+hpsm.protocol=${HPSM_PROTOCOL:http}
+hpsm.resource=${HPSM_RESOURCE:SM/7/ws/}
+hpsm.contentType=${HPSM_CONTENTTYPE:text/xml}
+hpsm.charset=${HPSM_CHARSET:UTF-8}
 
-#Maximum number of days to go back in time when fetching commits
-github.commitThresholdDays=${GITHUB_COMMIT_THRESHOLD_DAYS:-15}
+#Api User/ Pass
+hpsm.user=${HPSM_USER:}
+hpsm.pass=${HPSM_PASS:}
+
+#Api App Query settings
+hpsm.appSubType=${HPSM_APP_SUBTYPE:Application Service}
+hpsm.appType=${HPSM_APP_TYPE:}
+hpsm.appStatus=${HPSM_APP_STATUS:In Use}
+
+#Api Component Query settings
+hpsm.compSubType=${HPSM_COMP_SUBTYPE:Business}
+hpsm.compType=${HPSM_COMP_TYPE:application}
+
+#API app details
+hpsm.detailsRequestType=${HPSM_REQUEST_TYPE:RetrieveDeviceListRequest}
+hpsm.detailsSoapAction=${HPSM_SOAP_ACTION:RetrieveList}
 
 EOF
 
