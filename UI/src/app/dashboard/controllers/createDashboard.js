@@ -36,10 +36,9 @@
         ctrl.templateFilter = templateFilter;
         ctrl.setAvailableTemplates = setAvailableTemplates;
         ctrl.getConfigItem = getConfigItem;
-        ctrl.setConfigItemAppId = setConfigItemAppId;
-        ctrl.setConfigItemComponentId = setConfigItemComponentId;
-        ctrl.getConfigItemAppId = getConfigItemAppId;
-        ctrl.getConfigItemComponentId = getConfigItemComponentId;
+        ctrl.setConfigItemAppId = cmdbData.setConfigItemAppId;
+        ctrl.setConfigItemComponentId = cmdbData.setConfigItemComponentId;
+        ctrl.appendTitle = appendTitle;
 
         (function() {
             var types = dashboardData.types();
@@ -87,44 +86,23 @@
             ctrl.availableTemplates = templates;
         }
 
-        function setConfigItemAppId(id){
-            ctrl.configurationItemAppId = id;
-        }
-
-        function getConfigItemAppId(){
-            var value = null;
-            if(ctrl.configurationItemApp){
-                value = ctrl.configurationItemAppId;
-            }
-            return value;
-        }
-
-        function setConfigItemComponentId(id){
-            ctrl.configurationItemComponentId = id;
-        }
-
-        function getConfigItemComponentId(){
-            var value = null;
-            if(ctrl.configurationItemComponent){
-                value = ctrl.configurationItemComponentId;
-            }
-            return value;
-        }
         // method implementations
         function submit(form) {
 
             form.dashboardTitle.$setValidity('createError', true);
             // perform basic validation and send to the api
+
             if (form.$valid) {
                 var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
+                    title = ctrl.appendTitle(document.cdf.dashboardTitle.value, document.cdf.configurationItemApp.value,document.cdf.configurationItemComponent.value),
                     submitData = {
                         template: document.cdf.selectedTemplate.value,
-                        title:  document.cdf.dashboardTitle.value,
+                        title:  title,
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
-                        configurationItemAppObjectId:  ctrl.getConfigItemAppId(),
-                        configurationItemComponentObjectId:  ctrl.getConfigItemComponentId()
+                        configurationItemAppObjectId:  cmdbData.getConfigItemAppId(ctrl.configurationItemApp.id),
+                        configurationItemComponentObjectId:  cmdbData.getConfigItemComponentId(ctrl.configurationItemComponent.id)
                     };
 
                 dashboardData
@@ -147,6 +125,14 @@
 
         function isTeamDashboardSelected() {
             return ctrl.dashboardType && ctrl.dashboardType.id == DashboardType.TEAM;
+        }
+        function appendTitle(titleName, appName, compName){
+
+            var configurationItemAppName = appName ?  "-" +appName : "";
+            var configurationItemCompName = compName ?  "-" +compName : "";
+            var title = titleName + configurationItemAppName + configurationItemCompName;
+
+            return title ;
         }
     }
 })();

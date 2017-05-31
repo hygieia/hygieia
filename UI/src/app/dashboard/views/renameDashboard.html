@@ -15,7 +15,7 @@
                     ng-pattern="/^[a-zA-Z0-9 ]*$/"/>
             <span class="text-danger"></span>
         </form-group>
-        <form-group  input="configurationItemApp" novalidate>
+        <form-group  input="configurationItemApp" errors="{invalidName: 'This App and Component tired to a Dashboard already. Please select a new App'}">
             <input
                     type="text"
                     name="configurationItemApp"
@@ -26,14 +26,14 @@
                     typeahead-wait-ms="250" autocomplete="off"
                     typeahead-min-length="0"
                     typeahead-editable="false"
-                    typeahead-on-select="ctrl.setConfigItemAppId(ctrl.configurationItemApp.id)"
+                    typeahead-on-select="ctrl.submitAppChange(ctrl.configurationItemApp.id, $event)"
                     typeahead-no-results="noResults" />
             <div class="form-control" ng-show="noResults">
                 No Results Found
             </div>
         </form-group>
 
-        <form-group input="configurationItemComponent" novalidate>
+        <form-group input="configurationItemComponent" errors="{inValidName: 'Component must be valid'}">
             <input
                     type="text"
                     name="configurationItemComponent"
@@ -44,7 +44,7 @@
                     typeahead-wait-ms="250" autocomplete="off"
                     typeahead-min-length="0"
                     typeahead-editable="false"
-                    typeahead-on-select="ctrl.setConfigItemComponentId(ctrl.configurationItemComponent.id)"
+                    typeahead-on-select="ctrl.submitCompChange(ctrl.configurationItemComponent.id, $event)"
                     typeahead-no-results="noResults" />
             <div class="form-control" ng-show="noResults">
                 No Results Found

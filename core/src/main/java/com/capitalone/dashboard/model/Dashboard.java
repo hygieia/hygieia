@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -30,9 +31,11 @@ public class Dashboard extends BaseModel {
     private DashboardType type;
 
     private Application application;
-
+    //Ignore Updates
+    @Transient
     private String configurationItemAppName;
-
+    //Ignore Updates
+    @Transient
     private String configurationItemCompName;
 
     private ObjectId configurationItemAppObjectId;

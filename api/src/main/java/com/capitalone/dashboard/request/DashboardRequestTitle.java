@@ -7,8 +7,8 @@ import javax.validation.constraints.Size;
 public class DashboardRequestTitle {
 	
 	@NotNull
-	@Size(min = 6, max = 50)
-	@Pattern(message = "Special character(s) found", regexp = "^[a-zA-Z0-9 ]*$")
+	@Size(min = 6, max = 200)
+	@Pattern(message = "Special character(s) found", regexp = "^[a-zA-Z0-9- ]*$")
 	private String title;
 
 	public String getTitle() {

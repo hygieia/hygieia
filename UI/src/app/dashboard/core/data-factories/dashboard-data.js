@@ -24,6 +24,8 @@
         var myownerRoute = "/api/dashboard/myowner";
         var dashboardAllUsersRoute= '/api/dashboard/allUsers';
         var dashboardOwnersRoute = '/api/dashboard/owners';
+        var updateAppRoute = '/api/dashboard/updateApp';
+        var updateCompRoute = '/api/dashboard/updateComp';
 
         return {
             search: search,
@@ -39,7 +41,9 @@
             rename: renameDashboard,
             upsertWidget: upsertWidget,
             types: types,
-            getComponent:getComponent
+            getComponent:getComponent,
+            updateAppId: updateAppId,
+
         };
 
         // reusable helper
@@ -146,7 +150,32 @@
                     return response.data;
             });
         }
-
+        function updateAppId(id, appObjectId){
+            var route = updateAppRoute +"/"+id,
+                submitData = {
+                configurationItemAppObjectId: appObjectId};
+            return $http.put(route, submitData)
+                .success(
+                    function (response) {
+                        return response.data;
+                    })
+                .error (function (response) {
+                    return response.data;
+                });
+        }
+        function updateCompId(id, compObjectId){
+            var route = updateCompRoute +"/"+id,
+                submitData = {
+                    configurationItemComponentObjectId: compObjectId};
+            return $http.put(route, submitData)
+                .success(
+                    function (response) {
+                        return response.data;
+                    })
+                .error (function (response) {
+                    return response.data;
+                });
+        }
         function types() {
             return [
                 {

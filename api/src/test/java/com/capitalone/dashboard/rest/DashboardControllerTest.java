@@ -85,8 +85,8 @@ public class DashboardControllerTest {
                 .andExpect(jsonPath("$[0].title", is("title")))
                 .andExpect(jsonPath("$[0].application.name", is("app")))
                 .andExpect(jsonPath("$[0].application.components[0].name", is("comp")))
-                .andExpect(jsonPath("$[0].application.configurationItemAppObjectId", is(configItemAppId)))
-                .andExpect(jsonPath("$[0].application.configurationItemComponentObjectId", is(configItemComponentId)));
+                .andExpect(jsonPath("$[0].configurationItemAppObjectId", is(configItemAppId.toString())))
+                .andExpect(jsonPath("$[0].configurationItemComponentObjectId", is(configItemComponentId.toString())));
     }
     @Test
     public void createProductDashboard() throws Exception {
@@ -135,7 +135,7 @@ public class DashboardControllerTest {
             .andExpect(jsonPath("$.fieldErrors.template", hasItems("Please select a template")))
             .andExpect(jsonPath("$.fieldErrors.type", hasItems("Please select a type")))
             .andReturn();
-        assertThat(getFieldErrors(result), hasEntry(is("dashboardRequestTitle.title"), contains(is("size must be between 6 and 50"))));
+        assertThat(getFieldErrors(result), hasEntry(is("dashboardRequestTitle.title"), contains(is("size must be between 6 and 200"))));
     }
     @Test
     public void createDashboard_specialCharacters_badRequest() throws Exception {
@@ -290,7 +290,7 @@ public class DashboardControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fieldErrors.title", hasItems("size must be between 6 and 50")))
+                .andExpect(jsonPath("$.fieldErrors.title", hasItems("size must be between 6 and 200")))
                 ;
     }
     

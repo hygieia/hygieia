@@ -55,12 +55,24 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Iterable<Dashboard> all() {
-        return dashboardRepository.findAll(new Sort(Sort.Direction.ASC, "title"));
+        Iterable<Dashboard> dashboards = dashboardRepository.findAll(new Sort(Sort.Direction.ASC, "title"));
+        for(Dashboard dashboard: dashboards){
+            ObjectId appObjectId = dashboard.getConfigurationItemAppObjectId();
+            ObjectId compObjectId = dashboard.getConfigurationItemComponentObjectId();
+
+            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+        }
+        return dashboards;
     }
 
     @Override
     public Dashboard get(ObjectId id) {
         Dashboard dashboard = dashboardRepository.findOne(id);
+
+        ObjectId appObjectId = dashboard.getConfigurationItemAppObjectId();
+        ObjectId compObjectId = dashboard.getConfigurationItemComponentObjectId();
+
+        setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
 
         if (!dashboard.getApplication().getComponents().isEmpty()) {
             // Add transient Collector instance to each CollectorItem
@@ -389,18 +401,20 @@ public class DashboardServiceImpl implements DashboardService {
 
             ObjectId appObjectId = dashboard.getConfigurationItemAppObjectId();
             ObjectId compObjectId = dashboard.getConfigurationItemComponentObjectId();
-            if(appObjectId != null && !"".equals(appObjectId)){
-
-                Cmdb cmdb =  cmdbService.configurationItemsByObjectId(appObjectId);
-                dashboard.setConfigurationItemAppName(cmdb.getConfigurationItem());
-                dashboard.setValidAppName(cmdb.isValid());
-            }
-            if(compObjectId != null && !"".equals(compObjectId)){
-                Cmdb cmdb = cmdbService.configurationItemsByObjectId(compObjectId);
-                dashboard.setConfigurationItemCompName(cmdb.getConfigurationItem());
-                dashboard.setValidCompName(cmdb.isValid());
-            }
+            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
         }
     }
+    private void setAppAndComponentNameToDashboard(Dashboard dashboard, ObjectId appObjectId, ObjectId compObjectId) {
+        if(appObjectId != null && !"".equals(appObjectId)){
 
+            Cmdb cmdb =  cmdbService.configurationItemsByObjectId(appObjectId);
+            dashboard.setConfigurationItemAppName(cmdb.getConfigurationItem());
+            dashboard.setValidAppName(cmdb.isValidConfigItem());
+        }
+        if(compObjectId != null && !"".equals(compObjectId)){
+            Cmdb cmdb = cmdbService.configurationItemsByObjectId(compObjectId);
+            dashboard.setConfigurationItemCompName(cmdb.getConfigurationItem());
+            dashboard.setValidCompName(cmdb.isValidConfigItem());
+        }
+    }
 }

@@ -12,8 +12,6 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,9 +48,17 @@ public class DashboardController {
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Dashboard> createDashboard(@Valid @RequestBody DashboardRequest request) {
         try {
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(dashboardService.create(request.toDashboard()));
+
+            if(isUniqueAppCompComp(request)){
+                return ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .body(dashboardService.create(request.toDashboard()));
+            }else{
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(null);
+            }
+
         } catch (HygieiaException he) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -248,5 +254,97 @@ public class DashboardController {
         }
         return component;
     }
+    @RequestMapping(value = "/dashboard/updateApp/{id}", method = PUT,
+            produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateAppId(@PathVariable ObjectId id, @RequestBody Dashboard request) {
+
+        Dashboard dashboard = getDashboard(id);
+        Iterable<Dashboard> allDashboard = dashboards();
+        boolean itemExist = false;
+
+        for(Dashboard l :allDashboard)
+        {
+            if (id.compareTo(l.getId()) == 0) {
+                //skip the current dashboard
+                continue;
+            }
+            if(l.getConfigurationItemAppObjectId().equals(request.getConfigurationItemAppObjectId()) &&
+                    l.getConfigurationItemComponentObjectId().equals(dashboard.getConfigurationItemComponentObjectId()) )
+            {
+                itemExist=true;
+            }
+        }
+
+        if(!itemExist){
+            try {
+
+                dashboard.setConfigurationItemAppObjectId(request.getConfigurationItemAppObjectId());
+                dashboardService.update(dashboard);
+                return ResponseEntity.ok("Updated");
+            } catch (HygieiaException he) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(null);
+            }
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
+    }
+    @RequestMapping(value = "/dashboard/updateComp/{id}", method = PUT,
+            produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateCompId(@PathVariable ObjectId id, @RequestBody Dashboard request) {
+
+
+        Dashboard dashboard = getDashboard(id);
+        Iterable<Dashboard> allDashboard = dashboards();
+        boolean itemExist = false;
+
+        for(Dashboard l :allDashboard)
+        {
+            if (id.compareTo(l.getId()) == 0) {
+                //skip the current dashboard
+                continue;
+            }
+            if(l.getConfigurationItemAppObjectId().equals(request.getConfigurationItemAppObjectId()) &&
+                    l.getConfigurationItemComponentObjectId().equals(dashboard.getConfigurationItemComponentObjectId()) )
+            {
+                itemExist=true;
+            }
+        }
+
+        if(!itemExist){
+            try {
+
+                dashboard.setConfigurationItemComponentObjectId(request.getConfigurationItemComponentObjectId());
+                dashboardService.update(dashboard);
+                return ResponseEntity.ok("Updated");
+            } catch (HygieiaException he) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(null);
+            }
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
+    }
+    private boolean isUniqueAppCompComp(DashboardRequest request) {
+        Iterable<Dashboard> allDashboard = dashboards();
+        boolean unqiueDashBoard = true;
+
+        for(Dashboard l :allDashboard)
+        {
+            if(l.getConfigurationItemAppObjectId().equals(request.getConfigurationItemAppObjectId()) &&
+                    l.getConfigurationItemComponentObjectId().equals(request.getConfigurationItemComponentObjectId()) )
+            {
+                unqiueDashBoard=false;
+            }
+        }
+        return unqiueDashBoard;
+    }
+
 
 }

@@ -21,8 +21,8 @@ public class CmdbServiceImpl implements CmdbService {
 
     @Override
     public Page<Cmdb> configurationItemsByTypeWithFilter(String itemType, String filter, Pageable pageable) {
-        Page<Cmdb> configItemString = cmdbRepository.findAllByItemTypeAndConfigurationItemContainingIgnoreCase(
-                itemType, filter, pageable);
+        Page<Cmdb> configItemString = cmdbRepository.findAllByItemTypeAndConfigurationItemContainingIgnoreCaseAndValidConfigItem(
+                itemType, filter, pageable, true);
 
         return configItemString;
     }

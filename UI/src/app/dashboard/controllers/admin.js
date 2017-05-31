@@ -101,11 +101,8 @@
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',
                 resolve: {
-                    dashboardId: function() {
-                        return item.id;
-                    },
-                    dashboardName: function() {
-                        return item.name;
+                    dashboardItem: function() {
+                        return item;
                     }
                 }
             });
@@ -122,7 +119,11 @@
             for (var x = 0; x < data.length; x++) {
                 ctrl.dashboards.push({
                     id: data[x].id,
-                    name: data[x].title
+                    name: data[x].title,
+                    validAppName:  data[x].validAppName,
+                    validCompName: data[x].validCompName,
+                    configurationItemAppName:  data[x].configurationItemAppName,
+                    configurationItemCompName:  data[x].configurationItemCompName,
                 });
             }
         }

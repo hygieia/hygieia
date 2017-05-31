@@ -3,8 +3,6 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.*;
 import org.bson.types.ObjectId;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 

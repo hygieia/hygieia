@@ -1,17 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Application;
-import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.Service;
-import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -60,6 +50,8 @@ public class DashboardServiceTest {
     private ServiceRepository serviceRepository;
     @Mock
     private CustomRepositoryQuery customRepositoryQuery;
+    @Mock
+    private CmdbService cmdbService;
 
     @InjectMocks
     private DashboardServiceImpl dashboardService;
@@ -80,7 +72,12 @@ public class DashboardServiceTest {
         ObjectId configItemAppId = ObjectId.get();
         ObjectId configItemComponentId = ObjectId.get();
         Dashboard expected = makeTeamDashboard("template", "title", "AppName", "",configItemAppId,configItemComponentId,"comp1");
+        when(cmdbService.configurationItemsByObjectId(configItemAppId)).thenReturn(getConfigItemApp(configItemAppId));
+
+        when(cmdbService.configurationItemsByObjectId(configItemComponentId)).thenReturn(getConfigItemComp(configItemComponentId));
         when(dashboardRepository.findOne(id)).thenReturn(expected);
+
+
 
         assertThat(dashboardService.get(id), is(expected));
     }
@@ -538,5 +535,19 @@ public class DashboardServiceTest {
         w.setId(id);
         w.setName("updated");
         return w;
+    }
+    private Cmdb getConfigItemApp(ObjectId objectId){
+        Cmdb cmdb1 = new Cmdb();
+        cmdb1.setId(objectId);
+        cmdb1.setConfigurationItem("ASVTEST");
+        cmdb1.setValidConfigItem(true);
+        return cmdb1;
+    }
+    private Cmdb getConfigItemComp(ObjectId objectId){
+        Cmdb cmdb1 = new Cmdb();
+        cmdb1.setId(objectId);
+        cmdb1.setConfigurationItem("BAPTEST");
+        cmdb1.setValidConfigItem(true);
+        return cmdb1;
     }
 }
