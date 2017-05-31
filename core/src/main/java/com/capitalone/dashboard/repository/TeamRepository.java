@@ -2,6 +2,8 @@ package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.Team;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -32,4 +34,6 @@ public interface TeamRepository extends CrudRepository<Team, ObjectId>,
 
     @Query(value = "{ 'collectorId' : ?0 }")
     List<Team> findByCollectorId(ObjectId collectorId);
+
+    Page<Team> findAllByCollectorIdAndNameContainingIgnoreCase(ObjectId collectorId, String name, Pageable pageable);
 }

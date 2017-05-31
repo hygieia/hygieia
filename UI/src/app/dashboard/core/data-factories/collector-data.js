@@ -21,11 +21,11 @@
             getCollectorItem : getCollectorItem,
             collectorsByType: collectorsByType,
             encrypt: encrypt,
-            getCollecterItem:getCollectorItem
+            getCollectorItemById:getCollectorItemById
 
         };
 
-        function getCollectorItem(id) {
+        function getCollectorItemById(id) {
             return $http.get(itemRoute + '/'+id).then(function (response) {
                 return response.data;
             });
