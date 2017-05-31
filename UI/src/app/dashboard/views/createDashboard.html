@@ -22,42 +22,6 @@
             </select>
         </form-group>
 
-        <form-group  input="configurationItemApp" novalidate>
-            <input
-                type="text"
-                name="configurationItemApp"
-                ng-model="ctrl.configurationItemApp"
-                class="form-control"
-                placeholder="Select an App (Optional)"
-                uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue) "
-                typeahead-wait-ms="250" autocomplete="off"
-                typeahead-min-length="0"
-                typeahead-editable="false"
-                typeahead-on-select="ctrl.setConfigItemAppId(ctrl.configurationItemApp.id)"
-                typeahead-no-results="noResults" />
-            <div class="form-control" ng-show="noResults">
-                No Results Found
-            </div>
-        </form-group>
-
-        <form-group input="configurationItemComponent" novalidate>
-            <input
-                    type="text"
-                    name="configurationItemComponent"
-                    ng-model="ctrl.configurationItemComponent"
-                    class="form-control"
-                    placeholder="Select a Component (Optional)"
-                    uib-typeahead="configItemComp as configItemComp.configurationItem for configItemComp in ctrl.getConfigItem('component',$viewValue)"
-                    typeahead-wait-ms="250" autocomplete="off"
-                    typeahead-min-length="0"
-                    typeahead-editable="false"
-                    typeahead-on-select="ctrl.setConfigItemComponentId(ctrl.configurationItemComponent.id)"
-                    typeahead-no-results="noResults" />
-            <div class="form-control" ng-show="noResults">
-                No Results Found
-            </div>
-        </form-group>
-
         <form-group input="dashboardTitle" errors="{required: 'Dashboard title is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters', createError: 'Error creating dashboard. Change title and try again.', pattern : 'Special character(s) found. Please enter only letters, numbers or spaces.'}">
             <input
                 type="text"
@@ -83,6 +47,42 @@
                 maxlength="50"
                 autocomplete="off"
                 required />
+        </form-group>
+
+        <form-group  input="configurationItemApp" novalidate>
+            <input
+                    type="text"
+                    name="configurationItemApp"
+                    ng-model="ctrl.configurationItemApp"
+                    class="form-control"
+                    placeholder="Select a Business Service (Optional)"
+                    uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue) "
+                    typeahead-wait-ms="250" autocomplete="off"
+                    typeahead-min-length="0"
+                    typeahead-editable="false"
+                    typeahead-on-select="ctrl.setConfigItemAppId(ctrl.configurationItemApp.id)"
+                    typeahead-no-results="noResults" />
+            <div class="form-control" ng-show="noResults">
+                No Results Found
+            </div>
+        </form-group>
+
+        <form-group ng-show="ctrl.dashboardType.id != 'product'" input="configurationItemComponent" novalidate>
+            <input
+                    type="text"
+                    name="configurationItemComponent"
+                    ng-model="ctrl.configurationItemComponent"
+                    class="form-control"
+                    placeholder="Select a Business Application (Optional)"
+                    uib-typeahead="configItemComp as configItemComp.configurationItem for configItemComp in ctrl.getConfigItem('component',$viewValue)"
+                    typeahead-wait-ms="250" autocomplete="off"
+                    typeahead-min-length="0"
+                    typeahead-editable="false"
+                    typeahead-on-select="ctrl.setConfigItemComponentId(ctrl.configurationItemComponent.id)"
+                    typeahead-no-results="noResults" />
+            <div class="form-control" ng-show="noResults">
+                No Results Found
+            </div>
         </form-group>
 
         <div class="button-row row text-center">

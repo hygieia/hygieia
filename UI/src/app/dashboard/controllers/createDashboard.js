@@ -38,7 +38,6 @@
         ctrl.getConfigItem = getConfigItem;
         ctrl.setConfigItemAppId = cmdbData.setConfigItemAppId;
         ctrl.setConfigItemComponentId = cmdbData.setConfigItemComponentId;
-        ctrl.appendTitle = appendTitle;
 
         (function() {
             var types = dashboardData.types();
@@ -82,7 +81,11 @@
             if(templates.length == 1) {
                 ctrl.selectedTemplate = templates[0];
             }
+            if(ctrl.dashboardType.id === "product"){
 
+            }else{
+                
+            }
             ctrl.availableTemplates = templates;
         }
 
@@ -94,10 +97,9 @@
 
             if (form.$valid) {
                 var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
-                    title = ctrl.appendTitle(document.cdf.dashboardTitle.value, document.cdf.configurationItemApp.value,document.cdf.configurationItemComponent.value),
                     submitData = {
                         template: document.cdf.selectedTemplate.value,
-                        title:  title,
+                        title:  document.cdf.dashboardTitle.value,
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
@@ -125,14 +127,6 @@
 
         function isTeamDashboardSelected() {
             return ctrl.dashboardType && ctrl.dashboardType.id == DashboardType.TEAM;
-        }
-        function appendTitle(titleName, appName, compName){
-
-            var configurationItemAppName = appName ?  "-" +appName : "";
-            var configurationItemCompName = compName ?  "-" +compName : "";
-            var title = titleName + configurationItemAppName + configurationItemCompName;
-
-            return title ;
         }
     }
 })();

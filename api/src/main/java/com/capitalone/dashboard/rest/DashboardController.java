@@ -49,15 +49,9 @@ public class DashboardController {
     public ResponseEntity<Dashboard> createDashboard(@Valid @RequestBody DashboardRequest request) {
         try {
 
-            if(isUniqueAppCompComp(request)){
-                return ResponseEntity
-                        .status(HttpStatus.CREATED)
-                        .body(dashboardService.create(request.toDashboard()));
-            }else{
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(null);
-            }
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(dashboardService.create(request.toDashboard()));
 
         } catch (HygieiaException he) {
             return ResponseEntity

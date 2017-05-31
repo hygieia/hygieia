@@ -37,9 +37,9 @@ public class Dashboard extends BaseModel {
     //Ignore Updates
     @Transient
     private String configurationItemCompName;
-
+    //@Indexed(unique=true)
     private ObjectId configurationItemAppObjectId;
-
+    //@Indexed(unique=true)
     private ObjectId configurationItemComponentObjectId;
 
     private boolean validAppName;
