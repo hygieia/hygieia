@@ -41,15 +41,12 @@ dbusername=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_USERNAME:-db}
 #Database Password - default is blank
 dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
-# Logging File location
-logging.file=./logs/hpsm.log
-
 #Collector schedule (required)
 hpsm.cron=${HPSM_CRON:-* * 1 * * *}
 
 #Api Details
-hpsm.server=${HPSM_SERVER:kdcqsmapp01.kdc.capitalone.com}
-hpsm.port=${HPSM_PORT:13116}
+hpsm.server=${HPSM_SERVER:}
+hpsm.port=${HPSM_PORT:}
 hpsm.protocol=${HPSM_PROTOCOL:http}
 hpsm.resource=${HPSM_RESOURCE:SM/7/ws/}
 hpsm.contentType=${HPSM_CONTENTTYPE:text/xml}
@@ -60,13 +57,13 @@ hpsm.user=${HPSM_USER:}
 hpsm.pass=${HPSM_PASS:}
 
 #Api App Query settings
-hpsm.appSubType=${HPSM_APP_SUBTYPE:Application Service}
+hpsm.appSubType=${HPSM_APP_SUBTYPE:}
 hpsm.appType=${HPSM_APP_TYPE:}
-hpsm.appStatus=${HPSM_APP_STATUS:In Use}
+hpsm.appStatus=${HPSM_APP_STATUS:}
 
 #Api Component Query settings
-hpsm.compSubType=${HPSM_COMP_SUBTYPE:Business}
-hpsm.compType=${HPSM_COMP_TYPE:application}
+hpsm.compSubType=${HPSM_COMP_SUBTYPE:}
+hpsm.compType=${HPSM_COMP_TYPE:}
 
 #API app details
 hpsm.detailsRequestType=${HPSM_REQUEST_TYPE:RetrieveDeviceListRequest}
