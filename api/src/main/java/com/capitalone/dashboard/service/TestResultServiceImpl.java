@@ -92,7 +92,7 @@ public class TestResultServiceImpl implements TestResultService {
 
     private void validateTestCapabilities(TestResultRequest request, QTestResult testResult, BooleanBuilder builder) {
         if (!request.getTypes().isEmpty()) {
-            // builder.and(testResult.testCapabilities.any().type.in(request.getTypes()));
+            builder.and(testResult.testCapabilities.any().type.in(request.getTypes()));
         }
     }
 

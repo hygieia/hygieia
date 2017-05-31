@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.model;
 
-import org.json.simple.JSONArray;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class MaturityModel {
     @Indexed
     private String profile;
-    private JSONArray rules;
+    private String rules;
 
     public String getProfile() {
         return profile;
@@ -18,11 +17,11 @@ public class MaturityModel {
         this.profile = profile;
     }
 
-    public JSONArray getRules() {
+    public String getRules() {
         return rules;
     }
 
-    public void setRules(JSONArray rules) {
+    public void setRules(String rules) {
         this.rules = rules;
     }
 }
