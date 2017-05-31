@@ -113,7 +113,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             String configItem = cmdb.getConfigurationItem();
 
             if(configurationItemNameList != null && !configurationItemNameList.contains(configItem)){
-                cmdb.setValid(false);
+                cmdb.setValidConfigItem(false);
                 cmdbRepository.save(cmdb);
                 inValidCount++;
             }
