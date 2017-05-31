@@ -119,7 +119,7 @@
 
 
 
-                performanceData.appPerformance({componentId: $scope.widgetConfig.componentId}).then(function(data) {
+                performanceData.appPerformance({componentId: $scope.widgetConfig.componentId,max:20}).then(function(data) {
                     processResponse(data.result);
                     deferred.resolve(data.lastUpdated);
                 });
