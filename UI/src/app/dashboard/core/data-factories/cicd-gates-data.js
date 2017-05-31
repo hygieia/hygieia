@@ -169,9 +169,10 @@
   var fillDetails = function(data, $q, name, dashboardId, collectorItemId, componentId) {
     var defer = $q.defer();
     var allTasks = [];
-    for (var i = 0; i < data.length; i++) {
-      allTasks.push(factoryCaller(data[i], $q, name, dashboardId, collectorItemId, componentId));
-    }
+
+    _(data).forEach(function (gate) {
+      allTasks.push(factoryCaller(gate, $q, name, dashboardId, collectorItemId, componentId));
+    });
     $q.all(allTasks).then(function(res) {
       defer.resolve(res);
     });
@@ -200,7 +201,8 @@
         return $http.get(HygieiaConfig.local ? testDetailRoute : detailRoute + '/' + profileId)
           .then(function(response) {
             var data = response.data.rules;
-            return fillDetails(data, $q, name, dashboardId, collectorItemId, componentId).then(function(d) {
+            var jsonObj = JSON.parse(data);
+            return fillDetails(jsonObj, $q, name, dashboardId, collectorItemId, componentId).then(function(d) {
               return d;
             });
           });
