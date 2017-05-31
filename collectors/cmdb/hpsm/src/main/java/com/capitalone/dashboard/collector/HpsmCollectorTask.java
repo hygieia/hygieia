@@ -6,7 +6,6 @@ import com.capitalone.dashboard.model.HpsmCollector;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.HpsmRepository;
-import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
