@@ -103,9 +103,9 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     }
 
     /**
-     *  Takes configurationItemNameList (list of all APP/component names) and List<Cmdb> from client and removes old items from mongo
+     *  Takes configurationItemNameList (list of all APP/component names) and List<Cmdb> from client and sets flag to false for old items in mongo
      * @param configurationItemNameList
-     * @return return count of items removed
+     * @return return count of items invalidated
      */
     private int cleanUpOldCmdbItems(List<String> configurationItemNameList) {
         int inValidCount = 0;
@@ -113,7 +113,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             String configItem = cmdb.getConfigurationItem();
 
             if(configurationItemNameList != null && !configurationItemNameList.contains(configItem)){
-                cmdb.setValid(false);
+                cmdb.setValidConfigItem(false);
                 cmdbRepository.save(cmdb);
                 inValidCount++;
             }

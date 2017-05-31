@@ -28,7 +28,7 @@ public class Cmdb {
     private String ownerDept;
     private String commonName;
     private String itemType;
-    private boolean isValid;
+    private boolean validConfigItem;
 
     public ObjectId getId() {
         return id;
@@ -174,12 +174,13 @@ public class Cmdb {
         this.developmentOwnerUserName = developmentOwnerUserName;
     }
 
-    public boolean isValid() {
-        return isValid;
+
+    public boolean isValidConfigItem() {
+        return validConfigItem;
     }
 
-    public void setValid(boolean valid) {
-        isValid = valid;
+    public void setValidConfigItem(boolean validConfigItem) {
+        this.validConfigItem = validConfigItem;
     }
 
     @Override
@@ -220,7 +221,7 @@ public class Cmdb {
     @Override
     public String toString() {
 
-        StringBuffer buf = new StringBuffer(188);
+        StringBuffer buf = new StringBuffer(210);
         buf.append("configurationItem: ")
                 .append(configurationItem)
                 .append("\nassignmentGroup: ")
@@ -240,7 +241,9 @@ public class Cmdb {
                 .append("\nconfigurationItemSubType: ")
                 .append(configurationItemSubType)
                 .append("\nconfigurationItemType: ")
-                .append(configurationItemType);
+                .append(configurationItemType)
+                .append("\nvalidConfigItem: ")
+                .append(validConfigItem);
 
         return buf.toString();
     }
