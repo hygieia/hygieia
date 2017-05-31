@@ -33,7 +33,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                                 HpsmRepository hpsmRepository,
                                 CmdbRepository cmdbRepository,
                                 HpsmClient hpsmClient) {
-        super(taskScheduler, FeatureCollectorConstants.HPSM);
+        super(taskScheduler, "Hpsm");
 
         this.hpsmSettings = hpsmSettings;
         this.hpsmRepository = hpsmRepository;
