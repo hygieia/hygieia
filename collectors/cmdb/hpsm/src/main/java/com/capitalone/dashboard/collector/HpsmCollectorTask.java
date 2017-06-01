@@ -6,7 +6,6 @@ import com.capitalone.dashboard.model.HpsmCollector;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.HpsmRepository;
-import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CollectorTask that fetches Commit information from GitHub
+ * CollectorTask that fetches configuration item data from HPSM
  */
 @Component
 public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
@@ -33,7 +32,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                                 HpsmRepository hpsmRepository,
                                 CmdbRepository cmdbRepository,
                                 HpsmClient hpsmClient) {
-        super(taskScheduler, FeatureCollectorConstants.HPSM);
+        super(taskScheduler, "Hpsm");
 
         this.hpsmSettings = hpsmSettings;
         this.hpsmRepository = hpsmRepository;

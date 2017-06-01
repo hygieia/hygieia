@@ -14,7 +14,6 @@ public final class FeatureCollectorConstants {
         public static final String JIRA = "Jira";
         public static final String VERSIONONE = "VersionOne";
         public static final String GITLAB = "GitlabFeature";
-        public static final String HPSM = "Hpsm";
         @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
         // not an IP
         public static final String AGENT_VER = "01.00.00.01";
