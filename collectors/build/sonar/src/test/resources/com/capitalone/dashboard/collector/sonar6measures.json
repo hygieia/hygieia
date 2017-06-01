@@ -1,0 +1,148 @@
+{"component": {
+    "id": "AVu3b-MAphY78UZXuYHp",
+    "key": "com.capitalone.test:TestProject",
+    "name": "com.capitalone.test:TestProject",
+    "description": "Spring Boot Starter Parent",
+    "qualifier": "TRK",
+    "measures": [
+      {
+        "metric": "test_errors",
+        "value": "0",
+        "periods": [
+          {
+            "index": 1,
+            "value": "0"
+          }
+        ]
+      },
+      {
+        "metric": "coverage",
+        "value": "26.4",
+        "periods": [
+          {
+            "index": 1,
+            "value": "26.4"
+          }
+        ]
+      },
+      {
+        "metric": "test_success_density",
+        "value": "100.0",
+        "periods": [
+          {
+            "index": 1,
+            "value": "100.0"
+          }
+        ]
+      },
+      {
+        "metric": "ncloc",
+        "value": "26518",
+        "periods": [
+          {
+            "index": 1,
+            "value": "1730"
+          }
+        ]
+      },
+      {
+        "metric": "alert_status",
+        "value": "ERROR"
+      },
+      {
+        "metric": "sqale_index",
+        "value": "6225",
+        "periods": [
+          {
+            "index": 1,
+            "value": "165"
+          }
+        ]
+      },
+      {
+        "metric": "quality_gate_details",
+        "value": "{\"level\":\"ERROR\",\"conditions\":[{\"metric\":\"new_security_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"},{\"metric\":\"new_reliability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"2\",\"level\":\"ERROR\"},{\"metric\":\"new_maintainability_rating\",\"op\":\"GT\",\"period\":1,\"error\":\"1\",\"actual\":\"1\",\"level\":\"OK\"}]}"
+      },
+      {
+        "metric": "critical_violations",
+        "value": "243",
+        "periods": [
+          {
+            "index": 1,
+            "value": "5"
+          }
+        ]
+      },
+      {
+        "metric": "line_coverage",
+        "value": "25.9",
+        "periods": [
+          {
+            "index": 1,
+            "value": "25.9"
+          }
+        ]
+      },
+      {
+        "metric": "vulnerabilities",
+        "value": "2",
+        "periods": [
+          {
+            "index": 1,
+            "value": "0"
+          }
+        ]
+      },
+      {
+        "metric": "violations",
+        "value": "1048",
+        "periods": [
+          {
+            "index": 1,
+            "value": "91"
+          }
+        ]
+      },
+      {
+        "metric": "major_violations",
+        "value": "510",
+        "periods": [
+          {
+            "index": 1,
+            "value": "2"
+          }
+        ]
+      },
+      {
+        "metric": "tests",
+        "value": "419",
+        "periods": [
+          {
+            "index": 1,
+            "value": "419"
+          }
+        ]
+      },
+      {
+        "metric": "test_failures",
+        "value": "0",
+        "periods": [
+          {
+            "index": 1,
+            "value": "0"
+          }
+        ]
+      },
+      {
+        "metric": "blocker_violations",
+        "value": "5",
+        "periods": [
+          {
+            "index": 1,
+            "value": "0"
+          }
+        ]
+      }
+    ]
+  }
+}

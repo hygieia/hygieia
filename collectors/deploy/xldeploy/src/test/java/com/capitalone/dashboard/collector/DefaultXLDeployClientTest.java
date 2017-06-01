@@ -106,7 +106,7 @@ public class DefaultXLDeployClientTest {
         
         assertThat(((String)entCaptor.getValue().getBody()).replaceAll("(\r|\n|\t)", ""), is(appHistPostXml.replaceAll("(\r|\n|\t)", "")));
         
-        assertThat(hist.size(), is(2));
+        assertThat(hist.size(), is(3));
         assertThat(hist.get(0).getEnvironmentName(), is("QA01"));
         assertThat(hist.get(0).getDeploymentPackage(), is("Helloworld/helloworld-v1.0.0"));
         assertThat(hist.get(0).getEnvironmentId(), is("Environments/qa/QA01"));
@@ -119,6 +119,9 @@ public class DefaultXLDeployClientTest {
         
         assertThat(hist.get(1).getEnvironmentName(), is("Production"));
         assertThat(hist.get(1).getDeploymentPackage(), is("Helloworld/helloworld-v1.0.0"));
+        
+        assertThat(hist.get(2).getEnvironmentName(), is("Production"));
+        assertThat(hist.get(2).getDeploymentPackage(), is("Helloworld/helloworld-v1.0.1"));
     }
     
     private String getXml(String fileName) throws IOException {

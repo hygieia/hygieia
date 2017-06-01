@@ -31,12 +31,14 @@
 
 		var testProjectsByCollectorId = 'test-data/teams.json';
 		var buildProjectsByCollectorId = '/api/scopecollector/';
+		var buildProjectsByCollectorIdPage = '/api/scopecollector/page/';
 
 		var testTeamsRoute = 'test-data/teams.json';
 		var buildTeamsRoute = '/api/team';
 
 		var testTeamsByCollectorId = 'test-data/teams.json';
 		var buildTeamsByCollectorId = '/api/teamcollector/';
+		var buildTeamsByCollectorIdPage = '/api/teamcollector/page/';
 
 		return {
 			sprintMetrics : aggregateSprintEstimates,
@@ -45,7 +47,9 @@
 			teams : teams,
 			teamsByCollectorId : teamsByCollectorId,
 			projects : projects,
-			projectsByCollectorId : projectsByCollectorId
+			projectsByCollectorId : projectsByCollectorId,
+			projectsByCollectorIdPaginated:projectsByCollectorIdPaginated,
+			teamsByCollectorIdPaginated:teamsByCollectorIdPaginated
 		};
 		
 		function aggregateSprintEstimates(componentId, filterTeamId, filterProjectId, estimateMetricType, agileType) {
@@ -100,6 +104,19 @@
 		}
 
 		/**
+		 * Retrieves projects by  collector ID
+		 *
+		 * @param collectorId
+		 */
+		function projectsByCollectorIdPaginated(collectorId,params) {
+			return $http.get(HygieiaConfig.local ? testProjectsByCollectorId : buildProjectsByCollectorIdPage + collectorId,{params: params})
+				.then(function(response) {
+					return response.data;
+				});
+		}
+
+
+		/**
 		 * Retrieves teams by  collector ID
 		 *
 		 * @param collectorId
@@ -110,6 +127,19 @@
 						return response.data;
 					});
 		}
+
+		/**
+		 * Retrieves teams by  collector ID
+		 *
+		 * @param collectorId
+		 */
+		function teamsByCollectorIdPaginated(collectorId,params) {
+			return $http.get(HygieiaConfig.local ? testTeamsByCollectorId : buildTeamsByCollectorIdPage + collectorId,{params: params})
+				.then(function(response) {
+					return response.data;
+				});
+		}
+
 		
 		/**
          * Retrieves all projects

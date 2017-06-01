@@ -1,19 +1,25 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.Authentication;
-import com.capitalone.dashboard.repository.AuthenticationRepository;
+import java.util.ArrayList;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import com.capitalone.dashboard.model.AuthType;
+import com.capitalone.dashboard.model.Authentication;
+import com.capitalone.dashboard.repository.AuthenticationRepository;
+
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService {
+public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthenticationRepository authenticationRepository;
 
     @Autowired
-    public AuthenticationServiceImpl(
+    public DefaultAuthenticationServiceImpl(
             AuthenticationRepository authenticationRepository) {
         this.authenticationRepository = authenticationRepository;
     }
@@ -32,15 +38,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public String create(String username, String password) {
-        Authentication authentication = new Authentication(username, password);
-        try {
-            authenticationRepository.save(authentication);
-            return "User is created";
-        } catch (DuplicateKeyException e) {
-            return "User already exists";
-        }
-
+    public org.springframework.security.core.Authentication create(String username, String password) {
+        Authentication authentication = authenticationRepository.save(new Authentication(username, password));
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(), new ArrayList<GrantedAuthority>());
+        token.setDetails(AuthType.STANDARD);
+        return token;
     }
 
     @Override
@@ -74,14 +76,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public boolean authenticate(String username, String password) {
-        boolean flag = false;
+    public org.springframework.security.core.Authentication authenticate(String username, String password) {
         Authentication authentication = authenticationRepository.findByUsername(username);
 
         if (authentication != null && authentication.checkPassword(password)) {
-            flag = true;
+        	return new UsernamePasswordAuthenticationToken(authentication.getUsername(), authentication.getPassword(), new ArrayList<GrantedAuthority>());
         }
-        return flag;
-    }
 
+        throw new BadCredentialsException("Login Failed: Invalid credentials for user " + username);
+    }
+    
 }

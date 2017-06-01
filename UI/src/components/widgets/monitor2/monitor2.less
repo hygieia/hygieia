@@ -1,0 +1,58 @@
+@import (reference) '../../../../bower_components/bootstrap/less/mixins/gradients.less';
+@import (reference) '../../../app/css/mixins.less';
+@import (reference) '../../../app/css/variables.less';
+
+.monitor2-row {
+  .text-lg;
+
+  .dash-status {
+    margin-right: .75rem;
+  }
+}
+
+.monitor2-config {
+  .control-label {
+    font-weight: normal;
+  }
+
+  section header {
+    text-transform: uppercase;
+    letter-spacing: .2rem;
+    border-bottom: 1px solid @dash-modal-divider;
+    padding-bottom: .5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.monitor2-modal-buttons {
+  .btn {
+    border: 1px solid @btn-default-border;
+    font-size: 2rem;
+
+    .border-radius(50%);
+
+    &.selected {
+      background-color: @btn-default-border;
+    }
+
+    &:hover {
+      background-color: @btn-default-border;
+    }
+  }
+
+  .monitor2-button-fail {
+    color: @dash-status-fail;
+  }
+
+  .monitor2-button-warn {
+    color: @dash-status-warn;
+  }
+
+  .monitor2-button-pass {
+    color: @dash-status-pass;
+  }
+}
+
+.modal-view-status-input {
+  resize: none;
+}

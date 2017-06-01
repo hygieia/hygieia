@@ -1,9 +1,11 @@
 package com.capitalone.dashboard.config;
 
+import com.capitalone.dashboard.service.LibraryPolicyService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.capitalone.dashboard.auth.AuthenticationResponseService;
 import com.capitalone.dashboard.service.AuthenticationService;
 import com.capitalone.dashboard.service.BinaryArtifactService;
 import com.capitalone.dashboard.service.BuildService;
@@ -23,7 +25,11 @@ import com.capitalone.dashboard.service.ScopeService;
 import com.capitalone.dashboard.service.ServiceService;
 import com.capitalone.dashboard.service.TeamService;
 import com.capitalone.dashboard.service.TestResultService;
+import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
+import com.capitalone.dashboard.service.Monitor2Service;
+import com.capitalone.dashboard.service.PerformanceService;
+
 
 /**
  * Spring context configuration for Testing purposes
@@ -34,6 +40,11 @@ public class TestConfig {
 	@Bean
 	public AuthenticationService authenticationService() {
 		return Mockito.mock(AuthenticationService.class);
+	}
+	
+	@Bean
+	public AuthenticationResponseService authenticationResponseService() {
+		return Mockito.mock(AuthenticationResponseService.class);
 	}
 
 	@Bean
@@ -134,5 +145,25 @@ public class TestConfig {
 	@Bean
 	public TeamService teamService() {
 		return Mockito.mock(TeamService.class);
+	}
+
+	@Bean
+	public LibraryPolicyService libraryPolicyService() {
+		return Mockito.mock(LibraryPolicyService.class);
+	}
+
+	@Bean
+	public PerformanceService performanceService(){
+		return Mockito.mock(PerformanceService.class);
+	}
+
+	@Bean
+	public Monitor2Service monitor2Service(){
+		return Mockito.mock(Monitor2Service.class);
+	}
+
+	@Bean
+	public UserInfoService userInfoService() {
+	    return Mockito.mock(UserInfoService.class);
 	}
 }

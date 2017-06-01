@@ -1,9 +1,8 @@
 package com.capitalone.dashboard.request;
 
-import javax.validation.constraints.NotNull;
-
 import com.capitalone.dashboard.model.SCM;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

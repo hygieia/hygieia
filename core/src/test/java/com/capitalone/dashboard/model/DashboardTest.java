@@ -1,10 +1,9 @@
 package com.capitalone.dashboard.model;
 
+import com.capitalone.dashboard.util.PipelineUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.capitalone.dashboard.util.PipelineUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +51,7 @@ public class DashboardTest {
             app.addComponent(new Component(compName));
         }
 
-        Dashboard dashboard = new Dashboard(template, title, app, owner, DashboardType.Team);
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team);
         return dashboard;
     }
 
