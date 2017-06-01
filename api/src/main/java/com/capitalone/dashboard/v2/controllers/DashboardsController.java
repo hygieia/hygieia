@@ -14,6 +14,7 @@ import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitalone.dashboard.model.Dashboard;
@@ -27,8 +28,8 @@ public class DashboardsController {
     private DashboardService dashboardService;
 
     @RequestMapping(method = GET)
-    public Resources<Resource<Dashboard>> getDashboards() {
-        Iterable<Dashboard> dashboards = dashboardService.all();
+    public Resources<Resource<Dashboard>> getDashboards(@RequestParam(defaultValue="false", required=false) Boolean owned) {
+        Iterable<Dashboard> dashboards = owned ? dashboardService.getOwnedDashboards() : dashboardService.all();
         
         Collection<Resource<Dashboard>> dashboardsWithLinks = new ArrayList<>();
         dashboards.forEach(dashboard -> {
@@ -38,7 +39,7 @@ public class DashboardsController {
         });
         
         Resources<Resource<Dashboard>> resources = new Resources<>(dashboardsWithLinks);
-        resources.add(linkTo(methodOn(DashboardsController.class).getDashboards()).withSelfRel());
+        resources.add(linkTo(methodOn(DashboardsController.class).getDashboards(owned)).withSelfRel());
         
         return resources;
     }
