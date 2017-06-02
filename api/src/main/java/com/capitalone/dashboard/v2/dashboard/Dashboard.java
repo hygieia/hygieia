@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.v2.dtos;
+package com.capitalone.dashboard.v2.dashboard;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,12 +6,13 @@ import java.util.List;
 
 import org.springframework.hateoas.ResourceSupport;
 
+import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 
-public class DashboardDTO extends ResourceSupport {
+public class Dashboard extends ResourceSupport {
 
     private String dashboardId;
     private String template;
@@ -21,9 +22,19 @@ public class DashboardDTO extends ResourceSupport {
     private DashboardType type;
     private Application application;
     
-    public DashboardDTO() {
+    public Dashboard() {
         widgets = new ArrayList<>();
         owners = new ArrayList<>();
+    }
+    
+    public Dashboard(com.capitalone.dashboard.model.Dashboard dashboard) {
+        this.dashboardId = dashboard.getId().toHexString();
+        this.template = dashboard.getTemplate();
+        this.title = dashboard.getTitle();
+        this.type = dashboard.getType();
+        this.widgets = dashboard.getWidgets();
+        this.owners = dashboard.getOwners();
+        this.application = dashboard.getApplication();
     }
 
     public String getDashboardId() {
@@ -80,6 +91,13 @@ public class DashboardDTO extends ResourceSupport {
 
     public void setApplication(Application application) {
         this.application = application;
+    }
+    
+    public com.capitalone.dashboard.model.Dashboard toDomainModel() {
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        com.capitalone.dashboard.model.Dashboard dashboard = new com.capitalone.dashboard.model.Dashboard(this.template, this.title, this.application, owner, this.type);
+        
+        return dashboard;
     }
     
 }

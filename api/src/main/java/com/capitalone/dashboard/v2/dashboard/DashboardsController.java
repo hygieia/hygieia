@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.v2.controllers;
+package com.capitalone.dashboard.v2.dashboard;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.service.DashboardService;
-import com.capitalone.dashboard.v2.dtos.DashboardDTO;
-import com.capitalone.dashboard.v2.utilities.ResourceConversionUtility;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -35,31 +32,28 @@ public class DashboardsController {
     @Autowired
     private DashboardService dashboardService;
     
-    @Autowired
-    private ResourceConversionUtility converter;
-
     @ApiOperation(value = "Get all dashboards", notes = "This operation will return all the dashboards, there is an optional query parameter for just returning dashboards you own.")
     @RequestMapping(method = GET)
-    public Resources<DashboardDTO> getDashboards(@RequestParam(defaultValue="false", required=false) Boolean owned) {
-        Iterable<Dashboard> dashboards = owned ? dashboardService.getOwnedDashboards() : dashboardService.all();
+    public Resources<Dashboard> getDashboards(@RequestParam(defaultValue="false", required=false) Boolean owned) {
+        Iterable<com.capitalone.dashboard.model.Dashboard> dashboards = owned ? dashboardService.getOwnedDashboards() : dashboardService.all();
         
-        Collection<DashboardDTO> dashboardsWithLinks = new ArrayList<>();
+        Collection<Dashboard> dashboardsWithLinks = new ArrayList<>();
         dashboards.forEach(dashboard -> {
-            DashboardDTO resource = converter.toDashboardDTO(dashboard);
+            Dashboard resource = new Dashboard(dashboard);
             Link link = linkTo(methodOn(DashboardsController.class).getDashboard(resource.getDashboardId())).withSelfRel();
             resource.add(link);
             dashboardsWithLinks.add(resource);
         });
         
-        Resources<DashboardDTO> resources = new Resources<>(dashboardsWithLinks);
+        Resources<Dashboard> resources = new Resources<>(dashboardsWithLinks);
         resources.add(linkTo(methodOn(DashboardsController.class).getDashboards(owned)).withSelfRel());
         
         return resources;
     }
     
     @RequestMapping(value = "/{id}", method = GET)
-    public DashboardDTO getDashboard(@PathVariable String id) {
-        DashboardDTO dashboard = converter.toDashboardDTO(dashboardService.get(new ObjectId(id)));
+    public Dashboard getDashboard(@PathVariable String id) {
+        Dashboard dashboard = new Dashboard(dashboardService.get(new ObjectId(id)));
         Link link = linkTo(methodOn(DashboardsController.class).getDashboard(dashboard.getDashboardId())).withSelfRel();
         dashboard.add(link);
         return dashboard;
@@ -67,10 +61,10 @@ public class DashboardsController {
     
     @ApiOperation(value = "Create new Dashboard", code = 201)
     @RequestMapping(method = POST)
-    public ResponseEntity<DashboardDTO> createDashboard(@RequestBody DashboardDTO dashboard) {
+    public ResponseEntity<Dashboard> createDashboard(@RequestBody Dashboard dashboard) {
         try {
-            Dashboard createdDashboard = dashboardService.create(converter.toDashboard(dashboard));
-            DashboardDTO resource = converter.toDashboardDTO(createdDashboard);
+            com.capitalone.dashboard.model.Dashboard createdDashboard = dashboardService.create(dashboard.toDomainModel());
+            Dashboard resource = new Dashboard(createdDashboard);
             Link link = linkTo(methodOn(DashboardsController.class).getDashboard(resource.getDashboardId())).withSelfRel();
             resource.add(link);
             return ResponseEntity.status(HttpStatus.CREATED).body(resource);

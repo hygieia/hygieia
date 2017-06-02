@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.v2.controllers;
+package com.capitalone.dashboard.v2.application;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -7,6 +7,8 @@ import org.springframework.hateoas.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.capitalone.dashboard.v2.dashboard.DashboardsController;
 
 @RestController
 @RequestMapping("/v2")
