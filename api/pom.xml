@@ -101,7 +101,6 @@
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-hateoas</artifactId>
-        <version>1.5.2.RELEASE</version>
     </dependency>
 
     <dependency>
