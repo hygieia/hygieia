@@ -1,8 +1,6 @@
 package com.capitalone.dashboard.auth.apitoken;
 
 import com.capitalone.dashboard.auth.AuthenticationResultHandler;
-import com.capitalone.dashboard.auth.standard.StandardAuthenticationToken;
-import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
 import com.capitalone.dashboard.model.AuthType;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +9,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ApiTokenLoginRequestFilterTest {
+public class ApiTokenRequestFilterTest {
 
     @Mock
     private AuthenticationManager manager;
@@ -32,7 +29,7 @@ public class ApiTokenLoginRequestFilterTest {
 
     private String path;
 
-    private ApiTokenLoginRequestFilter filter;
+    private ApiTokenRequestFilter filter;
 
     @Mock
     private HttpServletRequest request;
@@ -42,19 +39,13 @@ public class ApiTokenLoginRequestFilterTest {
 
     @Before
     public void setup() {
-        path = "/login/apitoken";
-        filter = new ApiTokenLoginRequestFilter(path, manager, resultHandler);
+        path = "/**";
+        filter = new ApiTokenRequestFilter(path, manager, resultHandler);
     }
 
     @Test
     public void shouldCreateFilter() {
         assertNotNull(filter);
-    }
-
-    @Test(expected = AuthenticationServiceException.class)
-    public void shouldThrowExceptionIfNoPost() {
-        when(request.getMethod()).thenReturn("GET");
-        filter.attemptAuthentication(request, response);
     }
 
     @Test

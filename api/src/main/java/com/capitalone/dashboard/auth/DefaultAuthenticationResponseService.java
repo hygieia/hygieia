@@ -6,9 +6,11 @@ import java.util.HashSet;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.capitalone.dashboard.auth.apitoken.ApiTokenAuthenticationToken;
 import com.capitalone.dashboard.auth.ldap.CustomUserDetails;
 import com.capitalone.dashboard.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,14 +45,14 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 			emailAddress = ((CustomUserDetails) authentication.getPrincipal()).getEmailAddress();
 		}
 
-        UsernamePasswordAuthenticationToken authenticationWithAuthorities = null;
+		AbstractAuthenticationToken authenticationWithAuthorities = null;
 
 		AuthType authType = (AuthType)authentication.getDetails();
         if (authType == AuthType.APIKEY) {
             Collection<UserRole> roles = new ArrayList<>();
             roles.add(UserRole.ROLE_API);
 
-            authenticationWithAuthorities = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
+            authenticationWithAuthorities = new ApiTokenAuthenticationToken(authentication.getPrincipal(),
                     authentication.getCredentials(), createAuthorities(roles));
             authenticationWithAuthorities.setDetails(authentication.getDetails());
         } else {

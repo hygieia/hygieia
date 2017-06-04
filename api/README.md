@@ -241,7 +241,7 @@ A secure variable's value is by default not visible in the build log and can onl
 
 From the admin menu, generate an "apitoken" for an "apiuser"
 
-Create a POST request with the following 2 headers and retrieve a JWT token for secured API calls.
+Create a POST request with the following 2 headers and make a rest call for secured API.
 
 Add Authorization header
 ```
@@ -253,10 +253,4 @@ Authorization: Basic <authHeader>
 Add apiUser header
 ```
 apiUser <apiuser>
-```
-This POST request results in a JWT token in its response.
-
-Create a followup POST request with the following header to invoke secured APIs.
-```
-Authorization: Bearer <JWT token obtained from the response>
 ```
