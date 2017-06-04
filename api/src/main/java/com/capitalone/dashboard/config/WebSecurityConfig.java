@@ -54,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.antMatchers("/registerUser").permitAll()
 								.antMatchers("/login**").permitAll()
 								//TODO: sample call secured with ROLE_API
-								.antMatchers("/ping").hasAuthority("ROLE_API")
+								//.antMatchers("/ping").hasAuthority("ROLE_API")
 								.antMatchers(HttpMethod.GET, "/**").permitAll()
 								
 								// Temporary solution to allow jenkins plugin to send data to the api
