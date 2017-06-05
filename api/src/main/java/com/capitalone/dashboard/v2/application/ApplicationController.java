@@ -18,7 +18,7 @@ public class ApplicationController {
     public Resource<String> getApi() {
         Resource<String> resource = new Resource<>("Welcome to Hygieia");
         resource.add(linkTo(methodOn(ApplicationController.class).getApi()).withSelfRel(), 
-                linkTo(methodOn(DashboardsController.class).getDashboards(false)).withRel("all-dashboards"),
+                linkTo(methodOn(DashboardsController.class).getDashboards(null)).withRel("dashboards"),
                 linkTo(methodOn(DashboardsController.class).getDashboards(true)).withRel("my-dashboards"));
         
         return resource;

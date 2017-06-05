@@ -61,13 +61,13 @@ public class DashboardsController {
     
     @ApiOperation(value = "Create new Dashboard", code = 201)
     @RequestMapping(method = POST)
-    public ResponseEntity<Dashboard> createDashboard(@RequestBody Dashboard dashboard) {
+    public ResponseEntity<Dashboard> createDashboard(@RequestBody Dashboard dashboardRequest) {
         try {
-            com.capitalone.dashboard.model.Dashboard createdDashboard = dashboardService.create(dashboard.toDomainModel());
-            Dashboard resource = new Dashboard(createdDashboard);
-            Link link = linkTo(methodOn(DashboardsController.class).getDashboard(resource.getDashboardId())).withSelfRel();
-            resource.add(link);
-            return ResponseEntity.status(HttpStatus.CREATED).body(resource);
+            com.capitalone.dashboard.model.Dashboard createdDashboard = dashboardService.create(dashboardRequest.toDomainModel());
+            Dashboard dashboardResponse = new Dashboard(createdDashboard);
+            Link link = linkTo(methodOn(DashboardsController.class).getDashboard(dashboardResponse.getDashboardId())).withSelfRel();
+            dashboardResponse.add(link);
+            return ResponseEntity.status(HttpStatus.CREATED).body(dashboardResponse);
         } catch (HygieiaException he) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
