@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.config;
 
+import com.capitalone.dashboard.service.ApiTokenService;
 import com.capitalone.dashboard.service.LibraryPolicyService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -165,5 +166,10 @@ public class TestConfig {
 	@Bean
 	public UserInfoService userInfoService() {
 	    return Mockito.mock(UserInfoService.class);
+	}
+
+	@Bean
+	public ApiTokenService apiTokenService() {
+		return Mockito.mock(ApiTokenService.class);
 	}
 }
