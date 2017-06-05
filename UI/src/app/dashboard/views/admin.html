@@ -6,6 +6,7 @@
       <ul class="nav nav-pills nav-stacked">
         <li role="presentation" ng-class="{active:tab === 'dashboards'}"><a href ng-click="navigateToTab('dashboards')">Edit Dashboards</a></li>
         <li role="presentation" ng-class="{active:tab === 'users'}"><a href ng-click="navigateToTab('users')">Manage Admins</a></li>
+        <li role="presentation" ng-class="{active:tab === 'apitokens'}"><a href ng-click="navigateToTab('apitokens')">Generate ApiTokens</a></li>
       </ul>
     </div>
 
@@ -99,6 +100,49 @@
                     </div>
                 </div>
               </div>
+            <div ng-show="tab === 'apitokens'">
+                <div class="widget-modal">
+                    <div class="widget-modal-heading">
+                        Generate Api Tokens
+                    </div>
+                    <div class="widget-modal-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="text-center" ng-hide="apitokens">Loading Api Tokens...</div>
+                                <div ng-show="error">
+                                    {{error.data}}
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-15">
+
+                                        <div class="btn-block col-xs-15">
+                                            <span class="col-xs-3"><h3>Api User</h3></span>
+                                            <span class="col-xs-3"><h3>Expiration Date</h3></span>
+                                            <span class="col-xs-6"><button type="button" class="btn btn-primary btn-wide pull-right" ng-click="ctrl.generateToken()">New</button>
+                                            </span>
+                                        </div>
+
+                                        <input type="text" class="form-control" id="tokenSearch" placeholder="Filter Api Users" ng-model="tokenSearch">
+
+                                        <div class="dash-modal-row delete-dashboard-row clearfix"
+                                             ng-repeat="apitoken in apitokens | filter:{apiUser:tokenSearch} | orderBy:'apiUser'">
+                                            <div class="btn-block col-xs-15">
+                                                <span class="col-xs-3">{{apitoken.apiUser}}</span>
+                                                <span>{{::apitoken.expirationDt | date:'MM/dd/yyyy HH:mm:ss'}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center" ng-show="apitokens && !apitokens.length">
+                                    No results
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
