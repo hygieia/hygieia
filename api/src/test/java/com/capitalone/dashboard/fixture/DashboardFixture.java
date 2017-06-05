@@ -19,7 +19,6 @@ import com.capitalone.dashboard.request.DashboardRequest;
  	public static DashboardRequest makeDashboardRequest(String template, String title, String appName, String compName,
  			String owner, List<String> teamDashboardIds, String type) {
  		DashboardRequest request = new DashboardRequest();
- 		request.setTemplate(template);
  		request.setTitle(title);
  		request.setApplicationName(appName);
  		request.setComponentName(compName);
@@ -37,7 +36,7 @@ import com.capitalone.dashboard.request.DashboardRequest;
  			application = new Application(appName, component);
  		}
  
- 		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type);
+ 		return new Dashboard(title, application, new Owner(owner, AuthType.STANDARD), type);
  	}
  
  	public static Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {

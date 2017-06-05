@@ -1,0 +1,15 @@
+<widget-modal>
+	<form name="udf" class="form" ng-submit="ctrl.submit(udf)" novalidate>
+	
+		<div>
+			<active-widget-form widgets="ctrl.widgetsForm" />
+		</div>
+		
+		<div class="update-errors" ng-show="udf.$error.updateResponse">An error has occurred while updating the dashboard. Please contact a system administrator if this problem persists.</div>
+		
+		<div class="button-row text-center">
+			<button type="submit" class="btn btn-primary btn-wide">Update</button>
+		</div>
+	
+	</form>
+</widget-modal>

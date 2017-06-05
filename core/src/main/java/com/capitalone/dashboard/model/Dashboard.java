@@ -2,6 +2,7 @@ package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,13 +14,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Document(collection="dashboards")
 public class Dashboard extends BaseModel {
-    private String template;
-
     //NOTE Mongodb treats strings as different if they have different case
     @Indexed(unique=true)
     private String title;
 
     private List<Widget> widgets = new ArrayList<>();
+    private Map<WidgetFamily, List<WidgetType>> activeWidgetTypes;
 
     // multiple owner references for backwards compatibility
     // TODO: remove once impacts of breaking change are assessed
@@ -33,20 +33,11 @@ public class Dashboard extends BaseModel {
     Dashboard() {
     }
 
-    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type) {
-        this.template = template;
+    public Dashboard(String title, Application application, Owner owner, DashboardType type) {
         this.title = title;
         this.application = application;
         this.type = type;
         this.owners.add(owner);
-    }
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(String template) {
-        this.template = template;
     }
 
     public String getTitle() {
@@ -68,7 +59,19 @@ public class Dashboard extends BaseModel {
     public List<Widget> getWidgets() {
         return widgets;
     }
+    
+    public void setWidgets(List<Widget> widgets) {
+    	this.widgets = widgets;
+    }
+    
+    public Map<WidgetFamily, List<WidgetType>> getActiveWidgetTypes() {
+    	return activeWidgetTypes;
+    }
 
+    public void setActiveWidgetTypes(Map<WidgetFamily, List<WidgetType>> activeWidgetTypes) {
+    	this.activeWidgetTypes = activeWidgetTypes;
+    }
+    
 	public String getOwner() {
 		return owner;
 	}

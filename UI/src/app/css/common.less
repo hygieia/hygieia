@@ -317,6 +317,26 @@ body {
         }
     }
 
+	.dashboard-settings-icon {
+		cursor: pointer;
+		position: absolute;
+		top: -.5rem;
+		left: -3.5rem;
+		width: auto;
+		
+		.fa-cog {
+            color: lighten(#000000, @btn-default-bg);
+            opacity: 1;
+            .transition(opacity .2s linear);
+        }
+
+        &:hover {
+            .fa-cog {
+                opacity: .6;
+            }
+        }
+	}
+
     // switch between pipeline view
     .pipeline-toggle {
         position: absolute;

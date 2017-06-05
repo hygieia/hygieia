@@ -35,6 +35,7 @@
             demoteUserFromOwner: demoteUserFromOwner,
             detail: detail,
             create: create,
+            update: update,
             delete: deleteDashboard,
             rename: renameDashboard,
             upsertWidget: upsertWidget,
@@ -94,6 +95,16 @@
                 });
         }
 
+        // updates an existing dashboard
+        function update(id, data) {
+            return $http.put(dashboardRoute + '/' + id, data)
+                .success(function (response) {
+                    return response.data;
+                })
+                .error(function (response) {
+                    return null;
+                });
+        }
 
         // renames a dashboard
 

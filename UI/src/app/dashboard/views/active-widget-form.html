@@ -1,0 +1,34 @@
+<h4>Included Widgets</h4>
+<table class="dash-widgets-config" width="100%">
+	<tr>
+		<th>Widgets</th>
+		<th>Pipeline</th>
+		<th>Cloud</th>
+	</tr>
+	<td>
+		<div ng-repeat="widget in ctrl.widgets">
+			<input type="checkbox" name="selectedWidgets"
+				value="{{widget.value}}"
+				ng-checked="ctrl.activeWidgetTypesSelection.indexOf(widget.value) >= 0"
+				ng-click="ctrl.toggleWidgetSelection(widget.value, ctrl.activeWidgetTypesSelection)">
+				{{widget.name}}
+		</div>
+	</td>
+	<td>
+		<div ng-repeat="widget in ctrl.pipelineWidgets">
+			<input type="checkbox" name="selectedPipelineWidgets"
+				value="{{widget.value}}" ng-checked="ctrl.activePipelineWidgetTypesSelection.indexOf(widget.value) >= 0"
+				ng-click="ctrl.toggleWidgetSelection(widget.value, ctrl.activePipelineWidgetTypesSelection)">
+				{{widget.name}}
+		</div>
+	</td>
+	<td>
+		<div ng-repeat="widget in ctrl.cloudWidgets">
+			<input type="checkbox" name="selectedCloudWidgets"
+				value="{{widget.value}}" 
+				ng-checked="ctrl.activeCloudWidgetTypesSelection.indexOf(widget.value) >= 0"
+				ng-click="ctrl.toggleWidgetSelection(widget.value, ctrl.activeCloudWidgetTypesSelection)">
+				{{widget.name}}
+		</div>
+	</td>
+</table>

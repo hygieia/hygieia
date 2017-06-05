@@ -24,7 +24,6 @@ import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
-
 import com.capitalone.dashboard.model.Service;
 import com.capitalone.dashboard.model.ServiceStatus;
 import com.capitalone.dashboard.repository.DashboardRepository;
@@ -73,7 +72,7 @@ public class ServiceServiceTest {
         final ObjectId id = ObjectId.get();
         final String name = "service";
         final String url = "https://abc123456.com";
-        final Dashboard dashboard = new Dashboard("template", "title", new Application("app"), new Owner("amit", AuthType.STANDARD), DashboardType.Team);
+        final Dashboard dashboard = new Dashboard("title", new Application("app"), new Owner("amit", AuthType.STANDARD), DashboardType.Team);
         when(dashboardRepository.findOne(id)).thenReturn(dashboard);
 
         Service service=serviceService.create(id, name,url);

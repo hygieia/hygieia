@@ -619,7 +619,7 @@ public class DynamicPipelineServiceImplTest {
 	}
 
 	private Dashboard setupDashboard(Component component) {
-		Dashboard rt = new Dashboard("foo", "bar", new Application("helloworld", component), new Owner("MarkRx", AuthType.STANDARD), DashboardType.Product);
+		Dashboard rt = new Dashboard("bar", new Application("helloworld", component), new Owner("MarkRx", AuthType.STANDARD), DashboardType.Product);
 
 		Widget pipelineWidget = new Widget();
 		pipelineWidget.setName("pipeline");

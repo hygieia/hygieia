@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.request;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -10,11 +13,11 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.WidgetFamily;
+import com.capitalone.dashboard.model.WidgetType;
 
 public class DashboardRequest {
-    @NotNull
-    @Size(min=1, message="Please select a template")
-    private String template;
 
     @Valid
     @NotNull
@@ -27,15 +30,10 @@ public class DashboardRequest {
     @NotNull
     @Size(min=1, message="Please select a type")
     private String type;
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(String template) {
-        this.template = template;
-    }
-
+    
+    private Map<WidgetFamily, List<WidgetType>> activeWidgetTypes;
+    private List<Widget> widgets;
+    
 	public DashboardRequestTitle getDashboardRequestTitle() {
 		return dashboardRequestTitle;
 	}
@@ -70,11 +68,30 @@ public class DashboardRequest {
 
     public void setType(String type) { this.type = type; }
 
+	public Map<WidgetFamily, List<WidgetType>> getActiveWidgetTypes() {
+		return activeWidgetTypes;
+	}
+
+	public void setActiveWidgetTypes(Map<WidgetFamily, List<WidgetType>> activeWidgetTypes) {
+		this.activeWidgetTypes = activeWidgetTypes;
+	}
+	
+	public List<Widget> getWidgets() {
+		return widgets;
+	}
+
+	public void setWidgets(List<Widget> widgets) {
+		this.widgets = widgets;
+	}
+
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-        return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type);
+        Dashboard dashboard = new Dashboard(dashboardRequestTitle.getTitle(), application, owner, type);
+        dashboard.setActiveWidgetTypes(activeWidgetTypes);
+        dashboard.setWidgets(widgets);
+        return dashboard;
     }
 
     public Dashboard copyTo(Dashboard dashboard) {
@@ -82,4 +99,5 @@ public class DashboardRequest {
         updated.setId(dashboard.getId());
         return updated;
     }
+    
 }

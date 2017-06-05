@@ -37,6 +37,7 @@
             this.registerWidget = registerWidget;
             this.upsertWidget = upsertWidget;
             this.upsertComponent = upsertComponent;
+            this.activeWidgetTypes = $scope.dashboard.activeWidgetTypes;
 
             // add a new placeholder
             function registerPlaceholder(placeholder) {

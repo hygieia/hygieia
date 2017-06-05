@@ -5,21 +5,11 @@
                     class="form-control"
                     ng-model="ctrl.dashboardType"
                     ng-options="item.text for item in ctrl.dashboardTypes track by item.id"
-                    ng-change="ctrl.setAvailableTemplates()"
+                    ng-change="ctrl.showDashboardTypeSpecificConfig()"
                     required>
                 <option value="" disabled>Select a type</option>
             </select>
 
-        </form-group>
-
-        <form-group input="selectedTemplate" errors="{required: 'Please select a template'}">
-            <select name="selectedTemplate"
-                    class="form-control"
-                    ng-model="ctrl.selectedTemplate"
-                    ng-options="item.name for item in ctrl.availableTemplates track by item.value"
-                    required>
-                <option value="" disabled>Select a template</option>
-            </select>
         </form-group>
 
         <form-group input="dashboardTitle" errors="{required: 'Dashboard title is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters', createError: 'Error creating dashboard. Change title and try again.', pattern : 'Special character(s) found. Please enter only letters, numbers or spaces.'}">
@@ -49,7 +39,12 @@
                 required />
         </form-group>
 
-        <div class="button-row row text-center">
+		<div ng-if="ctrl.showIncludedWidgetsForm">
+			<active-widget-form widgets="ctrl.widgetsForm" />
+		</div>
+
+
+	<div class="button-row row text-center">
             <button type="submit" class="btn btn-primary btn-wide">Create</button>
         </div>
 
