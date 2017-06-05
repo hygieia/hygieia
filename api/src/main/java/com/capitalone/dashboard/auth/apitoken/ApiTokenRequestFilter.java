@@ -41,13 +41,6 @@ public class ApiTokenRequestFilter extends AbstractAuthenticationProcessingFilte
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)res;
 
-        String path = request.getRequestURI();
-
-        if (path.startsWith("/api/appinfo")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
         String apiUser = request.getHeader("apiUser");
         String authHeader = request.getHeader("Authorization");
 

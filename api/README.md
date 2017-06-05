@@ -247,8 +247,8 @@ Add Authorization header
 ```
 String passwordIsAuthToken = "PasswordIsAuthToken:{\"apiKey\":\"" + <generated apitoken> + "\"}";
 byte[] encodedAuth = Base64.encodeBase64(passwordIsAuthToken.getBytes(StandardCharsets.US_ASCII));
-String authHeader = "Basic " + new String(encodedAuth);
-Authorization: Basic <authHeader>
+String authHeader = "apiToken " + new String(encodedAuth);
+Authorization: apiToken <authHeader>
 ```
 Add apiUser header
 ```
