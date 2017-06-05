@@ -28,6 +28,7 @@
         ctrl.login = login;
         ctrl.logout = logout;
         ctrl.renameDashboard=renameDashboard;
+        ctrl.generateToken = generateToken;
 
         $scope.tab="dashboards";
 
@@ -66,6 +67,7 @@
         // request dashboards
         dashboardData.search().then(processResponse);
         userData.getAllUsers().then(processUserResponse);
+        userData.apitokens().then(processTokenResponse);
 
 
         //implementation of logout
@@ -116,6 +118,23 @@
 
         }
 
+        function generateToken()
+        {
+            console.log("Generate token in Admin");
+
+            var mymodalInstance=$uibModal.open({
+                templateUrl: 'app/dashboard/views/generateApiToken.html',
+                controller: 'GenerateApiTokenController',
+                controllerAs: 'ctrl',
+                resolve: {
+                }
+            });
+
+            mymodalInstance.result.then(function(condition) {
+                window.location.reload(false);
+            });
+
+        }
 
         function processResponse(data) {
             ctrl.dashboards = [];
@@ -129,6 +148,10 @@
 
         function processUserResponse(response) {
             $scope.users = response.data;
+        }
+
+        function processTokenResponse(response) {
+            $scope.apitokens = response.data;
         }
 
         $scope.navigateToTab = function(tab) {
