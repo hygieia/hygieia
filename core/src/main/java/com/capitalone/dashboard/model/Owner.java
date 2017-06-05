@@ -8,6 +8,8 @@ public class Owner {
 	private String username;
 	private AuthType authType;
 	
+	public Owner() {}
+	
 	public Owner(String username, AuthType authType) {
 		this.username = username;
 		this.authType = authType;

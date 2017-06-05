@@ -27,7 +27,7 @@
                                       ng-repeat="item in ctrl.dashboards | orderBy:'name'">
                                       <div class="btn-block">{{item.name}}
                                           <dash-trash class="clickable pull-right" ng-click="ctrl.deleteDashboard(item.id)"></dash-trash>
-                                          <dash-edit class="clickable pull-right" ng-click="ctrl.renameDashboard(item)"></dash-edit>
+                                          <dash-edit class="clickable pull-right" ng-click="ctrl.editDashboard(item)"></dash-edit>
                                       </div>
                                   </div>
                               </div>
