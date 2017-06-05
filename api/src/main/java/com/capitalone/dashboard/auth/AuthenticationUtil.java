@@ -20,10 +20,8 @@ public class AuthenticationUtil {
 	
 	public static AuthType getAuthTypeFromContext() {
 		Authentication authentication = getAuthentication();
-		if (authentication != null) {
-			if (authentication.getDetails() instanceof AuthType) {
-				return AuthType.valueOf((String)authentication.getDetails());
-			}
+		if (authentication != null && authentication.getDetails() instanceof String) {
+			return AuthType.valueOf((String)authentication.getDetails());
 		}
 		
 		return null;
