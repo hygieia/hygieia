@@ -1,5 +1,8 @@
 <widget-modal widget-modal-title="Administer Your Dashboard">
     <form name="cdf" class="form" ng-submit="ctrl.submit(cdf)" novalidate>
+        <div class="help-block text-danger" ng-show="error">
+            {{error}}
+        </div>
         <form-group input="dashboardTitle" errors="{required: 'New Dashboard name is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters', renameError: 'Error renaming dashboard. Change title and try again.', pattern : 'Special character(s) found. Please enter only letters, numbers or spaces.'}">
             <label class="modal-label">Rename</label>
         	<input
@@ -21,9 +24,6 @@
             <div class="row">
                 <div class="col-xs-12">
                     <div class="text-center" ng-hide="users">Loading Users...</div>
-                    <div ng-show="error">
-                        {{error.data}}
-                    </div>
 
                     <div class="row">
                         <div class="col-xs-5">
@@ -31,13 +31,13 @@
                             <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch">
 
                             <div class="dash-modal-row delete-dashboard-row clearfix"
-                                 ng-repeat="user in users | filter:{username:userSearch, authorities:'!ROLE_ADMIN'} | orderBy:'username'">
+                                 ng-repeat="user in users | filter:{username:userSearch} | ownerFilter:owners | orderBy:'username'">
 
                                 <div class="btn-block">
                                     <span class="label label-primary" ng-show="isActiveUser(user)">You</span>
                                     {{user.username}}
                                     <span class="badge">{{user.authType}}</span>
-                                    <div title="Promote User" class="clickable pull-right" ng-click="promoteUserToAdmin(user)">
+                                    <div title="Promote User" class="clickable pull-right" ng-click="promoteUserToOwner(user)">
                                             <span class="clickable fa fa-stack">
                                                 <span class="fa-circle-thin fa-stack-2x text-success"></span>
                                                 <span class="fa-angle-right fa-stack-1x text-success"></span>
@@ -47,14 +47,14 @@
                             </div>
                         </div>
                         <div class="col-xs-push-2 col-xs-5">
-                            <h3>Admins</h3>
+                            <h3>Owners</h3>
                             <div class="dash-modal-row delete-dashboard-row clearfix"
-                                 ng-repeat="user in users | orderBy:'username' | filter:{authorities:'ROLE_ADMIN'} as filteredAdmins">
+                                 ng-repeat="owner in owners | orderBy:'username'">
                                 <div class="btn-block">
-                                    <span class="label label-primary" ng-show="isActiveUser(user)">You</span>
-                                    {{user.username}}
-                                    <span class="badge">{{user.authType}}</span>
-                                    <div title="Demote User" ng-show="filteredAdmins.length > 1" class="clickable pull-right" ng-click="demoteUserFromAdmin(user)">
+                                    <span class="label label-primary" ng-show="isActiveUser(owner)">You</span>
+                                    {{owner.username}}
+                                    <span class="badge">{{owner.authType}}</span>
+                                    <div title="Demote User" ng-show="owners.length > 1" class="clickable pull-right" ng-click="demoteUserFromOwner(owner)">
                                             <span class="clickable fa fa-stack">
                                                 <span class="fa-circle-thin fa-stack-2x text-danger"></span>
                                                 <span class="fa-angle-left fa-stack-1x text-danger"></span>
