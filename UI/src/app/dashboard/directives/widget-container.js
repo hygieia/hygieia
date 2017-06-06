@@ -131,7 +131,7 @@
             }
 
             _($scope.dashboard.widgets)
-                .where(function (widget) {
+                .filter(function (widget) {
                     return $scope.processedWidgetNames.indexOf(widget.options.id) == -1;
                 })
                 .forEach(function (item, idx) {

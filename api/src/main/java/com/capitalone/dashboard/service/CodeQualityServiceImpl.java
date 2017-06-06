@@ -100,10 +100,14 @@ public class CodeQualityServiceImpl implements CodeQualityService {
                     new PageRequest(0, request.getMax(), Sort.Direction.DESC, "timestamp");
             result = codeQualityRepository.findAll(builder.getValue(), pageRequest).getContent();
         }
+        String instanceUrl = (String)item.getOptions().get("instanceUrl");
+        String projectId = (String) item.getOptions().get("projectId");
+        String reportUrl = getReportURL(instanceUrl,"dashboard/index/",projectId);
         Collector collector = collectorRepository.findOne(item.getCollectorId());
         long lastExecuted = (collector == null) ? 0 : collector.getLastExecuted();
-        return new DataResponse<>(result, lastExecuted);
+        return new DataResponse<>(result, lastExecuted,reportUrl);
     }
+
 
     protected CollectorItem getCollectorItem(CodeQualityRequest request) {
         CollectorItem item = null;
@@ -198,4 +202,14 @@ public class CodeQualityServiceImpl implements CodeQualityService {
         return codeQualityRepository.save(quality); // Save = Update (if ID present) or Insert (if ID not there)
     }
 
+    // get projectUrl and projectId from collectorItem and form reportUrl
+    private String getReportURL(String projectUrl,String path,String projectId) {
+        StringBuilder sb = new StringBuilder(projectUrl);
+        if(!projectUrl.endsWith("/")) {
+            sb.append("/");
+        }
+        sb.append(path)
+                .append(projectId);
+        return sb.toString();
+    }
 }

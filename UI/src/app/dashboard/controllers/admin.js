@@ -27,7 +27,8 @@
         ctrl.authType = userService.getAuthType();
         ctrl.login = login;
         ctrl.logout = logout;
-        ctrl.renameDashboard=renameDashboard;
+        ctrl.editDashboard = editDashboard;
+        ctrl.generateToken = generateToken;
 
         $scope.tab="dashboards";
 
@@ -66,6 +67,7 @@
         // request dashboards
         dashboardData.search().then(processResponse);
         userData.getAllUsers().then(processUserResponse);
+        userData.apitokens().then(processTokenResponse);
 
 
         //implementation of logout
@@ -92,13 +94,13 @@
             });
         }
 
-        function renameDashboard(item)
+        function editDashboard(item)
         {
-            console.log("Rename Dashboard in Admin");
+            console.log("Edit Dashboard in Admin");
 
             var mymodalInstance=$uibModal.open({
-                templateUrl: 'app/dashboard/views/renameDashboard.html',
-                controller: 'RenameDashboardController',
+                templateUrl: 'app/dashboard/views/editDashboard.html',
+                controller: 'EditDashboardController',
                 controllerAs: 'ctrl',
                 resolve: {
                     dashboardId: function() {
@@ -116,6 +118,23 @@
 
         }
 
+        function generateToken()
+        {
+            console.log("Generate token in Admin");
+
+            var mymodalInstance=$uibModal.open({
+                templateUrl: 'app/dashboard/views/generateApiToken.html',
+                controller: 'GenerateApiTokenController',
+                controllerAs: 'ctrl',
+                resolve: {
+                }
+            });
+
+            mymodalInstance.result.then(function(condition) {
+                window.location.reload(false);
+            });
+
+        }
 
         function processResponse(data) {
             ctrl.dashboards = [];
@@ -129,6 +148,10 @@
 
         function processUserResponse(response) {
             $scope.users = response.data;
+        }
+
+        function processTokenResponse(response) {
+            $scope.apitokens = response.data;
         }
 
         $scope.navigateToTab = function(tab) {

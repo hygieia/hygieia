@@ -119,7 +119,7 @@
 
 
 
-                performanceData.appPerformance({componentId: $scope.widgetConfig.componentId}).then(function(data) {
+                performanceData.appPerformance({componentId: $scope.widgetConfig.componentId,max:20}).then(function(data) {
                     processResponse(data.result);
                     deferred.resolve(data.lastUpdated);
                 });
@@ -175,7 +175,7 @@
             var metrics = _(data).sortBy('timeStamp').__wrapped__[0].metrics;
             var collectorItemId = data[0];
             var cId = collectorItemId.collectorItemId;
-            collectorData.getCollecterItem(cId).then(function(result) {
+            collectorData.getCollectorItemById(cId).then(function(result) {
                     var res = result;
                     ctrl.appname = res.description;
                 }
