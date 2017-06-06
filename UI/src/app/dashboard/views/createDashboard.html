@@ -48,9 +48,10 @@
                 autocomplete="off"
                 required />
         </form-group>
-
-        <form-group  input="configurationItemApp" novalidate>
-            <input
+        <p class="text-danger">{{ctrl.dupErroMessage}}</p>
+        <form-group  input="configurationItemApp" errors="{dupBusServError: 'Existing Dashboard found for this Business Service/ Business Application combination'}">
+            <label>Business Service <i class="fa fa-info-circle" uib-tooltip = "{{ctrl.getBusSerToolText()}}" tooltip-trigger="focus" tooltip-placement="top" aria-hidden="true"></i></label>
+            <input foodValidation
                     type="text"
                     name="configurationItemApp"
                     ng-model="ctrl.configurationItemApp"
@@ -61,13 +62,16 @@
                     typeahead-min-length="0"
                     typeahead-editable="false"
                     typeahead-on-select="ctrl.setConfigItemAppId(ctrl.configurationItemApp.id)"
-                    typeahead-no-results="noResults" />
+                    typeahead-no-results="noResults" dupError/>
             <div class="form-control" ng-show="noResults">
                 No Results Found
             </div>
+
+            <span class="invalid" ng-show="cdf.configurationItemApp.$error">{{ctrl.getErrors(cdf)}}</span>
         </form-group>
 
-        <form-group ng-show="ctrl.dashboardType.id != 'product'" input="configurationItemComponent" novalidate>
+        <form-group ng-show="ctrl.dashboardType.id != 'product'" input="configurationItemComponent" errors="{dupBusAppError: 'Existing Dashboard found for this Business Service/ Business Application combination'}">
+           <label>Business Application <i class="fa fa-info-circle" uib-tooltip = "{{ctrl.getBusAppToolText()}}" tooltip-trigger="focus" tooltip-placement="top" aria-hidden="true"></i></label>
             <input
                     type="text"
                     name="configurationItemComponent"

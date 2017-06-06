@@ -110,18 +110,25 @@ public class DashboardServiceImpl implements DashboardService {
         Cmdb cmdbCompItem =  cmdbService.configurationItemByConfigurationItem(component);
         Cmdb cmdbAppItem =  cmdbService.configurationItemByConfigurationItem(app);
 
-        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemComponentObjectIdAndConfigurationItemAppObjectId(cmdbCompItem.getId(), cmdbAppItem.getId());
+        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemAppObjectIdAndConfigurationItemComponentObjectId(cmdbAppItem.getId(),cmdbCompItem.getId());
 
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
     @Override
     public Dashboard create(Dashboard dashboard) throws HygieiaException {
         Iterable<Component> components = componentRepository.save(dashboard.getApplication().getComponents());
+
+
         try {
+            duplicateDashboardErrorCheck(dashboard);
             return dashboardRepository.save(dashboard);
         } catch (Exception e) {
             componentRepository.delete(components);
-            throw new HygieiaException("Failed creating dashboard.", HygieiaException.ERROR_INSERTING_DATA);
+            if(e instanceof HygieiaException){
+                throw e;
+            }else{
+                throw new HygieiaException("Failed creating dashboard.", HygieiaException.ERROR_INSERTING_DATA);
+            }
         }
     }
 
@@ -404,6 +411,13 @@ public class DashboardServiceImpl implements DashboardService {
             setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
         }
     }
+
+    /**
+     *  Sets business service, business application and valid flag for each to the give Dashboard
+     * @param dashboard
+     * @param appObjectId
+     * @param compObjectId
+     */
     private void setAppAndComponentNameToDashboard(Dashboard dashboard, ObjectId appObjectId, ObjectId compObjectId) {
         if(appObjectId != null && !"".equals(appObjectId)){
 
@@ -415,6 +429,24 @@ public class DashboardServiceImpl implements DashboardService {
             Cmdb cmdb = cmdbService.configurationItemsByObjectId(compObjectId);
             dashboard.setConfigurationItemCompName(cmdb.getConfigurationItem());
             dashboard.setValidCompName(cmdb.isValidConfigItem());
+        }
+    }
+
+    /**
+     *  Takes Dashboard and checks to see if there is an existing Dashboard with the same business service and business application
+     *  Throws error if found
+     * @param dashboard
+     * @throws HygieiaException
+     */
+    private void duplicateDashboardErrorCheck(Dashboard dashboard) throws HygieiaException {
+        ObjectId appObjectId = dashboard.getConfigurationItemAppObjectId();
+        ObjectId compObjectId = dashboard.getConfigurationItemComponentObjectId();
+
+        if(appObjectId != null && compObjectId != null){
+            Dashboard existingDashboard = dashboardRepository.findByConfigurationItemAppObjectIdAndConfigurationItemComponentObjectId(appObjectId, compObjectId);
+            if(existingDashboard != null){
+                throw new HygieiaException("Existing Dashboard: " + existingDashboard.getTitle(), HygieiaException.DUPLICATE_DATA);
+            }
         }
     }
 }

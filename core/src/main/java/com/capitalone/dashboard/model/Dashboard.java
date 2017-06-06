@@ -37,14 +37,20 @@ public class Dashboard extends BaseModel {
     //Ignore Updates
     @Transient
     private String configurationItemCompName;
-    //@Indexed(unique=true)
+
     private ObjectId configurationItemAppObjectId;
-    //@Indexed(unique=true)
+
     private ObjectId configurationItemComponentObjectId;
 
     private boolean validAppName;
 
     private boolean validCompName;
+
+    @Transient
+    String errorMessage;
+
+    @Transient
+    int errorCode;
 
     Dashboard() {
     }
@@ -153,5 +159,21 @@ public class Dashboard extends BaseModel {
 
     public void setValidCompName(boolean validCompName) {
         this.validCompName = validCompName;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
     }
 }

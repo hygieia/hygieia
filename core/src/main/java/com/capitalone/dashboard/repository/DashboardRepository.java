@@ -29,6 +29,8 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 
 	Iterable<Dashboard> findAllByConfigurationItemAppObjectId(ObjectId appObjectId);
 	Iterable<Dashboard> findAllByConfigurationItemComponentObjectId(ObjectId compObjectId);
-	Iterable<Dashboard> findAllByConfigurationItemComponentObjectIdAndConfigurationItemAppObjectId(ObjectId compObjectId, ObjectId appObjectId);
+	Iterable<Dashboard> findAllByConfigurationItemAppObjectIdAndConfigurationItemComponentObjectId(ObjectId appObjectId, ObjectId compObjectId);
+
+	Dashboard findByConfigurationItemAppObjectIdAndConfigurationItemComponentObjectId(ObjectId appObjectId, ObjectId compObjectId);
 
 }

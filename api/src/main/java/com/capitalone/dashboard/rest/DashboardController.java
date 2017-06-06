@@ -54,9 +54,12 @@ public class DashboardController {
                     .body(dashboardService.create(request.toDashboard()));
 
         } catch (HygieiaException he) {
+            Dashboard dashboard = request.toDashboard();
+            dashboard.setErrorMessage(he.getMessage());
+            dashboard.setErrorCode(he.getErrorCode());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+                    .body(dashboard);
         }
     }
 

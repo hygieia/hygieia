@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('CreateDashboardController', CreateDashboardController);
 
-    CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', 'userService', 'DashboardType','cmdbData'];
-    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType, cmdbData) {
+    CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', 'userService', 'DashboardType','cmdbData', 'dashboardService'];
+    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType, cmdbData, dashboardService) {
         var ctrl = this;
 
             // public variables
@@ -21,6 +21,7 @@
         ctrl.configurationItemComponent = '';
         ctrl.configurationItemAppId = "";
         ctrl.configurationItemComponentId = "";
+
         // TODO: dynamically register templates with script
         ctrl.templates = [
             {value: 'capone', name: 'Cap One', type: DashboardType.TEAM},
@@ -36,9 +37,11 @@
         ctrl.templateFilter = templateFilter;
         ctrl.setAvailableTemplates = setAvailableTemplates;
         ctrl.getConfigItem = getConfigItem;
-        ctrl.setConfigItemAppId = cmdbData.setConfigItemAppId;
-        ctrl.setConfigItemComponentId = cmdbData.setConfigItemComponentId;
-
+        ctrl.resetFormValidation = resetFormValidation;
+        ctrl.setConfigItemAppId = setConfigItemAppId;
+        ctrl.setConfigItemComponentId = setConfigItemComponentId;
+        ctrl.getBusAppToolText =  getBusAppToolText;
+        ctrl.getBusSerToolText = getBusSerToolText;
         (function() {
             var types = dashboardData.types();
             ctrl.dashboardTypes = [];
@@ -81,20 +84,15 @@
             if(templates.length == 1) {
                 ctrl.selectedTemplate = templates[0];
             }
-            if(ctrl.dashboardType.id === "product"){
-
-            }else{
-                
-            }
+            ctrl.configurationItemComponent = dashboardService.getBusServValueBasedOnType(ctrl.dashboardType.id, ctrl.configurationItemComponent);
             ctrl.availableTemplates = templates;
         }
 
         // method implementations
         function submit(form) {
 
-            form.dashboardTitle.$setValidity('createError', true);
+            resetFormValidation(form);
             // perform basic validation and send to the api
-
             if (form.$valid) {
                 var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
                     submitData = {
@@ -103,8 +101,8 @@
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
-                        configurationItemAppObjectId:  cmdbData.getConfigItemAppId(ctrl.configurationItemApp.id),
-                        configurationItemComponentObjectId:  cmdbData.getConfigItemComponentId(ctrl.configurationItemComponent.id)
+                        configurationItemAppObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemApp),
+                        configurationItemComponentObjectId:  dashboardService.getBusinessApplicationId(ctrl.configurationItemComponent)
                     };
 
                 dashboardData
@@ -116,17 +114,51 @@
                         $uibModalInstance.dismiss();
                     })
                     .error(function (data) {
-                        // display error message
-                        form.dashboardTitle.$setValidity('createError', false);
-                        if(data.status === 401) {
+
+                        if(data.errorCode === 401) {
                           $modalInstance.close();
+                        }else if(data.errorCode === -13){
+
+                            if(data.errorMessage){
+                                ctrl.dupErroMessage = data.errorMessage;
+                            }
+
+                            form.configurationItemApp.$setValidity('dupBusServError', false);
+                            form.configurationItemComponent.$setValidity('dupBusAppError', false);
+
+                        }else{
+                            form.dashboardTitle.$setValidity('createError', false);
                         }
+
                     });
             }
         }
 
         function isTeamDashboardSelected() {
             return ctrl.dashboardType && ctrl.dashboardType.id == DashboardType.TEAM;
+        }
+
+        function resetFormValidation(form){
+            ctrl.dupErroMessage = "";
+            form.configurationItemApp.$setValidity('dupBusServError', true);
+            form.configurationItemComponent.$setValidity('dupBusAppError', true);
+            form.dashboardTitle.$setValidity('createError', true);
+        }
+
+        function setConfigItemAppId(id){
+            dashboardService.setBusinessServiceId(id);
+        }
+
+        function setConfigItemComponentId(id){
+            dashboardService.setBusinessApplicationId(id);
+        }
+
+        function getBusAppToolText(){
+            return dashboardService.getBusAppToolTipText();
+        }
+
+        function getBusSerToolText(){
+            return dashboardService.getBusSerToolTipText();
         }
     }
 })();
