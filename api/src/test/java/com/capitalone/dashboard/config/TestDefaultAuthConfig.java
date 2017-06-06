@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.config;
 
+import com.capitalone.dashboard.repository.ApiTokenRepository;
+import com.capitalone.dashboard.service.ApiTokenService;
+import com.capitalone.dashboard.service.ApiTokenServiceImpl;
 import com.capitalone.dashboard.service.LibraryPolicyService;
 import com.capitalone.dashboard.model.Performance;
 import com.capitalone.dashboard.service.Monitor2Service;
@@ -61,6 +64,16 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
          return new UserInfoServiceImpl(userInfoRepository());
      }
 
+	 @Bean
+	 public ApiTokenRepository apiTokenRepository() {
+		 return Mockito.mock(ApiTokenRepository.class);
+	 }
+
+	 @Bean
+	 public ApiTokenService apiTokenService() {
+		 return new ApiTokenServiceImpl(apiTokenRepository());
+	 }
+ 	
  	@Bean
  	public AuthenticationService authenticationService() {
  		return new DefaultAuthenticationServiceImpl(authenticationRepository());
