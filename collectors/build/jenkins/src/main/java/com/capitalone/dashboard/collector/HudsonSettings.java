@@ -1,14 +1,16 @@
 package com.capitalone.dashboard.collector;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Bean to hold settings specific to the Hudson collector.
  */
+@RefreshScope
 @Component
 @ConfigurationProperties(prefix = "jenkins")
 public class HudsonSettings {

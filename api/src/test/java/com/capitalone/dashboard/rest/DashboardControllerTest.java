@@ -1,4 +1,5 @@
 package com.capitalone.dashboard.rest;
+
 import static com.capitalone.dashboard.fixture.DashboardFixture.makeComponent;
 import static com.capitalone.dashboard.fixture.DashboardFixture.makeDashboard;
 import static com.capitalone.dashboard.fixture.DashboardFixture.makeDashboardRequest;
@@ -144,6 +145,7 @@ public class DashboardControllerTest {
             .andReturn();
         assertThat(getFieldErrors(result), hasEntry(is("dashboardRequestTitle.title"), contains(is("Special character(s) found"))));
     }
+
     
     @Test
     public void getDashboard() throws Exception {
@@ -266,12 +268,14 @@ public class DashboardControllerTest {
         when(dashboardService.get(objectId)).thenReturn(orig);
         when(dashboardService.all()).thenReturn(Arrays.asList(orig));
 
-        mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
+       mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.fieldErrors.title", hasItems("Special character(s) found")))
                 ;
+       
+        
     }
     
     @Test
@@ -412,7 +416,7 @@ public class DashboardControllerTest {
     private Map<String, JSONArray> getFieldErrors(MvcResult result) throws UnsupportedEncodingException {
         String content = result.getResponse().getContentAsString();
         return JsonPath.read(content, "$.fieldErrors");
-}
+    }
     
     private void initiateSecurityContext(String username, AuthType standard) {
     	UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, "password");
