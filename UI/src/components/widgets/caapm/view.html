@@ -1,0 +1,96 @@
+<style>
+.circle_green {
+	border: 2px solid #a1a1a1;
+	padding: 10px 11px;
+	background: #00FF00;
+	width: 2px;
+	border-radius: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1%;
+}
+
+.circle_red {
+	border: 2px solid #a1a1a1;
+	padding: 10px 11px;
+	background: #FF0000;
+	width: 2px;
+	border-radius: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1%;
+}
+
+.circle_yellow {
+	border: 2px solid #a1a1a1;
+	padding: 10px 11px;
+	background: #f4f450;
+	width: 2px;
+	border-radius: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1%;
+}
+
+table {
+	font-family: arial, sans-serif;
+	width: 100%;	
+}
+
+td, th {
+	text-align: left;
+	padding: 8px;
+}
+</style>
+<div class="caapm-view">
+	<h3></h3>
+	<div class="widget-heading">
+           Active Alerts
+        </div>
+	<table class="table">
+		<tr class="dash-row">		
+			<td colspan ='4' style="text-align: right"><b>{{caApmVConfig.totalAlertsCount}} - Total</b></td></tr>
+		<tr class="dash-row">
+			<td style="width :40%;text-align:center"><b>Danger</b></td>
+			<td style="width :20%">&nbsp</td>
+			<td style="width :10%"><b>{{caApmVConfig.dangertAlertsCount}}</b></td>
+			<td style="width :5%" bgcolor="#FF0000">&nbsp</td>
+			<td style="width :35%"></td>
+		</tr>
+
+		<tr class="dash-row">
+			<td style="width :40%;text-align:center" ><b>Caution</b></td>
+			<td style="width :20%">&nbsp</td>
+			<td style="width :10%"><b>{{caApmVConfig.cautionAlertsCount}}</b></td>
+			<td style="width :5%" bgcolor="#f4f450">&nbsp</td>
+			<td style="width :35%" ></td>
+		</tr>
+
+		<tr class="dash-row">
+			<td style="width :40%;text-align:center"><b>Normal</b></td>
+			<td style="width :20%">&nbsp</td>
+			<td style="width :10%"><b>{{caApmVConfig.normalAlertsCount}}</b></td>
+			<td style="width :5%" bgcolor="#00FF00">&nbsp</td>
+			<td style="width :35%"></td>
+		</tr>
+	</table>
+	<br>
+	<div class="widget-heading">Worst 10</div>
+	<table class="table">
+		<tr class="spacer dash-row">
+			<th style="text-align : center">Status</th>
+			<th style="text-align : center">Alert name</th>
+		</tr>
+		<tr class="spacer dash-row"
+			ng-repeat="item in caApmVConfig.worstAlerts | orderBy:'item.count'">
+			<td>
+				<div ng-show="item.alertCurrStatus == 1" class="circle_green">
+				</div>
+				<div ng-show="item.alertCurrStatus == 2" class="circle_yellow">
+				</div>
+				<div ng-show="item.alertCurrStatus == 3" class="circle_red"></div>
+			</td>
+			<td class="dash-overflow environment-name" title="{{item.alertName}}">{{item.alertName}}</td>
+		</tr>
+	</table>
+</div>
