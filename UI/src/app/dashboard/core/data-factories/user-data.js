@@ -8,11 +8,14 @@
     function userData($http) {
         var testDetailRoute = 'test-data/signup_detail.json';
         var adminRoute = '/api/admin';
+        var userRoute = '/api/users';
 
         return {
             getAllUsers: getAllUsers,
             promoteUserToAdmin: promoteUserToAdmin,
-            demoteUserFromAdmin: demoteUserFromAdmin
+            demoteUserFromAdmin: demoteUserFromAdmin,
+            createToken: createToken,
+            apitokens: apitokens
         };
 
 
@@ -33,7 +36,7 @@
           }
           else
           {
-        return $http.get(adminRoute + "/users");
+        return $http.get(userRoute);
       }
     }
 
@@ -45,6 +48,16 @@
     function demoteUserFromAdmin(user) {
       var route = adminRoute + "/users/removeAdmin";
       return $http.post(route, user);
+    }
+
+    function createToken(apitoken) {
+        var route = adminRoute + "/createToken";
+        return $http.post(route, apitoken);
+    }
+
+    function apitokens() {
+        var route = adminRoute + "/apitokens";
+        return $http.get(route);
     }
 
   }
