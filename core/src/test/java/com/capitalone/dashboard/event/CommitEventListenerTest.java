@@ -36,6 +36,7 @@ import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
+import com.google.common.collect.Sets;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommitEventListenerTest {
@@ -181,12 +182,7 @@ public class CommitEventListenerTest {
         }
 
         Application application = new Application("app", component);
-        Dashboard dashboard = new Dashboard();
-        dashboard.setApplication(application);
-        dashboard.getOwners().add(new Owner("owner", AuthType.STANDARD));
-        dashboard.setTemplate("template");
-        dashboard.setTitle("title");
-        dashboard.setType(DashboardType.Team);
+        Dashboard dashboard = new Dashboard("template", "title", application, Sets.newHashSet(new Owner("owner", AuthType.STANDARD)), DashboardType.Team);
         dashboard.setId(ObjectId.get());
         return dashboard;
     }

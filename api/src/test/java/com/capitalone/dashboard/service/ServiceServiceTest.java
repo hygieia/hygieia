@@ -29,6 +29,7 @@ import com.capitalone.dashboard.model.ServiceStatus;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.ServiceRepository;
 import com.capitalone.dashboard.util.URLConnectionFactory;
+import com.google.common.collect.Sets;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -72,12 +73,7 @@ public class ServiceServiceTest {
         final ObjectId id = ObjectId.get();
         final String name = "service";
         final String url = "https://abc123456.com";
-        final Dashboard dashboard = new Dashboard();
-        dashboard.setApplication(new Application("app"));
-        dashboard.getOwners().add(new Owner("amit", AuthType.STANDARD));
-        dashboard.setTemplate("template");
-        dashboard.setTitle("title");
-        dashboard.setType(DashboardType.Team);
+        final Dashboard dashboard = new Dashboard("template", "title", new Application("app"), Sets.newHashSet(new Owner("amit", AuthType.STANDARD)), DashboardType.Team);
         when(dashboardRepository.findOne(id)).thenReturn(dashboard);
 
         Service service=serviceService.create(id, name,url);

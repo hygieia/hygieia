@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,11 +26,22 @@ public class Dashboard extends BaseModel {
     // multiple owner references for backwards compatibility
     // TODO: remove once impacts of breaking change are assessed
     private String owner;
-    private Collection<Owner> owners = new HashSet<>();
+    private Set<Owner> owners = new HashSet<Owner>();
     
     private DashboardType type;
 
     private Application application;
+
+    Dashboard() {
+    }
+
+    public Dashboard(String template, String title, Application application, Set<Owner> owners, DashboardType type) {
+        this.template = template;
+        this.title = title;
+        this.application = application;
+        this.type = type;
+        this.owners = owners;
+    }
 
     public String getTemplate() {
         return template;
@@ -68,11 +79,11 @@ public class Dashboard extends BaseModel {
 		this.owner = owner;
 	}
 	
-	public Collection<Owner> getOwners() {
+	public Set<Owner> getOwners() {
 		return owners;
 	}
 
-	public void setOwners(Collection<Owner> owners) {
+	public void setOwners(Set<Owner> owners) {
 		this.owners = owners;
 	}
 

@@ -61,6 +61,7 @@ import com.capitalone.dashboard.request.BuildSearchRequest;
 import com.capitalone.dashboard.request.CommitRequest;
 import com.capitalone.dashboard.request.PipelineSearchRequest;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Basic tests to test the functionality of the DynamicPipelineServiceImpl class. See
@@ -619,12 +620,7 @@ public class DynamicPipelineServiceImplTest {
 	}
 
 	private Dashboard setupDashboard(Component component) {
-	    Dashboard rt = new Dashboard();
-        rt.setApplication(new Application("helloworld", component));
-        rt.getOwners().add(new Owner("MarkRx", AuthType.STANDARD));
-        rt.setTemplate("foo");
-        rt.setTitle("bar");
-        rt.setType(DashboardType.Product);
+		Dashboard rt = new Dashboard("foo", "bar", new Application("helloworld", component), Sets.newHashSet(new Owner("MarkRx", AuthType.STANDARD)), DashboardType.Product);
 
 		Widget pipelineWidget = new Widget();
 		pipelineWidget.setName("pipeline");

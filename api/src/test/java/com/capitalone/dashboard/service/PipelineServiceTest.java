@@ -37,6 +37,7 @@ import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.request.PipelineSearchRequest;
+import com.google.common.collect.Sets;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PipelineServiceTest {
@@ -153,14 +154,8 @@ public class PipelineServiceTest {
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-        
-        Dashboard dashboard = new Dashboard();
-        dashboard.setApplication(app);
-        dashboard.getOwners().add(new Owner(owner, AuthType.STANDARD));
-        dashboard.setTemplate(template);
-        dashboard.setTitle(title);
-        dashboard.setType(DashboardType.Team);
 
+        Dashboard dashboard = new Dashboard(template, title, app, Sets.newHashSet(new Owner(owner, AuthType.STANDARD)), DashboardType.Team);
         return dashboard;
     }
 

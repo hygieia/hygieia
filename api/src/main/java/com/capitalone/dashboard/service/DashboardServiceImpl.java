@@ -36,6 +36,7 @@ import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -310,7 +311,7 @@ public class DashboardServiceImpl implements DashboardService {
         }
     	
     	Dashboard dashboard = dashboardRepository.findOne(dashboardId);
-        dashboard.setOwners(Lists.newArrayList(owners));
+        dashboard.setOwners(Sets.newHashSet(owners));
         Dashboard result = dashboardRepository.save(dashboard);
 
         return result.getOwners();

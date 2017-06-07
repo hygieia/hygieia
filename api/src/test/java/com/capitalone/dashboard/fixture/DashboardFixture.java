@@ -13,6 +13,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.request.DashboardRequest;
+import com.google.common.collect.Sets;
  
  public class DashboardFixture {
  
@@ -36,15 +37,8 @@ import com.capitalone.dashboard.request.DashboardRequest;
  			component.setName(compName);
  			application = new Application(appName, component);
  		}
- 		
- 		Dashboard dashboard = new Dashboard();
- 		dashboard.setApplication(application);
- 		dashboard.getOwners().add(new Owner(owner, AuthType.STANDARD));
- 		dashboard.setTemplate(template);
- 		dashboard.setTitle(title);
- 		dashboard.setType(type);
  
- 		return dashboard;
+ 		return new Dashboard(template, title, application, Sets.newHashSet(new Owner(owner, AuthType.STANDARD)), type);
  	}
  
  	public static Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {

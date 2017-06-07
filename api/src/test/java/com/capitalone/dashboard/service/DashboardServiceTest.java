@@ -53,6 +53,7 @@ import com.capitalone.dashboard.repository.ServiceRepository;
 import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardServiceTest {
@@ -522,11 +523,7 @@ public class DashboardServiceTest {
     public void updateOwners_empty_owner_set() {
     	Iterable<Owner> owners = Lists.newArrayList();
     	
-    	Dashboard dashboard = new Dashboard();
-        dashboard.setApplication(new Application("Application"));
-        dashboard.setTemplate("template");
-        dashboard.setTitle("title");
-        dashboard.setType(DashboardType.Team);
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), null, DashboardType.Team);
     	
     	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
     	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
@@ -559,12 +556,7 @@ public class DashboardServiceTest {
     	existingInfo.setUsername("existing");
     	existingInfo.setAuthType(AuthType.LDAP);
     	
-    	Dashboard dashboard = new Dashboard();
-        dashboard.setApplication(new Application("Application"));
-        dashboard.setTemplate("template");
-        dashboard.setTitle("title");
-        dashboard.getOwners().add(existingOwner);
-        dashboard.setType(DashboardType.Team);
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), Sets.newHashSet(existingOwner), DashboardType.Team);
     	
     	when(userInfoRepository.findByUsernameAndAuthType("existing", AuthType.LDAP)).thenReturn(existingInfo);
     	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
@@ -587,15 +579,7 @@ public class DashboardServiceTest {
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-        
-        Dashboard dashboard = new Dashboard();
-        dashboard.setApplication(app);
-        dashboard.getOwners().add(new Owner(owner, AuthType.STANDARD));
-        dashboard.setTemplate(template);
-        dashboard.setTitle(title);
-        dashboard.setType(DashboardType.Team);
-        
-        return dashboard;
+        return new Dashboard(template, title, app, Sets.newHashSet(new Owner(owner, AuthType.STANDARD)), DashboardType.Team);
     }
 
     private Widget makeWidget(ObjectId id, String name) {

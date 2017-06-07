@@ -2,6 +2,8 @@ package com.capitalone.dashboard.v2.dashboard;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.hateoas.ResourceSupport;
@@ -17,13 +19,13 @@ public class Dashboard extends ResourceSupport {
     private String template;
     private String title;
     private Collection<Widget> widgets;
-    private Collection<Owner> owners;
+    private Set<Owner> owners;
     private DashboardType type;
     private Application application;
     
     public Dashboard() {
         widgets = new ArrayList<>();
-        owners = new ArrayList<>();
+        owners = new HashSet<>();
     }
     
     public Dashboard(com.capitalone.dashboard.model.Dashboard dashboard) {
@@ -68,11 +70,11 @@ public class Dashboard extends ResourceSupport {
         this.widgets = widgets;
     }
 
-    public Collection<Owner> getOwners() {
+    public Set<Owner> getOwners() {
         return owners;
     }
 
-    public void setOwners(Collection<Owner> owners) {
+    public void setOwners(Set<Owner> owners) {
         this.owners = owners;
     }
 
@@ -93,13 +95,8 @@ public class Dashboard extends ResourceSupport {
     }
     
     public com.capitalone.dashboard.model.Dashboard toDomainModel() {
-        com.capitalone.dashboard.model.Dashboard dashboard = new com.capitalone.dashboard.model.Dashboard();
+        com.capitalone.dashboard.model.Dashboard dashboard = new com.capitalone.dashboard.model.Dashboard(template, title, application, owners, type);
         dashboard.setId(new ObjectId(dashboardId));
-        dashboard.setApplication(application);
-        dashboard.setOwners(owners);
-        dashboard.setTemplate(template);
-        dashboard.setTitle(title);
-        dashboard.setType(type);
         
         return dashboard;
     }

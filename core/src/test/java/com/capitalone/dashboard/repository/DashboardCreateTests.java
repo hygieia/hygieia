@@ -13,6 +13,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
+import com.google.common.collect.Sets;
 
 public class DashboardCreateTests extends FongoBaseRepositoryTest {
 
@@ -31,13 +32,8 @@ public class DashboardCreateTests extends FongoBaseRepositoryTest {
         System.out.println(component.getId());
 
         Application application = new Application("Jay's App", component);
-        
-        Dashboard dashboard = new Dashboard();
-        dashboard.setApplication(application);
-        dashboard.getOwners().add(new Owner("amit", AuthType.STANDARD));
-        dashboard.setTemplate("Topo");
-        dashboard.setTitle("Jays's Dashboard");
-        dashboard.setType(DashboardType.Team);
+
+        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application, Sets.newHashSet(new Owner("amit", AuthType.STANDARD)), DashboardType.Team);
 
         Widget build = new Widget();
         build.setName("build");

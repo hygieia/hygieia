@@ -4,10 +4,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
+import com.google.common.collect.Sets;
 
 public class DashboardRequest {
     @NotNull
@@ -71,14 +74,8 @@ public class DashboardRequest {
 	public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
-        
-        Dashboard dashboard = new Dashboard();
-        dashboard.setApplication(application);
-        dashboard.setTemplate(template);
-        dashboard.setTitle(dashboardRequestTitle.getTitle());
-        dashboard.setType(type);
-        
-        return dashboard;
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        return new Dashboard(template, dashboardRequestTitle.getTitle(), application, Sets.newHashSet(owner), type);
     }
 
     public Dashboard copyTo(Dashboard dashboard) {
