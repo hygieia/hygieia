@@ -120,6 +120,7 @@
                 ctrl.dashboards.push({
                     id: data[x].id,
                     name: data[x].title,
+                    type: data[x].type,
                     validAppName:  data[x].validAppName,
                     validCompName: data[x].validCompName,
                     configurationItemAppName:  data[x].configurationItemAppName,

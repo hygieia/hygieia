@@ -42,9 +42,9 @@
 
         this.getDashboardTitle = function (data) {
             var title = data.title;
-            var businessServiceName = data.configurationItemAppName ? " - " + data.configurationItemAppName : "";
-            var businessApplicationName = data.configurationItemCompName ? " - " + data.configurationItemCompName : "";
-            var applicationName = data.application.name ? " - " + data.application.name : "" ;
+            var businessServiceName = data.configurationItemAppName ? "-" + data.configurationItemAppName : "";
+            var businessApplicationName = data.configurationItemCompName ? "-" + data.configurationItemCompName : "";
+            var applicationName = data.application.name ? "-" + data.application.name : "" ;
 
             if(businessServiceName != "" && businessApplicationName != "" ){
                title = title +  businessServiceName + businessApplicationName;
@@ -56,11 +56,11 @@
         }
 
         this.getBusSerToolTipText = function (){
-            return "getBusSerToolTipText tooltip test text!"
+            return "A top level name which support Business function."
         }
 
         this.getBusAppToolTipText = function (){
-            return "getBusAppToolTipText tooltip test text!"
+            return " A Business Application (BAP) CI is a CI Subtype in the application which supports business function (Top level)."
         }
     }
 })();

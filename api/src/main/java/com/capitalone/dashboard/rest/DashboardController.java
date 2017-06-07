@@ -162,7 +162,32 @@ public class DashboardController {
                     .body(null);
         }
     }
+    @DashboardOwnerOrAdmin
+    @RequestMapping(value = "/dashboard/updateBusItems/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateDashboardBusinessItems(@PathVariable ObjectId id, @RequestBody DashboardRequest request) {
 
+        ObjectId updatedBusServiceObjectId = request.getConfigurationItemAppObjectId();
+        ObjectId updatedBusApplicationObjectId = request.getConfigurationItemComponentObjectId();
+        Dashboard dashboard = getDashboard(id);
+
+
+        try {
+
+            if(updatedBusServiceObjectId != null) {
+                dashboard.setConfigurationItemAppObjectId(updatedBusServiceObjectId);
+            }
+            if(updatedBusApplicationObjectId != null){
+                dashboard.setConfigurationItemComponentObjectId(updatedBusApplicationObjectId);
+            }
+            dashboardService.update(dashboard);
+            return ResponseEntity.ok("Updated");
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
+
+    }
     @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}", method = DELETE)
     public ResponseEntity<Void> deleteDashboard(@PathVariable ObjectId id) {
@@ -251,97 +276,5 @@ public class DashboardController {
         }
         return component;
     }
-    @RequestMapping(value = "/dashboard/updateApp/{id}", method = PUT,
-            produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateAppId(@PathVariable ObjectId id, @RequestBody Dashboard request) {
-
-        Dashboard dashboard = getDashboard(id);
-        Iterable<Dashboard> allDashboard = dashboards();
-        boolean itemExist = false;
-
-        for(Dashboard l :allDashboard)
-        {
-            if (id.compareTo(l.getId()) == 0) {
-                //skip the current dashboard
-                continue;
-            }
-            if(l.getConfigurationItemAppObjectId().equals(request.getConfigurationItemAppObjectId()) &&
-                    l.getConfigurationItemComponentObjectId().equals(dashboard.getConfigurationItemComponentObjectId()) )
-            {
-                itemExist=true;
-            }
-        }
-
-        if(!itemExist){
-            try {
-
-                dashboard.setConfigurationItemAppObjectId(request.getConfigurationItemAppObjectId());
-                dashboardService.update(dashboard);
-                return ResponseEntity.ok("Updated");
-            } catch (HygieiaException he) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(null);
-            }
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(null);
-        }
-    }
-    @RequestMapping(value = "/dashboard/updateComp/{id}", method = PUT,
-            produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateCompId(@PathVariable ObjectId id, @RequestBody Dashboard request) {
-
-
-        Dashboard dashboard = getDashboard(id);
-        Iterable<Dashboard> allDashboard = dashboards();
-        boolean itemExist = false;
-
-        for(Dashboard l :allDashboard)
-        {
-            if (id.compareTo(l.getId()) == 0) {
-                //skip the current dashboard
-                continue;
-            }
-            if(l.getConfigurationItemAppObjectId().equals(request.getConfigurationItemAppObjectId()) &&
-                    l.getConfigurationItemComponentObjectId().equals(dashboard.getConfigurationItemComponentObjectId()) )
-            {
-                itemExist=true;
-            }
-        }
-
-        if(!itemExist){
-            try {
-
-                dashboard.setConfigurationItemComponentObjectId(request.getConfigurationItemComponentObjectId());
-                dashboardService.update(dashboard);
-                return ResponseEntity.ok("Updated");
-            } catch (HygieiaException he) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(null);
-            }
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(null);
-        }
-    }
-    private boolean isUniqueAppCompComp(DashboardRequest request) {
-        Iterable<Dashboard> allDashboard = dashboards();
-        boolean unqiueDashBoard = true;
-
-        for(Dashboard l :allDashboard)
-        {
-            if(l.getConfigurationItemAppObjectId().equals(request.getConfigurationItemAppObjectId()) &&
-                    l.getConfigurationItemComponentObjectId().equals(request.getConfigurationItemComponentObjectId()) )
-            {
-                unqiueDashBoard=false;
-            }
-        }
-        return unqiueDashBoard;
-    }
-
 
 }

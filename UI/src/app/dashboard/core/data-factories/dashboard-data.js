@@ -24,9 +24,7 @@
         var myownerRoute = "/api/dashboard/myowner";
         var dashboardAllUsersRoute= '/api/dashboard/allUsers';
         var dashboardOwnersRoute = '/api/dashboard/owners';
-        var updateAppRoute = '/api/dashboard/updateApp';
-        var updateCompRoute = '/api/dashboard/updateComp';
-
+        var updateBusItemsRoute = '/api/dashboard/updateBusItems'
         return {
             search: search,
             mydashboard: mydashboard,
@@ -37,12 +35,12 @@
             demoteUserFromOwner: demoteUserFromOwner,
             detail: detail,
             create: create,
+            updateBusItems:updateBusItems,
             delete: deleteDashboard,
             rename: renameDashboard,
             upsertWidget: upsertWidget,
             types: types,
-            getComponent:getComponent,
-            updateAppId: updateAppId,
+            getComponent:getComponent
 
         };
 
@@ -98,7 +96,16 @@
                 });
         }
 
-
+        // Updates a dashboard
+        function updateBusItems(id, data) {
+            return $http.put(updateBusItemsRoute+"/"+id, data)
+                .success(function (response) {
+                    return response.data;
+                })
+                .error(function (response) {
+                    return null;
+                });
+        }
         // renames a dashboard
 
         function renameDashboard(id,newDashboardName){
@@ -150,32 +157,7 @@
                     return response.data;
             });
         }
-        function updateAppId(id, appObjectId){
-            var route = updateAppRoute +"/"+id,
-                submitData = {
-                configurationItemAppObjectId: appObjectId};
-            return $http.put(route, submitData)
-                .success(
-                    function (response) {
-                        return response.data;
-                    })
-                .error (function (response) {
-                    return response.data;
-                });
-        }
-        function updateCompId(id, compObjectId){
-            var route = updateCompRoute +"/"+id,
-                submitData = {
-                    configurationItemComponentObjectId: compObjectId};
-            return $http.put(route, submitData)
-                .success(
-                    function (response) {
-                        return response.data;
-                    })
-                .error (function (response) {
-                    return response.data;
-                });
-        }
+
         function types() {
             return [
                 {

@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService'];
-    function SiteController($scope, $q, $uibModal, dashboardData, $location, DashboardType, userService, authService) {
+    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService','dashboardService'];
+    function SiteController($scope, $q, $uibModal, dashboardData, $location, DashboardType, userService, authService, dashboardService) {
         var ctrl = this;
 
         // public variables
@@ -51,11 +51,7 @@
 
             ctrl.dashboardTypes = types;
 
-            // request dashboards
-            dashboardData.search().then(processDashboardResponse, processDashboardError);
-
-            // request my dashboards
-            dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
+            pullDashboards();
         })();
 
         function setType(type) {
@@ -103,7 +99,7 @@
         {
 
             // open modal for renaming dashboard
-            $uibModal.open({
+            var modalInstance = $uibModal.open({
                 templateUrl: 'app/dashboard/views/renameDashboard.html',
                 controller: 'RenameDashboardController',
                 controllerAs: 'ctrl',
@@ -112,6 +108,11 @@
                         return item;
                     }
                 }
+            });
+            modalInstance.result.then(function success() {
+
+            }, function close() {
+                pullDashboards()
             });
         }
 
@@ -131,7 +132,7 @@
             for (var x = 0; x < data.length; x++) {
                 var board = {
                     id: data[x].id,
-                    name: data[x].title,
+                    name: dashboardService.getDashboardTitle(data[x]),
                     isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
                 };
 
@@ -156,7 +157,7 @@
 
                 dashboards.push({
                     id: mydata[x].id,
-                    name: mydata[x].title,
+                    name: dashboardService.getDashboardTitle(mydata[x]),
                     type: mydata[x].type,
                     validAppName:  mydata[x].validAppName,
                     validCompName: mydata[x].validCompName,
@@ -215,6 +216,13 @@
                 showError = true;
             }
             return showError;
+        }
+        function pullDashboards(){
+            // request dashboards
+            dashboardData.search().then(processDashboardResponse, processDashboardError);
+
+            // request my dashboards
+            dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
         }
     }
 })();

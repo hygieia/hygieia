@@ -14,6 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -75,7 +76,8 @@ public class DashboardServiceImpl implements DashboardService {
         setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
 
         if (!dashboard.getApplication().getComponents().isEmpty()) {
-            // Add transient Collector instance to each CollectorItem
+            // Add transient Collector instance to each CollectorItem#2015
+
             Map<CollectorType, List<CollectorItem>> itemMap = dashboard.getApplication().getComponents().get(0).getCollectorItems();
 
             Iterable<Collector> collectors = collectorsFromItems(itemMap);
@@ -114,16 +116,24 @@ public class DashboardServiceImpl implements DashboardService {
 
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
-    @Override
-    public Dashboard create(Dashboard dashboard) throws HygieiaException {
-        Iterable<Component> components = componentRepository.save(dashboard.getApplication().getComponents());
+    public Dashboard create(Dashboard dashboard, boolean isUpdate) throws HygieiaException {
+        Iterable<Component> components = null;
 
+        if(!isUpdate) {
+            components = componentRepository.save(dashboard.getApplication().getComponents());
+        }
 
         try {
+
             duplicateDashboardErrorCheck(dashboard);
             return dashboardRepository.save(dashboard);
+
         } catch (Exception e) {
-            componentRepository.delete(components);
+            //Exclude deleting of components if this is an update request
+            if(!isUpdate) {
+                componentRepository.delete(components);
+            }
+
             if(e instanceof HygieiaException){
                 throw e;
             }else{
@@ -131,10 +141,13 @@ public class DashboardServiceImpl implements DashboardService {
             }
         }
     }
-
+    @Override
+    public Dashboard create(Dashboard dashboard) throws HygieiaException {
+        return create(dashboard, false);
+    }
     @Override
     public Dashboard update(Dashboard dashboard) throws HygieiaException {
-        return create(dashboard);
+        return create(dashboard, true);
     }
 
     @Override
@@ -444,7 +457,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         if(appObjectId != null && compObjectId != null){
             Dashboard existingDashboard = dashboardRepository.findByConfigurationItemAppObjectIdAndConfigurationItemComponentObjectId(appObjectId, compObjectId);
-            if(existingDashboard != null){
+            if(existingDashboard != null && !existingDashboard.getId().equals(dashboard.getId())){
                 throw new HygieiaException("Existing Dashboard: " + existingDashboard.getTitle(), HygieiaException.DUPLICATE_DATA);
             }
         }
