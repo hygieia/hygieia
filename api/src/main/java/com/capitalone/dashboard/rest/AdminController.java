@@ -35,11 +35,6 @@ public class AdminController {
         this.userInfoService = userInfoService;
         this.apiTokenService = apiTokenService;
     }
-
-    @RequestMapping(path = "/users", method = RequestMethod.GET)
-    public Collection<UserInfo> getUsers() {
-        return userInfoService.getUsers();
-    }
     
     @RequestMapping(path = "/users/addAdmin", method = RequestMethod.POST)
     public ResponseEntity<UserInfo> addAdmin(@RequestBody UserInfo user) {
