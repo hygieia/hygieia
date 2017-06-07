@@ -36,8 +36,15 @@ import com.capitalone.dashboard.request.DashboardRequest;
  			component.setName(compName);
  			application = new Application(appName, component);
  		}
+ 		
+ 		Dashboard dashboard = new Dashboard();
+ 		dashboard.setApplication(application);
+ 		dashboard.getOwners().add(new Owner(owner, AuthType.STANDARD));
+ 		dashboard.setTemplate(template);
+ 		dashboard.setTitle(title);
+ 		dashboard.setType(type);
  
- 		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type);
+ 		return dashboard;
  	}
  
  	public static Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {

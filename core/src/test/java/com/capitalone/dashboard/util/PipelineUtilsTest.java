@@ -36,7 +36,12 @@ public class PipelineUtilsTest {
     }
 
     private Dashboard setupDashboard() {
-        Dashboard rt = new Dashboard("Capone", "hygieia", new Application("hygieia", new Component()), new Owner("owner", AuthType.STANDARD), DashboardType.Team);
+        Dashboard rt = new Dashboard();
+        rt.setApplication(new Application("hygieia", new Component()));
+        rt.getOwners().add(new Owner("owner", AuthType.STANDARD));
+        rt.setTemplate("Capone");
+        rt.setTitle("hygieia");
+        rt.setType(DashboardType.Team);
 
         Widget pipelineWidget = new Widget();
         pipelineWidget.setName("pipeline");

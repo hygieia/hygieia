@@ -153,8 +153,14 @@ public class PipelineServiceTest {
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
+        
+        Dashboard dashboard = new Dashboard();
+        dashboard.setApplication(app);
+        dashboard.getOwners().add(new Owner(owner, AuthType.STANDARD));
+        dashboard.setTemplate(template);
+        dashboard.setTitle(title);
+        dashboard.setType(DashboardType.Team);
 
-        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team);
         return dashboard;
     }
 

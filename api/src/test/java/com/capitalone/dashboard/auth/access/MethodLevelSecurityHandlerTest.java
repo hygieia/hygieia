@@ -15,10 +15,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.capitalone.dashboard.auth.AuthenticationFixture;
-import com.capitalone.dashboard.auth.access.MethodLevelSecurityHandler;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.repository.DashboardRepository;
 
@@ -50,7 +48,7 @@ public class MethodLevelSecurityHandlerTest {
 	public void testIsOwnerOfDashboard_legacyDashFound() {
 		initiateSecurityContext();
 		
-		Dashboard dashboard = new Dashboard("team", "title", null, null, DashboardType.Team);
+		Dashboard dashboard = new Dashboard();
 		dashboard.setOwner(USERNAME);
 		when(dashboardRepository.findOne(any(ObjectId.class))).thenReturn(dashboard);
 		
@@ -61,7 +59,9 @@ public class MethodLevelSecurityHandlerTest {
 	public void testIsOwnerOfDashboard_newDashFound() {
 		initiateSecurityContext();
 		
-		Dashboard dashboard = new Dashboard("team", "title", null, new Owner(USERNAME, AuthType.STANDARD), DashboardType.Team);
+		Dashboard dashboard = new Dashboard();
+		dashboard.getOwners().add(new Owner(USERNAME, AuthType.STANDARD));
+		
 		when(dashboardRepository.findOne(any(ObjectId.class))).thenReturn(dashboard);
 		
 		assertTrue(handler.isOwnerOfDashboard(new ObjectId()));
@@ -71,7 +71,7 @@ public class MethodLevelSecurityHandlerTest {
 	public void testIsNotOwnerOfDashboard() {
 		initiateSecurityContext();
 		
-		Dashboard dashboard = new Dashboard("team", "title", null, null, DashboardType.Team);
+		Dashboard dashboard = new Dashboard();
 		dashboard.setOwner(SOME_OTHER_USER);
 		when(dashboardRepository.findOne(any(ObjectId.class))).thenReturn(dashboard);
 		

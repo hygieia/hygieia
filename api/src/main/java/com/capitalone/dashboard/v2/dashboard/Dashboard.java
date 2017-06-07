@@ -2,11 +2,10 @@ package com.capitalone.dashboard.v2.dashboard;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.hateoas.ResourceSupport;
 
-import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
@@ -18,7 +17,7 @@ public class Dashboard extends ResourceSupport {
     private String template;
     private String title;
     private Collection<Widget> widgets;
-    private List<Owner> owners;
+    private Collection<Owner> owners;
     private DashboardType type;
     private Application application;
     
@@ -69,11 +68,11 @@ public class Dashboard extends ResourceSupport {
         this.widgets = widgets;
     }
 
-    public List<Owner> getOwners() {
+    public Collection<Owner> getOwners() {
         return owners;
     }
 
-    public void setOwners(List<Owner> owners) {
+    public void setOwners(Collection<Owner> owners) {
         this.owners = owners;
     }
 
@@ -94,8 +93,13 @@ public class Dashboard extends ResourceSupport {
     }
     
     public com.capitalone.dashboard.model.Dashboard toDomainModel() {
-        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-        com.capitalone.dashboard.model.Dashboard dashboard = new com.capitalone.dashboard.model.Dashboard(this.template, this.title, this.application, owner, this.type);
+        com.capitalone.dashboard.model.Dashboard dashboard = new com.capitalone.dashboard.model.Dashboard();
+        dashboard.setId(new ObjectId(dashboardId));
+        dashboard.setApplication(application);
+        dashboard.setOwners(owners);
+        dashboard.setTemplate(template);
+        dashboard.setTitle(title);
+        dashboard.setType(type);
         
         return dashboard;
     }

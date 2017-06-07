@@ -1,7 +1,5 @@
 package com.capitalone.dashboard.service;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,11 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
-import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
-import com.capitalone.dashboard.model.UserInfo;
-import com.capitalone.dashboard.model.UserRole;
-import com.capitalone.dashboard.repository.UserInfoRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +14,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.capitalone.dashboard.auth.AuthenticationUtil;
+import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
+import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Collector;
@@ -30,6 +25,8 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.UserInfo;
+import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -38,6 +35,7 @@ import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.repository.ServiceRepository;
+import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -102,6 +100,13 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Dashboard create(Dashboard dashboard) throws HygieiaException {
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        dashboard.getOwners().add(owner);
+        return update(dashboard);
+    }
+
+    @Override
+    public Dashboard update(Dashboard dashboard) throws HygieiaException {
         Iterable<Component> components = componentRepository.save(dashboard.getApplication().getComponents());
         try {
             return dashboardRepository.save(dashboard);
@@ -109,11 +114,6 @@ public class DashboardServiceImpl implements DashboardService {
             componentRepository.delete(components);
             throw new HygieiaException("Failed creating dashboard.", HygieiaException.ERROR_INSERTING_DATA);
         }
-    }
-
-    @Override
-    public Dashboard update(Dashboard dashboard) throws HygieiaException {
-        return create(dashboard);
     }
 
     @Override
@@ -311,7 +311,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType) {
         Dashboard dashboard = dashboardRepository.findOne(dashboardId);
-        List<Owner> owners = dashboard.getOwners();
+        Collection<Owner> owners = dashboard.getOwners();
         Owner promotedOwner = new Owner(username, authType);
         owners.add(promotedOwner);
         dashboardRepository.save(dashboard);

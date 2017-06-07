@@ -1,22 +1,18 @@
 package com.capitalone.dashboard.repository;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
 
 public class DashboardCreateTests extends FongoBaseRepositoryTest {
 
@@ -35,8 +31,13 @@ public class DashboardCreateTests extends FongoBaseRepositoryTest {
         System.out.println(component.getId());
 
         Application application = new Application("Jay's App", component);
-
-        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application, new Owner("amit", AuthType.STANDARD), DashboardType.Team);
+        
+        Dashboard dashboard = new Dashboard();
+        dashboard.setApplication(application);
+        dashboard.getOwners().add(new Owner("amit", AuthType.STANDARD));
+        dashboard.setTemplate("Topo");
+        dashboard.setTitle("Jays's Dashboard");
+        dashboard.setType(DashboardType.Team);
 
         Widget build = new Widget();
         build.setName("build");

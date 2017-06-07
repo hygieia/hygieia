@@ -1,14 +1,15 @@
 package com.capitalone.dashboard.model;
 
-import com.capitalone.dashboard.util.PipelineUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import com.capitalone.dashboard.util.PipelineUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardTest {
@@ -51,7 +52,12 @@ public class DashboardTest {
             app.addComponent(new Component(compName));
         }
 
-        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team);
+        Dashboard dashboard = new Dashboard();
+        dashboard.setApplication(app);
+        dashboard.getOwners().add(new Owner(owner, AuthType.STANDARD));
+        dashboard.setTemplate(template);
+        dashboard.setTitle(title);
+        dashboard.setType(DashboardType.Team);
         return dashboard;
     }
 

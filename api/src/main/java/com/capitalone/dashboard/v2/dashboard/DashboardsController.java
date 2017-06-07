@@ -2,8 +2,10 @@ package com.capitalone.dashboard.v2.dashboard;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,8 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.service.DashboardService;
 
-import io.swagger.annotations.ApiOperation;
-
 @RestController
 @RequestMapping("/v2/dashboards")
 public class DashboardsController {
@@ -32,7 +32,6 @@ public class DashboardsController {
     @Autowired
     private DashboardService dashboardService;
     
-    @ApiOperation(value = "Get all dashboards", notes = "This operation will return all the dashboards, there is an optional query parameter for just returning dashboards you own.")
     @RequestMapping(method = GET)
     public Resources<Dashboard> getDashboards(@RequestParam(defaultValue="false", required=false) Boolean owned) {
         Iterable<com.capitalone.dashboard.model.Dashboard> dashboards = owned ? dashboardService.getOwnedDashboards() : dashboardService.all();
@@ -51,27 +50,39 @@ public class DashboardsController {
         return resources;
     }
     
-    @RequestMapping(value = "/{id}", method = GET)
+    @RequestMapping(path = "/{id}", method = GET)
     public Dashboard getDashboard(@PathVariable String id) {
         Dashboard dashboard = new Dashboard(dashboardService.get(new ObjectId(id)));
-        Link link = linkTo(methodOn(DashboardsController.class).getDashboard(dashboard.getDashboardId())).withSelfRel();
-        dashboard.add(link);
+        dashboard.add(linkTo(methodOn(DashboardsController.class).getDashboard(dashboard.getDashboardId())).withSelfRel());
+        
         return dashboard;
     }
     
-    @ApiOperation(value = "Create new Dashboard", code = 201)
     @RequestMapping(method = POST)
-    public ResponseEntity<Dashboard> createDashboard(@RequestBody Dashboard dashboardRequest) {
-        try {
-            com.capitalone.dashboard.model.Dashboard createdDashboard = dashboardService.create(dashboardRequest.toDomainModel());
-            Dashboard dashboardResponse = new Dashboard(createdDashboard);
-            Link link = linkTo(methodOn(DashboardsController.class).getDashboard(dashboardResponse.getDashboardId())).withSelfRel();
-            dashboardResponse.add(link);
-            return ResponseEntity.status(HttpStatus.CREATED).body(dashboardResponse);
-        } catch (HygieiaException he) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+    public ResponseEntity<Dashboard> createDashboard(@RequestBody Dashboard dashboard) throws HygieiaException {
+        com.capitalone.dashboard.model.Dashboard createdDashboard = dashboardService.create(dashboard.toDomainModel());
+        Dashboard dashboardResponse = new Dashboard(createdDashboard);
+        Link link = linkTo(methodOn(DashboardsController.class).getDashboard(dashboardResponse.getDashboardId())).withSelfRel();
+        dashboardResponse.add(link);
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(dashboardResponse);
     }
     
+    @RequestMapping(path = "/{id}", method = PUT)
+    public ResponseEntity<Dashboard> replaceDashboard(@RequestBody Dashboard dashboard) throws HygieiaException {
+        com.capitalone.dashboard.model.Dashboard updatedDashboard = dashboardService.update(dashboard.toDomainModel());
+        Dashboard dashboardResponse = new Dashboard(updatedDashboard);
+        Link link = linkTo(methodOn(DashboardsController.class).getDashboard(dashboardResponse.getDashboardId())).withSelfRel();
+        dashboardResponse.add(link);
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(dashboardResponse);
+    }
+    
+    @RequestMapping(path = "/{id}", method = DELETE)
+    public ResponseEntity<Void> deleteDashboard(@PathVariable String id) {
+        dashboardService.delete(new ObjectId(id));
+        
+        return ResponseEntity.noContent().build();
+    }
 
 }
