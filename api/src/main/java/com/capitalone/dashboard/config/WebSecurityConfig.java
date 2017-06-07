@@ -88,13 +88,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		
         if(authenticationProviders.contains(AuthType.LDAP)) {
     		configureLdap(auth);
-            String ldapServerUrl = authProperties.getLdapServerUrl();
-            String ldapUserDnPattern = authProperties.getLdapUserDnPattern();
-            if (StringUtils.isNotBlank(ldapServerUrl) && StringUtils.isNotBlank(ldapUserDnPattern)) {
-                auth.ldapAuthentication()
-                .userDnPatterns(ldapUserDnPattern)
-                .contextSource().url(ldapServerUrl);
-            }
+    		configureActiveDirectory(auth);
         }
 		
 		auth.authenticationProvider(apiTokenAuthenticationProvider);
