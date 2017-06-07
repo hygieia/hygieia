@@ -32,6 +32,9 @@ dbusername=${SPRING_DATA_MONGODB_USERNAME:-db}
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
+logRequest=${LOG_REQUEST:-false}
+logSplunkRequest=${LOG_SPLUNK_REQUEST:-false}
+
 corsEnabled=${CORS_ENABLED:-false}
 
 corsWhitelist=${CORS_WHITELIST:-http://domain1.com:port,http://domain2.com:port}
