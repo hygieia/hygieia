@@ -10,8 +10,8 @@
         .factory('performanceData', performanceData);
 
     function performanceData($http) {
-        var paApplicationPerformanceRoute = 'api/performance/application';
-        var paInfrastructurePerformanceRoute = 'api/performance/infrastructure';
+        var paApplicationPerformanceRoute = '/api/performance/application';
+        var paInfrastructurePerformanceRoute = '/api/performance/infrastructure';
         var testApplicationPerformanceRoute = 'test-data/ad_app_perfoamance.json';
         var testInfrastructurePerformanceRoute = 'test-data/ad_infra_performance.json';
 
