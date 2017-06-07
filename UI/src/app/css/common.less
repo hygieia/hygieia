@@ -3,6 +3,7 @@
 @import 'variables';
 @import 'mixins';
 @import '../chartist/chartist';
+@import '../gridstack/gridstack';
 @import '../../../bower_components/bootstrap-sweetalert/lib/sweet-alert';
 @import 'commit-blocks';
 
@@ -371,7 +372,27 @@ body {
             font-size: 1.1rem;
         }
     }
+    .widget-heading-performance {
+        border-bottom: 0px solid @dash-widget-heading-border;
+        color: @dash-widget-heading-text;
+        letter-spacing: .1rem;
+        padding-bottom: .5rem;
+        margin-bottom: 1.75rem;
 
+        .text-lg;
+        .border-top-radius(@dash-widget-border-radius);
+
+        .widget-settings-icon {
+            .transition(color 300ms ease);
+
+            &:hover {
+                color: @dash-dashboard-text-hover;
+            }
+        }
+        .last-updated {
+            font-size: 1.1rem;
+        }
+    }
     // sections of widgets should have the same widget markup
     // but may be styled slightly differently
     .widget-body .widget {
@@ -445,6 +466,10 @@ body {
             color: @dash-widget-alert-text;
         }
     }
+}
+
+.cicd-modal-content {
+  margin-left: 10%;
 }
 
 // WIDGET-MODAL
@@ -610,7 +635,7 @@ tr.dash-row > td {
     > div {
         float: left;
         height: @bar-height;
-//        margin-left: -@bar-height/2;
+        //        margin-left: -@bar-height/2;
 
         .border-right-radius(@bar-height / 2);
 
@@ -795,13 +820,13 @@ tr.dash-row > td {
     padding-top: 50px;
 
     .auth-modal-tab {
-      a {
-        color: white;
-      }
+        a {
+            color: white;
+        }
 
-      &:hover a, &.active a {
-        color: black;
-      }
+        &:hover a, &.active a {
+            color: black;
+        }
     }
 
 
@@ -820,9 +845,9 @@ tr.dash-row > td {
             text-align: center;
         }
     }
-    .auth-modal-footer{
+    .auth-modal-footer {
         .top-buffer {
-            margin-top:20px;
+            margin-top: 20px;
             text-align: center;
         }
         .animate-hide {
@@ -864,4 +889,10 @@ tr.dash-row > td {
     .navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
         background-color: rgba(0, 0, 0, 0.4);
     }
+}
+
+.cicd-gates {
+  .na-gate {
+    font-size:2rem;
+  }
 }

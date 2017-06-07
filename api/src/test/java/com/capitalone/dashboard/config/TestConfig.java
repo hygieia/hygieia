@@ -1,5 +1,8 @@
 package com.capitalone.dashboard.config;
 
+import com.capitalone.dashboard.service.ApiTokenService;
+import com.capitalone.dashboard.service.LibraryPolicyService;
+import com.capitalone.dashboard.service.MaturityModelService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +30,9 @@ import com.capitalone.dashboard.service.TeamService;
 import com.capitalone.dashboard.service.TestResultService;
 import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
+import com.capitalone.dashboard.service.Monitor2Service;
+import com.capitalone.dashboard.service.PerformanceService;
+
 
 /**
  * Spring context configuration for Testing purposes
@@ -38,7 +44,7 @@ public class TestConfig {
 	public AuthenticationService authenticationService() {
 		return Mockito.mock(AuthenticationService.class);
 	}
-	
+
 	@Bean
 	public AuthenticationResponseService authenticationResponseService() {
 		return Mockito.mock(AuthenticationResponseService.class);
@@ -98,7 +104,7 @@ public class TestConfig {
 	public ScopeService scopeService() {
 		return Mockito.mock(ScopeService.class);
 	}
-	
+
 	@Bean
 	public EncryptionService encryptionService() {
 		return Mockito.mock(EncryptionService.class);
@@ -113,7 +119,7 @@ public class TestConfig {
 	public PipelineService pipelineService() {
 		return Mockito.mock(PipelineService.class);
 	}
-	
+
 	@Bean
     public CloudInstanceService cloudInstanceService() {
         return Mockito.mock(CloudInstanceService.class);
@@ -133,7 +139,7 @@ public class TestConfig {
     public CloudVolumeService cloudVolumeService() {
         return Mockito.mock(CloudVolumeService.class);
     }
-    
+
     @Bean
     public PaginationHeaderUtility paginationHeaderUtility() {
     	return Mockito.mock(PaginationHeaderUtility.class);
@@ -143,7 +149,27 @@ public class TestConfig {
 	public TeamService teamService() {
 		return Mockito.mock(TeamService.class);
 	}
-	
+
+	@Bean
+	public LibraryPolicyService libraryPolicyService() {
+		return Mockito.mock(LibraryPolicyService.class);
+	}
+
+	@Bean
+	public MaturityModelService maturityModelService() {
+		return Mockito.mock(MaturityModelService.class);
+	}
+
+	@Bean
+	public PerformanceService performanceService(){
+		return Mockito.mock(PerformanceService.class);
+	}
+
+	@Bean
+	public Monitor2Service monitor2Service(){
+		return Mockito.mock(Monitor2Service.class);
+	}
+
 	@Bean
 	public AuthProperties authProperties() {
 	    return Mockito.mock(AuthProperties.class);
@@ -152,5 +178,10 @@ public class TestConfig {
   @Bean
 	public UserInfoService userInfoService() {
 	    return Mockito.mock(UserInfoService.class);
+	}
+
+	@Bean
+	public ApiTokenService apiTokenService() {
+		return Mockito.mock(ApiTokenService.class);
 	}
 }

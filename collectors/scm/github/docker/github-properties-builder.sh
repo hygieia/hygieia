@@ -49,6 +49,8 @@ github.host=${GITHUB_HOST:-github.com}
 #Maximum number of days to go back in time when fetching commits
 github.commitThresholdDays=${GITHUB_COMMIT_THRESHOLD_DAYS:-15}
 
+#Optional: Error threshold count after which collector stops collecting for a collector item. Default is 2.
+github.errorThreshold=${GITHUB_ERROR_THRESHOLD:-1}
 EOF
 
 echo "

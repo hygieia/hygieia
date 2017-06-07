@@ -35,5 +35,9 @@
         this.getAuthenticationProviders = function () {
           return loginData.getAuthenticationProviders();
         }
+        
+        this.tokens = function () {
+          tokenService.tokens();
+        }
     }
 })();

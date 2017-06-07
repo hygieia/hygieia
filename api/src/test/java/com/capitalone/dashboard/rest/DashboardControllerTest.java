@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
@@ -47,6 +49,7 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.DashboardRequestTitle;
@@ -54,6 +57,7 @@ import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.util.TestUtil;
 import com.capitalone.dashboard.util.WidgetOptionsBuilder;
+import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
 
 import net.minidev.json.JSONArray;
@@ -171,6 +175,7 @@ public class DashboardControllerTest {
     public void renameTeamDashboard() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
         Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team);
+        orig.setId(objectId);
         DashboardRequestTitle request = makeDashboardRequestTitle("different title");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
@@ -182,12 +187,13 @@ public class DashboardControllerTest {
 	
                 .andExpect(status().isOk());
     }
-    
+
     @Test
-    public void renameTeamDashboard_titleExists() throws Exception {
+    public void renameTeamDashboard_sameTitle() throws Exception {
         ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
-        Dashboard orig = makeDashboard("t1", "title exists", "app", "comp","amit", DashboardType.Team);
-        DashboardRequestTitle request = makeDashboardRequestTitle("title exists");
+        Dashboard orig = makeDashboard("t1", "dashboard title", "app", "comp","amit", DashboardType.Team);
+        orig.setId(objectId);
+        DashboardRequestTitle request = makeDashboardRequestTitle("dashboard title");
 
         when(dashboardService.get(objectId)).thenReturn(orig);
         when(dashboardService.all()).thenReturn(Arrays.asList(orig));
@@ -195,8 +201,60 @@ public class DashboardControllerTest {
         mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
+
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void renameTeamDashboard_titleExists() throws Exception {
+        ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
+        Dashboard orig = makeDashboard("t1", "t1 title", "app", "comp","amit", DashboardType.Team);
+        orig.setId(objectId);
+
+        ObjectId objectIdAnother = new ObjectId("54b981222364c80a6136c9f2");
+        Dashboard another = makeDashboard("t2", "new title", "app", "comp","amit", DashboardType.Team);
+        another.setId(objectIdAnother);
+
+        List<Dashboard> allDashboards = new ArrayList<Dashboard>();
+        allDashboards.add(orig);
+        allDashboards.add(another);
+
+        DashboardRequestTitle request = makeDashboardRequestTitle("new title");
+
+        when(dashboardService.get(objectId)).thenReturn(orig);
+        when(dashboardService.all()).thenReturn(allDashboards);
+
+        mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isBadRequest());
         verify(dashboardService, never()).update(orig);
+    }
+    
+    @Test
+    public void renameTeamDashboard_titleDoesntExist() throws Exception {
+        ObjectId objectId = new ObjectId("54b982620364c80a6136c9f2");
+        Dashboard orig = makeDashboard("t1", "t1 title", "app", "comp","amit", DashboardType.Team);
+        orig.setId(objectId);
+
+        ObjectId objectIdAnother = new ObjectId("54b981222364c80a6136c9f2");
+        Dashboard another = makeDashboard("t2", "t2 title", "app", "comp","amit", DashboardType.Team);
+        another.setId(objectIdAnother);
+
+        List<Dashboard> allDashboards = new ArrayList<Dashboard>();
+        allDashboards.add(orig);
+        allDashboards.add(another);
+
+        DashboardRequestTitle request = makeDashboardRequestTitle("title exists");
+
+        when(dashboardService.get(objectId)).thenReturn(orig);
+        when(dashboardService.all()).thenReturn(allDashboards);
+
+        mockMvc.perform(put("/dashboard/rename/" + objectId.toString())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isOk());
+        verify(dashboardService).update(orig);
     }
     
     @Test
@@ -303,6 +361,25 @@ public class DashboardControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isOk());
+    }
+    
+    @Test
+    public void updateOwners() throws Exception {
+    	ObjectId dashId = ObjectId.get();
+    	Iterable<Owner> owners = Lists.newArrayList(new Owner("one", AuthType.STANDARD), new Owner("two", AuthType.LDAP));
+    	when(dashboardService.updateOwners(dashId, owners)).thenReturn(owners);
+    	mockMvc.perform(put("/dashboard/" + dashId.toString() + "/owners")
+    			.contentType(MediaType.APPLICATION_JSON_UTF8)
+    			.content(TestUtil.convertObjectToJsonBytes(owners)))
+    			.andExpect(status().is2xxSuccessful())
+    			.andExpect(jsonPath("$", hasSize(2)))
+    			.andExpect(jsonPath("$[0].username", is("one")))
+    			.andExpect(jsonPath("$[0].authType", is(AuthType.STANDARD.name())))
+    			.andExpect(jsonPath("$[1].username", is("two")))
+    			.andExpect(jsonPath("$[1].authType", is(AuthType.LDAP.name())));
+    	verify(dashboardService).updateOwners(dashId, owners);
+    		
+    	
     }
 
 
