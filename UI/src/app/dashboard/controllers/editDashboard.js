@@ -15,8 +15,7 @@
         var ctrl = this;
         // public variables
 
-        ctrl.validBusServName = dashboardItem.validAppName
-        ctrl.validBusAppName = dashboardItem.validCompName
+
         ctrl.dashboardType = dashboardItem.type;
         ctrl.dashboardTitle = getDashboardTile(dashboardItem);
         ctrl.configurationItemApp = dashboardItem.configurationItemAppName;
@@ -39,7 +38,11 @@
         ctrl.tabToggleView = tabToggleView;
         ctrl.setConfigItemAppId = setConfigItemAppId;
         ctrl.setConfigItemComponentId = setConfigItemComponentId;
+        ctrl.isValidBusServName = isValidBusServName;
+        ctrl.isValidBusAppName = isValidBusAppName;
 
+        ctrl.validBusServName = isValidBusServName();
+        ctrl.validBusAppName = isValidBusAppName();
         ctrl.username = userService.getUsername();
         ctrl.authType = userService.getAuthType();
 
@@ -170,6 +173,20 @@
                 form.configurationItemComponent.$setValidity('dupBusAppError', true);
             }
 
+        }
+        function isValidBusServName(){
+            var valid = true;
+            if(dashboardItem.configurationItemAppName != undefined && !dashboardItem.validAppName){
+                valid = false;
+            }
+            return valid;
+        }
+        function isValidBusAppName(){
+            var valid = true;
+            if(dashboardItem.configurationItemCompName != undefined && !dashboardItem.validCompName){
+                valid = false;
+            }
+            return valid;
         }
     }
 })();
