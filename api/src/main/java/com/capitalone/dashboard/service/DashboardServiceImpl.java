@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.service;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.capitalone.dashboard.auth.AuthenticationUtil;
-import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
 import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuthType;
@@ -25,8 +23,6 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.UserInfo;
-import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -298,64 +294,30 @@ public class DashboardServiceImpl implements DashboardService {
 	}
 
     @Override
-    public Iterable<UserInfo> getAllUsers() {
-        return userInfoRepository.findByOrderByUsernameAsc();
-    }
-
-    @Override
     public Iterable<Owner> getOwners(ObjectId id) {
         Dashboard dashboard = get(id);
         return dashboard.getOwners();
     }
 
     @Override
-    public UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType) {
-        Dashboard dashboard = dashboardRepository.findOne(dashboardId);
-        Collection<Owner> owners = dashboard.getOwners();
-        Owner promotedOwner = new Owner(username, authType);
-        owners.add(promotedOwner);
-        dashboardRepository.save(dashboard);
-
-        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
-        if (user == null) {
-            throw new UserNotFoundException(username, authType);
+    public Iterable<Owner> updateOwners(ObjectId dashboardId, Iterable<Owner> owners) {
+        for(Owner owner : owners) {
+        	String username = owner.getUsername();
+        	AuthType authType = owner.getAuthType();
+        	if(userInfoRepository.findByUsernameAndAuthType(username, authType) == null) {
+        		throw new UserNotFoundException(username, authType);
+        	}
         }
-        user.getAuthorities().add(UserRole.ROLE_ADMIN);
+    	
+    	Dashboard dashboard = dashboardRepository.findOne(dashboardId);
+        dashboard.setOwners(Lists.newArrayList(owners));
+        Dashboard result = dashboardRepository.save(dashboard);
 
-        return user;
+        return result.getOwners();
     }
-
-    @Override
-    public UserInfo demoteFromOwner(ObjectId dashboardId, String username, AuthType authType) {
-        Dashboard dashboard = dashboardRepository.findOne(dashboardId);
-        int numberOfOwners = dashboard.getOwners().size();
-
-        //get admin users
-        Collection<UserInfo> adminUsers = userInfoRepository.findByAuthoritiesIn(UserRole.ROLE_ADMIN);
-
-        numberOfOwners += adminUsers.size();
-
-        if(numberOfOwners <= 1) {
-            throw new DeleteLastAdminException();
-        }
-
-        Owner demotedOwner = new Owner(username, authType);
-        dashboard.getOwners().remove(demotedOwner);
-        dashboardRepository.save(dashboard);
-
-        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
-        if (user == null) {
-            throw new UserNotFoundException(username, authType);
-        }
-
-        user.getAuthorities().remove(UserRole.ROLE_ADMIN);
-        return user;
-
-    }
-
+    
 	@Override
 	public String getDashboardOwner(String dashboardTitle) {
-
 		String dashboardOwner=dashboardRepository.findByTitle(dashboardTitle).get(0).getOwner();
 		
 		return dashboardOwner;
