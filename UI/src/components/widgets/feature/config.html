@@ -21,7 +21,7 @@
 				a valid feature data source</p>
 		</div>
 
-		<form-group>
+		<form-group novalidate="novalidate">
 			<div ng-hide="ctrl.hideProjectDropDown" class="col-sm-push-2 col-sm-8">
 				<label class="modal-label">Project Name:</label>
 				<input
@@ -42,6 +42,8 @@
 				<p class="help-block"
 					ng-if="configForm.projectName.$error.required">Please select
 					a valid project</p>
+				<p class="help-block"
+				   ng-if="ctrl.anyError">Project and/(or) Team selection required</p>
 			</div>
 
 			<div ng-hide="ctrl.hideTeamDropDown" class="col-sm-push-2 col-sm-8">
