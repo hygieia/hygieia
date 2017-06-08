@@ -157,11 +157,11 @@
 			if(widgetConfig && widgetConfig.options){
 				ctrl.selectedProjectObject={
 					name: widgetConfig.options.projectName,
-					pId: widgetConfig.options.projectId
+					pId: widgetConfig.options.projectName==='Any'?'Any':widgetConfig.options.projectId
 				}
 				ctrl.selectedTeamObject ={
 					name: widgetConfig.options.teamName,
-					teamId:widgetConfig.options.teamId
+					teamId:widgetConfig.options.teamName==='Any'?'Any':widgetConfig.options.teamId
 				}
 			}
 		}
@@ -197,12 +197,20 @@
 
 		function getProjectNames(filter) {
 			return featureData.projectsByCollectorIdPaginated(ctrl.collectorId.id,{"search": filter, "size": 20, "sort": "description", "page": 0}).then(function (response) {
+				if(filter==="Any"){
+					var defaultValue={name:'Any',value:'Any',pId:'Any',teamId:'Any'}
+					response.push(defaultValue);
+				}
 				return response;
 			});
 		}
 
 		function getTeamNames(filter) {
 			return featureData.teamsByCollectorIdPaginated(ctrl.collectorId.id,{"search": filter, "size": 20, "sort": "description", "page": 0}).then(function (response) {
+				if(filter==="Any"){
+					var defaultValue={name:'Any',value:'Any',pId:'Any',teamId:'Any'}
+					response.push(defaultValue);
+				}
 				return response;
 			});
 		}
