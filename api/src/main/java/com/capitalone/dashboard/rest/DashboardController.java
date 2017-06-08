@@ -1,13 +1,15 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.request.DashboardRequest;
-import com.capitalone.dashboard.request.DashboardRequestTitle;
-import com.capitalone.dashboard.request.WidgetRequest;
-import com.capitalone.dashboard.service.DashboardService;
-import com.google.common.collect.Lists;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +21,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.WidgetResponse;
+import com.capitalone.dashboard.request.DashboardRequest;
+import com.capitalone.dashboard.request.DashboardRequestTitle;
+import com.capitalone.dashboard.request.WidgetRequest;
+import com.capitalone.dashboard.service.DashboardService;
 
 @RestController
 public class DashboardController {
@@ -48,18 +54,13 @@ public class DashboardController {
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Dashboard> createDashboard(@Valid @RequestBody DashboardRequest request) {
         try {
-
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(dashboardService.create(request.toDashboard()));
-
         } catch (HygieiaException he) {
-            Dashboard dashboard = request.toDashboard();
-            dashboard.setErrorMessage(he.getMessage());
-            dashboard.setErrorCode(he.getErrorCode());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(dashboard);
+                    .body(null);
         }
     }
 
@@ -70,21 +71,6 @@ public class DashboardController {
         return dashboardService.get(id);
     }
 
-    @RequestMapping(value = "/dashboard/configItemApp/{configItem}", method = GET,
-            produces = APPLICATION_JSON_VALUE)
-    public DataResponse<Iterable<Dashboard>> getDashboardByApp(@PathVariable String configItem) {
-        return dashboardService.getByApp(configItem);
-    }
-    @RequestMapping(value = "/dashboard/configItemComponent/{configItem}", method = GET,
-            produces = APPLICATION_JSON_VALUE)
-    public DataResponse<Iterable<Dashboard>> getDashboardByComp(@PathVariable String configItem) {
-        return dashboardService.getByComponent(configItem);
-    }
-    @RequestMapping(value = "/dashboard/configItemComponentAndApp/{configItemComp}/{configItemApp}", method = GET,
-            produces = APPLICATION_JSON_VALUE)
-    public DataResponse<Iterable<Dashboard>> getDashboardByCompAndApp(@PathVariable String configItemComp,@PathVariable String configItemApp) {
-        return dashboardService.getByComponentAndApp(configItemComp,configItemApp);
-    }
     @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateDashboard(@PathVariable ObjectId id,
@@ -99,18 +85,10 @@ public class DashboardController {
         }
     }
 
-    @RequestMapping(path = "/dashboard/addOwner/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserInfo> addOwner(@PathVariable ObjectId id, @RequestBody UserInfo user) {
-        UserInfo savedUser = dashboardService.promoteToOwner(id, user.getUsername(), user.getAuthType());
-
-        return new ResponseEntity<UserInfo>(savedUser, HttpStatus.OK);
-    }
-
-    @RequestMapping(path = "/dashboard/removeOwner/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserInfo> removeOwner(@PathVariable ObjectId id, @RequestBody UserInfo user) {
-        UserInfo savedUser = dashboardService.demoteFromOwner(id, user.getUsername(), user.getAuthType());
-
-        return new ResponseEntity<UserInfo>(savedUser, HttpStatus.OK);
+    @DashboardOwnerOrAdmin
+    @RequestMapping(path = "/dashboard/{id}/owners", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Iterable<Owner>> updateOwners(@PathVariable ObjectId id, @RequestBody Iterable<Owner> owners) {
+    	return new ResponseEntity<Iterable<Owner>>(dashboardService.updateOwners(id, owners), HttpStatus.ACCEPTED);
     }
 
     @DashboardOwnerOrAdmin
@@ -162,32 +140,7 @@ public class DashboardController {
                     .body(null);
         }
     }
-    @DashboardOwnerOrAdmin
-    @RequestMapping(value = "/dashboard/updateBusItems/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateDashboardBusinessItems(@PathVariable ObjectId id, @RequestBody DashboardRequest request) {
 
-        ObjectId updatedBusServiceObjectId = request.getConfigurationItemBusServObjectId();
-        ObjectId updatedBusApplicationObjectId = request.getConfigurationItemBusAppObjectId();
-        Dashboard dashboard = getDashboard(id);
-
-
-        try {
-
-            if(updatedBusServiceObjectId != null) {
-                dashboard.setConfigurationItemBusServObjectId(updatedBusServiceObjectId);
-            }
-            if(updatedBusApplicationObjectId != null){
-                dashboard.setConfigurationItemBusAppObjectId(updatedBusApplicationObjectId);
-            }
-            dashboardService.update(dashboard);
-            return ResponseEntity.ok("Updated");
-        } catch (HygieiaException he) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(he.getMessage());
-        }
-
-    }
     @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/{id}", method = DELETE)
     public ResponseEntity<Void> deleteDashboard(@PathVariable ObjectId id) {
@@ -234,27 +187,7 @@ public class DashboardController {
 
     }
 
-    @RequestMapping(value = "/dashboard/allUsers/{id}", method = GET,
-            produces = APPLICATION_JSON_VALUE)
-    public Iterable<UserInfo> getAllUsers(@PathVariable ObjectId id) {
-
-        Iterable<UserInfo> allUsers = dashboardService.getAllUsers();
-
-        ArrayList<Owner> owners = Lists.newArrayList(getOwners(id));
-        for(UserInfo user: allUsers) {
-            if (owners.contains(new Owner(user.getUsername(), user.getAuthType()))) {
-                Collection<UserRole> roles = user.getAuthorities();
-                //here ROLE_ADMIN = owner of dashboard
-                //this is only to display on the UI and we don't update the user_info collection
-                roles.add(UserRole.ROLE_ADMIN);
-                user.setAuthorities(roles);
-            }
-        }
-
-        return allUsers;
-    }
-
-    @RequestMapping(value = "/dashboard/owners/{id}", method = GET,
+    @RequestMapping(value = "/dashboard/{id}/owners", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public Iterable<Owner> getOwners(@PathVariable ObjectId id) {
         return dashboardService.getOwners(id);

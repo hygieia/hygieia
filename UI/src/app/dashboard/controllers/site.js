@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('SiteController', SiteController);
 
-    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService','dashboardService'];
-    function SiteController($scope, $q, $uibModal, dashboardData, $location, DashboardType, userService, authService, dashboardService) {
+    SiteController.$inject = ['$scope', '$q', '$uibModal', 'dashboardData', '$location', 'DashboardType', 'userService', 'authService'];
+    function SiteController($scope, $q, $uibModal, dashboardData, $location, DashboardType, userService, authService) {
         var ctrl = this;
 
         // public variables
@@ -34,7 +34,6 @@
         ctrl.filterNotOwnedList = filterNotOwnedList;
         ctrl.filterDashboards = filterDashboards;
         ctrl.editDashboard = editDashboard;
-        ctrl.getInvalidAppOrCompError = getInvalidAppOrCompError;
 
         if (userService.isAdmin()) {
             ctrl.myadmin = true;
@@ -51,7 +50,11 @@
 
             ctrl.dashboardTypes = types;
 
-            pullDashboards();
+            // request dashboards
+            dashboardData.search().then(processDashboardResponse, processDashboardError);
+
+            // request my dashboards
+            dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
         })();
 
         function setType(type) {
@@ -97,22 +100,19 @@
 
         function editDashboard(item)
         {
-
             // open modal for renaming dashboard
-            var modalInstance = $uibModal.open({
+            $uibModal.open({
                 templateUrl: 'app/dashboard/views/editDashboard.html',
                 controller: 'EditDashboardController',
                 controllerAs: 'ctrl',
                 resolve: {
-                    dashboardItem: function() {
-                        return item;
+                    dashboardId: function() {
+                        return item.id;
+                    },
+                    dashboardName: function() {
+                        return item.name;
                     }
                 }
-            });
-            modalInstance.result.then(function success() {
-
-            }, function close() {
-                pullDashboards()
             });
         }
 
@@ -128,11 +128,10 @@
             // add dashboards to list
             ctrl.dashboards = [];
             var dashboards = [];
-
             for (var x = 0; x < data.length; x++) {
                 var board = {
                     id: data[x].id,
-                    name: dashboardService.getDashboardTitle(data[x]),
+                    name: data[x].title,
                     isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
                 };
 
@@ -141,6 +140,7 @@
                 }
                 dashboards.push(board);
             }
+
             ctrl.dashboards = dashboards;
         }
 
@@ -157,13 +157,8 @@
 
                 dashboards.push({
                     id: mydata[x].id,
-                    name: dashboardService.getDashboardTitle(mydata[x]),
+                    name: mydata[x].title,
                     type: mydata[x].type,
-                    validServiceName:  mydata[x].validServiceName,
-                    validAppName: mydata[x].validAppName,
-                    configurationItemBusServName:  mydata[x].configurationItemBusServName,
-                    configurationItemBusAppName:  mydata[x].configurationItemBusAppName,
-                    showError: ctrl.getInvalidAppOrCompError(mydata[x]),
                     isProduct: mydata[x].type && mydata[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
                 });
             }
@@ -209,20 +204,7 @@
             console.log("size after reduction  is:" + uniqueArray.length);
             ctrl.dashboards = uniqueArray;
         }
-        function getInvalidAppOrCompError(data){
-            var showError = false;
-
-            if((data.configurationItemBusServName != undefined && !data.validServiceName) || (data.configurationItemBusAppName != undefined && !data.validAppName)){
-                showError = true;
-            }
-            return showError;
-        }
-        function pullDashboards(){
-            // request dashboards
-            dashboardData.search().then(processDashboardResponse, processDashboardError);
-
-            // request my dashboards
-            dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
-        }
     }
+
+
 })();

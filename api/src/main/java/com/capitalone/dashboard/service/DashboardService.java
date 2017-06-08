@@ -1,10 +1,14 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
-import java.util.List;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.Widget;
 
 
 public interface DashboardService {
@@ -24,28 +28,6 @@ public interface DashboardService {
      * @return Dashboard instance
      */
     Dashboard get(ObjectId id);
-    /**
-     * Fetches a Dashboards.
-     *
-     * @param configItem dashboard unique identifier
-     * @return Dashboard instances
-     */
-    DataResponse<Iterable<Dashboard>> getByApp(String configItem);
-    /**
-     * Fetches a Dashboards.
-     *
-     * @param configItem dashboard unique identifier
-     * @return Dashboard instances
-     */
-    DataResponse<Iterable<Dashboard>> getByComponent(String configItem);
-    /**
-     * Fetches a Dashboards.
-     *
-     * @param configItemComp dashboard unique identifier
-     * @param configItemApp dashboard unique identifier
-     * @return Dashboard instances
-     */
-    DataResponse<Iterable<Dashboard>> getByComponentAndApp(String configItemComp, String configItemApp);
 
     /**
      * Creates a new Dashbaord and saves it to the store.
@@ -114,13 +96,22 @@ public interface DashboardService {
     
     List<Dashboard> getOwnedDashboards();
 
-    Iterable<UserInfo> getAllUsers();
-
+    /**
+     * Get the set of owners for a given dashboard
+     * 
+     * @param id get owners for this dashboard
+     * @return the set of owners for provided dashboard
+     */
     Iterable<Owner> getOwners(ObjectId id);
 
-    UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType);
-
-    UserInfo demoteFromOwner(ObjectId dashboardId, String username, AuthType authType);
+    /**
+     * Updates the owners of the given dashboard with the set of given owners
+     * 
+     * @param dashboardId update owners on this dashboard
+     * @param owners full collection of owners
+     * @return the new set of owners for provided dashboard
+     */
+    Iterable<Owner> updateOwners(ObjectId dashboardId, Iterable<Owner> owners);
     
     /**
      * Get owner of dashboard on supplying dashboard Title
