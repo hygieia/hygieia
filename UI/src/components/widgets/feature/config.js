@@ -197,7 +197,7 @@
 
 		function getProjectNames(filter) {
 			return featureData.projectsByCollectorIdPaginated(ctrl.collectorId.id,{"search": filter, "size": 20, "sort": "description", "page": 0}).then(function (response) {
-				if(filter==="Any"){
+				if(!angular.isUndefined(filter)&& filter.match(/any/i)){
 					var defaultValue={name:'Any',value:'Any',pId:'Any',teamId:'Any'}
 					response.push(defaultValue);
 				}
@@ -207,7 +207,7 @@
 
 		function getTeamNames(filter) {
 			return featureData.teamsByCollectorIdPaginated(ctrl.collectorId.id,{"search": filter, "size": 20, "sort": "description", "page": 0}).then(function (response) {
-				if(filter==="Any"){
+				if(!angular.isUndefined(filter) && filter.match(/any/i)){
 					var defaultValue={name:'Any',value:'Any',pId:'Any',teamId:'Any'}
 					response.push(defaultValue);
 				}
@@ -218,7 +218,13 @@
 
 		function submitForm(valid) {
 			ctrl.submitted = true;
-			if (valid && ctrl.collectors.length) {
+			if(ctrl.projectName ==="Any" && ctrl.teamName==="Any"){
+				ctrl.anyError = true;
+				return;
+			}else {
+				ctrl.anyError = false;
+			}
+			if(valid && ctrl.collectors.length){
 				createCollectorItem().then(processCollectorItemResponse);
 			}
 		}
