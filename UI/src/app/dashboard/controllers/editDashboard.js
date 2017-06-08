@@ -7,10 +7,10 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('RenameDashboardController', RenameDashboardController);
+        .controller('EditDashboardController', EditDashboardController);
 
-    RenameDashboardController.$inject = ['$uibModalInstance', 'dashboardData', 'cmdbData','userService', 'dashboardItem', '$scope', 'dashboardService'];
-    function RenameDashboardController($uibModalInstance, dashboardData, cmdbData, userService, dashboardItem, $scope, dashboardService) {
+    EditDashboardController.$inject = ['$uibModalInstance', 'dashboardData', 'cmdbData','userService', 'dashboardItem', '$scope', 'dashboardService'];
+    function EditDashboardController($uibModalInstance, dashboardData, cmdbData, userService, dashboardItem, $scope, dashboardService) {
 
         var ctrl = this;
         // public variables

@@ -100,8 +100,8 @@
 
             // open modal for renaming dashboard
             var modalInstance = $uibModal.open({
-                templateUrl: 'app/dashboard/views/renameDashboard.html',
-                controller: 'RenameDashboardController',
+                templateUrl: 'app/dashboard/views/editDashboard.html',
+                controller: 'EditDashboardController',
                 controllerAs: 'ctrl',
                 resolve: {
                     dashboardItem: function() {
