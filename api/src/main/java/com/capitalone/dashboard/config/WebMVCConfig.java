@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.capitalone.dashboard.rest")
+@ComponentScan(basePackages = {"com.capitalone.dashboard.rest", "com.capitalone.dashboard.v2"})
 public class WebMVCConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
