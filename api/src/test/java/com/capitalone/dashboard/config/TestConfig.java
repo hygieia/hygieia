@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.capitalone.dashboard.auth.AuthProperties;
 import com.capitalone.dashboard.auth.AuthenticationResponseService;
 import com.capitalone.dashboard.service.AuthenticationService;
 import com.capitalone.dashboard.service.BinaryArtifactService;
@@ -170,6 +171,11 @@ public class TestConfig {
 	}
 
 	@Bean
+	public AuthProperties authProperties() {
+	    return Mockito.mock(AuthProperties.class);
+  }
+  
+  @Bean
 	public UserInfoService userInfoService() {
 	    return Mockito.mock(UserInfoService.class);
 	}
