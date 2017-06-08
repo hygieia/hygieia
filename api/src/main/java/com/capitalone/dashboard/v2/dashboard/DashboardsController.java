@@ -75,7 +75,7 @@ public class DashboardsController {
         Link link = linkTo(methodOn(DashboardsController.class).getDashboard(dashboardResponse.getDashboardId())).withSelfRel();
         dashboardResponse.add(link);
         
-        return ResponseEntity.status(HttpStatus.CREATED).body(dashboardResponse);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(dashboardResponse);
     }
     
     @RequestMapping(path = "/{id}", method = DELETE)

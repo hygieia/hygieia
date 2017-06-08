@@ -133,7 +133,7 @@ public class DashboardsControllerTest {
         mockMvc.perform(put("/v2/dashboards/" + dashboardId)
                 .content(TestUtil.convertObjectToJsonBytes(dashboardResource))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
+                .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.template", is("Template")))
                 .andExpect(jsonPath("$.title", is("Title")))
                 .andExpect(jsonPath("$.links[0].rel", is("self")))
