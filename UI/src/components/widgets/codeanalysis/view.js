@@ -55,7 +55,7 @@
             var caData = _.isEmpty(response.result) ? {} : response.result[0];
 
 
-            ctrl.reportUrl = caData.url;
+            ctrl.reportUrl = response.reportUrl;
             ctrl.versionNumber = caData.version;
 
             ctrl.rulesCompliance = getMetric(caData.metrics, 'violations_density');
