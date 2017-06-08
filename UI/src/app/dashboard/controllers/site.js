@@ -33,7 +33,7 @@
         ctrl.setType = setType;
         ctrl.filterNotOwnedList = filterNotOwnedList;
         ctrl.filterDashboards = filterDashboards;
-        ctrl.renameDashboard = renameDashboard;
+        ctrl.editDashboard = editDashboard;
         ctrl.getInvalidAppOrCompError = getInvalidAppOrCompError;
 
         if (userService.isAdmin()) {
@@ -95,7 +95,7 @@
             });
         }
 
-        function renameDashboard(item)
+        function editDashboard(item)
         {
 
             // open modal for renaming dashboard
