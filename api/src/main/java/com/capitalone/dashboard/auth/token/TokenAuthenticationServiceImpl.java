@@ -1,5 +1,10 @@
 package com.capitalone.dashboard.auth.token;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
 import java.util.Collection;
 import java.util.Date;
 
@@ -16,11 +21,6 @@ import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.auth.AuthProperties;
 import com.google.common.collect.Sets;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
@@ -58,7 +58,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		try {
 			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token).getBody();
 			String username = claims.getSubject();
-			Collection<GrantedAuthority> authorities = getAuthorities(claims.get(ROLES_CLAIM, Collection.class));
+			Collection<? extends GrantedAuthority> authorities = getAuthorities(claims.get(ROLES_CLAIM, Collection.class));
 			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null, authorities);
 			authentication.setDetails(claims.get(DETAILS_CLAIM));
 			
