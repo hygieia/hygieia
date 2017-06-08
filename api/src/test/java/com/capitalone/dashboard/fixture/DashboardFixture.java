@@ -23,8 +23,8 @@ import com.capitalone.dashboard.request.DashboardRequest;
  		request.setTitle(title);
  		request.setApplicationName(appName);
  		request.setComponentName(compName);
- 		request.setConfigurationItemAppObjectId(configItemAppId);
- 		request.setConfigurationItemComponentObjectId(configItemComponentId);
+ 		request.setConfigurationItemBusServObjectId(configItemAppId);
+ 		request.setConfigurationItemBusAppObjectId(configItemComponentId);
  		request.setType(type);
  
  		return request;

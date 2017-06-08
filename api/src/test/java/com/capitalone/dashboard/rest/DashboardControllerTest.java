@@ -85,8 +85,8 @@ public class DashboardControllerTest {
                 .andExpect(jsonPath("$[0].title", is("title")))
                 .andExpect(jsonPath("$[0].application.name", is("app")))
                 .andExpect(jsonPath("$[0].application.components[0].name", is("comp")))
-                .andExpect(jsonPath("$[0].configurationItemAppObjectId", is(configItemAppId.toString())))
-                .andExpect(jsonPath("$[0].configurationItemComponentObjectId", is(configItemComponentId.toString())));
+                .andExpect(jsonPath("$[0].configurationItemBusServObjectId", is(configItemAppId.toString())))
+                .andExpect(jsonPath("$[0].configurationItemBusAppObjectId", is(configItemComponentId.toString())));
     }
     @Test
     public void createProductDashboard() throws Exception {

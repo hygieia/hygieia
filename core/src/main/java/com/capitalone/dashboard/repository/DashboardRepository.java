@@ -27,10 +27,10 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 	@Query(value="{'widgets.options.teams.collectorItemId': ?0 }")
 	List<Dashboard> findProductDashboardsByTeamDashboardCollectorItemId(String teamDashboardCollectorItemId);
 
-	Iterable<Dashboard> findAllByConfigurationItemAppObjectId(ObjectId appObjectId);
-	Iterable<Dashboard> findAllByConfigurationItemComponentObjectId(ObjectId compObjectId);
-	Iterable<Dashboard> findAllByConfigurationItemAppObjectIdAndConfigurationItemComponentObjectId(ObjectId appObjectId, ObjectId compObjectId);
+	Iterable<Dashboard> findAllByConfigurationItemBusServObjectId(ObjectId appObjectId);
+	Iterable<Dashboard> findAllByConfigurationItemBusAppObjectId(ObjectId compObjectId);
+	Iterable<Dashboard> findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(ObjectId appObjectId, ObjectId compObjectId);
 
-	Dashboard findByConfigurationItemAppObjectIdAndConfigurationItemComponentObjectId(ObjectId appObjectId, ObjectId compObjectId);
+	Dashboard findByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(ObjectId appObjectId, ObjectId compObjectId);
 
 }

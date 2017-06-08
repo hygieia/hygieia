@@ -159,10 +159,10 @@
                     id: mydata[x].id,
                     name: dashboardService.getDashboardTitle(mydata[x]),
                     type: mydata[x].type,
-                    validAppName:  mydata[x].validAppName,
-                    validCompName: mydata[x].validCompName,
-                    configurationItemAppName:  mydata[x].configurationItemAppName,
-                    configurationItemCompName:  mydata[x].configurationItemCompName,
+                    validServiceName:  mydata[x].validServiceName,
+                    validAppName: mydata[x].validAppName,
+                    configurationItemBusServName:  mydata[x].configurationItemBusServName,
+                    configurationItemBusAppName:  mydata[x].configurationItemBusAppName,
                     showError: ctrl.getInvalidAppOrCompError(mydata[x]),
                     isProduct: mydata[x].type && mydata[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
                 });
@@ -212,7 +212,7 @@
         function getInvalidAppOrCompError(data){
             var showError = false;
 
-            if((data.configurationItemAppName != undefined && !data.validAppName) || (data.configurationItemCompName != undefined && !data.validCompName)){
+            if((data.configurationItemBusServName != undefined && !data.validServiceName) || (data.configurationItemBusAppName != undefined && !data.validAppName)){
                 showError = true;
             }
             return showError;

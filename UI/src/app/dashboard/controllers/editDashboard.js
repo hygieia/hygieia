@@ -18,8 +18,8 @@
 
         ctrl.dashboardType = dashboardItem.type;
         ctrl.dashboardTitle = getDashboardTile(dashboardItem);
-        ctrl.configurationItemApp = dashboardItem.configurationItemAppName;
-        ctrl.configurationItemComponent = dashboardItem.configurationItemCompName;
+        ctrl.configurationItemBusServ = dashboardItem.configurationItemBusServName;
+        ctrl.configurationItemBusApp = dashboardItem.configurationItemBusAppName;
         ctrl.tabs = [
             { name: "Dashboard Title"},
             { name: "Business Service/ Application"},
@@ -112,8 +112,8 @@
             if (form.$valid) {
 
                 var submitData = {
-                        configurationItemAppObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemApp),
-                        configurationItemComponentObjectId:  dashboardService.getBusinessApplicationId(ctrl.configurationItemComponent)
+                        configurationItemBusServObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemBusServ),
+                        configurationItemBusAppObjectId:  dashboardService.getBusinessApplicationId(ctrl.configurationItemBusApp)
                     };
                 dashboardData
                     .updateBusItems(dashboardItem.id,submitData)
@@ -125,8 +125,8 @@
                             ctrl.dupErroMessage = data;
                         }
 
-                        form.configurationItemApp.$setValidity('dupBusServError', false);
-                        form.configurationItemComponent.$setValidity('dupBusAppError', false);
+                        form.configurationItemBusServ.$setValidity('dupBusServError', false);
+                        form.configurationItemBusApp.$setValidity('dupBusAppError', false);
                     });
             }
 
@@ -168,22 +168,22 @@
         };
         function resetFormValidation(form){
             ctrl.dupErroMessage = "";
-            form.configurationItemApp.$setValidity('dupBusServError', true);
-            if(form.configurationItemComponent){
-                form.configurationItemComponent.$setValidity('dupBusAppError', true);
+            form.configurationItemBusServ.$setValidity('dupBusServError', true);
+            if(form.configurationItemBusApp){
+                form.configurationItemBusApp.$setValidity('dupBusAppError', true);
             }
 
         }
         function isValidBusServName(){
             var valid = true;
-            if(dashboardItem.configurationItemAppName != undefined && !dashboardItem.validAppName){
+            if(dashboardItem.configurationItemBusServName != undefined && !dashboardItem.validServiceName){
                 valid = false;
             }
             return valid;
         }
         function isValidBusAppName(){
             var valid = true;
-            if(dashboardItem.configurationItemCompName != undefined && !dashboardItem.validCompName){
+            if(dashboardItem.configurationItemBusAppName != undefined && !dashboardItem.validAppName){
                 valid = false;
             }
             return valid;

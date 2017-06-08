@@ -14,7 +14,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -58,8 +57,8 @@ public class DashboardServiceImpl implements DashboardService {
     public Iterable<Dashboard> all() {
         Iterable<Dashboard> dashboards = dashboardRepository.findAll(new Sort(Sort.Direction.ASC, "title"));
         for(Dashboard dashboard: dashboards){
-            ObjectId appObjectId = dashboard.getConfigurationItemAppObjectId();
-            ObjectId compObjectId = dashboard.getConfigurationItemComponentObjectId();
+            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
 
             setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
         }
@@ -70,8 +69,8 @@ public class DashboardServiceImpl implements DashboardService {
     public Dashboard get(ObjectId id) {
         Dashboard dashboard = dashboardRepository.findOne(id);
 
-        ObjectId appObjectId = dashboard.getConfigurationItemAppObjectId();
-        ObjectId compObjectId = dashboard.getConfigurationItemComponentObjectId();
+        ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+        ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
 
         setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
 
@@ -95,7 +94,7 @@ public class DashboardServiceImpl implements DashboardService {
     public DataResponse<Iterable<Dashboard>> getByApp(String app) {
         Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(app);
 
-        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemAppObjectId(cmdb.getId());
+        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemBusServObjectId(cmdb.getId());
 
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
@@ -103,7 +102,7 @@ public class DashboardServiceImpl implements DashboardService {
     public DataResponse<Iterable<Dashboard>> getByComponent(String component) {
         Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(component);
 
-        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemComponentObjectId(cmdb.getId());
+        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId());
 
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
@@ -112,7 +111,7 @@ public class DashboardServiceImpl implements DashboardService {
         Cmdb cmdbCompItem =  cmdbService.configurationItemByConfigurationItem(component);
         Cmdb cmdbAppItem =  cmdbService.configurationItemByConfigurationItem(app);
 
-        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemAppObjectIdAndConfigurationItemComponentObjectId(cmdbAppItem.getId(),cmdbCompItem.getId());
+        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(cmdbAppItem.getId(),cmdbCompItem.getId());
 
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
@@ -419,8 +418,8 @@ public class DashboardServiceImpl implements DashboardService {
         for(Dashboard dashboard: findByOwnersList){
 
 
-            ObjectId appObjectId = dashboard.getConfigurationItemAppObjectId();
-            ObjectId compObjectId = dashboard.getConfigurationItemComponentObjectId();
+            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
             setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
         }
     }
@@ -435,13 +434,13 @@ public class DashboardServiceImpl implements DashboardService {
         if(appObjectId != null && !"".equals(appObjectId)){
 
             Cmdb cmdb =  cmdbService.configurationItemsByObjectId(appObjectId);
-            dashboard.setConfigurationItemAppName(cmdb.getConfigurationItem());
-            dashboard.setValidAppName(cmdb.isValidConfigItem());
+            dashboard.setConfigurationItemBusServName(cmdb.getConfigurationItem());
+            dashboard.setValidServiceName(cmdb.isValidConfigItem());
         }
         if(compObjectId != null && !"".equals(compObjectId)){
             Cmdb cmdb = cmdbService.configurationItemsByObjectId(compObjectId);
-            dashboard.setConfigurationItemCompName(cmdb.getConfigurationItem());
-            dashboard.setValidCompName(cmdb.isValidConfigItem());
+            dashboard.setConfigurationItemBusAppName(cmdb.getConfigurationItem());
+            dashboard.setValidAppName(cmdb.isValidConfigItem());
         }
     }
 
@@ -452,11 +451,11 @@ public class DashboardServiceImpl implements DashboardService {
      * @throws HygieiaException
      */
     private void duplicateDashboardErrorCheck(Dashboard dashboard) throws HygieiaException {
-        ObjectId appObjectId = dashboard.getConfigurationItemAppObjectId();
-        ObjectId compObjectId = dashboard.getConfigurationItemComponentObjectId();
+        ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+        ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
 
         if(appObjectId != null && compObjectId != null){
-            Dashboard existingDashboard = dashboardRepository.findByConfigurationItemAppObjectIdAndConfigurationItemComponentObjectId(appObjectId, compObjectId);
+            Dashboard existingDashboard = dashboardRepository.findByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(appObjectId, compObjectId);
             if(existingDashboard != null && !existingDashboard.getId().equals(dashboard.getId())){
                 throw new HygieiaException("Existing Dashboard: " + existingDashboard.getTitle(), HygieiaException.DUPLICATE_DATA);
             }

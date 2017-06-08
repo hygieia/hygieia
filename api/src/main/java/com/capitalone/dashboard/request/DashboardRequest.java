@@ -21,9 +21,9 @@ public class DashboardRequest {
 
     private String componentName;
 
-    private ObjectId configurationItemAppObjectId;
+    private ObjectId configurationItemBusServObjectId;
 
-    private ObjectId configurationItemComponentObjectId;
+    private ObjectId configurationItemBusAppObjectId;
 
     @NotNull
     @Size(min=1, message="Please select a type")
@@ -71,27 +71,27 @@ public class DashboardRequest {
 
     public void setType(String type) { this.type = type; }
 
-    public ObjectId getConfigurationItemAppObjectId() {
-        return configurationItemAppObjectId;
+    public ObjectId getConfigurationItemBusServObjectId() {
+        return configurationItemBusServObjectId;
     }
 
-    public void setConfigurationItemAppObjectId(ObjectId configurationItemAppObjectId) {
-        this.configurationItemAppObjectId = configurationItemAppObjectId;
+    public void setConfigurationItemBusServObjectId(ObjectId configurationItemBusServObjectId) {
+        this.configurationItemBusServObjectId = configurationItemBusServObjectId;
     }
 
-    public ObjectId getConfigurationItemComponentObjectId() {
-        return configurationItemComponentObjectId;
+    public ObjectId getConfigurationItemBusAppObjectId() {
+        return configurationItemBusAppObjectId;
     }
 
-    public void setConfigurationItemComponentObjectId(ObjectId configurationItemComponentObjectId) {
-        this.configurationItemComponentObjectId = configurationItemComponentObjectId;
+    public void setConfigurationItemBusAppObjectId(ObjectId configurationItemBusAppObjectId) {
+        this.configurationItemBusAppObjectId = configurationItemBusAppObjectId;
     }
 
     public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-       return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type , configurationItemAppObjectId, configurationItemComponentObjectId);
+       return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type , configurationItemBusServObjectId, configurationItemBusAppObjectId);
 
 
     }

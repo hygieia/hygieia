@@ -166,18 +166,18 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard/updateBusItems/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateDashboardBusinessItems(@PathVariable ObjectId id, @RequestBody DashboardRequest request) {
 
-        ObjectId updatedBusServiceObjectId = request.getConfigurationItemAppObjectId();
-        ObjectId updatedBusApplicationObjectId = request.getConfigurationItemComponentObjectId();
+        ObjectId updatedBusServiceObjectId = request.getConfigurationItemBusServObjectId();
+        ObjectId updatedBusApplicationObjectId = request.getConfigurationItemBusAppObjectId();
         Dashboard dashboard = getDashboard(id);
 
 
         try {
 
             if(updatedBusServiceObjectId != null) {
-                dashboard.setConfigurationItemAppObjectId(updatedBusServiceObjectId);
+                dashboard.setConfigurationItemBusServObjectId(updatedBusServiceObjectId);
             }
             if(updatedBusApplicationObjectId != null){
-                dashboard.setConfigurationItemComponentObjectId(updatedBusApplicationObjectId);
+                dashboard.setConfigurationItemBusAppObjectId(updatedBusApplicationObjectId);
             }
             dashboardService.update(dashboard);
             return ResponseEntity.ok("Updated");

@@ -121,10 +121,10 @@
                     id: data[x].id,
                     name: data[x].title,
                     type: data[x].type,
-                    validAppName:  data[x].validAppName,
-                    validCompName: data[x].validCompName,
-                    configurationItemAppName:  data[x].configurationItemAppName,
-                    configurationItemCompName:  data[x].configurationItemCompName,
+                    validServiceName:  data[x].validServiceName,
+                    validAppName: data[x].validAppName,
+                    configurationItemBusServName:  data[x].configurationItemBusServName,
+                    configurationItemBusAppName:  data[x].configurationItemBusAppName,
                 });
             }
         }

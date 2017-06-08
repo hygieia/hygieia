@@ -42,11 +42,11 @@
 
         this.getDashboardTitle = function (data) {
             var title = data.title;
-            var businessServiceName = data.configurationItemAppName ? "-" + data.configurationItemAppName : "";
-            var businessApplicationName = data.configurationItemCompName ? "-" + data.configurationItemCompName : "";
+            var businessServiceName = data.configurationItemBusServName ? "-" + data.configurationItemBusServName : "";
+            var businessApplicationName = data.configurationItemBusAppName ? "-" + data.configurationItemBusAppName : "";
             var applicationName = data.application.name ? "-" + data.application.name : "" ;
 
-            if(businessServiceName != "" && businessApplicationName != "" ){
+            if(businessServiceName != "" || businessApplicationName != "" ){
                title = title +  businessServiceName + businessApplicationName;
             }else{
                title = title + applicationName;

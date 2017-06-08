@@ -33,18 +33,18 @@ public class Dashboard extends BaseModel {
     private Application application;
     //Ignore Updates
     @Transient
-    private String configurationItemAppName;
+    private String configurationItemBusServName;
     //Ignore Updates
     @Transient
-    private String configurationItemCompName;
+    private String configurationItemBusAppName;
 
-    private ObjectId configurationItemAppObjectId;
+    private ObjectId configurationItemBusServObjectId;
 
-    private ObjectId configurationItemComponentObjectId;
+    private ObjectId configurationItemBusAppObjectId;
+
+    private boolean validServiceName;
 
     private boolean validAppName;
-
-    private boolean validCompName;
 
     @Transient
     String errorMessage;
@@ -55,11 +55,11 @@ public class Dashboard extends BaseModel {
     Dashboard() {
     }
 
-    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, ObjectId configurationItemAppObjectId, ObjectId configurationItemComponentObjectId) {
+    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, ObjectId configurationItemBusServObjectId, ObjectId configurationItemBusAppObjectId) {
         this.template = template;
         this.title = title;
-        this.configurationItemAppObjectId = configurationItemAppObjectId;
-        this.configurationItemComponentObjectId = configurationItemComponentObjectId;
+        this.configurationItemBusServObjectId = configurationItemBusServObjectId;
+        this.configurationItemBusAppObjectId = configurationItemBusAppObjectId;
         this.application = application;
         this.type = type;
         this.owners.add(owner);
@@ -113,36 +113,44 @@ public class Dashboard extends BaseModel {
 
     public void setType(DashboardType type) { this.type = type; }
 
-    public String getConfigurationItemAppName() {
-        return configurationItemAppName;
+    public String getConfigurationItemBusServName() {
+        return configurationItemBusServName;
     }
 
-    public void setConfigurationItemAppName(String configurationItemAppName) {
-        this.configurationItemAppName = configurationItemAppName;
+    public void setConfigurationItemBusServName(String configurationItemBusServName) {
+        this.configurationItemBusServName = configurationItemBusServName;
     }
 
-    public String getConfigurationItemCompName() {
-        return configurationItemCompName;
+    public String getConfigurationItemBusAppName() {
+        return configurationItemBusAppName;
     }
 
-    public void setConfigurationItemCompName(String configurationItemCompName) {
-        this.configurationItemCompName = configurationItemCompName;
+    public void setConfigurationItemBusAppName(String configurationItemBusAppName) {
+        this.configurationItemBusAppName = configurationItemBusAppName;
     }
 
-    public ObjectId getConfigurationItemAppObjectId() {
-        return configurationItemAppObjectId;
+    public ObjectId getConfigurationItemBusServObjectId() {
+        return configurationItemBusServObjectId;
     }
 
-    public void setConfigurationItemAppObjectId(ObjectId configurationItemAppObjectId) {
-        this.configurationItemAppObjectId = configurationItemAppObjectId;
+    public void setConfigurationItemBusServObjectId(ObjectId configurationItemBusServObjectId) {
+        this.configurationItemBusServObjectId = configurationItemBusServObjectId;
     }
 
-    public ObjectId getConfigurationItemComponentObjectId() {
-        return configurationItemComponentObjectId;
+    public ObjectId getConfigurationItemBusAppObjectId() {
+        return configurationItemBusAppObjectId;
     }
 
-    public void setConfigurationItemComponentObjectId(ObjectId configurationItemComponentObjectId) {
-        this.configurationItemComponentObjectId = configurationItemComponentObjectId;
+    public void setConfigurationItemBusAppObjectId(ObjectId configurationItemBusAppObjectId) {
+        this.configurationItemBusAppObjectId = configurationItemBusAppObjectId;
+    }
+
+    public boolean isValidServiceName() {
+        return validServiceName;
+    }
+
+    public void setValidServiceName(boolean validServiceName) {
+        this.validServiceName = validServiceName;
     }
 
     public boolean isValidAppName() {
@@ -151,14 +159,6 @@ public class Dashboard extends BaseModel {
 
     public void setValidAppName(boolean validAppName) {
         this.validAppName = validAppName;
-    }
-
-    public boolean isValidCompName() {
-        return validCompName;
-    }
-
-    public void setValidCompName(boolean validCompName) {
-        this.validCompName = validCompName;
     }
 
     public String getErrorMessage() {
