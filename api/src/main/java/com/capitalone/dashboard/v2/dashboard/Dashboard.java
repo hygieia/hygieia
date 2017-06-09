@@ -29,7 +29,7 @@ public class Dashboard extends ResourceSupport {
     }
     
     public Dashboard(com.capitalone.dashboard.model.Dashboard dashboard) {
-        this.dashboardId = dashboard.getId().toHexString();
+        this.dashboardId = dashboard.getId() != null ? dashboard.getId().toHexString() : null;
         this.template = dashboard.getTemplate();
         this.title = dashboard.getTitle();
         this.type = dashboard.getType();
