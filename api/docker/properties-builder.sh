@@ -46,6 +46,8 @@ feature.dynamicPipeline=${FEATURE_DYNAMIC_PIPELINE:-disabled}
 auth.expirationTime=${AUTH_EXPIRATION_TIME:-}
 # Secret Key used to validate the JWT tokens
 auth.secret=${AUTH_SECRET:-}
+auth.authenticationProviders=${AUTH_AUTHENTICATION_PROVIDERS:-}
+
 # LDAP Server Url, including port of your LDAP server
 auth.ldapServerUrl=${AUTH_LDAP_SERVER_URL:-}
 
