@@ -2,13 +2,10 @@ package com.capitalone.dashboard.service;
 
 import java.util.List;
 
+import com.capitalone.dashboard.model.*;
 import org.bson.types.ObjectId;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.Widget;
 
 
 public interface DashboardService {
@@ -130,6 +127,29 @@ public interface DashboardService {
      */
 
     Component getComponent(ObjectId componentId);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessService(String configItem);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessApplication(String configItem);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItemApplication dashboard unique identifier
+     * @param configItemService dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String configItemService, String configItemApplication);
+
 
 }
 

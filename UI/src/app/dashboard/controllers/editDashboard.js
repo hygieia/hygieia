@@ -28,21 +28,44 @@
         	}
         });
 
-    EditDashboardController.$inject = ['$uibModalInstance', 'dashboardData', 'userData', 'userService', 'dashboardId','dashboardName', '$scope', '$q'];
-    function EditDashboardController($uibModalInstance, dashboardData, userData, userService, dashboardId, dashboardName, $scope, $q) {
+    EditDashboardController.$inject = ['$uibModalInstance', 'dashboardData', 'userData', 'userService', 'dashboardItem', '$scope', '$q', 'cmdbData', 'dashboardService' ];
+    function EditDashboardController($uibModalInstance, dashboardData, userData, userService, dashboardItem, $scope, $q, cmdbData, dashboardService) {
 
         var ctrl = this;
 
         // public variables
-        ctrl.dashboardTitle = dashboardName;
+        ctrl.dashboardType = dashboardItem.type;
+        ctrl.dashboardTitle = getDashboardTile(dashboardItem);
+        ctrl.configurationItemBusServ = dashboardItem.configurationItemBusServName;
+        ctrl.configurationItemBusApp = dashboardItem.configurationItemBusAppName;
+        ctrl.tabs = [
+            { name: "Dashboard Title"},
+            { name: "Business Service/ Application"},
+            { name: "Owner Information"}
+
+        ];
+        ctrl.tabView = ctrl.tabs[0].name;
 
         // public methods
         ctrl.submit = submit;
+        ctrl.submitBusServOrApp = submitBusServOrApp;
+        ctrl.getConfigItem = getConfigItem;
+        ctrl.getDashboardTile = getDashboardTile;
+        ctrl.getBusAppToolText = getBusAppToolText;
+        ctrl.getBusSerToolText = getBusSerToolText;
+        ctrl.tabToggleView = tabToggleView;
+        ctrl.setConfigItemAppId = setConfigItemAppId;
+        ctrl.setConfigItemComponentId = setConfigItemComponentId;
+        ctrl.isValidBusServName = isValidBusServName;
+        ctrl.isValidBusAppName = isValidBusAppName;
+
+        ctrl.validBusServName = isValidBusServName();
+        ctrl.validBusAppName = isValidBusAppName();
 
         ctrl.username = userService.getUsername();
         ctrl.authType = userService.getAuthType();
 
-        dashboardData.owners(dashboardId).then(processOwnerResponse);
+        dashboardData.owners(dashboardItem.id).then(processOwnerResponse);
         
         function processUserResponse(response) {
             $scope.users = response.data;
@@ -85,10 +108,10 @@
                 form.dashboardTitle.$setValidity('renameError', false);
             }
         }
-        
+
         function parallelSubmit() {
-	    	return $q.all([dashboardData.rename(dashboardId, document.cdf.dashboardTitle.value),
-	    	               dashboardData.updateOwners(dashboardId, prepareOwners($scope.owners))])
+	    	return $q.all([dashboardData.rename(dashboardItem.id, document.cdf.dashboardTitle.value),
+	    	               dashboardData.updateOwners(dashboardItem.id, prepareOwners($scope.owners))])
 	    	         .then(function() {
 	    	        	 $uibModalInstance.close();
 	                     window.location.reload(false);
@@ -103,6 +126,86 @@
         	})
         	
         	return putData
+        }
+
+        function submitBusServOrApp(form) {
+            resetFormValidation(form);
+            if (form.$valid) {
+
+                var submitData = {
+                    configurationItemBusServObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemBusServ),
+                    configurationItemBusAppObjectId:  dashboardService.getBusinessApplicationId(ctrl.configurationItemBusApp)
+                };
+                dashboardData
+                    .updateBusItems(dashboardItem.id,submitData)
+                    .success(function (data) {
+
+                    })
+                    .error(function (data) {
+                        if(data){
+                            ctrl.dupErroMessage = data;
+                        }
+
+                        form.configurationItemBusServ.$setValidity('dupBusServError', false);
+                        form.configurationItemBusApp.$setValidity('dupBusAppError', false);
+                    });
+            }
+
+        }
+
+        function getConfigItem(type ,filter) {
+            return cmdbData.getConfigItemList(type, {"search": filter, "size": 20}).then(function (response){
+                return response;
+            });
+        }
+        function getDashboardTile(item){
+            var subName = dashboardItem.name.substring(0, dashboardItem.name.indexOf('-'));
+
+            return subName ? subName : dashboardItem.name
+        }
+
+        function setConfigItemAppId(id){
+            ctrl.validBusServName = true;
+            dashboardService.setBusinessServiceId(id);
+        }
+
+        function setConfigItemComponentId(id){
+            ctrl.validBusAppName = true;
+            dashboardService.setBusinessApplicationId(id);
+        }
+
+        function getBusAppToolText(){
+            return dashboardService.getBusAppToolTipText();
+        }
+
+        function getBusSerToolText(){
+            return dashboardService.getBusSerToolTipText();
+        }
+        function tabToggleView(index) {
+            ctrl.dupErroMessage = "";
+            ctrl.tabView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
+        };
+        function resetFormValidation(form){
+            ctrl.dupErroMessage = "";
+            form.configurationItemBusServ.$setValidity('dupBusServError', true);
+            if(form.configurationItemBusApp){
+                form.configurationItemBusApp.$setValidity('dupBusAppError', true);
+            }
+
+        }
+        function isValidBusServName(){
+            var valid = true;
+            if(dashboardItem.configurationItemBusServName != undefined && !dashboardItem.validServiceName){
+                valid = false;
+            }
+            return valid;
+        }
+        function isValidBusAppName(){
+            var valid = true;
+            if(dashboardItem.configurationItemBusAppName != undefined && !dashboardItem.validAppName){
+                valid = false;
+            }
+            return valid;
         }
     }
 })();

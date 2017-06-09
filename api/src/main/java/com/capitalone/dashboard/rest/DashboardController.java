@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.capitalone.dashboard.model.*;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.Widget;
-import com.capitalone.dashboard.model.WidgetResponse;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.DashboardRequestTitle;
 import com.capitalone.dashboard.request.WidgetRequest;
@@ -58,9 +54,12 @@ public class DashboardController {
                     .status(HttpStatus.CREATED)
                     .body(dashboardService.create(request.toDashboard()));
         } catch (HygieiaException he) {
+            Dashboard dashboard = request.toDashboard();
+            dashboard.setErrorMessage(he.getMessage());
+            dashboard.setErrorCode(he.getErrorCode());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+                    .body(dashboard);
         }
     }
 
@@ -208,6 +207,48 @@ public class DashboardController {
             component = dashboardService.getComponent(componentId);
         }
         return component;
+    }
+    @RequestMapping(value = "/dashboard/configItemApp/{configItem}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public DataResponse<Iterable<Dashboard>> getDashboardByApp(@PathVariable String configItem) {
+        return dashboardService.getByBusinessService(configItem);
+    }
+    @RequestMapping(value = "/dashboard/configItemComponent/{configItem}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public DataResponse<Iterable<Dashboard>> getDashboardByComp(@PathVariable String configItem) {
+        return dashboardService.getByBusinessApplication(configItem);
+    }
+    @RequestMapping(value = "/dashboard/configItemComponentAndApp/{configItemComp}/{configItemApp}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public DataResponse<Iterable<Dashboard>> getDashboardByCompAndApp(@PathVariable String configItemComp,@PathVariable String configItemApp) {
+        return dashboardService.getByServiceAndApplication(configItemComp,configItemApp);
+    }
+
+    @DashboardOwnerOrAdmin
+    @RequestMapping(value = "/dashboard/updateBusItems/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateDashboardBusinessItems(@PathVariable ObjectId id, @RequestBody DashboardRequest request) {
+
+        ObjectId updatedBusServiceObjectId = request.getConfigurationItemBusServObjectId();
+        ObjectId updatedBusApplicationObjectId = request.getConfigurationItemBusAppObjectId();
+        Dashboard dashboard = getDashboard(id);
+
+
+        try {
+
+            if(updatedBusServiceObjectId != null) {
+                dashboard.setConfigurationItemBusServObjectId(updatedBusServiceObjectId);
+            }
+            if(updatedBusApplicationObjectId != null){
+                dashboard.setConfigurationItemBusAppObjectId(updatedBusApplicationObjectId);
+            }
+            dashboardService.update(dashboard);
+            return ResponseEntity.ok("Updated");
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
+
     }
 
 }
