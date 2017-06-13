@@ -363,8 +363,8 @@ public class DashboardServiceImpl implements DashboardService {
         return component;
     }
     @Override
-    public Dashboard updateDashboardBusinessItems(ObjectId id, Dashboard request) throws HygieiaException {
-        Dashboard dashboard = get(id);
+    public Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard request) throws HygieiaException {
+        Dashboard dashboard = get(dashboardId);
         String updatedBusServiceName = request.getConfigurationItemBusServName();
         String updatedBusApplicationName = request.getConfigurationItemBusAppName();
         String originalBusServiceName = dashboard.getConfigurationItemBusServName();

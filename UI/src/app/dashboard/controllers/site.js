@@ -129,7 +129,7 @@
             for (var x = 0; x < data.length; x++) {
                 var board = {
                     id: data[x].id,
-                    name: data[x].title,
+                    name: dashboardService.getDashboardTitle(data[x]),
                     isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
                 };
 

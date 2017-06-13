@@ -29,7 +29,7 @@
                                     ng-pattern="/^[a-zA-Z0-9 ]*$/"/>
                             <span class="text-danger"></span>
                         </form-group>
-                        <div class="text-center"><button type="submit" class="btn btn-primary btn-wide">Update</button></div>
+                        <div class="text-center"><button type="submit" class="btn btn-primary btn-wide">Save</button></div>
                     </div>
                 </div>
             </form>
@@ -38,11 +38,11 @@
 
 
         <div class="container-fluid" ng-if="ctrl.tabView == 'Business Service/ Application'">
-            <form name="formBusinessService" class="form" ng-submit="ctrl.submitBusServOrApp(formBusinessService)" novalidate>
+            <form name="formBusinessService" class="form" ng-submit="ctrl.submitBusServOrApp(formBusinessService)">
                 <div class="row">
                     <div class="col-xs-12 gap">
                         <p class="text-danger">{{ctrl.dupErroMessage}}</p>
-                        <sform-group  input="configurationItemBusServ" errors="{dupBusServError: 'Existing Dashboard found for this Business Service/ Business Application combination', invalid: 'Invalid Business Service'}">
+                        <form-group  input="configurationItemBusServ" errors="{dupBusServError: 'Existing Dashboard found for this Business Service/ Business Application combination', invalid: 'Invalid Business Service'}">
                             <label ng-class="{'text-danger':ctrl.validBusServName == false}" class="modal-label">Business Service <i class="fa fa-info-circle" uib-tooltip = "{{ctrl.getBusSerToolText()}}" tooltip-trigger="focus" tooltip-placement="top" aria-hidden="true"></i></label>
                             <input
                                     type="text"
@@ -59,7 +59,7 @@
                             <div class="form-control" ng-show="noResults">
                                 No Results Found
                             </div>
-                        </sform-group>
+                        </form-group>
 
                         <form-group input="configurationItemBusApp" ng-if="ctrl.dashboardType != 'Product'"  errors="{dupBusAppError: 'Existing Dashboard found for this Business Service/ Business Application combination', invalid: 'Invalid Business Application'}">
                             <label ng-class="{'text-danger':ctrl.validBusAppName == false}"  class="modal-label">Business Application <i class="fa fa-info-circle" uib-tooltip = "{{ctrl.getBusAppToolText()}}" tooltip-trigger="focus" tooltip-placement="top" aria-hidden="true"></i></label>
@@ -79,7 +79,7 @@
                                 No Results Found
                             </div>
                         </form-group>
-                        <div class="text-center"><button type="submit" class="btn btn-primary btn-wide">Update</button></div>
+                        <div class="text-center"><button type="submit" class="btn btn-primary btn-wide">Save</button></div>
                     </div>
                 </div>
             </form>
@@ -140,7 +140,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="text-center"><button type="submit" class="btn btn-primary btn-wide">Update</button></div>
+                        <div class="text-center"><button type="submit" class="btn btn-primary btn-wide">Save</button></div>
                     </form>
                 </div>
             </div>

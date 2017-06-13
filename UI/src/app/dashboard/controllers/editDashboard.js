@@ -144,9 +144,6 @@
         function submitBusServOrApp(form) {
             resetFormValidation(form);
             if (form.$valid) {
-                //var configurationItemBusServ = document.formBusinessService.configurationItemBusServ.value;
-                //TODO: figure out what to do when this is undefined
-                //var configurationItemBusApp = document.formBusinessService.configurationItemBusApp.value;
                 var submitData = {
                     configurationItemBusServName: document.formBusinessService.configurationItemBusServ ? document.formBusinessService.configurationItemBusServ.value : null,
                     configurationItemBusAppName:  document.formBusinessService.configurationItemBusApp ?  document.formBusinessService.configurationItemBusApp.value : null
