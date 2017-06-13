@@ -110,8 +110,6 @@
             });
 
             mymodalInstance.result.then(function success() {
-
-            }, function close() {
                 dashboardData.search().then(processResponse);
                 userData.getAllUsers().then(processUserResponse);
                 userData.apitokens().then(processTokenResponse);

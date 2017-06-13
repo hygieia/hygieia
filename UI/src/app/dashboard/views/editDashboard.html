@@ -34,6 +34,9 @@
                 </div>
             </form>
         </div>
+
+
+
         <div class="container-fluid" ng-if="ctrl.tabView == 'Business Service/ Application'">
             <form name="formBusinessService" class="form" ng-submit="ctrl.submitBusServOrApp(formBusinessService)" novalidate>
                 <div class="row">
@@ -81,62 +84,64 @@
                 </div>
             </form>
         </div>
-
         <div class="container-fluid" ng-if="ctrl.tabView == 'Owner Information'">
             <div class="row">
                 <div class="col-xs-12 gap">
                     <label class="modal-label">Add/Remove Owners</label>
-                    <div class="widget-modal-body" style="width: 500px;height: 300px;overflow: auto;">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <div class="text-center" ng-hide="users">Loading Users...</div>
+                    <form name="ownerForm" class="form" ng-submit="ctrl.ownerFormSubmit(ownerForm)" novalidate>
+                        <div class="widget-modal-body" style="width: 500px;height: 300px;overflow: auto;">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="text-center" ng-hide="users">Loading Users...</div>
 
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <h3>Users</h3>
-                                        <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch">
+                                    <div class="row">
+                                        <div class="col-xs-5">
+                                            <h3>Users</h3>
+                                            <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch">
 
-                                        <div class="dash-modal-row delete-dashboard-row clearfix"
-                                             ng-repeat="user in users | filter:{username:userSearch} | ownerFilter:owners | orderBy:'username'">
+                                            <div class="dash-modal-row delete-dashboard-row clearfix"
+                                                 ng-repeat="user in users | filter:{username:userSearch} | ownerFilter:owners | orderBy:'username'">
 
-                                            <div class="btn-block">
-                                                <span class="label label-primary" ng-show="isActiveUser(user)">You</span>
-                                                {{user.username}}
-                                                <span class="badge">{{user.authType}}</span>
-                                                <div title="Promote User" class="clickable pull-right" ng-click="promoteUserToOwner(user)">
-                                                        <span class="clickable fa fa-stack">
-                                                            <span class="fa-circle-thin fa-stack-2x text-success"></span>
-                                                            <span class="fa-angle-right fa-stack-1x text-success"></span>
-                                                        </span>
+                                                <div class="btn-block">
+                                                    <span class="label label-primary" ng-show="isActiveUser(user)">You</span>
+                                                    {{user.username}}
+                                                    <span class="badge">{{user.authType}}</span>
+                                                    <div title="Promote User" class="clickable pull-right" ng-click="promoteUserToOwner(user)">
+                                                            <span class="clickable fa fa-stack">
+                                                                <span class="fa-circle-thin fa-stack-2x text-success"></span>
+                                                                <span class="fa-angle-right fa-stack-1x text-success"></span>
+                                                            </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-push-2 col-xs-5">
+                                            <h3>Owners</h3>
+                                            <div class="dash-modal-row delete-dashboard-row clearfix"
+                                                 ng-repeat="owner in owners | orderBy:'username'">
+                                                <div class="btn-block">
+                                                    <span class="label label-primary" ng-show="isActiveUser(owner)">You</span>
+                                                    {{owner.username}}
+                                                    <span class="badge">{{owner.authType}}</span>
+                                                    <div title="Demote User" ng-show="owners.length > 1" class="clickable pull-right" ng-click="demoteUserFromOwner(owner)">
+                                                            <span class="clickable fa fa-stack">
+                                                                <span class="fa-circle-thin fa-stack-2x text-danger"></span>
+                                                                <span class="fa-angle-left fa-stack-1x text-danger"></span>
+                                                            </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xs-push-2 col-xs-5">
-                                        <h3>Owners</h3>
-                                        <div class="dash-modal-row delete-dashboard-row clearfix"
-                                             ng-repeat="owner in owners | orderBy:'username'">
-                                            <div class="btn-block">
-                                                <span class="label label-primary" ng-show="isActiveUser(owner)">You</span>
-                                                {{owner.username}}
-                                                <span class="badge">{{owner.authType}}</span>
-                                                <div title="Demote User" ng-show="owners.length > 1" class="clickable pull-right" ng-click="demoteUserFromOwner(owner)">
-                                                        <span class="clickable fa fa-stack">
-                                                            <span class="fa-circle-thin fa-stack-2x text-danger"></span>
-                                                            <span class="fa-angle-left fa-stack-1x text-danger"></span>
-                                                        </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="text-center" ng-show="users && !users.length">
-                                    No results
+                                    <div class="text-center" ng-show="users && !users.length">
+                                        No results
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <div class="text-center"><button type="submit" class="btn btn-primary btn-wide">Update</button></div>
+                    </form>
                 </div>
             </div>
         </div>

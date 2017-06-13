@@ -226,23 +226,15 @@ public class DashboardController {
 
     @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/updateBusItems/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateDashboardBusinessItems(@PathVariable ObjectId id, @RequestBody DashboardRequest request) {
-
-        ObjectId updatedBusServiceObjectId = request.getConfigurationItemBusServObjectId();
-        ObjectId updatedBusApplicationObjectId = request.getConfigurationItemBusAppObjectId();
-        Dashboard dashboard = getDashboard(id);
-
-
+    public ResponseEntity<String> updateDashboardBusinessItems(@PathVariable ObjectId id, @RequestBody Dashboard request) {
         try {
+            Dashboard dashboard = dashboardService.updateDashboardBusinessItems(id, request);
+            if(dashboard != null){
+                return ResponseEntity.ok("Updated");
+            }else{
+                return ResponseEntity.ok("Unchanged");
+            }
 
-            if(updatedBusServiceObjectId != null) {
-                dashboard.setConfigurationItemBusServObjectId(updatedBusServiceObjectId);
-            }
-            if(updatedBusApplicationObjectId != null){
-                dashboard.setConfigurationItemBusAppObjectId(updatedBusApplicationObjectId);
-            }
-            dashboardService.update(dashboard);
-            return ResponseEntity.ok("Updated");
         } catch (HygieiaException he) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

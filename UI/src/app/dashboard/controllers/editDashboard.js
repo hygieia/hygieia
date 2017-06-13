@@ -28,14 +28,13 @@
         	}
         });
 
-    EditDashboardController.$inject = ['$uibModalInstance', 'dashboardData', 'userData', 'userService', 'dashboardItem', '$scope', '$q', 'cmdbData', 'dashboardService' ];
-    function EditDashboardController($uibModalInstance, dashboardData, userData, userService, dashboardItem, $scope, $q, cmdbData, dashboardService) {
+    EditDashboardController.$inject = ['$uibModalInstance', 'dashboardData', 'userData', 'userService', 'dashboardItem', '$scope', '$q', 'cmdbData', 'dashboardService', '$timeout' ];
+    function EditDashboardController($uibModalInstance, dashboardData, userData, userService, dashboardItem, $scope, $q, cmdbData, dashboardService, $timeout) {
 
         var ctrl = this;
 
         // public variables
         ctrl.dashboardType = dashboardItem.type;
-        ctrl.dashboardTitle = getDashboardTile(dashboardItem);
         ctrl.configurationItemBusServ = dashboardItem.configurationItemBusServName;
         ctrl.configurationItemBusApp = dashboardItem.configurationItemBusAppName;
         ctrl.tabs = [
@@ -49,24 +48,24 @@
         // public methods
         ctrl.submit = submit;
         ctrl.submitBusServOrApp = submitBusServOrApp;
+        ctrl.ownerFormSubmit = ownerFormSubmit;
         ctrl.getConfigItem = getConfigItem;
-        ctrl.getDashboardTile = getDashboardTile;
+        ctrl.getDashboardTitle = getDashboardTitle;
         ctrl.getBusAppToolText = getBusAppToolText;
         ctrl.getBusSerToolText = getBusSerToolText;
         ctrl.tabToggleView = tabToggleView;
-        ctrl.setConfigItemAppId = setConfigItemAppId;
-        ctrl.setConfigItemComponentId = setConfigItemComponentId;
         ctrl.isValidBusServName = isValidBusServName;
         ctrl.isValidBusAppName = isValidBusAppName;
 
         ctrl.validBusServName = isValidBusServName();
         ctrl.validBusAppName = isValidBusAppName();
+        ctrl.dashboardTitle = getDashboardTitle();
 
         ctrl.username = userService.getUsername();
         ctrl.authType = userService.getAuthType();
 
         dashboardData.owners(dashboardItem.id).then(processOwnerResponse);
-        
+
         function processUserResponse(response) {
             $scope.users = response.data;
         }
@@ -100,7 +99,7 @@
         function submit(form) {
             form.dashboardTitle.$setValidity('renameError', true);
             if (form.$valid) {
-                	parallelSubmit()
+                renameSubmit()
                     .catch(function(error){
                     	$scope.error = error.data
                     });
@@ -109,13 +108,27 @@
             }
         }
 
-        function parallelSubmit() {
-	    	return $q.all([dashboardData.rename(dashboardItem.id, document.cdf.dashboardTitle.value),
-	    	               dashboardData.updateOwners(dashboardItem.id, prepareOwners($scope.owners))])
+        function renameSubmit() {
+	    	return $q.when(dashboardData.rename(dashboardItem.id, document.cdf.dashboardTitle.value))
 	    	         .then(function() {
-	    	        	 $uibModalInstance.close();
-	                     window.location.reload(false);
-	    	         });
+                         $uibModalInstance.close();
+                     });
+        }
+        function ownerFormSubmit(form) {
+
+            if (form.$valid) {
+                ownerSubmit()
+                    .catch(function(error){
+                        $scope.error = error.data
+                    });
+            }
+        }
+        function ownerSubmit() {
+
+            return $q.when(dashboardData.updateOwners(dashboardItem.id, prepareOwners($scope.owners)))
+                .then(function() {
+                    $uibModalInstance.close();
+                });
         }
 
         function prepareOwners(owners) {
@@ -131,15 +144,17 @@
         function submitBusServOrApp(form) {
             resetFormValidation(form);
             if (form.$valid) {
-
+                //var configurationItemBusServ = document.formBusinessService.configurationItemBusServ.value;
+                //TODO: figure out what to do when this is undefined
+                //var configurationItemBusApp = document.formBusinessService.configurationItemBusApp.value;
                 var submitData = {
-                    configurationItemBusServObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemBusServ),
-                    configurationItemBusAppObjectId:  dashboardService.getBusinessApplicationId(ctrl.configurationItemBusApp)
+                    configurationItemBusServName: document.formBusinessService.configurationItemBusServ ? document.formBusinessService.configurationItemBusServ.value : null,
+                    configurationItemBusAppName:  document.formBusinessService.configurationItemBusApp ?  document.formBusinessService.configurationItemBusApp.value : null
                 };
                 dashboardData
                     .updateBusItems(dashboardItem.id,submitData)
                     .success(function (data) {
-
+                        $uibModalInstance.close();
                     })
                     .error(function (data) {
                         if(data){
@@ -158,20 +173,8 @@
                 return response;
             });
         }
-        function getDashboardTile(item){
-            var subName = dashboardItem.name.substring(0, dashboardItem.name.indexOf('-'));
-
-            return subName ? subName : dashboardItem.name
-        }
-
-        function setConfigItemAppId(id){
-            ctrl.validBusServName = true;
-            dashboardService.setBusinessServiceId(id);
-        }
-
-        function setConfigItemComponentId(id){
-            ctrl.validBusAppName = true;
-            dashboardService.setBusinessApplicationId(id);
+        function getDashboardTitle(){
+            return  dashboardService.getDashboardTitleOrig(dashboardItem);
         }
 
         function getBusAppToolText(){

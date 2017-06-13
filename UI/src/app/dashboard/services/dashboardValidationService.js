@@ -54,7 +54,11 @@
 
             return title;
         }
+        this.getDashboardTitleOrig = function(data){
+            var subName = data.name.substring(0, data.name.indexOf('-'));
 
+            return subName ? subName : data.name
+        }
         this.getBusSerToolTipText = function (){
             return "A top level name which support Business function."
         }

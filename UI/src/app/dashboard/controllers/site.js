@@ -110,8 +110,6 @@
                 }
             });
             modalInstance.result.then(function success() {
-
-            }, function close() {
                 pullDashboards()
             });
         }
@@ -149,7 +147,6 @@
         }
 
         function processMyDashboardResponse(mydata) {
-
             // add dashboards to list
             ctrl.mydash = [];
             var dashboards = [];
@@ -164,6 +161,8 @@
                     validAppName: mydata[x].validAppName,
                     configurationItemBusServName:  mydata[x].configurationItemBusServName,
                     configurationItemBusAppName:  mydata[x].configurationItemBusAppName,
+                    configurationItemBusServId:  mydata[x].configurationItemBusServObjectId,
+                    configurationItemBusAppId:  mydata[x].configurationItemBusAppObjectId,
                     showError: ctrl.getInvalidAppOrCompError(mydata[x])
                 });
             }

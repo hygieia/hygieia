@@ -363,6 +363,45 @@ public class DashboardServiceImpl implements DashboardService {
         return component;
     }
     @Override
+    public Dashboard updateDashboardBusinessItems(ObjectId id, Dashboard request) throws HygieiaException {
+        Dashboard dashboard = get(id);
+        String updatedBusServiceName = request.getConfigurationItemBusServName();
+        String updatedBusApplicationName = request.getConfigurationItemBusAppName();
+        String originalBusServiceName = dashboard.getConfigurationItemBusServName();
+        String originalBusApplicationName = dashboard.getConfigurationItemBusAppName();
+        boolean updateDashboard = false;
+
+        if(updatedBusServiceName != null && !updatedBusServiceName.isEmpty()){
+            Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(updatedBusServiceName);
+            if(cmdb != null){
+                updateDashboard = true;
+                dashboard.setConfigurationItemBusServObjectId(cmdb.getId());
+            }
+        } else if(originalBusServiceName != null && !originalBusServiceName.isEmpty()){
+
+            updateDashboard = true;
+            dashboard.setConfigurationItemBusServObjectId(null);
+        }
+
+        if(updatedBusApplicationName != null && !updatedBusApplicationName.isEmpty()){
+            Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(updatedBusApplicationName);
+            if(cmdb != null){
+                updateDashboard = true;
+                dashboard.setConfigurationItemBusAppObjectId(cmdb.getId());
+            }
+        } else if(originalBusApplicationName != null && !originalBusApplicationName.isEmpty()){
+                updateDashboard = true;
+                dashboard.setConfigurationItemBusAppObjectId(null);
+        }
+        if(updateDashboard){
+            dashboard = update(dashboard);
+        }else{
+            dashboard = null;
+        }
+
+        return dashboard;
+    }
+    @Override
     public DataResponse<Iterable<Dashboard>> getByBusinessService(String app) {
         Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(app);
 

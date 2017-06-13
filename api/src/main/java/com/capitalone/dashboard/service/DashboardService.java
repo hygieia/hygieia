@@ -150,7 +150,13 @@ public interface DashboardService {
      */
     DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String configItemService, String configItemApplication);
 
-
+    /**
+     *  Updates Dashboard Business Items
+     * @param dashboardId
+     * @param dashboard
+     * @return dashboard instance
+     */
+    Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard dashboard) throws HygieiaException;
 }
 
 
