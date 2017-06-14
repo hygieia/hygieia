@@ -130,7 +130,7 @@ public class DashboardServiceTest {
         verify(componentRepository).delete(components);
     }
 
-    //@Test
+    @Test
     public void update() throws HygieiaException {
         ObjectId configItemBusServId = ObjectId.get();
         ObjectId configItemBusAppId = ObjectId.get();
@@ -139,7 +139,6 @@ public class DashboardServiceTest {
         when(dashboardRepository.save(expected)).thenReturn(expected);
 
         assertThat(dashboardService.update(expected), is(expected));
-        verify(componentRepository, times(1)).save(expected.getApplication().getComponents());
     }
 
     @Test
