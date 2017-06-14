@@ -5,8 +5,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,6 +30,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.domain.Sort;
 
+import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.AuthType;
@@ -37,12 +42,16 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Service;
+import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.ServiceRepository;
+import com.capitalone.dashboard.repository.UserInfoRepository;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -58,6 +67,11 @@ public class DashboardServiceTest {
     private CollectorItemRepository collectorItemRepository;
     @Mock
     private ServiceRepository serviceRepository;
+    @Mock
+    private CustomRepositoryQuery customRepositoryQuery;
+    @Mock
+    private UserInfoRepository userInfoRepository;
+
     @InjectMocks
     private DashboardServiceImpl dashboardService;
 
@@ -153,6 +167,66 @@ public class DashboardServiceTest {
     }
 
     @Test
+    public void associateCollectorToComponentWithDisabledCollectorItem() {
+        ObjectId compId = ObjectId.get();
+        ObjectId collId = ObjectId.get();
+        ObjectId collItemId = ObjectId.get();
+        List<ObjectId> collItemIds = Arrays.asList(collItemId);
+
+        CollectorItem item = new CollectorItem();
+        item.setCollectorId(collId);
+        item.setEnabled(false);
+        Collector collector = new Collector();
+        collector.setCollectorType(CollectorType.Build);
+        Component component = new Component();
+        HashSet<CollectorItem> set = new HashSet<>();
+        set.add(item);
+
+        when(collectorItemRepository.findOne(collItemId)).thenReturn(item);
+        when(collectorRepository.findOne(collId)).thenReturn(collector);
+        when(componentRepository.findOne(compId)).thenReturn(component);
+
+        dashboardService.associateCollectorToComponent(compId, collItemIds);
+
+        assertThat(component.getCollectorItems().get(CollectorType.Build), contains(item));
+
+        verify(componentRepository).save(component);
+        verify(collectorItemRepository).save(set);
+    }
+
+    @Test
+    public void associateCollectorToComponent_Item_with_two_components() {
+        ObjectId compId = ObjectId.get();
+        ObjectId collId = ObjectId.get();
+        ObjectId collItemId = ObjectId.get();
+        List<ObjectId> collItemIds = Arrays.asList(collItemId);
+
+        CollectorItem item = new CollectorItem();
+        item.setCollectorId(collId);
+        item.setEnabled(false);
+        Collector collector = new Collector();
+        collector.setCollectorType(CollectorType.Build);
+        Component component1 = new Component();
+        HashSet<CollectorItem> set = new HashSet<>();
+        set.add(item);
+
+
+        Component component2 = new Component();
+
+        when(collectorItemRepository.findOne(collItemId)).thenReturn(item);
+        when(collectorRepository.findOne(collId)).thenReturn(collector);
+        when(componentRepository.findOne(compId)).thenReturn(component1);
+        when(customRepositoryQuery.findComponents(collector, item)).thenReturn(Arrays.asList(component1, component2));
+
+        dashboardService.associateCollectorToComponent(compId, collItemIds);
+
+        assertThat(component1.getCollectorItems().get(CollectorType.Build), contains(item));
+        assertThat(item.isEnabled(), is(true));
+        verify(componentRepository).save(component1);
+        verify(collectorItemRepository).save(set);
+    }
+
+    @Test
     public void associateCollectorToComponent_collectorItemDisabled_willBecomeEnabled() {
         ObjectId compId = ObjectId.get();
         ObjectId collId = ObjectId.get();
@@ -207,6 +281,7 @@ public class DashboardServiceTest {
         CollectorItem item2 = new CollectorItem();
         item2.setCollectorId(collId);
         item2.setId(collItemId2);
+        item2.setEnabled(true);
         set.add(item2);
 
 
@@ -224,6 +299,55 @@ public class DashboardServiceTest {
         verify(componentRepository).save(component);
         verify(collectorItemRepository).save((set));
     }
+
+    @Test
+    public void associateCollectorToComponent_switch_Item1_with_Item2_Multiple_Components() {
+        ObjectId compId = ObjectId.get();
+        ObjectId collId = ObjectId.get();
+
+        ObjectId collItemId1 = ObjectId.get();
+        ObjectId collItemId2 = ObjectId.get();
+
+        List<ObjectId> collItemIds = Arrays.asList(collItemId2);
+
+        CollectorItem item1 = new CollectorItem();
+        item1.setCollectorId(collId);
+        item1.setId(collItemId1);
+        item1.setEnabled(true);
+        Collector collector = new Collector();
+        collector.setCollectorType(CollectorType.Build);
+        Component component1 = new Component();
+        component1.addCollectorItem(CollectorType.Build, item1);
+
+        Component component2 = new Component();
+        component1.addCollectorItem(CollectorType.Build, item1);
+
+        HashSet<CollectorItem> set = new HashSet<>();
+        set.add(item1);
+
+        CollectorItem item2 = new CollectorItem();
+        item2.setCollectorId(collId);
+        item2.setId(collItemId2);
+        item2.setEnabled(true);
+        set.add(item2);
+
+
+        when(collectorItemRepository.findOne(collItemId1)).thenReturn(item1);
+        when(collectorItemRepository.findOne(collItemId2)).thenReturn(item2);
+        when(collectorRepository.findOne(collId)).thenReturn(collector);
+        when(componentRepository.findOne(compId)).thenReturn(component1);
+        when(customRepositoryQuery.findComponents(collector, item1)).thenReturn(Arrays.asList(component1, component2));
+
+        dashboardService.associateCollectorToComponent(compId, collItemIds);
+
+        assertThat(component1.getCollectorItems().get(CollectorType.Build), contains(item2));
+        assertThat(item1.isEnabled(), is(true));
+        assertThat(item2.isEnabled(), is(true));
+
+        verify(componentRepository).save(component1);
+        verify(collectorItemRepository).save((set));
+    }
+
 
 
     @Test
@@ -392,6 +516,61 @@ public class DashboardServiceTest {
         assertThat(d.getWidgets().get(0).getName(), is(expected.getName()));
 
         verify(dashboardRepository).save(d);
+    }
+    
+    @Test
+    public void updateOwners_empty_owner_set() {
+    	Iterable<Owner> owners = Lists.newArrayList();
+    	
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), null, DashboardType.Team);
+    	
+    	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
+    	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
+    	
+    	Iterable<Owner> result = dashboardService.updateOwners(dashboard.getId(), owners);
+    	assertTrue(Iterables.size(result) == 0);
+    	
+    	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
+    	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
+    }
+    
+    @Test(expected = UserNotFoundException.class)
+    public void updateOwners_user_not_found() {
+    	Owner existingOwner = new Owner("existing", AuthType.LDAP);
+    	Owner nonExistingOwner = new Owner("nonExisting", AuthType.STANDARD);
+    	
+    	when(userInfoRepository.findByUsernameAndAuthType("existing", AuthType.LDAP)).thenReturn(new UserInfo());
+    	when(userInfoRepository.findByUsernameAndAuthType("nonExisting", AuthType.STANDARD)).thenReturn(null);
+    	ObjectId dashboardId = ObjectId.get();
+    	Iterable<Owner> owners = Lists.newArrayList(existingOwner, nonExistingOwner);
+    	dashboardService.updateOwners(dashboardId, owners);
+    	
+    	verify(userInfoRepository, times(2)).findByUsernameAndAuthType(any(String.class), any(AuthType.class));
+    }
+    
+    @Test
+    public void updateOwners() {
+    	Owner existingOwner = new Owner("existing", AuthType.LDAP);
+    	UserInfo existingInfo = new UserInfo();
+    	existingInfo.setUsername("existing");
+    	existingInfo.setAuthType(AuthType.LDAP);
+    	
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwner, DashboardType.Team);
+    	
+    	when(userInfoRepository.findByUsernameAndAuthType("existing", AuthType.LDAP)).thenReturn(existingInfo);
+    	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
+    	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
+    	
+    	Iterable<Owner> owners = Lists.newArrayList(existingOwner);
+    	List<Owner> result = Lists.newArrayList(dashboardService.updateOwners(dashboard.getId(), owners));
+    	
+    	assertNotNull(result);
+    	assertEquals(1, result.size());
+    	assertEquals(existingOwner, result.get(0));
+    	
+    	verify(userInfoRepository).findByUsernameAndAuthType(eq("existing"), eq(AuthType.LDAP));
+    	verify(dashboardRepository).findOne(eq(dashboard.getId()));
+    	verify(dashboardRepository).save(eq(dashboard));
     }
 
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, String... compNames) {

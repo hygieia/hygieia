@@ -114,6 +114,7 @@ public class DefaultXLDeployClient implements XLDeployClient {
 	}
 	
 	@Override
+	@SuppressWarnings({"PMD.NPathComplexity"})
 	public List<XLDeployApplicationHistoryItem> getApplicationHistory(List<XLDeployApplication> applications, Date startDate, Date endDate) {
 		if (applications == null || applications.isEmpty()) {
 			return Collections.<XLDeployApplicationHistoryItem>emptyList();
@@ -148,7 +149,14 @@ public class DefaultXLDeployClient implements XLDeployClient {
 				
 				XLDeployApplicationHistoryItem historyItem = new XLDeployApplicationHistoryItem();
 				historyItem.setEnvironmentName(deploymentData.get("environment"));
-				historyItem.setDeploymentPackage(deploymentData.get("package"));
+				
+				String pkg = deploymentData.get("package");
+				
+				// updates seem to give both packages in play separated by a comma
+				if (pkg != null && pkg.indexOf(',') >= 0) {
+					pkg = pkg.substring(0, pkg.indexOf(','));
+				}
+				historyItem.setDeploymentPackage(pkg);
 				historyItem.setEnvironmentId(deploymentData.get("environmentId"));
 				
 				try {

@@ -83,7 +83,7 @@
 
         function createCollectorItem(chatOpsOption, chatOpsRoomAuthToken, chatOpsServerUrl, chatOpsRoomName) {
             var item = {
-                    collectorId: _.findWhere(ctrl.collectors, {name: 'ChatOps'}).id,
+                    collectorId: _.find(ctrl.collectors, {name: 'ChatOps'}).id,
                     options: {
                         chatOpsOption: chatOpsOption,
                         chatOpsRoomAuthToken: chatOpsRoomAuthToken,

@@ -1,11 +1,12 @@
 package com.capitalone.dashboard.collector;
 
-import java.math.BigDecimal;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityMetricStatus;
+import com.capitalone.dashboard.model.CodeQualityType;
+import com.capitalone.dashboard.model.SonarProject;
+import com.capitalone.dashboard.util.SonarDashboardUrl;
+import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -23,13 +24,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CodeQualityMetric;
-import com.capitalone.dashboard.model.CodeQualityMetricStatus;
-import com.capitalone.dashboard.model.CodeQualityType;
-import com.capitalone.dashboard.model.SonarProject;
-import com.capitalone.dashboard.util.SonarDashboardUrl;
-import com.capitalone.dashboard.util.Supplier;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class DefaultSonarClient implements SonarClient {
@@ -54,15 +53,13 @@ public class DefaultSonarClient implements SonarClient {
 
     private final RestOperations rest;
     private final HttpEntity<String> httpHeaders;
-    private final SonarSettings sonarSettings;
 
     @Autowired
     public DefaultSonarClient(Supplier<RestOperations> restOperationsSupplier, SonarSettings settings) {
-        this.httpHeaders = new HttpEntity<String>(
+        this.httpHeaders = new HttpEntity<>(
                 this.createHeaders(settings.getUsername(), settings.getPassword())
             );
         this.rest = restOperationsSupplier.get();
-        this.sonarSettings = settings;
     }
 
     @Override
@@ -91,10 +88,11 @@ public class DefaultSonarClient implements SonarClient {
         return projects;
     }
 
+
     @Override
-    public CodeQuality currentCodeQuality(SonarProject project) {
+    public CodeQuality currentCodeQuality(SonarProject project, String metrics) {
         String url = String.format(
-                project.getInstanceUrl() + URL_RESOURCE_DETAILS, project.getProjectId(), sonarSettings.getMetrics());
+                project.getInstanceUrl() + URL_RESOURCE_DETAILS, project.getProjectId(), metrics);
 
         try {
             JSONArray jsonArray = parseAsArray(url);

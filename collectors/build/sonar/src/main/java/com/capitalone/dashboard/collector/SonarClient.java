@@ -8,7 +8,6 @@ import java.util.List;
 public interface SonarClient {
 
     List<SonarProject> getProjects(String instanceUrl);
-
-    CodeQuality currentCodeQuality(SonarProject project);
+    CodeQuality currentCodeQuality(SonarProject project, String metrics);
 
 }

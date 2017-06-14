@@ -54,7 +54,7 @@
 
             for(var x in modalData.widgetConfig.options.mappings) {
                 var envName = modalData.widgetConfig.options.mappings[x];
-                if(_(ctrl.environments).where({'value':envName}).value().length) {
+                if(_(ctrl.environments).filter({'value':envName}).value().length) {
                     ctrl.mappings[x] = envName;
                 }
             }

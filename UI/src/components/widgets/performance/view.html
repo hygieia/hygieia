@@ -1,0 +1,178 @@
+<div class="performance-view">
+  <div class="row"></div>
+  <div class="row">
+    <div class="col-lg-3 col-sm-4">
+      <div class="widget health-bars">
+
+        <div class="widget-heading">
+         BT Health
+        </div>
+        <div class="widget-body">
+          <div guage-container>
+            <div class="ct-wrapper clearfix"
+                 ng-class=""
+                 popover-html-unsafe=""
+                 popover-trigger="focus"
+                 popover-placement="right"
+                 tabindex="0">
+                  <chartist class="ct-chart ct-square db-chart-primary ct-chart-Warning"
+                  chartist-data="performanceView.transactionHealthData"
+                  chartist-chart-options="performanceView.pieOptions"
+                  chartist-chart-type="Pie">
+                  </chartist>
+                  <div class="guage-number">
+                    <span ng-if="performanceView.businessavg" fit-text>{{performanceView.businessavg}}<small class="percent">%</small></span>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-sm-4">
+      <div class="widget health-bars">
+        <div class="widget-heading">
+          Node Health
+        </div>
+        <div class="widget-body">
+          <div guage-container>
+            <div class="ct-wrapper clearfix"
+                 ng-class=""
+                 popover-html-unsafe=""
+                 popover-trigger="focus"
+                 popover-placement="right"
+                 tabindex="0">
+                  <chartist class="ct-chart ct-square db-chart-primary ct-chart-Warning"
+                  chartist-data="performanceView.nodeHealthData"
+                  chartist-chart-options="performanceView.pieOptions"
+                  chartist-chart-type="Pie">
+                  </chartist>
+                  <div class="guage-number">
+                    <span ng-if="performanceView.nodeavg" fit-text>{{performanceView.nodeavg}}<small class="percent">%</small></span>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5 col-sm-10">
+      <div class="widget health-arrows">
+        <div class="widget-heading">
+          Overall Health
+        </div>
+          <table class="table">
+            <tr>
+              <td>
+                <span dash-status="ok" ng-if="performanceView.responsevalue == 0"></span>
+                <span dash-status="warning" ng-if="performanceView.responsevalue == 1"></span>
+                <span dash-status="alert" ng-if="performanceView.responsevalue == 2"></span>
+              </td>
+              <td>
+                Response Time
+              </td>
+              <td>
+                {{performanceView.responsetime}} ms
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <span dash-status="ok" ng-if="performanceView.errorvalue == 0"></span>
+                <span dash-status="warning" ng-if="performanceView.errorvalue == 1"></span>
+                <span dash-status="alert" ng-if="performanceView.errorvalue == 2"></span>
+              </td>
+              <td>
+                Errors Per Minute
+              </td>
+              <td>
+                {{performanceView.errorspm}}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+              </td>
+              <td>
+                Calls Per Minute
+              </td>
+              <td>
+                {{performanceView.callspm}}
+              </td>
+            </tr>
+
+
+          </table>
+        </div>
+      </div>
+
+      <div class="col-lg-1 col-sm-2">
+        <div class="widget">
+          <div class="widget-heading">
+            Warning
+          </div>
+          <div class="widget-body">
+            <table class="table violations" style="cursor:pointer;">
+              <tr>
+                <td ng-click="performanceView.showDetail(0)">
+                  <span dash-status="ok"></span>
+                  {{performanceView.good.length}}
+                </td>
+              </tr>
+              <tr>
+                <td ng-click="performanceView.showDetail(1)">
+                  <span dash-status="warning"></span>
+                  {{performanceView.warning.length}}
+                </td>
+              </tr>
+              <tr>
+                <td ng-click="performanceView.showDetail(2)">
+                  <span dash-status="alert"></span>
+                  {{performanceView.bad.length}}
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+  <div class="row">
+    <div class="col-lg-6 col-sm-12">
+          <div class="widget health-charts health-charts-calls">
+            <div class="widget-heading">
+              Calls
+            </div>
+            <div class="widget-body">
+              <chartist class="ct-chart ct-octave dash-chart-alt"
+                        chartist-chart-type="Line"
+                        chartist-data="performanceView.callsChartData"
+                        chartist-chart-options="performanceView.callsChartOptions"
+                        chartist-events=""
+                        >
+              </chartist>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-sm-12">
+          <div class="widget health-charts health-charts-errors">
+            <div class="widget-heading">
+              Errors
+            </div>
+            <div class="widget-body">
+              <chartist class="ct-chart ct-octave dash-chart-alt"
+                        chartist-chart-type="Line"
+                        chartist-data="performanceView.errorsChartData"
+                        chartist-chart-options="performanceView.errorsChartOptions"
+                        chartist-events=""
+                        >
+              </chartist>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>

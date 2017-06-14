@@ -25,6 +25,7 @@ import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.WidgetResponse;
 import com.capitalone.dashboard.request.DashboardRequest;
@@ -85,17 +86,35 @@ public class DashboardController {
     }
 
     @DashboardOwnerOrAdmin
+    @RequestMapping(path = "/dashboard/{id}/owners", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Iterable<Owner>> updateOwners(@PathVariable ObjectId id, @RequestBody Iterable<Owner> owners) {
+    	return new ResponseEntity<Iterable<Owner>>(dashboardService.updateOwners(id, owners), HttpStatus.ACCEPTED);
+    }
+
+    @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/rename/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> renameDashboard(@PathVariable ObjectId id,
     		@Valid @RequestBody DashboardRequestTitle request) {
 
 
         Dashboard dashboard = getDashboard(id);
+        String existingTitle = dashboard.getTitle();
+        String newTitle = request.getTitle();
+
+        //no change to title is ok
+        if (existingTitle.equalsIgnoreCase(newTitle)) {
+            return ResponseEntity.ok("Unchanged");
+        }
+
         Iterable<Dashboard> allDashboard = dashboards();
         boolean titleExist = false;
 
         for(Dashboard l :allDashboard)
         {
+            if (id.compareTo(l.getId()) == 0) {
+                //skip the current dashboard
+                continue;
+            }
             if(l.getTitle().equals(request.getTitle()))
             {
                 titleExist=true;
@@ -168,10 +187,27 @@ public class DashboardController {
 
     }
 
+    @RequestMapping(value = "/dashboard/{id}/owners", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public Iterable<Owner> getOwners(@PathVariable ObjectId id) {
+        return dashboardService.getOwners(id);
+    }
+
     @Deprecated
     @RequestMapping(value = "/dashboard/myowner/{id}", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public String getDashboardOwner(@PathVariable ObjectId id) {
     	return "Authorized";
     }
+
+    @RequestMapping(value = "/dashboard/component/{componentId}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public Component getComponentForDashboard(@PathVariable ObjectId componentId) {
+        Component component = new Component();
+        if (null != componentId) {
+            component = dashboardService.getComponent(componentId);
+        }
+        return component;
+    }
+
 }

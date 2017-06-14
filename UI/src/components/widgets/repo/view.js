@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('RepoViewController', RepoViewController);
 
-    RepoViewController.$inject = ['$q', '$scope','codeRepoData', 'pullRepoData', 'issueRepoData','$uibModal'];
-    function RepoViewController($q, $scope, codeRepoData, pullRepoData, issueRepoData, $uibModal) {
+    RepoViewController.$inject = ['$q', '$scope','codeRepoData', 'pullRepoData', 'issueRepoData', 'collectorData', '$uibModal'];
+    function RepoViewController($q, $scope, codeRepoData, pullRepoData, issueRepoData, collectorData, $uibModal) {
         var ctrl = this;
 
         ctrl.combinedChartOptions = {
@@ -39,7 +39,9 @@
                 offset: 30,
                 showGrid: true,
                 showLabel: true,
-                labelInterpolationFnc: function(value) { return Math.round(value * 100) / 100; }
+                labelInterpolationFnc: function (value) {
+                    return Math.round(value * 100) / 100;
+                }
             }
         };
 
@@ -77,7 +79,7 @@
 
             var seriesIndex = target.getAttribute('ct:series-index');
 
-            alert(ctrl.commitController);
+            //alert(ctrl.commitController);
             $uibModal.open({
                 controller: 'RepoDetailController',
                 controllerAs: 'detail',
@@ -103,17 +105,18 @@
         var commits = [];
 
         var groupedCommitData = [];
+          
         function processCommitResponse(data, numberOfDays) {
             commits = [];
             groupedCommitData = [];
             // get total commits by day
             var groups = _(data).sortBy('timestamp')
-                .groupBy(function(item) {
+                .groupBy(function (item) {
                     return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
                 }).value();
 
-            for(var x=-1*numberOfDays+1; x <= 0; x++) {
-                if(groups[x]) {
+            for (var x = -1 * numberOfDays + 1; x <= 0; x++) {
+                if (groups[x]) {
                     commits.push(groups[x].length);
                     groupedCommitData.push(groups[x]);
                 }
@@ -124,10 +127,9 @@
             }
 
             //update charts
-            if(commits.length)
-            {
+            if (commits.length) {
                 var labels = [];
-                _(commits).forEach(function() {
+                _(commits).forEach(function (c) {
                     labels.push('');
                 });
 
@@ -135,7 +137,6 @@
                     series: [commits],
                     labels: labels
                 };
-
             }
 
 
@@ -181,21 +182,22 @@
                         lastFourteenDaysCommitContributors.push(commit.scmAuthor);
                     }
                 }
-
             });
 
-            ctrl.lastDayCommitCount = lastDayCommitCount;
-            ctrl.lastDayCommitContributorCount = lastDayCommitContributors.length;
-            ctrl.lastSevenDaysCommitCount = lastSevenDayCommitCount;
-            ctrl.lastSevenDaysCommitContributorCount = lastSevenDaysCommitContributors.length;
-            ctrl.lastFourteenDaysCommitCount = lastFourteenDayCommitCount;
-            ctrl.lastFourteenDaysCommitContributorCount = lastFourteenDaysCommitContributors.length;
+            ctrl.lastDayPullCount = lastDayPullCount;
+            ctrl.lastDayPullContributorCount = lastDayPullContributors.length;
+            ctrl.lastsevenDaysPullCount = lastsevenDayPullCount;
+            ctrl.lastsevenDaysPullContributorCount = lastsevenDaysPullContributors.length;
+            ctrl.lastfourteenDaysPullCount = lastfourteenDayPullCount;
+            ctrl.lastfourteenDaysPullContributorCount = lastfourteenDaysPullContributors.length;
+
 
             function toMidnight(date) {
                 date.setHours(0, 0, 0, 0);
                 return date;
             }
         }
+
         var pulls = [];
 
         var groupedpullData = [];
@@ -289,7 +291,7 @@
                 return date;
             }
         }
-
+          
         var issues = [];
         var groupedissueData = [];
         function processIssueResponse(data, numberOfDays) {
