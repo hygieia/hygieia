@@ -1,7 +1,13 @@
 package com.capitalone.dashboard.rest;
 
-import java.util.Collection;
-
+import com.capitalone.dashboard.auth.access.Admin;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.ApiToken;
+import com.capitalone.dashboard.model.UserInfo;
+import com.capitalone.dashboard.request.ApiTokenRequest;
+import com.capitalone.dashboard.service.ApiTokenService;
+import com.capitalone.dashboard.service.UserInfoService;
+import com.capitalone.dashboard.util.EncryptionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitalone.dashboard.auth.access.Admin;
-import com.capitalone.dashboard.model.UserInfo;
-import com.capitalone.dashboard.service.UserInfoService;
+import javax.validation.Valid;
+import java.util.Collection;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/admin")
@@ -20,15 +27,13 @@ import com.capitalone.dashboard.service.UserInfoService;
 public class AdminController {
     
     private final UserInfoService userInfoService;
+
+    private final ApiTokenService apiTokenService;
     
     @Autowired
-    public AdminController(UserInfoService userInfoService) {
+    public AdminController(UserInfoService userInfoService, ApiTokenService apiTokenService) {
         this.userInfoService = userInfoService;
-    }
-
-    @RequestMapping(path = "/users", method = RequestMethod.GET)
-    public Collection<UserInfo> getUsers() {
-        return userInfoService.getUsers();
+        this.apiTokenService = apiTokenService;
     }
     
     @RequestMapping(path = "/users/addAdmin", method = RequestMethod.POST)
@@ -43,5 +48,30 @@ public class AdminController {
         UserInfo savedUser = userInfoService.demoteFromAdmin(user.getUsername(), user.getAuthType());
 
         return new ResponseEntity<UserInfo>(savedUser, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/createToken", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createToken(@Valid @RequestBody ApiTokenRequest apiTokenRequest) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(apiTokenService.getApiToken(apiTokenRequest.getApiUser(),
+                            apiTokenRequest.getExpirationDt())
+                    );
+        } catch (EncryptionException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        } catch (HygieiaException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @RequestMapping(path = "/apitokens", method = RequestMethod.GET)
+    public Collection<ApiToken> getApiTokens() {
+        Collection<ApiToken> tokens = apiTokenService.getApiTokens();
+        return tokens;
     }
 }

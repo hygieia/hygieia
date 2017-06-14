@@ -27,6 +27,9 @@ dbusername=${SPRING_DATA_MONGODB_USERNAME:-db}
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
+logRequest=${LOG_REQUEST:-false}
+logSplunkRequest=${LOG_SPLUNK_REQUEST:-false}
+
 corsEnabled=${CORS_ENABLED:-false}
 
 corsWhitelist=${CORS_WHITELIST:-http://domain1.com:port,http://domain2.com:port}
@@ -38,6 +41,8 @@ feature.dynamicPipeline=${FEATURE_DYNAMIC_PIPELINE:-disabled}
 auth.expirationTime=${AUTH_EXPIRATION_TIME:-}
 # Secret Key used to validate the JWT tokens
 auth.secret=${AUTH_SECRET:-}
+auth.authenticationProviders=${AUTH_AUTHENTICATION_PROVIDERS:-}
+
 # LDAP Server Url, including port of your LDAP server
 auth.ldapServerUrl=${AUTH_LDAP_SERVER_URL:-}
 
