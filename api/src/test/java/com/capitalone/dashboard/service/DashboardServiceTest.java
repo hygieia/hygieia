@@ -62,6 +62,8 @@ public class DashboardServiceTest {
     private UserInfoRepository userInfoRepository;
     @Mock
     private CmdbService cmdbService;
+    @Mock
+    private Dashboard myDashboard;
 
     @InjectMocks
     private DashboardServiceImpl dashboardService;
@@ -584,7 +586,39 @@ public class DashboardServiceTest {
     	verify(dashboardRepository).findOne(eq(dashboard.getId()));
     	verify(dashboardRepository).save(eq(dashboard));
     }
+    @Test
+    public void updateDashboardBusinessItems() throws HygieiaException{
 
+        ObjectId id = ObjectId.get();
+        ObjectId configItemBusServIdOrg = ObjectId.get();
+        ObjectId configItemBusAppIdOrg = ObjectId.get();
+        ObjectId configItemBusServIdUpdate = ObjectId.get();
+        ObjectId configItemBusAppIdUpdate = ObjectId.get();
+
+        String newServiceName = "ASVTEST123";
+        String newAppName = "BAPTEST123";
+        Cmdb serviceUpdated = getConfigItemApp(configItemBusServIdUpdate);
+        serviceUpdated.setConfigurationItem(newServiceName);
+        Cmdb appUpdated = getConfigItemApp(configItemBusServIdUpdate);
+        appUpdated.setConfigurationItem(newAppName);
+
+        myDashboard = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServIdOrg, configItemBusAppIdOrg, "comp1", "comp2");
+        Dashboard dashboardRequest = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServIdUpdate, configItemBusAppIdUpdate, "comp1", "comp2");
+        dashboardRequest.setConfigurationItemBusServName(newServiceName);
+        dashboardRequest.setConfigurationItemBusAppName(newAppName);
+
+        when(cmdbService.configurationItemsByObjectId(configItemBusServIdOrg)).thenReturn(getConfigItemApp(configItemBusServIdOrg));
+        when(cmdbService.configurationItemsByObjectId(configItemBusAppIdOrg)).thenReturn(getConfigItemComp(configItemBusAppIdOrg));
+
+        when(dashboardRepository.findOne(id)).thenReturn(myDashboard);
+
+        when(cmdbService.configurationItemByConfigurationItem(newServiceName)).thenReturn(serviceUpdated);
+        when(cmdbService.configurationItemByConfigurationItem(newAppName)).thenReturn(appUpdated);
+
+        when(dashboardService.update(myDashboard)).thenReturn(myDashboard);
+
+        assertNotNull(dashboardService.updateDashboardBusinessItems(id,dashboardRequest));
+    }
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,ObjectId configItemBusServId,ObjectId configItemBusAppId, String... compNames) {
         Application app = new Application(appName);
         for (String compName : compNames) {
