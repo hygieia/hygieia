@@ -53,42 +53,21 @@ public class DefaultGitHubClient implements GitHubClient {
 
     @Autowired
     public DefaultGitHubClient(GitHubSettings settings,
-                               Supplier<RestOperations> restOperationsSupplier) {
+            Supplier<RestOperations> restOperationsSupplier) {
         this.settings = settings;
         this.restOperations = restOperationsSupplier.get();
     }
 
     @Override
-    @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength"}) // agreed, fixme
-    public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) throws RestClientException {
+    @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
+    //TODO get commits for all branches
+    public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) {
 
         List<Commit> commits = new ArrayList<>();
 
         // format URL
-        String repoUrl = (String) repo.getOptions().get("url");
-        if (repoUrl.endsWith(".git")) {
-            repoUrl = repoUrl.substring(0, repoUrl.lastIndexOf(".git"));
-        }
-        URL url;
-        String hostName = "";
-        String protocol = "";
-        try {
-            url = new URL(repoUrl);
-            hostName = url.getHost();
-            protocol = url.getProtocol();
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            LOG.error(e.getMessage());
-        }
-        String hostUrl = protocol + "://" + hostName + "/";
-        String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
-        String apiUrl;
-        if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
-            apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + repoName;
-        } else {
-            apiUrl = protocol + "://" + hostName + SEGMENT_API + repoName;
-            LOG.debug("API URL IS:" + apiUrl);
-        }
+        String apiUrl = formatAPIURL((String) repo.getOptions().get("url"));
+
         Date dt;
         if (firstRun) {
             int firstRunDaysHistory = settings.getFirstRunHistoryDays();
@@ -106,7 +85,7 @@ public class DefaultGitHubClient implements GitHubClient {
         cal.setTime(dt);
         String thisMoment = String.format("%tFT%<tRZ", cal);
 
-        String queryUrl = apiUrl.concat("/commits?sha=" + repo.getBranch()
+        String queryUrl = apiUrl.concat("/commits?sha=" + repo.getDefaultBranch()
                 + "&since=" + thisMoment);
         /*
 		 * Calendar cal = Calendar.getInstance(); cal.setTime(dateInstance);
@@ -127,50 +106,129 @@ public class DefaultGitHubClient implements GitHubClient {
         int pageNumber = 1;
         String queryUrlPage = queryUrl;
         while (!lastPage) {
-            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            JSONArray jsonArray = paresAsArray(response);
-            for (Object item : jsonArray) {
-                JSONObject jsonObject = (JSONObject) item;
-                String sha = str(jsonObject, "sha");
-                JSONObject commitObject = (JSONObject) jsonObject.get("commit");
-                JSONObject authorObject = (JSONObject) commitObject.get("author");
-                String message = str(commitObject, "message");
-                String author = str(authorObject, "name");
-                long timestamp = new DateTime(str(authorObject, "date"))
-                        .getMillis();
-                JSONArray parents = (JSONArray) jsonObject.get("parents");
-                List<String> parentShas = new ArrayList<>();
-                if (parents != null) {
-                    for (Object parentObj : parents) {
-                        parentShas.add(str((JSONObject) parentObj, "sha"));
+            try {
+                ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+                JSONArray jsonArray = parseAsArray(response);
+                for (Object item : jsonArray) {
+                    JSONObject jsonObject = (JSONObject) item;
+                    String sha = str(jsonObject, "sha");
+                    JSONObject commitObject = (JSONObject) jsonObject.get("commit");
+                    JSONObject authorObject = (JSONObject) commitObject.get("author");
+                    String message = str(commitObject, "message");
+                    String author = str(authorObject, "name");
+                    long timestamp = new DateTime(str(authorObject, "date"))
+                            .getMillis();
+                    JSONArray parents = (JSONArray) jsonObject.get("parents");
+                    List<String> parentShas = new ArrayList<>();
+                    if (parents != null) {
+                        for (Object parentObj : parents) {
+                            parentShas.add(str((JSONObject)parentObj, "sha"));
+                        }
                     }
+                    
+                    Commit commit = new Commit();
+                    commit.setTimestamp(System.currentTimeMillis());
+                    commit.setScmUrl(repo.getRepoUrl());
+                    commit.setScmBranch(repo.getDefaultBranch());
+                    commit.setScmRevisionNumber(sha);
+                    commit.setScmParentRevisionNumbers(parentShas);
+                    commit.setScmAuthor(author);
+                    commit.setScmCommitLog(message);
+                    commit.setScmCommitTimestamp(timestamp);
+                    commit.setNumberOfChanges(1);
+                    commit.setType(getCommitType(CollectionUtils.size(parents), message));
+                    commits.add(commit);
                 }
-
-                Commit commit = new Commit();
-                commit.setTimestamp(System.currentTimeMillis());
-                commit.setScmUrl(repo.getRepoUrl());
-                commit.setScmBranch(repo.getBranch());
-                commit.setScmRevisionNumber(sha);
-                commit.setScmParentRevisionNumbers(parentShas);
-                commit.setScmAuthor(author);
-                commit.setScmCommitLog(message);
-                commit.setScmCommitTimestamp(timestamp);
-                commit.setNumberOfChanges(1);
-                commit.setType(getCommitType(CollectionUtils.size(parents), message));
-                commits.add(commit);
-            }
-            if (CollectionUtils.isEmpty(jsonArray)) {
+                if (CollectionUtils.isEmpty(jsonArray)) {
+                    lastPage = true;
+                } else {
+                    lastPage = isThisLastPage(response);
+                    pageNumber++;
+                    queryUrlPage = queryUrl + "&page=" + pageNumber;
+                }
+            } catch (RestClientException re) {
+                LOG.error(re.getMessage() + ":" + queryUrl);
                 lastPage = true;
-            } else {
-                lastPage = isThisLastPage(response);
-                pageNumber++;
-                queryUrlPage = queryUrl + "&page=" + pageNumber;
             }
         }
         return commits;
     }
 
-    private CommitType getCommitType(int parentSize, String commitMessage) {
+    private String formatAPIURL(String repoUrl){
+        String modifiedRepoURL = repoUrl;
+        if (modifiedRepoURL.endsWith(".git")) {
+            modifiedRepoURL = modifiedRepoURL.substring(0, modifiedRepoURL.lastIndexOf(".git"));
+        }
+        URL url;
+        String hostName = "";
+        String protocol = "";
+        try {
+            url = new URL(modifiedRepoURL);
+            hostName = url.getHost();
+            protocol = url.getProtocol();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            LOG.error(e.getMessage());
+        }
+        String hostUrl = protocol + "://" + hostName + "/";
+        String repoName = modifiedRepoURL.substring(hostUrl.length(), modifiedRepoURL.length());
+        String apiUrl;
+        if (hostName.startsWith(PUBLIC_GITHUB_HOST_NAME)) {
+            apiUrl = protocol + "://" + PUBLIC_GITHUB_REPO_HOST + repoName;
+        } else {
+            apiUrl = protocol + "://" + hostName + SEGMENT_API + repoName;
+            LOG.debug("API URL IS:"+apiUrl);
+        }
+        return apiUrl;
+    }
+
+    @Override
+    public List<String> getBranches(GitHubRepo repo){
+
+        List<String> branches = new ArrayList<String>();
+
+        String apiUrl = formatAPIURL((String) repo.getOptions().get("url"));
+        String queryUrl = apiUrl.concat("/branches");
+
+        // decrypt password
+        String decryptedPassword = "";
+        if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
+            try {
+                decryptedPassword = Encryption.decryptString(
+                        repo.getPassword(), settings.getKey());
+            } catch (EncryptionException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+
+        boolean lastPage = false;
+        int pageNumber = 1;
+        String queryUrlPage = queryUrl;
+        while (!lastPage) {
+            try{
+                ResponseEntity<String> response = makeRestCall(queryUrlPage,  repo.getUserId(), decryptedPassword);
+                JSONArray jsonArray = parseAsArray(response);
+                for(Object item : jsonArray){
+                    JSONObject jsonObject = (JSONObject) item;
+                    branches.add((String) jsonObject.get("name"));
+                }
+                if (CollectionUtils.isEmpty(jsonArray)) {
+                    lastPage = true;
+                } else {
+                    lastPage = isThisLastPage(response);
+                    pageNumber++;
+                    queryUrlPage = queryUrl + "?page=" + pageNumber;
+                }
+            } catch (RestClientException re) {
+                LOG.error(re.getMessage() + ":" + queryUrlPage);
+                lastPage = true;
+            }
+        }
+
+        return branches;
+    }
+
+    private CommitType getCommitType (int parentSize, String commitMessage ) {
         if (parentSize > 1) return CommitType.Merge;
         if (settings.getNotBuiltCommits() == null) return CommitType.New;
         for (String s : settings.getNotBuiltCommits()) {
@@ -206,7 +264,7 @@ public class DefaultGitHubClient implements GitHubClient {
     }
 
     private ResponseEntity<String> makeRestCall(String url, String userId,
-                                                String password) {
+            String password) {
         // Basic Auth only.
         if (!"".equals(userId) && !"".equals(password)) {
             return restOperations.exchange(url, HttpMethod.GET,
@@ -230,7 +288,7 @@ public class DefaultGitHubClient implements GitHubClient {
         return headers;
     }
 
-    private JSONArray paresAsArray(ResponseEntity<String> response) {
+    private JSONArray parseAsArray(ResponseEntity<String> response) {
         try {
             return (JSONArray) new JSONParser().parse(response.getBody());
         } catch (ParseException pe) {

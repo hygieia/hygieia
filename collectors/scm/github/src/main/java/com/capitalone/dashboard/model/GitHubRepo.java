@@ -1,13 +1,15 @@
 package com.capitalone.dashboard.model;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * CollectorItem extension to store the github repo url and branch.
  */
 public class GitHubRepo extends CollectorItem {
     private static final String REPO_URL = "url"; // http://github.company.com/jack/somejavacode
-    private static final String BRANCH = "branch"; // master, development etc.
+    private static final String DEFAULT_BRANCH = "branch"; // master, development etc.
+    private static final String BRANCHES = "branches"; //list of all branches for this repository
     private static final String USER_ID = "userID";
     private static final String PASSWORD = "password";
     private static final String LAST_UPDATE_TIME = "lastUpdate";
@@ -27,8 +29,7 @@ public class GitHubRepo extends CollectorItem {
     public void setPassword(String password) {
         getOptions().put(PASSWORD, password);
     }
-    
-    
+
     public String getRepoUrl() {
         return (String) getOptions().get(REPO_URL);
     }
@@ -37,14 +38,21 @@ public class GitHubRepo extends CollectorItem {
         getOptions().put(REPO_URL, instanceUrl);
     }
     
-    public String getBranch() {
-        return (String) getOptions().get(BRANCH);
+    public String getDefaultBranch() {
+        return (String) getOptions().get(DEFAULT_BRANCH);
     }
 
-    public void setBranch(String branch) {
-        getOptions().put(BRANCH, branch);
+    public void setDefaultBranch(String branch) {
+        getOptions().put(DEFAULT_BRANCH, branch);
     }
 
+    public List<String> getBranches() {
+        return (List<String>)getOptions().get(BRANCHES);
+    }
+
+    public void setBranches(List<String> branches) {
+        getOptions().put(BRANCHES, branches);
+    }
 
     public Date getLastUpdateTime() {
         Object latest = getOptions().get(LAST_UPDATE_TIME);
@@ -69,7 +77,7 @@ public class GitHubRepo extends CollectorItem {
 
         GitHubRepo gitHubRepo = (GitHubRepo) o;
 
-        return getRepoUrl().equals(gitHubRepo.getRepoUrl()) & getBranch().equals(gitHubRepo.getBranch());
+        return getRepoUrl().equals(gitHubRepo.getRepoUrl()) & getBranches().equals(gitHubRepo.getBranches()) & getDefaultBranch().equals(gitHubRepo.getDefaultBranch());
     }
 
     @Override
