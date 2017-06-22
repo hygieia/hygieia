@@ -1,5 +1,36 @@
 package com.capitalone.dashboard.service;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
+import org.bson.types.ObjectId;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.domain.Sort;
+
+import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.AuthType;
@@ -11,6 +42,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Service;
+import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
@@ -18,32 +50,9 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.ServiceRepository;
+import com.capitalone.dashboard.repository.UserInfoRepository;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.bson.types.ObjectId;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.data.domain.Sort;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardServiceTest {
@@ -60,6 +69,8 @@ public class DashboardServiceTest {
     private ServiceRepository serviceRepository;
     @Mock
     private CustomRepositoryQuery customRepositoryQuery;
+    @Mock
+    private UserInfoRepository userInfoRepository;
 
     @InjectMocks
     private DashboardServiceImpl dashboardService;
@@ -505,6 +516,61 @@ public class DashboardServiceTest {
         assertThat(d.getWidgets().get(0).getName(), is(expected.getName()));
 
         verify(dashboardRepository).save(d);
+    }
+    
+    @Test
+    public void updateOwners_empty_owner_set() {
+    	Iterable<Owner> owners = Lists.newArrayList();
+    	
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), null, DashboardType.Team);
+    	
+    	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
+    	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
+    	
+    	Iterable<Owner> result = dashboardService.updateOwners(dashboard.getId(), owners);
+    	assertTrue(Iterables.size(result) == 0);
+    	
+    	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
+    	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
+    }
+    
+    @Test(expected = UserNotFoundException.class)
+    public void updateOwners_user_not_found() {
+    	Owner existingOwner = new Owner("existing", AuthType.LDAP);
+    	Owner nonExistingOwner = new Owner("nonExisting", AuthType.STANDARD);
+    	
+    	when(userInfoRepository.findByUsernameAndAuthType("existing", AuthType.LDAP)).thenReturn(new UserInfo());
+    	when(userInfoRepository.findByUsernameAndAuthType("nonExisting", AuthType.STANDARD)).thenReturn(null);
+    	ObjectId dashboardId = ObjectId.get();
+    	Iterable<Owner> owners = Lists.newArrayList(existingOwner, nonExistingOwner);
+    	dashboardService.updateOwners(dashboardId, owners);
+    	
+    	verify(userInfoRepository, times(2)).findByUsernameAndAuthType(any(String.class), any(AuthType.class));
+    }
+    
+    @Test
+    public void updateOwners() {
+    	Owner existingOwner = new Owner("existing", AuthType.LDAP);
+    	UserInfo existingInfo = new UserInfo();
+    	existingInfo.setUsername("existing");
+    	existingInfo.setAuthType(AuthType.LDAP);
+    	
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwner, DashboardType.Team);
+    	
+    	when(userInfoRepository.findByUsernameAndAuthType("existing", AuthType.LDAP)).thenReturn(existingInfo);
+    	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
+    	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
+    	
+    	Iterable<Owner> owners = Lists.newArrayList(existingOwner);
+    	List<Owner> result = Lists.newArrayList(dashboardService.updateOwners(dashboard.getId(), owners));
+    	
+    	assertNotNull(result);
+    	assertEquals(1, result.size());
+    	assertEquals(existingOwner, result.get(0));
+    	
+    	verify(userInfoRepository).findByUsernameAndAuthType(eq("existing"), eq(AuthType.LDAP));
+    	verify(dashboardRepository).findOne(eq(dashboard.getId()));
+    	verify(dashboardRepository).save(eq(dashboard));
     }
 
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, String... compNames) {

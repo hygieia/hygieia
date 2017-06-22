@@ -1,14 +1,19 @@
 package com.capitalone.dashboard.auth;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import com.capitalone.dashboard.model.AuthType;
+import com.google.common.collect.Lists;
 
 @Component
 @EnableConfigurationProperties
@@ -21,6 +26,8 @@ public class AuthProperties {
 	private String secret;
 	private String ldapUserDnPattern;
 	private String ldapServerUrl;
+	private List<AuthType> authenticationProviders = Lists.newArrayList();
+
 	private String adDomain;
 	private String adRootDn;
 	private String adUrl;
@@ -56,6 +63,14 @@ public class AuthProperties {
 	public void setLdapServerUrl(String ldapServerUrl) {
 		this.ldapServerUrl = ldapServerUrl;
 	}
+	
+    public List<AuthType> getAuthenticationProviders() {
+        return authenticationProviders;
+    }
+
+    public void setAuthenticationProviders(List<AuthType> authenticationProviders) {
+        this.authenticationProviders = authenticationProviders;
+    }
 
 	public String getAdDomain() {
 		return adDomain;
@@ -91,6 +106,10 @@ public class AuthProperties {
 		if (getExpirationTime() == null) {
 			LOGGER.info("No JWT expiration time found in configuration, setting to one day.");
 			setExpirationTime((long) 1000*60*60*24);
+		}
+		
+		if (CollectionUtils.isEmpty(authenticationProviders)) {
+		    authenticationProviders.add(AuthType.STANDARD);
 		}
 	}
 

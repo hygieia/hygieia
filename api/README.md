@@ -31,12 +31,17 @@ dbreplicaset=[false if you are not using MongoDB replicaset]
 dbhostport=[host1:port1,host2:port2,host3:port3]
 server.contextPath=[Web Context path if any]
 server.port=[Web server port - default is 8080]
+logRequest=false
+logSplunkRequest=false
 corsEnabled=false
 corsWhitelist=http://domain1.com:port,http://domain2.com:port
 version.number=@application.version.number@
 
 auth.expirationTime=[JWT expiration time in milliseconds]
 auth.secret=[Secret Key used to validate the JWT tokens]
+auth.authenticationProviders=[Authentication types you would like to enable, defaults to STANDARD, ex: STANDARD,LDAP]
+auth.ldapServerUrl=[LDAP Server Url, including port of your LDAP server]
+auth.ldapUserDnPattern=[LDAP User Dn Pattern, where the username is replaced with '{0}']
 
 # LDAP Server Url, including port of your LDAP server
 auth.ldapServerUrl=[ldap://company.com:389]
