@@ -23,7 +23,8 @@ public enum CollectorType {
     Cloud,
     Product,
     AppPerformance,
-    InfraPerformance;
+    InfraPerformance,
+    CaApm;
 
     public static CollectorType fromString(String value) {
         for (CollectorType collectorType : values()) {

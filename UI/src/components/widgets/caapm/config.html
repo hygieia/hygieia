@@ -1,0 +1,23 @@
+<widget-modal widget-modal-title="Configure CA-APM Widget">
+	 <form name="configForm" role="form"
+          ng-submit="caApmConfig.submit(configForm.$valid,caApmConfig.collectorItemId)" novalidate="novalidate">
+        <form-group class="text-center" input="collectorItemId" errors="{required: 'Please select a Manage Module'}">
+            
+             <ui-select id="collectorItemId" ng-model="caApmConfig.collectorItemId" theme="bootstrap"
+                       ng-disabled="caApmConfig.toolsDropdownDisabled" required>
+                <ui-select-match placeholder={{caApmConfig.toolsDropdownPlaceholder}}>{{$select.selected.name}}
+                </ui-select-match>
+                <ui-select-choices group-by="'group'" allow-clear="true"
+                                   repeat="item in (caApmConfig.listModules | orderBy: 'name' | filter: $select.search) track by item.value">
+                    <div ng-bind-html="item.name | highlight: $select.search"></div>                  
+                </ui-select-choices>
+                <ui-select-no-choice>
+                    No Manage Modules were found
+                </ui-select-no-choice>
+            </ui-select>
+            </form-group>
+     	<div class="button-row row text-center">
+		<button type="submit" class="btn btn-primary btn-wide">Save</button>
+	</div>
+</form>
+</widget-modal>
