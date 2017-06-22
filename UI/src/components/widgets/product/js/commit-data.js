@@ -294,35 +294,37 @@
                 });
 
                 // calculate info used in prod cell
-                var teamProdData = {
-                        averageDays: '--',
-                        totalCommits: 0
-                    },
-                    commitTimeToProd = _(team.stages)
-                    // limit to prod
-                        .filter(function (val, key) {
-                            return key == prodStage
-                        })
-                        // make all commits a single array
-                        .reduce(function (num, commits) {
-                            return num + commits;
-                        })
-                        // they should, but make sure the commits have a prod timestamp
-                        .filter(function (commit) {
-                            return commit.processedTimestamps && commit.processedTimestamps[prodStage];
-                        })
-                        // calculate their time to prod
+                var commitTimeToProd;
+                var commitArray = _(team.stages)
+                // limit to prod
+                    .filter(function (val, key) {
+                        return key == prodStage
+                    })
+                    // make all commits a single array
+                    .reduce(function (num, commits) {
+                        return num + commits;
+                    });
+                if(!angular.isUndefined(commitArray)){
+                    commitTimeToProd = _(commitArray).filter(function (commit) {
+                        return commit.processedTimestamps && commit.processedTimestamps[prodStage];
+                    })
+                    // calculate their time to prod
                         .map(function (commit) {
                             return {
                                 duration: commit.processedTimestamps[prodStage] - commit.scmCommitTimestamp,
                                 commitTimestamp: commit.scmCommitTimestamp
                             };
                         });
+                }
 
+                var teamProdData = {
+                    averageDays: '--',
+                    totalCommits: 0
+                },commitTimeToProd;
 
-                teamProdData.totalCommits = commitTimeToProd.length;
+                teamProdData.totalCommits = !angular.isUndefined(commitTimeToProd)?commitTimeToProd.length:0;
 
-                if (commitTimeToProd.length > 1) {
+                if (!angular.isUndefined(commitTimeToProd)?commitTimeToProd.length:0 > 1) {
                     var averageDuration = _(commitTimeToProd).pluck('duration').reduce(function (a, b) {
                             return a + b;
                         }) / commitTimeToProd.length;
