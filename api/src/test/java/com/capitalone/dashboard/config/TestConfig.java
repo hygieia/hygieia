@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.config;
 
-import com.capitalone.dashboard.service.GitRequestService;
 import com.capitalone.dashboard.service.ApiTokenService;
 import com.capitalone.dashboard.service.LibraryPolicyService;
 import com.capitalone.dashboard.service.MaturityModelService;
@@ -157,7 +156,7 @@ public class TestConfig {
 		return Mockito.mock(GitRequestService.class);
   }
   
-  @Bean
+    @Bean
 	public LibraryPolicyService libraryPolicyService() {
 		return Mockito.mock(LibraryPolicyService.class);
 	}
@@ -182,7 +181,7 @@ public class TestConfig {
 	    return Mockito.mock(AuthProperties.class);
   }
   
-  @Bean
+    @Bean
 	public UserInfoService userInfoService() {
 	    return Mockito.mock(UserInfoService.class);
 	}

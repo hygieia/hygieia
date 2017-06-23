@@ -2,6 +2,7 @@
     <div class="widget-detail repo-detail">
         <div class="widget-detail-body">
             <table class="table" ng-show="detail.commits.length">
+                <label class="modal-label" ng-show="detail.commits.length">Commits</label>
                 <thead>
                 <tr>
                     <th>Revision</th>
@@ -20,42 +21,40 @@
                 </tbody>
             </table>
             <table class="table" ng-show="detail.pulls.length">
+                <label class="modal-label" ng-show="detail.pulls.length">Pulls</label>
                 <thead>
                 <tr>
                     <th>Number</th>
-                    <th>Org</th>
-                    <th>Repo</th>
-                    <th>Created At</th>
-                    <th>Developer</th>
+                    <th>Author</th>
+                    <th>Message</th>
+                    <th>Time</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="pull in detail.pulls">
                     <td>{{::pull.number | limitTo:8}}</td>
-                    <td>{{::pull.orgName}}</td>
-                    <td>{{::pull.repoName}}</td>
-                    <td>{{::pull.createdAt}}</td>
-                    <td>{{::pull.userId | date:'MMM d, HH:mm:ss'}}</td>
+                    <td>{{::pull.userId}}</td>
+                    <td>{{::pull.scmCommitLog}}</td>
+                    <td>{{::pull.createdAt | date:'MMM d, HH:mm:ss'}}</td>
                 </tr>
                 </tbody>
             </table>
             <table class="table" ng-show="detail.issues.length">
+                <label class="modal-label" ng-show="detail.issues.length">Issues</label>
                 <thead>
                 <tr>
                     <th>Number</th>
-                    <th>Org</th>
-                    <th>Repo</th>
-                    <th>Created At</th>
-                    <th>Developer</th>
+                    <th>Author</th>
+                    <th>Message</th>
+                    <th>Time</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="issue in detail.issues">
                     <td>{{::issue.number | limitTo:8}}</td>
-                    <td>{{::issue.orgName}}</td>
-                    <td>{{::issue.repoName}}</td>
-                    <td>{{::issue.createdAt}}</td>
-                    <td>{{::issue.userId | date:'MMM d, HH:mm:ss'}}</td>
+                    <td>{{::issue.userId}}</td>
+                    <td>{{::issue.scmCommitLog}}</td>
+                    <td>{{::issue.createdAt | date:'MMM d, HH:mm:ss'}}</td>
                 </tr>
                 </tbody>
             </table>

@@ -23,11 +23,17 @@ public interface GitRequestRepository  extends CrudRepository<GitRequest, Object
      */
     GitRequest findByCollectorItemIdAndScmRevisionNumber(ObjectId collectorItemId, String revisionNumber);
 
+    GitRequest findByCollectorItemIdAndNumberAndRequestType(ObjectId collectorItemId, String number, String requestType);
+
     @Query(value="{ 'collectorItemId': ?0, 'scmCommitTimestamp': { $gt: ?1 }}")
     List<GitRequest> findByCollectorItemIdAndScmCommitTimestamp(ObjectId collectorItemid,
                                                           Long scmCommitTimestampThreshold);
 
     GitRequest findByCollectorItemIdAndNumber(ObjectId collectorItemId, String number);
-    GitRequest findByOrgNameAndRepoNameAndNumberAndType(String orgName, String repoName, String number, String type);
+    //GitRequest findByOrgNameAndRepoNameAndNumberAndType(String orgName, String repoName, String number, String type);
+
+    List<GitRequest> findByScmUrlAndScmBranchAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(String scmUrl, String scmBranch, long beginDt, long endDt);
+
+    List<GitRequest> findByScmUrlAndScmBranch(String scmUrl, String scmBranch, long beginDt, long endDt);
 
 }

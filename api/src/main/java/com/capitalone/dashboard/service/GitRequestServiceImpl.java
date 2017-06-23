@@ -4,22 +4,18 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.QGitRequest;
 import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.request.GitRequestRequest;
 import com.mysema.query.BooleanBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -27,16 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
-
-import static com.capitalone.dashboard.model.QCollector.collector;
-import static com.capitalone.dashboard.model.QCommit.commit;
-import static com.capitalone.dashboard.model.QGitRequest.gitRequest;
-
 
 @Service
 public class GitRequestServiceImpl implements GitRequestService {
@@ -50,11 +39,11 @@ public class GitRequestServiceImpl implements GitRequestService {
     public GitRequestServiceImpl(GitRequestRepository gitRequestRepository,
                            ComponentRepository componentRepository,
                            CollectorRepository collectorRepository,
-                                 CollectorService colllectorService) {
+                                 CollectorService collectorService) {
         this.gitRequestRepository = gitRequestRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
-        this.collectorService = colllectorService;
+        this.collectorService = collectorService;
     }
 
     @Override
@@ -209,9 +198,9 @@ public class GitRequestServiceImpl implements GitRequestService {
             gitRequest.setScmAuthor(str(senderObject, "login"));
             gitRequest.setUserId(str(senderObject, "login"));
             gitRequest.setScmCommitLog(str(reqObject, "title"));
-            gitRequest.setCreatedAt(str(reqObject,"created_at"));
-            gitRequest.setClosedAt(str(reqObject,"closed_at"));
-            gitRequest.setMergedAt(str(reqObject,"merged_at"));
+            gitRequest.setCreatedAt(new DateTime(str(reqObject,"created_at")).getMillis());
+            gitRequest.setClosedAt(new DateTime(str(reqObject,"closed_at")).getMillis());
+            gitRequest.setMergedAt(new DateTime(str(reqObject,"merged_at")).getMillis());
             gitRequest.setState(str(reqObject,"state"));
             gitRequest.setNumber(str(reqObject,"number"));
             String orgRepo = str(repoObject,"full_name");
@@ -222,6 +211,18 @@ public class GitRequestServiceImpl implements GitRequestService {
                     gitRequest.setRepoName(reponameArray[1]);
                 }
             }
+
+            JSONObject headObject = (JSONObject) jsonObject.get("head");
+            JSONObject headRepoObject = (JSONObject) headObject.get("repo");
+            gitRequest.setSourceBranch(str(headObject, "ref"));
+            gitRequest.setSourceRepo(str(headRepoObject, "full_name"));
+            gitRequest.setHeadSha(str(headObject, "sha"));
+
+            JSONObject baseObject = (JSONObject) jsonObject.get("base");
+            JSONObject baseRepoObject = (JSONObject) baseObject.get("repo");
+            gitRequest.setTargetBranch(str(baseObject, "ref"));
+            gitRequest.setTargetRepo(str(baseRepoObject, "full_name"));
+            gitRequest.setBaseSha(str(baseObject, "sha"));
 
         }
         private String str(JSONObject json, String key) throws HygieiaException {

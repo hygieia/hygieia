@@ -56,22 +56,34 @@
                 componentId: $scope.widgetConfig.componentId,
                 numberOfDays: 14
             };
-            codeRepoData.details(params).then(function(data) {
+
+            codeRepoData.details(params).then(function (data) {
                 processCommitResponse(data.result, params.numberOfDays);
-                deferred.resolve(data.lastUpdated);
+                ctrl.lastUpdated = data.lastUpdated;
+            }).then(function () {
+                collectorData.getCollectorItem($scope.widgetConfig.componentId, 'scm').then(function (data) {
+                    deferred.resolve( {lastUpdated: ctrl.lastUpdated, collectorItem: data});
+                });
             });
-            pullRepoData.details(params).then(function(data) {
+            pullRepoData.details(params).then(function (data) {
                 processPullResponse(data.result, params.numberOfDays);
-                deferred.resolve(data.lastUpdated);
+                ctrl.lastUpdated = data.lastUpdated;
+            }).then(function () {
+                collectorData.getCollectorItem($scope.widgetConfig.componentId, 'scm').then(function (data) {
+                    deferred.resolve( {lastUpdated: ctrl.lastUpdated, collectorItem: data});
+                });
             });
-            issueRepoData.details(params).then(function(data) {
+            issueRepoData.details(params).then(function (data) {
                 processIssueResponse(data.result, params.numberOfDays);
-                deferred.resolve(data.lastUpdated);
+                ctrl.lastUpdated = data.lastUpdated;
+            }).then(function () {
+                collectorData.getCollectorItem($scope.widgetConfig.componentId, 'scm').then(function (data) {
+                    deferred.resolve( {lastUpdated: ctrl.lastUpdated, collectorItem: data});
+                });
             });
             
             return deferred.promise;
         };
-
 
         function showDetail(evt) {
             var target = evt.target,
@@ -79,7 +91,7 @@
 
             var seriesIndex = target.getAttribute('ct:series-index');
 
-            //alert(ctrl.commitController);
+            //alert(ctrl);
             $uibModal.open({
                 controller: 'RepoDetailController',
                 controllerAs: 'detail',
@@ -102,10 +114,9 @@
                 }
             });
         }
-        var commits = [];
 
+        var commits = [];
         var groupedCommitData = [];
-          
         function processCommitResponse(data, numberOfDays) {
             commits = [];
             groupedCommitData = [];
@@ -125,20 +136,31 @@
                     groupedCommitData.push([]);
                 }
             }
-
+            var labels = [];
+            _(commits).forEach(function (c) {
+                labels.push('');
+            });
             //update charts
-            if (commits.length) {
-                var labels = [];
-                _(commits).forEach(function (c) {
-                    labels.push('');
-                });
-
+            if (commits.length)
+            {
                 ctrl.commitChartData = {
                     series: [commits],
                     labels: labels
                 };
             }
-
+            ctrl.combinedChartData = {
+                labels: labels,
+                series: [{
+                    name: 'commits',
+                    data: commits
+                }, {
+                    name: 'pulls',
+                    data: pulls
+                }, {
+                    name: 'issues',
+                    data: issues
+                }]
+            };
 
             // group get total counts and contributors
             var today = toMidnight(new Date());
@@ -184,12 +206,12 @@
                 }
             });
 
-            ctrl.lastDayPullCount = lastDayPullCount;
-            ctrl.lastDayPullContributorCount = lastDayPullContributors.length;
-            ctrl.lastsevenDaysPullCount = lastsevenDayPullCount;
-            ctrl.lastsevenDaysPullContributorCount = lastsevenDaysPullContributors.length;
-            ctrl.lastfourteenDaysPullCount = lastfourteenDayPullCount;
-            ctrl.lastfourteenDaysPullContributorCount = lastfourteenDaysPullContributors.length;
+            ctrl.lastDayCommitCount = lastDayCommitCount;
+            ctrl.lastDayCommitContributorCount = lastDayCommitContributors.length;
+            ctrl.lastSevenDaysCommitCount = lastSevenDayCommitCount;
+            ctrl.lastSevenDaysCommitContributorCount = lastSevenDaysCommitContributors.length;
+            ctrl.lastFourteenDaysCommitCount = lastFourteenDayCommitCount;
+            ctrl.lastFourteenDaysCommitContributorCount = lastFourteenDaysCommitContributors.length;
 
 
             function toMidnight(date) {
@@ -199,11 +221,10 @@
         }
 
         var pulls = [];
-
         var groupedpullData = [];
         function processPullResponse(data, numberOfDays) {
-            groupedpullData = [];
             pulls = [];
+            groupedpullData = [];
             // get total pulls by day
             var groups = _(data).sortBy('timestamp')
                 .groupBy(function(item) {
@@ -220,21 +241,32 @@
                     groupedpullData.push([]);
                 }
             }
-
+            var labels = [];
+            _(pulls).forEach(function() {
+                labels.push('');
+            });
             //update charts
             if(pulls.length)
             {
-                var labels = [];
-                _(pulls).forEach(function() {
-                    labels.push('');
-                });
-
                 ctrl.pullChartData = {
                     series: [pulls],
                     labels: labels
                 };
 
             }
+            ctrl.combinedChartData = {
+                labels: labels,
+                series: [{
+                    name: 'commits',
+                    data: commits
+                }, {
+                    name: 'pulls',
+                    data: pulls
+                }, {
+                    name: 'issues',
+                    data: issues
+                }]
+            };
 
             // group get total counts and contributors
             var today = toMidnight(new Date());
@@ -388,12 +420,6 @@
             ctrl.lastsevenDaysIssueContributorCount = lastsevenDaysIssueContributors.length;
             ctrl.lastfourteenDaysIssueCount = lastfourteenDayIssueCount;
             ctrl.lastfourteenDaysIssueContributorCount = lastfourteenDaysIssueContributors.length;
-
-            var labels = [];
-            _(issues).forEach(function() {
-                labels.push('');
-            });
-
 
             function toMidnight(date) {
                 date.setHours(0, 0, 0, 0);

@@ -114,6 +114,9 @@ public class CommitServiceImpl implements CommitService {
 
     }
 
+    public List<Commit> getCommitsBySha (String scmRevisionNumber) {
+        return commitRepository.findByScmRevisionNumber(scmRevisionNumber);
+    }
 
     private boolean isNewCommit(CollectorItem repo, Commit commit) {
         return commitRepository.findByCollectorItemIdAndScmRevisionNumber(
