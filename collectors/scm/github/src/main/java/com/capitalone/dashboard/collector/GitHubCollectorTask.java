@@ -7,10 +7,12 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitHubRepoRepository;
+import com.capitalone.dashboard.repository.GitRequestRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -35,6 +37,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     private final BaseCollectorRepository<Collector> collectorRepository;
     private final GitHubRepoRepository gitHubRepoRepository;
     private final CommitRepository commitRepository;
+    private final GitRequestRepository gitRequestRepository;
     private final GitHubClient gitHubClient;
     private final GitHubSettings gitHubSettings;
     private final ComponentRepository dbComponentRepository;
@@ -42,12 +45,13 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
     @Autowired
     public GitHubCollectorTask(TaskScheduler taskScheduler,
-                               BaseCollectorRepository<Collector> collectorRepository,
-                               GitHubRepoRepository gitHubRepoRepository,
-                               CommitRepository commitRepository,
-                               GitHubClient gitHubClient,
-                               GitHubSettings gitHubSettings,
-                               ComponentRepository dbComponentRepository) {
+                                   BaseCollectorRepository<Collector> collectorRepository,
+                                   GitHubRepoRepository gitHubRepoRepository,
+                                   CommitRepository commitRepository,
+                                    GitRequestRepository gitRequestRepository,
+                                   GitHubClient gitHubClient,
+                                   GitHubSettings gitHubSettings,
+                                   ComponentRepository dbComponentRepository) {
         super(taskScheduler, "GitHub");
         this.collectorRepository = collectorRepository;
         this.gitHubRepoRepository = gitHubRepoRepository;
@@ -55,6 +59,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         this.gitHubClient = gitHubClient;
         this.gitHubSettings = gitHubSettings;
         this.dbComponentRepository = dbComponentRepository;
+        this.gitRequestRepository = gitRequestRepository;
     }
 
     @Override
@@ -144,6 +149,18 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                             commitCount++;
                         }
                     }
+                    for (GitRequest pull : gitHubClient.getPulls(repo, firstRun, gitRequestRepository)) {
+                        LOG.debug(pull.getTimestamp()+":::"+pull.getScmCommitLog());
+                        pull.setCollectorItemId(repo.getId());
+                        gitRequestRepository.save(pull);
+                        pullCount++;
+                    }
+                    for (GitRequest issue : gitHubClient.getIssues(repo, firstRun, gitRequestRepository)) {
+                        LOG.debug(issue.getTimestamp()+":::"+issue.getScmCommitLog());
+                        issue.setCollectorItemId(repo.getId());
+                        gitRequestRepository.save(issue);
+                        issueCount++;
+                    }
                     repo.setLastUpdated(System.currentTimeMillis());
                 } catch (HttpStatusCodeException hc) {
                     LOG.error("Error fetching commits for:" + repo.getRepoUrl(), hc);
@@ -161,6 +178,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         }
         log("Repo Count", start, repoCount);
         log("New Commits", start, commitCount);
+        log("New Pulls", start, pullCount);
+        log("New Issues", start, issueCount);
 
         log("Finished", start);
     }

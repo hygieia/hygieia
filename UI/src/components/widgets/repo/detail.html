@@ -1,7 +1,6 @@
 <widget-modal widget-modal-close="true">
     <div class="widget-detail repo-detail">
         <div class="widget-detail-body">
-            <span class="no-changesets" ng-hide="detail.commits.length">No Changes</span>
             <table class="table" ng-show="detail.commits.length">
                 <thead>
                 <tr>
@@ -17,6 +16,46 @@
                     <td>{{::commit.scmAuthor}}</td>
                     <td>{{::commit.scmCommitLog}}</td>
                     <td>{{::commit.scmCommitTimestamp | date:'MMM d, HH:mm:ss'}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="table" ng-show="detail.pulls.length">
+                <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Org</th>
+                    <th>Repo</th>
+                    <th>Created At</th>
+                    <th>Developer</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="pull in detail.pulls">
+                    <td>{{::pull.number | limitTo:8}}</td>
+                    <td>{{::pull.orgName}}</td>
+                    <td>{{::pull.repoName}}</td>
+                    <td>{{::pull.createdAt}}</td>
+                    <td>{{::pull.userId | date:'MMM d, HH:mm:ss'}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="table" ng-show="detail.issues.length">
+                <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Org</th>
+                    <th>Repo</th>
+                    <th>Created At</th>
+                    <th>Developer</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="issue in detail.issues">
+                    <td>{{::issue.number | limitTo:8}}</td>
+                    <td>{{::issue.orgName}}</td>
+                    <td>{{::issue.repoName}}</td>
+                    <td>{{::issue.createdAt}}</td>
+                    <td>{{::issue.userId | date:'MMM d, HH:mm:ss'}}</td>
                 </tr>
                 </tbody>
             </table>
