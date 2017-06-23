@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitHubRepo;
@@ -137,11 +138,13 @@ public class DefaultGitHubClient implements GitHubClient {
                 JSONObject jsonObject = (JSONObject) item;
                 String sha = str(jsonObject, "sha");
                 JSONObject commitObject = (JSONObject) jsonObject.get("commit");
-                JSONObject authorObject = (JSONObject) commitObject.get("author");
+                JSONObject commitAuthorObject = (JSONObject) commitObject.get("author");
                 String message = str(commitObject, "message");
-                String author = str(authorObject, "name");
-                long timestamp = new DateTime(str(authorObject, "date"))
+                String author = str(commitAuthorObject, "name");
+                long timestamp = new DateTime(str(commitAuthorObject, "date"))
                         .getMillis();
+				JSONObject authorObject = (JSONObject) jsonObject.get("author");
+				String authorLogin = str(authorObject, "login");
                 JSONArray parents = (JSONArray) jsonObject.get("parents");
                 List<String> parentShas = new ArrayList<>();
                 if (parents != null) {
@@ -157,6 +160,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 commit.setScmRevisionNumber(sha);
                 commit.setScmParentRevisionNumbers(parentShas);
                 commit.setScmAuthor(author);
+				commit.setScmAuthorLogin(authorLogin);
                 commit.setScmCommitLog(message);
                 commit.setScmCommitTimestamp(timestamp);
                 commit.setNumberOfChanges(1);
@@ -249,7 +253,7 @@ public class DefaultGitHubClient implements GitHubClient {
     }
 
 	@Override
-	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength"}) // agreed, fixme
+	@SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength", "PMD.NcssMethodCount"}) // agreed, fixme
 	public List<GitRequest> getPulls(GitHubRepo repo, boolean firstRun, GitRequestRepository gitRequestRepository) {
 
 		List<GitRequest> pulls = new ArrayList<>();
@@ -324,6 +328,7 @@ public class DefaultGitHubClient implements GitHubClient {
 						JSONObject jsonObject = (JSONObject) item;
 						String message = str(jsonObject, "title");
 						String number = str(jsonObject, "number");
+						String sha = str(jsonObject, "merge_commit_sha");
 
 						JSONObject userObject = (JSONObject) jsonObject.get("user");
 						String name = str(userObject, "login");
@@ -331,6 +336,8 @@ public class DefaultGitHubClient implements GitHubClient {
 						String merged = str(jsonObject, "merged_at");
 						String closed = str(jsonObject, "closed_at");
 						long createdTimestamp = new DateTime(created).getMillis();
+						String commentsUrl = str(jsonObject, "comments_url");
+						String reviewCommentsUrl = str(jsonObject, "review_comments_url");
 
 						GitRequest pull = new GitRequest();
 
@@ -341,33 +348,59 @@ public class DefaultGitHubClient implements GitHubClient {
 						}
 						pull.setUserId(name);
 						pull.setScmUrl(repo.getRepoUrl());
+						pull.setScmBranch(branch);
 						pull.setTimestamp(createdTimestamp);
-						pull.setScmRevisionNumber(number);
+						pull.setScmRevisionNumber(sha);
 						pull.setScmCommitLog(message);
-						pull.setCreatedAt(created);
-						pull.setClosedAt(closed);
-						pull.setMergedAt(merged);
+						pull.setCreatedAt(createdTimestamp);
+						pull.setClosedAt(new DateTime(closed).getMillis());
+						pull.setMergedAt(new DateTime(merged).getMillis());
 						pull.setNumber(number);
 						pull.setRequestType("pull");
 						pull.setState("open");
 						if (merged != null) {
 							pull.setState("merged");
+						} else if (closed != null) {
+							pull.setState("closed");
 						}
-						else
-							if (closed != null) {
-								pull.setState("closed");
-							}
 
 						String reponameArray[] = pageUrl.split("/");
 
-						GitRequest preExistinggitRequest = gitRequestRepository.findByOrgNameAndRepoNameAndNumberAndType(
-								reponameArray[ORG_POS_IN_API_URL], reponameArray[REPO_POS_IN_API_URL],
-								number,"pull");
-						if ( preExistinggitRequest!= null) {
-							gitRequestRepository.delete(preExistinggitRequest);
-						}
+//						GitRequest preExistinggitRequest = gitRequestRepository.findByOrgNameAndRepoNameAndNumberAndType(
+//								reponameArray[ORG_POS_IN_API_URL], reponameArray[REPO_POS_IN_API_URL],
+//								number,"pull");
+//						if ( preExistinggitRequest!= null) {
+//							gitRequestRepository.delete(preExistinggitRequest);
+//						}
 						pull.setOrgName(reponameArray[ORG_POS_IN_API_URL]);
 						pull.setRepoName(reponameArray[REPO_POS_IN_API_URL]);
+
+						JSONObject headObject = (JSONObject) jsonObject.get("head");
+						JSONObject headRepoObject = (JSONObject) headObject.get("repo");
+						if (headObject != null) {
+							pull.setHeadSha(str(headObject, "sha"));
+							pull.setSourceBranch(str(headObject, "ref"));
+						}
+						if (headRepoObject != null) {
+							pull.setSourceRepo(str(headRepoObject, "full_name"));
+						}
+
+						JSONObject baseObject = (JSONObject) jsonObject.get("base");
+						JSONObject baseRepoObject = (JSONObject) baseObject.get("repo");
+						if (baseObject != null) {
+							pull.setBaseSha(str(baseObject, "sha"));
+							pull.setTargetBranch(str(baseObject, "ref"));
+						}
+						if (baseRepoObject != null) {
+							pull.setTargetRepo(str(baseRepoObject, "full_name"));
+						}
+
+						pull.setCommentsUrl(commentsUrl);
+						List<Comment> comments = getComments(commentsUrl, repo);
+						pull.setComments(comments);
+						List<Comment> reviewComments = getComments(reviewCommentsUrl, repo);
+						pull.setReviewComments(reviewComments);
+						pull.setReviewCommentsUrl(reviewCommentsUrl);
 						pulls.add(pull);
 					}
 
@@ -461,6 +494,12 @@ public class DefaultGitHubClient implements GitHubClient {
 					JSONArray jsonArray = paresAsArray(response);
 					for (Object item : jsonArray) {
 						JSONObject jsonObject = (JSONObject) item;
+
+						//pull requests are also issues
+						if(jsonObject.get("pull_request") != null) {
+							continue;
+						}
+
 						String message = str(jsonObject, "title");
 						String number = str(jsonObject, "number");
 
@@ -482,8 +521,8 @@ public class DefaultGitHubClient implements GitHubClient {
 						issue.setTimestamp(createdTimestamp);
 						issue.setScmRevisionNumber(number);
 						issue.setScmCommitLog(message);
-						issue.setCreatedAt(created);
-						issue.setClosedAt(closed);
+						issue.setCreatedAt(createdTimestamp);
+						issue.setClosedAt(new DateTime(closed).getMillis());
 						issue.setNumber(number);
 						issue.setRequestType("issue");
 						if (closed != null) {
@@ -494,12 +533,12 @@ public class DefaultGitHubClient implements GitHubClient {
 						}
 						String reponameArray[] = pageUrl.split("/");
 
-						GitRequest preExistingIssue = issueRepository.findByOrgNameAndRepoNameAndNumberAndType(
-								reponameArray[ORG_POS_IN_API_URL], reponameArray[REPO_POS_IN_API_URL],
-								number, "issue");
-						if ( preExistingIssue!= null) {
-							issueRepository.delete(preExistingIssue);
-						}
+//						GitRequest preExistingIssue = issueRepository.findByOrgNameAndRepoNameAndNumberAndType(
+//								reponameArray[ORG_POS_IN_API_URL], reponameArray[REPO_POS_IN_API_URL],
+//								number, "issue");
+//						if ( preExistingIssue!= null) {
+//							issueRepository.delete(preExistingIssue);
+//						}
 						issue.setOrgName(reponameArray[6]);
 						issue.setRepoName(reponameArray[7]);
 						issues.add(issue);
@@ -521,5 +560,50 @@ public class DefaultGitHubClient implements GitHubClient {
 			LOG.error(e.getMessage());
 		}
 		return issues;
+	}
+
+	@SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength"}) // agreed, fixme
+	public List<Comment> getComments(String commentsUrl, GitHubRepo repo) throws RestClientException {
+
+		List<Comment> comments = new ArrayList<>();
+
+		// decrypt password
+		String decryptedPassword = "";
+		if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
+			try {
+				decryptedPassword = Encryption.decryptString(
+						repo.getPassword(), settings.getKey());
+			} catch (EncryptionException e) {
+				LOG.error(e.getMessage());
+			}
+		}
+		boolean lastPage = false;
+		int pageNumber = 1;
+		String queryUrlPage = commentsUrl;
+		while (!lastPage) {
+			ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+			JSONArray jsonArray = paresAsArray(response);
+			for (Object item : jsonArray) {
+				JSONObject jsonObject = (JSONObject) item;
+
+				Comment comment = new Comment();
+				JSONObject userJsonObj = (JSONObject)jsonObject.get("user");
+				comment.setUser((String)userJsonObj.get("login"));
+				long crt = new DateTime(str(jsonObject, "created_at")).getMillis();
+				comment.setCreatedAt(crt);
+				long upd = new DateTime(str(jsonObject, "updated_at")).getMillis();
+				comment.setUpdatedAt(upd);
+				comment.setBody(str(jsonObject, "body"));
+				comments.add(comment);
+			}
+			if (CollectionUtils.isEmpty(jsonArray)) {
+				lastPage = true;
+			} else {
+				lastPage = isThisLastPage(response);
+				pageNumber++;
+				queryUrlPage = commentsUrl + "&page=" + pageNumber;
+			}
+		}
+		return comments;
 	}
 }

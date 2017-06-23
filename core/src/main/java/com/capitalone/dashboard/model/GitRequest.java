@@ -4,6 +4,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 /**
  * A specific commit in a version control repository.
  *
@@ -22,6 +24,25 @@ public class GitRequest extends SCM {
     private ObjectId id;
     private String orgName;
     private String repoName;
+    private String sourceRepo;
+    private String sourceBranch;
+    private String targetRepo;
+    private String targetBranch;
+    private String number;
+    private ObjectId collectorItemId;
+    private long createdAt;
+    private long closedAt;
+    private String state;
+    private long mergedAt;
+    private long timestamp;
+    private long resolutiontime;
+    private String userId = null;
+    private String commentsUrl;
+    private String reviewCommentsUrl;
+    private List<Comment> comments;
+    private List<Comment> reviewComments;
+    private String headSha;
+    private String baseSha;
 
     public String getRequestType() {
         return requestType;
@@ -39,6 +60,38 @@ public class GitRequest extends SCM {
 
     public void setId(ObjectId id) {
         this.id = id;
+    }
+
+    public String getSourceRepo() {
+        return sourceRepo;
+    }
+
+    public void setSourceRepo(String sourceRepo) {
+        this.sourceRepo = sourceRepo;
+    }
+
+    public String getSourceBranch() {
+        return sourceBranch;
+    }
+
+    public void setSourceBranch(String sourceBranch) {
+        this.sourceBranch = sourceBranch;
+    }
+
+    public String getTargetRepo() {
+        return targetRepo;
+    }
+
+    public void setTargetRepo(String targetRepo) {
+        this.targetRepo = targetRepo;
+    }
+
+    public String getTargetBranch() {
+        return targetBranch;
+    }
+
+    public void setTargetBranch(String targetBranch) {
+        this.targetBranch = targetBranch;
     }
 
     public String getOrgName() {
@@ -73,27 +126,27 @@ public class GitRequest extends SCM {
         this.collectorItemId = collectorItemId;
     }
 
-    public String getCreatedAt() {
+    public long getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getClosedAt() {
+    public long getClosedAt() {
         return closedAt;
     }
 
-    public void setClosedAt(String closedAt) {
+    public void setClosedAt(long closedAt) {
         this.closedAt = closedAt;
     }
 
-    public String getMergedAt() {
+    public long getMergedAt() {
         return mergedAt;
     }
 
-    public void setMergedAt(String mergedAt) {
+    public void setMergedAt(long mergedAt) {
         this.mergedAt = mergedAt;
     }
 
@@ -121,11 +174,6 @@ public class GitRequest extends SCM {
         this.userId = userId;
     }
 
-    private String number;
-    private ObjectId collectorItemId;
-    private String createdAt;
-    private String closedAt;
-
     public String getState() {
         return state;
     }
@@ -134,10 +182,51 @@ public class GitRequest extends SCM {
         this.state = state;
     }
 
-    private String state;
-    private String mergedAt;
-    private long timestamp;
-    private long resolutiontime;
-    private String userId = null;
+    public String getCommentsUrl() {
+        return commentsUrl;
+    }
 
+    public void setCommentsUrl(String commentsUrl) {
+        this.commentsUrl = commentsUrl;
+    }
+
+    public String getReviewCommentsUrl() {
+        return reviewCommentsUrl;
+    }
+
+    public void setReviewCommentsUrl(String reviewCommentsUrl) {
+        this.reviewCommentsUrl = reviewCommentsUrl;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<Comment> getReviewComments() {
+        return reviewComments;
+    }
+
+    public void setReviewComments(List<Comment> reviewComments) {
+        this.reviewComments = reviewComments;
+    }
+
+    public String getHeadSha() {
+        return headSha;
+    }
+
+    public void setHeadSha(String headSha) {
+        this.headSha = headSha;
+    }
+
+    public String getBaseSha() {
+        return baseSha;
+    }
+
+    public void setBaseSha(String baseSha) {
+        this.baseSha = baseSha;
+    }
 }
