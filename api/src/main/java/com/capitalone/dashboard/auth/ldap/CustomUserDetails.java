@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.auth.ldap;
 
+import java.util.Collection;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.ldap.userdetails.LdapUserDetails;
-
-import java.util.Collection;
 
 public class CustomUserDetails implements LdapUserDetails {
     private String displayName;
@@ -148,5 +148,10 @@ public class CustomUserDetails implements LdapUserDetails {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    @Override
+    public void eraseCredentials() {
+        this.password = null;
     }
 }

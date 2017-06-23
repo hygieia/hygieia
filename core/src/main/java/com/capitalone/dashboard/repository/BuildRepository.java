@@ -1,12 +1,13 @@
 package com.capitalone.dashboard.repository;
 
-import com.capitalone.dashboard.model.Build;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
+import com.capitalone.dashboard.model.Build;
 
 /**
  * Repository for {@link Build} data.
@@ -24,4 +25,5 @@ public interface BuildRepository extends CrudRepository<Build, ObjectId>, QueryD
 
     @Query(value="{'sourceChangeSet.scmRevisionNumber' : {$exists: true, $in: ?0}, 'collectorItemId': { $in: ?1 }}")
     List<Build> findBuildsForRevisionNumbersAndBuildCollectorItemIds(List<String> scmRevisionNumbers, List<ObjectId> buildCollectorItemId);
+
 }

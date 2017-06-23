@@ -1,15 +1,10 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.TestResultRepository;
-import com.capitalone.dashboard.request.CollectorRequest;
-import com.capitalone.dashboard.request.TestDataCreateRequest;
-import com.capitalone.dashboard.request.TestResultRequest;
-import com.google.common.collect.Lists;
-import com.mysema.query.BooleanBuilder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +13,25 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.QTestResult;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.TestCase;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.TestResultRepository;
+import com.capitalone.dashboard.request.CollectorRequest;
+import com.capitalone.dashboard.request.TestDataCreateRequest;
+import com.capitalone.dashboard.request.TestResultRequest;
+import com.google.common.collect.Lists;
+import com.querydsl.core.BooleanBuilder;
 
 @Service
 public class TestResultServiceImpl implements TestResultService {

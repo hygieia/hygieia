@@ -1,14 +1,12 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.BuildRepository;
-import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.request.BuildDataCreateRequest;
-import com.capitalone.dashboard.request.BuildSearchRequest;
-import com.capitalone.dashboard.request.CollectorRequest;
-import com.mysema.query.BooleanBuilder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.BuildStatus;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.model.QBuild;
+import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.request.BuildDataCreateRequest;
+import com.capitalone.dashboard.request.BuildSearchRequest;
+import com.capitalone.dashboard.request.CollectorRequest;
+import com.querydsl.core.BooleanBuilder;
 
 @Service
 public class BuildServiceImpl implements BuildService {
@@ -49,6 +63,7 @@ public class BuildServiceImpl implements BuildService {
 
         QBuild build = new QBuild("build");
         BooleanBuilder builder = new BooleanBuilder();
+        
 
         builder.and(build.collectorItemId.eq(item.getId()));
 

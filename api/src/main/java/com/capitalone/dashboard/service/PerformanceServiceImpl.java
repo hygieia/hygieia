@@ -1,5 +1,17 @@
 package com.capitalone.dashboard.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -17,18 +29,7 @@ import com.capitalone.dashboard.request.PerformanceCreateRequest;
 import com.capitalone.dashboard.request.PerformanceSearchRequest;
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
-import com.mysema.query.BooleanBuilder;
-import org.apache.commons.lang.StringUtils;
-import org.bson.types.ObjectId;
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.querydsl.core.BooleanBuilder;
 
 @Service
 public class PerformanceServiceImpl implements PerformanceService {

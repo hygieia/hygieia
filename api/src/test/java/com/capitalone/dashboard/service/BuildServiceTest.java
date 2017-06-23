@@ -1,16 +1,12 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.SCM;
-import com.capitalone.dashboard.repository.BuildRepository;
-import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.request.BuildDataCreateRequest;
-import com.capitalone.dashboard.request.BuildSearchRequest;
-import com.mysema.query.types.Predicate;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+
 import org.bson.types.ObjectId;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -22,12 +18,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Arrays;
-
-import static org.mockito.Mockito.argThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.request.BuildDataCreateRequest;
+import com.capitalone.dashboard.request.BuildSearchRequest;
+import com.querydsl.core.types.Predicate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BuildServiceTest {

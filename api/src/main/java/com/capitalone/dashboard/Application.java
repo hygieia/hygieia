@@ -2,14 +2,10 @@ package com.capitalone.dashboard;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 
-import com.capitalone.dashboard.config.MongoConfig;
-import com.capitalone.dashboard.config.RestApiAppConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -27,14 +23,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 @EnableEncryptableProperties
-public class Application extends SpringBootServletInitializer {
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(Application.class, RestApiAppConfig.class, WebMVCConfig.class, MongoConfig.class);
-    }
-    
+public class Application {
+
     public static void main(String[] args) {
-        new Application().configure(new SpringApplicationBuilder(Application.class)).run(args);
+        SpringApplication.run(Application.class, args);
     }
 
     @Bean
