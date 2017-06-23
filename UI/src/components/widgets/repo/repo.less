@@ -2,10 +2,24 @@
 @import (reference) '../../../app/css/mixins.less';
 
 .repo-view {
+    .commit-view{
+        .ct-series-a .ct-line {
+            stroke: green;
+        }
+        .ct-series-b .ct-line {
+            stroke: blue;
+        }
+        .ct-series-c .ct-line {
+            stroke: red;
+        }
+    }
+
     .repo-summary-table {
+        @dash-chart-alt-color:    contrast('blue');
+
         td {
             .text-lg;
-            vertical-align: middle;
+            vertical-align: top;
             text-align: center;
             width: 20%;
             padding: .5rem .2rem;
@@ -31,3 +45,5 @@
         }
     }
 }
+
+
