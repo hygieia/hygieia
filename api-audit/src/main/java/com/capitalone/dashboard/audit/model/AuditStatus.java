@@ -1,0 +1,9 @@
+package com.capitalone.dashboard.audit.model;
+
+public enum AuditStatus {
+    COMMITAUTHOR_NE_MERGECOMMITER,
+    COMMITAUTHOR_EQ_MERGECOMMITER,
+    PULLREQ_REVIEWED_BY_PEER,
+    PULLREQ_NOT_PEER_REVIEWED,
+    DIRECT_COMMITS_TO_BASE
+}
