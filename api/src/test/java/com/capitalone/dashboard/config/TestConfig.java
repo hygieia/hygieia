@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.capitalone.dashboard.auth.AuthProperties;
 import com.capitalone.dashboard.auth.AuthenticationResponseService;
 import com.capitalone.dashboard.service.AuthenticationService;
 import com.capitalone.dashboard.service.BinaryArtifactService;
@@ -18,6 +19,7 @@ import com.capitalone.dashboard.service.CloudVolumeService;
 import com.capitalone.dashboard.service.CodeQualityService;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.CommitService;
+import com.capitalone.dashboard.service.GitRequestService;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.service.DeployService;
 import com.capitalone.dashboard.service.EncryptionService;
@@ -150,6 +152,11 @@ public class TestConfig {
 	}
 
 	@Bean
+	public GitRequestService gitRequestService() {
+		return Mockito.mock(GitRequestService.class);
+  }
+  
+    @Bean
 	public LibraryPolicyService libraryPolicyService() {
 		return Mockito.mock(LibraryPolicyService.class);
 	}
@@ -170,6 +177,11 @@ public class TestConfig {
 	}
 
 	@Bean
+	public AuthProperties authProperties() {
+	    return Mockito.mock(AuthProperties.class);
+  }
+  
+    @Bean
 	public UserInfoService userInfoService() {
 	    return Mockito.mock(UserInfoService.class);
 	}

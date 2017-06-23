@@ -2,10 +2,10 @@
 	'use strict';
 
 	angular.module(HygieiaConfig.module).controller('featureConfigController',
-			featureConfigController);
+		featureConfigController);
 
 	featureConfigController.$inject = [ 'modalData', '$uibModalInstance',
-			'collectorData', 'featureData'];
+		'collectorData', 'featureData'];
 
 	function featureConfigController(modalData, $uibModalInstance, collectorData, featureData) {
 		/* jshint validthis:true */
@@ -25,7 +25,7 @@
 		ctrl.hideTeamDropDown = true;
 		ctrl.hideEstimateMetricDropDown = true;
 		ctrl.hideSprintTypeDropDown = true;
-        ctrl.hideListTypeDropDown = true;
+		ctrl.hideListTypeDropDown = true;
 		ctrl.evaluateTypeSelection = evaluateTypeSelection;
 
 		// public variables
@@ -57,7 +57,7 @@
 
 		// Request collectors
 		collectorData.collectorsByType('AgileTool').then(
-				processCollectorsResponse);
+			processCollectorsResponse);
 		// initialize inputs
 		initEstimateMetricType(widgetConfig);
 		initSprintType(widgetConfig);
@@ -71,7 +71,7 @@
 			ctrl.collectors = data;
 			var featureCollector = modalData.dashboard.application.components[0].collectorItems.AgileTool;
 			var featureCollectorId = featureCollector ? featureCollector[0].collectorId
-					: null;
+				: null;
 
 			getCollectors(data, featureCollectorId);
 
@@ -103,10 +103,10 @@
 					ctrl.valid = true;
 					ctrl.collectorId = ctrl.featureTypeOptions[ctrl.selectedTypeIndex];
 					if (ctrl.collectorId.value === 'Jira') {
-	                    ctrl.hideEstimateMetricDropDown = false;
-	                } else {
-	                    ctrl.hideEstimateMetricDropDown = true;
-	                }
+						ctrl.hideEstimateMetricDropDown = false;
+					} else {
+						ctrl.hideEstimateMetricDropDown = true;
+					}
 					ctrl.hideProjectDropDown = false;
 					ctrl.hideTeamDropDown = false;
 					ctrl.hideSprintTypeDropDown = false;
@@ -146,22 +146,22 @@
 		}
 
 		function initListType(widgetConfig) {
-            if (widgetConfig && widgetConfig.options && widgetConfig.options.listType) {
-                ctrl.listType = widgetConfig.options.listType;
-            } else {
-                ctrl.listType = 'epics';
-            }
-        }
+			if (widgetConfig && widgetConfig.options && widgetConfig.options.listType) {
+				ctrl.listType = widgetConfig.options.listType;
+			} else {
+				ctrl.listType = 'epics';
+			}
+		}
 
-        function initSelectedProjectAndTeam(widgetConfig){
+		function initSelectedProjectAndTeam(widgetConfig){
 			if(widgetConfig && widgetConfig.options){
 				ctrl.selectedProjectObject={
 					name: widgetConfig.options.projectName,
-					pId: widgetConfig.options.projectId
+					pId: widgetConfig.options.projectName==='Any'?'Any':widgetConfig.options.projectId
 				}
 				ctrl.selectedTeamObject ={
 					name: widgetConfig.options.teamName,
-					teamId:widgetConfig.options.teamId
+					teamId:widgetConfig.options.teamName==='Any'?'Any':widgetConfig.options.teamId
 				}
 			}
 		}
@@ -187,30 +187,54 @@
 
 		}
 
-		function onSelectProject(item){
+		function onSelectProject(item,form){
 			ctrl.selectedProjectObject  = item;
+			setValidityForProjectAndTeam(form);
 		}
 
-		function onSelectTeam(item){
+		function onSelectTeam(item,form){
 			ctrl.selectedTeamObject = item;
+			setValidityForProjectAndTeam(form);
+		}
+
+		function setValidityForProjectAndTeam(form){
+			if(ctrl.projectName ==="Any" && ctrl.teamName==="Any"){
+				form.projectName.$setValidity('anyError',false);
+				form.teamName.$setValidity('teamError',false);
+				return;
+			}else {
+				form.projectName.$setValidity('anyError',true);
+				form.teamName.$setValidity('teamError',true);
+			}
 		}
 
 		function getProjectNames(filter) {
 			return featureData.projectsByCollectorIdPaginated(ctrl.collectorId.id,{"search": filter, "size": 20, "sort": "description", "page": 0}).then(function (response) {
+				if(!angular.isUndefined(filter)&& filter.match(/any/i)){
+					var defaultValue={name:'Any',value:'Any',pId:'Any',teamId:'Any'}
+					response.push(defaultValue);
+				}
 				return response;
 			});
 		}
 
 		function getTeamNames(filter) {
 			return featureData.teamsByCollectorIdPaginated(ctrl.collectorId.id,{"search": filter, "size": 20, "sort": "description", "page": 0}).then(function (response) {
+				if(!angular.isUndefined(filter) && filter.match(/any/i)){
+					var defaultValue={name:'Any',value:'Any',pId:'Any',teamId:'Any'}
+					response.push(defaultValue);
+				}
 				return response;
 			});
 		}
 
 
-		function submitForm(valid) {
+		function submitForm(valid,form) {
 			ctrl.submitted = true;
-			if (valid && ctrl.collectors.length) {
+			form.projectName.$setValidity('anyError',true);
+			form.projectName.$setValidity('teamError',true);
+			setValidityForProjectAndTeam(form);
+			if(form.$valid && ctrl.collectors.length){
 				createCollectorItem().then(processCollectorItemResponse);
 			}
 		}
