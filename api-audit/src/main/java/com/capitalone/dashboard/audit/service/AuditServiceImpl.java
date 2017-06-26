@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.audit.service;
 
-import com.capitalone.dashboard.audit.service.AuditService;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.CommitRepository;
