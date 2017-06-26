@@ -36,6 +36,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+	              <classifier>exec</classifier>
+	            </configuration>
             </plugin>
             <plugin>
                 <groupId>com.mysema.maven</groupId>
