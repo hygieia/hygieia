@@ -14,5 +14,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./artifactory-properties-builder.sh && \
-  java -jar artifactory-artifact-collector*.jar --spring.config.location=/hygieia/hygieia-artifactory-artifact-collector.properties
+  exec java -jar artifactory-artifact-collector*.jar --spring.config.location=/hygieia/hygieia-artifactory-artifact-collector.properties
 

@@ -14,5 +14,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./subversion-properties-builder.sh && \
-  java -jar subversion-collector*.jar --spring.config.location=/hygieia/hygieia-subversion-collector.properties
+  exec java -jar subversion-collector*.jar --spring.config.location=/hygieia/hygieia-subversion-collector.properties
 

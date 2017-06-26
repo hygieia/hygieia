@@ -4,7 +4,7 @@ FROM docker.io/java:openjdk-8-jdk
 MAINTAINER Hygieia@capitalone.com
 
 
-ENV SPRING_DATA_MONGODB_DATABASE=dashboard
+ENV SPRING_DATA_MONGODB_DATABASE=dashboarddb
 ENV SPRING_DATA_MONGODB_HOST=10.0.1.1
 ENV SPRING_DATA_MONGODB_PORT=9999
 ENV SPRING_DATA_MONGODB_USERNAME=db
@@ -25,4 +25,4 @@ VOLUME ["/hygieia/logs"]
 
 EXPOSE 8080
 CMD ./properties-builder.sh &&\
-  java -Djava.security.egd=file:/dev/./urandom -jar api.jar --spring.config.location=/hygieia/dashboard.properties
+  exec java -Djava.security.egd=file:/dev/./urandom -Djasypt.encryptor.password=hygieiasecret -jar api.jar --spring.config.location=/hygieia/dashboard.properties

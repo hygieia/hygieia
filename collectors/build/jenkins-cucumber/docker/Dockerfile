@@ -14,5 +14,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./jenkins-cucumber-test-properties-builder.sh && \
-  java -jar jenkins-cucumber-test-collector*.jar --spring.config.location=/hygieia/hygieia-jenkins-cucumber-test-collector.properties
+  exec java -jar jenkins-cucumber-test-collector*.jar --spring.config.location=/hygieia/hygieia-jenkins-cucumber-test-collector.properties
 

@@ -14,5 +14,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./chat-ops-properties-builder.sh && \
-  java -jar chat-ops-collector*.jar --spring.config.location=/hygieia/hygieia-chat-ops-collector.properties
+  exec java -jar chat-ops-collector*.jar --spring.config.location=/hygieia/hygieia-chat-ops-collector.properties
 

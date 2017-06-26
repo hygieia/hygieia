@@ -14,5 +14,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 CMD ./xldeploy-properties-builder.sh && \
-  java -jar xldeploy-deployment-collector*.jar --spring.config.location=/hygieia/hygieia-xldeploy-deployment-collector.properties
+  exec java -jar xldeploy-deployment-collector*.jar --spring.config.location=/hygieia/hygieia-xldeploy-deployment-collector.properties
 
