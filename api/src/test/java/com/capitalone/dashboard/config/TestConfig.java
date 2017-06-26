@@ -22,6 +22,7 @@ import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.service.DeployService;
 import com.capitalone.dashboard.service.EncryptionService;
 import com.capitalone.dashboard.service.FeatureService;
+import com.capitalone.dashboard.service.GitRequestService;
 import com.capitalone.dashboard.service.LibraryPolicyService;
 import com.capitalone.dashboard.service.MaturityModelService;
 import com.capitalone.dashboard.service.Monitor2Service;
@@ -152,6 +153,11 @@ public class TestConfig {
 	}
 
 	@Bean
+	public GitRequestService gitRequestService() {
+		return Mockito.mock(GitRequestService.class);
+  }
+  
+    @Bean
 	public LibraryPolicyService libraryPolicyService() {
 		return Mockito.mock(LibraryPolicyService.class);
 	}
