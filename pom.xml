@@ -165,6 +165,7 @@
       <modules>
         <module>core</module>
         <module>api</module>
+        <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins</module>
@@ -206,6 +207,7 @@
       <modules>
         <module>core</module>
         <module>api</module>
+        <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins</module>
