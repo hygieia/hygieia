@@ -35,6 +35,8 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- Packaging change in Spring Boot 1.4 forces this configuration since 
+                the dependency jar is technically a spring boot app, should probably be fixed -->
                 <configuration>
 	              <classifier>exec</classifier>
 	            </configuration>
