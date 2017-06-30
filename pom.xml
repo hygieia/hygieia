@@ -56,7 +56,6 @@
   </distributionManagement>
 
   <properties>
-    <spring-data-releasetrain.version>INGALLS-SR4</spring-data-releasetrain.version>
     <mongodb.version>3.0.2</mongodb.version>
     <mongo>3.0.2</mongo>
     <guava.version>16.0.1</guava.version>
