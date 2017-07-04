@@ -87,7 +87,9 @@ public class DefaultUDeployClientTest {
     @Test
     public void testGetEnvironmentResourceStatusData() throws Exception {
         String resourceJson = getJson("resources.json");
-        String nonComplianceJson = getJson("noncompliance.json");
+        String nonComplianceJson = getJson("inventory.json");
+        String component1Json = getJson("component1.json");
+        String component2Json = getJson("component2.json");
 
         String appJson = getJson("application.json");
 
@@ -99,7 +101,9 @@ public class DefaultUDeployClientTest {
         List<UDeployApplication> apps = defaultUDeployClient.getApplications(instanceUrl);
 
         String resourceUrl = "http://udeploy.com/rest/deploy/environment/e32de740-160b-4ffb-a63f-0690607d9903/resources";
-        String nonCompUrl = "http://udeploy.com/rest/deploy/environment/e32de740-160b-4ffb-a63f-0690607d9903/noncompliantResources";
+        String nonCompUrl = "http://udeploy.com/rest/deploy/environment/e32de740-160b-4ffb-a63f-0690607d9903/latestDesiredInventory";
+        String component1 = "http://udeploy.com/rest/resource/resource/6b7bae94-6492-438e-b6ad-21ec7347b180/resources";
+        String component2 = "http://udeploy.com/rest/resource/resource/70f3334a-4e76-4581-958b-c29867015250/resources";
 
 
         String environments = getJson("environments.json");
@@ -121,6 +125,12 @@ public class DefaultUDeployClientTest {
 
         when(rest.exchange(eq(nonCompUrl), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(nonComplianceJson, HttpStatus.OK));
+        
+        when(rest.exchange(eq(component1), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+        		.thenReturn(new ResponseEntity<>(component1Json, HttpStatus.OK));
+        
+        when(rest.exchange(eq(component2), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
+				.thenReturn(new ResponseEntity<>(component2Json, HttpStatus.OK));
 
         when(rest.exchange(eq(fileTree1url), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(fileTree1, HttpStatus.OK));
@@ -133,12 +143,12 @@ public class DefaultUDeployClientTest {
 
         assertThat(data.size(), is(2));
         assertThat(data.get(0).getComponentName(), is("jpetstore.war"));
-        assertThat(data.get(0).getResourceName(), is("msp_16"));
+        assertThat(data.get(0).getResourceName(), is("udagent-web"));
         assertThat(data.get(0).isDeployed(), is(false));
         assertThat(data.get(0).isOnline(), is(true));
         assertThat(data.get(0).getEnvironmentName(), is("Team1"));
         assertThat(data.get(1).getComponentName(), is("jpetstore.ear"));
-        assertThat(data.get(1).getResourceName(), is("msp_16"));
+        assertThat(data.get(1).getResourceName(), is("udagent-web"));
         assertThat(data.get(1).isDeployed(), is(true));
         assertThat(data.get(1).isOnline(), is(true));
         assertThat(data.get(1).getEnvironmentName(), is("Team1"));
