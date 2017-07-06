@@ -97,7 +97,7 @@
                 size: 'lg',
                 resolve: {
                     build: function() {
-                        return _.findWhere(builds, { number: build.number });
+                        return _.find(builds, { number: build.number });
                     },
                     collectorName: function () {
                         return $scope.dashboard.application.components[0].collectorItems.Build[0].collector.name;
@@ -289,7 +289,7 @@
             function setDisplayToErrorState(data, failureThreshold, cb) {
                 // order by end time and limit to last 5
                 data = _.sortBy(data, 'endTime').reverse().slice(0, failureThreshold);
-                data = _.where(data, function (item) {
+                data = _.filter(data, function (item) {
                     return (item.buildStatus.toLowerCase() != 'success') &&  (item.buildStatus.toLowerCase() != 'inprogress') ;
                 });
 

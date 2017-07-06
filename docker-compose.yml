@@ -1,5 +1,5 @@
 mongodb:
-  image: bitnami/mongodb:latest
+  image: mongo:latest
   environment:
     - MONGODB_USERNAME=db
     - MONGODB_DATABASE=dashboard
@@ -41,8 +41,6 @@ hygieia-github-scm-collector:
 #  - GITHUB_HOST=github.com
 #  - GITHUB_CRON='0 0/5 * * * *'
 #  - GITHUB_COMMIT_THREASHOLD_DAYS=15
-
-
 
 hygieia-jira-feature-collector:
   image: hygieia-jira-feature-collector:latest
@@ -333,5 +331,3 @@ hygieia-artifactory-artifact-collector:
 #  - ARTIFACTORY_REPO=prerelease,release
 # Artifactory REST endpoint
 #  - ARTIFACTORY_ENDPOINT=artifactory/
-
-

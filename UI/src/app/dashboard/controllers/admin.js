@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$location','$uibModal', 'userService', 'authService'];
-    function AdminController(dashboardData, $location, $uibModal, userService, authService) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location','$uibModal', 'userService', 'authService', 'userData'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -24,9 +24,13 @@
         ctrl.showAuthentication = userService.isAuthenticated();
         ctrl.templateUrl = "app/dashboard/views/navheader.html";
         ctrl.username = userService.getUsername();
+        ctrl.authType = userService.getAuthType();
         ctrl.login = login;
         ctrl.logout = logout;
-        ctrl.renameDashboard=renameDashboard;
+        ctrl.editDashboard = editDashboard;
+        ctrl.generateToken = generateToken;
+
+        $scope.tab="dashboards";
 
         // list of available themes. Must be updated manually
         ctrl.themes = [
@@ -62,6 +66,8 @@
 
         // request dashboards
         dashboardData.search().then(processResponse);
+        userData.getAllUsers().then(processUserResponse);
+        userData.apitokens().then(processTokenResponse);
 
 
         //implementation of logout
@@ -88,13 +94,13 @@
             });
         }
 
-        function renameDashboard(item)
+        function editDashboard(item)
         {
-            console.log("Rename Dashboard in Admin");
+            console.log("Edit Dashboard in Admin");
 
             var mymodalInstance=$uibModal.open({
-                templateUrl: 'app/dashboard/views/renameDashboard.html',
-                controller: 'RenameDashboardController',
+                templateUrl: 'app/dashboard/views/editDashboard.html',
+                controller: 'EditDashboardController',
                 controllerAs: 'ctrl',
                 resolve: {
                     dashboardId: function() {
@@ -112,6 +118,23 @@
 
         }
 
+        function generateToken()
+        {
+            console.log("Generate token in Admin");
+
+            var mymodalInstance=$uibModal.open({
+                templateUrl: 'app/dashboard/views/generateApiToken.html',
+                controller: 'GenerateApiTokenController',
+                controllerAs: 'ctrl',
+                resolve: {
+                }
+            });
+
+            mymodalInstance.result.then(function(condition) {
+                window.location.reload(false);
+            });
+
+        }
 
         function processResponse(data) {
             ctrl.dashboards = [];
@@ -122,5 +145,49 @@
                 });
             }
         }
+
+        function processUserResponse(response) {
+            $scope.users = response.data;
+        }
+
+        function processTokenResponse(response) {
+            $scope.apitokens = response.data;
+        }
+
+        $scope.navigateToTab = function(tab) {
+          $scope.tab=tab;
+        }
+
+        $scope.isActiveUser = function(user) {
+          if(user.authType === ctrl.authType && user.username === ctrl.username) {
+            return true;
+          }
+          return false;
+        }
+
+        $scope.promoteUserToAdmin = function(user) {
+          userData.promoteUserToAdmin(user).then(
+            function(response) {
+              var index = $scope.users.indexOf(user);
+              $scope.users[index] = response.data;
+            },
+            function(error) {
+              $scope.error = error;
+            }
+        );
+        }
+
+        $scope.demoteUserFromAdmin = function(user) {
+          userData.demoteUserFromAdmin(user).then(
+            function(response) {
+              var index = $scope.users.indexOf(user);
+              $scope.users[index] = response.data;
+            },
+            function(error) {
+              $scope.error = error;
+            }
+        );
+        }
+
     }
 })();

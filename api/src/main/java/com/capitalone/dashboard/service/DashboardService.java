@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 
 
@@ -94,6 +95,23 @@ public interface DashboardService {
      */
     
     List<Dashboard> getOwnedDashboards();
+
+    /**
+     * Get the set of owners for a given dashboard
+     * 
+     * @param id get owners for this dashboard
+     * @return the set of owners for provided dashboard
+     */
+    Iterable<Owner> getOwners(ObjectId id);
+
+    /**
+     * Updates the owners of the given dashboard with the set of given owners
+     * 
+     * @param dashboardId update owners on this dashboard
+     * @param owners full collection of owners
+     * @return the new set of owners for provided dashboard
+     */
+    Iterable<Owner> updateOwners(ObjectId dashboardId, Iterable<Owner> owners);
     
     /**
      * Get owner of dashboard on supplying dashboard Title
@@ -103,6 +121,16 @@ public interface DashboardService {
      */
     
     String getDashboardOwner(String dashboardTitle);
+
+    /**
+     * Get component
+     * @Param component Id
+     * @return Component
+     *
+     */
+
+    Component getComponent(ObjectId componentId);
+
 }
 
 
