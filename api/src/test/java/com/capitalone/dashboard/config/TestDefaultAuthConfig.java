@@ -1,13 +1,8 @@
 package com.capitalone.dashboard.config;
 
 import com.capitalone.dashboard.repository.ApiTokenRepository;
-import com.capitalone.dashboard.service.ApiTokenService;
-import com.capitalone.dashboard.service.ApiTokenServiceImpl;
-import com.capitalone.dashboard.service.GitRequestService;
-import com.capitalone.dashboard.service.LibraryPolicyService;
+import com.capitalone.dashboard.service.*;
 import com.capitalone.dashboard.model.Performance;
-import com.capitalone.dashboard.service.Monitor2Service;
-import com.capitalone.dashboard.service.PerformanceService;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
