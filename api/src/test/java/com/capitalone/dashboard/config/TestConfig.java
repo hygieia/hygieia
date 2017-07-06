@@ -1,13 +1,38 @@
 package com.capitalone.dashboard.config;
 
-import com.capitalone.dashboard.service.*;
+import com.capitalone.dashboard.service.ApiTokenService;
+import com.capitalone.dashboard.service.LibraryPolicyService;
+import com.capitalone.dashboard.service.MaturityModelService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.capitalone.dashboard.auth.AuthProperties;
 import com.capitalone.dashboard.auth.AuthenticationResponseService;
+import com.capitalone.dashboard.service.AuthenticationService;
+import com.capitalone.dashboard.service.BinaryArtifactService;
+import com.capitalone.dashboard.service.BuildService;
+import com.capitalone.dashboard.service.CloudInstanceService;
+import com.capitalone.dashboard.service.CloudSubnetService;
+import com.capitalone.dashboard.service.CloudVirtualNetworkService;
+import com.capitalone.dashboard.service.CloudVolumeService;
+import com.capitalone.dashboard.service.CodeQualityService;
+import com.capitalone.dashboard.service.CollectorService;
+import com.capitalone.dashboard.service.CommitService;
+import com.capitalone.dashboard.service.GitRequestService;
+import com.capitalone.dashboard.service.DashboardService;
+import com.capitalone.dashboard.service.DeployService;
+import com.capitalone.dashboard.service.EncryptionService;
+import com.capitalone.dashboard.service.FeatureService;
+import com.capitalone.dashboard.service.PipelineService;
+import com.capitalone.dashboard.service.ScopeService;
+import com.capitalone.dashboard.service.ServiceService;
+import com.capitalone.dashboard.service.TeamService;
+import com.capitalone.dashboard.service.TestResultService;
+import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
+import com.capitalone.dashboard.service.Monitor2Service;
+import com.capitalone.dashboard.service.PerformanceService;
 
 
 /**
@@ -127,6 +152,11 @@ public class TestConfig {
 	}
 
 	@Bean
+	public GitRequestService gitRequestService() {
+		return Mockito.mock(GitRequestService.class);
+  }
+  
+    @Bean
 	public LibraryPolicyService libraryPolicyService() {
 		return Mockito.mock(LibraryPolicyService.class);
 	}
@@ -151,7 +181,7 @@ public class TestConfig {
 	    return Mockito.mock(AuthProperties.class);
   }
   
-   @Bean
+    @Bean
 	public UserInfoService userInfoService() {
 	    return Mockito.mock(UserInfoService.class);
 	}
