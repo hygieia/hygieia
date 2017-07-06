@@ -84,7 +84,7 @@ Create CollectorTask
 Create a class that extends the abstract CollectorTask and implement the required abstract methods.
 
 
-###getCollector() Method
+### getCollector() Method
 --------------------------------------
 
 The getCollector method should return a prototypical instance of your Collector subclass (eg PivotalTrackerCollector). This
@@ -92,30 +92,30 @@ method is only used the very first time your collector runs so that your collect
 collection in MongoDB.
 
 
-###getCollectorRepository() Method
+### getCollectorRepository() Method
 --------------------------------------
 
 This method should return a reference to your custom collector repository.
 
-###getCron() Method
+### getCron() Method
 --------------------------------------
 
 This method should return the cron expression to schedule how often your collector executes.
 
-###collect() Method
+### collect() Method
 --------------------------------------
 
 The collect method holds the business logic for your collector. This method is called on a schedule based on the value you
 provide from the getCron() method..
 
 
-###Spring Singleton
+### Spring Singleton
 --------------------------------------
 
 The CollectorTask class is a Spring bean singleton. Use the constructor to inject any Spring beans that are required to
 execute the logic of your collector (eg MongDB repositories such as FeatureRepository).
 
-###Example
+### Example
 --------------------------------------
 
     package com.capitalone.dashboard.collector;
@@ -207,7 +207,7 @@ the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-S
 for information about sourcing this properties file.
 
 
-###Sample application.properties file
+### Sample application.properties file
 --------------------------------------
 
     #Database Name

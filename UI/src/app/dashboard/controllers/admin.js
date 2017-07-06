@@ -9,15 +9,11 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['dashboardData', '$cookies', '$cookieStore', '$location'];
-    function AdminController(dashboardData, $cookies, $cookieStore, $location) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location','$uibModal', 'userService', 'authService', 'userData'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData) {
         var ctrl = this;
-
-        console.log("I am in admin page run scope");
-        if ($cookies.username == 'admin') {
-            console.log("I am admin");
+        if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
-
         }
         else {
             console.log("Not authenticated redirecting");
@@ -25,9 +21,16 @@
         }
 
         ctrl.storageAvailable = localStorageSupported;
+        ctrl.showAuthentication = userService.isAuthenticated();
         ctrl.templateUrl = "app/dashboard/views/navheader.html";
-        ctrl.username = $cookies.username;
+        ctrl.username = userService.getUsername();
+        ctrl.authType = userService.getAuthType();
+        ctrl.login = login;
         ctrl.logout = logout;
+        ctrl.editDashboard = editDashboard;
+        ctrl.generateToken = generateToken;
+
+        $scope.tab="dashboards";
 
         // list of available themes. Must be updated manually
         ctrl.themes = [
@@ -63,13 +66,18 @@
 
         // request dashboards
         dashboardData.search().then(processResponse);
+        userData.getAllUsers().then(processUserResponse);
+        userData.apitokens().then(processTokenResponse);
 
 
         //implementation of logout
         function logout() {
-            $cookieStore.remove("username");
-            $cookieStore.remove("authenticated");
-            $location.path("/");
+            authService.logout();
+            $location.path("/login");
+        }
+
+        function login() {
+          $location.path("/login")
         }
 
         // method implementations
@@ -86,6 +94,48 @@
             });
         }
 
+        function editDashboard(item)
+        {
+            console.log("Edit Dashboard in Admin");
+
+            var mymodalInstance=$uibModal.open({
+                templateUrl: 'app/dashboard/views/editDashboard.html',
+                controller: 'EditDashboardController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    dashboardId: function() {
+                        return item.id;
+                    },
+                    dashboardName: function() {
+                        return item.name;
+                    }
+                }
+            });
+
+            mymodalInstance.result.then(function(condition) {
+                window.location.reload(false);
+            });
+
+        }
+
+        function generateToken()
+        {
+            console.log("Generate token in Admin");
+
+            var mymodalInstance=$uibModal.open({
+                templateUrl: 'app/dashboard/views/generateApiToken.html',
+                controller: 'GenerateApiTokenController',
+                controllerAs: 'ctrl',
+                resolve: {
+                }
+            });
+
+            mymodalInstance.result.then(function(condition) {
+                window.location.reload(false);
+            });
+
+        }
+
         function processResponse(data) {
             ctrl.dashboards = [];
             for (var x = 0; x < data.length; x++) {
@@ -95,5 +145,49 @@
                 });
             }
         }
+
+        function processUserResponse(response) {
+            $scope.users = response.data;
+        }
+
+        function processTokenResponse(response) {
+            $scope.apitokens = response.data;
+        }
+
+        $scope.navigateToTab = function(tab) {
+          $scope.tab=tab;
+        }
+
+        $scope.isActiveUser = function(user) {
+          if(user.authType === ctrl.authType && user.username === ctrl.username) {
+            return true;
+          }
+          return false;
+        }
+
+        $scope.promoteUserToAdmin = function(user) {
+          userData.promoteUserToAdmin(user).then(
+            function(response) {
+              var index = $scope.users.indexOf(user);
+              $scope.users[index] = response.data;
+            },
+            function(error) {
+              $scope.error = error;
+            }
+        );
+        }
+
+        $scope.demoteUserFromAdmin = function(user) {
+          userData.demoteUserFromAdmin(user).then(
+            function(response) {
+              var index = $scope.users.indexOf(user);
+              $scope.users[index] = response.data;
+            },
+            function(error) {
+              $scope.error = error;
+            }
+        );
+        }
+
     }
 })();

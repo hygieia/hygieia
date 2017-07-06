@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('addTeamController', addTeamController);
 
-    addTeamController.$inject = ['$scope', '$modalInstance', 'collectorData', '$timeout'];
-    function addTeamController($scope, $modalInstance, collectorData, $timeout) {
+    addTeamController.$inject = ['$scope', '$uibModalInstance', 'collectorData', '$timeout'];
+    function addTeamController($scope, $uibModalInstance, collectorData, $timeout) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -85,9 +85,11 @@
             if(valid) {
                 // get the normal display name
                 var name = 'Unknown';
+                var dashBoardId = "";
                 _(ctrl.dashboards).forEach(function(item) {
                     if(ctrl.collectorItemId == item.id) {
                         name = item.title;
+                        dashBoardId = item.dashboardId;
                     }
                 });
 
@@ -97,11 +99,12 @@
                     obj = {
                         collectorItemId: ctrl.collectorItemId,
                         name: name,
-                        customName: ctrl.customName
+                        customName: ctrl.customName,
+                        dashBoardId: dashBoardId
                     };
                 }
 
-                $modalInstance.close(obj);
+                $uibModalInstance.close(obj);
             }
         }
     }

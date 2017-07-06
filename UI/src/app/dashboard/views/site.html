@@ -36,17 +36,20 @@
 
                 <div class="row gap">
                     <div class="col-sm-4 col-sm-push-8 text-center">
-                        <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.createDashboard()">
-                            <span class="fa fa-stack fa-lg">
-                                <span class="fa-circle-thin fa-stack-2x"></span>
-                                <span class="fa-plus fa-stack-1x"></span>
-                            </span>
-                            <br/>
-                            Create a new<br/>dashboard
+                        <div>
+                            <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.createDashboard()" ng-show="ctrl.showAuthentication">
+                                <span class="fa fa-stack fa-lg">
+                                    <span class="fa-circle-thin fa-stack-2x"></span>
+                                    <span class="fa-plus fa-stack-1x"></span>
+                                </span>
+                                <br/>
+                                Create a new<br/>dashboard
+                            </div>
                         </div>
+
                     </div>
                     <div class="col-sm-8 col-sm-pull-4">
-                        <div>
+                        <div ng-show="ctrl.showAuthentication">
                             <div class="text-2x">My Dashboards <span class="label label-default"></span></div>
 
                             <div class="text-center" ng-hide="ctrl.mydash">Loading Your Dashboards...</div>
@@ -57,6 +60,12 @@
                             <ul class="list-animate list-group text-left">
                                 <li class="list-group-item" ng-repeat="myitem in mydashboards = (ctrl.mydash | filter:ctrl.filterDashboards | orderBy: 'name')">
                                     <span class="pull-right">
+
+
+                                       <a href ng-click="ctrl.editDashboard(myitem)">
+                                           <span class="fa fa-lg fa-cog text-success"></span>
+                                       </a>
+
                                        <a href ng-click="ctrl.deleteDashboard(myitem)">
                                            <span class="fa fa-lg fa-trash text-danger"></span>
                                        </a>
@@ -97,4 +106,3 @@
         </div>
     </div>
 </div>
-

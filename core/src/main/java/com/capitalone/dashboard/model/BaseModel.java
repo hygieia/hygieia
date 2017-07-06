@@ -17,4 +17,11 @@ public class BaseModel {
     public void setId(ObjectId id) {
         this.id = id;
     }
+
+    /*
+     * Note:
+     * 
+     * Having hashcode + equals is more complicated than simply comparing ObjectIds since
+     * it does not provide a way to properly compare models that have not been saved yet.
+     */
 }

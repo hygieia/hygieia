@@ -1,6 +1,6 @@
 <widget-modal widget-modal-title="Configure Code Analysis Widget" class="ca-config">
     <form name="configForm" role="form"
-          ng-submit="caWidget.submit(caWidget.caCollectorItem, caWidget.saCollectorItem, caWidget.testConfigs)"
+          ng-submit="caWidget.submit(caWidget.caCollectorItem, caWidget.saCollectorItem, caWidget.ossCollectorItem, caWidget.testConfigs)"
           novalidate="novalidate">
 
         <div class="box">
@@ -9,26 +9,18 @@
 
                 <div class="text-center modal-label">Static Code Analysis:</div>
 
-                <!--<select name="caCollectorItem"
-                        class="form-control"
-                        ng-model="caWidget.caCollectorItem"
-                        ng-options="(item.displayName + ' - ' + item.description) for item in caWidget.caJobs | orderBy:['collector.name','description'] track by item.id"
-                        ng-disabled="caWidget.caJobs.length === 0">
-                    <option value="" disabled>{{caWidget.caToolsDropdownPlaceholder}}</option>
-                </select>-->
+				<input type="text" name="caCollectorItem" class="form-control" placeholder="Search a Code Analysis Job"
+					ng-model="caWidget.caCollectorItem"
+					uib-typeahead="item as item.description for item in getCodeQualityCollectors($viewValue)" typeahead-focus
+					typeahead-template-url="sonarProjectUrlTemplate.html"
+					typeahead-wait-ms="250" autocomplete="off"
+					typeahead-min-length="0"
+          typeahead-no-results="noResults"
 
-                <ui-select ng-model="caWidget.caCollectorItem" theme="bootstrap"
-                           ng-disabled="caWidget.caJobs.length === 0">
-                    <ui-select-match placeholder="Select your CodeAnalysis job">{{$select.selected.description}}
-                    </ui-select-match>
-                    <ui-select-choices
-                            repeat="item in (caWidget.caJobs | orderBy:['collector.name','description'] | filter: $select.search) track by item.id"
-                            refresh="refreshPatients($select.search)"
-                            refresh-delay="0">
-                        <div ng-bind-html="(item.displayName + ' - ' + item.description) | highlight: $select.search"></div>
-                    </ui-select-choices>
-                </ui-select>
-
+					required>
+          <div class="form-control" ng-show="noResults">
+            No Results Found
+          </div>
 
             </form-group>
         </div>
@@ -36,13 +28,6 @@
 
         <div class="form-group text-center">
             <div class="text-center modal-label">Security Scan:</div>
-            <!-- <select name="saCollectorItem"
-                     class="form-control"
-                     ng-model="caWidget.saCollectorItem"
-                     ng-options="(item.collector.name + ' - ' + item.options.projectName + '-' + item.options.projectversion) for item in caWidget.saJobs | orderBy:['collector.name','description'] track by item.id"
-                     ng-disabled="caWidget.saJobs.length === 0">
-                 <option value="">{{caWidget.saToolsDropdownPlaceholder}}</option>
-             </select>-->
 
             <ui-select ng-model="caWidget.saCollectorItem" theme="bootstrap" ng-disabled="caWidget.saJobs.length === 0">
                 <ui-select-match placeholder="Select your SecurityAnalysis job">{{$select.selected.description}}
@@ -51,7 +36,25 @@
                         repeat="item in (caWidget.saJobs | orderBy:['item.collector.name','description'] | filter: $select.search ) track by item.id"
                         refresh="refreshPatients($select.search)"
                         refresh-delay="0">
-                    <div ng-bind-html="(item.collector.name + ' - ' + item.options.projectName + '-' + item.options.projectversion) | highlight: $select.search"></div>
+                    <div ng-bind-html="(item.collector.name + ' - ' + item.description) | highlight: $select.search"></div>
+                </ui-select-choices>
+                <ui-select-no-choice>
+                    No Jobs were found
+                </ui-select-no-choice>
+            </ui-select>
+        </div>
+
+        <div class="form-group text-center">
+            <div class="text-center modal-label">Open Source Scan:</div>
+
+            <ui-select ng-model="caWidget.ossCollectorItem" theme="bootstrap" ng-disabled="caWidget.ossJobs.length === 0">
+                <ui-select-match placeholder="Select your Open Source scan job">{{$select.selected.description}}
+                </ui-select-match>
+                <ui-select-choices
+                        repeat="item in (caWidget.ossJobs | orderBy:['item.collector.name','description'] | filter: $select.search ) track by item.id"
+                        refresh="refreshPatients($select.search)"
+                        refresh-delay="0">
+                    <div ng-bind-html="(item.collector.name + ' - ' + item.options.applicationName) | highlight: $select.search"></div>
                 </ui-select-choices>
                 <ui-select-no-choice>
                     No Jobs were found
@@ -76,12 +79,6 @@
                             required>
                 </div>
                 <div class="col-sm-8">
-                    <!--<select class="form-control" name="collectorItemList"
-                            ng-model="configItem.testCollectorItem"
-                            ng-options="(item.niceName + '-' + item.description) for item in configItem.testJob | orderBy:['collector.name','description'] track by item.id"
-                            ng-disabled="caWidget.testJobs.length === 0">
-                        <option value="">{{caWidget.testToolsDropdownPlaceholder}}</option>
-                    </select>-->
 
                     <ui-select ng-model="configItem.testCollectorItem" theme="bootstrap"
                                ng-disabled="caWidget.testJobs.length === 0">
@@ -112,3 +109,8 @@
         </form-group>
     </form>
 </widget-modal>
+<script type="text/ng-template" id="sonarProjectUrlTemplate.html">
+	<a title={{match.model.options.instanceUrl}}>
+		<span ng-bind-html="match.label | uibTypeaheadHighlight:query"/> 
+	</a>
+</script>

@@ -81,12 +81,16 @@
 @dash-state-config-text-hover:      @dash-state-config-text;
 
 // dash-status colors
+@dash-status-ignore:                @gray-light;
+@dash-status-ignore-border:         darken(@dash-status-ignore, 30%);
+@dash-status-ignore-text:           contrast(@dash-status-ignore);
 @dash-status-pass:                  @brand-success;
 @dash-status-warn:                  @brand-warning;
 @dash-status-fail:                  @brand-danger;
 @dash-status-fail-border:           darken(@dash-status-fail, 30%);
 @dash-status-fail-text:             contrast(@dash-status-fail);
 
+@dash-status-alert-ignore:			@dash-status-ignore;
 @dash-status-alert-pass:            @dash-status-pass;
 @dash-status-alert-warn:            @dash-status-warn;
 @dash-status-alert-fail:            @dash-status-fail;
@@ -110,3 +114,5 @@
 
 @dash-btn-wide: @padding-base-horizontal * 2;
 @dash-btn-wide-2x: @dash-btn-wide * 2;
+
+@white: #fff;

@@ -2,7 +2,6 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.JobCollectorItem;
 import com.capitalone.dashboard.repository.BinaryArtifactRepository;
@@ -11,6 +10,7 @@ import com.capitalone.dashboard.repository.JobRepository;
 import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.BinaryArtifactSearchRequest;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang.ObjectUtils;
 import org.bson.types.ObjectId;
@@ -33,32 +33,40 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
 
     @Override
     public DataResponse<Iterable<BinaryArtifact>> search(BinaryArtifactSearchRequest request) {
-        if ((request.getArtifactGroup() != null) && (request.getArtifactName() != null) && (request.getArtifactVersion() != null)) {
-            return new DataResponse<>(artifactRepository.findByArtifactGroupIdAndArtifactNameAndArtifactVersion
-                    (request.getArtifactGroup(), request.getArtifactName(), request.getArtifactVersion()), 0);
-        }
-
-        if ((request.getArtifactGroup() != null) && (request.getArtifactName() != null)) {
-            return new DataResponse<>(artifactRepository.findByArtifactNameAndArtifactVersion(
-                    request.getArtifactName(), request.getArtifactVersion()), 0);
-        }
-
-        if (request.getArtifactName() != null) {
-            return new DataResponse<>(artifactRepository.findByArtifactName(
-                    request.getArtifactName()), 0);
-        }
-
-        if (request.getArtifactGroup() != null) {
-            return new DataResponse<>(artifactRepository.findByArtifactGroupId(
-                    request.getArtifactGroup()), 0);
-        }
+    	
+    	Map<String, Object> attributes = new HashMap<>();
+    	
+    	if (request.getArtifactGroup() != null) {
+    		attributes.put(BinaryArtifactRepository.ARTIFACT_GROUP_ID, request.getArtifactGroup());
+    	}
+    	
+    	if (request.getArtifactModule() != null) {
+    		attributes.put(BinaryArtifactRepository.ARTIFACT_MODULE, request.getArtifactModule());
+    	}
+    	
+    	if (request.getArtifactVersion() != null) {
+    		attributes.put(BinaryArtifactRepository.ARTIFACT_VERSION, request.getArtifactVersion());
+    	}
+    	
+    	if (request.getArtifactName() != null) {
+    		attributes.put(BinaryArtifactRepository.ARTIFACT_NAME, request.getArtifactName());
+    	}
+    	
+    	if (request.getArtifactClassifier() != null) {
+    		attributes.put(BinaryArtifactRepository.ARTIFACT_CLASSIFIER, request.getArtifactClassifier());
+    	}
+    	
+    	if (request.getArtifactExtension() != null) {
+    		attributes.put(BinaryArtifactRepository.ARTIFACT_EXTENSION, request.getArtifactExtension());
+    	}
+    	
+    	if (request.getBuildId() != null) {
+    		attributes.put(BinaryArtifactRepository.BUILD_INFO_ID, request.getBuildId());
+    	}
+		
+		Iterable<BinaryArtifact> rt = artifactRepository.findByAttributes(attributes);
         
-		if (request.getBuildId() != null) {
-			return new DataResponse<>(artifactRepository.findByBuildInfoId(
-					request.getBuildId()), 0);
-		}
-        
-        return new DataResponse<>(null, 0);
+        return new DataResponse<>(rt, System.currentTimeMillis());
 
     }
     
@@ -72,6 +80,11 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
 		ba.setArtifactName(request.getArtifactName());
 		ba.setCanonicalName(request.getCanonicalName());
 		ba.setArtifactGroupId(request.getArtifactGroup());
+		ba.setArtifactVersion(request.getArtifactVersion());
+		ba.setArtifactModule(request.getArtifactModule() != null? request.getArtifactModule() : request.getArtifactName());
+		ba.setArtifactClassifier(request.getArtifactClassifier());
+		ba.setArtifactExtension(request.getArtifactExtension());
+		ba.setTimestamp(request.getTimestamp());
 
 		Map<String, Object> metadata = request.getMetadata();
 		
@@ -80,9 +93,6 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
 				ba.getMetadata().put(e.getKey(), String.valueOf(e.getValue()));
 			}
 		}
-
-		ba.setArtifactVersion(request.getArtifactVersion());
-		ba.setTimestamp(request.getTimestamp());
 		
 		// Set the build information if we have it
 		ObjectId buildId = (request.getBuildId() != null && !request.getBuildId().isEmpty())?
@@ -131,9 +141,9 @@ public class BinaryArtifactServiceImpl implements BinaryArtifactService {
 
 
     private BinaryArtifact existing(BinaryArtifact artifact, ObjectId buildId) {
-        Iterable<BinaryArtifact> bas = artifactRepository.findByArtifactGroupIdAndArtifactNameAndArtifactVersion
-                (artifact.getArtifactGroupId(), artifact.getArtifactName(),
-                        artifact.getArtifactVersion());
+        Iterable<BinaryArtifact> bas = artifactRepository.findByAttributes(artifact.getArtifactGroupId(), artifact.getArtifactModule(), 
+        		artifact.getArtifactVersion(), artifact.getArtifactName(), artifact.getArtifactClassifier(), artifact.getArtifactExtension());
+
         for (BinaryArtifact ba : bas) {
         	
         	// could be null due to old documents

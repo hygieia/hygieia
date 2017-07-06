@@ -94,65 +94,71 @@ gulp.task('build', function(callback) {
 // run the build task, start up a browser, then
 // watch the different file locations and execute
 // the relevant tasks
-gulp.task('serve', ['build'], function() {
-    /*
-     * Location of your backend server
-     */
-    var proxyTarget = config.api || 'http://localhost:8080';
+function server(ghostMode) {
+  ghostMode = typeof ghostMode == 'undefined' ? false : true
+  return function () {
+      /*
+       * Location of your backend server
+       */
+      var proxyTarget = config.api || 'http://localhost:8080';
 
-    var proxy = httpProxy.createProxyServer({
-        target: proxyTarget
-    });
+      var proxy = httpProxy.createProxyServer({
+          target: proxyTarget
+      });
 
-    proxy.on('error', function(error, req, res) {
-        res.writeHead(500, {
-            'Content-Type': 'text/plain'
-        });
+      proxy.on('error', function(error, req, res) {
+          res.writeHead(500, {
+              'Content-Type': 'text/plain'
+          });
 
-        console.error(chalk.red('[Proxy]'), error);
-    });
+          console.error(chalk.red('[Proxy]'), error);
+      });
 
-    /*
-     * The proxy middleware is an Express middleware added to BrowserSync to
-     * handle backend request and proxy them to your backend.
-     */
-    function proxyMiddleware(req, res, next) {
-        /*
-         * Proxy the REST API.
-         */
-        if (/^\/api\/.*/.test(req.url)) {
-            proxy.web(req, res);
-        } else {
-            next();
-        }
-    }
+      /*
+       * The proxy middleware is an Express middleware added to BrowserSync to
+       * handle backend request and proxy them to your backend.
+       */
+      function proxyMiddleware(req, res, next) {
+          /*
+           * Proxy the REST API.
+           */
+          if (/^\/api\/.*/.test(req.url)) {
+              proxy.web(req, res);
+          } else {
+              next();
+          }
+      }
 
-    browserSync.init({
-        server: {
-            baseDir: hygieia.dist,
-            startPath: '/',
-            middleware: [proxyMiddleware]
-        }
-    });
+      browserSync.init({
+          server: {
+              baseDir: hygieia.dist,
+              startPath: '/',
+              middleware: [proxyMiddleware]
+          },
+          ghostMode: ghostMode
+      });
 
-    gulp.watch(jsFiles).on('change', function() {
-        runSequence(['js','html'], browserSync.reload);
-    });
+      gulp.watch(jsFiles).on('change', function() {
+          runSequence(['js','html'], browserSync.reload);
+      });
 
-    // watch the less files in addition to the themes
-    gulp.watch(themeFiles.concat(widgetStyleFiles)).on('change', function() {
-        runSequence('themes', browserSync.reload);
-    });
+      // watch the less files in addition to the themes
+      gulp.watch(themeFiles.concat(widgetStyleFiles)).on('change', function() {
+          runSequence('themes', browserSync.reload);
+      });
 
-    gulp.watch(viewFiles).on('change', function() {
-        runSequence('views', browserSync.reload);
-    });
+      gulp.watch(viewFiles).on('change', function() {
+          runSequence('views', browserSync.reload);
+      });
 
-    gulp.watch(testDataFiles).on('change', function() {
-        runSequence('test-data');
-    });
-});
+      gulp.watch(testDataFiles).on('change', function() {
+          runSequence('test-data');
+      });
+  }
+}
 
+gulp.task('serve', ['build'], server());
+gulp.task('serve:ghost-mode', ['build'], server(true))
 
 
 /*******************************
@@ -232,7 +238,7 @@ gulp.task('fonts', function() {
         .src([
             'bower_components/**/*'
         ])
-        .pipe(filter('**/*.{eot,ttf,woff}'))
+        .pipe(filter('**/*.{eot,ttf,woff,woff2}'))
         .pipe(flatten())
         .pipe(gulp.dest(hygieia.dist + 'fonts'));
 });
@@ -264,7 +270,7 @@ gulp.task('html', function() {
         // replace inject:js with script references to all the files in the following sources
         .pipe(inject(gulp.src(
     		!!argv.prod ? ['src/app/app.js'] : jsFiles)
-    		.pipe(order(['app/app.js', 'app/dashboard/core/module.js', 'app/**/*.js', 'components/**/*.js'])), 
+    		.pipe(order(['app/app.js', 'app/dashboard/core/module.js', 'app/**/*.js', 'components/**/*.js'])),
     		{ name: 'hygieia', ignorePath: 'src', addRootSlash: false }))
 
         // replace custom placeholders with our configured values

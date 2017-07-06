@@ -5,6 +5,7 @@ import com.capitalone.dashboard.model.CodeQualityMetric;
 import com.capitalone.dashboard.model.CodeQualityMetricStatus;
 import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.model.SonarProject;
+import com.capitalone.dashboard.util.SonarDashboardUrl;
 import com.capitalone.dashboard.util.Supplier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +27,8 @@ import org.springframework.web.client.RestOperations;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class DefaultSonarClient implements SonarClient {
@@ -51,15 +53,13 @@ public class DefaultSonarClient implements SonarClient {
 
     private final RestOperations rest;
     private final HttpEntity<String> httpHeaders;
-    private final SonarSettings sonarSettings;
 
     @Autowired
     public DefaultSonarClient(Supplier<RestOperations> restOperationsSupplier, SonarSettings settings) {
-        this.httpHeaders = new HttpEntity<String>(
+        this.httpHeaders = new HttpEntity<>(
                 this.createHeaders(settings.getUsername(), settings.getPassword())
             );
         this.rest = restOperationsSupplier.get();
-        this.sonarSettings = settings;
     }
 
     @Override
@@ -88,10 +88,11 @@ public class DefaultSonarClient implements SonarClient {
         return projects;
     }
 
+
     @Override
-    public CodeQuality currentCodeQuality(SonarProject project) {
+    public CodeQuality currentCodeQuality(SonarProject project, String metrics) {
         String url = String.format(
-                project.getInstanceUrl() + URL_RESOURCE_DETAILS, project.getProjectId(), sonarSettings.getMetrics());
+                project.getInstanceUrl() + URL_RESOURCE_DETAILS, project.getProjectId(), metrics);
 
         try {
             JSONArray jsonArray = parseAsArray(url);
@@ -101,7 +102,7 @@ public class DefaultSonarClient implements SonarClient {
 
                 CodeQuality codeQuality = new CodeQuality();
                 codeQuality.setName(str(prjData, NAME));
-                codeQuality.setUrl(project.getInstanceUrl() + "/dashboard/index/" + project.getProjectId());
+                codeQuality.setUrl(new SonarDashboardUrl(project.getInstanceUrl(), project.getProjectId()).toString());
                 codeQuality.setType(CodeQualityType.StaticAnalysis);
                 codeQuality.setTimestamp(timestamp(prjData, DATE));
                 codeQuality.setVersion(str(prjData, VERSION));

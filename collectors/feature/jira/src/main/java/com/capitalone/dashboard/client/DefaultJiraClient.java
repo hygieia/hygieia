@@ -41,6 +41,8 @@ import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.util.concurrent.Promise;
+import com.capitalone.dashboard.model.Team;
+import com.capitalone.dashboard.util.ClientUtil;
 import com.capitalone.dashboard.util.FeatureSettings;
 import com.capitalone.dashboard.util.FeatureWidgetQueries;
 import com.google.common.collect.Lists;
@@ -57,6 +59,9 @@ import com.google.common.collect.Lists;
 @Component
 public class DefaultJiraClient implements JiraClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultJiraClient.class);
+	private static final ClientUtil TOOLS = ClientUtil.getInstance();
+	
+	private static final String TEMPO_TEAMS_REST_SUFFIX = "rest/tempo-teams/1/team";
 	
 	private final DateFormat QUERY_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
@@ -87,7 +92,7 @@ public class DefaultJiraClient implements JiraClient {
 				String startDateStr = QUERY_DATE_FORMAT.format(new Date(startTime));
 				
 				String query = featureWidgetQueries.getStoryQuery(startDateStr,
-						featureSettings.getJiraIssueTypeId(), featureSettings.getStoryQuery());
+						featureSettings.getJiraIssueTypeNames(), featureSettings.getStoryQuery());
 				
 				Promise<SearchResult> promisedRs = client.getSearchClient().searchJql(
 						query, featureSettings.getPageSize(), pageStart, DEFAULT_FIELDS);
@@ -106,7 +111,7 @@ public class DefaultJiraClient implements JiraClient {
 					rt = Lists.newArrayList(jiraRawRs);
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().get() != null && e.getStatusCode().get() == 401 ) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401 ) {
 					LOGGER.error("Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.");
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
@@ -133,7 +138,7 @@ public class DefaultJiraClient implements JiraClient {
 					rt = Lists.newArrayList(jiraRawRs);
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().get() != null && e.getStatusCode().get() == 401 ) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401 ) {
 					LOGGER.error("Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.");
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
@@ -146,6 +151,88 @@ public class DefaultJiraClient implements JiraClient {
 		
 		return rt;
 	}
+	
+	@Override
+	@SuppressWarnings("PMD.NPathComplexity")
+	public List<Team> getTeams() {
+	    List<Team> result = new ArrayList<>();
+		
+	    if (StringUtils.isEmpty(featureSettings.getJiraTeamFieldName())) {
+	        return result;
+	    }
+	    
+		try {			
+			URL url = new URL(featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/")? "" : "/") 
+						+ TEMPO_TEAMS_REST_SUFFIX);
+			URLConnection connection = null;
+			
+			if (featureSettings.getJiraProxyUrl() != null && !featureSettings.getJiraProxyUrl().isEmpty() && (featureSettings.getJiraProxyPort() != null)) {
+				String fullProxyUrl = featureSettings.getJiraProxyUrl() + ":" + featureSettings.getJiraProxyPort();
+				URL proxyUrl = new URL(fullProxyUrl);
+				URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(),
+					proxyUrl.getHost(), proxyUrl.getPort(), proxyUrl.getPath(), proxyUrl.getQuery(), null);
+				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUri.getHost(), proxyUri.getPort()));
+				connection = url.openConnection(proxy);
+
+				if (!StringUtils.isEmpty(featureSettings.getJiraCredentials())) {
+					String[] creds = (new String(Base64.decodeBase64(featureSettings.getJiraCredentials()))).split(":");
+					final String uname = creds[0];
+					final String pword = creds.length > 1? creds[1] : null;
+					Authenticator.setDefault(new Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(uname, pword.toCharArray());
+						}
+					});
+					connection.setRequestProperty("Proxy-Authorization", "Basic " + featureSettings.getJiraCredentials());
+				}
+			} else {
+				connection = url.openConnection();
+			}
+
+			HttpURLConnection request = (HttpURLConnection) connection;
+			request.setRequestProperty("Authorization" , "Basic " + featureSettings.getJiraCredentials());
+			request.connect();
+			
+			try (InputStreamReader streamReader = new InputStreamReader((InputStream) request.getContent(), Charset.forName("UTF-8"));
+			        BufferedReader inReader = new BufferedReader(streamReader)) {
+			    StringBuilder sb = new StringBuilder();	    
+    			int cp;
+    		    while ((cp = inReader.read()) != -1) {
+    				sb.append((char) cp);		      
+    		    }
+    		    
+                JSONParser parser = new JSONParser();
+                try {
+                    JSONArray teamsJson = (JSONArray) parser.parse(sb.toString());
+                    
+                    if (teamsJson != null) {
+                        for (Object obj : teamsJson) {
+                            String teamId = TOOLS.sanitizeResponse(((JSONObject) obj).get("id"));
+                            String teamName = TOOLS.sanitizeResponse(getJSONString((JSONObject) obj, "name"));
+                            result.add(new Team(teamId, teamName));
+                        }
+                    }
+                } catch (ParseException pe) {
+                    LOGGER.error("Parser exception when parsing teams", pe);
+                }
+			}
+        } catch (org.springframework.web.client.RestClientException rce) {
+            LOGGER.error("Client exception when loading teams", rce);
+            throw rce;
+        }  catch (MalformedURLException mfe) {
+            LOGGER.error("Malformed url for loading teams", mfe);
+        } catch (IOException ioe) {
+			LOGGER.error("IOException", ioe);
+		} catch (URISyntaxException urie) {
+			LOGGER.error("URISyntaxException for Jira connection", urie);
+		}
+		
+		return result;
+	}
+	
+	private String getJSONString(JSONObject obj, String field) {
+        return ((String) obj.get(field));
+    }
 
 	@Override
 	public Issue getEpic(String epicKey) {
@@ -166,7 +253,7 @@ public class DefaultJiraClient implements JiraClient {
 					rt = Lists.newArrayList(jiraRawRs);
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().get() != null && e.getStatusCode().get() == 401 ) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401 ) {
 					LOGGER.error("Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.");
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
@@ -208,7 +295,7 @@ public class DefaultJiraClient implements JiraClient {
 					}
 				}
 			} catch (RestClientException e) {
-				if (e.getStatusCode().get() != null && e.getStatusCode().get() == 401 ) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401 ) {
 					LOGGER.error("Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.");
 				} else {
 					LOGGER.error("No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following:" + e.getCause());
@@ -281,15 +368,19 @@ public class DefaultJiraClient implements JiraClient {
                     JSONObject jsonStatus = (JSONObject) status;
                     String statusName = (String) jsonStatus.get("name");
                     
+                    // Not added until jira 6. Old versions may still work - they will just have to manually specify 
+                    // categories in the jira properties file
                     Object statusCategory = jsonStatus.get("statusCategory");
-                    JSONObject jsonStatusCategory = (JSONObject) statusCategory;
-                    String statusCategoryName = (String) jsonStatusCategory.get("name");
-					if (statusCategoryName == null) {
-						LOGGER.warn("No statusCategory for status : " + statusName);
-						continue;
-					}
-					
-					statusMap.put(statusName, statusCategoryName);					
+                    if (statusCategory != null) {
+	                    JSONObject jsonStatusCategory = (JSONObject) statusCategory;
+	                    String statusCategoryName = (String) jsonStatusCategory.get("name");
+						if (statusCategoryName == null) {
+							LOGGER.warn("No statusCategory for status : " + statusName);
+							continue;
+						}
+						
+						statusMap.put(statusName, statusCategoryName);
+                    }
                 }
             } catch (ParseException pe) {
                 LOGGER.error("Parser exception when parsing statuses", pe);

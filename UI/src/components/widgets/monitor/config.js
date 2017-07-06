@@ -5,8 +5,8 @@
         .module(HygieiaConfig.module)
         .controller('monitorConfigController', monitorConfigController);
 
-    monitorConfigController.$inject = ['$scope', '$q', '$modalInstance', 'monitorData', 'modalData'];
-    function monitorConfigController($scope, $q, $modalInstance, monitorData, modalData) {
+    monitorConfigController.$inject = ['$scope', '$q', '$uibModalInstance', 'monitorData', 'modalData'];
+    function monitorConfigController($scope, $q, $uibModalInstance, monitorData, modalData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -20,6 +20,8 @@
 
         // variables
         ctrl.appName = modalData.dashboard.application.name;
+        ctrl.url = modalData.dashboard.application.url;
+
         ctrl.newDashboardServices = [];
         ctrl.newDependentServices = [];
 
@@ -81,7 +83,8 @@
                 .map(function (item) {
                     return {
                         id: item.id,
-                        name: item.applicationName + ': ' + item.name
+                        name: item.applicationName + ': ' + item.name,
+                        url: item.applicationName + ': ' + item.url
                     };
                 })
                 .value();
@@ -128,7 +131,7 @@
             var promises = [];
 
             function whereName(data) {
-                return _(data).where(function (item) {
+                return _(data).filter(function (item) {
                     return item.name && item.name.length;
                 });
             }
@@ -146,7 +149,7 @@
                     return item.name.toLowerCase();
                 })
                 .forEach(function (item) {
-                    promises.push(monitorData.createService(dashboardId, item.name));
+                    promises.push(monitorData.createService(dashboardId, item.name, item.url));
                 });
 
             whereName(_.map(ctrl.newDependentServices, function (item) {
@@ -163,7 +166,11 @@
                         id: modalData.widgetConfig.options.id
                     }
                 };
-                $modalInstance.close(responses.length ? widgetResponse : null);
+                $uibModalInstance.close(responses.length ? widgetResponse : null);
+            }, function (response) {
+              if(response.status === 401) {
+                $uibModalInstance.close();
+              }
             });
         }
     }

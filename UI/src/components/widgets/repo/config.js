@@ -7,9 +7,9 @@
 	angular.module(HygieiaConfig.module).controller('RepoConfigController',
 			RepoConfigController);
 
-	RepoConfigController.$inject = [ 'modalData', '$modalInstance',
+	RepoConfigController.$inject = [ 'modalData', '$uibModalInstance',
 			'collectorData' ];
-	function RepoConfigController(modalData, $modalInstance, collectorData) {
+	function RepoConfigController(modalData, $uibModalInstance, collectorData) {
 		var ctrl = this;
 		var widgetConfig = modalData.widgetConfig;
 
@@ -27,9 +27,6 @@
 			value: 'Gitlab'
 		}];
 
-//console.log(JSON.stringify(widgetConfig)); //"{"options":{"id":"repo0"}}"
-//		console.log(JSON.stringify(widgetConfig.options.id));
-
 		if (!widgetConfig.options.scm) {
 			ctrl.repoOption="";
 		}
@@ -38,7 +35,7 @@
 			var myindex;
 
 			for (var v = 0; v < ctrl.repoOptions.length; v++) {
-				if (ctrl.repoOptions[v].name == widgetConfig.options.scm.name) {
+				if (ctrl.repoOptions[v].name === widgetConfig.options.scm.name) {
 					myindex = v;
 				}
 			}
@@ -80,7 +77,7 @@
 						ctrl.gitBranch === widgetConfig.options.branch &&
 						ctrl.repouser === widgetConfig.options.userID &&
 						ctrl.repopass === widgetConfig.options.password) {
-						$modalInstance.close();
+						$uibModalInstance.close();
 						return;
 					}
 				}
@@ -89,7 +86,7 @@
 					if (ctrl.repopass === widgetConfig.options.password) {
 						//password is unchanged in the form so don't encrypt it again
 						try {
-							createCollectorItem().then(processCollectorItemResponse);
+							createCollectorItem().then(processCollectorItemResponse, handleError);
 						} catch (e) {
 							console.log(e);
 						}
@@ -101,14 +98,14 @@
 							}
 							ctrl.repopass = response;
 							try {
-								createCollectorItem().then(processCollectorItemResponse);
+								createCollectorItem().then(processCollectorItemResponse, handleError);
 							} catch (e) {
 								console.log(e);
 							}
 						});
 					}
 				} else {
-					createCollectorItem().then(processCollectorItemResponse);
+					createCollectorItem().then(processCollectorItemResponse, handleError);
 				}
 			}
 		}
@@ -116,60 +113,71 @@
 		/*
 		 * function createCollectorItem(url) { var item = { // TODO - Remove
 		 * hard-coded subversion reference when mulitple // scm collectors
-		 * become available collectorId : _.findWhere(ctrl.collectors, { name :
+		 * become available collectorId : _.find(ctrl.collectors, { name :
 		 * 'Subversion' }).id, options : { url : url } }; return
 		 * collectorData.createCollectorItem(item); }
 		 */
 
+		function getNonNullString(value) {
+			return _.isEmpty(value)||_.isUndefined(value)?"":value
+		}
+
+		function getOptions(scm) {
+			return {
+				scm: scm,
+				url: ctrl.repoUrl,
+				branch: getNonNullString(ctrl.gitBranch),
+                userID: getNonNullString(ctrl.repouser),
+                password: getNonNullString(ctrl.repopass)
+			}
+		}
+
+		function getUniqueOptions (scm) {
+			return {
+                scm: scm,
+                url: ctrl.repoUrl,
+                branch: ctrl.gitBranch,
+                userID: getNonNullString(ctrl.repouser)
+            }
+		}
+
 		function createCollectorItem() {
 			var item = {};
 
-			if (ctrl.repoOption.name.indexOf("GitHub") != -1) {
+			if (ctrl.repoOption.name.indexOf("GitHub") !== -1) {
 
 				item = {
-					collectorId: _.findWhere(ctrl.collectors, {name: 'GitHub'}).id,
-					options: {
-						scm: 'Github',
-						url: ctrl.repoUrl,
-						branch: ctrl.gitBranch,
-						userID: ctrl.repouser,
-						password: ctrl.repopass
-					}
+					collectorId: _.find(ctrl.collectors, {name: 'GitHub'}).id,
+					options: getOptions('Github'),
+					uniqueOptions: getUniqueOptions('Github')
 				};
-			} else if (ctrl.repoOption.name.indexOf("Bitbucket") != -1) {
+			} else if (ctrl.repoOption.name.indexOf("Bitbucket") !== -1) {
 
 				item = {
-					collectorId: _.findWhere(ctrl.collectors, {name: 'Bitbucket'}).id,
-					options: {
-						scm: 'Bitbucket',
-						url: ctrl.repoUrl,
-						branch: ctrl.gitBranch,
-						userID: ctrl.repouser,
-						password: ctrl.repopass
-					}
+					collectorId: _.find(ctrl.collectors, {name: 'Bitbucket'}).id,
+					options: getOptions('Bitbucket'),
+                    uniqueOptions: getUniqueOptions('Bitbucket')
 				};
-			} else if  (ctrl.repoOption.name.indexOf("Subversion") != -1) {
+			} else if  (ctrl.repoOption.name.indexOf("Subversion") !== -1) {
 				item = {
-					collectorId : _.findWhere(ctrl.collectors, { name: 'Subversion' }).id,
-					options: {
-						scm: 'Subversion',
-						url: ctrl.repoUrl,
-						userID: ctrl.repouser,
-						password: ctrl.repopass
-					}
+					collectorId : _.find(ctrl.collectors, { name: 'Subversion' }).id,
+                    options: getOptions('Subversion'),
+                    uniqueOptions: getUniqueOptions('Subversion')
 				};
-			} else if (ctrl.repoOption.name.indexOf("Gitlab") != -1) {
+			} else if (ctrl.repoOption.name.indexOf("Gitlab") !== -1) {
 				item = {
-					collectorId : _.findWhere(ctrl.collectors, { name: 'Gitlab' }).id,
-					options: {
-						scm: 'Gitlab',
-						url: ctrl.repoUrl,
-						userID: ctrl.repouser,
-						password: ctrl.repopass
-					}
+					collectorId : _.find(ctrl.collectors, { name: 'Gitlab' }).id,
+                    options: getOptions('Gitlab'),
+                    uniqueOptions: getUniqueOptions('Gitlab')
 				};
 			}
 			return collectorData.createCollectorItem(item);
+		}
+
+		function handleError(response) {
+			if(response.status === 401) {
+				$modalInstance.close();
+			}
 		}
 
 		function processCollectorItemResponse(response) {
@@ -180,15 +188,14 @@
 					scm : ctrl.repoOption,
 					url : ctrl.repoUrl,
 					branch : ctrl.gitBranch,
-					userID : ctrl.repouser,
-					password : ctrl.repopass
+					userID : getNonNullString(ctrl.repouser),
+					password: getNonNullString(ctrl.repopass)
 				},
 				componentId : modalData.dashboard.application.components[0].id,
 				collectorItemId : response.data.id
 			};
-
 			// pass this new config to the modal closing so it's saved
-			$modalInstance.close(postObj);
+			$uibModalInstance.close(postObj);
 		}
 	}
 })();

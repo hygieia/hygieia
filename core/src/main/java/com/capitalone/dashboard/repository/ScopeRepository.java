@@ -3,6 +3,8 @@ package com.capitalone.dashboard.repository;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -10,7 +12,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.capitalone.dashboard.model.Scope;
 
 /**
- * Repository for {@link ScopeCollector}.
+ * Repository for {@link Scope}.
  */
 public interface ScopeRepository extends CrudRepository<Scope, ObjectId>,
 		QueryDslPredicateExecutor<Scope> {
@@ -37,4 +39,9 @@ public interface ScopeRepository extends CrudRepository<Scope, ObjectId>,
 
 	@Query(value = "{'pId' : ?0 }")
 	List<Scope> getScopeById(String pId);
+
+	@Query(value = "{ 'collectorId' : ?0 }")
+	List<Scope> findByCollectorId(ObjectId collectorId);
+
+	Page<Scope> findAllByCollectorIdAndNameContainingIgnoreCase(ObjectId collectorId, String name, Pageable pageable);
 }

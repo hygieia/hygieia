@@ -1,17 +1,15 @@
 package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.config.TestConfig;
-import com.capitalone.dashboard.config.WebMVCConfig;
-import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CodeQualityMetric;
-import com.capitalone.dashboard.model.CodeQualityMetricStatus;
-import com.capitalone.dashboard.model.CodeQualityType;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.request.CodeQualityCreateRequest;
-import com.capitalone.dashboard.request.CodeQualityRequest;
-import com.capitalone.dashboard.service.CodeQualityService;
-import com.capitalone.dashboard.util.TestUtil;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Arrays;
+
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -28,15 +26,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Arrays;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.capitalone.dashboard.config.TestConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
+import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CodeQualityMetricStatus;
+import com.capitalone.dashboard.model.CodeQualityType;
+import com.capitalone.dashboard.model.DataResponse;
+import com.capitalone.dashboard.request.CodeQualityCreateRequest;
+import com.capitalone.dashboard.request.CodeQualityRequest;
+import com.capitalone.dashboard.service.CodeQualityService;
+import com.capitalone.dashboard.util.TestUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class, WebMVCConfig.class })
@@ -70,29 +71,29 @@ public class CodeQualityControllerTest {
 		mockMvc.perform(
 				get("/quality/static-analysis?componentId=" + ObjectId.get() + "&max=1"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$result", hasSize(1)))
+				.andExpect(jsonPath("$.result", hasSize(1)))
 				.andExpect(
-						jsonPath("$result[0].id",
+						jsonPath("$.result[0].id",
 								is(quality.getId().toString())))
 				.andExpect(
-						jsonPath("$result[0].collectorItemId", is(quality
+						jsonPath("$.result[0].collectorItemId", is(quality
 								.getCollectorItemId().toString())))
 				.andExpect(
-						jsonPath("$result[0].timestamp",
+						jsonPath("$.result[0].timestamp",
 								is(intVal(quality.getTimestamp()))))
-				.andExpect(jsonPath("$result[0].name", is(quality.getName().toString())))
-				.andExpect(jsonPath("$result[0].url", is(quality.getUrl())))
-				.andExpect(jsonPath("$result[0].type", is(quality.getType().toString())))
+				.andExpect(jsonPath("$.result[0].name", is(quality.getName().toString())))
+				.andExpect(jsonPath("$.result[0].url", is(quality.getUrl())))
+				.andExpect(jsonPath("$.result[0].type", is(quality.getType().toString())))
 				.andExpect(
-						jsonPath("$result[0].version", is(quality.getVersion())))
+						jsonPath("$.result[0].version", is(quality.getVersion())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].name",
+						jsonPath("$.result[0].metrics[0].name",
 								is(metric.getName().toString())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].formattedValue",
+						jsonPath("$.result[0].metrics[0].formattedValue",
 								is(metric.getFormattedValue())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].status",
+						jsonPath("$.result[0].metrics[0].status",
 								is(metric.getStatus().toString())));
 	}
 
@@ -108,29 +109,29 @@ public class CodeQualityControllerTest {
 		mockMvc.perform(
 				get("/quality/security-analysis?componentId=" + ObjectId.get() + "&max=1"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$result", hasSize(1)))
+				.andExpect(jsonPath("$.result", hasSize(1)))
 				.andExpect(
-						jsonPath("$result[0].id",
+						jsonPath("$.result[0].id",
 								is(quality.getId().toString())))
 				.andExpect(
-						jsonPath("$result[0].collectorItemId", is(quality
+						jsonPath("$.result[0].collectorItemId", is(quality
 								.getCollectorItemId().toString())))
 				.andExpect(
-						jsonPath("$result[0].timestamp",
+						jsonPath("$.result[0].timestamp",
 								is(intVal(quality.getTimestamp()))))
-				.andExpect(jsonPath("$result[0].name", is(quality.getName())))
-				.andExpect(jsonPath("$result[0].url", is(quality.getUrl())))
-				.andExpect(jsonPath("$result[0].type", is(quality.getType().toString())))
+				.andExpect(jsonPath("$.result[0].name", is(quality.getName())))
+				.andExpect(jsonPath("$.result[0].url", is(quality.getUrl())))
+				.andExpect(jsonPath("$.result[0].type", is(quality.getType().toString())))
 				.andExpect(
-						jsonPath("$result[0].version", is(quality.getVersion())))
+						jsonPath("$.result[0].version", is(quality.getVersion())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].name",
+						jsonPath("$.result[0].metrics[0].name",
 								is(metric.getName())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].formattedValue",
+						jsonPath("$.result[0].metrics[0].formattedValue",
 								is(metric.getFormattedValue())))
 				.andExpect(
-						jsonPath("$result[0].metrics[0].status",
+						jsonPath("$.result[0].metrics[0].status",
 								is(metric.getStatus().toString())));
 	}
 

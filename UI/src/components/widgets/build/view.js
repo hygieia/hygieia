@@ -8,8 +8,8 @@
         .module(HygieiaConfig.module)
         .controller('BuildWidgetViewController', BuildWidgetViewController);
 
-    BuildWidgetViewController.$inject = ['$scope', 'buildData', 'DisplayState', '$q', '$modal'];
-    function BuildWidgetViewController($scope, buildData, DisplayState, $q, $modal) {
+    BuildWidgetViewController.$inject = ['$scope', 'buildData', 'DisplayState', '$q', '$uibModal'];
+    function BuildWidgetViewController($scope, buildData, DisplayState, $q, $uibModal) {
         var ctrl = this;
         var builds = [];
 
@@ -90,14 +90,14 @@
         };
 
         ctrl.detail = function(build) {
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'components/widgets/build/detail.html',
                 controller: 'BuildWidgetDetailController',
                 controllerAs: 'detail',
                 size: 'lg',
                 resolve: {
                     build: function() {
-                        return _.findWhere(builds, { number: build.number });
+                        return _.find(builds, { number: build.number });
                     },
                     collectorName: function () {
                         return $scope.dashboard.application.components[0].collectorItems.Build[0].collector.name;
@@ -289,7 +289,7 @@
             function setDisplayToErrorState(data, failureThreshold, cb) {
                 // order by end time and limit to last 5
                 data = _.sortBy(data, 'endTime').reverse().slice(0, failureThreshold);
-                data = _.where(data, function (item) {
+                data = _.filter(data, function (item) {
                     return (item.buildStatus.toLowerCase() != 'success') &&  (item.buildStatus.toLowerCase() != 'inprogress') ;
                 });
 

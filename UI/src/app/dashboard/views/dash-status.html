@@ -1,6 +1,10 @@
 <span class="dash-status fa">
+    <span class="dash-status-ignore" ng-if="currentStatus == statuses.IGNORE">
+    	{{ignoreText}}
+    </span>
     <span class="dash-status-pass fa-check" ng-if="currentStatus == statuses.PASS"></span>
     <span class="dash-status-warn fa-warning" ng-if="currentStatus == statuses.WARN"></span>
+    <span class="dash-status-pass fa-lock" ng-if="currentStatus == statuses.UNAUTH"></span>
     <span class="dash-status-fail" ng-if="currentStatus == statuses.FAIL">
         {{failText}}
     </span>

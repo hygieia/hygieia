@@ -70,13 +70,52 @@ dbpassword=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 #Collector schedule (required)
 jenkins.cron=${JENKINS_CRON:-0 0/5 * * * *}
 
+#The page size
+jenkins.pageSize=${JENKINS_PAGE_SIZE:-1000}
+
+# The folder depth - default is 10
+jenkins.folderDepth=${JENKINS_FOLDER_DEPTH:-10}
+
 #Jenkins server (required) - Can provide multiple
-jenkins.servers[0]=${JENKINS_MASTER:-http://jenkins.company.com}
-
+#jenkins.servers[0]=http://jenkins.company.com
 #Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
-jenkins.username=${JENKINS_USERNAME}
-jenkins.apiKey=${JENKINS_API_KEY}
+#jenkins.usernames[0]=user
+#jenkins.apiKeys[0]=12345
 
+EOF
+
+# find how many jenkins urls are configured
+max=$(wc -w <<< "${!JENKINS_MASTER*}")
+
+# loop over and output the url, username, apiKey and niceName
+i=0
+while [ $i -lt $max ]
+do
+	if [ $i -eq 0 ]
+	then
+		server="JENKINS_MASTER"
+		username="JENKINS_USERNAME"
+		apiKey="JENKINS_API_KEY"
+		niceName="JENKINS_NAME"
+	else
+		server="JENKINS_MASTER$i"
+		username="JENKINS_USERNAME$i"
+		apiKey="JENKINS_API_KEY$i"
+		niceName="JENKINS_NAME$i"
+	fi
+	
+cat >> $PROP_FILE <<EOF
+jenkins.servers[${i}]=${!server}
+jenkins.usernames[${i}]=${!username}
+jenkins.apiKeys[${i}]=${!apiKey}
+jenkins.niceNames[${i}]=${!niceName}
+
+EOF
+	
+	i=$(($i+1))
+done
+
+cat >> $PROP_FILE <<EOF
 #Determines if build console log is collected - defaults to false
 jenkins.saveLog=${JENKINS_SAVE_LOG:-true}
 
@@ -88,13 +127,13 @@ jenkins.dockerLocalHostIP=${DOCKER_LOCALHOST}
 
 EOF
 
-if ( "$JENKINS_OP_CENTER" != "" )
+if [ "$JENKINS_OP_CENTER" != "" ]
 then
 
 	cat >> $PROP_FILE <<EOF
 #If using username/token for api authentication (required for Cloudbees Jenkins Ops Center) see sample
-#jenkins.servers[1]=${JENKINS_OP_CENTER:-http://username:token@jenkins.company.com}
-jenkins.servers[1]=${JENKINS_OP_CENTER}
+#jenkins.servers[${max}]=${JENKINS_OP_CENTER:-http://username:token@jenkins.company.com}
+jenkins.servers[${max}]=${JENKINS_OP_CENTER}
 EOF
 
 fi

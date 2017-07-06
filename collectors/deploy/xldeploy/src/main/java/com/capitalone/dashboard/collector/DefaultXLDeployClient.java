@@ -114,6 +114,7 @@ public class DefaultXLDeployClient implements XLDeployClient {
 	}
 	
 	@Override
+	@SuppressWarnings({"PMD.NPathComplexity"})
 	public List<XLDeployApplicationHistoryItem> getApplicationHistory(List<XLDeployApplication> applications, Date startDate, Date endDate) {
 		if (applications == null || applications.isEmpty()) {
 			return Collections.<XLDeployApplicationHistoryItem>emptyList();
@@ -148,7 +149,14 @@ public class DefaultXLDeployClient implements XLDeployClient {
 				
 				XLDeployApplicationHistoryItem historyItem = new XLDeployApplicationHistoryItem();
 				historyItem.setEnvironmentName(deploymentData.get("environment"));
-				historyItem.setDeploymentPackage(deploymentData.get("package"));
+				
+				String pkg = deploymentData.get("package");
+				
+				// updates seem to give both packages in play separated by a comma
+				if (pkg != null && pkg.indexOf(',') >= 0) {
+					pkg = pkg.substring(0, pkg.indexOf(','));
+				}
+				historyItem.setDeploymentPackage(pkg);
 				historyItem.setEnvironmentId(deploymentData.get("environmentId"));
 				
 				try {
@@ -189,7 +197,7 @@ public class DefaultXLDeployClient implements XLDeployClient {
         ResponseEntity<String> response = null;
         try {
             response = restOperations.exchange(url, HttpMethod.GET,
-                    new HttpEntity<>(createHeaders()), String.class);
+                    new HttpEntity<>(createHeaders(instanceUrl)), String.class);
 
         } catch (RestClientException re) {
             LOGGER.error("Error with REST url: " + url);
@@ -202,7 +210,7 @@ public class DefaultXLDeployClient implements XLDeployClient {
         String url = normalizeUrl(instanceUrl, "/deployit/" + endpoint);
         ResponseEntity<String> response = null;
         try {
-        	HttpHeaders headers = createHeaders();
+        	HttpHeaders headers = createHeaders(instanceUrl);
         	headers.setContentType(MediaType.APPLICATION_XML);
         	
             response = restOperations.exchange(url, HttpMethod.POST,
@@ -219,9 +227,16 @@ public class DefaultXLDeployClient implements XLDeployClient {
         return StringUtils.removeEnd(instanceUrl, "/") + remainder;
     }
 
-    protected HttpHeaders createHeaders() {
-        String auth = xlDeploySettings.getUsername() + ":"
-                + xlDeploySettings.getPassword();
+    protected HttpHeaders createHeaders(String instanceUrl) {
+    	int idx = xlDeploySettings.getServers().indexOf(instanceUrl);
+    	if (idx < 0 || xlDeploySettings.getUsernames() == null || xlDeploySettings.getPasswords() == null) {
+    		return new HttpHeaders();
+    	}
+    	
+    	String username = xlDeploySettings.getUsernames().get(idx);
+    	String password = xlDeploySettings.getPasswords().get(idx);
+    	
+        String auth = username + ":" + password;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(
                 StandardCharsets.US_ASCII));
         String authHeader = "Basic " + new String(encodedAuth);

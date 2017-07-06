@@ -5,14 +5,18 @@
         .module(HygieiaConfig.module)
         .controller('deployViewController', deployViewController);
 
-    deployViewController.$inject = ['$scope', 'DashStatus', 'deployData', 'DisplayState', '$q', '$modal'];
-    function deployViewController($scope, DashStatus, deployData, DisplayState, $q, $modal) {
+    deployViewController.$inject = ['$scope', 'DashStatus', 'deployData', 'DisplayState', '$q', '$uibModal'];
+    function deployViewController($scope, DashStatus, deployData, DisplayState, $q, $uibModal) {
         /*jshint validthis:true */
         var ctrl = this;
 
         // public variables
         ctrl.environments = [];
         ctrl.statuses = DashStatus;
+        ctrl.ignoreEnvironmentFailuresRegex=/^$/;
+        if ($scope.widgetConfig.options.ignoreRegex !== undefined && $scope.widgetConfig.options.ignoreRegex !== null && $scope.widgetConfig.options.ignoreRegex !== '') {
+            ctrl.ignoreEnvironmentFailuresRegex=new RegExp($scope.widgetConfig.options.ignoreRegex.replace(/^"(.*)"$/, '$1'));
+        }
 
         ctrl.load = load;
         ctrl.showDetail = showDetail;
@@ -27,7 +31,7 @@
         }
 
         function showDetail(environment) {
-            $modal.open({
+            $uibModal.open({
                 controller: 'DeployDetailController',
                 controllerAs: 'detail',
                 templateUrl: 'components/widgets/deploy/detail.html',
@@ -38,6 +42,9 @@
                     },
                     collectorName: function () {
                         return $scope.dashboard.application.components[0].collectorItems.Deployment[0].collector.name;
+                    },
+                    collectorNiceName: function () {
+                        return $scope.dashboard.application.components[0].collectorItems.Deployment[0].niceName;
                     }
                 }
             });
@@ -48,13 +55,20 @@
                 getEnvironments: getEnvironments,
                 getIsDefaultState: getIsDefaultState
             };
+            
+            var ignoreEnvironmentFailuresRegex = ctrl.ignoreEnvironmentFailuresRegex;
+            
+            function ignoreEnvironmentFailures(environment) {
+            	return ignoreEnvironmentFailuresRegex.test(environment.name);
+            }
 
             function getIsDefaultState(data, cb) {
                 var isDefaultState = true;
                 _(data).forEach(function (environment) {
-                    var offlineUnits = _(environment.units).where({'deployed': false}).value().length;
+                    var offlineUnits = _(environment.units).filter({'deployed': false}).value().length;
 
-                    if(environment.units && environment.units.length == offlineUnits) {
+                    if(environment.units && environment.units.length == offlineUnits
+                    		&& !ignoreEnvironmentFailures(environment)) {
                         isDefaultState = false;
                     }
                 });
@@ -72,17 +86,18 @@
                         serverUpCount: getServerOnlineCount(item.units, true),
                         serverDownCount: getServerOnlineCount(item.units, false),
                         failedComponents: getFailedComponentCount(item.units),
+                        ignoreFailure: ignoreEnvironmentFailures(item),
                         lastUpdated: getLatestUpdate(item.units)
                     };
 
                     function getFailedComponentCount(units) {
-                        return _(units).where({'deployed':false}).value().length;
+                        return _(units).filter({'deployed':false}).value().length;
                     }
 
                     function getServerOnlineCount(units, isOnline) {
                         var total = 0;
                         _(units).forEach(function (unit) {
-                            total += _(unit.servers).where({'online':isOnline})
+                            total += _(unit.servers).filter({'online':isOnline})
                                 .value()
                                 .length;
                         });

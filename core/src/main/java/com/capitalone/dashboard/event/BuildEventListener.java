@@ -9,7 +9,7 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Pipeline;
 import com.capitalone.dashboard.model.PipelineCommit;
-import com.capitalone.dashboard.model.PipelineStageType;
+import com.capitalone.dashboard.model.PipelineStage;
 import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.repository.BuildRepository;
@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -92,8 +93,9 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
             Pipeline pipeline = getOrCreatePipeline(teamDashboard);
 
             for (SCM scm : build.getSourceChangeSet()) {
-                PipelineCommit commit = new PipelineCommit(scm, build.getTimestamp());
-                pipeline.addCommit(PipelineStageType.Build.name(), commit);
+            	// we want to use the build start time since the timestamp was just the time that the collector ran
+                PipelineCommit commit = new PipelineCommit(scm, build.getStartTime());
+                pipeline.addCommit(PipelineStage.BUILD.getName(), commit);
             }
 
             boolean hasFailedBuilds = !pipeline.getFailedBuilds().isEmpty();
@@ -107,12 +109,12 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
              * Logic:
              * If the build start time is after the scm commit, move the commit to build stage. Match the repo at the very least.
              */
-            Map<String, PipelineCommit> commitStageCommits = pipeline.getCommitsByStage(PipelineStageType.Commit.name());
-            Map<String, PipelineCommit> buildStageCommits = pipeline.getCommitsByStage(PipelineStageType.Build.name());
+            Map<String, PipelineCommit> commitStageCommits = pipeline.getCommitsByEnvironmentName(PipelineStage.COMMIT.getName());
+            Map<String, PipelineCommit> buildStageCommits = pipeline.getCommitsByEnvironmentName(PipelineStage.BUILD.getName());
             for (String rev : commitStageCommits.keySet()) {
                 PipelineCommit commit = commitStageCommits.get(rev);
                 if ((commit.getScmCommitTimestamp() < build.getStartTime()) && !buildStageCommits.containsKey(rev) && isMoveCommitToBuild(build, commit)) {
-                    pipeline.addCommit(PipelineStageType.Build.name(), commit);
+                    pipeline.addCommit(PipelineStage.BUILD.getName(), commit);
                 }
             }
             pipelineRepository.save(pipeline);
@@ -166,8 +168,8 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
                 Build b = failedBuilds.next();
                 if (b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())) {
                     for (SCM scm : b.getSourceChangeSet()) {
-                        PipelineCommit failedBuildCommit = new PipelineCommit(scm, successfulBuild.getTimestamp());
-                        pipeline.addCommit(PipelineStageType.Build.name(), failedBuildCommit);
+                        PipelineCommit failedBuildCommit = new PipelineCommit(scm, successfulBuild.getStartTime());
+                        pipeline.addCommit(PipelineStage.BUILD.getName(), failedBuildCommit);
                         successfulBuild.getSourceChangeSet().add(scm);
                     }
                     failedBuilds.remove();
@@ -187,8 +189,16 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
      * @return
      */
     private List<Dashboard> findAllDashboardsForBuild(Build build) {
+        if (build == null || build.getCollectorItemId() == null) {
+            //return an empty list if the build is not associated with a Dashboard
+            return new ArrayList<>();
+        }
         CollectorItem buildCollectorItem = collectorItemRepository.findOne(build.getCollectorItemId());
         List<Component> components = componentRepository.findByBuildCollectorItemId(buildCollectorItem.getId());
+        if (components == null || components.size() == 0) {
+            //return an empty list if the build is not associated with a Dashboard
+            return new ArrayList<>();
+        }
         return dashboardRepository.findByApplicationComponentsIn(components);
     }
 

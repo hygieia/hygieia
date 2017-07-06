@@ -16,6 +16,8 @@
         var testSearchRoute = 'test-data/dashboard_search.json';
         var testDetailRoute = 'test-data/dashboard_detail.json';
         var testOwnedRoute='test-data/dashboard_owned.json';
+        var testAllUsersRoute= 'test-data/all_users.json';
+        var testOwnersRoute = 'test-data/owners.json';
 
         var dashboardRoute = '/api/dashboard';
         var mydashboardRoute = "/api/dashboard/mydashboard";
@@ -25,11 +27,15 @@
             search: search,
             mydashboard: mydashboard,
             myowner: myowner,
+            owners: owners,
+            updateOwners: updateOwners,
             detail: detail,
             create: create,
             delete: deleteDashboard,
+            rename: renameDashboard,
             upsertWidget: upsertWidget,
-            types: types
+            types: types,
+            getComponent:getComponent
         };
 
         // reusable helper
@@ -38,7 +44,7 @@
                 return response.data;
             });
         }
-
+        
         // gets list of dashboards
         function search() {
             return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardRoute);
@@ -50,9 +56,24 @@
         }
 
         //gets dashboard owner from dashboard title
-        function myowner(title)
+        function myowner(id)
         {
-            return getPromise(HygieiaConfig.local ? testOwnedRoute : myownerRoute + "/" + title );
+            return getPromise(HygieiaConfig.local ? testOwnedRoute : myownerRoute + "/" + id );
+        }
+
+        //gets component from componentId
+        function getComponent(componentId){
+            return getPromise(HygieiaConfig.local ? testOwnedRoute : myComponentRoute+ '/' + componentId);
+        }
+
+        function owners(id) {
+            return getPromise(HygieiaConfig.local ? testOwnersRoute : dashboardRoute + "/" + id + "/owners");
+        }
+        
+        function updateOwners(id, owners) {
+        	return $http.put(dashboardRoute + "/" + id + "/owners", owners).then(function (response) {
+                return response.data;
+            });
         }
 
         // gets info for a single dashboard including available widgets
@@ -68,6 +89,25 @@
                 })
                 .error(function (response) {
                     return null;
+                });
+        }
+
+
+        // renames a dashboard
+
+        function renameDashboard(id,newDashboardName){
+            console.log("In data renaming dashboard");
+            var postData= {
+                title: newDashboardName
+             }
+            return $http.put(dashboardRoute+"/rename/"+id, postData)
+                .success(
+                    function (response) {
+                    return response.data;
+                })
+                .error (function (response) {
+                    console.log("Error Occured while renaming Dashboard in Data layer:"+JSON.stringify(response));
+                    return response.data;
                 });
         }
 

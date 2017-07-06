@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -52,7 +53,11 @@ public class CommitServiceImpl implements CommitService {
         BooleanBuilder builder = new BooleanBuilder();
 
         Component component = componentRepository.findOne(request.getComponentId());
-        CollectorItem item = component.getCollectorItems().get(CollectorType.SCM).get(0);
+        CollectorItem item = component.getFirstCollectorItemForType(CollectorType.SCM);
+        if (item == null) {
+            Iterable<Commit> results = new ArrayList<>();
+            return new DataResponse<>(results, new Date().getTime());
+        }
         builder.and(commit.collectorItemId.eq(item.getId()));
 
         if (request.getNumberOfDays() != null) {
@@ -109,6 +114,9 @@ public class CommitServiceImpl implements CommitService {
 
     }
 
+    public List<Commit> getCommitsBySha (String scmRevisionNumber) {
+        return commitRepository.findByScmRevisionNumber(scmRevisionNumber);
+    }
 
     private boolean isNewCommit(CollectorItem repo, Commit commit) {
         return commitRepository.findByCollectorItemIdAndScmRevisionNumber(
@@ -190,15 +198,15 @@ public class CommitServiceImpl implements CommitService {
                 int numberChanges = ((JSONArray) cObj.get("added")).size() +
                         ((JSONArray) cObj.get("removed")).size() +
                         ((JSONArray) cObj.get("modified")).size();
-                
+
                 JSONArray parents = (JSONArray) jsonObject.get("parents");
-				List<String> parentShas = new ArrayList<>();
-				if (parents != null) {
-					for (Object parentObj : parents) {
-						parentShas.add(str((JSONObject)parentObj, "sha"));
-					}
-				}
-                
+                List<String> parentShas = new ArrayList<>();
+                if (parents != null) {
+                    for (Object parentObj : parents) {
+                        parentShas.add(str((JSONObject)parentObj, "sha"));
+                    }
+                }
+
                 Commit commit = new Commit();
                 commit.setScmUrl(url);
                 commit.setTimestamp(System.currentTimeMillis()); // this is hygieia timestamp.

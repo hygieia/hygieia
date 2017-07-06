@@ -8,6 +8,8 @@ import com.mysema.query.BooleanBuilder;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,29 +44,20 @@ public class ScopeServiceImpl implements ScopeService {
 	/**
 	 * Retrieves all unique scopes
 	 * 
-	 * @param componentId
-	 *            The ID of the related UI component that will reference
-	 *            collector item content from this collector
-	 * 
 	 * @return A data response list of type Scope containing all unique scopes
 	 */
 	@Override
-	public DataResponse<List<Scope>> getAllScopes(ObjectId componentId) {
-		Component component = componentRepository.findOne(componentId);
-		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.ScopeOwner).get(0);
-		QScopeOwner team = new QScopeOwner("team");
-		BooleanBuilder builder = new BooleanBuilder();
-
-		builder.and(team.collectorItemId.eq(item.getId()));
-
+	public List<Scope> getAllScopes() {
 		// Get all available scopes
-		List<Scope> scope = scopeRepository.findByOrderByProjectPathDesc();
+		List<Scope> scopes = scopeRepository.findByOrderByProjectPathDesc();
 
-		Collector collector = collectorRepository
-				.findOne(item.getCollectorId());
+		for (Scope scope : scopes) {
+		    Collector collector = collectorRepository
+				.findOne(scope.getCollectorId());
+		    scope.setCollector(collector);
+		}
 
-		return new DataResponse<>(scope, collector.getLastExecuted());
+		return scopes;
 	}
 
 	/**
@@ -84,7 +77,7 @@ public class ScopeServiceImpl implements ScopeService {
 			String scopeId) {
 		Component component = componentRepository.findOne(componentId);
 		CollectorItem item = component.getCollectorItems()
-				.get(CollectorType.ScopeOwner).get(0);
+				.get(CollectorType.AgileTool).get(0);
 		QScopeOwner team = new QScopeOwner("team");
 		BooleanBuilder builder = new BooleanBuilder();
 
@@ -98,4 +91,39 @@ public class ScopeServiceImpl implements ScopeService {
 
 		return new DataResponse<>(scope, collector.getLastExecuted());
 	}
+
+	/**
+	 * Retrieves the scope information for a given scope source system ID
+	 *
+	 * @param collectorId
+	 *
+	 * @return projects
+	 */
+	@Override
+	public List<Scope>  getScopesByCollector(ObjectId collectorId) {
+		List<Scope> scopes = scopeRepository.findByCollectorId(collectorId);
+
+		//clean up needed for < > characters
+		for (Scope scope : scopes) {
+			scope.setName(  scope.getName().replaceAll("[<>]", "")  );
+			scope.setProjectPath(  scope.getProjectPath().replaceAll("[<>]", "")  );
+		}
+
+		return scopes;
+	}
+
+	/**
+	 * Finds paged results of scope items of a given collectorId, projectName, pageable
+	 *
+	 * @param  collectorId
+	 * @param {@link org.springframework.data.domain.Pageable} object to determine which page to return
+	 * @return scope items matching the specified type
+	 */
+	@Override
+	public Page<Scope> getScopeByCollectorWithFilter(ObjectId collectorId, String projectName, Pageable pageable){
+
+		Page<Scope> scopeItems =  scopeRepository.findAllByCollectorIdAndNameContainingIgnoreCase(collectorId,projectName,pageable);
+		return scopeItems;
+	}
+
 }

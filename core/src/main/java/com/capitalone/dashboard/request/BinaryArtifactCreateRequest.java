@@ -1,9 +1,8 @@
 package com.capitalone.dashboard.request;
 
-import javax.validation.constraints.NotNull;
-
 import com.capitalone.dashboard.model.SCM;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +22,9 @@ public class BinaryArtifactCreateRequest {
     private String artifactGroup;
     @NotNull
     private String artifactVersion;
+    private String artifactModule;
+    private String artifactClassifier;
+    private String artifactExtension;
     
     // May be null if comes in from rest call outside of jenkins
     private String buildId;
@@ -96,4 +98,28 @@ public class BinaryArtifactCreateRequest {
     public void setMetadata(Map<String, Object> metadata) {
     	this.metadata = metadata;
     }
+
+	public String getArtifactModule() {
+		return artifactModule;
+	}
+
+	public void setArtifactModule(String artifactModule) {
+		this.artifactModule = artifactModule;
+	}
+
+	public String getArtifactClassifier() {
+		return artifactClassifier;
+	}
+
+	public void setArtifactClassifier(String artifactClassifier) {
+		this.artifactClassifier = artifactClassifier;
+	}
+
+	public String getArtifactExtension() {
+		return artifactExtension;
+	}
+
+	public void setArtifactExtension(String artifactExtension) {
+		this.artifactExtension = artifactExtension;
+	}
 }

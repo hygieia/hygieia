@@ -26,6 +26,7 @@
             search: search,
             createService: createService,
             updateService: updateService,
+            refreshService: refreshService,
             deleteService: deleteService,
             createDependentService: createDependentService,
             deleteDependentService: deleteDependentService
@@ -61,8 +62,13 @@
         }
 
         // add a new service name. name must be sent with quotes around it
-        function createService(dashboardId, name) {
-            return $http.post(HygieiaConfig.local ? testingDetailRoute : getServiceRoute(dashboardId), JSON.stringify(name))
+        function createService(dashboardId, name, url) {
+
+            var postData = {
+                name: name,
+                url: url
+            }
+            return $http.post(HygieiaConfig.local ? testingDetailRoute : getServiceRoute(dashboardId), JSON.stringify(postData))
                 .then(function (response) {
                     return response.data;
                 });
@@ -84,6 +90,25 @@
                     return response.data;
                 });
         }
+
+        function refreshService(dashboardId, service) {
+            // create a copy so we don't modify the original
+            service = angular.copy(service);
+
+            var serviceId = service.id;
+            if (serviceId) {
+                delete service.id;
+            }
+
+            // try to map the status value back to what the api expects
+            service.status = mappedStatusValues[service.status] || service.status;
+            return $http.get(HygieiaConfig.local ? testingDetailRoute : getServiceRoute(dashboardId) + serviceId, service)
+                .then(function (response) {
+                    return response.data;
+                });
+        }
+
+
 
         // delete a service. will only work for the dashboard that created it
         function deleteService(dashboardId, serviceId) {

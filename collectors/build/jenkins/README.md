@@ -30,6 +30,10 @@ dbhost=localhost
 # Database Port - default is 27017
 dbport=9999
 
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+
 # Database Username - default is blank
 dbusername=db
 
@@ -38,6 +42,12 @@ dbpassword=dbpass
 
 # Collector schedule (required)
 jenkins.cron=0 0/5 * * * *
+
+# The page size
+jenkins.pageSize=1000
+
+# The folder depth - default is 10
+jenkins.folderDepth=10
 
 # Jenkins server (required) - Can provide multiple
 jenkins.servers[0]=http://jenkins.company.com
@@ -48,8 +58,8 @@ jenkins.servers[1]=http://username:token@jenkins.company.com
 
 # Another option: If using same username/password Jenkins auth,
 #   set username/apiKey to use HTTP Basic Auth (blank=no auth)
-jenkins.username=
-jenkins.apiKey=
+jenkins.usernames[0]=
+jenkins.apiKeys[0]=
 
 # Determines if build console log is collected - defaults to false
 jenkins.saveLog=true

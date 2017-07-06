@@ -30,6 +30,10 @@ dbhost=192.168.33.11
 # Database Port - default is 27017
 dbport=27017
 
+# MongoDB replicaset
+dbreplicaset=[false if you are not using MongoDB replicaset]
+dbhostport=[host1:port1,host2:port2,host3:port3]
+
 # Database Username - default is blank
 dbusername=db
 
@@ -42,9 +46,9 @@ xldeploy.cron=0 0/5 * * * *
 # XLDeploy server (required) - Can provide multiple
 xldeploy.servers[0]=http://xldeploy.company.com
 
-# XLDeploy user name (required)
-xldeploy.username=bobama
+# XLDeploy user name (required) - Can provide multiple
+xldeploy.usernames[0]=bobama 
 
-# XLDeploy password (required)
-xldeploy.password=s3cr3t
+# XLDeploy password (required) - Can provide multiple
+xldeploy.passwords[0]=s3cr3t
 ```

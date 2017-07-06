@@ -5,18 +5,26 @@ package com.capitalone.dashboard.model;
  */
 public enum CollectorType {
     SCM,
+    CMDB,
     Build,
     Artifact,
     Deployment,
+    AgileTool,
+    @Deprecated
     Feature,
+    @Deprecated
     ScopeOwner,
+    @Deprecated
     Scope,
     CodeQuality,
     Test,
     StaticSecurityScan,
+    LibraryPolicy,
     ChatOps,
     Cloud,
-    Product;
+    Product,
+    AppPerformance,
+    InfraPerformance;
 
     public static CollectorType fromString(String value) {
         for (CollectorType collectorType : values()) {

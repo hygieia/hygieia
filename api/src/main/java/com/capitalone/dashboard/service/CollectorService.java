@@ -5,8 +5,11 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CollectorService {
 
@@ -17,15 +20,16 @@ public interface CollectorService {
      * @return Collectors matching the specified type
      */
     List<Collector>  collectorsByType(CollectorType collectorType);
-
+    
     /**
-     * Finds all CollectorItems of a given type.
+     * Finds paged results of CollectorItems of a given type.
      *
      * @param collectorType collector type
+     * @param {@link org.springframework.data.domain.Pageable} object to determine which page to return
      * @return CollectorItems matching the specified type
      */
-    List<CollectorItem> collectorItemsByType(CollectorType collectorType);
-
+    Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String descriptionFilter, Pageable pageable);
+    
     /**
      * Find a CollectorItem by it's id.
      *
@@ -44,6 +48,7 @@ public interface CollectorService {
      */
     CollectorItem createCollectorItem(CollectorItem item);
 
+    CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> selectOptions);
     /**
      * Creates a new CollectorItem. If a CollectorItem already exists with the
      * same collector id and niceName, that CollectorItem will be returned instead
@@ -71,4 +76,12 @@ public interface CollectorService {
      * @return created Collector
      */
     Collector createCollector(Collector collector);
+
+
+    /**
+     * Gets a list of collectorItems for a given component id
+     * @param id id
+     * @return List of collectorItems
+     */
+    List<CollectorItem> getCollectorItemForComponent (String id, String type);
 }

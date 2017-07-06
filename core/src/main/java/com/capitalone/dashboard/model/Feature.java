@@ -16,11 +16,13 @@
 
 package com.capitalone.dashboard.model;
 
+import java.util.List;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 /**
  * Represents a feature (story/requirement) of a component.
@@ -40,10 +42,13 @@ public class Feature extends BaseModel {
 	private String sId;
 	private String sNumber;
 	private String sName;
+	private String sTypeId;
+	private String sTypeName;
 	private String sStatus;
 	private String sState;
 	private String sEstimate; // estimate in story points
 	private Integer sEstimateTime; // estimate in minutes
+	private String sUrl;
 	@Indexed
 	private String changeDate;
 	private String isDeleted;
@@ -82,6 +87,7 @@ public class Feature extends BaseModel {
 	private String sSprintName;
 	@Indexed
 	private String sSprintID;
+	private String sSprintUrl;
 
 	/*
 	 * Epic data
@@ -93,6 +99,7 @@ public class Feature extends BaseModel {
 	private String sEpicEndDate;
 	private String sEpicBeginDate;
 	private String sEpicName;
+	private String sEpicUrl;
 	private String sEpicNumber;
 	private String sEpicID;
 
@@ -139,6 +146,22 @@ public class Feature extends BaseModel {
 	public void setsName(String sName) {
 		this.sName = sName;
 	}
+	
+	public String getsTypeId() {
+		return sTypeId;
+	}
+
+	public void setsTypeId(String sTypeId) {
+		this.sTypeId = sTypeId;
+	}
+
+	public String getsTypeName() {
+		return sTypeName;
+	}
+
+	public void setsTypeName(String sTypeName) {
+		this.sTypeName = sTypeName;
+	}
 
 	public String getsStatus() {
 		return sStatus;
@@ -171,6 +194,14 @@ public class Feature extends BaseModel {
 	public void setsEstimateTime(Integer sEstimateTime) {
 		this.sEstimateTime = sEstimateTime;
 	}
+	
+	public void setsUrl(String sUrl) {
+        this.sUrl = sUrl;
+    }
+
+    public String getsUrl() {
+        return sUrl;
+    }
 
 	public String getsProjectID() {
 		return sProjectID;
@@ -195,7 +226,15 @@ public class Feature extends BaseModel {
 	public void setsSprintID(String sSprintID) {
 		this.sSprintID = sSprintID;
 	}
+	
+    public void setsSprintUrl(String sSprintUrl) {
+        this.sSprintUrl = sSprintUrl;
+    }
 
+    public String getsSprintUrl() {
+        return sSprintUrl;
+    }
+    
 	public String getsTeamID() {
 		return sTeamID;
 	}
@@ -299,6 +338,14 @@ public class Feature extends BaseModel {
 	public String getsEpicName() {
 		return this.sEpicName;
 	}
+	
+	public void setsEpicUrl(String sEpicUrl) {
+        this.sEpicUrl = sEpicUrl;
+    }
+
+    public String getsEpicUrl() {
+        return sEpicUrl;
+    }
 
 	public void setsEpicBeginDate(String sEpicBeginDate) {
 		this.sEpicBeginDate = sEpicBeginDate;
@@ -474,5 +521,22 @@ public class Feature extends BaseModel {
 
 	public List<String> getsOwnersIsDeleted() {
 		return this.sOwnersIsDeleted;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		Feature that = (Feature) o;
+		EqualsBuilder builder = new EqualsBuilder();
+		return builder.append(collectorId, that.collectorId).append(sId, that.sId).build();
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(17, 37).append(collectorId).append(sId).toHashCode();
 	}
 }

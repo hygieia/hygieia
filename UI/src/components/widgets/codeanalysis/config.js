@@ -8,40 +8,47 @@
         .module(HygieiaConfig.module)
         .controller('CodeAnalysisConfigController', CodeAnalysisConfigController);
 
-    CodeAnalysisConfigController.$inject = ['modalData', 'collectorData', '$modalInstance'];
-    function CodeAnalysisConfigController(modalData, collectorData, $modalInstance) {
-        var ctrl = this;
-        var widgetConfig = modalData.widgetConfig;
-        var component = modalData.dashboard.application.components[0];
+    CodeAnalysisConfigController.$inject = ['modalData', '$scope', 'collectorData', '$uibModalInstance'];
+    function CodeAnalysisConfigController(modalData, $scope, collectorData, $uibModalInstance) {
+        var ctrl = this,
+        widgetConfig = modalData.widgetConfig,
+        component = modalData.dashboard.application.components[0];
 
-        ctrl.caToolsDropdownPlaceholder = 'Loading Code Analysis Jobs...';
         ctrl.saToolsDropdownPlaceholder = 'Loading Security Analysis Jobs...';
+        ctrl.ossToolsDropdownPlaceholder = 'Loading Open Source Scanning Jobs...';
         ctrl.testToolsDropdownPlaceholder = 'Loading Functional Test Jobs...';
 
         // public methods
+        ctrl.caLoading = true;
         ctrl.submit = submitForm;
         ctrl.addTestConfig = addTestConfig;
         ctrl.deleteTestConfig = deleteTestConfig;
 
+        $scope.getCodeQualityCollectors = function(filter){
+        	return collectorData.itemsByType('codequality', {"search": filter, "size": 20}).then(function (response){
+        		return response;
+        	});
+        };
+
+        loadSavedCodeQualityJob();
+
+        console.log(collectorData);
         // request all the codequality and test collector items
-        collectorData.itemsByType('codequality').then(processCaResponse);
         collectorData.itemsByType('staticSecurityScan').then(processSaResponse);
         collectorData.itemsByType('test').then(processTestsResponse);
+        collectorData.itemsByType('libraryPolicy').then(processOSSscanResponse);
 
-        function processCaResponse(data) {
+        function loadSavedCodeQualityJob(){
+        	var codeQualityCollectorItems = component.collectorItems.CodeQuality,
+            savedCodeQualityJob = codeQualityCollectorItems ? codeQualityCollectorItems[0].description : null;
 
-            var caCollectorItems = component.collectorItems.CodeQuality;
-            var caCollectorItemId = _.isEmpty(caCollectorItems) ? null : caCollectorItems[0].id;
-            if (data != null) {
-                var j;
-                for (j = 0; j < data.length; ++j) {
-                    data[j].displayName = ((data[j].niceName != null) && (data[j].niceName != ""))? data[j].niceName : data[j].collector.name;
-                }
+            if(savedCodeQualityJob){
+            	$scope.getCodeQualityCollectors(savedCodeQualityJob).then(getCodeQualityCollectorsCallback) ;
             }
-            ctrl.caJobs = data;
+        }
 
-            ctrl.caCollectorItem = caCollectorItemId ? _.findWhere(ctrl.caJobs, {id: caCollectorItemId}) : null;
-            ctrl.caToolsDropdownPlaceholder = data.length ? 'Select a Code Analysis Job' : 'No Code Analysis Job Found';
+        function getCodeQualityCollectorsCallback(data) {
+            ctrl.caCollectorItem = data[0];
         }
 
         function processSaResponse(data) {
@@ -49,8 +56,18 @@
             var saCollectorItemId = _.isEmpty(saCollectorItems) ? null : saCollectorItems[0].id;
 
             ctrl.saJobs = data;
-            ctrl.saCollectorItem = saCollectorItemId ? _.findWhere(ctrl.saJobs, {id: saCollectorItemId}) : null;
+            ctrl.saCollectorItem = saCollectorItemId ? _.find(ctrl.saJobs, {id: saCollectorItemId}) : null;
             ctrl.saToolsDropdownPlaceholder = data.length ? 'Select a Security Analysis Job' : 'No Security Analysis Job Found';
+        }
+
+        function processOSSscanResponse(data) {
+            var ossCollectorItems = component.collectorItems.LibraryPolicy;
+            var ossCollectorItemId = _.isEmpty(ossCollectorItems) ? null : ossCollectorItems[0].id;
+
+            ctrl.ossJobs = data;
+            ctrl.ossCollectorItem = ossCollectorItemId ? _.findWhere(ctrl.ossJobs, {id: ossCollectorItemId}) : null;
+            ctrl.ossToolsDropdownPlaceholder = data.length ? 'Select a Open Source Scan Job' : 'No Open Source Scan Found';
+
         }
 
         function processTestsResponse(data) {
@@ -75,7 +92,7 @@
                 }
             }
             for (index = 0; index < testCollectorItemIds.length; ++index) {
-                var testItem = testCollectorItemIds ? _.findWhere(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
+                var testItem = testCollectorItemIds ? _.find(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
                 ctrl.testConfigs.push({
                     testJobName: testJobNamesFromWidget[index],
                     testJob: ctrl.testJobs,
@@ -85,11 +102,12 @@
             ctrl.testToolsDropdownPlaceholder = data.length ? 'Select a Functional Test Job' : 'No Functional Test Jobs Found';
         }
 
-        function submitForm(caCollectorItem, saCollectorItem, testConfigs) {
+        function submitForm(caCollectorItem, saCollectorItem, ossCollectorItem, testConfigs) {
             var collectorItems = [];
             var testJobNames = [];
             if (caCollectorItem) collectorItems.push(caCollectorItem.id);
             if (saCollectorItem) collectorItems.push(saCollectorItem.id);
+            if (ossCollectorItem) collectorItems.push(ossCollectorItem.id);
             if (testConfigs) {
                 var index;
                 for (index = 0; index < testConfigs.length; ++index) {
@@ -108,7 +126,7 @@
                 collectorItemIds: collectorItems
             };
             // pass this new config to the modal closing so it's saved
-            $modalInstance.close(postObj);
+            $uibModalInstance.close(postObj);
         }
 
 

@@ -17,10 +17,14 @@
         var db = dependencies.db,
             configuredTeam = dependencies.configuredTeam,
             $q = dependencies.$q,
+            $timeout = dependencies.$timeout,
             isReload = dependencies.isReload,
             pipelineData = dependencies.pipelineData,
             nowTimestamp = dependencies.nowTimestamp,
-            ctrlStages = dependencies.ctrlStages;
+            ctrlStages = dependencies.ctrlStages,
+            prodStageValue = dependencies.prodStageValue;
+
+        var prodStage = prodStageValue;
 
         // timestamps
         var now = moment(),
@@ -84,11 +88,11 @@
             }
 
             // put all results in the database
-            _(response.stages.Prod).forEach(function (commit) {
+            _(response.stages[prodStage]).forEach(function (commit) {
                 // extend the commit object with fields we need
                 // to search the db
                 commit.collectorItemId = collectorItemId;
-                commit.timestamp = commit.processedTimestamps.Prod;
+                commit.timestamp = commit.processedTimestamps[prodStage];
 
                 db.prodCommit.add(commit);
             });
@@ -98,7 +102,8 @@
 
         function processPipelineCommitData(team) {
             db.prodCommit.where('[collectorItemId+timestamp]').between([collectorItemId, ninetyDaysAgo], [collectorItemId, dateEnds]).toArray(function (rows) {
-                team.stages.Prod = _(rows).sortBy('timestamp').reverse().value();
+                var uniqueRows = _.uniq(rows,'scmRevisionNumber');
+                team.stages[prodStage] = _(uniqueRows).sortBy('timestamp').reverse().value();
 
                 var teamStageData = {},
                     stageDurations = {},
@@ -237,7 +242,7 @@
                             // for this current stage, otherwise use the commit timestamp
                             var lastUpdatedDuration = _(stageData.commits).map(function (commit) {
                                     return commit.in[stageName] || moment().valueOf() - commit.timestamp;
-                                }).min().value(),
+                                }).min(),
                                 lastUpdated = moment().add(-1 * lastUpdatedDuration, 'milliseconds');
 
                             return {
@@ -289,35 +294,37 @@
                 });
 
                 // calculate info used in prod cell
-                var teamProdData = {
-                        averageDays: '--',
-                        totalCommits: 0
-                    },
-                    commitTimeToProd = _(team.stages)
-                    // limit to prod
-                        .filter(function (val, key) {
-                            return key == 'Prod'
-                        })
-                        // make all commits a single array
-                        .reduce(function (num, commits) {
-                            return num + commits;
-                        })
-                        // they should, but make sure the commits have a prod timestamp
-                        .filter(function (commit) {
-                            return commit.processedTimestamps && commit.processedTimestamps['Prod'];
-                        })
-                        // calculate their time to prod
+                var commitTimeToProd;
+                var commitArray = _(team.stages)
+                // limit to prod
+                    .filter(function (val, key) {
+                        return key == prodStage
+                    })
+                    // make all commits a single array
+                    .reduce(function (num, commits) {
+                        return num + commits;
+                    });
+                if(!angular.isUndefined(commitArray)){
+                    commitTimeToProd = _(commitArray).filter(function (commit) {
+                        return commit.processedTimestamps && commit.processedTimestamps[prodStage];
+                    })
+                    // calculate their time to prod
                         .map(function (commit) {
                             return {
-                                duration: commit.processedTimestamps['Prod'] - commit.scmCommitTimestamp,
+                                duration: commit.processedTimestamps[prodStage] - commit.scmCommitTimestamp,
                                 commitTimestamp: commit.scmCommitTimestamp
                             };
                         });
+                }
 
+                var teamProdData = {
+                    averageDays: '--',
+                    totalCommits: 0
+                },commitTimeToProd;
 
-                teamProdData.totalCommits = commitTimeToProd.length;
+                teamProdData.totalCommits = !angular.isUndefined(commitTimeToProd)?commitTimeToProd.length:0;
 
-                if (commitTimeToProd.length > 1) {
+                if (!angular.isUndefined(commitTimeToProd)?commitTimeToProd.length:0 > 1) {
                     var averageDuration = _(commitTimeToProd).pluck('duration').reduce(function (a, b) {
                             return a + b;
                         }) / commitTimeToProd.length;
@@ -340,9 +347,12 @@
                     }
                 }
 
-                dependencies.setTeamData(team.collectorItemId, {
+                $timeout(function() {
+                    dependencies.setTeamData(team.collectorItemId, {
                     stages: teamStageData,
-                    prod: teamProdData
+                    prod: teamProdData,
+                    prodStage:prodStage
+                    });
                 });
             });
         }

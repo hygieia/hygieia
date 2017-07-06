@@ -1,13 +1,17 @@
-<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" class="alert alert-info">{{alert.msg}}</alert>
 <div class="widget row"
      ng-class="{'configure' : state == widget_state.CONFIGURE, 'alert': display == display_state.ERROR}">
-    <div class="widget-heading" ng-if="header">
-        {{title}}
+    <div ng-class="(title!='Quality' && title!='Performance') ? 'widget-heading' : 'widget-heading-performance'" ng-if="header">
+        <span ng-if="title!='Quality' && title!='Performance'">{{title}}</span>
 
         <span class="widget-settings-icon clickable pull-right fa fa-cog"
               type="button"
-              ng-if="widgetDefinition && widgetDefinition.config && state == widget_state.READY"
-              ng-click="checkPermission()"></span>
+              ng-if="hasPermission() && widgetDefinition && widgetDefinition.config && state == widget_state.READY"
+              ng-click="configModal()"></span>
+
+        <span ng-if = "collectionError" uib-tooltip-html = "'<b>Error collecting data:</b> <p>{{collectorItems[collectorItems.length-1].errors[collectorItems[collectorItems.length-1].errors.length-1].errorMessage}}</p>'"
+              tooltip-trigger="focus" tooltip-placement="bottom" class="fa fa-ban widget-font-fail">
+        </span>
 
         <span class="pull-right last-updated">
             {{lastUpdatedDisplay}}
@@ -17,10 +21,15 @@
         <div class="widget-body-main">
             <!-- widget content -->
         </div>
-        <div class="widget-body-config clickable" ng-click="checkPermission()">
+        <div class="widget-body-config clickable" ng-click="configModal()" ng-show="hasPermission()">
             <div>
                 <div class="fa fa-cog fa-lg"></div>
                 <div>Configure<br/>widget</div>
+            </div>
+        </div>
+        <div class="widget-body-config" ng-hide="hasPermission()">
+            <div>
+                <div>Owner Modification Only</div>
             </div>
         </div>
     </div>

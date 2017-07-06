@@ -98,17 +98,21 @@ public class FeatureWidgetQueries {
 	 * @param changeDatePara
 	 *            The change date specified from which to pull data with a given
 	 *            query template.
-	 * @param issueType
-	 *            The Jira IssueType specified from which to pull data with a
+	 * @param issueTypes
+	 *            The Jira IssueTypes specified from which to pull data with a
 	 *            given query template.
 	 * @param queryName
 	 *            The source system query name (without the file type).
 	 * @return A given source system query, in String format.
 	 */
-	public String getStoryQuery(String changeDatePara, String issueType, String queryName) {
+	public String getStoryQuery(String changeDatePara, String[] issueTypes, String queryName) {
 		ST st = folder.getInstanceOf(queryName);
 		st.add("changeDate", changeDatePara);
-		st.add("issueType", issueType);
+		String[] issueTypesQuoted = new String[issueTypes.length];
+		for (int i = 0; i < issueTypes.length; i++) {
+			issueTypesQuoted[i] = "'" + issueTypes[i] + "'";
+		}
+		st.add("issueTypes", String.join(",", issueTypesQuoted));
 		String query = st.render();
 
 		return query;

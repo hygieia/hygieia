@@ -8,9 +8,9 @@
         .module(HygieiaConfig.module)
         .controller('ChatOpsConfigController', ChatOpsConfigController);
 
-    ChatOpsConfigController.$inject = ['modalData', '$modalInstance',
+    ChatOpsConfigController.$inject = ['modalData', '$uibModalInstance',
         'collectorData'];
-    function ChatOpsConfigController(modalData, $modalInstance, collectorData) {
+    function ChatOpsConfigController(modalData, $uibModalInstance, collectorData) {
         var ctrl = this;
         var widgetConfig = modalData.widgetConfig;
 
@@ -83,7 +83,7 @@
 
         function createCollectorItem(chatOpsOption, chatOpsRoomAuthToken, chatOpsServerUrl, chatOpsRoomName) {
             var item = {
-                    collectorId: _.findWhere(ctrl.collectors, {name: 'ChatOps'}).id,
+                    collectorId: _.find(ctrl.collectors, {name: 'ChatOps'}).id,
                     options: {
                         chatOpsOption: chatOpsOption,
                         chatOpsRoomAuthToken: chatOpsRoomAuthToken,
@@ -111,7 +111,7 @@
             };
 
             // pass this new config to the modal closing so it's saved
-            $modalInstance.close(postObj);
+            $uibModalInstance.close(postObj);
         }
     }
 })();

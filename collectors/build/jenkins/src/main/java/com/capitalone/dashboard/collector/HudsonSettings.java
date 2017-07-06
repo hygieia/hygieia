@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -12,14 +13,17 @@ import java.util.List;
 @ConfigurationProperties(prefix = "jenkins")
 public class HudsonSettings {
 
-
+	
     private String cron;
     private boolean saveLog = false;
     private List<String> servers;
     private List<String> niceNames;
-    private String username;
-    private String apiKey;
+    private List<String> usernames;
+    private List<String> apiKeys;
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
+    private int pageSize;
+    @Value("${folderDepth:10}")
+    private int folderDepth;
 
     public String getCron() {
         return cron;
@@ -44,21 +48,21 @@ public class HudsonSettings {
     public void setServers(List<String> servers) {
         this.servers = servers;
     }
-
-    public String getUsername() {
-        return username;
+    
+    public List<String> getUsernames() {
+        return usernames;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsernames(List<String> usernames) {
+        this.usernames = usernames;
+    }
+    
+    public List<String> getApiKeys() {
+        return apiKeys;
     }
 
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
+    public void setApiKeys(List<String> apiKeys) {
+        this.apiKeys = apiKeys;
     }
     
     public void setDockerLocalHostIP(String dockerLocalHostIP) {
@@ -84,5 +88,21 @@ public class HudsonSettings {
     		localHostOverride = dockerLocalHostIP;
     	}
         return localHostOverride;
+    }
+    
+    public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+    
+    public int getPageSize() {
+		return pageSize;
+	}
+
+    public void setFolderDepth(int folderDepth) {
+        this.folderDepth = folderDepth;
+    }
+
+    public int getFolderDepth() {
+        return folderDepth;
     }
 }
