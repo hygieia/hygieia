@@ -67,6 +67,7 @@
     <jacoco.version>0.7.6.201602180812</jacoco.version>
     <joda-time.version>2.7</joda-time.version>
     <joda-convert.version>1.8.1</joda-convert.version>
+    <docker.useConfigFile>false</docker.useConfigFile>
   </properties>
 
   <build>
@@ -76,6 +77,7 @@
         <artifactId>docker-maven-plugin</artifactId>
         <configuration>
           <skipDockerBuild>true</skipDockerBuild>
+          <useConfigFile>${docker.useConfigFile}</useConfigFile>
         </configuration>
         <executions>
           <execution>
@@ -183,7 +185,7 @@
         <module>collectors/scm/github</module>
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
-        <module>hygieia-jenkins-plugin</module>
+        <module>collectors/cmdb/hpsm</module>
         <module>UI</module>
       </modules>
       <build>
@@ -224,6 +226,7 @@
         <module>collectors/scm/github</module>
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
+        <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
      	<module>UI</module>
  </modules>
