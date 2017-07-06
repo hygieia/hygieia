@@ -25,6 +25,7 @@
         // public methods
         ctrl.createDashboard = createDashboard;
         ctrl.deleteDashboard = deleteDashboard;
+        ctrl.manageTemplates = manageTemplates;
         ctrl.open = open;
         ctrl.login = login;
         ctrl.logout = logout;
@@ -32,7 +33,7 @@
         ctrl.setType = setType;
         ctrl.filterNotOwnedList = filterNotOwnedList;
         ctrl.filterDashboards = filterDashboards;
-        ctrl.renameDashboard = renameDashboard;
+        ctrl.editDashboard = editDashboard;
 
         if (userService.isAdmin()) {
             ctrl.myadmin = true;
@@ -97,12 +98,12 @@
             });
         }
 
-        function renameDashboard(item)
+        function editDashboard(item)
         {
             // open modal for renaming dashboard
             $uibModal.open({
-                templateUrl: 'app/dashboard/views/renameDashboard.html',
-                controller: 'RenameDashboardController',
+                templateUrl: 'app/dashboard/views/editDashboard.html',
+                controller: 'EditDashboardController',
                 controllerAs: 'ctrl',
                 resolve: {
                     dashboardId: function() {
@@ -115,6 +116,9 @@
             });
         }
 
+        function manageTemplates() {
+            $location.path('/templates');
+        }
 
         function open(dashboardId) {
             $location.path('/dashboard/' + dashboardId);

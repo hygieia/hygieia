@@ -36,14 +36,17 @@
 
                 <div class="row gap">
                     <div class="col-sm-4 col-sm-push-8 text-center">
-                        <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.createDashboard()" ng-show="ctrl.showAuthentication">
-                            <span class="fa fa-stack fa-lg">
-                                <span class="fa-circle-thin fa-stack-2x"></span>
-                                <span class="fa-plus fa-stack-1x"></span>
-                            </span>
-                            <br/>
-                            Create a new<br/>dashboard
+                        <div>
+                            <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.createDashboard()" ng-show="ctrl.showAuthentication">
+                                <span class="fa fa-stack fa-lg">
+                                    <span class="fa-circle-thin fa-stack-2x"></span>
+                                    <span class="fa-plus fa-stack-1x"></span>
+                                </span>
+                                <br/>
+                                Create a new<br/>dashboard
+                            </div>
                         </div>
+
                     </div>
                     <div class="col-sm-8 col-sm-pull-4">
                         <div ng-show="ctrl.showAuthentication" id="myDashboardsSection">
@@ -59,7 +62,7 @@
                                     <span class="pull-right">
 
 
-                                       <a href ng-click="ctrl.renameDashboard(myitem)">
+                                       <a href ng-click="ctrl.editDashboard(myitem)">
                                            <span class="fa fa-lg fa-cog text-success"></span>
                                        </a>
 

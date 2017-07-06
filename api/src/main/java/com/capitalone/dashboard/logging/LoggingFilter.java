@@ -1,32 +1,8 @@
-package com.capitalone.dashboard.config;
+package com.capitalone.dashboard.logging;
 
 
-import com.capitalone.dashboard.ApiSettings;
-import com.capitalone.dashboard.model.RequestLog;
-import com.capitalone.dashboard.repository.RequestLogRepository;
-import com.mongodb.util.JSON;
-import org.apache.commons.io.output.TeeOutputStream;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.WriteListener;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,7 +20,33 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ReadListener;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.WriteListener;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.output.TeeOutputStream;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+
+import com.capitalone.dashboard.ApiSettings;
+import com.capitalone.dashboard.model.RequestLog;
+import com.capitalone.dashboard.repository.RequestLogRepository;
+import com.mongodb.util.JSON;
 
 //import org.springframework.util.MimeType;
 
@@ -72,9 +74,9 @@ public class LoggingFilter implements Filter {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        if (settings.isLogRequest() && (httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
+        if (httpServletRequest.getMethod().equals(HttpMethod.PUT.toString()) ||
                 (httpServletRequest.getMethod().equals(HttpMethod.POST.toString())) ||
-                (httpServletRequest.getMethod().equals(HttpMethod.DELETE.toString())))) {
+                (httpServletRequest.getMethod().equals(HttpMethod.DELETE.toString()))) {
             Map<String, String> requestMap = this.getTypesafeRequestMap(httpServletRequest);
             BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
             BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);

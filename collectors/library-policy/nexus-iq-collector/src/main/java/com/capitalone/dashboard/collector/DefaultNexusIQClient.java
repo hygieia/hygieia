@@ -79,6 +79,7 @@ public class DefaultNexusIQClient implements NexusIQClient {
                 application.setInstanceUrl(instanceUrl);
                 application.setApplicationId(str(applicationData, ID));
                 application.setApplicationName(str(applicationData, NAME));
+                application.setDescription(application.getApplicationName());
                 application.setPublicId(str(applicationData, PUBLIC_ID));
                 nexusIQApplications.add(application);
             }
