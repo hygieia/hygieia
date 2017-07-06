@@ -2,10 +2,10 @@
 	'use strict';
 
 	angular.module(HygieiaConfig.module).controller('featureConfigController',
-			featureConfigController);
+		featureConfigController);
 
 	featureConfigController.$inject = [ 'modalData', '$uibModalInstance',
-			'collectorData', 'featureData' ];
+		'collectorData', 'featureData'];
 
 	function featureConfigController(modalData, $uibModalInstance, collectorData, featureData) {
 		/* jshint validthis:true */
@@ -25,25 +25,19 @@
 		ctrl.hideTeamDropDown = true;
 		ctrl.hideEstimateMetricDropDown = true;
 		ctrl.hideSprintTypeDropDown = true;
-        ctrl.hideListTypeDropDown = true;
+		ctrl.hideListTypeDropDown = true;
 		ctrl.evaluateTypeSelection = evaluateTypeSelection;
 
 		// public variables
 		ctrl.featureType = ctrl.featureTypeOption;
 		ctrl.collectorItemId = null;
 		ctrl.collectors = [];
-
 		ctrl.projects = [];
-		ctrl.selectedProject = null;
 		ctrl.projectId = widgetConfig.options.projectId;
 		ctrl.projectName = widgetConfig.options.projectName;
-
 		ctrl.teams = [];
-		ctrl.selectedTeam = null;
 		ctrl.teamId = widgetConfig.options.teamId;
 		ctrl.teamName = widgetConfig.options.teamName;
-
-		ctrl.submit = submitForm;
 		ctrl.featureTypeOption = "";
 		ctrl.featureTypeOptions = [];
 		ctrl.estimateMetricType = "";
@@ -52,117 +46,32 @@
 		ctrl.sprintTypes = [{type: "scrum", value: "Scrum"}, {type: "kanban", value: "Kanban"}, {type: "scrumkanban", value:"Both"}];
 		ctrl.listType = "";
 		ctrl.listTypes = [{type: "epics", value: "Epics"}, {type: "issues", value: "Issues"}];
+		ctrl.selectedProject = null;
+		ctrl.selectedTeam = null;
+
+		ctrl.submit = submitForm;
+		ctrl.getProjectNames = getProjectNames;
+		ctrl.getTeamNames = getTeamNames;
+		ctrl.onSelectProject = onSelectProject;
+		ctrl.onSelectTeam = onSelectTeam;
 
 		// Request collectors
 		collectorData.collectorsByType('AgileTool').then(
-				processCollectorsResponse);
-
+			processCollectorsResponse);
+		// initialize inputs
 		initEstimateMetricType(widgetConfig);
 		initSprintType(widgetConfig);
 		initListType(widgetConfig);
+		initProjectName(widgetConfig);
+		initTeamName(widgetConfig);
+		initSelectedProjectAndTeam(widgetConfig);
 
-		function processProjectsResponse(data) {
-			var projects = [];
-			var featureProjectId = widgetConfig.options.projectId;
-
-			if (!ctrl.submitted && (ctrl.collectorId.value !== widgetConfig.options.featureTool) ) {
-				featureProjectId = 'Any';
-			}
-
-			projects = getProjects(data, featureProjectId);
-
-			ctrl.projectsDropdownPlaceholder = 'Select a Project';
-			ctrl.projectsDropdownDisabled = false;
-
-			function getProjects(data, currentProjectId) {
-			    var anyItem = {
-                    projectId : 'Any',
-                    projectName : 'Any'
-                };
-                projects.push(anyItem);
-                if (currentProjectId !== null && currentProjectId === 'Any') {
-                    ctrl.selectedProjectIndex = 0;
-                }
-				for ( var x = 0; x < data.length; x++) {
-					var obj = data[x];
-					var item = {
-						projectId : obj.pId,
-						projectName : obj.name
-					};
-
-					projects.push(item);
-
-					if (currentProjectId !== null && item.projectId === currentProjectId) {
-						ctrl.selectedProjectIndex = x+1;
-					}
-				}
-
-				ctrl.projects = projects;
-
-				if ((ctrl.selectedProjectIndex === undefined) || (ctrl.selectedProjectIndex === null)) {
-					ctrl.selectedProject = '';
-				} else {
-				    // TODO: check what valid is used for
-					ctrl.valid = true;
-					ctrl.selectedProject = ctrl.projects[ctrl.selectedProjectIndex];
-				}
-			}
-		}
-
-
-		function processTeamsResponse(data) {
-			var teams = [];
-			var featureTeamId = widgetConfig.options.teamId;
-
-			if (!ctrl.submitted && (ctrl.collectorId.value !== widgetConfig.options.featureTool) ) {
-				featureTeamId = 'Any';
-			}
-
-			teams = getTeams(data, featureTeamId);
-
-			ctrl.teamsDropdownPlaceholder = 'Select a team';
-			ctrl.teamsDropdownDisabled = false;
-
-			function getTeams(data, currentTeamId) {
-				var anyItem = {
-					teamId : 'Any',
-					teamName : 'Any'
-				};
-				teams.push(anyItem);
-				if (currentTeamId !== null && currentTeamId === 'Any') {
-					ctrl.selectedTeamIndex = 0;
-				}
-				for ( var x = 0; x < data.length; x++) {
-					var obj = data[x];
-					var item = {
-						teamId : obj.teamId,
-						teamName : obj.name
-					};
-
-					teams.push(item);
-
-					if (currentTeamId !== null && item.teamId === currentTeamId) {
-						ctrl.selectedTeamIndex = x+1;
-					}
-				}
-
-				ctrl.teams = teams;
-
-				if ((ctrl.selectedTeamIndex === undefined) || (ctrl.selectedTeamIndex === null)) {
-					ctrl.selectedTeam = '';
-				} else {
-					// TODO: check what valid is used for
-					ctrl.valid = true;
-					ctrl.selectedTeam = ctrl.teams[ctrl.selectedTeamIndex];
-				}
-			}
-		}
 
 		function processCollectorsResponse(data) {
 			ctrl.collectors = data;
 			var featureCollector = modalData.dashboard.application.components[0].collectorItems.AgileTool;
 			var featureCollectorId = featureCollector ? featureCollector[0].collectorId
-					: null;
+				: null;
 
 			getCollectors(data, featureCollectorId);
 
@@ -194,23 +103,29 @@
 					ctrl.valid = true;
 					ctrl.collectorId = ctrl.featureTypeOptions[ctrl.selectedTypeIndex];
 					if (ctrl.collectorId.value === 'Jira') {
-	                    ctrl.hideEstimateMetricDropDown = false;
-	                } else {
-	                    ctrl.hideEstimateMetricDropDown = true;
-	                }
+						ctrl.hideEstimateMetricDropDown = false;
+					} else {
+						ctrl.hideEstimateMetricDropDown = true;
+					}
 					ctrl.hideProjectDropDown = false;
 					ctrl.hideTeamDropDown = false;
 					ctrl.hideSprintTypeDropDown = false;
 					ctrl.hideListTypeDropDown = false;
-
-					// Request projects
-					featureData.projectsByCollectorId(ctrl.collectorId.id).then(
-						processProjectsResponse);
-
-					// Request teams
-					featureData.teamsByCollectorId(ctrl.collectorId.id).then(
-						processTeamsResponse);
 				}
+			}
+		}
+
+
+		function initProjectName(widgetConfig) {
+
+			if (widgetConfig.options.projectName != undefined && widgetConfig.options.projectName != null) {
+				ctrl.projectName = widgetConfig.options.projectName;
+			}
+		}
+
+		function initTeamName(widgetConfig) {
+			if (widgetConfig.options.teamName != undefined && widgetConfig.options.teamName != null) {
+				ctrl.teamName = widgetConfig.options.teamName;
 			}
 		}
 
@@ -231,12 +146,25 @@
 		}
 
 		function initListType(widgetConfig) {
-            if (widgetConfig && widgetConfig.options && widgetConfig.options.listType) {
-                ctrl.listType = widgetConfig.options.listType;
-            } else {
-                ctrl.listType = 'epics';
-            }
-        }
+			if (widgetConfig && widgetConfig.options && widgetConfig.options.listType) {
+				ctrl.listType = widgetConfig.options.listType;
+			} else {
+				ctrl.listType = 'epics';
+			}
+		}
+
+		function initSelectedProjectAndTeam(widgetConfig){
+			if(widgetConfig && widgetConfig.options){
+				ctrl.selectedProjectObject={
+					name: widgetConfig.options.projectName,
+					pId: widgetConfig.options.projectName==='Any'?'Any':widgetConfig.options.projectId
+				}
+				ctrl.selectedTeamObject ={
+					name: widgetConfig.options.teamName,
+					teamId:widgetConfig.options.teamName==='Any'?'Any':widgetConfig.options.teamId
+				}
+			}
+		}
 
 		function evaluateTypeSelection() {
 			if (ctrl.collectorId == null || ctrl.collectorId === "") {
@@ -257,21 +185,57 @@
 				ctrl.hideListTypeDropDown = false;
 			}
 
-			// Request projects
-			featureData.projectsByCollectorId(ctrl.collectorId.id).then(
-				processProjectsResponse);
-
-			// Request teams
-			featureData.teamsByCollectorId(ctrl.collectorId.id).then(
-				processTeamsResponse);
 		}
 
-		function submitForm(valid) {
+		function onSelectProject(item,form){
+			ctrl.selectedProjectObject  = item;
+			setValidityForProjectAndTeam(form);
+		}
+
+		function onSelectTeam(item,form){
+			ctrl.selectedTeamObject = item;
+			setValidityForProjectAndTeam(form);
+		}
+
+		function setValidityForProjectAndTeam(form){
+			if(ctrl.projectName ==="Any" && ctrl.teamName==="Any"){
+				form.projectName.$setValidity('anyError',false);
+				form.teamName.$setValidity('teamError',false);
+				return;
+			}else {
+				form.projectName.$setValidity('anyError',true);
+				form.teamName.$setValidity('teamError',true);
+			}
+		}
+
+		function getProjectNames(filter) {
+			return featureData.projectsByCollectorIdPaginated(ctrl.collectorId.id,{"search": filter, "size": 20, "sort": "description", "page": 0}).then(function (response) {
+				if(!angular.isUndefined(filter)&& filter.match(/any/i)){
+					var defaultValue={name:'Any',value:'Any',pId:'Any',teamId:'Any'}
+					response.push(defaultValue);
+				}
+				return response;
+			});
+		}
+
+		function getTeamNames(filter) {
+			return featureData.teamsByCollectorIdPaginated(ctrl.collectorId.id,{"search": filter, "size": 20, "sort": "description", "page": 0}).then(function (response) {
+				if(!angular.isUndefined(filter) && filter.match(/any/i)){
+					var defaultValue={name:'Any',value:'Any',pId:'Any',teamId:'Any'}
+					response.push(defaultValue);
+				}
+				return response;
+			});
+		}
+
+
+		function submitForm(valid,form) {
 			ctrl.submitted = true;
-			if (valid && ctrl.collectors.length) {
-
+			form.projectName.$setValidity('anyError',true);
+			form.projectName.$setValidity('teamError',true);
+			setValidityForProjectAndTeam(form);
+			if(form.$valid && ctrl.collectors.length){
 				createCollectorItem().then(processCollectorItemResponse);
-
 			}
 		}
 
@@ -280,21 +244,21 @@
 			var collectorId;
 
 			if (ctrl.collectorId.value === 'Jira') {
-				collectorId = _.findWhere(ctrl.collectors, {name: 'Jira'}).id
+				collectorId = _.find(ctrl.collectors, {name: 'Jira'}).id
 			} else if (ctrl.collectorId.value === 'VersionOne') {
-				collectorId = _.findWhere(ctrl.collectors, {name: 'VersionOne'}).id
+				collectorId = _.find(ctrl.collectors, {name: 'VersionOne'}).id
 			} else if (ctrl.collectorId.value ==='GitlabFeature') {
-				collectorId = _.findWhere(ctrl.collectors, {name: 'GitlabFeature'}).id
+				collectorId = _.find(ctrl.collectors, {name: 'GitlabFeature'}).id
 			}
 
 			item = {
 				collectorId: collectorId,
 				options: {
 					featureTool: ctrl.collectorId.value,
-					teamName : ctrl.selectedTeam.teamName,
-					teamId : ctrl.selectedTeam.teamId,
-					projectName : ctrl.selectedProject.projectName,
-					projectId : ctrl.selectedProject.projectId
+					teamName : ctrl.selectedTeamObject.name,
+					teamId : ctrl.selectedTeamObject.teamId,
+					projectName : ctrl.selectedProjectObject.name,
+					projectId :ctrl.selectedProjectObject.pId
 				}
 			};
 			return collectorData.createCollectorItem(item);
@@ -306,10 +270,10 @@
 				options : {
 					id : widgetConfig.options.id,
 					featureTool: ctrl.collectorId.value,
-					teamName : ctrl.selectedTeam.teamName,
-					teamId : ctrl.selectedTeam.teamId,
-					projectName : ctrl.selectedProject.projectName,
-					projectId : ctrl.selectedProject.projectId,
+					teamName : ctrl.selectedTeamObject.name,
+					teamId : ctrl.selectedTeamObject.teamId,
+					projectName : ctrl.selectedProjectObject.name,
+					projectId : ctrl.selectedProjectObject.pId,
 					showStatus : { // starting configuration for what is currently showing. Needs to be mutually exclusive!
 						kanban: "kanban" === ctrl.sprintType || "scrumkanban" === ctrl.sprintType,
 						scrum: "scrum" === ctrl.sprintType

@@ -4,7 +4,9 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +28,7 @@ public class CollectorItem extends BaseModel {
     private String description;
     private String niceName;
     private boolean enabled;
+    private List<CollectionError> errors = new ArrayList<>();
     private boolean pushed;
     private ObjectId collectorId;
     private long lastUpdated;
@@ -92,5 +95,12 @@ public class CollectorItem extends BaseModel {
 
     public void setNiceName(String niceName) {
         this.niceName = niceName;
+    }
+
+    public List<CollectionError> getErrors() {
+        return errors;
+    }
+    public int getErrorCount() {
+        return errors.size();
     }
 }

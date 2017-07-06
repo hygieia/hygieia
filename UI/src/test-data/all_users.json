@@ -1,0 +1,8 @@
+{
+    "_id" : "590733c34f941f8a1adf9574",
+    "username" : "someuser",
+    "authorities" : [
+        "ROLE_USER"
+    ],
+    "authType" : "STANDARD"
+}

@@ -3,29 +3,22 @@
           ng-submit="deployConfig.submit(configForm.$valid,deployConfig.deployJob)" novalidate="novalidate">
         <form-group input="deployJob" errors="{required:'Please select your application'}">
 
-            <!--<select name="deployJob"
-                    class="form-control"
-                    ng-model="deployConfig.deployJob"
-                    ng-options="job.name for job in deployConfig.deployJobs | orderBy: 'name' track by job.value"
-                    ng-disabled="deployConfig.jobDropdownDisabled"
-                    required>
-                <option value="">{{deployConfig.jobDropdownPlaceholder}}</option>
-            </select>-->
-
-            <ui-select id="deployJob" ng-model="deployConfig.deployJob" theme="bootstrap"
-                       ng-disabled="deployConfig.jobDropdownDisabled" required>
-                <ui-select-match placeholder={{deployConfig.jobDropdownPlaceholder}}>{{$select.selected.name}}
-                </ui-select-match>
-                <ui-select-choices group-by="'group'"
-                        repeat="job in (deployConfig.deployJobs| orderBy: 'name' | filter: $select.search) track by job.value">
-                    <div ng-bind-html="job.name | highlight: $select.search"></div>
-                </ui-select-choices>
-                <ui-select-no-choice>
-                    No deployment job was found
-                </ui-select-no-choice>
-            </ui-select>
-            
-        </form-group>
+	    <input
+			type="text" name="collectorItemId" class="form-control"
+			placeholder="Search for a deployment application"
+			ng-model="deployConfig.deployJob"
+			uib-typeahead="job as job.name for job in getDeploymentJobs($viewValue)"
+			typeahead-focus 
+			typeahead-template-url="deploymentsUrlTemplate.html"
+			typeahead-min-length="0" 
+			typeahead-wait-ms="250" 
+			autocomplete="off"
+			typeahead-no-results="noResults" 
+			required>
+	
+		<div class="form-control" ng-show="noResults">
+			No Results Found
+		</div>
         
         <form-group input="ignoreRegex" errors="{validregex:'Please enter a valid Regular Expression'}">
 	
@@ -40,7 +33,7 @@
 	    </form-group>
 
         <div class="form-group checkbox">
-            <label>
+            <label title="If true deployments with the same name and ID that processed in different servers will grouped together">
                 <input type="checkbox" name="aggregateServers" ng-model="deployConfig.aggregateServers" ng-change="reload()">
                 Aggregate Servers
             </label>
@@ -61,3 +54,8 @@
         </div>
     </form>
 </widget-modal>
+<script type="text/ng-template" id="deploymentsUrlTemplate.html">
+	<a title={{match.model.group}}>
+		<span ng-bind-html="match.model.name | uibTypeaheadHighlight:query"/> 
+	</a>
+</script>

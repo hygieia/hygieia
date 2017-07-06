@@ -42,6 +42,7 @@ var localStorageSupported = (function () {
         'ui.bootstrap',
         'fitText',
         'angular-chartist',
+        'gridstack-angular',
         'ngCookies',
         'validation.match',
         'as.sortable',
@@ -116,6 +117,18 @@ var localStorageSupported = (function () {
             return dashboardData.detail($stateParams.id);
           }
         }
+      })
+
+      .state('templates', {
+        url: '/templates',
+        controller: 'TemplateController as ctrl',
+        templateUrl: 'app/dashboard/views/templates.html'
+      })
+
+      .state('createTemplate', {
+        url: '/templates/create',
+        controller: 'TemplateController as ctrl',
+        templateUrl: 'app/dashboard/views/templatesManager.html'
       });
 
     })

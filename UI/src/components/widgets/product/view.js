@@ -10,8 +10,8 @@
         }});
 
 
-    productViewController.$inject = ['$scope', '$document', '$uibModal', '$location', '$q', '$stateParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData'];
-    function productViewController($scope, $document, $uibModal, $location, $q, $stateParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData) {
+    productViewController.$inject = ['$scope', '$document', '$uibModal', '$location', '$q', '$stateParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData', 'cicdGatesData'];
+    function productViewController($scope, $document, $uibModal, $location, $q, $stateParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData, cicdGatesData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -128,6 +128,8 @@
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
         ctrl.viewQualityDetails = viewQualityDetails;
+        ctrl.viewGatesDetails = viewGatesDetails;
+        ctrl.initPerc = initPerc;
 
         // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
@@ -339,6 +341,45 @@
                 }
             });
         }
+
+        function viewGatesDetails(team){
+            dashboardData.detail(team.dashBoardId).then(function(res){
+               var componentId = res.widgets[0].componentId;
+
+            $uibModal.open({
+                templateUrl: 'components/widgets/product/cicd-gates/cicd-gates.html',
+                controller: 'CicdGatesController',
+                controllerAs: 'ctrl',
+                size: 'lg',
+                resolve : {
+                    team : function (){
+                        return team;
+                    },
+                    dashboardId : function (){
+                      return team.dashBoardId;
+                    },
+                    componentId: function (){
+                      return componentId;
+                    }
+                }
+            })
+          })
+        }
+
+        function initPerc(team) {
+          var name = team.customname || team.name;
+          dashboardData.detail(team.dashBoardId).then(function(res) {
+            var componentId = res.widgets[0].componentId;
+            cicdGatesData.details(name, team.dashBoardId, team.collectorItemId, componentId).then(function(response) {
+              var pass = 0;
+              for (var i = 0; i < response.length; i++) {
+                pass += response[i].value == "pass" ? 1 : 0;
+              }
+              team.passedGates = pass;
+              team.totalGates = response.length;
+            });
+          })
+        };
 
         function viewQualityDetails(team, stage, metricIndex) {
             $uibModal.open({

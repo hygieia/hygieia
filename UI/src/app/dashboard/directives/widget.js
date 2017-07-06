@@ -104,6 +104,8 @@
             };
 
             $scope.lastUpdatedDisplay = '';
+            $scope.collectorItems = null;
+            $scope.collectionError = false;
 
             // public methods
             $scope.configModal = configModal;
@@ -149,7 +151,6 @@
                         delete $scope.widgetConfig.collectorItemId;
                     }
 
-                    console.log('New Widget Config', $scope.widgetConfig);
                     dashboardData
                         .upsertWidget($scope.dashboard.id, $scope.widgetConfig)
                         .then(function (response) {
@@ -160,7 +161,7 @@
 
                             // add or update the widget from the response.
                             // required when a new widget id is created
-                            if(response.widget !== null && typeof response.widget == 'object') {
+                            if(response.widget !== null && typeof response.widget === 'object') {
                                 angular.extend($scope.widgetConfig, response.widget);
                             }
 
@@ -182,7 +183,7 @@
                 stopInterval();
 
                 // don't request if widget is not in the read state
-                if ($scope.state != WidgetState.READY) {
+                if ($scope.state !== WidgetState.READY) {
                     return;
                 }
 
@@ -242,7 +243,14 @@
                 if (load && load.then) {
                     load.then(function(result) {
                         var lastUpdated = angular.isArray(result) ? _.max(result) : result;
+                        var collectorItems = result.collectorItem;
                         $scope.lastUpdatedDisplay = moment(lastUpdated).dash('ago');
+                        $scope.collectorItems = collectorItems;
+                        if (collectorItems) {
+                            for (var i = 0; (i < collectorItems.length) && !$scope.collectionError ; i++ ) {
+                                $scope.collectionError = collectorItems[i].errors.length > 0;
+                            }
+                        }
                     });
                 }
             }

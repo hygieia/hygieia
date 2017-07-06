@@ -27,6 +27,9 @@ dbusername=${SPRING_DATA_MONGODB_USERNAME:-db}
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
+logRequest=${LOG_REQUEST:-false}
+logSplunkRequest=${LOG_SPLUNK_REQUEST:-false}
+
 corsEnabled=${CORS_ENABLED:-false}
 
 corsWhitelist=${CORS_WHITELIST:-http://domain1.com:port,http://domain2.com:port}
@@ -34,10 +37,26 @@ corsWhitelist=${CORS_WHITELIST:-http://domain1.com:port,http://domain2.com:port}
 feature.dynamicPipeline=${FEATURE_DYNAMIC_PIPELINE:-disabled}
 
 #Authentication Settings
+# JWT expiration time in milliseconds
 auth.expirationTime=${AUTH_EXPIRATION_TIME:-}
+# Secret Key used to validate the JWT tokens
 auth.secret=${AUTH_SECRET:-}
+auth.authenticationProviders=${AUTH_AUTHENTICATION_PROVIDERS:-}
+
+# LDAP Server Url, including port of your LDAP server
 auth.ldapServerUrl=${AUTH_LDAP_SERVER_URL:-}
+
+# If using standard ldap
+# LDAP User Dn Pattern, where the username is replaced with '{0}'
 auth.ldapUserDnPattern=${AUTH_LDAP_USER_DN_PATTERN:-}
+
+# If using ActiveDirectory
+# This will be the domain part of your userPrincipalName
+auth.adDomain=${AUTH_AD_DOMAIN:-}
+# This will be your root dn
+auth.adRootDn=${AUTH_AD_ROOT_DN:-}
+# This is your active directory url
+auth.adUrl=${AUTH_AD_URL:-}
 
 #Monitor Widget proxy credentials
 monitor.proxy.username=${MONITOR_PROXY_USERNAME:-}

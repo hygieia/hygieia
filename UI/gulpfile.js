@@ -238,7 +238,7 @@ gulp.task('fonts', function() {
         .src([
             'bower_components/**/*'
         ])
-        .pipe(filter('**/*.{eot,ttf,woff}'))
+        .pipe(filter('**/*.{eot,ttf,woff,woff2}'))
         .pipe(flatten())
         .pipe(gulp.dest(hygieia.dist + 'fonts'));
 });
