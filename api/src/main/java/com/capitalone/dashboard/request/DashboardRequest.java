@@ -1,12 +1,16 @@
 package com.capitalone.dashboard.request;
 
-import com.capitalone.dashboard.auth.AuthenticationUtil;
-import com.capitalone.dashboard.model.*;
-import org.bson.types.ObjectId;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.capitalone.dashboard.auth.AuthenticationUtil;
+import com.capitalone.dashboard.model.Application;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
+import org.bson.types.ObjectId;
 
 public class DashboardRequest {
     @NotNull

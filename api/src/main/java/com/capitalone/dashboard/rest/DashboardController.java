@@ -1,3 +1,4 @@
+
 package com.capitalone.dashboard.rest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -10,7 +11,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.capitalone.dashboard.model.*;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.WidgetResponse;
+import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.DashboardRequestTitle;
 import com.capitalone.dashboard.request.WidgetRequest;

@@ -2,11 +2,14 @@ package com.capitalone.dashboard.service;
 
 import java.util.List;
 
-import com.capitalone.dashboard.model.*;
 import org.bson.types.ObjectId;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.DataResponse;
 
 public interface DashboardService {
 
