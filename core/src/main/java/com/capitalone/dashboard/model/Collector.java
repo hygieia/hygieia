@@ -2,6 +2,9 @@ package com.capitalone.dashboard.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The collectors that have been registered in the given Dashboard app instance.
  */
@@ -11,6 +14,7 @@ public class Collector extends BaseModel {
     private CollectorType collectorType;
     private boolean enabled;
     private boolean online;
+    private List<CollectionError> errors = new ArrayList<>();
     private long lastExecuted;
 
     public Collector() {
@@ -59,5 +63,13 @@ public class Collector extends BaseModel {
 
     public void setLastExecuted(long lastExecuted) {
         this.lastExecuted = lastExecuted;
+    }
+
+    public List<CollectionError> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<CollectionError> errors) {
+        this.errors = errors;
     }
 }

@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,6 +49,7 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.DashboardRequestTitle;
@@ -55,6 +57,7 @@ import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.util.TestUtil;
 import com.capitalone.dashboard.util.WidgetOptionsBuilder;
+import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
 
 import net.minidev.json.JSONArray;
@@ -358,6 +361,25 @@ public class DashboardControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isOk());
+    }
+    
+    @Test
+    public void updateOwners() throws Exception {
+    	ObjectId dashId = ObjectId.get();
+    	Iterable<Owner> owners = Lists.newArrayList(new Owner("one", AuthType.STANDARD), new Owner("two", AuthType.LDAP));
+    	when(dashboardService.updateOwners(dashId, owners)).thenReturn(owners);
+    	mockMvc.perform(put("/dashboard/" + dashId.toString() + "/owners")
+    			.contentType(MediaType.APPLICATION_JSON_UTF8)
+    			.content(TestUtil.convertObjectToJsonBytes(owners)))
+    			.andExpect(status().is2xxSuccessful())
+    			.andExpect(jsonPath("$", hasSize(2)))
+    			.andExpect(jsonPath("$[0].username", is("one")))
+    			.andExpect(jsonPath("$[0].authType", is(AuthType.STANDARD.name())))
+    			.andExpect(jsonPath("$[1].username", is("two")))
+    			.andExpect(jsonPath("$[1].authType", is(AuthType.LDAP.name())));
+    	verify(dashboardService).updateOwners(dashId, owners);
+    		
+    	
     }
 
 

@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,8 @@ public class GitHubSettings {
     private String key;
     private int firstRunHistoryDays;
     private String[] notBuiltCommits;
+	@Value("${github.errorThreshold:2}")
+    private int errorThreshold;
 
 
 	public String getHost() {
@@ -55,4 +58,12 @@ public class GitHubSettings {
     public void setNotBuiltCommits(String[] notBuiltCommits) {
         this.notBuiltCommits = notBuiltCommits;
     }
+
+	public int getErrorThreshold() {
+		return errorThreshold;
+	}
+
+	public void setErrorThreshold(int errorThreshold) {
+		this.errorThreshold = errorThreshold;
+	}
 }

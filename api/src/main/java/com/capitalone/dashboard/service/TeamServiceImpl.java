@@ -11,6 +11,8 @@ import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.TeamRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -102,4 +104,18 @@ public class TeamServiceImpl implements TeamService {
 
         return teams;
     }
+
+    /**
+     * Retrieves the team information for a given collectorId, teamName, pageable
+     *
+     * @param collectorId, teamName, pageable
+     *
+     * @return teams
+     */
+    @Override
+    public Page<Team> getTeamByCollectorWithFilter(ObjectId collectorId, String teamName, Pageable pageable) {
+        Page<Team> teams = teamRepository.findAllByCollectorIdAndNameContainingIgnoreCase(collectorId,teamName,pageable);
+        return teams;
+    }
+
 }

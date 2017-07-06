@@ -87,4 +87,48 @@
          </item>
       </values>
    </lines>
+   <lines>
+      <values>
+         <item>
+            <key>environment</key>
+            <value xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">Production</value>
+         </item>
+         <item>
+            <key>package</key>
+            <value xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">Helloworld/helloworld-v1.0.1, Helloworld/helloworld-v1.0.0</value>
+         </item>
+         <item>
+            <key>environmentId</key>
+            <value xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">Environments/prod/Production</value>
+         </item>
+         <item>
+            <key>completionDate</key>
+            <value xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">2016-04-12T15:04:24.567+0000</value>
+         </item>
+         <item>
+            <key>environmentIdWithoutRoot</key>
+            <value xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">prod/Production</value>
+         </item>
+         <item>
+            <key>type</key>
+            <value xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">Update</value>
+         </item>
+         <item>
+            <key>user</key>
+            <value xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">admin</value>
+         </item>
+         <item>
+            <key>taskId</key>
+            <value xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">aaaafc80-eedf-410e-bc43-4a0c3fdd4nnn</value>
+         </item>
+         <item>
+            <key>startDate</key>
+            <value xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">2016-04-12T15:04:24.567+0000</value>
+         </item>
+         <item>
+            <key>status</key>
+            <value xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">DONE</value>
+         </item>
+      </values>
+   </lines>
 </report>

@@ -179,11 +179,12 @@
         <module>collectors/feature/versionone</module>
         <module>collectors/feature/gitlab</module>
         <module>collectors/misc/chat-ops</module>
+        <module>collectors/performance/appdynamics</module>
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
-        <module>hygieia-jenkins-plugin</module>
+        <module>collectors/cmdb/hpsm</module>
         <module>UI</module>
       </modules>
       <build>
@@ -219,10 +220,12 @@
         <module>collectors/feature/versionone</module>
         <module>collectors/feature/gitlab</module>
         <module>collectors/misc/chat-ops</module>
+        <module>collectors/performance/appdynamics</module>
         <module>collectors/scm/bitbucket</module>
         <module>collectors/scm/github</module>
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
+        <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
      	<module>UI</module>
  </modules>

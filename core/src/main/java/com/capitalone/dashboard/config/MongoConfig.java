@@ -2,6 +2,7 @@ package com.capitalone.dashboard.config;
 
 import com.capitalone.dashboard.repository.RepositoryPackage;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import org.slf4j.Logger;
@@ -53,6 +54,10 @@ public class MongoConfig extends AbstractMongoConfiguration {
         MongoClient client;
         LOGGER.info("ReplicaSet" + dbreplicaset);
 
+        MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
+        builder.maxConnectionIdleTime(60000);
+        MongoClientOptions opts = builder.build();
+
         if (Boolean.parseBoolean(dbreplicaset)) {
             List<ServerAddress> serverAddressList = new ArrayList<>();
             for (String h : hostport) {
@@ -71,7 +76,7 @@ public class MongoConfig extends AbstractMongoConfiguration {
             } else {
                 MongoCredential mongoCredential = MongoCredential.createScramSha1Credential(
                         userName, databaseName, password.toCharArray());
-                client = new MongoClient(serverAddressList, Collections.singletonList(mongoCredential));
+                client = new MongoClient(serverAddressList, Collections.singletonList(mongoCredential), opts);
             }
         } else {
             ServerAddress serverAddr = new ServerAddress(host, port);
@@ -81,7 +86,7 @@ public class MongoConfig extends AbstractMongoConfiguration {
             } else {
                 MongoCredential mongoCredential = MongoCredential.createScramSha1Credential(
                         userName, databaseName, password.toCharArray());
-                client = new MongoClient(serverAddr, Collections.singletonList(mongoCredential));
+                client = new MongoClient(serverAddr, Collections.singletonList(mongoCredential), opts);
             }
 
         }
