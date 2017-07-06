@@ -136,7 +136,7 @@ public class DashboardControllerTest {
             .andExpect(jsonPath("$.fieldErrors.template", hasItems("Please select a template")))
             .andExpect(jsonPath("$.fieldErrors.type", hasItems("Please select a type")))
             .andReturn();
-        assertThat(getFieldErrors(result), hasEntry(is("dashboardRequestTitle.title"), contains(is("size must be between 6 and 200"))));
+        assertThat(getFieldErrors(result), hasEntry(is("dashboardRequestTitle.title"), contains(is("size must be between 6 and 50"))));
     }
     @Test
     public void createDashboard_specialCharacters_badRequest() throws Exception {
@@ -291,7 +291,7 @@ public class DashboardControllerTest {
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fieldErrors.title", hasItems("size must be between 6 and 200")))
+                .andExpect(jsonPath("$.fieldErrors.title", hasItems("size must be between 6 and 50")))
                 ;
     }
     
