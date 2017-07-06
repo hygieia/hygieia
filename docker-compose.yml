@@ -1,45 +1,70 @@
-mongodb:
-  image: mongo:latest
-  container_name: mongodb
-  command: mongod --smallfiles
-  ports:
-   - "27017:27017"
-  volumes:
-   - ./mongo:/data/db:rw
-  volume_driver: local
-hygieia-api:
-  image: hygieia-api:latest
-  container_name: hygieia-api
-  ports:
-  - "8080:8080"
-  volumes:
-  - ./logs:/hygieia/logs
-  links:
-  - mongodb:mongo
-hygieia-ui:
-  image: hygieia-ui:latest
-  container_name: hygieia-ui
-  ports:
-  - "8088:80"
-  links:
-  - hygieia-api
-
-
-hygieia-github-scm-collector:
-  image: hygieia-github-scm-collector:latest
-  container_name: hygieia-github
-  volumes:
-  - ./logs:/hygieia/logs
-  links:
-  - mongodb:mongo
-  - hygieia-api
-# place any values you want to change in docker-compose.override.yml
-#  environment:
-#  - GITHUB_HOST=github.com
-#  - GITHUB_CRON='0 0/5 * * * *'
-#  - GITHUB_COMMIT_THREASHOLD_DAYS=15
-
-
+version: '2'
+volumes:
+  data: {}
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    #command: mongod --smallfiles
+    ports:
+     - "27017:27017"
+    volumes:
+     - data:/data/db:rw
+    volume_driver: local
+  db-setup:
+    build: db
+    depends_on: [mongodb]
+    container_name: db_doer
+    links:
+      - mongodb
+    #links now use hostnames instead of ENV Vars
+    environment:
+      - MONGO_STARTED=yes
+  hygieia-api:
+    build: api/docker
+    image: library/hygieia-api:latest
+    container_name: hygieia-api
+    ports:
+      - "8080:8080"
+    volumes:
+    - data:/hygieia/logs
+    links:
+      - mongodb
+    environment:
+      - MONGO_STARTED=yes
+  hygieia-ui:
+    build: UI/docker
+    image: library/hygieia-ui:latest
+    container_name: hygieia-ui
+    ports:
+      - "8088:80"
+    links:
+      - hygieia-api
+  hygieia-github-scm-collector:
+    image: capitalone/hygieia-github-scm-collector:latest
+    container_name: hygieia-github
+    volumes:
+      - ./logs:/hygieia/logs
+    links:
+      - mongodb
+      - hygieia-api
+    #place any values you want to change in docker-compose.override.yml
+    environment:
+    - GITHUB_HOST=github.com
+    #- GITHUB_CRON='0 0/5 * * * *'
+    - GITHUB_COMMIT_THREASHOLD_DAYS=15
+    - MONGO_PORT=tcp://mongodb:27017
+  # hygieia-jenkins-build-collector:
+  #   image: capitalone/hygieia-jenkins-build-collector:latest
+  #   container_name: hygieia-jenkins-build
+  #   volumes:
+  #   - ./logs:/hygieia/logs
+  #   links:
+  #   - mongodb:mongo
+  #   - hygieia-api
+  #   environment:
+  # #Jenkins server (required) - Can provide multiple
+  #   - JENKINS_MASTER=http://172.17.0.2:8080
 
 hygieia-jira-feature-collector:
   image: hygieia-jira-feature-collector:latest
@@ -330,5 +355,3 @@ hygieia-artifactory-artifact-collector:
 #  - ARTIFACTORY_REPO=prerelease,release
 # Artifactory REST endpoint
 #  - ARTIFACTORY_ENDPOINT=artifactory/
-
-
