@@ -139,9 +139,13 @@ Only the above proxy settings (non-authentication) may required to be set on you
 
 * Build the containers
 
+#### Maven build:
 ```bash
 mvn docker:build
 ```
+
+#### docker build:
+docker-compose build
 
 * Bring up the container images
 
@@ -149,7 +153,9 @@ mvn docker:build
 docker-compose up -d
 ```
 
-* Create a user in Mongo (if you log into the container then you don't have to install Mongo locally)
+If using Maven build, continue on. If you have used the docker build the user should already exist in the mongodb container.
+
+* Create user in mongo (if you log into the container then you dont have to install mongo locally)
 
 ```bash
 docker exec -t -i mongodb2 bash
