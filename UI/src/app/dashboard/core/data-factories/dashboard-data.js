@@ -37,7 +37,7 @@
             upsertWidget: upsertWidget,
             types: types,
             getComponent:getComponent,
-            updateBusItems:updateBusItems,
+            updateBusItems:updateBusItems
         };
 
         // reusable helper
