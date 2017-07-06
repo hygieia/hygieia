@@ -141,8 +141,9 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
                 repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
 
-                LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
+                LOG.info("*******" + repo.getOptions().toString() + "::" + repo.getBranch() + "********");
                 try {
+                    LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + " get commits");
                     for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
                         LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
                         if (isNewCommit(repo, commit)) {
@@ -152,6 +153,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                         }
                     }
 
+                    LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + " get pulls");
                     List<GitRequest> pulls = gitHubClient.getPulls(repo, firstRun, gitRequestRepository);
                     for (GitRequest pull : pulls) {
                         LOG.debug(pull.getTimestamp()+":::"+pull.getScmCommitLog());
@@ -167,6 +169,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                         }
                     }
 
+                    LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + " get issues");
                     List<GitRequest> issues = gitHubClient.getIssues(repo, firstRun, gitRequestRepository);
                     for (GitRequest issue : issues) {
                         LOG.debug(issue.getTimestamp()+":::"+issue.getScmCommitLog());
