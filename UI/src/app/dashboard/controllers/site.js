@@ -147,6 +147,7 @@
         }
 
         function processMyDashboardResponse(mydata) {
+
             // add dashboards to list
             ctrl.mydash = [];
             var dashboards = [];
@@ -173,6 +174,9 @@
         function processMyDashboardError(data) {
             ctrl.mydash = [];
         }
+
+
+
 
         function deleteDashboard(item) {
             var id = item.id;

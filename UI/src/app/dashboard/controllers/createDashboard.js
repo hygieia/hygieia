@@ -13,7 +13,7 @@
     function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType, cmdbData, dashboardService) {
         var ctrl = this;
 
-            // public variables
+        // public variables
         ctrl.dashboardTitle = '';
         ctrl.applicationName = '';
         ctrl.availableTemplates = [];
@@ -97,7 +97,7 @@
                 var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
                     submitData = {
                         template: document.cdf.selectedTemplate.value,
-                        title:  document.cdf.dashboardTitle.value,
+                        title: document.cdf.dashboardTitle.value,
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
                         componentName: appName,
@@ -114,7 +114,6 @@
                         $uibModalInstance.dismiss();
                     })
                     .error(function (data) {
-
                         if(data.errorCode === 401) {
                           $modalInstance.close();
                         }else if(data.errorCode === -13){

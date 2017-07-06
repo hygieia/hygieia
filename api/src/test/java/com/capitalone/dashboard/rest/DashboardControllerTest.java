@@ -78,7 +78,6 @@ public class DashboardControllerTest {
     }
     @Test
     public void dashboards() throws Exception {
-
         Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
         when(dashboardService.all()).thenReturn(Arrays.asList(d1));
         mockMvc.perform(get("/dashboard"))
@@ -102,7 +101,6 @@ public class DashboardControllerTest {
     }
     @Test
     public void createTeamDashboard() throws Exception {
-
         DashboardRequest request = makeDashboardRequest("template", "dashboard title", "app", "comp","amit", null, "team", configItemAppId, configItemComponentId);
         initiateSecurityContext("amit", AuthType.STANDARD);
         mockMvc.perform(post("/dashboard")
