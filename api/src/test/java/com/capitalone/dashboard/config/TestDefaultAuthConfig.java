@@ -24,6 +24,7 @@ import com.capitalone.dashboard.service.CloudInstanceService;
 import com.capitalone.dashboard.service.CloudSubnetService;
 import com.capitalone.dashboard.service.CloudVirtualNetworkService;
 import com.capitalone.dashboard.service.CloudVolumeService;
+import com.capitalone.dashboard.service.CmdbService;
 import com.capitalone.dashboard.service.CodeQualityService;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.CommitService;
@@ -204,4 +205,7 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 	 public GitRequestService gitRequestService() {
 		 return Mockito.mock(GitRequestService.class);
 	 }
+
+	 @Bean
+	 public CmdbService cmdbService() {return Mockito.mock(CmdbService.class);}
  }
