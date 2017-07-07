@@ -6,7 +6,7 @@
             <label class="modal-label">Build Job</label>
  			 <input type="text" name="collectorItemId" class="form-control" placeholder="Search a build job"
        ng-model="buildConfig.collectorItemId"
- 			 uib-typeahead="item as item.description for item in getJobs($viewValue)" typeahead-focus
+ 			 uib-typeahead="item as item.niceName + '-' + item.description for item in getJobs($viewValue)" typeahead-focus
  			 typeahead-template-url="jobUrlTemplate.html"
  			 typeahead-min-length="0"
  			 typeahead-wait-ms="250"
