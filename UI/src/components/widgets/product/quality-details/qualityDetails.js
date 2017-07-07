@@ -150,7 +150,7 @@
                     return daysAgo(row.timestamp);
                 })
                 .map(function(tests, key) {
-                    var avg = tests.length ? _(tests).pluck(metric).reduce(function(a, b) { return a + b; }) / tests.length : 0;
+                    var avg = tests.length ? _(tests).map(metric).reduce(function(a, b) { return a + b; }) / tests.length : 0;
 
                     // set obj
                     return [parseInt(key), avg];

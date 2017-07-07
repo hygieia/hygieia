@@ -144,7 +144,11 @@ public class DefaultGitHubClient implements GitHubClient {
                 long timestamp = new DateTime(str(commitAuthorObject, "date"))
                         .getMillis();
 				JSONObject authorObject = (JSONObject) jsonObject.get("author");
-				String authorLogin = str(authorObject, "login");
+				String authorLogin = "";
+				if(authorObject!=null){
+					authorLogin = str(authorObject, "login");
+				}
+
                 JSONArray parents = (JSONArray) jsonObject.get("parents");
                 List<String> parentShas = new ArrayList<>();
                 if (parents != null) {
