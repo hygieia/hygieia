@@ -5,7 +5,7 @@
 
                 <a ng-href="#/" class="dashboard-logo"></a>
 
-                {{::ctrl.dashboard.title}}
+                <h4 title="{{::ctrl.dashboard.title }}">{{::ctrl.dashboard.title | trunText:50}}</h4>
 
                 <div class="pipeline-toggle btn-group">
 

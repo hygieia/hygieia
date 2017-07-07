@@ -9,7 +9,7 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
-
+import com.capitalone.dashboard.model.DataResponse;
 
 public interface DashboardService {
 
@@ -130,7 +130,36 @@ public interface DashboardService {
      */
 
     Component getComponent(ObjectId componentId);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessService(String configItem);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessApplication(String configItem);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItemApplication dashboard unique identifier
+     * @param configItemService dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String configItemService, String configItemApplication);
 
+    /**
+     *  Updates Dashboard Business Items
+     * @param dashboardId
+     * @param dashboard
+     * @return dashboard instance
+     */
+    Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard dashboard) throws HygieiaException;
 }
 
 
