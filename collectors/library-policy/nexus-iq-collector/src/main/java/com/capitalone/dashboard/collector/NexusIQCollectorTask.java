@@ -13,8 +13,6 @@ import com.capitalone.dashboard.repository.LibraryPolicyResultsRepository;
 import com.capitalone.dashboard.repository.NexusIQApplicationRepository;
 import com.capitalone.dashboard.repository.NexusIQCollectorRepository;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
@@ -150,6 +148,7 @@ public class NexusIQCollectorTask extends CollectorTask<NexusIQCollector> {
         }
     }
 
+    @SuppressWarnings({"PMD.CollapsibleIfStatements","PMD.AvoidDeeplyNestedIfStmts"})
     private void refreshData(List<NexusIQApplication> applications) {
         long start = System.currentTimeMillis();
         int count = 0;
@@ -188,12 +187,12 @@ public class NexusIQCollectorTask extends CollectorTask<NexusIQCollector> {
         return nexusIQApplicationRepository.findEnabledApplications(collector.getId(), instanceUrl);
     }
 
-    private List<NexusIQApplication> getSavedApplcations(NexusIQCollector collector, String instanceUrl) {
-        Iterable<NexusIQApplication> iterable = nexusIQApplicationRepository.findAll();
-        List<NexusIQApplication> returnList = new ArrayList<>();
-        iterable.forEach(returnList::add);
-        return returnList;
-    }
+//    private List<NexusIQApplication> getSavedApplcations(NexusIQCollector collector, String instanceUrl) {
+//        Iterable<NexusIQApplication> iterable = nexusIQApplicationRepository.findAll();
+//        List<NexusIQApplication> returnList = new ArrayList<>();
+//        iterable.forEach(returnList::add);
+//        return returnList;
+//    }
 
     private void addNewApplications(List<NexusIQApplication> applications, List<NexusIQApplication> existingApplications, NexusIQCollector collector) {
         long start = System.currentTimeMillis();
