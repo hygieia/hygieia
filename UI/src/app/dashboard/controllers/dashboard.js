@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['dashboard', '$location'];
-    function DashboardController(dashboard, $location) {
+    DashboardController.$inject = ['dashboard', '$location', 'dashboardService'];
+    function DashboardController(dashboard, $location, dashboardService) {
         var ctrl = this;
 
         // if dashboard isn't available through resolve it may have been deleted
@@ -24,6 +24,7 @@
 
         // public variables
         ctrl.templateUrl = 'components/templates/' + dashboard.template.toLowerCase() + '.html';
+        dashboard.title = dashboardService.getDashboardTitle(dashboard);
         ctrl.dashboard = dashboard;
 
         console.log('Dashboard', dashboard);

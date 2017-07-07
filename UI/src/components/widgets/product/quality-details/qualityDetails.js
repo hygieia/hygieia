@@ -388,8 +388,8 @@
                     _(tests).groupBy(function(test) {
                         return daysAgo(test.timestamp);
                     }).forEach(function(tests, key) {
-                        var passed = _(tests).pluck('successCount').reduce(function(a, b) { return a + b; }),
-                            total = _(tests).pluck('totalCount').reduce(function(a, b) { return a + b; }),
+                        var passed = _(tests).map('successCount').reduce(function(a, b) { return a + b; }),
+                            total = _(tests).map('totalCount').reduce(function(a, b) { return a + b; }),
                             tip = '';
 
                         _(tests).forEach(function(run) {
