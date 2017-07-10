@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.audit.service;
+package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;

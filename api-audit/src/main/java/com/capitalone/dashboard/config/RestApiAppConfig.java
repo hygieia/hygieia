@@ -1,5 +1,5 @@
 
-package com.capitalone.dashboard.audit.config;
+package com.capitalone.dashboard.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
                 @ComponentScan.Filter(RestController.class),
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = WebMVCConfig.class)
         },
-        basePackages = "com.capitalone.dashboard.audit"
+        basePackages = "com.capitalone.dashboard"
 )
 public class RestApiAppConfig {
 
