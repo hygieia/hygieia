@@ -1,3 +1,4 @@
+
 package com.capitalone.dashboard.rest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -28,6 +29,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.WidgetResponse;
+import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.DashboardRequestTitle;
 import com.capitalone.dashboard.request.WidgetRequest;
@@ -58,9 +60,12 @@ public class DashboardController {
                     .status(HttpStatus.CREATED)
                     .body(dashboardService.create(request.toDashboard()));
         } catch (HygieiaException he) {
+            Dashboard dashboard = request.toDashboard();
+            dashboard.setErrorMessage(he.getMessage());
+            dashboard.setErrorCode(he.getErrorCode());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+                    .body(dashboard);
         }
     }
 
@@ -208,6 +213,40 @@ public class DashboardController {
             component = dashboardService.getComponent(componentId);
         }
         return component;
+    }
+    @RequestMapping(value = "/dashboard/configItemApp/{configItem}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public DataResponse<Iterable<Dashboard>> getDashboardByApp(@PathVariable String configItem) {
+        return dashboardService.getByBusinessService(configItem);
+    }
+    @RequestMapping(value = "/dashboard/configItemComponent/{configItem}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public DataResponse<Iterable<Dashboard>> getDashboardByComp(@PathVariable String configItem) {
+        return dashboardService.getByBusinessApplication(configItem);
+    }
+    @RequestMapping(value = "/dashboard/configItemComponentAndApp/{configItemComp}/{configItemApp}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public DataResponse<Iterable<Dashboard>> getDashboardByCompAndApp(@PathVariable String configItemComp,@PathVariable String configItemApp) {
+        return dashboardService.getByServiceAndApplication(configItemComp,configItemApp);
+    }
+
+    @DashboardOwnerOrAdmin
+    @RequestMapping(value = "/dashboard/updateBusItems/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateDashboardBusinessItems(@PathVariable ObjectId id, @RequestBody Dashboard request) {
+        try {
+            Dashboard dashboard = dashboardService.updateDashboardBusinessItems(id, request);
+            if(dashboard != null){
+                return ResponseEntity.ok("Updated");
+            }else{
+                return ResponseEntity.ok("Unchanged");
+            }
+
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
+
     }
 
 }

@@ -71,9 +71,11 @@
                                        </a>
                                     </span>
 
-                                    <a class="btn-block clickable" ng-click="ctrl.open(myitem.id)">
+                                    <a class="btn-block clickable" title="{{myitem.name}}" ng-click="ctrl.open(myitem.id)">
                                         <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : myitem.isProduct}"></span>
-                                        {{ myitem.name }}
+                                        <span   ng-class="{'text-danger' : myitem.showError}">
+                                            {{ myitem.name | trunText:50 }}
+                                        </span>
                                     </a>
                                 </li>
                             </ul>
@@ -85,14 +87,14 @@
                             <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
 
                             <ul class="list-animate list-group text-left">
-                                <li class="list-group-item clickable" ng-click="ctrl.open(item.id)"
+                                <li  title="{{item.name}}"class="list-group-item clickable" ng-click="ctrl.open(item.id)"
                                     ng-repeat="item in filteredDashboards = (ctrl.dashboards | filter: ctrl.filterDashboards | orderBy:'name')">
                                     <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : item.isProduct}"></span>
 
                                     <span class="fa fa-angle-right list-group-item-right"></span>
 
                                 </span>
-                                    {{item.name}}
+                                    {{item.name | trunText:50}}
                                 </li>
                             </ul>
 

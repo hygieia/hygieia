@@ -25,7 +25,7 @@
                               <div class="list-animate">
                                   <div class="dash-modal-row delete-dashboard-row clearfix"
                                       ng-repeat="item in ctrl.dashboards | orderBy:'name'">
-                                      <div class="btn-block">{{item.name}}
+                                      <div title="{{item.name}}" class="btn-block">{{item.name |  trunText:30}}
                                           <dash-trash class="clickable pull-right" ng-click="ctrl.deleteDashboard(item.id)"></dash-trash>
                                           <dash-edit class="clickable pull-right" ng-click="ctrl.editDashboard(item)"></dash-edit>
                                       </div>
