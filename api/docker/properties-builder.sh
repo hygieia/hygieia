@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
+  echo "Skipping properties builder"
+  return
+fi
+
 # if we are linked, use that info
 if [ "$MONGO_STARTED" != "" ]; then
   # links now use hostnames
