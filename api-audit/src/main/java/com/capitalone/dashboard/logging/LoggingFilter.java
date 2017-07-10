@@ -1,7 +1,7 @@
-package com.capitalone.dashboard.audit.logging;
+package com.capitalone.dashboard.logging;
 
 
-import com.capitalone.dashboard.audit.ApiSettings;
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.RequestLog;
 import com.capitalone.dashboard.repository.RequestLogRepository;
 import com.mongodb.util.JSON;
