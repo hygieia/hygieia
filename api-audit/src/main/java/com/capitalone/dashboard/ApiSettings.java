@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.audit;
+package com.capitalone.dashboard;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;

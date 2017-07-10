@@ -1,9 +1,9 @@
-package com.capitalone.dashboard.audit;
+package com.capitalone.dashboard;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
-import com.capitalone.dashboard.audit.config.RestApiAppConfig;
-import com.capitalone.dashboard.audit.config.WebMVCConfig;
+import com.capitalone.dashboard.config.RestApiAppConfig;
+import com.capitalone.dashboard.config.WebMVCConfig;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;

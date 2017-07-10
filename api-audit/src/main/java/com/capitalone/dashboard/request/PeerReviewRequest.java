@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.audit.request;
+package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
 

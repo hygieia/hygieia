@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.audit.logging;
+package com.capitalone.dashboard.logging;
 
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;

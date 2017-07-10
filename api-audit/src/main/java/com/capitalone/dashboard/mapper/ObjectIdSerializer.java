@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.audit.mapper;
+package com.capitalone.dashboard.mapper;
 
 
 import com.fasterxml.jackson.core.JsonGenerator;

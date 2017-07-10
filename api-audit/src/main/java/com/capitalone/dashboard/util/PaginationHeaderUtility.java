@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.audit.util;
+package com.capitalone.dashboard.util;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;

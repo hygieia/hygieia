@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.audit.editors;
+package com.capitalone.dashboard.editors;
 
 import com.capitalone.dashboard.model.BuildStatus;
 

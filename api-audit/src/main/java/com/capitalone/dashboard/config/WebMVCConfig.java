@@ -1,8 +1,8 @@
-package com.capitalone.dashboard.audit.config;
+package com.capitalone.dashboard.config;
 
 import java.util.List;
 
-import com.capitalone.dashboard.audit.mapper.CustomObjectMapper;
+import com.capitalone.dashboard.mapper.CustomObjectMapper;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.capitalone.dashboard.audit.rest")
+@ComponentScan(basePackages = "com.capitalone.dashboard.rest")
 public class WebMVCConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {

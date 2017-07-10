@@ -1,5 +1,6 @@
-package com.capitalone.dashboard.audit.model;
+package com.capitalone.dashboard.response;
 
+import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
 

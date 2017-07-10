@@ -1,16 +1,13 @@
-package com.capitalone.dashboard.audit.rest;
+package com.capitalone.dashboard.rest;
 
-import com.capitalone.dashboard.audit.model.AuditStatus;
-import com.capitalone.dashboard.audit.model.PeerReviewResponse;
-import com.capitalone.dashboard.audit.request.PeerReviewRequest;
-
-import com.capitalone.dashboard.audit.service.AuditService;
+import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
-
 import com.capitalone.dashboard.model.GitRequest;
-
+import com.capitalone.dashboard.response.PeerReviewResponse;
+import com.capitalone.dashboard.request.PeerReviewRequest;
+import com.capitalone.dashboard.service.AuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;

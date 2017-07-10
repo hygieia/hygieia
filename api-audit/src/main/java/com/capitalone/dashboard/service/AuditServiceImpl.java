@@ -1,4 +1,4 @@
-package com.capitalone.dashboard.audit.service;
+package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 public class AuditServiceImpl implements AuditService {
 
-    private final GitRequestRepository gitRequestRepository;
+    private GitRequestRepository gitRequestRepository;
     private final CommitRepository commitRepository;
 
     @Autowired
