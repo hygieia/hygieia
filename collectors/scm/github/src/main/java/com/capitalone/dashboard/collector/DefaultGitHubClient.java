@@ -82,8 +82,8 @@ public class DefaultGitHubClient implements GitHubClient {
             hostName = url.getHost();
             protocol = url.getProtocol();
         } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
             LOG.error(e.getMessage());
+			throw new RestClientException(e.getMessage(), e);
         }
         String hostUrl = protocol + "://" + hostName + "/";
         String repoName = repoUrl.substring(hostUrl.length(), repoUrl.length());
@@ -144,7 +144,10 @@ public class DefaultGitHubClient implements GitHubClient {
                 long timestamp = new DateTime(str(commitAuthorObject, "date"))
                         .getMillis();
 				JSONObject authorObject = (JSONObject) jsonObject.get("author");
-				String authorLogin = str(authorObject, "login");
+				String authorLogin = "";
+				if (authorObject != null) {
+					authorLogin = str(authorObject, "login");
+				}
                 JSONArray parents = (JSONArray) jsonObject.get("parents");
                 List<String> parentShas = new ArrayList<>();
                 if (parents != null) {
