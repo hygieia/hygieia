@@ -33,6 +33,7 @@ import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.PaginationHeaderUtility;
 import com.capitalone.dashboard.service.Monitor2Service;
 import com.capitalone.dashboard.service.PerformanceService;
+import com.capitalone.dashboard.service.CmdbService;
 
 
 /**
@@ -190,4 +191,7 @@ public class TestConfig {
 	public ApiTokenService apiTokenService() {
 		return Mockito.mock(ApiTokenService.class);
 	}
+
+	@Bean
+	public CmdbService cmdbService() {return Mockito.mock(CmdbService.class);}
 }
