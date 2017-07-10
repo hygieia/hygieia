@@ -325,7 +325,7 @@
                 teamProdData.totalCommits = !angular.isUndefined(commitTimeToProd)?commitTimeToProd.length:0;
 
                 if (!angular.isUndefined(commitTimeToProd)?commitTimeToProd.length:0 > 1) {
-                    var averageDuration = _(commitTimeToProd).pluck('duration').reduce(function (a, b) {
+                    var averageDuration = _(commitTimeToProd).map('duration').reduce(function (a, b) {
                             return a + b;
                         }) / commitTimeToProd.length;
 
