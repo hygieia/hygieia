@@ -118,7 +118,7 @@ docker ps
 Take the port mapping and the IP for your docker-machine <env> ip and verify by ```http://<docker-machine env ip>:<docker port for hygieia_api>/api/dashboard```
 
 
-##Create new API
+## Create new API
 1. Create a new rest controller or add to an existing controller
 2. Create a new service interface and new service implementation. 
 3. Add new request and response classes 
