@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
+  echo "Skipping properties builder"
+  return
+fi
+
 # mongo container provides the HOST/PORT
 # api container provided DB Name, ID & PWD
 
@@ -8,7 +13,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-gitlab-git-collector.properties
+	PROP_FILE=hygieia-gitlab-scm-collector.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then

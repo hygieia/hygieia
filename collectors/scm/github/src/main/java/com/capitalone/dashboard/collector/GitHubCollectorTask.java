@@ -7,10 +7,12 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitHubRepoRepository;
+import com.capitalone.dashboard.repository.GitRequestRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -35,6 +37,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     private final BaseCollectorRepository<Collector> collectorRepository;
     private final GitHubRepoRepository gitHubRepoRepository;
     private final CommitRepository commitRepository;
+    private final GitRequestRepository gitRequestRepository;
     private final GitHubClient gitHubClient;
     private final GitHubSettings gitHubSettings;
     private final ComponentRepository dbComponentRepository;
@@ -42,12 +45,13 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
     @Autowired
     public GitHubCollectorTask(TaskScheduler taskScheduler,
-                               BaseCollectorRepository<Collector> collectorRepository,
-                               GitHubRepoRepository gitHubRepoRepository,
-                               CommitRepository commitRepository,
-                               GitHubClient gitHubClient,
-                               GitHubSettings gitHubSettings,
-                               ComponentRepository dbComponentRepository) {
+                                   BaseCollectorRepository<Collector> collectorRepository,
+                                   GitHubRepoRepository gitHubRepoRepository,
+                                   CommitRepository commitRepository,
+                                    GitRequestRepository gitRequestRepository,
+                                   GitHubClient gitHubClient,
+                                   GitHubSettings gitHubSettings,
+                                   ComponentRepository dbComponentRepository) {
         super(taskScheduler, "GitHub");
         this.collectorRepository = collectorRepository;
         this.gitHubRepoRepository = gitHubRepoRepository;
@@ -55,6 +59,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         this.gitHubClient = gitHubClient;
         this.gitHubSettings = gitHubSettings;
         this.dbComponentRepository = dbComponentRepository;
+        this.gitRequestRepository = gitRequestRepository;
     }
 
     @Override
@@ -126,6 +131,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         long start = System.currentTimeMillis();
         int repoCount = 0;
         int commitCount = 0;
+        int pullCount = 0;
+        int issueCount = 0;
 
         clean(collector);
         for (GitHubRepo repo : enabledRepos(collector)) {
@@ -134,14 +141,47 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
 
                 repo.removeLastUpdateDate();  //moved last update date to collector item. This is to clean old data.
 
-                LOG.debug(repo.getOptions().toString() + "::" + repo.getBranch());
+                LOG.info("*******" + repo.getOptions().toString() + "::" + repo.getBranch() + "********");
                 try {
+                    LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + " get commits");
                     for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
                         LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
                         if (isNewCommit(repo, commit)) {
                             commit.setCollectorItemId(repo.getId());
                             commitRepository.save(commit);
                             commitCount++;
+                        }
+                    }
+
+                    LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + " get pulls");
+                    List<GitRequest> pulls = gitHubClient.getPulls(repo, firstRun, gitRequestRepository);
+                    for (GitRequest pull : pulls) {
+                        LOG.debug(pull.getTimestamp()+":::"+pull.getScmCommitLog());
+                        if (isNewPull(repo, pull)) {
+                            pull.setCollectorItemId(repo.getId());
+                            gitRequestRepository.save(pull);
+                            pullCount++;
+                        } else {
+                            GitRequest existingPull = gitRequestRepository.findByCollectorItemIdAndNumberAndRequestType(repo.getId(), pull.getNumber(), "pull");
+                            pull.setId(existingPull.getId());
+                            pull.setCollectorItemId(repo.getId());
+                            gitRequestRepository.save(pull);
+                        }
+                    }
+
+                    LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + " get issues");
+                    List<GitRequest> issues = gitHubClient.getIssues(repo, firstRun, gitRequestRepository);
+                    for (GitRequest issue : issues) {
+                        LOG.debug(issue.getTimestamp()+":::"+issue.getScmCommitLog());
+                        if (isNewIssue(repo, issue)) {
+                            issue.setCollectorItemId(repo.getId());
+                            gitRequestRepository.save(issue);
+                            issueCount++;
+                        } else {
+                            GitRequest existingIssue = gitRequestRepository.findByCollectorItemIdAndNumberAndRequestType(repo.getId(), issue.getNumber(), "issue");
+                            issue.setId(existingIssue.getId());
+                            issue.setCollectorItemId(repo.getId());
+                            gitRequestRepository.save(issue);
                         }
                     }
                     repo.setLastUpdated(System.currentTimeMillis());
@@ -161,6 +201,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         }
         log("Repo Count", start, repoCount);
         log("New Commits", start, commitCount);
+        log("New Pulls", start, pullCount);
+        log("New Issues", start, issueCount);
 
         log("Finished", start);
     }
@@ -176,5 +218,13 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 repo.getId(), commit.getScmRevisionNumber()) == null;
     }
 
+    private boolean isNewPull(GitHubRepo repo, GitRequest pull) {
+        return gitRequestRepository.findByCollectorItemIdAndNumberAndRequestType(
+                repo.getId(), pull.getNumber(), "pull") == null;
+    }
 
+    private boolean isNewIssue(GitHubRepo repo, GitRequest issue) {
+        return gitRequestRepository.findByCollectorItemIdAndNumberAndRequestType(
+                repo.getId(), issue.getNumber(), "issue") == null;
+    }
 }

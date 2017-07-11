@@ -5,13 +5,11 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.Widget;
-
+import com.capitalone.dashboard.model.DataResponse;
 
 public interface DashboardService {
 
@@ -98,13 +96,22 @@ public interface DashboardService {
     
     List<Dashboard> getOwnedDashboards();
 
-    Iterable<UserInfo> getAllUsers();
-
+    /**
+     * Get the set of owners for a given dashboard
+     * 
+     * @param id get owners for this dashboard
+     * @return the set of owners for provided dashboard
+     */
     Iterable<Owner> getOwners(ObjectId id);
 
-    UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType);
-
-    UserInfo demoteFromOwner(ObjectId dashboardId, String username, AuthType authType);
+    /**
+     * Updates the owners of the given dashboard with the set of given owners
+     * 
+     * @param dashboardId update owners on this dashboard
+     * @param owners full collection of owners
+     * @return the new set of owners for provided dashboard
+     */
+    Iterable<Owner> updateOwners(ObjectId dashboardId, Iterable<Owner> owners);
     
     /**
      * Get owner of dashboard on supplying dashboard Title
@@ -114,6 +121,45 @@ public interface DashboardService {
      */
     
     String getDashboardOwner(String dashboardTitle);
+
+    /**
+     * Get component
+     * @Param component Id
+     * @return Component
+     *
+     */
+
+    Component getComponent(ObjectId componentId);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessService(String configItem);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessApplication(String configItem);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItemApplication dashboard unique identifier
+     * @param configItemService dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String configItemService, String configItemApplication);
+
+    /**
+     *  Updates Dashboard Business Items
+     * @param dashboardId
+     * @param dashboard
+     * @return dashboard instance
+     */
+    Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard dashboard) throws HygieiaException;
 }
 
 

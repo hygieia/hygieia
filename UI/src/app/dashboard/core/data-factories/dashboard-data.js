@@ -22,23 +22,22 @@
         var dashboardRoute = '/api/dashboard';
         var mydashboardRoute = "/api/dashboard/mydashboard";
         var myownerRoute = "/api/dashboard/myowner";
-        var dashboardAllUsersRoute= '/api/dashboard/allUsers';
-        var dashboardOwnersRoute = '/api/dashboard/owners';
+        var updateBusItemsRoute = '/api/dashboard/updateBusItems'
 
         return {
             search: search,
             mydashboard: mydashboard,
             myowner: myowner,
-            allUsers: allUsers,
             owners: owners,
-            promoteUserToOwner: promoteUserToOwner,
-            demoteUserFromOwner: demoteUserFromOwner,
+            updateOwners: updateOwners,
             detail: detail,
             create: create,
             delete: deleteDashboard,
             rename: renameDashboard,
             upsertWidget: upsertWidget,
-            types: types
+            types: types,
+            getComponent:getComponent,
+            updateBusItems:updateBusItems
         };
 
         // reusable helper
@@ -47,7 +46,7 @@
                 return response.data;
             });
         }
-
+        
         // gets list of dashboards
         function search() {
             return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardRoute);
@@ -64,12 +63,19 @@
             return getPromise(HygieiaConfig.local ? testOwnedRoute : myownerRoute + "/" + id );
         }
 
-        function allUsers(id) {
-            return getPromise(HygieiaConfig.local ? testAllUsersRoute : dashboardAllUsersRoute + "/" + id);
+        //gets component from componentId
+        function getComponent(componentId){
+            return getPromise(HygieiaConfig.local ? testOwnedRoute : myComponentRoute+ '/' + componentId);
         }
 
         function owners(id) {
-            return getPromise(HygieiaConfig.local ? testOwnersRoute : dashboardOwnersRoute + "/" + id);
+            return getPromise(HygieiaConfig.local ? testOwnersRoute : dashboardRoute + "/" + id + "/owners");
+        }
+        
+        function updateOwners(id, owners) {
+        	return $http.put(dashboardRoute + "/" + id + "/owners", owners).then(function (response) {
+                return response.data;
+            });
         }
 
         // gets info for a single dashboard including available widgets
@@ -103,32 +109,6 @@
                 })
                 .error (function (response) {
                     console.log("Error Occured while renaming Dashboard in Data layer:"+JSON.stringify(response));
-                    return response.data;
-                });
-        }
-
-        function promoteUserToOwner(id, user) {
-            var route = dashboardRoute + "/addOwner/"+id, user;
-            return $http.put(route, user)
-                .success(
-                    function (response) {
-                        return response.data;
-                    })
-                .error (function (response) {
-                    console.log("Error Occured while promoting user to owner :"+JSON.stringify(response));
-                    return response.data;
-                });
-        }
-
-        function demoteUserFromOwner(id, user) {
-            var route = dashboardRoute + "/removeOwner/"+id, user;
-            return $http.put(route, user)
-                .success(
-                    function (response) {
-                        return response.data;
-                    })
-                .error (function (response) {
-                    console.log("Error Occured while demoting user from owner:"+JSON.stringify(response));
                     return response.data;
                 });
         }
@@ -176,6 +156,16 @@
             return route.then(function (response) {
                 return response.data;
             });
+        }
+
+        function updateBusItems(id, data) {
+            return $http.put(updateBusItemsRoute+"/"+id, data)
+                .success(function (response) {
+                    return response.data;
+                })
+                .error(function (response) {
+                    return null;
+                });
         }
     }
 })();

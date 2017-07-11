@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['$scope', 'dashboardData', '$location','$uibModal', 'userService', 'authService', 'userData'];
-    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location','$uibModal', 'userService', 'authService', 'userData', 'dashboardService'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -27,7 +27,8 @@
         ctrl.authType = userService.getAuthType();
         ctrl.login = login;
         ctrl.logout = logout;
-        ctrl.renameDashboard=renameDashboard;
+        ctrl.editDashboard = editDashboard;
+        ctrl.generateToken = generateToken;
 
         $scope.tab="dashboards";
 
@@ -66,6 +67,7 @@
         // request dashboards
         dashboardData.search().then(processResponse);
         userData.getAllUsers().then(processUserResponse);
+        userData.apitokens().then(processTokenResponse);
 
 
         //implementation of logout
@@ -92,21 +94,38 @@
             });
         }
 
-        function renameDashboard(item)
+        function editDashboard(item)
         {
-            console.log("Rename Dashboard in Admin");
+            console.log("Edit Dashboard in Admin");
 
             var mymodalInstance=$uibModal.open({
-                templateUrl: 'app/dashboard/views/renameDashboard.html',
-                controller: 'RenameDashboardController',
+                templateUrl: 'app/dashboard/views/editDashboard.html',
+                controller: 'EditDashboardController',
                 controllerAs: 'ctrl',
                 resolve: {
-                    dashboardId: function() {
-                        return item.id;
-                    },
-                    dashboardName: function() {
-                        return item.name;
+                    dashboardItem: function() {
+                        return item;
                     }
+                }
+            });
+
+            mymodalInstance.result.then(function success() {
+                dashboardData.search().then(processResponse);
+                userData.getAllUsers().then(processUserResponse);
+                userData.apitokens().then(processTokenResponse);
+            });
+
+        }
+
+        function generateToken()
+        {
+            console.log("Generate token in Admin");
+
+            var mymodalInstance=$uibModal.open({
+                templateUrl: 'app/dashboard/views/generateApiToken.html',
+                controller: 'GenerateApiTokenController',
+                controllerAs: 'ctrl',
+                resolve: {
                 }
             });
 
@@ -116,19 +135,27 @@
 
         }
 
-
         function processResponse(data) {
             ctrl.dashboards = [];
             for (var x = 0; x < data.length; x++) {
                 ctrl.dashboards.push({
                     id: data[x].id,
-                    name: data[x].title
+                    name: dashboardService.getDashboardTitle(data[x]),
+                    type: data[x].type,
+                    validServiceName:  data[x].validServiceName,
+                    validAppName: data[x].validAppName,
+                    configurationItemBusServName:  data[x].configurationItemBusServName,
+                    configurationItemBusAppName:  data[x].configurationItemBusAppName,
                 });
             }
         }
 
         function processUserResponse(response) {
             $scope.users = response.data;
+        }
+
+        function processTokenResponse(response) {
+            $scope.apitokens = response.data;
         }
 
         $scope.navigateToTab = function(tab) {

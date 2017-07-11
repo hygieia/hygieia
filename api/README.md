@@ -31,12 +31,17 @@ dbreplicaset=[false if you are not using MongoDB replicaset]
 dbhostport=[host1:port1,host2:port2,host3:port3]
 server.contextPath=[Web Context path if any]
 server.port=[Web server port - default is 8080]
+logRequest=false
+logSplunkRequest=false
 corsEnabled=false
 corsWhitelist=http://domain1.com:port,http://domain2.com:port
 version.number=@application.version.number@
 
 auth.expirationTime=[JWT expiration time in milliseconds]
 auth.secret=[Secret Key used to validate the JWT tokens]
+auth.authenticationProviders=[Authentication types you would like to enable, defaults to STANDARD, ex: STANDARD,LDAP]
+auth.ldapServerUrl=[LDAP Server Url, including port of your LDAP server]
+auth.ldapUserDnPattern=[LDAP User Dn Pattern, where the username is replaced with '{0}']
 
 # LDAP Server Url, including port of your LDAP server
 auth.ldapServerUrl=[ldap://company.com:389]
@@ -236,3 +241,21 @@ For additional information, see jasypt spring boot [documentation](https://githu
 
 Tip: If using GitLab CI Runner, specify the value for JASYPT_ENCRYPTOR_PASSWORD as a secure variable. Secure variables can be added to a Gitlab project by navigating to Project Settings > Variables > Add Variable. 
 A secure variable's value is by default not visible in the build log and can only be configured by an administrator of a project.
+
+### Securing APIs Basic Auth
+
+From the admin menu, generate an "apitoken" for an "apiuser"
+
+Create a POST request with the following 2 headers and make a rest call for secured API.
+
+Add Authorization header
+```
+String passwordIsAuthToken = "PasswordIsAuthToken:{\"apiKey\":\"" + <generated apitoken> + "\"}";
+byte[] encodedAuth = Base64.encodeBase64(passwordIsAuthToken.getBytes(StandardCharsets.US_ASCII));
+String authHeader = "apiToken " + new String(encodedAuth);
+Authorization: apiToken <authHeader>
+```
+Add apiUser header
+```
+apiUser <apiuser>
+```

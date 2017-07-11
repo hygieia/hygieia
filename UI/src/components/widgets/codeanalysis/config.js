@@ -15,6 +15,7 @@
         component = modalData.dashboard.application.components[0];
 
         ctrl.saToolsDropdownPlaceholder = 'Loading Security Analysis Jobs...';
+        ctrl.ossToolsDropdownPlaceholder = 'Loading Open Source Scanning Jobs...';
         ctrl.testToolsDropdownPlaceholder = 'Loading Functional Test Jobs...';
 
         // public methods
@@ -27,13 +28,15 @@
         	return collectorData.itemsByType('codequality', {"search": filter, "size": 20}).then(function (response){
         		return response;
         	});
-        }
+        };
 
         loadSavedCodeQualityJob();
 
+        console.log(collectorData);
         // request all the codequality and test collector items
         collectorData.itemsByType('staticSecurityScan').then(processSaResponse);
         collectorData.itemsByType('test').then(processTestsResponse);
+        collectorData.itemsByType('libraryPolicy').then(processOSSscanResponse);
 
         function loadSavedCodeQualityJob(){
         	var codeQualityCollectorItems = component.collectorItems.CodeQuality,
@@ -53,8 +56,18 @@
             var saCollectorItemId = _.isEmpty(saCollectorItems) ? null : saCollectorItems[0].id;
 
             ctrl.saJobs = data;
-            ctrl.saCollectorItem = saCollectorItemId ? _.findWhere(ctrl.saJobs, {id: saCollectorItemId}) : null;
+            ctrl.saCollectorItem = saCollectorItemId ? _.find(ctrl.saJobs, {id: saCollectorItemId}) : null;
             ctrl.saToolsDropdownPlaceholder = data.length ? 'Select a Security Analysis Job' : 'No Security Analysis Job Found';
+        }
+
+        function processOSSscanResponse(data) {
+            var ossCollectorItems = component.collectorItems.LibraryPolicy;
+            var ossCollectorItemId = _.isEmpty(ossCollectorItems) ? null : ossCollectorItems[0].id;
+
+            ctrl.ossJobs = data;
+            ctrl.ossCollectorItem = ossCollectorItemId ? _.find(ctrl.ossJobs, {id: ossCollectorItemId}) : null;
+            ctrl.ossToolsDropdownPlaceholder = data.length ? 'Select a Open Source Scan Job' : 'No Open Source Scan Found';
+
         }
 
         function processTestsResponse(data) {
@@ -79,7 +92,7 @@
                 }
             }
             for (index = 0; index < testCollectorItemIds.length; ++index) {
-                var testItem = testCollectorItemIds ? _.findWhere(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
+                var testItem = testCollectorItemIds ? _.find(ctrl.testJobs, {id: testCollectorItemIds[index]}) : null;
                 ctrl.testConfigs.push({
                     testJobName: testJobNamesFromWidget[index],
                     testJob: ctrl.testJobs,
@@ -89,11 +102,12 @@
             ctrl.testToolsDropdownPlaceholder = data.length ? 'Select a Functional Test Job' : 'No Functional Test Jobs Found';
         }
 
-        function submitForm(caCollectorItem, saCollectorItem, testConfigs) {
+        function submitForm(caCollectorItem, saCollectorItem, ossCollectorItem, testConfigs) {
             var collectorItems = [];
             var testJobNames = [];
             if (caCollectorItem) collectorItems.push(caCollectorItem.id);
             if (saCollectorItem) collectorItems.push(saCollectorItem.id);
+            if (ossCollectorItem) collectorItems.push(ossCollectorItem.id);
             if (testConfigs) {
                 var index;
                 for (index = 0; index < testConfigs.length; ++index) {

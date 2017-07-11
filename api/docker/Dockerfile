@@ -1,4 +1,3 @@
-
 FROM docker.io/java:openjdk-8-jdk
 
 MAINTAINER Hygieia@capitalone.com
@@ -14,14 +13,12 @@ ENV SPRING_DATA_MONGODB_PASSWORD=ENC(aSPTk36yA/ZklUg75CrZ8w==)
 RUN \
   mkdir /hygieia
 
-COPY hygieia /hygieia
+COPY target /hygieia
 COPY properties-builder.sh /hygieia/
-
 
 WORKDIR /hygieia
 
 VOLUME ["/hygieia/logs"]
-
 
 EXPOSE 8080
 CMD ./properties-builder.sh &&\
