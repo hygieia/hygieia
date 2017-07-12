@@ -36,15 +36,22 @@
 
         // method implementations
         function loadSavedBuildJob(){
+            ctrl.buildId ="";
         	var buildCollector = modalData.dashboard.application.components[0].collectorItems.Build,
             savedCollectorBuildJob = buildCollector ? buildCollector[0].description : null;
-            if(savedCollectorBuildJob) { 
+
+            if(savedCollectorBuildJob) {
+                ctrl.buildId = buildCollector[0].id;
             	$scope.getJobs(savedCollectorBuildJob).then(getBuildsCallback) 
             }
         }
         
         function getBuildsCallback(data) {
-            ctrl.collectorItemId = data[0];
+            _(data).forEach(function (item) {
+                if(item.id == ctrl.buildId){
+                    ctrl.collectorItemId = item;
+                }
+            });
         }
 
         function submitForm(valid, collector) {
