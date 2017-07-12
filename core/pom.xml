@@ -112,6 +112,12 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
         </dependency>
+        
+	    <dependency>
+	        <groupId>org.springframework.cloud</groupId>
+	        <artifactId>spring-cloud-starter-config</artifactId>
+	        <version>${spring.cloud.version}</version>
+	    </dependency>
 
         <!-- Query DSL -->
         <dependency>

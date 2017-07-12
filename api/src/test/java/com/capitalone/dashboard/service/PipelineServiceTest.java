@@ -54,14 +54,15 @@ public class PipelineServiceTest {
     @Test
     public void search() throws Exception {
         ObjectId dashboardCollectorItemId = ObjectId.get();
-
+        ObjectId configItemAppId = ObjectId.get();
+        ObjectId configItemComponentId = ObjectId.get();
         //build request
         PipelineSearchRequest request = new PipelineSearchRequest();
         List<ObjectId> dashboardCollectorItemIds = new ArrayList<>();
         dashboardCollectorItemIds.add(dashboardCollectorItemId);
         request.setCollectorItemId(dashboardCollectorItemIds);
 
-        Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "comp1", "comp2");
+        Dashboard dashboard = makeTeamDashboard("template", "title", "appName", "",configItemAppId,configItemComponentId,"comp1", "comp2");
         dashboard.getWidgets().add(makePipelineWidget("Dev ENV", "QA Env", null, null, "Prod"));
         Widget buildWidget = new Widget();
         buildWidget.setName("build");
@@ -78,10 +79,10 @@ public class PipelineServiceTest {
 
         Pipeline pipeline = makePipeline(dashboardCollectorItem);
         pipeline.addCommit(PipelineStage.COMMIT.getName(), makePipelineCommit("sha0", 1454953452000L));
-        pipeline.addCommit(PipelineStage.BUILD.getName(), makePipelineCommit("sha1", 1454953452001L));
-        pipeline.addCommit("Dev ENV", makePipelineCommit("sha2", 1454953452002L));
-        pipeline.addCommit("QA Env", makePipelineCommit("sha3", 1454953452003L));
-        pipeline.addCommit("Prod", makePipelineCommit("sha4", 1454953452004L));
+        pipeline.addCommit(PipelineStage.BUILD.getName(), makePipelineCommit("sha0", 1454953452000L));
+        pipeline.addCommit("dev", makePipelineCommit("sha0", 1454953452000L));
+        pipeline.addCommit("qa", makePipelineCommit("sha0", 1454953452000L));
+        pipeline.addCommit("prod", makePipelineCommit("sha0", 1454953452000L));
 
         List<Pipeline> pipelines = new ArrayList<>();
         pipelines.add(pipeline);
@@ -96,11 +97,11 @@ public class PipelineServiceTest {
         PipelineResponse actual = pipelineResponses.get(0);
 
         assertEquals(actual.getCollectorItemId(), expected.getCollectorItemId());
+        assertThat(actual.getStageCommits(PipelineStage.COMMIT).size(), is(0));
+        assertThat(actual.getStageCommits(PipelineStage.BUILD).size(), is(0));
+        assertThat(actual.getStageCommits(PipelineStage.valueOf("dev")).size(),is(0));
+        assertThat(actual.getStageCommits(PipelineStage.valueOf("qa")).size(),is(0));
         assertThat(actual.getStageCommits(PipelineStage.valueOf("prod")).size(),is(1));
-        assertThat(actual.getStageCommits(PipelineStage.COMMIT).size(), is(1));
-             assertThat(actual.getStageCommits(PipelineStage.BUILD).size(), is(1));
-        assertThat(actual.getStageCommits(PipelineStage.valueOf("dev")).size(),is(1));
-        assertThat(actual.getStageCommits(PipelineStage.valueOf("qa")).size(),is(1));
     }
 
     private Widget makePipelineWidget(String devName, String qaName, String intName, String perfName, String prodName){
@@ -125,6 +126,11 @@ public class PipelineServiceTest {
             pipelineWidget.getOptions().put("prod",prodName);
         }
 
+        Map<String,String> order = new HashMap<>();
+        order.put("0","dev");
+        order.put("1","qa");
+        order.put("2","prod");
+        pipelineWidget.getOptions().put("order", order);
         pipelineWidget.getOptions().put("mappings", environmentMap);
         return pipelineWidget;
     }
@@ -148,13 +154,14 @@ public class PipelineServiceTest {
 
     }
 
-    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, String... compNames) {
+    private Dashboard makeTeamDashboard(String template, String title, String appName, String owner, ObjectId configItemAppId,ObjectId configItemComponentId, String... compNames) {
+
         Application app = new Application(appName);
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
 
-        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team);
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemAppId, configItemComponentId);
         return dashboard;
     }
 

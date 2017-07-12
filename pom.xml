@@ -182,6 +182,8 @@
         <module>collectors/scm/subversion</module>
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
+        <module>collectors/library-policy/nexus-iq-collector</module>
+        <module>hygieia-jenkins-plugin</module>
         <module>UI</module>
       </modules>
       <build>
@@ -224,6 +226,7 @@
         <module>collectors/scm/gitlab</module>
         <module>collectors/cmdb/hpsm</module>
         <module>collectors/library-policy/nexus-iq-collector</module>
+        <module>hygieia-jenkins-plugin</module>
      	<module>UI</module>
  </modules>
       <build>

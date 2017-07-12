@@ -103,17 +103,16 @@
                 var deferred = $q.defer();
                 var libraryData = (response === null) || _.isEmpty(response.result) ? {} : response.result[0];
                 ctrl.libraryPolicyDetails = libraryData;
-                //Fix for issue 1422
-                _.each(libraryData.children,function(item) {
-                    if(item.threats.License){
+                if (libraryData.threats) {
+                    if (libraryData.threats.License) {
                         ctrl.libraryLicenseThreats = libraryData.threats.License;
-                        ctrl.libraryLicenseThreatStatus = getLibraryPolicyStatus(libraryData.threats.License);
+                        ctrl.libraryLicenseThreatStatus = getLibraryPolicyStatus(libraryData.threats.License)
                     }
-                    if(libraryData.threats.Security ){
+                    if (libraryData.threats.Security) {
                         ctrl.librarySecurityThreats = libraryData.threats.Security;
-                        ctrl.librarySecurityThreatStatus = getLibraryPolicyStatus(libraryData.threats.Security);
+                        ctrl.librarySecurityThreatStatus = getLibraryPolicyStatus(libraryData.threats.Security)
                     }
-                });
+                }
                 deferred.resolve(response.lastUpdated);
                 return deferred.promise;
             }
