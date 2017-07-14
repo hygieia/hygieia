@@ -2,7 +2,7 @@
 
 if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
   echo "Skipping properties builder"
-  return
+  exit 0
 fi
 
 # if we are linked, use that info
