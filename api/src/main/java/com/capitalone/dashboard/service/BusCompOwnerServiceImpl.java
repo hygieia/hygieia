@@ -1,12 +1,16 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.auth.AuthenticationUtil;
+import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class BusCompOwnerServiceImpl implements BusCompOwnerService{
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(BusCompOwnerServiceImpl.class);
     private final CmdbService cmdbService;
     private final DashboardRepository dashboardRepository;
     private final DashboardService dashboardService;
@@ -30,45 +34,52 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
         this.dashboardService = dashboardService;
     }
     @Override
-    public void assignOwnerToDashboards(String firstName, String middleName, String lastName){
-        /**
-         * returns logged in user as Iterable<Owner> for insert
-         */
-        Iterable<Owner> owner = getUserInformation();
-        /**
-         * Returns List of Business Service ObjectIds where give firstName and lastName are found
-         * as an Owner for the Service
-         */
-        Iterable<ObjectId> businessServiceObjectIdList = getBusinessServiceList(firstName, lastName);
-        /**
-         * Returns list of Dashboard that are tied to the above found Business Service ObjectIds
-         */
-        Iterable<Dashboard> dashboards = dashboardRepository.findAllByConfigurationItemBusServObjectIdIn(businessServiceObjectIdList);
-        /**
-         * Returns list of Dashboard ObjectIds where the logged in user is an owner
-         */
-        List<ObjectId> ownedDashboardObjectIds = dashboardService.getOwnedDashboardsObjectIds();
-        /**
-         * Loops through list of matching dashBoards and adds logged in user to the board if they are
-         * not already a member
-         */
-        for(Dashboard dashboard: dashboards){
-            ObjectId id = dashboard.getId();
-            if(ownedDashboardObjectIds != null && !ownedDashboardObjectIds.contains(dashboard.getId())){
-                dashboardService.updateOwners(id, owner);
+    public void assignOwnerToDashboards(String firstName, String middleName, String lastName, Authentication authentication){
+
+        if(firstName != null && !firstName.isEmpty() && lastName != null && !lastName.isEmpty()){
+            /**
+             * returns logged in user as Iterable<Owner> for insert
+             */
+            Owner owner = getUserInformation(authentication);
+            LOGGER.info("Owner Found: " + owner.toString());
+            /**
+             * Returns List of Business Service ObjectIds where give firstName and lastName are found
+             * as an Owner for the Service
+             */
+            Iterable<ObjectId> businessServiceObjectIdList = getBusinessServiceList(firstName, lastName);
+            /**
+             * Returns list of Dashboard that are tied to the above found Business Service ObjectIds
+             */
+            Iterable<Dashboard> dashboards = dashboardRepository.findAllByConfigurationItemBusServObjectIdIn(businessServiceObjectIdList);
+            /**
+             * Returns list of Dashboard ObjectIds where the logged in user is an owner
+             */
+            List<ObjectId> ownedDashboardObjectIds = dashboardService.getOwnedDashboardsObjectIds();
+            /**
+             * Loops through list of matching dashBoards and adds logged in user to the board if they are
+             * not already a member
+             */
+            for(Dashboard dashboard: dashboards){
+                ObjectId id = dashboard.getId();
+                if(ownedDashboardObjectIds != null && !ownedDashboardObjectIds.contains(dashboard.getId())){
+                    LOGGER.info("Dashboard Owner updated: " + dashboard.getTitle());
+                    List<Owner> dashboardOwners = dashboard.getOwners();
+                    dashboardOwners.add(owner);
+                    dashboardService.updateOwners(id, dashboardOwners);
+                }
             }
         }
     }
 
     /**
      *
-     * @return Iterable<Owner> logged in user
+     * @return Owner logged in user
      */
-    private Iterable<Owner> getUserInformation(){
-        List<Owner> ownerList = new ArrayList<>();
-        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-        ownerList.add(owner);
-        return ownerList;
+    private Owner getUserInformation(Authentication authentication){
+        AuthType authType = (AuthType)authentication.getDetails();
+        Owner owner = new Owner(authentication.getName(), authType);
+
+        return owner;
     }
     /**
      *  Takes First name and last name and returns any Business Services where one of the 4 owner fields match the input
