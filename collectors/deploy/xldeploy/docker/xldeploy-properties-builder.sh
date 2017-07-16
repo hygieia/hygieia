@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
+  echo "Skipping properties builder"
+  exit 0
+fi
+
 # mongo container provides the HOST/PORT
 # api container provided DB Name, ID & PWD
 

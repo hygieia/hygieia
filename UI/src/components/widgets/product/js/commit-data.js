@@ -102,7 +102,7 @@
 
         function processPipelineCommitData(team) {
             db.prodCommit.where('[collectorItemId+timestamp]').between([collectorItemId, ninetyDaysAgo], [collectorItemId, dateEnds]).toArray(function (rows) {
-                var uniqueRows = _.uniq(rows,'scmRevisionNumber');
+                var uniqueRows = _.uniqBy(rows,'scmRevisionNumber');
                 team.stages[prodStage] = _(uniqueRows).sortBy('timestamp').reverse().value();
 
                 var teamStageData = {},
@@ -305,11 +305,8 @@
                         return num + commits;
                     });
                 if(!angular.isUndefined(commitArray)){
-                    commitTimeToProd = _(commitArray).filter(function (commit) {
-                        return commit.processedTimestamps && commit.processedTimestamps[prodStage];
-                    })
                     // calculate their time to prod
-                        .map(function (commit) {
+                    commitTimeToProd = commitArray.map(function (commit) {
                             return {
                                 duration: commit.processedTimestamps[prodStage] - commit.scmCommitTimestamp,
                                 commitTimestamp: commit.scmCommitTimestamp
