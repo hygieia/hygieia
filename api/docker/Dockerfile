@@ -13,7 +13,7 @@ ENV SPRING_DATA_MONGODB_PASSWORD=ENC(aSPTk36yA/ZklUg75CrZ8w==)
 RUN \
   mkdir /hygieia
 
-COPY target /hygieia
+COPY hygieia/ /hygieia
 COPY properties-builder.sh /hygieia/
 
 WORKDIR /hygieia
