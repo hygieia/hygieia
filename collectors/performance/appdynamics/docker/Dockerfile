@@ -21,5 +21,5 @@ WORKDIR /hygieia
 VOLUME ["/hygieia/logs"]
 
 EXPOSE 8080
-CMD ./appdynamics-properties-builder.sh &&\
+CMD /bin/sh ./appdynamics-properties-builder.sh &&\
   java -Djava.security.egd=file:/dev/./urandom -jar appdynamics-collector.jar --spring.config.location=/hygieia/appdynamics.properties
