@@ -29,6 +29,7 @@
 
     <!-- Package as an executable jar -->
     <build>
+        <finalName>appdynamics-collector</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -43,7 +44,7 @@
                     <dockerDirectory>${project.basedir}/docker</dockerDirectory>
                     <resources>
                         <resource>
-                            <targetPath>/</targetPath>
+                            <targetPath>/hygieia</targetPath>
                             <directory>${project.build.directory}</directory>
                             <include>${project.build.finalName}.jar</include>
                         </resource>
