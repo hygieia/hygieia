@@ -90,6 +90,12 @@ mvn clean package -pl UI docker:build
 ```bash
 docker run -t -p 8088:80 --link hygieia-api -i hygieia-ui:latest
 ```
+### API server running on a custom port
+If the API server is running on a port other than the default (`8080`) then modify `UI/gulpfile.js` to include the custom port:
+```
+// Using port 8888 for the API server instead of the default (8080)
+var proxyTarget = config.api || 'http://localhost:8888';
+```
 
 ### API check
 
