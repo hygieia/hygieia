@@ -247,7 +247,7 @@
                     // prompt a message if team is already added or add to prod dashboard otherwise.
                     if(itemInd){
                         swal(config.name+' dashboard added already');
-                    }else if(widgets==null ||(!buildInd && !repoInd)){
+                    }else if(widgets==null || !buildInd || !repoInd){
                         swal('Configure Build and Code Repository for '+config.name+' before adding to Product Dashboard');
                     }else{
                         // add our new config to the array
