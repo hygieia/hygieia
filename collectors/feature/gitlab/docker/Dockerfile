@@ -1,5 +1,5 @@
 
-FROM docker.io/java:openjdk-8-jdk
+FROM docker.io/openjdk:8-jre
 
 MAINTAINER Hygieia@capitalone.com
 
