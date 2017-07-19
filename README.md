@@ -18,7 +18,9 @@ Watch the video below to see Hygieia℠ in action:
 
  [![Hygieia℠ Is AWESOME](/media/images/video-shot.png)](https://www.youtube.com/watch?v=SoNTA78j0tc "Hygieia Is AWESOME")
 
-We use tools for everything today, and each tool has its own unique dashboard to present information. Capital One DevOps Engineers developed Hygieia after researching existing tools and finding:
+We use tools for everything today, and each tool has its own unique dashboard to present information. What is lacking is a near real-time consolidated view of the end-to-end delivery pipeline. This view and a continuous feedback loop are critical to the success of any DevOps organization.
+
+Capital One DevOps Engineers developed Hygieia after researching existing tools and finding:
 
 * Commercial application lifecycle management tools allow users to visualize traceability between stories, code, tests, and builds; however, they do not cross over from build to deployment.
 
