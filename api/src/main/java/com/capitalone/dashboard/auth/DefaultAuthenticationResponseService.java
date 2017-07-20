@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.capitalone.dashboard.auth.apitoken.ApiTokenAuthenticationToken;
 import com.capitalone.dashboard.auth.ldap.CustomUserDetails;
 import com.capitalone.dashboard.model.UserRole;
+import com.capitalone.dashboard.service.BusCompOwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +30,9 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	
 	@Autowired
 	private UserInfoService userInfoService;
+
+	@Autowired
+	private BusCompOwnerService busCompOwnerService;
 	
 	@Override
 	public void handle(HttpServletResponse response, Authentication authentication) {
@@ -60,10 +64,14 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
                     userInfoService.getAuthorities(authentication.getName(), firstName, middleName, lastName, displayName, emailAddress, (AuthType)authentication.getDetails());
             authenticationWithAuthorities = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), authorities);
             authenticationWithAuthorities.setDetails(authentication.getDetails());
+
+            if(authType == AuthType.LDAP){
+				busCompOwnerService.assignOwnerToDashboards(firstName, middleName, lastName, authentication);
+			}
         }
 		
 		tokenAuthenticationService.addAuthentication(response, authenticationWithAuthorities);
-
+        
 	}
 
     private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
