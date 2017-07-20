@@ -41,7 +41,6 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
              * returns logged in user as Iterable<Owner> for insert
              */
             Owner owner = getUserInformation(authentication);
-            LOGGER.info("Owner Found: " + owner.toString());
             /**
              * Returns List of Business Service ObjectIds where give firstName and lastName are found
              * as an Owner for the Service
