@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.service;
 
-import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Dashboard;
