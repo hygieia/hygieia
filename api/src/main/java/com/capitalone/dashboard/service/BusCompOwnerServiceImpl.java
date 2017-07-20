@@ -46,7 +46,7 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
              * Returns List of Business Service ObjectIds where give firstName and lastName are found
              * as an Owner for the Service
              */
-            Iterable<ObjectId> businessServiceObjectIdList = getBusinessServiceList(firstName, lastName);
+            Iterable<ObjectId> businessServiceObjectIdList = getBusinessServiceList(firstName, lastName.toLowerCase());
             /**
              * Returns list of Dashboard that are tied to the above found Business Service ObjectIds
              */
@@ -95,10 +95,10 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
         /**
          Defining search parameters
          */
-        Predicate<Cmdb> supportOwnerLn = p -> p.getSupportOwner().contains(lastName);
-        Predicate<Cmdb> serviceOwnerLn = p -> p.getAppServiceOwner().contains(lastName);
-        Predicate<Cmdb> developmentOwnerLn = p -> p.getDevelopmentOwner().contains(lastName);
-        Predicate<Cmdb> businessOwnerLn = p -> p.getBusinessOwner().contains(lastName);
+        Predicate<Cmdb> supportOwnerLn = p -> p.getSupportOwner().toLowerCase().contains(lastName);
+        Predicate<Cmdb> serviceOwnerLn = p -> p.getAppServiceOwner().toLowerCase().contains(lastName);
+        Predicate<Cmdb> developmentOwnerLn = p -> p.getDevelopmentOwner().toLowerCase().contains(lastName);
+        Predicate<Cmdb> businessOwnerLn = p -> p.getBusinessOwner().toLowerCase().contains(lastName);
         /**
          * Combining search parameters into one predicate OR search
          */
@@ -135,7 +135,7 @@ public class BusCompOwnerServiceImpl implements BusCompOwnerService{
      */
     private boolean doesMatchFullName(String firstName, String fullName){
         boolean matching = false;
-        if(firstName != null && !firstName.isEmpty()){
+        if(firstName != null && !firstName.isEmpty() && fullName != null && !fullName.isEmpty()){
             String firstFromCMDB;
             String[] array = fullName.split(" ");
 

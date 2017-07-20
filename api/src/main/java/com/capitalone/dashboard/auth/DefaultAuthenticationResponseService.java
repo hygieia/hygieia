@@ -64,11 +64,13 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
                     userInfoService.getAuthorities(authentication.getName(), firstName, middleName, lastName, displayName, emailAddress, (AuthType)authentication.getDetails());
             authenticationWithAuthorities = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), authorities);
             authenticationWithAuthorities.setDetails(authentication.getDetails());
+
+            if(authType == AuthType.LDAP){
+				busCompOwnerService.assignOwnerToDashboards(firstName, middleName, lastName, authentication);
+			}
         }
 		
 		tokenAuthenticationService.addAuthentication(response, authenticationWithAuthorities);
-
-		busCompOwnerService.assignOwnerToDashboards(firstName, middleName, lastName, authentication);
 	}
 
     private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
