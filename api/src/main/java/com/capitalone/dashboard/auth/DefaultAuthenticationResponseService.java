@@ -71,6 +71,7 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
         }
 		
 		tokenAuthenticationService.addAuthentication(response, authenticationWithAuthorities);
+        
 	}
 
     private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
