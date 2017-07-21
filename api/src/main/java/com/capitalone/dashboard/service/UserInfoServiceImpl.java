@@ -19,94 +19,100 @@ import com.google.common.collect.Sets;
 @Component
 public class UserInfoServiceImpl implements UserInfoService {
 
-	private UserInfoRepository userInfoRepository;
-	
-	@Autowired
-	public UserInfoServiceImpl(UserInfoRepository userInfoRepository) {
-		this.userInfoRepository = userInfoRepository;
-	}
-	
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType) {
-		Collection<UserRole> roles = getUserInfo(username, firstName, middleName, lastName, displayName, emailAddress, authType).getAuthorities();
-		return createAuthorities(roles);
-	}
-	
-	@Override
-	public UserInfo getUserInfo(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType) {
-		UserInfo userInfo = userInfoRepository.findByUsernameAndAuthType(username, authType);
-		if(userInfo == null) {
-			userInfo = createUserInfo(username, firstName, middleName, lastName, displayName, emailAddress, authType);
-			userInfoRepository.save(userInfo);
-		}
-		
-		// TODO: This will give the standard "admin" user admin privledges, might want
-		// to bootstrap in an admin user, or something better than this.
-		addAdminRoleToStandardAdminUser(userInfo);
-		
-		return userInfo;
-	}
-	
+    private UserInfoRepository userInfoRepository;
+
+    @Autowired
+    public UserInfoServiceImpl(UserInfoRepository userInfoRepository) {
+        this.userInfoRepository = userInfoRepository;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType) {
+        Collection<UserRole> roles = getUserInfo(username, firstName, middleName, lastName, displayName, emailAddress, authType).getAuthorities();
+        return createAuthorities(roles);
+    }
+
+    @Override
+    public UserInfo getUserInfo(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType) {
+        UserInfo userInfo = getUser(username, authType);
+        if (userInfo == null) {
+            userInfo = createUserInfo(username, firstName, middleName, lastName, displayName, emailAddress, authType);
+            userInfoRepository.save(userInfo);
+        }
+
+        // TODO: This will give the standard "admin" user admin privledges, might want
+        // to bootstrap in an admin user, or something better than this.
+        addAdminRoleToStandardAdminUser(userInfo);
+
+        return userInfo;
+    }
+
     @Override
     public Collection<UserInfo> getUsers() {
         return Sets.newHashSet(userInfoRepository.findAll());
     }
 
+
+    @Override
+    public UserInfo getUser(String userId, AuthType authType) {
+        return userInfoRepository.findByUsernameAndAuthType(userId, authType);
+    }
+
     @Override
     public UserInfo promoteToAdmin(String username, AuthType authType) {
-        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
+        UserInfo user = getUser(username, authType);
         if (user == null) {
             throw new UserNotFoundException(username, authType);
         }
-        
+
         user.getAuthorities().add(UserRole.ROLE_ADMIN);
         UserInfo savedUser = userInfoRepository.save(user);
         return savedUser;
     }
-    
+
     @Override
     public UserInfo demoteFromAdmin(String username, AuthType authType) {
         int numberOfAdmins = userInfoRepository.findByAuthoritiesIn(UserRole.ROLE_ADMIN).size();
-        if(numberOfAdmins <= 1) {
+        if (numberOfAdmins <= 1) {
             throw new DeleteLastAdminException();
         }
-        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
+        UserInfo user = getUser(username, authType);
         if (user == null) {
             throw new UserNotFoundException(username, authType);
         }
-        
+
         user.getAuthorities().remove(UserRole.ROLE_ADMIN);
         UserInfo savedUser = userInfoRepository.save(user);
         return savedUser;
     }
 
-	private UserInfo createUserInfo(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType) {
-		UserInfo userInfo = new UserInfo();
-		userInfo.setUsername(username);
-		userInfo.setFirstName(firstName);
-		userInfo.setMiddleName(middleName);
-		userInfo.setLastName(lastName);
-		userInfo.setDisplayName(displayName);
-		userInfo.setEmailAddress(emailAddress);
-		userInfo.setAuthType(authType);
-		userInfo.setAuthorities(Sets.newHashSet(UserRole.ROLE_USER));
-		
-		return userInfo;
-	}
+    private UserInfo createUserInfo(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUsername(username);
+        userInfo.setFirstName(firstName);
+        userInfo.setMiddleName(middleName);
+        userInfo.setLastName(lastName);
+        userInfo.setDisplayName(displayName);
+        userInfo.setEmailAddress(emailAddress);
+        userInfo.setAuthType(authType);
+        userInfo.setAuthorities(Sets.newHashSet(UserRole.ROLE_USER));
 
-	private void addAdminRoleToStandardAdminUser(UserInfo userInfo) {
-		if ("admin".equals(userInfo.getUsername()) && AuthType.STANDARD == userInfo.getAuthType()) {
-			userInfo.getAuthorities().add(UserRole.ROLE_ADMIN);
-		}
-	}
-	
-	private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
-		Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
-		authorities.forEach(authority -> {
-			grantedAuthorities.add(new SimpleGrantedAuthority(authority.name())); 
-		});
-		
-		return grantedAuthorities;
-	}
+        return userInfo;
+    }
+
+    private void addAdminRoleToStandardAdminUser(UserInfo userInfo) {
+        if ("admin".equals(userInfo.getUsername()) && AuthType.STANDARD == userInfo.getAuthType()) {
+            userInfo.getAuthorities().add(UserRole.ROLE_ADMIN);
+        }
+    }
+
+    private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
+        Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
+        authorities.forEach(authority -> {
+            grantedAuthorities.add(new SimpleGrantedAuthority(authority.name()));
+        });
+
+        return grantedAuthorities;
+    }
 
 }

@@ -12,7 +12,10 @@ public interface UserInfoService {
 	Collection<? extends GrantedAuthority> getAuthorities(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType);
 	UserInfo getUserInfo(String username, String firstName, String middleName, String lastName, String displayName, String emailAddress, AuthType authType);
 	Collection<UserInfo> getUsers();
-    UserInfo promoteToAdmin(String username, AuthType authType);
+
+	UserInfo getUser(String userId, AuthType authType);
+
+	UserInfo promoteToAdmin(String username, AuthType authType);
     UserInfo demoteFromAdmin(String username, AuthType authType);
 
 }
