@@ -97,7 +97,7 @@ public class BuildBuilder {
             request.setEndTime(build.getStartTimeInMillis() + build.getDuration());
             if (buildChangeSet) {
                 request.setCodeRepos(getRepoBranch(build));
-                ChangeLogSet<? extends ChangeLogSet.Entry> sets = ((AbstractBuild) run).getChangeSet();
+                ChangeLogSet<? extends ChangeLogSet.Entry> sets = build.getChangeSet();
                 List<ChangeLogSet<? extends ChangeLogSet.Entry>> changeLogSets = sets.isEmptySet() ? Collections.<ChangeLogSet<? extends ChangeLogSet.Entry>>emptyList() : Collections.<ChangeLogSet<? extends ChangeLogSet.Entry>>singletonList(sets);
                 request.setSourceChangeSet(getCommitList(changeLogSets));
             }
