@@ -29,7 +29,7 @@ public class GitlabUrlUtilityTest {
 	private GitlabUrlUtility gitlabUrlUtility;
 
 	@Test
-	public void shouldBuildApiUrl() {
+	public void shouldBuildV4ApiUrl() {
 		when(gitlabRepo.getRepoUrl()).thenReturn("https://domain.org/namespace/Hygieia");
 		when(gitlabRepo.getBranch()).thenReturn("master");
 		
@@ -37,11 +37,27 @@ public class GitlabUrlUtilityTest {
 		
 		assertEquals("http", result.getScheme());
 		assertEquals("gitlab.com", result.getHost());
-		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertEquals("/api/v4/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
 		assertTrue(result.getQuery().contains("since="));
 	}
+	
+	@Test
+    public void shouldBuildV3ApiUrl() {
+        when(gitlabRepo.getRepoUrl()).thenReturn("https://domain.org/namespace/Hygieia");
+        when(gitlabRepo.getBranch()).thenReturn("master");
+        when(gitlabSettings.getApiVersion()).thenReturn(3);
+        
+        URI result  = gitlabUrlUtility.buildApiUrl(gitlabRepo, true, 100);
+        
+        assertEquals("http", result.getScheme());
+        assertEquals("gitlab.com", result.getHost());
+        assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+        assertTrue(result.getQuery().contains("ref_name=master"));
+        assertTrue(result.getQuery().contains("per_page=100"));
+        assertTrue(result.getQuery().contains("since="));
+    }
 	
 	@Test
 	public void shouldBuildApiUrlWithGitExtension() {
@@ -52,7 +68,7 @@ public class GitlabUrlUtilityTest {
 		
 		assertEquals("http", result.getScheme());
 		assertEquals("gitlab.com", result.getHost());
-		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertEquals("/api/v4/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
 		assertTrue(result.getQuery().contains("since="));
@@ -68,7 +84,7 @@ public class GitlabUrlUtilityTest {
 		
 		assertEquals("https", result.getScheme());
 		assertEquals("gitlab.com", result.getHost());
-		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertEquals("/api/v4/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
 		assertTrue(result.getQuery().contains("since="));
@@ -84,7 +100,7 @@ public class GitlabUrlUtilityTest {
 		
 		assertEquals("http", result.getScheme());
 		assertEquals("customhost.com", result.getHost());
-		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertEquals("/api/v4/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
 		assertTrue(result.getQuery().contains("since="));
@@ -101,7 +117,7 @@ public class GitlabUrlUtilityTest {
 		
 		assertEquals("http", result.getScheme());
 		assertEquals("customhost.com", result.getHost());
-		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertEquals("/api/v4/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertEquals(443, result.getPort());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
@@ -119,7 +135,7 @@ public class GitlabUrlUtilityTest {
         
         assertEquals("http", result.getScheme());
         assertEquals("customhost.com", result.getHost());
-        assertEquals("/gitlab/is/here/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+        assertEquals("/gitlab/is/here/api/v4/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
         assertTrue(result.getQuery().contains("ref_name=master"));
         assertTrue(result.getQuery().contains("per_page=100"));
         assertTrue(result.getQuery().contains("since="));
@@ -135,7 +151,7 @@ public class GitlabUrlUtilityTest {
 		
 		assertEquals("http", result.getScheme());
 		assertEquals("gitlab.com", result.getHost());
-		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertEquals("/api/v4/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
 		assertTrue(result.getQuery().contains("since="));
@@ -151,7 +167,7 @@ public class GitlabUrlUtilityTest {
 		
 		assertEquals("http", result.getScheme());
 		assertEquals("gitlab.com", result.getHost());
-		assertEquals("/api/v3/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
+		assertEquals("/api/v4/projects/namespace%2FHygieia/repository/commits/", result.getRawPath());
 		assertTrue(result.getQuery().contains("ref_name=master"));
 		assertTrue(result.getQuery().contains("per_page=100"));
 		assertTrue(result.getQuery().contains("since="));

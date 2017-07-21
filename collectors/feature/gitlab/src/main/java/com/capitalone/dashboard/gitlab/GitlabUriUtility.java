@@ -17,7 +17,8 @@ public class GitlabUriUtility {
 	private static final String DEFAULT_PROTOCOL = "http";
 	private static final String DEFAULT_HOST = "gitlab.com";
 	private static final String API_PATH_SEGMENT = "api";
-	private static final String VERSION_PATH_SEGMENT = "v3";
+    private static final String V3 = "v3";
+    private static final String V4 = "v4";
 	private static final String ISSUES_PATH_SEGMENT = "issues";
 	private static final String BOARDS_PATH_SEGMENT = "boards";
 	private static final String PROJECTS_PATH_SEGMENT = "projects";
@@ -84,8 +85,9 @@ public class GitlabUriUtility {
 	}
 
 	private UriComponentsBuilder buildApiUri() {
-		String protocol = StringUtils.isBlank(settings.getProtocol()) ? DEFAULT_PROTOCOL : settings.getProtocol();
-		String host = StringUtils.isBlank(settings.getHost()) ? DEFAULT_HOST : settings.getHost();
+		String protocol = getProtocol();
+		String host = getHost();
+		String apiVersion = getApiVersion();
 		
 		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
 		
@@ -97,8 +99,20 @@ public class GitlabUriUtility {
 				.host(host)
 				.path(settings.getPath())
 				.pathSegment(API_PATH_SEGMENT)
-				.pathSegment(VERSION_PATH_SEGMENT)
+				.pathSegment(apiVersion)
 				.queryParam(RESULT_PER_PAGE_QUERY_PARAM_KEY, RESULTS_PER_PAGE);
 	}
+
+    private String getApiVersion() {
+        return settings.getApiVersion() == 3 ? V3 : V4;
+    }
+
+    private String getHost() {
+        return StringUtils.isBlank(settings.getHost()) ? DEFAULT_HOST : settings.getHost();
+    }
+
+    private String getProtocol() {
+        return StringUtils.isBlank(settings.getProtocol()) ? DEFAULT_PROTOCOL : settings.getProtocol();
+    }
 
 }
