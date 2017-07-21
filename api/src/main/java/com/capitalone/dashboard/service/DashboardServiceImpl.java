@@ -130,7 +130,7 @@ public class DashboardServiceImpl implements DashboardService {
             if(e instanceof HygieiaException){
                 throw e;
             }else{
-                throw new HygieiaException("Failed creating dashboard.", HygieiaException.ERROR_INSERTING_DATA);
+                throw new HygieiaException("Failed creating dashboard." + e.getMessage(), HygieiaException.ERROR_INSERTING_DATA);
             }
         }
     }
