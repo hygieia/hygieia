@@ -9,6 +9,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.capitalone.dashboard.service.BusCompOwnerService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,9 @@ public class DefaultAuthenticationResponseServiceTest {
 	
 	@Mock
 	private UserInfoService userInfoService;
+
+	@Mock
+	private BusCompOwnerService busCompOwnerService;
 	
 	@InjectMocks
 	private DefaultAuthenticationResponseService service;
@@ -60,6 +64,7 @@ public class DefaultAuthenticationResponseServiceTest {
 	@Test
 	public void shouldHandleResponse() throws Exception {
 		ArgumentCaptor<UsernamePasswordAuthenticationToken> captorAuthentication = ArgumentCaptor.forClass(UsernamePasswordAuthenticationToken.class);
+		//when(busCompOwnerService.assignOwnerToDashboards("","","",null))
 		service.handle(httpServletResponse, authentication);
 		
 		verify(tokenAuthenticationService).addAuthentication(any(HttpServletResponse.class), captorAuthentication.capture());
