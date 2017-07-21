@@ -1,0 +1,18 @@
+{
+  "dashboardRequest": {
+    "template": "capone",
+    "title": "RempteAPIDBTest",
+    "type": "team",
+    "applicationName": "Remote-API-DB-APP",
+    "componentName": "Rempte-API-DB-APP",
+    "configurationItemBusServObjectId": null,
+    "configurationItemBusAppObjectId": null
+  },
+  "codeRepoEntries": [
+    {
+      "toolName": "GitHub",
+      "url": "https://github.kdc.capitalone.com/yaf107/TestRepo",
+      "branch": "master"
+    }
+  ]
+}
