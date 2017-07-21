@@ -20,7 +20,7 @@ Watch the video below to see Hygieia℠ in action:
 
 We use tools for everything today, and each tool has its own unique dashboard to present information. What is lacking is a near real-time consolidated view of the end-to-end delivery pipeline. This view and a continuous feedback loop are critical to the success of any DevOps organization.
 
-Capital One Engineers from our DevOps team developed Hygieia with the need for a user-friendly, out-of-the-box DevOps visualization tool in mind since none is commercially available. We researched existing tools and found:
+Capital One Engineers from our DevOps team developed Hygieia with the need for a user-friendly, out-of-the-box DevOps visualization tool in mind since none is available commercially. We researched existing tools and found:
 
 * Commercial application lifecycle management tools allow users to visualize traceability between stories, code, tests, and builds; however, they do not cross over from build to deployment.
 
