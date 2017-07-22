@@ -31,6 +31,9 @@ public class AuthProperties {
 	private String adDomain;
 	private String adRootDn;
 	private String adUrl;
+
+	private String ldapBindUser;
+	private String ldapBindPass;
 	
 	public void setExpirationTime(Long expirationTime) {
 		this.expirationTime = expirationTime;
@@ -95,6 +98,22 @@ public class AuthProperties {
     public void setAdUrl(String adUrl) {
         this.adUrl = adUrl;
     }
+
+	public String getLdapBindUser() {
+		return ldapBindUser;
+	}
+
+	public void setLdapBindUser(String ldapBindUser) {
+		this.ldapBindUser = ldapBindUser;
+	}
+
+	public String getLdapBindPass() {
+		return ldapBindPass;
+	}
+
+	public void setLdapBindPass(String ldapBindPass) {
+		this.ldapBindPass = ldapBindPass;
+	}
 
 	@PostConstruct
 	public void applyDefaultsIfNeeded() {
