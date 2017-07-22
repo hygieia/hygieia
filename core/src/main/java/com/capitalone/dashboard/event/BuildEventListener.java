@@ -118,9 +118,9 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
                 }
             }
             pipelineRepository.save(pipeline);
-            if (hasFailedBuilds) {
-                buildRepository.save(build);
-            }
+//            if (hasFailedBuilds) {
+//                buildRepository.save(build);
+//            }
         }
     }
 
@@ -170,7 +170,7 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
                     for (SCM scm : b.getSourceChangeSet()) {
                         PipelineCommit failedBuildCommit = new PipelineCommit(scm, successfulBuild.getStartTime());
                         pipeline.addCommit(PipelineStage.BUILD.getName(), failedBuildCommit);
-                        successfulBuild.getSourceChangeSet().add(scm);
+//                        successfulBuild.getSourceChangeSet().add(scm);
                     }
                     failedBuilds.remove();
 
