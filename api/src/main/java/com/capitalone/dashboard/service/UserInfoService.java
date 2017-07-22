@@ -17,5 +17,5 @@ public interface UserInfoService {
 
 	UserInfo promoteToAdmin(String username, AuthType authType);
     UserInfo demoteFromAdmin(String username, AuthType authType);
-
+	boolean isUserValid(String userId, AuthType authType);
 }
