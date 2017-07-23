@@ -2,11 +2,12 @@ package com.capitalone.dashboard.model;
 
 
 public class AppdynamicsApplication extends CollectorItem {
-    private static final String APP_NAME = "appName";
-    private static final String APP_ID = "appID";
-    private static final String APP_DESC = "appDesc";
-    private static final String APP_DASHBOARD_URL = "dashboardUrl";
-    private static final String APP_INSTANCE_ID = "instanceID"; //used to specify which instance it belongs to
+    protected static final String APP_NAME = "appName";
+    protected static final String APP_ID = "appID";
+    protected static final String APP_DESC = "appDesc";
+    protected static final String APP_DASHBOARD_URL = "dashboardUrl";
+    protected static final String APP_INSTANCE_ID = "instanceID"; //used to specify which instance it belongs to
+
 
 
     public int getinstanceID() {

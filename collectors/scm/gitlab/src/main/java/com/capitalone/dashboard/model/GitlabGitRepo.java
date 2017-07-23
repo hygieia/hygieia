@@ -13,10 +13,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * CollectorItem extension to store the gitlab repo url
  */
 public class GitlabGitRepo extends  CollectorItem {
-    private static final String REPO_URL = "url";
-    private static final String BRANCH = "branch";
-    private static final String USER_ID = "userID";
-    private static final String PASSWORD = "password";
+    public static final String REPO_URL = "url";
+    public static final String BRANCH = "branch";
+    public static final String USER_ID = "userID";
+    public static final String PASSWORD = "password";
     private static final String LAST_UPDATE_TIME = "lastUpdate";
 
     public String getUserId() {

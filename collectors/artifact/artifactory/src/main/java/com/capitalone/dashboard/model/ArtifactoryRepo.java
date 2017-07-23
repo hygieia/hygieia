@@ -4,9 +4,9 @@ package com.capitalone.dashboard.model;
  * CollectorItem extension to store the instance, repo name and repo url.
  */
 public class ArtifactoryRepo extends CollectorItem {
-    private static final String INSTANCE_URL = "instanceUrl";
-    private static final String REPO_NAME = "repoName";
-    private static final String REPO_URL = "repoUrl";
+    protected static final String INSTANCE_URL = "instanceUrl";
+    protected static final String REPO_NAME = "repoName";
+    protected static final String REPO_URL = "repoUrl";
 
     public String getInstanceUrl() {
         return (String) getOptions().get(INSTANCE_URL);

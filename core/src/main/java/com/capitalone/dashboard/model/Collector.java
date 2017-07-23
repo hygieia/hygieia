@@ -15,8 +15,10 @@ public class Collector extends BaseModel {
     private boolean enabled;
     private boolean online;
     private List<CollectionError> errors = new ArrayList<>();
-    //Every collector will have its own set of required fields depending upon the specific tool.
+    //Every collector will have its own set of required and optional fields depending upon the specific tool.
     private List<String> requiredFields = new ArrayList<>();
+    private List<String> optionalFields = new ArrayList<>();
+
     private long lastExecuted;
 
     public Collector() {
@@ -81,5 +83,13 @@ public class Collector extends BaseModel {
 
     public void setRequiredFields(List<String> requiredFields) {
         this.requiredFields = requiredFields;
+    }
+
+    public List<String> getOptionalFields() {
+        return optionalFields;
+    }
+
+    public void setOptionalFields(List<String> optionalFields) {
+        this.optionalFields = optionalFields;
     }
 }

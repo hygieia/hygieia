@@ -1,10 +1,10 @@
 package com.capitalone.dashboard.model;
 
 public class NexusIQApplication extends CollectorItem {
-    private static final String INSTANCE_URL = "instanceUrl";
-    private static final String APPLICATION_NAME = "applicationName";
-    private static final String APPLICATION_ID = "applicationId";
-    private static final String APPLICATION_PUBLIC_ID = "publicId";
+    protected static final String INSTANCE_URL = "instanceUrl";
+    protected static final String APPLICATION_NAME = "applicationName";
+    protected static final String APPLICATION_ID = "applicationId";
+    protected static final String APPLICATION_PUBLIC_ID = "publicId";
 
     public String getInstanceUrl() {
         return (String) getOptions().get(INSTANCE_URL);
