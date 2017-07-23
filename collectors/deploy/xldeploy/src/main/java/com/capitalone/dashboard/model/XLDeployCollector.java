@@ -31,7 +31,8 @@ public class XLDeployCollector extends Collector {
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
         }
-        protoType.getRequiredFields().addAll(Arrays.asList(XLDeployApplication.INSTANCE_URL,XLDeployApplication.APP_NAME));
+        protoType.getUniqueFields().addAll(Arrays.asList(XLDeployApplication.INSTANCE_URL,XLDeployApplication.APP_NAME));
+        protoType.getAllFields().addAll(Arrays.asList(XLDeployApplication.INSTANCE_URL,XLDeployApplication.APP_NAME, XLDeployApplication.APP_ID, XLDeployApplication.APP_TYPE));
         return protoType;
     }
 }

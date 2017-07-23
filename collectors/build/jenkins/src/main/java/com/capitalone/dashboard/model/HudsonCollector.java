@@ -39,7 +39,8 @@ public class HudsonCollector extends Collector {
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
         }
-        protoType.getRequiredFields().addAll(Arrays.asList(HudsonJob.INSTANCE_URL, HudsonJob.JOB_URL, HudsonJob.JOB_NAME));
+        protoType.getUniqueFields().addAll(Arrays.asList(HudsonJob.INSTANCE_URL, HudsonJob.JOB_URL, HudsonJob.JOB_NAME));
+        protoType.getAllFields().addAll(protoType.getUniqueFields());
         return protoType;
     }
 }

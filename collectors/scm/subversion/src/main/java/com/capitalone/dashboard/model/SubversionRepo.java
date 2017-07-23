@@ -5,7 +5,7 @@ package com.capitalone.dashboard.model;
  */
 public class SubversionRepo extends CollectorItem {
     public static final String URL = "url";
-    private static final String LATEST_REV = "rev";
+    public static final String LATEST_REV = "rev";
 
     public String getRepoUrl() {
         return (String) getOptions().get(URL);

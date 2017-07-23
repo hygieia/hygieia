@@ -21,7 +21,8 @@ public class ArtifactoryCollector extends Collector {
         protoType.setOnline(true);
         protoType.setEnabled(true);
         protoType.getArtifactoryServers().addAll(servers);
-        protoType.getRequiredFields().addAll(Arrays.asList(ArtifactoryRepo.INSTANCE_URL, ArtifactoryRepo.REPO_NAME, ArtifactoryRepo.REPO_URL));
+        protoType.getUniqueFields().addAll(Arrays.asList(ArtifactoryRepo.INSTANCE_URL, ArtifactoryRepo.REPO_NAME, ArtifactoryRepo.REPO_URL));
+        protoType.getAllFields().addAll(protoType.getUniqueFields());
         return protoType;
     }
 }

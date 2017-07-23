@@ -14,7 +14,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -64,8 +63,8 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         protoType.setCollectorType(CollectorType.SCM);
         protoType.setOnline(true);
         protoType.setEnabled(true);
-        protoType.getRequiredFields().addAll(Arrays.asList(GitRepo.REPO_URL,GitRepo.BRANCH));
-        protoType.getOptionalFields().addAll(Arrays.asList(GitRepo.USER_ID, GitRepo.PASSWORD));
+        protoType.getUniqueFields().addAll(Arrays.asList(GitRepo.REPO_URL,GitRepo.BRANCH));
+        protoType.getAllFields().addAll(Arrays.asList(GitRepo.REPO_URL,GitRepo.BRANCH, GitRepo.USER_ID, GitRepo.PASSWORD, GitRepo.LAST_UPDATE_TIME, GitRepo.LAST_UPDATE_COMMIT));
         return protoType;
     }
 

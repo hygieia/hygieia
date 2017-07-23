@@ -15,9 +15,9 @@ public class Collector extends BaseModel {
     private boolean enabled;
     private boolean online;
     private List<CollectionError> errors = new ArrayList<>();
-    //Every collector will have its own set of required and optional fields depending upon the specific tool.
-    private List<String> requiredFields = new ArrayList<>();
-    private List<String> optionalFields = new ArrayList<>();
+    //Every collector will have its own set of required and all fields depending upon the specific tool.
+    private List<String> uniqueFields = new ArrayList<>();
+    private List<String> allFields = new ArrayList<>();
 
     private long lastExecuted;
 
@@ -77,19 +77,19 @@ public class Collector extends BaseModel {
         this.errors = errors;
     }
 
-    public List<String> getRequiredFields() {
-        return requiredFields;
+    public List<String> getUniqueFields() {
+        return uniqueFields;
     }
 
-    public void setRequiredFields(List<String> requiredFields) {
-        this.requiredFields = requiredFields;
+    public void setUniqueFields(List<String> uniqueFields) {
+        this.uniqueFields = uniqueFields;
     }
 
-    public List<String> getOptionalFields() {
-        return optionalFields;
+    public List<String> getAllFields() {
+        return allFields;
     }
 
-    public void setOptionalFields(List<String> optionalFields) {
-        this.optionalFields = optionalFields;
+    public void setAllFields(List<String> allFields) {
+        this.allFields = allFields;
     }
 }

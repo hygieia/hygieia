@@ -12,8 +12,8 @@ public class GitRepo extends CollectorItem {
     public static final String BRANCH = "branch"; // master, development etc.
     public static final String USER_ID = "userID";
     public static final String PASSWORD = "password";
-    private static final String LAST_UPDATE_TIME = "lastUpdate";
-    private static final String LAST_UPDATE_COMMIT = "lastUpdateCommit"; // Bitbucket Server api uses last update commit instead of time
+    public static final String LAST_UPDATE_TIME = "lastUpdate";
+    public static final String LAST_UPDATE_COMMIT = "lastUpdateCommit"; // Bitbucket Server api uses last update commit instead of time
     
     public String getUserId() {
         return (String) getOptions().get(USER_ID);

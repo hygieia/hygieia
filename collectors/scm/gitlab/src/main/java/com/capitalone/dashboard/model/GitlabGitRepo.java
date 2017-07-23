@@ -17,7 +17,7 @@ public class GitlabGitRepo extends  CollectorItem {
     public static final String BRANCH = "branch";
     public static final String USER_ID = "userID";
     public static final String PASSWORD = "password";
-    private static final String LAST_UPDATE_TIME = "lastUpdate";
+    public static final String LAST_UPDATE_TIME = "lastUpdate";
 
     public String getUserId() {
         return (String) getOptions().get(USER_ID);

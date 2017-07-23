@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SonarCollector extends Collector {
@@ -28,6 +29,8 @@ public class SonarCollector extends Collector {
         protoType.getSonarServers().addAll(servers);
         protoType.getSonarVersions().addAll(versions);
         protoType.getSonarMetrics().addAll(metrics);
+        protoType.getUniqueFields().addAll(Arrays.asList(SonarProject.INSTANCE_URL, SonarProject.PROJECT_NAME));
+        protoType.getAllFields().addAll(Arrays.asList(SonarProject.INSTANCE_URL, SonarProject.PROJECT_NAME, SonarProject.PROJECT_ID));
         return protoType;
     }
 }

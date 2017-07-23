@@ -39,7 +39,8 @@ public class BambooCollector extends Collector {
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
         }
-        protoType.getRequiredFields().addAll(Arrays.asList(BambooJob.INSTANCE_URL, BambooJob.JOB_URL, BambooJob.JOB_NAME));
+        protoType.getUniqueFields().addAll(Arrays.asList(BambooJob.INSTANCE_URL, BambooJob.JOB_URL, BambooJob.JOB_NAME));
+        protoType.getAllFields().addAll(protoType.getUniqueFields());
         return protoType;
     }
 }

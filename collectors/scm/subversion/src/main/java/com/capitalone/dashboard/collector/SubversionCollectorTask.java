@@ -63,7 +63,8 @@ public class SubversionCollectorTask extends CollectorTask<Collector> {
         protoType.setCollectorType(CollectorType.SCM);
         protoType.setOnline(true);
         protoType.setEnabled(true);
-        protoType.getRequiredFields().addAll(Arrays.asList(SubversionRepo.URL));
+        protoType.getUniqueFields().addAll(Arrays.asList(SubversionRepo.URL));
+        protoType.getAllFields().addAll(Arrays.asList(SubversionRepo.URL, SubversionRepo.LATEST_REV));
         return protoType;
     }
 

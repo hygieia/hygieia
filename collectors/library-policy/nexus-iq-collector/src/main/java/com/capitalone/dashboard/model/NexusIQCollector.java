@@ -18,7 +18,8 @@ public class NexusIQCollector extends Collector {
         protoType.setOnline(true);
         protoType.setEnabled(true);
         protoType.getNexusIQServers().addAll(servers);
-        protoType.getRequiredFields().addAll(Arrays.asList(NexusIQApplication.INSTANCE_URL,NexusIQApplication.APPLICATION_NAME));
+        protoType.getUniqueFields().addAll(Arrays.asList(NexusIQApplication.INSTANCE_URL,NexusIQApplication.APPLICATION_NAME));
+        protoType.getAllFields().addAll(Arrays.asList(NexusIQApplication.INSTANCE_URL,NexusIQApplication.APPLICATION_NAME, NexusIQApplication.APPLICATION_ID, NexusIQApplication.APPLICATION_PUBLIC_ID));
         return protoType;
     }
 }

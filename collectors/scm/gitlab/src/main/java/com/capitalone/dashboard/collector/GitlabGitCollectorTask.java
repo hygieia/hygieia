@@ -70,8 +70,8 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 		protoType.setCollectorType(CollectorType.SCM);
 		protoType.setOnline(true);
 		protoType.setEnabled(true);
-		protoType.getRequiredFields().addAll(Arrays.asList(GitlabGitRepo.REPO_URL,GitlabGitRepo.BRANCH));
-		protoType.getOptionalFields().addAll(Arrays.asList(GitlabGitRepo.USER_ID, GitlabGitRepo.PASSWORD));
+		protoType.getUniqueFields().addAll(Arrays.asList(GitlabGitRepo.REPO_URL,GitlabGitRepo.BRANCH));
+		protoType.getAllFields().addAll(Arrays.asList(GitlabGitRepo.REPO_URL,GitlabGitRepo.BRANCH, GitlabGitRepo.USER_ID, GitlabGitRepo.PASSWORD, GitlabGitRepo.LAST_UPDATE_TIME));
 		return protoType;
 	}
 

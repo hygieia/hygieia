@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,6 +25,8 @@ public class JenkinsCucumberTestCollector extends Collector {
         protoType.setOnline(true);
         protoType.setEnabled(true);
         protoType.getBuildServers().addAll(buildServers);
+        protoType.getUniqueFields().addAll(Arrays.asList(JenkinsJob.INSTANCE_URL, JenkinsJob.JOB_URL, JenkinsJob.JOB_NAME));
+        protoType.getAllFields().addAll(protoType.getUniqueFields());
         return protoType;
     }
 }

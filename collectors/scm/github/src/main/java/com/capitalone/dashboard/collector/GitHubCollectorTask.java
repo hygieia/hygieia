@@ -70,8 +70,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         protoType.setCollectorType(CollectorType.SCM);
         protoType.setOnline(true);
         protoType.setEnabled(true);
-        protoType.getRequiredFields().addAll(Arrays.asList(GitHubRepo.REPO_URL,GitHubRepo.BRANCH));
-        protoType.getOptionalFields().addAll(Arrays.asList(GitHubRepo.USER_ID, GitHubRepo.PASSWORD));
+        protoType.getUniqueFields().addAll(Arrays.asList(GitHubRepo.REPO_URL,GitHubRepo.BRANCH));
+        protoType.getAllFields().addAll(Arrays.asList(GitHubRepo.REPO_URL,GitHubRepo.BRANCH, GitHubRepo.USER_ID, GitHubRepo.PASSWORD, GitHubRepo.LAST_UPDATE_TIME));
         return protoType;
     }
 

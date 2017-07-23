@@ -30,7 +30,8 @@ public class AppdynamicsCollector extends Collector {
         protoType.setEnabled(true);
         protoType.setLastExecuted(System.currentTimeMillis());
         protoType.setInstanceUrl(settings.getInstanceUrlList());
-        protoType.getRequiredFields().addAll(Arrays.asList(AppdynamicsApplication.APP_DASHBOARD_URL,AppdynamicsApplication.APP_NAME));
+        protoType.getUniqueFields().addAll(Arrays.asList(AppdynamicsApplication.APP_DASHBOARD_URL,AppdynamicsApplication.APP_NAME));
+        protoType.getAllFields().addAll(Arrays.asList(AppdynamicsApplication.APP_DASHBOARD_URL,AppdynamicsApplication.APP_NAME, AppdynamicsApplication.APP_DESC, AppdynamicsApplication.APP_INSTANCE_ID));
         return protoType;
     }
 

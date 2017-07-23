@@ -31,7 +31,8 @@ public class UDeployCollector extends Collector {
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
         }
-        protoType.getRequiredFields().addAll(Arrays.asList(UDeployApplication.INSTANCE_URL,UDeployApplication.APP_NAME));
+        protoType.getUniqueFields().addAll(Arrays.asList(UDeployApplication.INSTANCE_URL,UDeployApplication.APP_NAME));
+        protoType.getAllFields().addAll(Arrays.asList(UDeployApplication.INSTANCE_URL,UDeployApplication.APP_NAME, UDeployApplication.APP_ID));
         return protoType;
     }
 }
