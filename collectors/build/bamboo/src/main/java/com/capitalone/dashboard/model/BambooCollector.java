@@ -3,6 +3,7 @@ package com.capitalone.dashboard.model;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,6 +39,7 @@ public class BambooCollector extends Collector {
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
         }
+        protoType.getRequiredFields().addAll(Arrays.asList(BambooJob.INSTANCE_URL, BambooJob.JOB_URL, BambooJob.JOB_NAME));
         return protoType;
     }
 }

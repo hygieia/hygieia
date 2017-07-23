@@ -14,10 +14,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -62,6 +64,8 @@ public class GitCollectorTask extends CollectorTask<Collector> {
         protoType.setCollectorType(CollectorType.SCM);
         protoType.setOnline(true);
         protoType.setEnabled(true);
+        protoType.getRequiredFields().addAll(Arrays.asList(GitRepo.REPO_URL,GitRepo.BRANCH));
+        protoType.getOptionalFields().addAll(Arrays.asList(GitRepo.USER_ID, GitRepo.PASSWORD));
         return protoType;
     }
 

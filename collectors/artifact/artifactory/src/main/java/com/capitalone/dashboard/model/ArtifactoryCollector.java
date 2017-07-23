@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,6 +21,7 @@ public class ArtifactoryCollector extends Collector {
         protoType.setOnline(true);
         protoType.setEnabled(true);
         protoType.getArtifactoryServers().addAll(servers);
+        protoType.getRequiredFields().addAll(Arrays.asList(ArtifactoryRepo.INSTANCE_URL, ArtifactoryRepo.REPO_NAME, ArtifactoryRepo.REPO_URL));
         return protoType;
     }
 }

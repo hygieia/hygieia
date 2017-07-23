@@ -23,6 +23,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,6 +70,8 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         protoType.setCollectorType(CollectorType.SCM);
         protoType.setOnline(true);
         protoType.setEnabled(true);
+        protoType.getRequiredFields().addAll(Arrays.asList(GitHubRepo.REPO_URL,GitHubRepo.BRANCH));
+        protoType.getOptionalFields().addAll(Arrays.asList(GitHubRepo.USER_ID, GitHubRepo.PASSWORD));
         return protoType;
     }
 

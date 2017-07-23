@@ -2,6 +2,7 @@ package com.capitalone.dashboard.model;
 
 import com.capitalone.dashboard.collector.AppdynamicsSettings;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,6 +30,7 @@ public class AppdynamicsCollector extends Collector {
         protoType.setEnabled(true);
         protoType.setLastExecuted(System.currentTimeMillis());
         protoType.setInstanceUrl(settings.getInstanceUrlList());
+        protoType.getRequiredFields().addAll(Arrays.asList(AppdynamicsApplication.APP_DASHBOARD_URL,AppdynamicsApplication.APP_NAME));
         return protoType;
     }
 

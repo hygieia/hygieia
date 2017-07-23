@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.util.CollectionUtils;
@@ -30,6 +31,7 @@ public class UDeployCollector extends Collector {
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
         }
+        protoType.getRequiredFields().addAll(Arrays.asList(UDeployApplication.INSTANCE_URL,UDeployApplication.APP_NAME));
         return protoType;
     }
 }

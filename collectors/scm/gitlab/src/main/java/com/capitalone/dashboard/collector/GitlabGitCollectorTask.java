@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.collector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,6 +70,8 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 		protoType.setCollectorType(CollectorType.SCM);
 		protoType.setOnline(true);
 		protoType.setEnabled(true);
+		protoType.getRequiredFields().addAll(Arrays.asList(GitlabGitRepo.REPO_URL,GitlabGitRepo.BRANCH));
+		protoType.getOptionalFields().addAll(Arrays.asList(GitlabGitRepo.USER_ID, GitlabGitRepo.PASSWORD));
 		return protoType;
 	}
 

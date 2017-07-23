@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class NexusIQCollector extends Collector {
@@ -17,6 +18,7 @@ public class NexusIQCollector extends Collector {
         protoType.setOnline(true);
         protoType.setEnabled(true);
         protoType.getNexusIQServers().addAll(servers);
+        protoType.getRequiredFields().addAll(Arrays.asList(NexusIQApplication.INSTANCE_URL,NexusIQApplication.APPLICATION_NAME));
         return protoType;
     }
 }
