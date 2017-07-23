@@ -3,13 +3,9 @@ package com.capitalone.dashboard.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import javax.validation.constraints.NotNull;
-
 public class Owner {
 
-	@NotNull
 	private String username;
-	@NotNull
 	private AuthType authType;
 	
 	public Owner() {}

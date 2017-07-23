@@ -20,6 +20,4 @@ public interface CmdbRepository extends CrudRepository<Cmdb, ObjectId>  {
 
     List<Cmdb> findAllByItemType(String type);
 
-    Cmdb findByConfigurationItemAndItemType(String confiugrationItem, String itemType);
-
 }
