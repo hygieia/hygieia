@@ -2,7 +2,9 @@ package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SonarCollector extends Collector {
     private List<String> sonarServers = new ArrayList<>();
@@ -29,8 +31,17 @@ public class SonarCollector extends Collector {
         protoType.getSonarServers().addAll(servers);
         protoType.getSonarVersions().addAll(versions);
         protoType.getSonarMetrics().addAll(metrics);
-        protoType.getUniqueFields().addAll(Arrays.asList(SonarProject.INSTANCE_URL, SonarProject.PROJECT_NAME));
-        protoType.getAllFields().addAll(Arrays.asList(SonarProject.INSTANCE_URL, SonarProject.PROJECT_NAME, SonarProject.PROJECT_ID));
+
+        Map<String, Object> allOptions = new HashMap<>();
+        allOptions.put(SonarProject.INSTANCE_URL,"");
+        allOptions.put(SonarProject.PROJECT_NAME,"");
+        allOptions.put(SonarProject.PROJECT_ID, "");
+        protoType.setAllFields(allOptions);
+
+        Map<String, Object> uniqueOptions = new HashMap<>();
+        uniqueOptions.put(SonarProject.INSTANCE_URL,"");
+        uniqueOptions.put(SonarProject.PROJECT_NAME,"");
+        protoType.setUniqueFields(uniqueOptions);
         return protoType;
     }
 }

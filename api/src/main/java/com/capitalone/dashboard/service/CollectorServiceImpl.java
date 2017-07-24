@@ -125,6 +125,7 @@ public class CollectorServiceImpl implements CollectorService {
         return collectorItemRepository.save(item);
     }
 
+
     @Override
     public CollectorItem createCollectorItemByNiceNameAndProjectId(CollectorItem item, String projectId) throws HygieiaException {
         //Try to find a matching by collector ID and niceName.

@@ -2,7 +2,9 @@ package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Collector implementation for XLDeploy that stores Artifactory server URLs.
@@ -21,8 +23,12 @@ public class ArtifactoryCollector extends Collector {
         protoType.setOnline(true);
         protoType.setEnabled(true);
         protoType.getArtifactoryServers().addAll(servers);
-        protoType.getUniqueFields().addAll(Arrays.asList(ArtifactoryRepo.INSTANCE_URL, ArtifactoryRepo.REPO_NAME, ArtifactoryRepo.REPO_URL));
-        protoType.getAllFields().addAll(protoType.getUniqueFields());
+        Map<String, Object> options = new HashMap<>();
+        options.put(ArtifactoryRepo.INSTANCE_URL,"");
+        options.put(ArtifactoryRepo.REPO_NAME,"");
+        options.put(ArtifactoryRepo.REPO_URL,"");
+        protoType.setAllFields(options);
+        protoType.setUniqueFields(options);
         return protoType;
     }
 }

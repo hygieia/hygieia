@@ -2,8 +2,11 @@ package com.capitalone.dashboard.collector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -70,8 +73,19 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 		protoType.setCollectorType(CollectorType.SCM);
 		protoType.setOnline(true);
 		protoType.setEnabled(true);
-		protoType.getUniqueFields().addAll(Arrays.asList(GitlabGitRepo.REPO_URL,GitlabGitRepo.BRANCH));
-		protoType.getAllFields().addAll(Arrays.asList(GitlabGitRepo.REPO_URL,GitlabGitRepo.BRANCH, GitlabGitRepo.USER_ID, GitlabGitRepo.PASSWORD, GitlabGitRepo.LAST_UPDATE_TIME));
+
+		Map<String, Object> allOptions = new HashMap<>();
+		allOptions.put(GitlabGitRepo.REPO_URL, new String());
+		allOptions.put(GitlabGitRepo.BRANCH, new String());
+		allOptions.put(GitlabGitRepo.USER_ID, "");
+		allOptions.put(GitlabGitRepo.PASSWORD, "");
+		allOptions.put(GitlabGitRepo.LAST_UPDATE_TIME, new Date());
+		protoType.setAllFields(allOptions);
+
+		Map<String, Object> uniqueOptions = new HashMap<>();
+		uniqueOptions.put(GitlabGitRepo.REPO_URL, "");
+		uniqueOptions.put(GitlabGitRepo.BRANCH, "");
+		protoType.setUniqueFields(uniqueOptions);
 		return protoType;
 	}
 

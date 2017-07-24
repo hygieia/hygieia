@@ -64,6 +64,7 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
         return template.find(new Query(c), CollectorItem.class);
     }
 
+
     @Override
     public List<com.capitalone.dashboard.model.Component> findComponents(Collector collector) {
         Criteria c = Criteria.where("collectorItems." + collector.getCollectorType() + ".collectorId").is(collector.getId());

@@ -2,7 +2,9 @@ package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.util.CollectionUtils;
 
@@ -31,8 +33,20 @@ public class XLDeployCollector extends Collector {
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
         }
-        protoType.getUniqueFields().addAll(Arrays.asList(XLDeployApplication.INSTANCE_URL,XLDeployApplication.APP_NAME));
-        protoType.getAllFields().addAll(Arrays.asList(XLDeployApplication.INSTANCE_URL,XLDeployApplication.APP_NAME, XLDeployApplication.APP_ID, XLDeployApplication.APP_TYPE));
+
+        Map<String, Object> allOptions = new HashMap<>();
+        allOptions.put(XLDeployApplication.INSTANCE_URL,"");
+        allOptions.put(XLDeployApplication.APP_NAME,"");
+        allOptions.put(XLDeployApplication.APP_ID, "");
+        allOptions.put(XLDeployApplication.APP_TYPE, "");
+        protoType.setAllFields(allOptions);
+
+        Map<String, Object> uniqueOptions = new HashMap<>();
+        uniqueOptions.put(XLDeployApplication.INSTANCE_URL,"");
+        uniqueOptions.put(XLDeployApplication.APP_NAME,"");
+        protoType.setUniqueFields(uniqueOptions);
+
+
         return protoType;
     }
 }

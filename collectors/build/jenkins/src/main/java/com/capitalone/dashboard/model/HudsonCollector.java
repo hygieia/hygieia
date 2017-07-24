@@ -4,7 +4,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Extension of Collector that stores current build server configuration.
@@ -39,8 +41,12 @@ public class HudsonCollector extends Collector {
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
         }
-        protoType.getUniqueFields().addAll(Arrays.asList(HudsonJob.INSTANCE_URL, HudsonJob.JOB_URL, HudsonJob.JOB_NAME));
-        protoType.getAllFields().addAll(protoType.getUniqueFields());
+        Map<String, Object> options = new HashMap<>();
+        options.put(HudsonJob.INSTANCE_URL,"");
+        options.put(HudsonJob.JOB_URL,"");
+        options.put(HudsonJob.JOB_NAME,"");
+        protoType.setAllFields(options);
+        protoType.setUniqueFields(options);
         return protoType;
     }
 }

@@ -2,7 +2,9 @@ package com.capitalone.dashboard.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.util.CollectionUtils;
 
@@ -31,8 +33,17 @@ public class UDeployCollector extends Collector {
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
         }
-        protoType.getUniqueFields().addAll(Arrays.asList(UDeployApplication.INSTANCE_URL,UDeployApplication.APP_NAME));
-        protoType.getAllFields().addAll(Arrays.asList(UDeployApplication.INSTANCE_URL,UDeployApplication.APP_NAME, UDeployApplication.APP_ID));
+        
+        Map<String, Object> allOptions = new HashMap<>();
+        allOptions.put(UDeployApplication.INSTANCE_URL,"");
+        allOptions.put(UDeployApplication.APP_NAME,"");
+        allOptions.put(UDeployApplication.APP_ID, "");
+        protoType.setAllFields(allOptions);
+
+        Map<String, Object> uniqueOptions = new HashMap<>();
+        uniqueOptions.put(UDeployApplication.INSTANCE_URL,"");
+        uniqueOptions.put(UDeployApplication.APP_NAME,"");
+        protoType.setUniqueFields(uniqueOptions);
         return protoType;
     }
 }

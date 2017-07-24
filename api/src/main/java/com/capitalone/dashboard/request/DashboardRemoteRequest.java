@@ -162,16 +162,20 @@ public class DashboardRemoteRequest {
 
 
         public CollectorItem toCollectorItem(Collector collector) throws HygieiaException{
-            if (options.keySet().containsAll(collector.getUniqueFields())) {
+            if (options.keySet().containsAll(collector.getUniqueFields().keySet())) {
                 CollectorItem collectorItem = new CollectorItem();
                 collectorItem.setEnabled(true);
                 collectorItem.setPushed(true);
                 for (String key : options.keySet()) {
-                    collectorItem.getOptions().put(key, options.get(key));
+                    if (collector.getAllFields().keySet().contains(key)) {
+                        collectorItem.getOptions().put(key, options.get(key));
+                    } else {
+                        throw new HygieiaException(toolName + " collector does not support field: " + key, HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
+                    }
                 }
                 return collectorItem;
             } else {
-                throw new HygieiaException("Missing required fields. " + toolName + " collector required fields are: " + String.join(", ", collector.getUniqueFields()), HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
+                throw new HygieiaException("Missing required fields. " + toolName + " collector required fields are: " + String.join(", ", collector.getUniqueFields().keySet()), HygieiaException.COLLECTOR_ITEM_CREATE_ERROR);
             }
         }
 

@@ -2,13 +2,16 @@ package com.capitalone.dashboard.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The collectors that have been registered in the given Dashboard app instance.
  */
-@Document(collection="collectors")
+@Document(collection = "collectors")
 public class Collector extends BaseModel {
     private String name;
     private CollectorType collectorType;
@@ -16,8 +19,8 @@ public class Collector extends BaseModel {
     private boolean online;
     private List<CollectionError> errors = new ArrayList<>();
     //Every collector will have its own set of required and all fields depending upon the specific tool.
-    private List<String> uniqueFields = new ArrayList<>();
-    private List<String> allFields = new ArrayList<>();
+    private Map<String, Object> uniqueFields = new HashMap<>();
+    private Map<String, Object> allFields = new HashMap<>();
 
     private long lastExecuted;
 
@@ -77,19 +80,19 @@ public class Collector extends BaseModel {
         this.errors = errors;
     }
 
-    public List<String> getUniqueFields() {
+    public Map<String, Object> getUniqueFields() {
         return uniqueFields;
     }
 
-    public void setUniqueFields(List<String> uniqueFields) {
+    public void setUniqueFields(Map<String, Object> uniqueFields) {
         this.uniqueFields = uniqueFields;
     }
 
-    public List<String> getAllFields() {
+    public Map<String, Object> getAllFields() {
         return allFields;
     }
 
-    public void setAllFields(List<String> allFields) {
+    public void setAllFields(Map<String, Object> allFields) {
         this.allFields = allFields;
     }
 }

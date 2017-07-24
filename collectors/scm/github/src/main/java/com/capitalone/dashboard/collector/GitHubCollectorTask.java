@@ -22,10 +22,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -70,8 +73,19 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         protoType.setCollectorType(CollectorType.SCM);
         protoType.setOnline(true);
         protoType.setEnabled(true);
-        protoType.getUniqueFields().addAll(Arrays.asList(GitHubRepo.REPO_URL,GitHubRepo.BRANCH));
-        protoType.getAllFields().addAll(Arrays.asList(GitHubRepo.REPO_URL,GitHubRepo.BRANCH, GitHubRepo.USER_ID, GitHubRepo.PASSWORD, GitHubRepo.LAST_UPDATE_TIME));
+
+        Map<String, Object> allOptions = new HashMap<>();
+        allOptions.put(GitHubRepo.REPO_URL, "");
+        allOptions.put(GitHubRepo.BRANCH, "");
+        allOptions.put(GitHubRepo.USER_ID, "");
+        allOptions.put(GitHubRepo.PASSWORD, "");
+        allOptions.put(GitHubRepo.LAST_UPDATE_TIME, new Date());
+        protoType.setAllFields(allOptions);
+
+        Map<String, Object> uniqueOptions = new HashMap<>();
+        uniqueOptions.put(GitHubRepo.REPO_URL, "");
+        uniqueOptions.put(GitHubRepo.BRANCH, "");
+        protoType.setUniqueFields(uniqueOptions);
         return protoType;
     }
 
