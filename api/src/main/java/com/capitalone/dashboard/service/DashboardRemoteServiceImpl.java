@@ -8,6 +8,7 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
+import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.DashboardRepository;
@@ -47,8 +48,10 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
     }
 
     @Override
-    public Dashboard remoteCreate(DashboardRemoteRequest request) throws HygieiaException {
+    public Dashboard remoteCreate(DashboardRemoteRequest request, boolean isUpdate) throws HygieiaException {
         Dashboard dashboard;
+        Map<String, Widget> existingWidgets = new HashMap<>();
+
         if (!userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())) {
             throw new HygieiaException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", HygieiaException.BAD_DATA);
         }
@@ -56,8 +59,18 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         List<Dashboard> dashboards = dashboardRepository.findByTitle(request.getMetaData().getTitle());
         if (!CollectionUtils.isEmpty(dashboards)) {
             dashboard = dashboards.get(0);
-            dashboard.getWidgets().clear(); //not right
+            if (!isUpdate) {
+                throw new HygieiaException("Dashboard " + dashboard.getTitle() + " (id =" + dashboard.getId() + ") already exists", HygieiaException.DUPLICATE_DATA);
+            }
+            //Save the widgets
+            for (Widget w : dashboard.getWidgets()) {
+                existingWidgets.put(w.getName(), w);
+            }
+
         } else {
+            if (isUpdate) {
+                throw new HygieiaException("Dashboard " + request.getMetaData().getTitle() +  "does not exist.", HygieiaException.BAD_DATA);
+            }
             dashboard = dashboardService.create(requestToDashboard(request));
         }
 
@@ -87,12 +100,28 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             WidgetRequest widgetRequest = allWidgetRequests.get(key);
             Component component = dashboardService.associateCollectorToComponent(
                     dashboard.getApplication().getComponents().get(0).getId(), widgetRequest.getCollectorItemIds());
-            dashboardService.addWidget(dashboard, widgetRequest.widget());
+            Widget newWidget = widgetRequest.widget();
+            if (isUpdate) {
+                Widget oldWidget = existingWidgets.get(newWidget.getName());
+                Widget widget = widgetRequest.updateWidget(dashboardService.getWidget(dashboard, oldWidget.getId()));
+                dashboardService.updateWidget(dashboard, widget);
+            } else {
+                dashboardService.addWidget(dashboard, newWidget);
+            }
         }
-
         return (dashboard != null) ? dashboardService.get(dashboard.getId()) : null;
     }
 
+/**
+ * WidgetRequest request.
+    Component component = dashboardService.associateCollectorToComponent(
+            request.getComponentId(), request.getCollectorItemIds());
+
+    Dashboard dashboard = dashboardService.get(id);
+    Widget widget = request.updateWidget(dashboardService.getWidget(dashboard, widgetId));
+    widget = dashboardService.updateWidget(dashboard, widget);
+
+ **/
     /**
      * Creates a collector item from an entry in the request.
      * @param entry

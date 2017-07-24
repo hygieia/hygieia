@@ -253,8 +253,8 @@ public class DashboardRemoteRequest {
             Map<String, String> scm = new HashMap<>();
             scm.put("name", toolName);
             scm.put("value", toolName);
-            options.put("scm", scm);
-            return options;
+            opts.put("scm", scm);
+            return opts;
         }
     }
 

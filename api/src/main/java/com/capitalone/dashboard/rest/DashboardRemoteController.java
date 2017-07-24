@@ -35,7 +35,7 @@ public class DashboardRemoteController {
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> remoteCreateDashboard(@Valid @RequestBody DashboardRemoteRequest request) {
         try {
-            Dashboard dashboard = dashboardRemoteService.remoteCreate(request);
+            Dashboard dashboard = dashboardRemoteService.remoteCreate(request, false);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body("Successfully created dashboard: id =" + dashboard.getId());
@@ -43,6 +43,21 @@ public class DashboardRemoteController {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Failed to create dashboard. Error: " + he.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/dashboard/update", method = POST,
+            consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> remoteUpdateDashboard(@Valid @RequestBody DashboardRemoteRequest request) {
+        try {
+            Dashboard dashboard = dashboardRemoteService.remoteCreate(request, true);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body("Successfully updated dashboard: id =" + dashboard.getId());
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to update dashboard. Error: " + he.getMessage());
         }
     }
 }

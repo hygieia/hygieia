@@ -5,7 +5,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
 
 public interface DashboardRemoteService {
-    Dashboard remoteCreate(DashboardRemoteRequest request) throws HygieiaException;
+    Dashboard remoteCreate(DashboardRemoteRequest request, boolean isUpdate) throws HygieiaException;
 }
 
 
