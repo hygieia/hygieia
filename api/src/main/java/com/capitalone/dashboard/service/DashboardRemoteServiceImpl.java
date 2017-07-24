@@ -138,12 +138,12 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         ObjectId appId = null;
         ObjectId serviceId = null;
         if (!StringUtils.isEmpty(metaData.getBusinessApplication())) {
-            Cmdb app = cmdbRepository.findByConfigurationItemAndItemType(metaData.getBusinessApplication(), "app");
+            Cmdb app = cmdbRepository.findByConfigurationItemAndItemType(metaData.getBusinessApplication(), "component");
             if (app == null) throw new HygieiaException("Invalid Business Application Name.", HygieiaException.BAD_DATA);
             appId = app.getId();
         }
         if (!StringUtils.isEmpty(metaData.getBusinessService())) {
-            Cmdb service = cmdbRepository.findByConfigurationItemAndItemType(metaData.getBusinessService(), "service");
+            Cmdb service = cmdbRepository.findByConfigurationItemAndItemType(metaData.getBusinessService(), "app");
             if (service == null) throw new HygieiaException("Invalid Business Service Name.", HygieiaException.BAD_DATA);
             serviceId = service.getId();
         }
