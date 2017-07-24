@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -328,6 +329,17 @@ public class DashboardServiceImpl implements DashboardService {
 		return Lists.newArrayList(myDashboards);
 	}
 
+    @Override
+    public List<ObjectId> getOwnedDashboardsObjectIds() {
+        List<ObjectId> dashboardIdList = new ArrayList<>();
+        List<Dashboard> ownedDashboards =  getOwnedDashboards();
+
+        for(Dashboard dashboard: ownedDashboards){
+            dashboardIdList.add(dashboard.getId());
+        }
+
+        return dashboardIdList;
+    }
     @Override
     public Iterable<Owner> getOwners(ObjectId id) {
         Dashboard dashboard = get(id);

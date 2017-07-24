@@ -64,6 +64,10 @@ auth.adRootDn=${AUTH_AD_ROOT_DN:-}
 # This is your active directory url
 auth.adUrl=${AUTH_AD_URL:-}
 
+# Needed if you want to query ldap
+auth.ldapBindUser=${AUTH_LDAP_BIND_USER:-}
+auth.ldapBindPass=${AUTH_LDAP_BIND_PASS:-}
+
 #Monitor Widget proxy credentials
 monitor.proxy.username=${MONITOR_PROXY_USERNAME:-}
 monitor.proxy.password=${MONITOR_PROXY_PASSWORD:-}
