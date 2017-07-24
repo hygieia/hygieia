@@ -142,14 +142,14 @@ public interface DashboardService {
      * @param configItem dashboard unique identifier
      * @return Dashboard instances
      */
-    DataResponse<Iterable<Dashboard>> getByBusinessService(String configItem);
+    DataResponse<Iterable<Dashboard>> getByBusinessService(String configItem) throws HygieiaException;
     /**
      * Fetches a Dashboards.
      *
      * @param configItem dashboard unique identifier
      * @return Dashboard instances
      */
-    DataResponse<Iterable<Dashboard>> getByBusinessApplication(String configItem);
+    DataResponse<Iterable<Dashboard>> getByBusinessApplication(String configItem) throws HygieiaException;
     /**
      * Fetches a Dashboards.
      *
@@ -157,7 +157,7 @@ public interface DashboardService {
      * @param configItemService dashboard unique identifier
      * @return Dashboard instances
      */
-    DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String configItemService, String configItemApplication);
+    DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String configItemService, String configItemApplication) throws HygieiaException;
 
     /**
      *  Updates Dashboard Business Items
