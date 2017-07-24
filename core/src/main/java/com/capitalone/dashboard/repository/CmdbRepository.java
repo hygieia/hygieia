@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
 /**
  * Repository for {@link Cmdb} data.
  */
@@ -15,7 +16,9 @@ public interface CmdbRepository extends CrudRepository<Cmdb, ObjectId>  {
 
     Page<Cmdb> findAllByItemTypeAndConfigurationItemContainingIgnoreCaseAndValidConfigItem(String itemType, String configurationItem, Pageable pageable, boolean valid);
 
-    Cmdb findAllByConfigurationItemContainingIgnoreCase(String configurationItem);
+    Cmdb findByConfigurationItemContainingIgnoreCase(String configurationItem);
+
+    List<Cmdb> findAllByItemType(String type);
 
     Cmdb findByConfigurationItemAndItemType(String confiugrationItem, String itemType);
 

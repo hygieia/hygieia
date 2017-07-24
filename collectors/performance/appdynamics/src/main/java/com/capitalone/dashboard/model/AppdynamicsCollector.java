@@ -2,7 +2,6 @@ package com.capitalone.dashboard.model;
 
 import com.capitalone.dashboard.collector.AppdynamicsSettings;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
