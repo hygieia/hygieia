@@ -33,15 +33,16 @@ public class DashboardRemoteController {
 
     @RequestMapping(value = "/dashboard/create", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Dashboard> remoteCreateDashboard(@Valid @RequestBody DashboardRemoteRequest request) {
+    public ResponseEntity<String> remoteCreateDashboard(@Valid @RequestBody DashboardRemoteRequest request) {
         try {
+            Dashboard dashboard = dashboardRemoteService.remoteCreate(request);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(dashboardRemoteService.remoteCreate(request));
+                    .body("Successfully created dashboard: id =" + dashboard.getId());
         } catch (HygieiaException he) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+                    .body("Failed to create dashboard. Error: " + he.getMessage());
         }
     }
 }

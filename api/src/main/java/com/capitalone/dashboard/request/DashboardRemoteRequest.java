@@ -147,8 +147,9 @@ public class DashboardRemoteRequest {
     public static abstract class Entry {
         @NotNull
         String toolName;
+
         @NotEmpty
-        Map<String, Object> options;
+        Map<String, Object> options = new HashMap<>();
 
         public abstract CollectorType getType();
 
@@ -185,6 +186,13 @@ public class DashboardRemoteRequest {
 
         public abstract Map<String, Object> toWidgetOptions();
 
+        public Map<String, Object> getOptions() {
+            return options;
+        }
+
+        public void setOptions(Map<String, Object> options) {
+            this.options = options;
+        }
     }
 
     /**
@@ -217,25 +225,6 @@ public class DashboardRemoteRequest {
      * Details for creating Code Repo widget
      */
     public static class CodeRepoEntry extends Entry {
-        @NotNull
-        String url;
-        String branch;
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public String getBranch() {
-            return branch;
-        }
-
-        public void setBranch(String branch) {
-            this.branch = branch;
-        }
 
         @Override
         public CollectorType getType() {
@@ -255,12 +244,11 @@ public class DashboardRemoteRequest {
 
         @Override
         public Map<String, Object> toWidgetOptions() {
-            Map<String, Object> options = new HashMap<>();
-            options.put("name", "repo");
-            options.put("id", "repo0");
-            options.put("url", url);
-            if (!StringUtils.isEmpty(branch)) {
-                options.put("branch", branch);
+            Map<String, Object> opts = new HashMap<>();
+            opts.put("name", "repo");
+            opts.put("id", "repo0");
+            for (String key : options.keySet()) {
+                opts.put(key, options.get(key));
             }
             Map<String, String> scm = new HashMap<>();
             scm.put("name", toolName);

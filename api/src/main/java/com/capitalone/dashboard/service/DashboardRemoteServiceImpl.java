@@ -49,7 +49,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
     @Override
     public Dashboard remoteCreate(DashboardRemoteRequest request) throws HygieiaException {
         Dashboard dashboard;
-        if (userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())) {
+        if (!userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())) {
             throw new HygieiaException("Invalid owner information or authentication type. Owner first needs to sign up in Hygieia", HygieiaException.BAD_DATA);
         }
 
