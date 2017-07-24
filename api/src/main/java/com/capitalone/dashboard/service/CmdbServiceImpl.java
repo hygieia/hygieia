@@ -40,7 +40,7 @@ public class CmdbServiceImpl implements CmdbService {
     }
     @Override
     public Cmdb configurationItemByConfigurationItem(String configItem){
-        Cmdb cmdbItem= cmdbRepository.findByConfigurationItemContainingIgnoreCase(configItem);
+        Cmdb cmdbItem= cmdbRepository.findByConfigurationItemIgnoreCase(configItem);
         return cmdbItem;
     }
     @Override
