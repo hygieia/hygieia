@@ -55,6 +55,8 @@ import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import javax.validation.constraints.AssertTrue;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardServiceTest {
@@ -495,6 +497,132 @@ public class DashboardServiceTest {
         verify(dashboardRepository).delete(expected);
 
         assertThat(depService.getDependedBy(), not(contains(id)));
+    }
+
+    @Test
+    public void deleteTestCollectorItemDisable() {
+        ObjectId id = ObjectId.get();
+        ObjectId configItemBusServId = ObjectId.get();
+        ObjectId configItemBusAppId = ObjectId.get();
+
+        ObjectId collId = ObjectId.get();
+
+        ObjectId collItemId1 = ObjectId.get();
+        ObjectId collItemId2 = ObjectId.get();
+
+        CollectorItem item1 = new CollectorItem();
+        item1.setCollectorId(collId);
+        item1.setId(collItemId1);
+        item1.setEnabled(true);
+
+        CollectorItem item2 = new CollectorItem();
+        item2.setCollectorId(collId);
+        item2.setId(collItemId2);
+        item2.setEnabled(true);
+
+        Component component = new Component();
+        component.addCollectorItem(CollectorType.Build, item1);
+        component.addCollectorItem(CollectorType.Build, item2);
+
+
+        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServId, configItemBusAppId,"comp1");
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item1);
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item2);
+        when(dashboardRepository.findOne(id)).thenReturn(expected);
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item1)).thenReturn(Arrays.asList());
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item2)).thenReturn(Arrays.asList());
+
+        dashboardService.delete(id);
+
+        verify(componentRepository).delete(expected.getApplication().getComponents());
+        verify(dashboardRepository).delete(expected);
+        assertThat(item1.isEnabled(), is(false));
+        assertThat(item2.isEnabled(),is(false));
+        verify(collectorItemRepository).save(item1);
+        verify(collectorItemRepository).save(item2);
+    }
+
+
+    @Test
+    public void deleteTestCollectorOneItemDisable() {
+        ObjectId id = ObjectId.get();
+        ObjectId configItemBusServId = ObjectId.get();
+        ObjectId configItemBusAppId = ObjectId.get();
+
+        ObjectId collId = ObjectId.get();
+
+        ObjectId collItemId1 = ObjectId.get();
+        ObjectId collItemId2 = ObjectId.get();
+
+        CollectorItem item1 = new CollectorItem();
+        item1.setCollectorId(collId);
+        item1.setId(collItemId1);
+        item1.setEnabled(true);
+
+        CollectorItem item2 = new CollectorItem();
+        item2.setCollectorId(collId);
+        item2.setId(collItemId2);
+        item2.setEnabled(true);
+
+        Component component = new Component();
+        component.addCollectorItem(CollectorType.Build, item1);
+
+        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServId, configItemBusAppId,"comp1");
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item1);
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item2);
+        when(dashboardRepository.findOne(id)).thenReturn(expected);
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item1)).thenReturn(Arrays.asList(component));
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item2)).thenReturn(Arrays.asList());
+
+        dashboardService.delete(id);
+
+        verify(componentRepository).delete(expected.getApplication().getComponents());
+        verify(dashboardRepository).delete(expected);
+        assertThat(item1.isEnabled(), is(true));
+        assertThat(item2.isEnabled(),is(false));
+        verify(collectorItemRepository).save(item2);
+    }
+
+    @Test
+    public void deleteTestCollectorNothingDisabled() {
+        ObjectId id = ObjectId.get();
+        ObjectId configItemBusServId = ObjectId.get();
+        ObjectId configItemBusAppId = ObjectId.get();
+
+        ObjectId collId = ObjectId.get();
+
+        ObjectId collItemId1 = ObjectId.get();
+        ObjectId collItemId2 = ObjectId.get();
+
+        CollectorItem item1 = new CollectorItem();
+        item1.setCollectorId(collId);
+        item1.setId(collItemId1);
+        item1.setEnabled(true);
+
+        CollectorItem item2 = new CollectorItem();
+        item2.setCollectorId(collId);
+        item2.setId(collItemId2);
+        item2.setEnabled(true);
+
+        Component component = new Component();
+        component.addCollectorItem(CollectorType.Build, item1);
+        component.addCollectorItem(CollectorType.Build, item2);
+
+        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServId, configItemBusAppId,"comp1");
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item1);
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item2);
+        when(dashboardRepository.findOne(id)).thenReturn(expected);
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item1)).thenReturn(Arrays.asList(component));
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item2)).thenReturn(Arrays.asList(component));
+
+        dashboardService.delete(id);
+
+        verify(componentRepository).delete(expected.getApplication().getComponents());
+        verify(dashboardRepository).delete(expected);
+        assertThat(item1.isEnabled(), is(true));
+        assertThat(item2.isEnabled(),is(true));
+        verify(collectorItemRepository,never()).save(item1);
+        verify(collectorItemRepository,never()).save(item2);
     }
 
     @Test

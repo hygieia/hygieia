@@ -152,7 +152,6 @@ public class DashboardServiceImpl implements DashboardService {
             throw new UnsafeDeleteException("Cannot delete team dashboard " + dashboard.getTitle() + " as it is referenced by program dashboards.");
         }
 
-        componentRepository.delete(dashboard.getApplication().getComponents());
 
         // Remove this Dashboard's services and service dependencies
         serviceRepository.delete(serviceRepository.findByDashboardId(id));
@@ -161,7 +160,32 @@ public class DashboardServiceImpl implements DashboardService {
             serviceRepository.save(service);
         }
 
+        /**
+         * Delete Dashboard. Then delete component. Then disable collector items if needed
+         */
         dashboardRepository.delete(dashboard);
+        componentRepository.delete(dashboard.getApplication().getComponents());
+        handleCollectorItems(dashboard.getApplication().getComponents());
+    }
+
+    /**
+     * For the dashboard, get all the components and get all the collector items for the components.
+     * If a collector item is NOT associated with any Component, disable it.
+     * @param components
+     */
+    private void handleCollectorItems(List<Component> components) {
+        for (Component component : components) {
+            Map<CollectorType, List<CollectorItem>> itemMap = component.getCollectorItems();
+            for (CollectorType type : itemMap.keySet()) {
+                List<CollectorItem> items = itemMap.get(type);
+                for (CollectorItem i : items) {
+                    if (CollectionUtils.isEmpty(customRepositoryQuery.findComponents(i.getCollectorId(),type,i))) {
+                        i.setEnabled(false);
+                        collectorItemRepository.save(i);
+                    }
+                }
+            }
+        }
     }
 
     private boolean isSafeDelete(Dashboard dashboard) {
