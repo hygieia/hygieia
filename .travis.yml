@@ -9,6 +9,17 @@ cache:
     - $HOME/.m2
     - $HOME/UI/node_modules
 
+before_install:
+# shutdown servies on Travis, which may have a memory impact
+# show memory usage before and after shutdown of services
+ - "sudo service --status-all"
+ - "sudo free -m -t"
+ - "sudo /etc/init.d/mysql stop"
+ - "sudo /etc/init.d/postgresql stop"
+ - "sudo /etc/init.d/couchdb stop"
+ - "sudo /etc/init.d/redis-server stop"
+ - "sudo free -m -t"
+
 script: mvn clean install -q
 
 notifications:
@@ -26,10 +37,14 @@ notifications:
     on_failure: always # [always|never|change] # default: always
 
 before_script:
- - "uname -a"
- - "free -m"
  - "echo $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx512m"
+
+after_failure:
+# show memory usage again
+ - "sudo free -m -t"
+# show actions of the OOM killer
+ - "sudo dmesg"
 
 after_success:
   - codecov
