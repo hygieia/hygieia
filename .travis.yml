@@ -25,6 +25,10 @@ notifications:
     on_success: always #[always|never|change] # default: change
     on_failure: always # [always|never|change] # default: always
 
+before_script:
+ - "echo $JAVA_OPTS"
+ - "export JAVA_OPTS=-Xmx512m"
+
 after_success:
   - codecov
 branches:
