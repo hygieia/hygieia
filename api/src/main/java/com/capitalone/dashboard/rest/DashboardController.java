@@ -29,7 +29,6 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.WidgetResponse;
-import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.DashboardRequestTitle;
 import com.capitalone.dashboard.request.WidgetRequest;
@@ -216,18 +215,36 @@ public class DashboardController {
     }
     @RequestMapping(value = "/dashboard/configItemApp/{configItem}", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public DataResponse<Iterable<Dashboard>> getDashboardByApp(@PathVariable String configItem) {
-        return dashboardService.getByBusinessService(configItem);
+    public ResponseEntity getDashboardByApp(@PathVariable String configItem) {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getByBusinessService(configItem));
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
     }
     @RequestMapping(value = "/dashboard/configItemComponent/{configItem}", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public DataResponse<Iterable<Dashboard>> getDashboardByComp(@PathVariable String configItem) {
-        return dashboardService.getByBusinessApplication(configItem);
+    public ResponseEntity getDashboardByComp(@PathVariable String configItem) {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getByBusinessApplication(configItem));
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
     }
     @RequestMapping(value = "/dashboard/configItemComponentAndApp/{configItemComp}/{configItemApp}", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public DataResponse<Iterable<Dashboard>> getDashboardByCompAndApp(@PathVariable String configItemComp,@PathVariable String configItemApp) {
-        return dashboardService.getByServiceAndApplication(configItemComp,configItemApp);
+    public ResponseEntity getDashboardByCompAndApp(@PathVariable String configItemComp,@PathVariable String configItemApp) {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getByServiceAndApplication(configItemComp,configItemApp));
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
     }
 
     @DashboardOwnerOrAdmin
