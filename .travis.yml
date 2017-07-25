@@ -26,6 +26,8 @@ notifications:
     on_failure: always # [always|never|change] # default: always
 
 before_script:
+ - "uname -a"
+ - "free -m"
  - "echo $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx512m"
 
