@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,6 +149,11 @@ public class DashboardRemoteRequest {
         @NotNull
         String toolName;
 
+        @NotNull
+        String description;
+
+        boolean pushed;
+
         @NotEmpty
         Map<String, Object> options = new HashMap<>();
 
@@ -161,12 +167,28 @@ public class DashboardRemoteRequest {
             this.toolName = toolName;
         }
 
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public boolean isPushed() {
+            return pushed;
+        }
+
+        public void setPushed(boolean pushed) {
+            this.pushed = pushed;
+        }
 
         public CollectorItem toCollectorItem(Collector collector) throws HygieiaException{
             if (options.keySet().containsAll(collector.getUniqueFields().keySet())) {
                 CollectorItem collectorItem = new CollectorItem();
                 collectorItem.setEnabled(true);
-                collectorItem.setPushed(true);
+                collectorItem.setPushed(false);
+                collectorItem.setDescription(description);
                 for (String key : options.keySet()) {
                     if (collector.getAllFields().keySet().contains(key)) {
                         collectorItem.getOptions().put(key, options.get(key));
@@ -198,7 +220,7 @@ public class DashboardRemoteRequest {
     /**
      * Details for creating Feature widget
      */
-    public class FeatureEntry extends Entry {
+    public static class FeatureEntry extends Entry {
 
         @Override
         public CollectorType getType() {
@@ -261,7 +283,8 @@ public class DashboardRemoteRequest {
     /**
      * Details for creating Build widget
      */
-    public class BuildEntry extends Entry {
+    public static class BuildEntry extends Entry {
+
         @Override
         public CollectorType getType() {
             return CollectorType.Build;
@@ -279,7 +302,11 @@ public class DashboardRemoteRequest {
 
         @Override
         public Map<String, Object> toWidgetOptions() {
-            return null;
+            Map<String, Object> opts = new HashMap<>();
+            opts.put("id", getWidgetId());
+            opts.put("buildDurationThreshold", 3);
+            opts.put("consecutiveFailureThreshold",5);
+            return opts;
         }
 
     }
@@ -288,7 +315,7 @@ public class DashboardRemoteRequest {
      * Details for creating Static Code Analysis in Code Quality Widget
      */
 
-    public class StaticCodeEntry extends Entry {
+    public static class StaticCodeEntry extends Entry {
 
         @Override
         public CollectorType getType() {
@@ -307,16 +334,18 @@ public class DashboardRemoteRequest {
 
         @Override
         public Map<String, Object> toWidgetOptions() {
-            return null;
+            Map<String, Object> opts = new HashMap<>();
+            opts.put("id", getWidgetId());
+            opts.put("testJobNames", Arrays.asList(""));
+            return opts;
         }
-
     }
 
     /**
      * Entry to create Library Scan in Code Quality Widget
      *
      */
-    public class LibraryScanEntry extends Entry {
+    public static class LibraryScanEntry extends Entry {
 
         @Override
         public CollectorType getType() {
@@ -335,7 +364,10 @@ public class DashboardRemoteRequest {
 
         @Override
         public Map<String, Object> toWidgetOptions() {
-            return null;
+            Map<String, Object> opts = new HashMap<>();
+            opts.put("id", getWidgetId());
+            opts.put("testJobNames", Arrays.asList(""));
+            return opts;
         }
 
     }
@@ -343,7 +375,7 @@ public class DashboardRemoteRequest {
     /**
      * Entry to create Security Scan in Code Quality Widget
      */
-    public class SecurityScanEntry extends Entry {
+    public static class SecurityScanEntry extends Entry {
 
         @Override
         public CollectorType getType() {
@@ -362,14 +394,17 @@ public class DashboardRemoteRequest {
 
         @Override
         public Map<String, Object> toWidgetOptions() {
-            return null;
+            Map<String, Object> opts = new HashMap<>();
+            opts.put("id", getWidgetId());
+            opts.put("testJobNames", Arrays.asList(""));
+            return opts;
         }
     }
 
     /**
      * Entry to create Functional Test in Code Quality Widget
      */
-    public class FunctionalTestEntry extends Entry {
+    public static class FunctionalTestEntry extends Entry {
 
         @Override
         public CollectorType getType() {
@@ -395,7 +430,7 @@ public class DashboardRemoteRequest {
     /**
      * Entry to create Deployment widget
      */
-    public class DeploymentEntry extends Entry {
+    public static class DeploymentEntry extends Entry {
 
         @Override
         public CollectorType getType() {
@@ -414,7 +449,9 @@ public class DashboardRemoteRequest {
 
         @Override
         public Map<String, Object> toWidgetOptions() {
-            return null;
+            Map<String, Object> opts = new HashMap<>();
+            opts.put("id", getWidgetId());
+            return opts;
         }
 
     }

@@ -2,7 +2,8 @@ package com.capitalone.dashboard.fixture;
  
  import java.util.List;
 
-import org.bson.types.ObjectId;
+ import com.capitalone.dashboard.request.DashboardRemoteRequest;
+ import org.bson.types.ObjectId;
 
 import com.capitalone.dashboard.model.Application;
 import com.capitalone.dashboard.model.AuthType;
@@ -29,7 +30,26 @@ import com.capitalone.dashboard.request.DashboardRequest;
  
  		return request;
  	}
- 
+
+	 public static DashboardRemoteRequest makeDashboardRemoteRequest(String template, String title, String appName, String compName,
+														 String owner, List<String> teamDashboardIds, String type, ObjectId configItemAppId, ObjectId configItemComponentId) {
+		 DashboardRemoteRequest request = new DashboardRemoteRequest();
+		 DashboardRemoteRequest.DashboardMetaData metaData = new DashboardRemoteRequest.DashboardMetaData();
+		 Owner owner1 = new Owner();
+		 owner1.setUsername(owner);
+		 owner1.setAuthType(AuthType.STANDARD);
+		 metaData.setApplicationName(appName);
+		 metaData.setOwner(owner1);
+		 metaData.setComponentName(compName);
+		 metaData.setTemplate(template);
+		 metaData.setTitle(title);
+		 metaData.setType(type);
+		 request.setMetaData(metaData);
+
+
+		 return request;
+	 }
+
  	public static Dashboard makeDashboard(String template, String title, String appName, String compName, String owner,
  			DashboardType type, ObjectId configItemAppId, ObjectId configItemComponentId) {
  		Application application = null;

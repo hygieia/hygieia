@@ -1,12 +1,4 @@
 {
-  "codeRepoEntries": [
-    {"toolName": "Github",
-      "options": {
-        "branch": "master",
-        "url": "http://test.git.com"
-      }
-    }
-  ],
   "metaData": {
     "applicationName": "AppNm",
     "businessApplication": "BusApp",
@@ -19,5 +11,14 @@
     "template": "CapOne",
     "title": "AutoDashTitle",
     "type": "Team"
-  }
+  },
+  "codeRepoEntries": [
+    {
+      "toolName": "GitHub",
+      "options": {
+        "branch": "master",
+        "url": "http://test.git.com"
+      }
+    }
+  ]
 }

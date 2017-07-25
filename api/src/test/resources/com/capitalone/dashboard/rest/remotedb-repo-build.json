@@ -1,0 +1,56 @@
+{
+  "metaData": {
+    "applicationName": "AppNm",
+    "componentName": "BusComp",
+    "owner": {
+      "authType": "STANDARD",
+      "username": "topopal"
+    },
+    "template": "CapOne",
+    "title": "AutoDashTitle",
+    "type": "Team"
+  },
+  "codeRepoEntries": [
+    {
+      "toolName": "GitHub",
+      "description": "Team Github Repo",
+      "options": {
+        "branch": "master",
+        "url": "http://test.git.com"
+      }
+    }
+  ],
+  "buildEntries": [
+    {
+      "toolName": "Hudson",
+      "description": "MyJob",
+      "options": {
+        "instanceUrl": "http://jenkins.com",
+        "jobUrl": "http://jenkins.com/job/MyJob/",
+        "jobName": "MyJob"
+      }
+    }
+  ],
+  "staticCodeEntries": [
+    {
+      "toolName": "Sonar",
+      "description": "MySonarJob",
+      "options": {
+        "instanceUrl": "http://sonar.com",
+        "projectName": "MyJob"
+      }
+    }
+  ],
+  "securityScanEntries": [
+    {
+      "toolName": "Eratocode",
+      "description": "MyEratocodeJob",
+      "options": {
+        "instanceUrl": "http://eratocode.com",
+        "projectName": "MyJob",
+        "applicationID": "ASV1234",
+        "applicationName" : "MyEratoApp"
+      }
+    }
+  ]
+}

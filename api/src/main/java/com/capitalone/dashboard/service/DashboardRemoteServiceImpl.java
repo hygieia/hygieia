@@ -20,6 +20,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -103,8 +104,12 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             Widget newWidget = widgetRequest.widget();
             if (isUpdate) {
                 Widget oldWidget = existingWidgets.get(newWidget.getName());
-                Widget widget = widgetRequest.updateWidget(dashboardService.getWidget(dashboard, oldWidget.getId()));
-                dashboardService.updateWidget(dashboard, widget);
+                if (oldWidget == null) {
+                    dashboardService.addWidget(dashboard, newWidget);
+                } else {
+                    Widget widget = widgetRequest.updateWidget(dashboardService.getWidget(dashboard, oldWidget.getId()));
+                    dashboardService.updateWidget(dashboard, widget);
+                }
             } else {
                 dashboardService.addWidget(dashboard, newWidget);
             }
@@ -132,7 +137,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         CollectorItem item = entry.toCollectorItem(collector);
         item.setCollectorId(collector.getId());
 
-        return collectorService.createCollectorItemSelectOptions(item,collector.getAllFields(), collector.getUniqueFields());
+        return collectorService.createCollectorItemSelectOptions(item,collector.getAllFields(), item.getOptions());
     }
 
     /**
@@ -148,7 +153,9 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             request.setName(entry.getWidgetName());
             request.setComponentId(dashboard.getApplication().getComponents().get(0).getId());
             request.setOptions(entry.toWidgetOptions());
-            request.setCollectorItemIds(Arrays.asList(item.getId()));
+            List<ObjectId> ids = new ArrayList<>();
+            ids.add(item.getId());
+            request.setCollectorItemIds(ids);
         }
         return request;
     }
