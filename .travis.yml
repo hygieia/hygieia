@@ -9,6 +9,16 @@ cache:
     - $HOME/.m2
     - $HOME/UI/node_modules
 
+before_install:
+# stop unused services and check memory
+ - "sudo service --status-all"
+ - "sudo free -m -t"
+ - "sudo /etc/init.d/mysql stop"
+ - "sudo /etc/init.d/postgresql stop"
+ - "#sudo /etc/init.d/couchdb stop"
+ - "sudo /etc/init.d/redis-server stop"
+ - "sudo free -m -t"
+
 script: mvn clean install -q
 
 notifications:
@@ -24,6 +34,11 @@ notifications:
       - tapabrata.pal@capitalone.com
     on_success: always #[always|never|change] # default: change
     on_failure: always # [always|never|change] # default: always
+
+after_failure:
+# check memory and show kernel messages
+ - "sudo free -m -t"
+ - "sudo dmesg"
 
 after_success:
   - codecov
