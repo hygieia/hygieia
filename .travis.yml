@@ -10,8 +10,7 @@ cache:
     - $HOME/UI/node_modules
 
 before_install:
-# shutdown servies on Travis, which may have a memory impact
-# show memory usage before and after shutdown of services
+# stop unused services and check memory
  - "sudo service --status-all"
  - "sudo free -m -t"
  - "sudo /etc/init.d/mysql stop"
@@ -36,14 +35,9 @@ notifications:
     on_success: always #[always|never|change] # default: change
     on_failure: always # [always|never|change] # default: always
 
-before_script:
- - "echo $JAVA_OPTS"
- - "export JAVA_OPTS=-Xmx512m"
-
 after_failure:
-# show memory usage again
+# check memory and show kernel messages
  - "sudo free -m -t"
-# show actions of the OOM killer
  - "sudo dmesg"
 
 after_success:
