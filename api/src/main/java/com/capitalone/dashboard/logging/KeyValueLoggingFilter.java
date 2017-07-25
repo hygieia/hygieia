@@ -20,9 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.capitalone.dashboard.model.SplunkLog;
+import com.capitalone.dashboard.model.KeyValueLog;
 
-public class SplunkConnectionLoggingFilter implements Filter {
+public class KeyValueLoggingFilter implements Filter {
     
     protected static final String USER_AUTHORITIES = "USER_AUTHORITIES";
     protected static final String USER_DETAILS = "USER_DETAILS";
@@ -35,7 +35,7 @@ public class SplunkConnectionLoggingFilter implements Filter {
     protected static final String APPLICATION_NAME = "APPLICATION_NAME";
     protected static final String APPLICATION_VERSION = "APPLICATION_VERSION";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SplunkConnectionLoggingFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeyValueLoggingFilter.class);
     
     @Value("${application.name}")
     private String appName;
@@ -53,9 +53,9 @@ public class SplunkConnectionLoggingFilter implements Filter {
         LOGGER.info(getLogEntry(requestWrapper, responseWrapper).toString());
     }
 
-    private SplunkLog getLogEntry(HttpServletRequest request, HttpServletResponse response) {
+    private KeyValueLog getLogEntry(HttpServletRequest request, HttpServletResponse response) {
         
-        SplunkLog log = new SplunkLog();
+        KeyValueLog log = new KeyValueLog();
         log.with(REMOTE_ADDRESS, request.getRemoteAddr())
             .with(APPLICATION_NAME, appName)
             .with(APPLICATION_VERSION, version)
