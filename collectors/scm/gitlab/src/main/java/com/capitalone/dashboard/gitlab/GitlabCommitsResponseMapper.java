@@ -25,7 +25,8 @@ public class GitlabCommitsResponseMapper {
 
     private Commit map(String repoUrl, String branch, GitlabCommit gitlabCommit) {
         long timestamp = new DateTime(gitlabCommit.getCreatedAt()).getMillis();
-        CommitType commitType = CollectionUtils.isEmpty(gitlabCommit.getParentIds()) ? CommitType.New : CommitType.Merge;
+        int parentSize = CollectionUtils.isNotEmpty(gitlabCommit.getParentIds()) ? gitlabCommit.getParentIds().size() : 0;
+        CommitType commitType = parentSize > 1 ? CommitType.Merge : CommitType.New;
         
         Commit commit = new Commit();
         commit.setTimestamp(System.currentTimeMillis());
