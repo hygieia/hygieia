@@ -14,7 +14,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SplunkLoggingConditionTest {
+public class KeyValueLoggingConditionTest {
 
     @Mock
     private ConditionContext context;
@@ -26,34 +26,34 @@ public class SplunkLoggingConditionTest {
     private AnnotatedTypeMetadata metadata;
     
     @InjectMocks
-    private SplunkLoggingCondition condition;
+    private KeyValueLoggingCondition condition;
     
     @Test
     public void shouldBeTrueWhenPropertyTrue() {
-        SplunkLoggingCondition condition = new SplunkLoggingCondition();
+    	KeyValueLoggingCondition condition = new KeyValueLoggingCondition();
         
         when(context.getEnvironment()).thenReturn(environment);
-        when(environment.getProperty(SplunkLoggingCondition.LOG_SPLUNK_REQUEST)).thenReturn("true");
+        when(environment.getProperty(KeyValueLoggingCondition.LOG_REQUEST_KEY_VALUE)).thenReturn("true");
         
         assertTrue(condition.matches(context, metadata));
     }
     
     @Test
     public void shouldBeFalseWhenPropertyFalse() {
-        SplunkLoggingCondition condition = new SplunkLoggingCondition();
+    	KeyValueLoggingCondition condition = new KeyValueLoggingCondition();
         
         when(context.getEnvironment()).thenReturn(environment);
-        when(environment.getProperty(SplunkLoggingCondition.LOG_SPLUNK_REQUEST)).thenReturn("false");
+        when(environment.getProperty(KeyValueLoggingCondition.LOG_REQUEST_KEY_VALUE)).thenReturn("false");
         
         assertFalse(condition.matches(context, metadata));
     }
     
     @Test
     public void shouldBeFalseWhenPropertyNull() {
-        SplunkLoggingCondition condition = new SplunkLoggingCondition();
+    	KeyValueLoggingCondition condition = new KeyValueLoggingCondition();
         
         when(context.getEnvironment()).thenReturn(environment);
-        when(environment.getProperty(SplunkLoggingCondition.LOG_SPLUNK_REQUEST)).thenReturn(null);
+        when(environment.getProperty(KeyValueLoggingCondition.LOG_REQUEST_KEY_VALUE)).thenReturn(null);
         
         assertFalse(condition.matches(context, metadata));
     }
