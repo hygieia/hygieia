@@ -232,6 +232,12 @@ public class DeployServiceImpl implements DeployService {
         col.setEnabled(true);
         col.setOnline(true);
         col.setLastExecuted(System.currentTimeMillis());
+
+        Map<String, Object> allOptions = new HashMap<>();
+        allOptions.put("applicationName", "");
+        allOptions.put("instanceUrl", "");
+        col.getAllFields().putAll(allOptions);
+        col.getUniqueFields().putAll(allOptions);
         return collectorService.createCollector(col);
     }
 

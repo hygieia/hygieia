@@ -152,7 +152,7 @@ public class DashboardRemoteRequest {
         @NotNull
         String description;
 
-        boolean pushed;
+        boolean pushed = false;
 
         @NotEmpty
         Map<String, Object> options = new HashMap<>();
@@ -187,7 +187,7 @@ public class DashboardRemoteRequest {
             if (options.keySet().containsAll(collector.getUniqueFields().keySet())) {
                 CollectorItem collectorItem = new CollectorItem();
                 collectorItem.setEnabled(true);
-                collectorItem.setPushed(false);
+                collectorItem.setPushed(isPushed());
                 collectorItem.setDescription(description);
                 for (String key : options.keySet()) {
                     if (collector.getAllFields().keySet().contains(key)) {
@@ -423,7 +423,10 @@ public class DashboardRemoteRequest {
 
         @Override
         public Map<String, Object> toWidgetOptions() {
-            return null;
+            Map<String, Object> opts = new HashMap<>();
+            opts.put("id", getWidgetId());
+            opts.put("testJobNames",Arrays.asList(""));
+            return opts;
         }
     }
 

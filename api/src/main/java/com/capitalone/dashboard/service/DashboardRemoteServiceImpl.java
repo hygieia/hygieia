@@ -11,6 +11,7 @@ import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
 import com.capitalone.dashboard.request.WidgetRequest;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +29,7 @@ import java.util.Map;
 @Service
 public class DashboardRemoteServiceImpl implements DashboardRemoteService {
     private final CollectorRepository collectorRepository;
+    private final CustomRepositoryQuery customRepositoryQuery;
     private final DashboardRepository dashboardRepository;
     private final DashboardService dashboardService;
     private final CollectorService collectorService;
@@ -39,8 +40,9 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
     @Autowired
     public DashboardRemoteServiceImpl(
             CollectorRepository collectorRepository,
-            DashboardRepository dashboardRepository, DashboardService dashboardService, CollectorService collectorService, UserInfoService userInfoService, CmdbRepository cmdbRepository) {
+            CustomRepositoryQuery customRepositoryQuery, DashboardRepository dashboardRepository, DashboardService dashboardService, CollectorService collectorService, UserInfoService userInfoService, CmdbRepository cmdbRepository) {
         this.collectorRepository = collectorRepository;
+        this.customRepositoryQuery = customRepositoryQuery;
         this.dashboardRepository = dashboardRepository;
         this.dashboardService = dashboardService;
         this.collectorService = collectorService;
