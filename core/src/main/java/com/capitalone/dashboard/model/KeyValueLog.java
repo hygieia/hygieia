@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class SplunkLog {
+public class KeyValueLog {
     
     private static final char SEPERATOR = ' ';
     private static final char EQUALS = '=';
@@ -14,7 +14,7 @@ public class SplunkLog {
     
     private Map<String, Object> attributes = new LinkedHashMap<>();
     
-    public SplunkLog with(String key, Object value) {
+    public KeyValueLog with(String key, Object value) {
         attributes.put(key, value);
         return this;
     }

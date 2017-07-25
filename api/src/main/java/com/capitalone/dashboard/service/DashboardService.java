@@ -9,7 +9,7 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
-
+import com.capitalone.dashboard.model.DataResponse;
 
 public interface DashboardService {
 
@@ -97,6 +97,12 @@ public interface DashboardService {
     List<Dashboard> getOwnedDashboards();
 
     /**
+     * Gets all dashboard ObjectIds belonging to the authenticated user
+     * @return List of dashboard ObjectIds
+     */
+    List<ObjectId> getOwnedDashboardsObjectIds();
+
+    /**
      * Get the set of owners for a given dashboard
      * 
      * @param id get owners for this dashboard
@@ -130,7 +136,36 @@ public interface DashboardService {
      */
 
     Component getComponent(ObjectId componentId);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessService(String configItem) throws HygieiaException;
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessApplication(String configItem) throws HygieiaException;
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItemApplication dashboard unique identifier
+     * @param configItemService dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String configItemService, String configItemApplication) throws HygieiaException;
 
+    /**
+     *  Updates Dashboard Business Items
+     * @param dashboardId
+     * @param dashboard
+     * @return dashboard instance
+     */
+    Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard dashboard) throws HygieiaException;
 }
 
 

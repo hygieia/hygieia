@@ -5,7 +5,6 @@ import com.capitalone.dashboard.service.ApiTokenService;
 import com.capitalone.dashboard.service.ApiTokenServiceImpl;
 import com.capitalone.dashboard.service.GitRequestService;
 import com.capitalone.dashboard.service.LibraryPolicyService;
-import com.capitalone.dashboard.model.Performance;
 import com.capitalone.dashboard.service.Monitor2Service;
 import com.capitalone.dashboard.service.PerformanceService;
 import org.mockito.Mockito;
@@ -24,9 +23,11 @@ import com.capitalone.dashboard.service.CloudInstanceService;
 import com.capitalone.dashboard.service.CloudSubnetService;
 import com.capitalone.dashboard.service.CloudVirtualNetworkService;
 import com.capitalone.dashboard.service.CloudVolumeService;
+import com.capitalone.dashboard.service.CmdbService;
 import com.capitalone.dashboard.service.CodeQualityService;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.CommitService;
+import com.capitalone.dashboard.service.BusCompOwnerService;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.service.DefaultAuthenticationServiceImpl;
 import com.capitalone.dashboard.service.DeployService;
@@ -204,4 +205,10 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 	 public GitRequestService gitRequestService() {
 		 return Mockito.mock(GitRequestService.class);
 	 }
+
+	 @Bean
+	 public CmdbService cmdbService() {return Mockito.mock(CmdbService.class);}
+
+	 @Bean
+	 public BusCompOwnerService busCompOwnerService() {return Mockito.mock(BusCompOwnerService.class);}
  }
