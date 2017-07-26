@@ -73,4 +73,7 @@ gitlab.apiToken=
 #Gitlab selfSignedCertificate (optional, defaults to false, set to true if your instance of gitlab is running on https without a trusted certificate
 gitlab.selfSignedCertificate=false
 
+#Gitlab API Version (optional, defaults to current version of 4)
+gitlab.apiVersion=4
+
 ```

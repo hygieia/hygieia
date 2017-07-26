@@ -70,6 +70,9 @@ gitlab.commitThresholdDays=${GITLAB_COMMIT_THRESHOLD_DAYS:-15}
 #Gitlab Instance using self signed certificate
 gitlab.selfSignedCertificate=${GITLAB_SELF_SIGNED_CERTIFICATE:-false}
 
+#Gitlab API Version (optional, defaults to current version of 4)
+gitlab.apiVersion=${GITLAB_API_VERSION:-4}
+
 EOF
 
 echo "

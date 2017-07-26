@@ -67,6 +67,9 @@ gitlab.apiToken=${GITLAB_API_TOKEN:-}
 #Gitlab selfSignedCertificate (optional, defaults to false, set to true if your instance of gitlab is running on https without a trusted certificate
 gitlab.selfSignedCertificate=${GITLAB_SELF_SIGNED_CERTIFICATE:-false}
 
+#Gitlab API Version (optional, defaults to current version of 4)
+gitlab.apiVersion=${GITLAB_API_VERSION:-4}
+
 EOF
 
 echo "
