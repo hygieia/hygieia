@@ -59,7 +59,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<skipDockerBuild>false</skipDockerBuild>
+					<skipDockerBuild>true</skipDockerBuild>
 					<imageName>hygieia-${project.build.finalName}</imageName>
 					<baseImage>${uitest.baseImage}</baseImage>
 					<workdir>/usr/src/app/</workdir>
