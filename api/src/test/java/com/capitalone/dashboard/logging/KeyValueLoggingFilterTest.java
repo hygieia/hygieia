@@ -37,7 +37,7 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SplunkConnectionLoggingFilterTest {
+public class KeyValueLoggingFilterTest {
     
     @Mock
     private HttpServletRequest request;
@@ -64,14 +64,14 @@ public class SplunkConnectionLoggingFilterTest {
     private String requestMethod = "POST";
     private int statusCode = 200;
     
-    SplunkConnectionLoggingFilter filter;
+    KeyValueLoggingFilter filter;
 
     @Before
     public void setup() {
         Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         logger.addAppender(appender);
         
-        filter = new SplunkConnectionLoggingFilter();
+        filter = new KeyValueLoggingFilter();
         
         ReflectionTestUtils.setField(filter, "appName", appName);
         ReflectionTestUtils.setField(filter, "version", appVersion);
@@ -97,12 +97,12 @@ public class SplunkConnectionLoggingFilterTest {
         LoggingEvent loggingEvent = logCaptor.getValue();
         
         assertEquals(Level.INFO, loggingEvent.getLevel());
-        assertTrue(verifyLogContains(loggingEvent, SplunkConnectionLoggingFilter.REMOTE_ADDRESS, remoteAddress));
-        assertTrue(verifyLogContains(loggingEvent, SplunkConnectionLoggingFilter.APPLICATION_NAME, appName));
-        assertTrue(verifyLogContains(loggingEvent, SplunkConnectionLoggingFilter.APPLICATION_VERSION, appVersion));
-        assertTrue(verifyLogContains(loggingEvent, SplunkConnectionLoggingFilter.REQUEST_URL, requestUrl));
-        assertTrue(verifyLogContains(loggingEvent, SplunkConnectionLoggingFilter.REQUEST_METHOD, requestMethod));
-        assertTrue(verifyLogContains(loggingEvent, SplunkConnectionLoggingFilter.STATUS_CODE, statusCode));
+        assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.REMOTE_ADDRESS, remoteAddress));
+        assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.APPLICATION_NAME, appName));
+        assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.APPLICATION_VERSION, appVersion));
+        assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.REQUEST_URL, requestUrl));
+        assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.REQUEST_METHOD, requestMethod));
+        assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.STATUS_CODE, statusCode));
     }
     
     @Test
@@ -124,10 +124,10 @@ public class SplunkConnectionLoggingFilterTest {
         verify(appender).doAppend(logCaptor.capture());
         LoggingEvent loggingEvent = logCaptor.getValue();
         
-        assertTrue(verifyLogContains(loggingEvent, SplunkConnectionLoggingFilter.SESSION_ID, sessionId));
-        assertTrue(verifyLogContains(loggingEvent, SplunkConnectionLoggingFilter.USER_NAME, principal));
-        assertTrue(verifyLogContains(loggingEvent, SplunkConnectionLoggingFilter.USER_DETAILS, userDetails));
-        assertTrue(verifyLogContains(loggingEvent, SplunkConnectionLoggingFilter.USER_AUTHORITIES, "[ROLE_ADMIN]"));
+        assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.SESSION_ID, sessionId));
+        assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.USER_NAME, principal));
+        assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.USER_DETAILS, userDetails));
+        assertTrue(verifyLogContains(loggingEvent, KeyValueLoggingFilter.USER_AUTHORITIES, "[ROLE_ADMIN]"));
     }
 
     private boolean verifyLogContains(LoggingEvent loggingEvent, String field, Object value) {
