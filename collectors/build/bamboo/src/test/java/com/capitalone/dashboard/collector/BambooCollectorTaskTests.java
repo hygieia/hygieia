@@ -1,13 +1,13 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.Build;
-import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.BambooCollector;
 import com.capitalone.dashboard.model.BambooJob;
-import com.capitalone.dashboard.repository.BuildRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.repository.BambooCollectorRepository;
 import com.capitalone.dashboard.repository.BambooJobRepository;
+import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
 import com.google.common.collect.Sets;
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -36,15 +36,23 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class BambooCollectorTaskTests {
 
-    @Mock private TaskScheduler taskScheduler;
-    @Mock private BambooCollectorRepository bambooCollectorRepository;
-    @Mock private BambooJobRepository bambooJobRepository;
-    @Mock private BuildRepository buildRepository;
-    @Mock private BambooClient bambooClient;
-    @Mock private BambooSettings bambooSettings;
-    @Mock private ComponentRepository dbComponentRepository;
+    @Mock
+    private TaskScheduler taskScheduler;
+    @Mock
+    private BambooCollectorRepository bambooCollectorRepository;
+    @Mock
+    private BambooJobRepository bambooJobRepository;
+    @Mock
+    private BuildRepository buildRepository;
+    @Mock
+    private BambooClient bambooClient;
+    @Mock
+    private BambooSettings bambooSettings;
+    @Mock
+    private ComponentRepository dbComponentRepository;
 
-    @InjectMocks private BambooCollectorTask task;
+    @InjectMocks
+    private BambooCollectorTask task;
 
     private static final String SERVER1 = "server1";
     private static final String NICENAME1 = "niceName1";
@@ -70,6 +78,22 @@ public class BambooCollectorTaskTests {
     public void collect_twoJobs_jobsAdded() {
         when(bambooClient.getInstanceJobs(SERVER1)).thenReturn(twoJobsWithTwoBuilds(SERVER1, NICENAME1));
         when(dbComponentRepository.findAll()).thenReturn(components());
+        List<BambooJob> bambooJobs = new ArrayList<>();
+        BambooJob bambooJob = bambooJob("1", SERVER1, "JOB1_URL", NICENAME1);
+        bambooJobs.add(bambooJob);
+        when(bambooJobRepository.findEnabledJobs(null, "server1")).thenReturn(bambooJobs);
+        task.collect(collectorWithOneServer());
+        verify(bambooJobRepository, times(1)).save(anyListOf(BambooJob.class));
+    }
+
+    @Test
+    public void collect_twoJobs_jobsAdded_random_order() {
+        when(bambooClient.getInstanceJobs(SERVER1)).thenReturn(twoJobsWithTwoBuildsRandom(SERVER1, NICENAME1));
+        when(dbComponentRepository.findAll()).thenReturn(components());
+        List<BambooJob> bambooJobs = new ArrayList<>();
+        BambooJob bambooJob = bambooJob("2", SERVER1, "JOB2_URL", NICENAME1);
+        bambooJobs.add(bambooJob);
+        when(bambooJobRepository.findEnabledJobs(null, "server1")).thenReturn(bambooJobs);
         task.collect(collectorWithOneServer());
         verify(bambooJobRepository, times(1)).save(anyListOf(BambooJob.class));
     }
@@ -77,7 +101,7 @@ public class BambooCollectorTaskTests {
     @Test
     public void collect_oneJob_exists_notAdded() {
         BambooCollector collector = collectorWithOneServer();
-        BambooJob job = bambooJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
+        BambooJob job = bambooJob("1", SERVER1, "JOB1_URL", NICENAME1);
         when(bambooClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job));
         when(bambooJobRepository.findJob(collector.getId(), SERVER1, job.getJobName()))
                 .thenReturn(job);
@@ -92,10 +116,10 @@ public class BambooCollectorTaskTests {
     @Test
     public void delete_job() {
         BambooCollector collector = collectorWithOneServer();
-		collector.setId(ObjectId.get());
-        BambooJob job1 = bambooJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
+        collector.setId(ObjectId.get());
+        BambooJob job1 = bambooJob("1", SERVER1, "JOB1_URL", NICENAME1);
         job1.setCollectorId(collector.getId());
-        BambooJob job2 = bambooJob("JOB2", SERVER1, "JOB2_URL", NICENAME1);
+        BambooJob job2 = bambooJob("2", SERVER1, "JOB2_URL", NICENAME1);
         job2.setCollectorId(collector.getId());
         List<BambooJob> jobs = new ArrayList<>();
         jobs.add(job1);
@@ -114,8 +138,8 @@ public class BambooCollectorTaskTests {
     @Test
     public void delete_never_job() {
         BambooCollector collector = collectorWithOneServer();
-		collector.setId(ObjectId.get());
-        BambooJob job1 = bambooJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
+        collector.setId(ObjectId.get());
+        BambooJob job1 = bambooJob("1", SERVER1, "JOB1_URL", NICENAME1);
         job1.setCollectorId(collector.getId());
         List<BambooJob> jobs = new ArrayList<>();
         jobs.add(job1);
@@ -131,8 +155,8 @@ public class BambooCollectorTaskTests {
     @Test
     public void collect_jobNotEnabled_buildNotAdded() {
         BambooCollector collector = collectorWithOneServer();
-        BambooJob job = bambooJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
-        Build build = build("JOB1_1", "JOB1_1_URL");
+        BambooJob job = bambooJob("1", SERVER1, "JOB1_URL", NICENAME1);
+        Build build = build("1", "JOB1_1_URL");
 
         when(bambooClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
         when(dbComponentRepository.findAll()).thenReturn(components());
@@ -144,8 +168,8 @@ public class BambooCollectorTaskTests {
     @Test
     public void collect_jobEnabled_buildExists_buildNotAdded() {
         BambooCollector collector = collectorWithOneServer();
-        BambooJob job = bambooJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
-        Build build = build("JOB1_1", "JOB1_1_URL");
+        BambooJob job = bambooJob("1", SERVER1, "JOB1_URL", NICENAME1);
+        Build build = build("1", "JOB1_1_URL");
 
         when(bambooClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
         when(bambooJobRepository.findEnabledJobs(collector.getId(), SERVER1))
@@ -160,8 +184,8 @@ public class BambooCollectorTaskTests {
     @Test
     public void collect_jobEnabled_newBuild_buildAdded() {
         BambooCollector collector = collectorWithOneServer();
-        BambooJob job = bambooJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
-        Build build = build("JOB1_1", "JOB1_1_URL");
+        BambooJob job = bambooJob("1", SERVER1, "JOB1_URL", NICENAME1);
+        Build build = build("1", "JOB1_1_URL");
 
         when(bambooClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
         when(bambooJobRepository.findEnabledJobs(collector.getId(), SERVER1))
@@ -186,8 +210,15 @@ public class BambooCollectorTaskTests {
 
     private Map<BambooJob, Set<Build>> twoJobsWithTwoBuilds(String server, String niceName) {
         Map<BambooJob, Set<Build>> jobs = new HashMap<>();
-        jobs.put(bambooJob("JOB1", server, "JOB1_URL", niceName), Sets.newHashSet(build("JOB1_1", "JOB1_1_URL"), build("JOB1_2", "JOB1_2_URL")));
-        jobs.put(bambooJob("JOB2", server, "JOB2_URL", niceName), Sets.newHashSet(build("JOB2_1", "JOB2_1_URL"), build("JOB2_2", "JOB2_2_URL")));
+        jobs.put(bambooJob("1", server, "JOB1_URL", niceName), Sets.newHashSet(build("1", "JOB1_1_URL"), build("2", "JOB1_2_URL")));
+        jobs.put(bambooJob("2", server, "JOB2_URL", niceName), Sets.newHashSet(build("1", "JOB2_1_URL"), build("2", "JOB2_2_URL")));
+        return jobs;
+    }
+
+    private Map<BambooJob, Set<Build>> twoJobsWithTwoBuildsRandom(String server, String niceName) {
+        Map<BambooJob, Set<Build>> jobs = new HashMap<>();
+        jobs.put(bambooJob("2", server, "JOB2_URL", niceName), Sets.newHashSet(build("2", "JOB2_1_URL"), build("2", "JOB2_2_URL")));
+        jobs.put(bambooJob("1", server, "JOB1_URL", niceName), Sets.newHashSet(build("1", "JOB1_1_URL"), build("2", "JOB1_2_URL")));
         return jobs;
     }
 
@@ -208,12 +239,12 @@ public class BambooCollectorTaskTests {
     }
 
     private ArrayList<com.capitalone.dashboard.model.Component> components() {
-    	ArrayList<com.capitalone.dashboard.model.Component> cArray = new ArrayList<com.capitalone.dashboard.model.Component>();
-    	com.capitalone.dashboard.model.Component c = new Component();
-    	c.setId(new ObjectId());
-    	c.setName("COMPONENT1");
-    	c.setOwner("JOHN");
-    	cArray.add(c);
-    	return cArray;
+        ArrayList<com.capitalone.dashboard.model.Component> cArray = new ArrayList<com.capitalone.dashboard.model.Component>();
+        com.capitalone.dashboard.model.Component c = new Component();
+        c.setId(new ObjectId());
+        c.setName("COMPONENT1");
+        c.setOwner("JOHN");
+        cArray.add(c);
+        return cArray;
     }
 }
