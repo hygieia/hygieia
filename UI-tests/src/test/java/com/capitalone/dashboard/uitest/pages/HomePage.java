@@ -8,9 +8,11 @@ import org.openqa.selenium.support.ui.Select;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.At;
 import net.thucydides.core.annotations.DefaultUrl;
+import java.util.List;
+import java.util.ArrayList;
 
-@DefaultUrl("https://localhost:3000/#/site")
-@At(urls={"#HOST/#/site"})
+@DefaultUrl("http://localhost:3000/#/")
+@At(urls={"#HOST/#/"})
 public class HomePage extends PageObject {
 	
 	@FindBy(className="welcome-header")
@@ -39,9 +41,12 @@ public class HomePage extends PageObject {
 	
 	@FindBy(id="filter")
 	WebElement filterByDashboardInput;
-	
-	@FindBy(css=".fa.fa-lg.fa-trash.text-danger")
+
+	@FindBy(id="deleteDashboardButton")
 	WebElement deleteDashboardButton;
+
+	@FindBy(css=".list-group-item")
+	List<WebElement> allDashboards;
 	
 	public HomePage(WebDriver driver) {
 		super(driver);
@@ -63,6 +68,10 @@ public class HomePage extends PageObject {
 		innerCreateNewDashboardButton.click();
 	}
 
+	public void clickDeleteDashboardButton() {
+		deleteDashboardButton.click();
+	}
+
 	public void setDashboardTypeDropdownMenuTo(String teamDropdownOption) {
 		Select dropdown = new Select(dashboardTypeDropdown);
 		dropdown.selectByVisibleText(teamDropdownOption);
@@ -79,6 +88,14 @@ public class HomePage extends PageObject {
 
 	public void typeInToApplicationTitleInput(String applicationTitle) {
 		applicationNameInput.sendKeys(applicationTitle);
+	}
+
+	public List<String> getAllDashboards() {
+		List<String> allDashboardNames = new ArrayList<String>();
+		for (WebElement dashboard : allDashboards) {
+			allDashboardNames.add(dashboard.getText());
+		}
+		return allDashboardNames;
 	}
 
 }
