@@ -36,15 +36,23 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class HudsonCollectorTaskTests {
 
-    @Mock private TaskScheduler taskScheduler;
-    @Mock private HudsonCollectorRepository hudsonCollectorRepository;
-    @Mock private HudsonJobRepository hudsonJobRepository;
-    @Mock private BuildRepository buildRepository;
-    @Mock private HudsonClient hudsonClient;
-    @Mock private HudsonSettings hudsonSettings;
-    @Mock private ComponentRepository dbComponentRepository;
+    @Mock
+    private TaskScheduler taskScheduler;
+    @Mock
+    private HudsonCollectorRepository hudsonCollectorRepository;
+    @Mock
+    private HudsonJobRepository hudsonJobRepository;
+    @Mock
+    private BuildRepository buildRepository;
+    @Mock
+    private HudsonClient hudsonClient;
+    @Mock
+    private HudsonSettings hudsonSettings;
+    @Mock
+    private ComponentRepository dbComponentRepository;
 
-    @InjectMocks private HudsonCollectorTask task;
+    @InjectMocks
+    private HudsonCollectorTask task;
 
     private static final String SERVER1 = "server1";
     private static final String NICENAME1 = "niceName1";
@@ -70,14 +78,31 @@ public class HudsonCollectorTaskTests {
     public void collect_twoJobs_jobsAdded() {
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(twoJobsWithTwoBuilds(SERVER1, NICENAME1));
         when(dbComponentRepository.findAll()).thenReturn(components());
+        List<HudsonJob> hudsonJobs = new ArrayList<>();
+        HudsonJob hudsonJob = hudsonJob("1", SERVER1, "JOB1_URL", NICENAME1);
+        hudsonJobs.add(hudsonJob);
+        when(hudsonJobRepository.findEnabledJobs(null, "server1")).thenReturn(hudsonJobs);
         task.collect(collectorWithOneServer());
         verify(hudsonJobRepository, times(1)).save(anyListOf(HudsonJob.class));
     }
 
     @Test
+    public void collect_twoJobs_jobsAdded_random_order() {
+        when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(twoJobsWithTwoBuilds(SERVER1, NICENAME1));
+        when(dbComponentRepository.findAll()).thenReturn(components());
+        List<HudsonJob> hudsonJobs = new ArrayList<>();
+        HudsonJob hudsonJob = hudsonJob("2", SERVER1, "JOB2_URL", NICENAME1);
+        hudsonJobs.add(hudsonJob);
+        when(hudsonJobRepository.findEnabledJobs(null, "server1")).thenReturn(hudsonJobs);
+        task.collect(collectorWithOneServer());
+        verify(hudsonJobRepository, times(1)).save(anyListOf(HudsonJob.class));
+    }
+
+
+    @Test
     public void collect_oneJob_exists_notAdded() {
         HudsonCollector collector = collectorWithOneServer();
-        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
+        HudsonJob job = hudsonJob("1", SERVER1, "JOB1_URL", NICENAME1);
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job));
         when(hudsonJobRepository.findJob(collector.getId(), SERVER1, job.getJobName()))
                 .thenReturn(job);
@@ -92,10 +117,10 @@ public class HudsonCollectorTaskTests {
     @Test
     public void delete_job() {
         HudsonCollector collector = collectorWithOneServer();
-		collector.setId(ObjectId.get());
-        HudsonJob job1 = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
+        collector.setId(ObjectId.get());
+        HudsonJob job1 = hudsonJob("1", SERVER1, "JOB1_URL", NICENAME1);
         job1.setCollectorId(collector.getId());
-        HudsonJob job2 = hudsonJob("JOB2", SERVER1, "JOB2_URL", NICENAME1);
+        HudsonJob job2 = hudsonJob("2", SERVER1, "JOB2_URL", NICENAME1);
         job2.setCollectorId(collector.getId());
         List<HudsonJob> jobs = new ArrayList<>();
         jobs.add(job1);
@@ -114,8 +139,8 @@ public class HudsonCollectorTaskTests {
     @Test
     public void delete_never_job() {
         HudsonCollector collector = collectorWithOneServer();
-		collector.setId(ObjectId.get());
-        HudsonJob job1 = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
+        collector.setId(ObjectId.get());
+        HudsonJob job1 = hudsonJob("1", SERVER1, "JOB1_URL", NICENAME1);
         job1.setCollectorId(collector.getId());
         List<HudsonJob> jobs = new ArrayList<>();
         jobs.add(job1);
@@ -131,8 +156,8 @@ public class HudsonCollectorTaskTests {
     @Test
     public void collect_jobNotEnabled_buildNotAdded() {
         HudsonCollector collector = collectorWithOneServer();
-        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
-        Build build = build("JOB1_1", "JOB1_1_URL");
+        HudsonJob job = hudsonJob("1", SERVER1, "JOB1_URL", NICENAME1);
+        Build build = build("1", "JOB1_1_URL");
 
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
         when(dbComponentRepository.findAll()).thenReturn(components());
@@ -144,8 +169,8 @@ public class HudsonCollectorTaskTests {
     @Test
     public void collect_jobEnabled_buildExists_buildNotAdded() {
         HudsonCollector collector = collectorWithOneServer();
-        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
-        Build build = build("JOB1_1", "JOB1_1_URL");
+        HudsonJob job = hudsonJob("1", SERVER1, "JOB1_URL", NICENAME1);
+        Build build = build("1", "JOB1_1_URL");
 
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
         when(hudsonJobRepository.findEnabledJobs(collector.getId(), SERVER1))
@@ -160,8 +185,8 @@ public class HudsonCollectorTaskTests {
     @Test
     public void collect_jobEnabled_newBuild_buildAdded() {
         HudsonCollector collector = collectorWithOneServer();
-        HudsonJob job = hudsonJob("JOB1", SERVER1, "JOB1_URL", NICENAME1);
-        Build build = build("JOB1_1", "JOB1_1_URL");
+        HudsonJob job = hudsonJob("1", SERVER1, "JOB1_URL", NICENAME1);
+        Build build = build("1", "JOB1_1_URL");
 
         when(hudsonClient.getInstanceJobs(SERVER1)).thenReturn(oneJobWithBuilds(job, build));
         when(hudsonJobRepository.findEnabledJobs(collector.getId(), SERVER1))
@@ -186,8 +211,15 @@ public class HudsonCollectorTaskTests {
 
     private Map<HudsonJob, Set<Build>> twoJobsWithTwoBuilds(String server, String niceName) {
         Map<HudsonJob, Set<Build>> jobs = new HashMap<>();
-        jobs.put(hudsonJob("JOB1", server, "JOB1_URL", niceName), Sets.newHashSet(build("JOB1_1", "JOB1_1_URL"), build("JOB1_2", "JOB1_2_URL")));
-        jobs.put(hudsonJob("JOB2", server, "JOB2_URL", niceName), Sets.newHashSet(build("JOB2_1", "JOB2_1_URL"), build("JOB2_2", "JOB2_2_URL")));
+        jobs.put(hudsonJob("1", server, "JOB1_URL", niceName), Sets.newHashSet(build("1", "JOB1_1_URL"), build("1", "JOB1_2_URL")));
+        jobs.put(hudsonJob("2", server, "JOB2_URL", niceName), Sets.newHashSet(build("2", "JOB2_1_URL"), build("2", "JOB2_2_URL")));
+        return jobs;
+    }
+
+    private Map<HudsonJob, Set<Build>> twoJobsWithTwoBuildsRandom(String server, String niceName) {
+        Map<HudsonJob, Set<Build>> jobs = new HashMap<>();
+        jobs.put(hudsonJob("2", server, "JOB2_URL", niceName), Sets.newHashSet(build("2", "JOB2_1_URL"), build("2", "JOB2_2_URL")));
+        jobs.put(hudsonJob("1", server, "JOB1_URL", niceName), Sets.newHashSet(build("1", "JOB1_1_URL"), build("1", "JOB1_2_URL")));
         return jobs;
     }
 
@@ -208,12 +240,12 @@ public class HudsonCollectorTaskTests {
     }
 
     private ArrayList<com.capitalone.dashboard.model.Component> components() {
-    	ArrayList<com.capitalone.dashboard.model.Component> cArray = new ArrayList<com.capitalone.dashboard.model.Component>();
-    	com.capitalone.dashboard.model.Component c = new Component();
-    	c.setId(new ObjectId());
-    	c.setName("COMPONENT1");
-    	c.setOwner("JOHN");
-    	cArray.add(c);
-    	return cArray;
+        ArrayList<com.capitalone.dashboard.model.Component> cArray = new ArrayList<com.capitalone.dashboard.model.Component>();
+        com.capitalone.dashboard.model.Component c = new Component();
+        c.setId(new ObjectId());
+        c.setName("COMPONENT1");
+        c.setOwner("JOHN");
+        cArray.add(c);
+        return cArray;
     }
 }

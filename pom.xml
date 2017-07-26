@@ -189,6 +189,7 @@
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>hygieia-jenkins-plugin</module>
         <module>UI</module>
+        <module>UI-tests</module>
       </modules>
       <build>
         <pluginManagement>
@@ -232,6 +233,7 @@
         <module>collectors/library-policy/nexus-iq-collector</module>
         <module>hygieia-jenkins-plugin</module>
      	<module>UI</module>
+        <module>UI-tests</module>
  </modules>
       <build>
         <plugins>
