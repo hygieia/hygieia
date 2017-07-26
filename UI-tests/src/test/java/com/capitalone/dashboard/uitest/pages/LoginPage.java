@@ -8,8 +8,8 @@ import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-@DefaultUrl("https://localhost:3000/#/")
-@At(urls={"#HOST/#/"})
+@DefaultUrl("http://localhost:3000/#/login")
+@At(urls={"#HOST/#/login"})
 public class LoginPage extends PageObject {
 
 	@FindBy(name="username")

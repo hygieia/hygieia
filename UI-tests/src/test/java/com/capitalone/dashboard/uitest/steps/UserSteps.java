@@ -1,6 +1,9 @@
 package com.capitalone.dashboard.uitest.steps;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.hasItem;
 import net.thucydides.core.annotations.Step;
 
 import org.apache.commons.lang3.StringUtils;
@@ -71,6 +74,11 @@ public class UserSteps {
 	@Step
 	public void clicks_delete_dashboard() {
 		homePage.clickDeleteDashboard();
+	}
+
+	@Step
+	public void should_not_see_given_dashboard(String dashboardName) {
+		assertThat(homePage.getAllDashboards(), not(hasItem(dashboardName)));
 	}
 	
 	@Step
