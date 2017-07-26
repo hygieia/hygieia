@@ -1,19 +1,21 @@
 package com.capitalone.dashboard.collector;
 
 
-
+import com.capitalone.dashboard.model.BambooCollector;
+import com.capitalone.dashboard.model.BambooJob;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.BambooCollector;
-import com.capitalone.dashboard.model.BambooJob;
+import com.capitalone.dashboard.repository.BambooCollectorRepository;
+import com.capitalone.dashboard.repository.BambooJobRepository;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.BambooCollectorRepository;
-import com.capitalone.dashboard.repository.BambooJobRepository;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -25,8 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * CollectorTask that fetches Build information from Bamboo
@@ -146,6 +146,7 @@ public class BambooCollectorTask extends CollectorTask<BambooCollector> {
 
     /**
      * Delete orphaned job collector items
+     *
      * @param activeJobs
      * @param existingJobs
      * @param activeServers
@@ -190,20 +191,18 @@ public class BambooCollectorTask extends CollectorTask<BambooCollector> {
         int count = 0;
 
         for (BambooJob job : enabledJobs) {
-//            LOG.info("Enabled Job Name: " + job.getJobName());
-            if (job.isPushed()) {LOG.info("Job Pushed already: " + job.getJobName());continue;}
-//            LOG.info("No of builds by job:"+ buildsByJob.get(job));
-            for (Build buildSummary : nullSafe(buildsByJob.get(job))) {
-//              LOG.info("Build Summary: " + buildSummary
-//                  .getBuildUrl());
+            if (job.isPushed()) {
+                LOG.info("Job Pushed already: " + job.getJobName());
+                continue;
+            }
+            // process new builds in the order of their build numbers - this has implication to handling of commits in BuildEventListener
+            ArrayList<Build> builds = Lists.newArrayList(nullSafe(buildsByJob.get(job)));
+            builds.sort((Build b1, Build b2) -> Integer.valueOf(b1.getNumber()) - Integer.valueOf(b2.getNumber()));
+            for (Build buildSummary : builds) {
                 if (isNewBuild(job, buildSummary)) {
-//                    LOG.info("Build is new: " + buildSummary
-//                        .getBuildUrl());
-
                     Build build = bambooClient.getBuildDetails(buildSummary
                             .getBuildUrl(), job.getInstanceUrl());
                     if (build != null) {
-//                        LOG.info("Build details received: ");
                         build.setCollectorItemId(job.getId());
                         buildRepository.save(build);
                         count++;
@@ -278,7 +277,7 @@ public class BambooCollectorTask extends CollectorTask<BambooCollector> {
     }
 
     @SuppressWarnings("unused")
-	private BambooJob getExistingJob(BambooCollector collector, BambooJob job) {
+    private BambooJob getExistingJob(BambooCollector collector, BambooJob job) {
         return bambooJobRepository.findJob(collector.getId(),
                 job.getInstanceUrl(), job.getJobName());
     }

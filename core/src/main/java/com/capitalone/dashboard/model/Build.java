@@ -130,4 +130,9 @@ public class Build extends BaseModel {
     public List<RepoBranch> getCodeRepos() {
         return codeRepos;
     }
+
+    public void setCodeRepos(List<RepoBranch> codeRepos) {
+        this.codeRepos = codeRepos;
+    }
+
 }

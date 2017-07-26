@@ -1,20 +1,42 @@
 package com.capitalone.dashboard.event;
 
-import com.capitalone.dashboard.model.*;
-import com.capitalone.dashboard.repository.*;
+import com.capitalone.dashboard.model.BinaryArtifact;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Component;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.EnvironmentComponent;
+import com.capitalone.dashboard.model.EnvironmentStage;
+import com.capitalone.dashboard.model.Pipeline;
+import com.capitalone.dashboard.model.PipelineCommit;
+import com.capitalone.dashboard.model.PipelineStage;
+import com.capitalone.dashboard.model.SCM;
+import com.capitalone.dashboard.repository.BinaryArtifactRepository;
+import com.capitalone.dashboard.repository.BuildRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.CollectorRepository;
+import com.capitalone.dashboard.repository.CommitRepository;
+import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.DashboardRepository;
+import com.capitalone.dashboard.repository.JobRepository;
+import com.capitalone.dashboard.repository.PipelineRepository;
+import com.capitalone.dashboard.util.PipelineUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @org.springframework.stereotype.Component
 public class EnvironmentComponentEventListener extends HygieiaMongoEventListener<EnvironmentComponent> {
@@ -157,8 +179,7 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
 					pipeline.addCommit(environmentComponent.getEnvironmentName(), commit);
 				}
         	}
-        	boolean hasFailedBuilds = !pipeline.getFailedBuilds().isEmpty();
-            processPreviousFailedBuilds(build, pipeline);
+            PipelineUtils.processPreviousFailedBuilds(build, pipeline);
             /**
              * If some build events are missed, here is an attempt to move commits to the build stage
              * This also takes care of the problem with Jenkins first build change set being empty.
@@ -170,14 +191,12 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
             Map<String, PipelineCommit> envStageCommits = pipeline.getCommitsByEnvironmentName(pseudoEnvName);
             for (String rev : commitStageCommits.keySet()) {
                 PipelineCommit commit = commitStageCommits.get(rev);
-                if ((commit.getScmCommitTimestamp() < build.getStartTime()) && !envStageCommits.containsKey(rev) && isMoveCommitToBuild(build, commit)) {
+                if ((commit.getScmCommitTimestamp() < build.getStartTime()) && !envStageCommits.containsKey(rev) && PipelineUtils.isMoveCommitToBuild(build, commit, commitRepository)) {
                     pipeline.addCommit(pseudoEnvName, commit);
                 }
             }
             pipelineRepository.save(pipeline);
-            if (hasFailedBuilds) {
-                buildRepository.save(build);
-            }
+
         }
         /**
          * Update last artifact on the pipeline
@@ -185,64 +204,6 @@ public class EnvironmentComponentEventListener extends HygieiaMongoEventListener
         if(sortedArtifacts != null && !sortedArtifacts.isEmpty()){
             BinaryArtifact lastArtifact = sortedArtifacts.get(sortedArtifacts.size() - 1);
             currentStage.setLastArtifact(lastArtifact);
-        }
-    }
-
-    /**
-     * Iterate over failed builds, if the failed build collector item id matches the successful builds collector item id
-     * take all the commits from the changeset of the failed build and add them to the pipeline and also to the changeset
-     * of the successful build.  Then remove the failed build from the collection after it has been processed.
-     *
-     * @param successfulBuild
-     * @param pipeline
-     */
-    private void processPreviousFailedBuilds(Build successfulBuild, Pipeline pipeline) {
-
-        if (!pipeline.getFailedBuilds().isEmpty()) {
-            Iterator<Build> failedBuilds = pipeline.getFailedBuilds().iterator();
-
-            while (failedBuilds.hasNext()) {
-                Build b = failedBuilds.next();
-                if (b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())) {
-                    for (SCM scm : b.getSourceChangeSet()) {
-                        PipelineCommit failedBuildCommit = new PipelineCommit(scm, successfulBuild.getStartTime());
-                        pipeline.addCommit(PipelineStage.BUILD.getName(), failedBuildCommit);
-                        successfulBuild.getSourceChangeSet().add(scm);
-                    }
-                    failedBuilds.remove();
-
-                }
-            }
-        }
-    }
-
-
-    private boolean isMoveCommitToBuild(Build build, SCM scm) {
-        List<Commit> commitsFromRepo = getCommitsFromCommitRepo(scm);
-        List<RepoBranch> codeReposFromBuild = build.getCodeRepos();
-        Set<String> codeRepoUrlsFromCommits = new HashSet<>();
-        for (Commit c : commitsFromRepo) {
-            codeRepoUrlsFromCommits.add(getRepoNameOnly(c.getScmUrl()));
-        }
-
-        for (RepoBranch rb : codeReposFromBuild) {
-            if (codeRepoUrlsFromCommits.contains(getRepoNameOnly(rb.getUrl()))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private List<Commit> getCommitsFromCommitRepo(SCM scm) {
-        return commitRepository.findByScmRevisionNumber(scm.getScmRevisionNumber());
-    }
-
-    private String getRepoNameOnly(String url) {
-        try {
-            URL temp = new URL(url);
-            return temp.getHost() + temp.getPath();
-        } catch (MalformedURLException e) {
-            return url;
         }
     }
 
