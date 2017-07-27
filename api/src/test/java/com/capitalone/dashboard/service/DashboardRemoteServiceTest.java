@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -182,9 +183,12 @@ public class DashboardRemoteServiceTest {
         List<DashboardRemoteRequest.CodeRepoEntry> entries = new ArrayList<DashboardRemoteRequest.CodeRepoEntry>();
         DashboardRemoteRequest.CodeRepoEntry validSCM = new DashboardRemoteRequest.CodeRepoEntry();
         validSCM.setToolName("GitHub");
+        Map options = new HashMap();
+        options.put("url", "http://git.test.com");
+        options.put("branch", "master");
+        validSCM.setOptions(options);
         entries.add(validSCM);
         request.setCodeRepoEntries(entries);
-
 
         when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
         when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
@@ -193,6 +197,19 @@ public class DashboardRemoteServiceTest {
 
         List<Collector> collectors = new ArrayList<Collector>();
         Collector githubCollector = makeCollector("GitHub", CollectorType.SCM);
+        Map uniqueFields = new HashMap();
+        uniqueFields.put("branch", "");
+        uniqueFields.put("url", "");
+        githubCollector.setUniqueFields(uniqueFields);
+
+        Map allFields = new HashMap();
+        allFields.put("branch", "");
+        allFields.put("url", "");
+        allFields.put("userID", "");
+        allFields.put("password", "");
+        allFields.put("lastUpdate", "");
+        githubCollector.setAllFields(allFields);
+
         collectors.add(githubCollector);
 
         when( collectorRepository.findByCollectorTypeAndName(validSCM.getType(), validSCM.getToolName()) ).thenReturn(collectors);
