@@ -10,13 +10,8 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
-import com.capitalone.dashboard.repository.ComponentRepository;
-import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
-import com.capitalone.dashboard.repository.ServiceRepository;
-import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.capitalone.dashboard.request.DashboardRemoteRequest;
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -44,21 +39,7 @@ public class DashboardRemoteServiceTest {
     @Mock
     private DashboardRepository dashboardRepository;
     @Mock
-    private ComponentRepository componentRepository;
-    @Mock
     private CollectorRepository collectorRepository;
-    @Mock
-    private CollectorItemRepository collectorItemRepository;
-    @Mock
-    private ServiceRepository serviceRepository;
-    @Mock
-    private CustomRepositoryQuery customRepositoryQuery;
-    @Mock
-    private UserInfoRepository userInfoRepository;
-    @Mock
-    private CmdbService cmdbService;
-    @Mock
-    private Dashboard myDashboard;
     @Mock
     private UserInfoService userInfoService;
     @Mock
@@ -155,7 +136,6 @@ public class DashboardRemoteServiceTest {
         entries.add(invalidSCM);
         request.setCodeRepoEntries(entries);
 
-
         when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
         when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
         when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
@@ -173,7 +153,7 @@ public class DashboardRemoteServiceTest {
     }
 
     @Test
-    public void remoteCreateWithValidCollector() throws HygieiaException {
+    public void remoteCreateSCM() throws HygieiaException {
         ObjectId configItemBusServId = ObjectId.get();
         ObjectId configItemBusAppId = ObjectId.get();
         Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser",configItemBusServId,configItemBusAppId, "comp1","comp2");
@@ -220,6 +200,58 @@ public class DashboardRemoteServiceTest {
 
         Component component = new Component();
         component.addCollectorItem(CollectorType.SCM, item);
+
+        assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
+    }
+
+    @Test
+    public void remoteCreateBuild() throws HygieiaException {
+        ObjectId configItemBusServId = ObjectId.get();
+        ObjectId configItemBusAppId = ObjectId.get();
+        Dashboard expected = makeTeamDashboard("template", "dashboardtitle", "appName", "someuser",configItemBusServId,configItemBusAppId, "comp1","comp2");
+        ObjectId objectId = ObjectId.get();
+        expected.setId(objectId);
+        DashboardRemoteRequest request = makeDashboardRemoteRequest("template", "dashboardtitle", "appName", "comp", "someuser", null, "team", configItemBusServId, configItemBusAppId);
+        List<DashboardRemoteRequest.BuildEntry> entries = new ArrayList<DashboardRemoteRequest.BuildEntry>();
+        DashboardRemoteRequest.BuildEntry validBuild = new DashboardRemoteRequest.BuildEntry();
+        validBuild.setToolName("Hudson");
+        Map options = new HashMap();
+        options.put("jobName", "MyBuildJob");
+        options.put("jobUrl", "http://jenkins.com/MyBuildJob");
+        options.put("instanceUrl", "http://jenkins.com");
+        validBuild.setOptions(options);
+        entries.add(validBuild);
+        request.setBuildEntries(entries);
+
+        when(userInfoService.isUserValid(request.getMetaData().getOwner().getUsername(), request.getMetaData().getOwner().getAuthType())).thenReturn(true);
+        when(dashboardRepository.findByTitle(request.getMetaData().getTitle())).thenReturn(new ArrayList<Dashboard>());
+        when(dashboardService.create(Matchers.any(Dashboard.class))).thenReturn(expected);
+        when(dashboardService.get(objectId)).thenReturn(expected);
+
+        List<Collector> collectors = new ArrayList<Collector>();
+        Collector hudsonCollector = makeCollector("Hudson", CollectorType.Build);
+        Map uniqueFields = new HashMap();
+        uniqueFields.put("jobName", "");
+        uniqueFields.put("jobUrl", "");
+        uniqueFields.put("instanceUrl", "");
+        hudsonCollector.setUniqueFields(uniqueFields);
+
+        Map allFields = new HashMap();
+        allFields.put("jobName", "");
+        allFields.put("jobUrl", "");
+        allFields.put("instanceUrl", "");
+        hudsonCollector.setAllFields(allFields);
+
+        collectors.add(hudsonCollector);
+
+        when( collectorRepository.findByCollectorTypeAndName(validBuild.getType(), validBuild.getToolName()) ).thenReturn(collectors);
+
+        CollectorItem item = makeCollectorItem();
+
+        when(  collectorService.createCollectorItemSelectOptions(Matchers.any(CollectorItem.class), Matchers.any(Map.class), Matchers.any(Map.class) ) ).thenReturn(item);
+
+        Component component = new Component();
+        component.addCollectorItem(CollectorType.Build, item);
 
         assertThat(dashboardRemoteService.remoteCreate(request, false), is(expected));
     }
