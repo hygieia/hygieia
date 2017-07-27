@@ -11,6 +11,7 @@ import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.HudsonCollectorRepository;
 import com.capitalone.dashboard.repository.HudsonJobRepository;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,6 +144,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
     /**
      * Delete orphaned job collector items
+     *
      * @param activeJobs
      * @param existingJobs
      * @param activeServers
@@ -188,7 +190,10 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
 
         for (HudsonJob job : enabledJobs) {
             if (job.isPushed()) continue;
-            for (Build buildSummary : nullSafe(buildsByJob.get(job))) {
+            // process new builds in the order of their build numbers - this has implication to handling of commits in BuildEventListener
+            ArrayList<Build> builds = Lists.newArrayList(nullSafe(buildsByJob.get(job)));
+            builds.sort((Build b1, Build b2) -> Integer.valueOf(b1.getNumber()) - Integer.valueOf(b2.getNumber()));
+            for (Build buildSummary : builds) {
                 if (isNewBuild(job, buildSummary)) {
                     Build build = hudsonClient.getBuildDetails(buildSummary
                             .getBuildUrl(), job.getInstanceUrl());
@@ -267,7 +272,7 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
     }
 
     @SuppressWarnings("unused")
-	private HudsonJob getExistingJob(HudsonCollector collector, HudsonJob job) {
+    private HudsonJob getExistingJob(HudsonCollector collector, HudsonJob job) {
         return hudsonJobRepository.findJob(collector.getId(),
                 job.getInstanceUrl(), job.getJobName());
     }

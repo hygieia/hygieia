@@ -61,3 +61,11 @@ Since the tests were designed to run on a docker platform, **there is no data cl
 ## A note on passwords...
 
 Since this is all test data, passwords are not encrypted. The included database setup file (mongo_setup.js) has a hashed password 'password' to allow easy insertion.
+
+## Executing Tests Without Docker Setup
+
+In the UI-tests folder under project root, execute the following command. Use an existing username and password for the tests to login to the application
+
+Example:
+
+`mvn clean verify -f ./docker-pom.xml -DUITEST_EXISTING_USERNAME=hygieia_test_user -DUITEST_EXISTING_PASSWORD=password`
