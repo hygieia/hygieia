@@ -30,6 +30,7 @@ public class FeatureSettings {
 	private String path;
 	private String apiToken;
 	private boolean selfSignedCertificate;
+	private int apiVersion;
 
 	public String getCron() {
 		return cron;
@@ -87,6 +88,14 @@ public class FeatureSettings {
         this.selfSignedCertificate = selfSignedCertificate;
     }
     
+    public int getApiVersion() {
+        return apiVersion;
+    }
+
+    public void setApiVersion(int apiVersion) {
+        this.apiVersion = apiVersion;
+    }
+
     @PostConstruct
     public void trustSelfSignedCertificatesIfNecessary() {
         if (isSelfSignedCertificate()) {
