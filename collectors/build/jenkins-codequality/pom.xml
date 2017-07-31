@@ -9,7 +9,7 @@
     <url>https://github.com/capitalone/Hygieia</url>
     <packaging>jar</packaging>
 
-    <artifactId>jenkins-codequality-collector</artifactId>
+    <artifactId>jenkins-codequality</artifactId>
 
     <parent>
         <groupId>com.capitalone.dashboard</groupId>

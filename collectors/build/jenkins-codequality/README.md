@@ -12,7 +12,7 @@ mvn install
 
 Copy this file to your server and launch it using :
 ```
-java -JAR jenkins-codequlaity-collector.jar
+java -jar jenkins-codequality.jar
 ```
 
 ## application.properties
