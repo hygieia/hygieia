@@ -97,6 +97,12 @@ public interface DashboardService {
     List<Dashboard> getOwnedDashboards();
 
     /**
+     * Gets all dashboard ObjectIds belonging to the authenticated user
+     * @return List of dashboard ObjectIds
+     */
+    List<ObjectId> getOwnedDashboardsObjectIds();
+
+    /**
      * Get the set of owners for a given dashboard
      * 
      * @param id get owners for this dashboard

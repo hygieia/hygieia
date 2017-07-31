@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CmdbServiceImpl implements CmdbService {
 
@@ -38,7 +40,12 @@ public class CmdbServiceImpl implements CmdbService {
     }
     @Override
     public Cmdb configurationItemByConfigurationItem(String configItem){
-        Cmdb cmdbItem= cmdbRepository.findAllByConfigurationItemContainingIgnoreCase(configItem);
+        Cmdb cmdbItem= cmdbRepository.findByConfigurationItemContainingIgnoreCase(configItem);
         return cmdbItem;
+    }
+    @Override
+    public List<Cmdb> getAllBusServices(){
+        List<Cmdb> cmdbs = cmdbRepository.findAllByItemType("app");
+        return cmdbs;
     }
 }

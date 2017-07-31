@@ -2,7 +2,7 @@
 
 if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
   echo "Skipping properties builder"
-  return
+  exit 0
 fi
 
 # if we are linked, use that info
@@ -63,6 +63,10 @@ auth.adDomain=${AUTH_AD_DOMAIN:-}
 auth.adRootDn=${AUTH_AD_ROOT_DN:-}
 # This is your active directory url
 auth.adUrl=${AUTH_AD_URL:-}
+
+# Needed if you want to query ldap
+auth.ldapBindUser=${AUTH_LDAP_BIND_USER:-}
+auth.ldapBindPass=${AUTH_LDAP_BIND_PASS:-}
 
 #Monitor Widget proxy credentials
 monitor.proxy.username=${MONITOR_PROXY_USERNAME:-}

@@ -58,6 +58,10 @@ auth.adRootDn=[dc=your,dc=company,dc=com]
 # This will be your active directory url (required for AD)
 auth.adUrl=[Need an example]
 
+# Needed if you want query ldap
+auth.ldapBindUser=[binduser]
+auth.ldapBindPass=[bindpass]
+
 monitor.proxy.host=[hostname of proxy server]
 monitor.proxy.type=[http|socks|direct]
 monitor.proxy.port=[port enabled on proxy server]

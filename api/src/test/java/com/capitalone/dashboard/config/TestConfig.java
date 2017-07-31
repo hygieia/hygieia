@@ -19,6 +19,7 @@ import com.capitalone.dashboard.service.CloudVolumeService;
 import com.capitalone.dashboard.service.CodeQualityService;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.CommitService;
+import com.capitalone.dashboard.service.BusCompOwnerService;
 import com.capitalone.dashboard.service.GitRequestService;
 import com.capitalone.dashboard.service.DashboardService;
 import com.capitalone.dashboard.service.DeployService;
@@ -194,4 +195,7 @@ public class TestConfig {
 
 	@Bean
 	public CmdbService cmdbService() {return Mockito.mock(CmdbService.class);}
+
+	@Bean
+	public BusCompOwnerService busCompOwnerService() {return Mockito.mock(BusCompOwnerService.class);}
 }

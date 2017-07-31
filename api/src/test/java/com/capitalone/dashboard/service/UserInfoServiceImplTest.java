@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.capitalone.dashboard.auth.AuthProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -35,6 +36,9 @@ public class UserInfoServiceImplTest {
     
     @Mock
     private UserInfoRepository userInfoRepository;
+
+    @Mock
+    private AuthProperties authProperties;
     
     @InjectMocks
     private UserInfoServiceImpl service;
@@ -177,6 +181,21 @@ public class UserInfoServiceImplTest {
         assertFalse(result.getAuthorities().contains(UserRole.ROLE_ADMIN));
         verify(userInfoRepository).save(user);
         
+    }
+
+    @Test
+    public void shouldValidateUser() {
+        UserInfo user = new UserInfo();
+        user.setUsername("standarduser");
+        user.setAuthType(AuthType.STANDARD);
+
+        when(userInfoRepository.findByUsernameAndAuthType("abc123", AuthType.STANDARD)).thenReturn(null);
+        boolean result = service.isUserValid("abc123", AuthType.STANDARD);
+        assertFalse(result);
+
+        when(userInfoRepository.findByUsernameAndAuthType("standarduser", AuthType.STANDARD)).thenReturn(user);
+        result = service.isUserValid("standarduser", AuthType.STANDARD);
+        assertTrue(result);
     }
 
 }
