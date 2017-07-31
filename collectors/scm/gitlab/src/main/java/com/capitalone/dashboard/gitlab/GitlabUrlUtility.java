@@ -27,7 +27,10 @@ public class GitlabUrlUtility {
 	
 	private static final String GIT_EXTENSION = ".git";
 	private static final String DEFAULT_PROTOCOL = "http";
-    private static final String SEGMENT_API = "/api/v3/projects/";
+    private static final String SEGMENT_API = "api";
+    private static final String V3 = "v3";
+    private static final String V4 = "v4";
+    private static final String PROJECTS_SEGMENT = "projects";
 	private static final String COMMITS_API = "/repository/commits/";
 	private static final String DATE_QUERY_PARAM_KEY = "since";
 	private static final String BRANCH_QUERY_PARAM_KEY = "ref_name";
@@ -46,7 +49,8 @@ public class GitlabUrlUtility {
             repoUrl = StringUtils.removeEnd(repoUrl, GIT_EXTENSION);
         }
         
-        String protocol = StringUtils.isBlank(gitlabSettings.getProtocol()) ? DEFAULT_PROTOCOL : gitlabSettings.getProtocol();
+        String apiVersion = getApiVersion();
+        String protocol = getProtocol();
 		String repoName = getRepoName(repoUrl);
 		String host = getRepoHost();
 		String date = getDateForCommits(repo, firstRun);
@@ -60,7 +64,9 @@ public class GitlabUrlUtility {
 		URI uri = builder.scheme(protocol)
 				.host(host)
 				.path(gitlabSettings.getPath())
-				.path(SEGMENT_API)
+				.pathSegment(SEGMENT_API)
+				.pathSegment(apiVersion)
+				.pathSegment(PROJECTS_SEGMENT)
 				.path(repoName)
 				.path(COMMITS_API)
 				.queryParam(BRANCH_QUERY_PARAM_KEY, repo.getBranch())
@@ -69,6 +75,14 @@ public class GitlabUrlUtility {
 				.build(true).toUri();
 
 		return uri;
+    }
+
+    private String getProtocol() {
+        return StringUtils.isBlank(gitlabSettings.getProtocol()) ? DEFAULT_PROTOCOL : gitlabSettings.getProtocol();
+    }
+
+    private String getApiVersion() {
+        return gitlabSettings.getApiVersion() == 3 ? V3 : V4;
     }
 
 	public URI updatePage(URI uri, int nextPage) {
