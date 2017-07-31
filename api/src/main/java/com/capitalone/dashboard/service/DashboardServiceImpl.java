@@ -449,7 +449,7 @@ public class DashboardServiceImpl implements DashboardService {
         Cmdb cmdbAppItem =  cmdbService.configurationItemByConfigurationItem(app);
         Iterable<Dashboard> rt = null;
 
-        if(cmdbAppItem != null && cmdbAppItem != null){
+        if(cmdbAppItem != null && cmdbCompItem != null){
             rt = dashboardRepository.findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(cmdbAppItem.getId(),cmdbCompItem.getId());
         }
         return new DataResponse<>(rt, System.currentTimeMillis());
