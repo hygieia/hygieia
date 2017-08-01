@@ -90,4 +90,8 @@ public class CodeQuality extends BaseModel {
     public Set<CodeQualityMetric> getMetrics() {
         return metrics;
     }
+
+    public void addMetric(CodeQualityMetric metric) {
+        this.metrics.add(metric);
+    }
 }
