@@ -65,7 +65,7 @@
             var ossCollectorItemId = _.isEmpty(ossCollectorItems) ? null : ossCollectorItems[0].id;
 
             ctrl.ossJobs = data;
-            ctrl.ossCollectorItem = ossCollectorItemId ? _.findWhere(ctrl.ossJobs, {id: ossCollectorItemId}) : null;
+            ctrl.ossCollectorItem = ossCollectorItemId ? _.find(ctrl.ossJobs, {id: ossCollectorItemId}) : null;
             ctrl.ossToolsDropdownPlaceholder = data.length ? 'Select a Open Source Scan Job' : 'No Open Source Scan Found';
 
         }

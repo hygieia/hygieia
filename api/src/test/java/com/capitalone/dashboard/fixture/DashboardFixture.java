@@ -17,19 +17,21 @@ import com.capitalone.dashboard.request.DashboardRequest;
  public class DashboardFixture {
  
  	public static DashboardRequest makeDashboardRequest(String template, String title, String appName, String compName,
- 			String owner, List<String> teamDashboardIds, String type) {
+ 			String owner, List<String> teamDashboardIds, String type, ObjectId configItemAppId, ObjectId configItemComponentId) {
  		DashboardRequest request = new DashboardRequest();
  		request.setTemplate(template);
  		request.setTitle(title);
  		request.setApplicationName(appName);
  		request.setComponentName(compName);
+ 		request.setConfigurationItemBusServObjectId(configItemAppId);
+ 		request.setConfigurationItemBusAppObjectId(configItemComponentId);
  		request.setType(type);
  
  		return request;
  	}
  
  	public static Dashboard makeDashboard(String template, String title, String appName, String compName, String owner,
- 			DashboardType type) {
+ 			DashboardType type, ObjectId configItemAppId, ObjectId configItemComponentId) {
  		Application application = null;
  		if (type.equals(DashboardType.Team)) {
  			Component component = new Component();
@@ -37,7 +39,7 @@ import com.capitalone.dashboard.request.DashboardRequest;
  			application = new Application(appName, component);
  		}
  
- 		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type);
+ 		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppId, configItemComponentId);
  	}
  
  	public static Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {

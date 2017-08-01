@@ -179,9 +179,11 @@ public class CommitEventListenerTest {
         if (hasBuildCollector) {
             component.addCollectorItem(CollectorType.Build, collectorItem());
         }
+        ObjectId configItemAppId = new ObjectId();
+        ObjectId configItemComponentId = new ObjectId();
 
         Application application = new Application("app", component);
-        Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD), DashboardType.Team);
+        Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD),  DashboardType.Team , configItemAppId, configItemComponentId);
         dashboard.setId(ObjectId.get());
         return dashboard;
     }

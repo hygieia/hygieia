@@ -8,10 +8,12 @@ import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.GitHubRepo;
+import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.BaseCollectorItemRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitHubRepoRepository;
+import com.capitalone.dashboard.repository.GitRequestRepository;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,11 +41,13 @@ public class GitHubCollectorTaskTest {
     @Mock private GitHubSettings gitHubSettings;
     @Mock private ComponentRepository dbComponentRepository;
     @Mock private CommitRepository commitRepository;
+    @Mock private GitRequestRepository gitRequestRepository;
 
     @Mock private GitHubRepo repo1;
     @Mock private GitHubRepo repo2;
 
     @Mock private Commit commit;
+    @Mock private GitRequest gitRequest;
 
     @InjectMocks private GitHubCollectorTask task;
 
@@ -138,6 +142,8 @@ public class GitHubCollectorTaskTest {
         when(gitHubSettings.getErrorThreshold()).thenReturn(1);
 
         when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
+        when(gitHubClient.getIssues(repo1, true, gitRequestRepository)).thenReturn(getGitRequests());
+        when(gitHubClient.getPulls(repo1, true, gitRequestRepository)).thenReturn(getGitRequests());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo1.getId(), "1")).thenReturn(null);
@@ -208,7 +214,22 @@ public class GitHubCollectorTaskTest {
         commits.add(commit);
         return commits;
     }
-
+    private ArrayList<GitRequest> getGitRequests() {
+        ArrayList<GitRequest> gitRequests = new ArrayList<GitRequest>();
+        gitRequest = new GitRequest();
+        gitRequest.setTimestamp(System.currentTimeMillis());
+        gitRequest.setScmUrl("http://testcurrenturl");
+        gitRequest.setScmBranch("master");
+        gitRequest.setScmRevisionNumber("1");
+        gitRequest.setScmParentRevisionNumbers(Collections.singletonList("2"));
+        gitRequest.setScmAuthor("author");
+        gitRequest.setScmCommitLog("This is a test commit");
+        gitRequest.setScmCommitTimestamp(System.currentTimeMillis());
+        gitRequest.setNumberOfChanges(1);
+        gitRequest.setType(CommitType.New);
+        gitRequests.add(gitRequest);
+        return gitRequests;
+    }
     private List<GitHubRepo> getEnabledRepos() {
         List<GitHubRepo> gitHubs = new ArrayList<GitHubRepo>();
         repo1 = new GitHubRepo();

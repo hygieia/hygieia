@@ -1,13 +1,13 @@
 <div class="repo-view">
     <div class="widget">
         <div class="widget-heading">
-            Commits per day
+            Issues, Pulls and Commits per day
         </div>
         <div class="widget-body">
-            <chartist class="ct-chart ct-octave dash-chart-alt"
+            <chartist class="commit-view ct-octave dash-chart-alt"
                       chartist-chart-type="Line"
-                      chartist-data="repoView.commitChartData"
-                      chartist-chart-options="repoView.commitChartOptions"
+                      chartist-data="repoView.combinedChartData"
+                      chartist-chart-options="repoView.combinedChartOptions"
                       chartist-events="repoView.commitChartEvents"
                     >
             </chartist>
@@ -21,16 +21,40 @@
         <div class="widget-body">
             <table class="table repo-summary-table">
                 <tr>
-                    <td>Total Commits</td>
+                    <td style="color: #04eeff">Commits</td>
                     <td>{{repoView.lastDayCommitCount}}</td>
                     <td>{{repoView.lastSevenDaysCommitCount}}</td>
                     <td>{{repoView.lastFourteenDaysCommitCount}}</td>
                 </tr>
                 <tr>
+                    <td style="color: #04eb0f">Pulls</td>
+                    <td>{{repoView.lastDayPullCount}}</td>
+                    <td>{{repoView.lastsevenDaysPullCount}}</td>
+                    <td>{{repoView.lastfourteenDaysPullCount}}</td>
+                </tr>
+                <tr>
+                    <td style="color: red">Issues</td>
+                    <td>{{repoView.lastDayIssueCount}}</td>
+                    <td>{{repoView.lastsevenDaysIssueCount}}</td>
+                    <td>{{repoView.lastfourteenDaysIssueCount}}</td>
+                </tr>
+                <tr>
+                    <td>Committors</td>
+                    <td>{{repoView.lastDayCommitContributorCount}}</td>
+                    <td>{{repoView.lastSevenDaysCommitContributorCount}}</td>
+                    <td>{{repoView.lastFourteenDaysCommitContributorCount}}</td>
+                </tr>
+                <tr>
                     <td>Contributors</td>
-                    <td>{{repoView.lastDayContributorCount}}</td>
-                    <td>{{repoView.lastSevenDaysContributorCount}}</td>
-                    <td>{{repoView.lastFourteenDaysContributorCount}}</td>
+                    <td>{{repoView.lastDayPullContributorCount}}</td>
+                    <td>{{repoView.lastsevenDaysPullContributorCount}}</td>
+                    <td>{{repoView.lastfourteenDaysPullContributorCount}}</td>
+                </tr>
+                <tr>
+                    <td>Ideators</td>
+                    <td>{{repoView.lastDayIssueContributorCount}}</td>
+                    <td>{{repoView.lastsevenDaysIssueContributorCount}}</td>
+                    <td>{{repoView.lastfourteenDaysIssueContributorCount}}</td>
                 </tr>
                 <tr class="totals">
                     <td></td>

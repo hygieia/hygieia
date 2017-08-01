@@ -68,5 +68,8 @@ gitlab.apiToken=
 
 #Maximum number of days to go back in time when fetching commits
 gitlab.commitThresholdDays=15
+
+#Gitlab API Version (optional, defaults to current version of 4)
+gitlab.apiVersion=4
 ```
 

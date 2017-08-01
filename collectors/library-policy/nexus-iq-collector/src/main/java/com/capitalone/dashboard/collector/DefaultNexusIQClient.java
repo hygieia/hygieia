@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 import com.capitalone.dashboard.model.LibraryPolicyReport;
@@ -43,8 +44,7 @@ public class DefaultNexusIQClient implements NexusIQClient {
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String PUBLIC_ID = "publicId";
-    private static final String STATUS_WARN = "WARN";
-    private static final String STATUS_ALERT = "ALERT";
+
 
 
     private final RestOperations rest;
@@ -128,6 +128,8 @@ public class DefaultNexusIQClient implements NexusIQClient {
      * @param url url of the report
      * @return LibraryPolicyResult
      */
+    @SuppressWarnings({"PMD.AvoidDeeplyNestedIfStmts","PMD.NPathComplexity"}) // agreed PMD, fixme
+
     @Override
     public LibraryPolicyResult getDetailedReport(String url) {
         LibraryPolicyResult policyResult = null;
@@ -202,7 +204,7 @@ public class DefaultNexusIQClient implements NexusIQClient {
         String format = str(identifier, "format");
         if (format == null) return unknown;
         String componentName;
-        switch (format.toLowerCase()) {
+        switch (format.toLowerCase(Locale.ENGLISH)) {
             case "maven":
                 componentName = String.format("%s:%s-%s.%s",
                         str(coordinate, "groupId"),

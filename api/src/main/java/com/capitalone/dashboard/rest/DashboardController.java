@@ -1,3 +1,4 @@
+
 package com.capitalone.dashboard.rest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -58,9 +59,12 @@ public class DashboardController {
                     .status(HttpStatus.CREATED)
                     .body(dashboardService.create(request.toDashboard()));
         } catch (HygieiaException he) {
+            Dashboard dashboard = request.toDashboard();
+            dashboard.setErrorMessage(he.getMessage());
+            dashboard.setErrorCode(he.getErrorCode());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+                    .body(dashboard);
         }
     }
 
@@ -208,6 +212,58 @@ public class DashboardController {
             component = dashboardService.getComponent(componentId);
         }
         return component;
+    }
+    @RequestMapping(value = "/dashboard/configItemApp/{configItem}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity getDashboardByApp(@PathVariable String configItem) {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getByBusinessService(configItem));
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
+    }
+    @RequestMapping(value = "/dashboard/configItemComponent/{configItem}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity getDashboardByComp(@PathVariable String configItem) {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getByBusinessApplication(configItem));
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
+    }
+    @RequestMapping(value = "/dashboard/configItemComponentAndApp/{configItemComp}/{configItemApp}", method = GET,
+            produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity getDashboardByCompAndApp(@PathVariable String configItemComp,@PathVariable String configItemApp) {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getByServiceAndApplication(configItemComp,configItemApp));
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
+    }
+
+    @DashboardOwnerOrAdmin
+    @RequestMapping(value = "/dashboard/updateBusItems/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateDashboardBusinessItems(@PathVariable ObjectId id, @RequestBody Dashboard request) {
+        try {
+            Dashboard dashboard = dashboardService.updateDashboardBusinessItems(id, request);
+            if(dashboard != null){
+                return ResponseEntity.ok("Updated");
+            }else{
+                return ResponseEntity.ok("Unchanged");
+            }
+
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
+
     }
 
 }

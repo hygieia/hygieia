@@ -1,3 +1,4 @@
+
 package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.Application;
@@ -8,6 +9,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.Cmdb;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -26,6 +28,9 @@ public class DashboardCreateTests extends FongoBaseRepositoryTest {
     @Autowired
     private ComponentRepository componentRepository;
 
+    @Autowired
+    private CmdbRepository cmdbRepository;
+
     @Test
     public void createTeamDashboardTest() {
         Component component = new Component("Jay's component");
@@ -34,9 +39,19 @@ public class DashboardCreateTests extends FongoBaseRepositoryTest {
         component = componentRepository.save(component);
         System.out.println(component.getId());
 
+        Cmdb configItemApp = new Cmdb();
+        configItemApp.setConfigurationItem("ASVTEST");
+        configItemApp = cmdbRepository.save(configItemApp);
+        configItemApp.getId();
+
+        Cmdb configItemComp = new Cmdb();
+        configItemComp.setConfigurationItem("BAPTEST");
+        configItemComp = cmdbRepository.save(configItemComp);
+        configItemComp.getId();
+
         Application application = new Application("Jay's App", component);
 
-        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application, new Owner("amit", AuthType.STANDARD), DashboardType.Team);
+        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application, new Owner("amit", AuthType.STANDARD), DashboardType.Team,  configItemApp.getId(), configItemComp.getId());
 
         Widget build = new Widget();
         build.setName("build");
