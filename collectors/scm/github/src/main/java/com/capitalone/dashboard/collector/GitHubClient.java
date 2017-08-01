@@ -4,7 +4,6 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitHubRepo;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.repository.GitRequestRepository;
 
 import java.net.MalformedURLException;
 import java.util.List;

@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.model;
 
-import java.beans.IntrospectionException;
 import java.util.Date;
 
 /**

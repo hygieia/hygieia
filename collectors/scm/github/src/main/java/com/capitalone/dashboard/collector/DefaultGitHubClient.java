@@ -162,6 +162,7 @@ public class DefaultGitHubClient implements GitHubClient {
      * @throws HygieiaException
      */
     @Override
+    @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength", "PMD.NcssMethodCount"}) // agreed, fixme
     public List<GitRequest> getPulls(GitHubRepo repo, String status, boolean firstRun, Map<Long, String> prMap) throws MalformedURLException, HygieiaException {
 
         List<GitRequest> pulls = new ArrayList<>();
