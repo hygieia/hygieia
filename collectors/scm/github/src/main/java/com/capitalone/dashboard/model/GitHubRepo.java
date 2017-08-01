@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.model;
 
+import java.beans.IntrospectionException;
 import java.util.Date;
 
 /**
@@ -11,6 +12,8 @@ public class GitHubRepo extends CollectorItem {
     public static final String USER_ID = "userID";
     public static final String PASSWORD = "password";
     public static final String LAST_UPDATE_TIME = "lastUpdate";
+    private int lastPrPage;
+
 
     public String getUserId() {
         return (String) getOptions().get(USER_ID);
@@ -45,6 +48,13 @@ public class GitHubRepo extends CollectorItem {
         getOptions().put(BRANCH, branch);
     }
 
+    public int getLastPrPage() {
+        return lastPrPage;
+    }
+
+    public void setLastPrPage(int lastPrPage) {
+        this.lastPrPage = lastPrPage;
+    }
 
     public Date getLastUpdateTime() {
         Object latest = getOptions().get(LAST_UPDATE_TIME);
