@@ -1,0 +1,49 @@
+<widget-modal widget-modal-title="Configure wlmonitor Widget">
+<style>
+.dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
+    cursor:pointer;
+}
+</style>
+    <form class="wlmonitor-config" name="configForm" ng-submit="wlMonitorConfig.submit(configForm.$valid)" novalidate="novalidate">
+        <div class="form-group" ng-class="{'has-error': configForm.collectorItemId.$invalid && wlMonitorConfig.submitted}">         
+            
+            <div class="dash-modal-row clearfix form-horizontal" ng-repeat="env in wlMonitorConfig.environmentData">
+                    <span class="trash-icon clickable pull-right fa fa-stack fa-lg"
+                          ng-click="wlMonitorConfig.deleteEnvironmentData($index)">
+                        <span class="fa-circle-thin fa-stack-2x"></span>
+                        <span class="fa-trash fa-stack-1x"></span>
+                    </span>                    
+                    <span class="form-control-inline-container">
+                        {{env.description}}
+                    </span>
+              </div>
+            <div class="dash-modal-row clearfix form-horizontal" ng-repeat="env in wlMonitorConfig.newenvironmentData"> 
+            
+            <span class="trash-icon clickable pull-right fa fa-stack fa-lg"
+                          ng-click="wlMonitorConfig.deleteNewenvironmentData($index)">
+                        <span class="fa-circle-thin fa-stack-2x"></span>
+                        <span class="fa-trash fa-stack-1x"></span>
+             </span>                
+			<input autocomplete="off"  class="form-control" style="width:91% !important;" name="env.collectorItemId" type="text" ng-model="env.vDeployJob" uib-typeahead="job.description for job in wlMonitorConfig.vDeployJobs | filter: $viewValue" 
+  			 typeahead-editable="false" typeahead-min-length='2' placeholder="Start typing environment name..." typeahead-on-select="wlMonitorConfig.onTimeCodeSelect($item)" required>
+            <p class="help-block" ng-if="configForm.collectorItemId.$error.required">Please enter environment name</p>
+            </div>
+        </div>
+
+        <hr/>
+
+        <div class="form-group text-center">
+             <button type="button" class="btn btn-default" ng-click="wlMonitorConfig.addNewEnvironment()">
+                <span class="fa fa-stack">
+                    <span class="fa-circle-thin fa-stack-2x"></span>
+                    <span class="fa-plus fa-stack-1x"></span>
+                </span>
+                Add Environment
+            </button>
+        </div>
+
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+</widget-modal>

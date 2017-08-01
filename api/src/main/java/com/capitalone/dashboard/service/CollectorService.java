@@ -84,4 +84,6 @@ public interface CollectorService {
      * @return List of collectorItems
      */
     List<CollectorItem> getCollectorItemForComponent (String id, String type);
+
+    List<CollectorItem> collectorItemsByType(CollectorType collectorType);
 }

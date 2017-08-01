@@ -23,9 +23,10 @@ public enum CollectorType {
     ChatOps,
     Cloud,
     Product,
+    WLMonitor,
     AppPerformance,
     InfraPerformance;
-
+  
     public static CollectorType fromString(String value) {
         for (CollectorType collectorType : values()) {
             if (collectorType.toString().equalsIgnoreCase(value)) {

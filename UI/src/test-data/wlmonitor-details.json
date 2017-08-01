@@ -1,0 +1,103 @@
+{
+  "result": {
+    "environments": [
+      {
+        "id": "57109b4ff622b1156436cbc7",
+        "collectorItemId": "570f6b21f622b116840a16ef",
+        "environmentName": "DEV1",
+        "deployed": "SUCCESS",
+        "applicationName": "Application_A",
+        "servers":[
+        {
+        "name" : "DEV1AS",
+        "status" :"RUNNING"
+        },{
+        "name" : "DEV1MS1",
+        "status" :"RUNNING"
+        }
+        ]      
+      },
+      {
+        "id": "57109b4ff622b1156436cbc8",
+        "collectorItemId": "570f6b21f622b116840a16ef",
+        "environmentName": "DEV1",
+        "deployed": "SUCCESS",
+        "applicationName": "Application_A",
+        "servers":[
+        {
+        "name" : "DEV1AS",
+        "status" :"RUNNING"
+        },{
+        "name" : "DEV1MS1",
+        "status" :"RUNNING"
+        }
+        ]       
+      },
+      {
+        "id": "57109b4ff622b1156436cbc8",
+        "collectorItemId": "570f6b21f622b116840a16ef",
+        "environmentName": "DEV1_WEB",
+        "deployed": "SUCCESS",
+        "applicationName": "Application_A",
+        "servers":[
+        {
+        "name" : "DEV1AS",
+        "status" :"RUNNING"
+        },{
+        "name" : "DEV1MS1",
+        "status" :"RUNNING"
+        }
+        ] 
+      },
+      {
+        "id": "57109b4ff622b1156436cbc8",
+        "collectorItemId": "570f6b21f622b116840a16ef",
+        "environmentName": "dfuji",
+        "deployed": "FAILURE",
+        "applicationName": "Application_A",
+        "servers":[
+        {
+        "name" : "DEV1AS",
+        "status" :"RUNNING"
+        },{
+        "name" : "DEV1MS1",
+        "status" :"RUNNING"
+        }
+        ] 
+      },
+      {
+        "id": "57109b4ff622b1156436cbc8",
+        "collectorItemId": "570f6b21f622b116840a16ef",
+        "environmentName": "DANAMUDIWEB",
+        "deployed": "SUCCESS",
+        "applicationName": "Application_A",
+        "servers":[
+        {
+        "name" : "DEV1AS",
+        "status" :"RUNNING"
+        },{
+        "name" : "DEV1MS1",
+        "status" :"RUNNING"
+        }
+        ] 
+      },
+      {
+        "id": "57109b4ff622b1156436cbc8",
+        "collectorItemId": "570f6b21f622b116840a16ef",
+        "environmentName": "UAT1SERVICE",
+        "deployed": "FAILURE",
+        "applicationName": "Application_A",
+        "servers":[
+        {
+        "name" : "DEV1AS",
+        "status" :"RUNNING"
+        },{
+        "name" : "DEV1MS1",
+        "status" :"RUNNING"
+        }
+        ] 
+      }
+    ]
+  },
+  "lastUpdated": 1460706182265
+}
