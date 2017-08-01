@@ -424,28 +424,34 @@ public class DashboardServiceImpl implements DashboardService {
         return dashboard;
     }
     @Override
-    public DataResponse<Iterable<Dashboard>> getByBusinessService(String app) {
+    public DataResponse<Iterable<Dashboard>> getByBusinessService(String app) throws HygieiaException {
         Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(app);
+        Iterable<Dashboard> rt = null;
 
-        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemBusServObjectId(cmdb.getId());
-
+        if(cmdb != null){
+            rt = dashboardRepository.findAllByConfigurationItemBusServObjectId(cmdb.getId());
+        }
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
     @Override
-    public DataResponse<Iterable<Dashboard>> getByBusinessApplication(String component) {
+    public DataResponse<Iterable<Dashboard>> getByBusinessApplication(String component) throws HygieiaException {
         Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(component);
+        Iterable<Dashboard> rt = null;
 
-        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId());
-
+        if(cmdb != null){
+           rt = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId());
+        }
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
     @Override
-    public DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String component, String app) {
+    public DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String component, String app) throws HygieiaException {
         Cmdb cmdbCompItem =  cmdbService.configurationItemByConfigurationItem(component);
         Cmdb cmdbAppItem =  cmdbService.configurationItemByConfigurationItem(app);
+        Iterable<Dashboard> rt = null;
 
-        Iterable<Dashboard> rt = dashboardRepository.findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(cmdbAppItem.getId(),cmdbCompItem.getId());
-
+        if(cmdbAppItem != null && cmdbCompItem != null){
+            rt = dashboardRepository.findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(cmdbAppItem.getId(),cmdbCompItem.getId());
+        }
         return new DataResponse<>(rt, System.currentTimeMillis());
     }
 

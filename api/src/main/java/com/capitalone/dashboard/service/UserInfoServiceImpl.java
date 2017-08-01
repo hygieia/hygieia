@@ -157,14 +157,19 @@ public class UserInfoServiceImpl implements UserInfoService {
 		props.put("java.naming.security.protocol", "ssl");
 		props.put(Context.SECURITY_AUTHENTICATION, "simple");
 
-		if(!StringUtils.isBlank(authProperties.getAdUrl())) {
-			props.put(Context.PROVIDER_URL, authProperties.getAdUrl());
-			props.put(Context.SECURITY_PRINCIPAL, authProperties.getLdapBindUser() + "@" + authProperties.getAdDomain());
-		} else {
-			props.put(Context.PROVIDER_URL, authProperties.getLdapServerUrl());
-			props.put(Context.SECURITY_PRINCIPAL, StringUtils.replace(authProperties.getLdapUserDnPattern(), "{0}", authProperties.getLdapBindUser()));
+		try {
+			if (!StringUtils.isBlank(authProperties.getAdUrl())) {
+				props.put(Context.PROVIDER_URL, authProperties.getAdUrl());
+				props.put(Context.SECURITY_PRINCIPAL, authProperties.getLdapBindUser() + "@" + authProperties.getAdDomain());
+			} else {
+				props.put(Context.PROVIDER_URL, authProperties.getLdapServerUrl());
+				props.put(Context.SECURITY_PRINCIPAL, StringUtils.replace(authProperties.getLdapUserDnPattern(), "{0}", authProperties.getLdapBindUser()));
+			}
+			props.put(Context.SECURITY_CREDENTIALS, authProperties.getLdapBindPass());
+		} catch (Exception e) {
+			LOGGER.error("Failed to retrieve properties for InitialDirContext", e);
+			return false;
 		}
-		props.put(Context.SECURITY_CREDENTIALS, authProperties.getLdapBindPass());
 
 		InitialDirContext context = new InitialDirContext(props);
 
