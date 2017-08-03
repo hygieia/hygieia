@@ -1,0 +1,58 @@
+version: '2.1'
+
+services:
+
+    # Mongo service uses a hacky little command to keep it alive while the tests run. Without the sleep, the container would exit after running the setup script.
+    mongo:
+        image: $MONGO_IMAGE
+        volumes:
+        - ./mongo_setup.js:/usr/local/bin/mongo_setup.js
+        command: bash -c "mongod --fork --logpath /var/log/mongodb.log && sleep 5 && mongo dashboard /usr/local/bin/mongo_setup.js && while true; do sleep 2; done"
+        
+    hygieia-api:
+        image: $API_IMAGE
+        environment:
+            SPRING_DATA_MONGODB_DATABASE: dashboard
+            SPRING_DATA_MONGODB_USERNAME: db
+            SPRING_DATA_MONGODB_PASSWORD: password
+            
+            # Using replica set and single node configuration to guarentee overriding any database host information that may be saved in the image.
+            SPRING_DATA_MONGODB_HOST: mongo
+            SPRING_DATA_MONGODB_PORT: 27017
+            SPRING_DATA_MONGODB_HOST_PORT: mongo:27017
+            SPRING_DATA_MONGODB_REPSET: 'true'
+        depends_on:
+        - mongo
+        command: bash -c "./properties-builder.sh && java -jar api.jar --spring.config.location=/hygieia/dashboard.properties"
+        
+    hygieia-ui:
+        image: $UI_IMAGE
+        depends_on:
+        - hygieia-api
+        environment:
+          HYGIEIA_API_PORT: http://hygieia-api:8080
+
+    hub:
+        image: $HUB_IMAGE
+        depends_on:
+        - hygieia-ui
+
+    node1:
+        image: $NODE1_IMAGE
+        depends_on:
+        - hub
+        - hygieia-ui
+        environment: 
+            HUB_PORT_4444_TCP_ADDR: hub
+            HUB_PORT_4444_TCP_PORT: 4444
+
+    uitests:
+        image: $TEST_IMAGE
+        command: echo 'UI Test container started'
+        volumes:
+        - ..:/usr/src/app
+        - ~/.m2:/root/.m2
+        links:
+        - hygieia-ui
+        - hub
+        - node1

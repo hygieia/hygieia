@@ -98,7 +98,7 @@ function server(ghostMode) {
   ghostMode = typeof ghostMode == 'undefined' ? false : true
   return function () {
       /*
-       * Location of your backend server
+       * Location of your backend (API) server--default port 8080
        */
       var proxyTarget = config.api || 'http://localhost:8080';
 
