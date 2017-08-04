@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Learn how to install and configure API">
+<meta name="keywords" content=" ">
+<title>All About Hygieia API | Hygieia</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+<script src="js/csi.min.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> Hygieia Documentation</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="https://github/capitalone/Hygieia" target="_blank">GitHub</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="">Dashboard Configuration</a></li>
+                        
+                        
+                        
+                        <li><a href="p1_landing_page.html">Supported Collectors List</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                
+			<li>
+
+
+
+  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:hygieia@capitalone.com?subject=Hygieia Documentation feedback&body=I have some feedback about the All About Hygieia API page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
+
+</li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="All About Hygieia API">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3">
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle">
+    <!-- <span><img src="./images/devops_logo.png"/></span> -->
+     </li>
+    
+    
+    
+        
+    
+    <li>
+        <a href="#">Home/Getting Started</a>
+        <ul>
+            
+            
+            
+            <li><a href="home.html">Introduction</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Installation/Setup Instructions</a>
+        <ul>
+            
+            
+            
+            <li><a href="prerequisites.html">Installation Prerequisites</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="setup.html">Choose a Setup</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="environmentdetails.html">Environment Details</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Configuration Procedure</a>
+        <ul>
+            
+            
+            
+            <li><a href="database.html">Database Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li class="active"><a href="api.html">API Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="ui.html">UI Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="collectors.html">Collectors</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Additional Configuration</a>
+        <ul>
+            
+            
+            
+            <li><a href="pluginjenkins.html">Plugins/Webhook</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="proxyauthentication.html">Proxy Authentication</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Build</a>
+        <ul>
+            
+            
+            
+            <li><a href="builddocker.html">Build Docker</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="buildhygieia.html">Build Hygieia</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Test the Installation</a>
+        <ul>
+            
+            
+            
+            <li><a href="gitsetup.html">Set up Git</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="sonarsetup.html">Set up Sonar</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="jenkinssetup.html">Set up Jenkins</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Troubleshooting</a>
+        <ul>
+            
+            
+            
+            <li><a href="troubleshoot.html">Troubleshoot Instructions</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
+</div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    <!-- Content Column -->
+    <div class="col-md-9">
+        
+<div class="post-header">
+   <h1 class="post-title-main">All About Hygieia API</h1>
+</div>
+
+
+
+
+<div class="post-content">
+
+   
+    <div class="summary">Learn how to install and configure API</div>
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+    
+
+  <p><a href="https://hub.docker.com/r/capitalone/hygieia-api/"><img src="https://img.shields.io/docker/stars/capitalone/hygieia-api.svg" alt="Docker Stars" /></a>
+<a href="https://hub.docker.com/r/capitalone/hygieia-api/"><img src="https://img.shields.io/docker/pulls/capitalone/hygieia-api.svg" alt="Docker Stars" /></a></p>
+
+<h1 id="hygieia-api">Hygieia℠ API</h1>
+
+<p>This contains all common REST api services that work with source data system data, which has already
+been collected by other service tasks.  This is an abstraction from the local data layer, and the source
+system data layer. All REST controllers should be generic to their purpose, and should not be specific
+to any given source system.</p>
+
+<p>This project uses Spring Boot to package the api as an executable JAR with dependencies.</p>
+
+<h2 id="building">Building</h2>
+
+<p>Run <code class="highlighter-rouge">mvn install</code> to package the collector into an executable JAR file.</p>
+
+<h2 id="api-properties-file">API Properties file</h2>
+
+<p>The API layer needs a property file in following format:</p>
+
+<div class="language-properties highlighter-rouge"><pre class="highlight"><code><span class="c"># dashboard.properties
+</span><span class="py">dbname</span><span class="p">=</span><span class="s">dashboard</span>
+<span class="py">dbusername</span><span class="p">=</span><span class="s">[MogoDb Database Username, defaults to empty]</span>
+<span class="py">dbpassword</span><span class="p">=</span><span class="s">[MongoDb Database Password, defaults to empty]</span>
+<span class="py">dbhost</span><span class="p">=</span><span class="s">[Host on which MongoDb is running, defaults to localhost]</span>
+<span class="py">dbport</span><span class="p">=</span><span class="s">[Port on which MongoDb is listening, defaults to 27017]</span>
+<span class="py">dbreplicaset</span><span class="p">=</span><span class="s">[false if you are not using MongoDB replicaset]</span>
+<span class="py">dbhostport</span><span class="p">=</span><span class="s">[host1:port1,host2:port2,host3:port3]</span>
+<span class="py">server.contextPath</span><span class="p">=</span><span class="s">[Web Context path if any]</span>
+<span class="py">server.port</span><span class="p">=</span><span class="s">[Web server port - default is 8080]</span>
+<span class="py">logRequest</span><span class="p">=</span><span class="s">false</span>
+<span class="py">logSplunkRequest</span><span class="p">=</span><span class="s">false</span>
+<span class="py">corsEnabled</span><span class="p">=</span><span class="s">false</span>
+<span class="py">corsWhitelist</span><span class="p">=</span><span class="s">http://domain1.com:port,http://domain2.com:port</span>
+<span class="py">version.number</span><span class="p">=</span><span class="s">@application.version.number@</span>
+
+<span class="py">auth.expirationTime</span><span class="p">=</span><span class="s">[JWT expiration time in milliseconds]</span>
+<span class="py">auth.secret</span><span class="p">=</span><span class="s">[Secret Key used to validate the JWT tokens]</span>
+<span class="py">auth.authenticationProviders</span><span class="p">=</span><span class="s">[Authentication types you would like to enable, defaults to STANDARD, ex: STANDARD,LDAP]</span>
+<span class="py">auth.ldapServerUrl</span><span class="p">=</span><span class="s">[LDAP Server Url, including port of your LDAP server]</span>
+<span class="py">auth.ldapUserDnPattern</span><span class="p">=</span><span class="s">[LDAP User Dn Pattern, where the username is replaced with '{0}']</span>
+
+<span class="c"># LDAP Server Url, including port of your LDAP server
+</span><span class="py">auth.ldapServerUrl</span><span class="p">=</span><span class="s">[ldap://company.com:389]</span>
+
+<span class="c"># If using standard ldap
+# LDAP User Dn Pattern, where the username is replaced with '{0}'
+</span><span class="py">auth.ldapUserDnPattern</span><span class="p">=</span><span class="s">[uid={0},OU=Users,dc=your,dc=company,dc=com]</span>
+
+<span class="c"># If using ActiveDirectory
+# This will be the domain part of your userPrincipalName
+</span><span class="py">auth.adDomain</span><span class="p">=</span><span class="s">[company.com]</span>
+<span class="c"># This will be your root dn
+</span><span class="py">auth.adRootDn</span><span class="p">=</span><span class="s">[dc=your,dc=company,dc=com]</span>
+<span class="c"># This will be your active directory url (required for AD)
+</span><span class="py">auth.adUrl</span><span class="p">=</span><span class="s">[Need an example]</span>
+
+<span class="py">monitor.proxy.host</span><span class="p">=</span><span class="s">[hostname of proxy server]</span>
+<span class="py">monitor.proxy.type</span><span class="p">=</span><span class="s">[http|socks|direct]</span>
+<span class="py">monitor.proxy.port</span><span class="p">=</span><span class="s">[port enabled on proxy server]</span>
+<span class="py">monitor.proxy.username</span><span class="p">=</span><span class="s">[proxy username]</span>
+<span class="py">monitor.proxy.password</span><span class="p">=</span><span class="s">[proxy password]</span>
+</code></pre>
+</div>
+
+<p>All the above values are optional. Even without the property file you must be able to run the api (assuming you have mongodb installed with no authorization).
+<strong>Note:</strong> When <code class="highlighter-rouge">dbusername</code> is not present or the value is empty then it skips the mongodb authorization part.
+<strong>Note:</strong> If the expiration time is left blank, the token will can be thought of as permanently expired. This will cause the users to never see any content. While leaving this value blank will not terminate application start up, this is a mandatory field if you wish users to see any content.
+<strong>Note:</strong> If the secret is left blank, a random key will be generated.  To allow multiple instances of the API to validate the same JWT token, provide the same key to each instance of the API running.<br />
+<strong>Note:</strong> If both LDAP parameters are not provided, LDAP will not be an available authentication provider.
+<strong>Note:</strong> When enabling proxy support for the monitor widget, if the host is not supplied the rest of the monitor.proxy args are ignored. If running with Docker, the port and type will be defaulted to 80 and HTTP. When running locally, these must be supplied.</p>
+
+<h2 id="run-the-api">Run the API</h2>
+
+<p>After you have build your project, from the target folder run the below command,</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>java -jar api.jar --spring.config.location<span class="o">=</span>dashboard.properties -Djasypt.encryptor.password<span class="o">=</span>hygieiasecret
+</code></pre>
+</div>
+
+<p>By default the server starts at port <code class="highlighter-rouge">8080</code> and uses the context path <code class="highlighter-rouge">/api</code>.
+These values are configurable by using the below 2 properties in <code class="highlighter-rouge">dashboard.properties</code>.
+The jasypt.encryptor.password system property is used to decrypt the database password. For more information, refer to encrypted properties.</p>
+
+<div class="language-properties highlighter-rouge"><pre class="highlight"><code><span class="py">server.contextPath</span><span class="p">=</span><span class="s">/api</span>
+<span class="py">server.port</span><span class="p">=</span><span class="s">8080</span>
+</code></pre>
+</div>
+
+<p>For more information about the server configuration, see the Spring Boot <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files">documentation</a>.</p>
+
+<h2 id="docker-image">Docker image</h2>
+
+<h3 id="create">Create</h3>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># from top-level project</span>
+mvn clean package -pl api docker:build
+</code></pre>
+</div>
+
+<h3 id="run">Run</h3>
+
+<p>First start Mongodb</p>
+
+<p>For example:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run -d -p 27017:27017 --name mongodb -v ./mongo:/data/db mongo:latest  mongod --smallfiles
+</code></pre>
+</div>
+
+<p>Create User:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>use db
+db.createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})
+</code></pre>
+</div>
+<p>or from CLI:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mongo 192.168.64.2/admin --eval <span class="s1">'db.getSiblingDB("db").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'</span>
+</code></pre>
+</div>
+
+<p>More details: <a href="https://hub.docker.com/r/library/mongo/">https://hub.docker.com/r/library/mongo/</a></p>
+
+<p>Then running the API from docker is easy:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run -t -p 8080:8080 --link mongodb:mongo -v ./logs:/hygieia/logs -i hygieia-api:latest
+</code></pre>
+</div>
+
+<h3 id="environment-variables">Environment variables</h3>
+
+<p>Environment variables for dashboard properties can be specified like:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -i hygieia-api:latest
+</code></pre>
+</div>
+
+<p>For more properties see the <a href="Dockerfile">Dockerfile</a></p>
+
+<h3 id="list-containers">List containers</h3>
+
+<p>View port by running</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>docker ps
+</code></pre>
+</div>
+
+<h3 id="api-access">API Access</h3>
+
+<p>Take the port mapping and the IP for your docker-machine <env> ip and verify by http://<docker-machine env="" ip="">:<docker port="" for="" hygieia_api="">/api/dashboard</docker></docker-machine></env></p>
+
+<h3 id="troubleshooting">Troubleshooting</h3>
+<p>If the api module fails to launch with the following error, then follow the 2 steps listed below to fix the problem
+<code class="highlighter-rouge">Error creating bean with name 'dashboardRepository': Invocation of init method failed; nested exception is
+org.springframework.dao.DuplicateKeyException: Write failed with error code 11000 and error message 'null'</code></p>
+
+<p>Step 1 : save the lines below to a file called fixdups.js</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>var dupsExist = false;
+db.dashboards.aggregate([
+  { $group: {
+    _id: { firstField: "$title"},
+    uniqueIds: { $addToSet: "$_id" },
+    count: { $sum: 1 }
+  }},
+  { $match: {
+    count: { $gt: 1 }
+  }}
+]).forEach(
+	function(myDoc) {
+		dupsExist = true;
+		print(myDoc.count + " dashboards have the same title " + myDoc._id.firstField);
+		var arr = myDoc.uniqueIds;
+		for(i=0; i&lt;arr.length; i++) {
+			var oneDash = db.dashboards.findOne({_id: arr[i]});
+			var newTitle = oneDash.title + "_" + oneDash.owner + "_" + i;
+			print("Rename " + oneDash.title + " to " + newTitle);
+			db.dashboards.update({_id: arr[i]},{$set:{title: newTitle}});
+		}
+	}
+);
+
+if (!dupsExist) {
+	print("No duplicate title dashboards found.");
+}
+</code></pre>
+</div>
+<p>Step 2 : run the following on the command line</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mongo &lt;dbhost&gt;:&lt;dbport&gt;/&lt;dbname&gt; fixdups.js
+</code></pre>
+</div>
+
+<h2 id="rundeck-webhook-integration">Rundeck Webhook Integration</h2>
+
+<p>Hygieia supports registering deployments using the Rundeck <a href="http://rundeck.org/docs/manual/jobs.html#webhooks">webhook</a>.  In the Rundeck job configuration, select <strong>Send Notification?</strong> and check the on success and on failure webhook checkboxes.  Configure the URL as <code class="highlighter-rouge">http://&lt;apihost&gt;:&lt;apiport&gt;/api/deploy/rundeck</code>.  In order to provide configurability, a few additional features can be added to the webhook URL to assist in locating the proper data to register the deployment.</p>
+
+<p>Additional request parameters can be added to the webhook URL to provide input on where to locate this data.  These parameters can be specified as <code class="highlighter-rouge">optionName=&lt;value&gt;</code> or <code class="highlighter-rouge">optionNameParam=&lt;value&gt;</code>.  When the webhook URL provides a parameter in the form <code class="highlighter-rouge">optionName=&lt;value&gt;</code>, it will use the value provided in the parameter for the field in Hygieia.  When the webhook URL provides a request parameter in the form <code class="highlighter-rouge">optionNameParam=&lt;value&gt;</code>, the option named <code class="highlighter-rouge">&lt;value&gt;</code> will be queried and the value of that option in the job will be used to populate that field.  Otherwise, the default values will be used.</p>
+
+<p>This can be done for the following options:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">appName</code></li>
+  <li><code class="highlighter-rouge">envName</code> (required)</li>
+  <li><code class="highlighter-rouge">artifactName</code> (required)</li>
+  <li><code class="highlighter-rouge">artifactGroup</code></li>
+  <li><code class="highlighter-rouge">artifactVersion</code></li>
+  <li><code class="highlighter-rouge">niceName</code> - Name that appears for the collector in the Hygieia UI.</li>
+</ul>
+
+<p>For a couple examples, to set the <code class="highlighter-rouge">artifactName</code> based on the <code class="highlighter-rouge">deploymentUnit</code> option in the Rundeck job, the webhook URL would be <code class="highlighter-rouge">http://&lt;apihost&gt;:&lt;apiport&gt;/api/deploy/rundeck?artifactNameParam=deploymentUnit</code>.  To set the <code class="highlighter-rouge">envName</code> to be <code class="highlighter-rouge">QA</code> every time this job runs, the webhook URL would be <code class="highlighter-rouge">http://&lt;apihost&gt;:&lt;apiport&gt;/api/deploy/rundeck?envName=QA</code>.</p>
+
+<p>If these values are not provided, it will first query the job to see if it has an option that matches the name of the field.  If not, it will look through the following possibilities:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">appName</code>
+    <ul>
+      <li><code class="highlighter-rouge">hygieiaAppName</code></li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">envName</code>
+    <ul>
+      <li><code class="highlighter-rouge">environment</code></li>
+      <li><code class="highlighter-rouge">env</code></li>
+      <li><code class="highlighter-rouge">hygieiaEnvName</code></li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">artifactName</code>
+    <ul>
+      <li><code class="highlighter-rouge">artifactId</code></li>
+      <li><code class="highlighter-rouge">hygieiaArtifactName</code></li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">artfactGroup</code>
+    <ul>
+      <li><code class="highlighter-rouge">group</code></li>
+      <li><code class="highlighter-rouge">hygieiaArtifactGroup</code></li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">niceName</code>
+    <ul>
+      <li><code class="highlighter-rouge">hygieiaNiceName</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>For the required fields, if the methods to locate values have been exhausted, the webhook endpoint will fail and no deployment will be registered.  An exception will appear in the Hygieia API log with the field name that is missing from the job.  If <code class="highlighter-rouge">appName</code> is not set, it will be set based on the Rundeck project name.</p>
+
+<h3 id="encrypted-properties">Encrypted Properties</h3>
+
+<p>Properties that are recommended to not be stored in plain text can be encrypted/decrypted using jasypt.
+Encrypted properties are enclosed in keyword ENC(), i.e. ENC(thisisanencryptedproperty).
+To generate an encrypted property, run
+<code class="highlighter-rouge">java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar  org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="dbpass" password=hygieiasecret algorithm=PBEWithMD5AndDES</code> where dbpass is the property value being encrypted and hygieiasecret is the secret. When starting the collector, this secret has to be passed as a System property via <code class="highlighter-rouge">-Djasypt.encryptor.password=hygieiasecret</code> in order to decrypt the property.</p>
+
+<p>Via docker, pass as an environment variable <code class="highlighter-rouge">docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -e "JASYPT_ENCRYPTOR_PASSWORD=hygieiasecret" -i hygieia-api:latest</code>.</p>
+
+<p>For additional information, see jasypt spring boot <a href="https://github.com/ulisesbocchio/jasypt-spring-boot/blob/master/README.md">documentation</a>.</p>
+
+<p>Tip: If using GitLab CI Runner, specify the value for JASYPT_ENCRYPTOR_PASSWORD as a secure variable. Secure variables can be added to a Gitlab project by navigating to Project Settings &gt; Variables &gt; Add Variable. 
+A secure variable’s value is by default not visible in the build log and can only be configured by an administrator of a project.</p>
+
+<h3 id="securing-apis-basic-auth">Securing APIs Basic Auth</h3>
+
+<p>From the admin menu, generate an “apitoken” for an “apiuser”</p>
+
+<p>Create a POST request with the following 2 headers and make a rest call for secured API.</p>
+
+<p>Add Authorization header</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>String passwordIsAuthToken = "PasswordIsAuthToken:{\"apiKey\":\"" + &lt;generated apitoken&gt; + "\"}";
+byte[] encodedAuth = Base64.encodeBase64(passwordIsAuthToken.getBytes(StandardCharsets.US_ASCII));
+String authHeader = "apiToken " + new String(encodedAuth);
+Authorization: apiToken &lt;authHeader&gt;
+</code></pre>
+</div>
+<p>Add apiUser header</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>apiUser &lt;apiuser&gt;
+</code></pre>
+</div>
+
+
+    <div class="tags">
+        
+    </div>
+
+    
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               <!--&copy;2017 Capital One. All rights reserved. <br /> -->
+ Site last generated: Aug 4, 2017 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
+
+</body>
+
+</html>

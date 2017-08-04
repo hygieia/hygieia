@@ -1,0 +1,511 @@
+[
+
+
+
+
+{
+"title": "Sonar Collector",
+"tags": "",
+"keywords": "",
+"url": "Hygieia2.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "All About Hygieia API",
+"tags": "",
+"keywords": "",
+"url": "api.html",
+"summary": "Learn how to install and configure API"
+}
+,
+
+
+
+{
+"title": "App Dynamics Collector",
+"tags": "",
+"keywords": "",
+"url": "appdynamics.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Architecture Overview",
+"tags": "",
+"keywords": "",
+"url": "architecture.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Sonar Collector",
+"tags": "",
+"keywords": "",
+"url": "artifactory.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "AWS Collector",
+"tags": "",
+"keywords": "",
+"url": "aws.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Bamboo Collector",
+"tags": "",
+"keywords": "",
+"url": "bamboo.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Bitbucket Collector",
+"tags": "",
+"keywords": "",
+"url": "bitbucket.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Build Docker",
+"tags": "",
+"keywords": "",
+"url": "builddocker.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Build Hygieia",
+"tags": "",
+"keywords": "",
+"url": "buildhygieia.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "ChatOps Collector",
+"tags": "",
+"keywords": "",
+"url": "chatops.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Collectors",
+"tags": "",
+"keywords": "",
+"url": "collectors.html",
+"summary": "Know the basics of installing and configuring Hygieia"
+}
+,
+
+
+
+{
+"title": "Cucumber Collector",
+"tags": "",
+"keywords": "",
+"url": "cucumber.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Database Setup",
+"tags": "",
+"keywords": "",
+"url": "database.html",
+"summary": "Know the basics of installing and configuring the Database"
+}
+,
+
+
+
+{
+"title": "Environment Details",
+"tags": "",
+"keywords": "",
+"url": "environmentdetails.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Sonar Collector",
+"tags": "",
+"keywords": "",
+"url": "features.html",
+"summary": ""
+}
+,
+
+
+
+
+
+{
+"title": "Introduction",
+"tags": "",
+"keywords": "",
+"url": "getting_started.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "GitHub Collector",
+"tags": "",
+"keywords": "",
+"url": "github.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Gitlab Collector",
+"tags": "",
+"keywords": "",
+"url": "gitlab.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Set up Git",
+"tags": "",
+"keywords": "",
+"url": "gitsetup.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Jenkins Build Collector",
+"tags": "",
+"keywords": "",
+"url": "jenkins.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Set up Jenkins",
+"tags": "",
+"keywords": "",
+"url": "jenkinssetup.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "JIRA Collector",
+"tags": "",
+"keywords": "",
+"url": "jira.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Sonar Collector",
+"tags": "",
+"keywords": "",
+"url": "sonar.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Scroll layout",
+"tags": "special_layouts",
+"keywords": "json, scrolling, scrollto, jquery plugin",
+"url": "jsmydoc_scroll.html",
+"summary": "This page demonstrates how you the integration of a script called ScrollTo, which is used here to link definitions of a JSON code sample to a list of definitions for that particular term. The scenario here is that the JSON blocks are really long, with extensive nesting and subnesting, which makes it difficult for tables below the JSON to adequately explain the term in a usable way."
+}
+,
+
+
+
+{
+"title": "All Collectors",
+"tags": "",
+"keywords": "",
+"url": "p1_landing_page.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Hygieia-Jenkins Plugin",
+"tags": "",
+"keywords": "",
+"url": "pluginjenkins.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Prerequisites",
+"tags": "",
+"keywords": "",
+"url": "prerequisites.html",
+"summary": ""
+}
+,
+
+
+
+
+
+{
+"title": "Configure Proxy Authentication",
+"tags": "",
+"keywords": "",
+"url": "proxyauthentication.html",
+"summary": ""
+}
+,
+
+
+
+
+
+{
+"title": "Setup",
+"tags": "",
+"keywords": "",
+"url": "setup.html",
+"summary": "Know the basics of installing and configuring Hygieia"
+}
+,
+
+
+
+
+
+{
+"title": "Sonar Collector",
+"tags": "",
+"keywords": "",
+"url": "sonar.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Set up SONAR",
+"tags": "",
+"keywords": "",
+"url": "sonarsetup.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Subversion Collector",
+"tags": "",
+"keywords": "",
+"url": "subversion.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Tag archives overview",
+"tags": "navigation",
+"keywords": "archives, tagging",
+"url": "tag_archives_overview.html",
+"summary": "This is an overview to the tag archives section. Really the only reason this section is listed explicitly in the TOC here is to demonstrate how to add a third-level to the navigation."
+}
+,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+"title": "Troubleshooting",
+"tags": "",
+"keywords": "",
+"url": "troubleshoot.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "UDeploy Collector",
+"tags": "",
+"keywords": "",
+"url": "udeploy.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "UI Configuration",
+"tags": "",
+"keywords": "",
+"url": "ui.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "VersionOne",
+"tags": "",
+"keywords": "",
+"url": "versionone.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "XLDeploy Collector",
+"tags": "",
+"keywords": "",
+"url": "xldeploy.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "",
+"tags": "",
+"keywords": "",
+"url": "index.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "",
+"tags": "",
+"keywords": "",
+"url": "hygieiagetting_started.html",
+"summary": ""
+}
+,
+
+
+
+
+
+{
+"title": "Sample post",
+"tags": "newsgetting_started",
+"keywords": "",
+"url": "/samplepost.html",
+"summary": "This is some summary frontmatter for my sample post."
+}
+,
+
+
+{
+"title": "Welcome to Jekyll!",
+"tags": "news",
+"keywords": "",
+"url": "/myupdate.html",
+"summary": ""
+}
+,
+
+
+{
+"title": "Test post from last year",
+"tags": "news",
+"keywords": "",
+"url": "/test-post-from-last-year.html",
+"summary": ""
+}
+
+
+
+]

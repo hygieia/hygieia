@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Know the basics of installing and configuring Hygieia">
+<meta name="keywords" content=" ">
+<title>Setup | Hygieia</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+<script src="js/csi.min.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> Hygieia Documentation</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="https://github/capitalone/Hygieia" target="_blank">GitHub</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="">Dashboard Configuration</a></li>
+                        
+                        
+                        
+                        <li><a href="p1_landing_page.html">Supported Collectors List</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                
+			<li>
+
+
+
+  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:hygieia@capitalone.com?subject=Hygieia Documentation feedback&body=I have some feedback about the Setup page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
+
+</li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="Setup">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3">
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle">
+    <!-- <span><img src="./images/devops_logo.png"/></span> -->
+     </li>
+    
+    
+    
+        
+    
+    <li>
+        <a href="#">Home/Getting Started</a>
+        <ul>
+            
+            
+            
+            <li><a href="home.html">Introduction</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Installation/Setup Instructions</a>
+        <ul>
+            
+            
+            
+            <li><a href="prerequisites.html">Installation Prerequisites</a></li>
+            
+            
+            
+            
+            
+            
+            <li class="active"><a href="setup.html">Choose a Setup</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="environmentdetails.html">Environment Details</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Configuration Procedure</a>
+        <ul>
+            
+            
+            
+            <li><a href="database.html">Database Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="api.html">API Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="ui.html">UI Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="collectors.html">Collectors</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Additional Configuration</a>
+        <ul>
+            
+            
+            
+            <li><a href="pluginjenkins.html">Plugins/Webhook</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="proxyauthentication.html">Proxy Authentication</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Build</a>
+        <ul>
+            
+            
+            
+            <li><a href="builddocker.html">Build Docker</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="buildhygieia.html">Build Hygieia</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Test the Installation</a>
+        <ul>
+            
+            
+            
+            <li><a href="gitsetup.html">Set up Git</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="sonarsetup.html">Set up Sonar</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="jenkinssetup.html">Set up Jenkins</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Troubleshooting</a>
+        <ul>
+            
+            
+            
+            <li><a href="troubleshoot.html">Troubleshoot Instructions</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
+</div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    <!-- Content Column -->
+    <div class="col-md-9">
+        
+<div class="post-header">
+   <h1 class="post-title-main">Setup</h1>
+</div>
+
+
+
+
+<div class="post-content">
+
+   
+    <div class="summary">Know the basics of installing and configuring Hygieia</div>
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+    
+
+  <h2><img src="/UI/src/assets/img/hygieia_b.png" alt="Image" /></h2>
+
+<h2 id="build-hygieia">Build Hygieia℠</h2>
+<p>Needs Java 1.8.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mvn clean install package
+</code></pre>
+</div>
+<p>The above command will build all components for Hygieia.</p>
+
+<h2 id="hygieia-setup-instructions">Hygieia℠ Setup Instructions</h2>
+<p>The following components are required to run Hygieia℠:</p>
+
+<h3 id="database">Database</h3>
+<ul>
+  <li>MongoDB 3.0+
+    <ul>
+      <li><a href="https://www.mongodb.org/downloads#previous">Download &amp; Installation instructions</a></li>
+      <li>Configure MongoDB
+    * Go to the bin directory of your mongodb installation and run the following command to start the mongodb do make sure that data directory should pre-exist at the target location <br />
+<code>mongod --dbpath &lt; path to the data directory&gt; </code> <br />
+for e.g <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongod --dbpath /dev/data/db </code>
+    * Run the following commands as shown below at mongodb command prompt
+ <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongo </code></li>
+    </ul>
+  </li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>         $ mongo  
+         MongoDB shell version: 3.0.4
+         connecting to: test  
+         
+         &gt; use dashboarddb
+         switched to db dashboarddb
+         &gt; db.createUser(
+                  {
+                    user: "dashboarduser",
+                    pwd: "dbpassword",
+                    roles: [
+                       {role: "readWrite", db: "dashboard"}
+                            ]
+                    })
+          
+         
+                    Output similar to below should be seen in your mongo shell
+                    
+                Successfully added user: {
+                  "user" : "dashboarduser",
+                  "roles" : [
+                  {
+                    "role" : "readWrite",
+                    "db" : "dashboard"
+                  }
+                  ]
+                }  
+</code></pre>
+</div>
+
+<p>We recommend that you download MongoDB clients (RoboMongo etc) to connect to your locally
+running database and make sure that database: dashboard is created, and you are able to connect to it.</p>
+
+<h3 id="executing-via-a-script">Executing via a script</h3>
+<p>To execute the above via a script in an automated fashion, use <code class="highlighter-rouge">mongosrc.js</code>:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>  mongo &lt; mongosrc.js
+</code></pre>
+</div>
+
+<h2 id="api-layer">API Layer</h2>
+<p>Please click on the link below to learn about how to build and run the API layer</p>
+<ul>
+  <li><a href="/api">API</a></li>
+</ul>
+
+<h2 id="tool-collectors">Tool Collectors</h2>
+<p>In general, all the collectors can be run using the following command</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>java -jar &lt;Path to collector-name.jar&gt; --spring.config.name<span class="o">=</span>&lt;prefix <span class="k">for </span>properties&gt; --spring.config.location<span class="o">=</span>&lt;path to properties file location&gt;
+</code></pre>
+</div>
+
+<p>You can view the collector inventory <a href="collectors/README.md">here</a>.</p>
+
+<p>You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.</p>
+
+<h2 id="ui-layer">UI Layer</h2>
+<p>Please click on the link below to learn about how to build and run the UI layer</p>
+<ul>
+  <li><a href="/UI">UI</a></li>
+</ul>
+
+<h2 id="pluginwebhook">Plugin/Webhook</h2>
+<p>You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia. Currently, you can publish build, artifact info, sonar results, deployment results and Cucumber test results. You may not need to run corresponding collectors if you use Jenkins for build, deploy, sonar analysis and running cucumber tests.</p>
+<ul>
+  <li><a href="/hygieia-jenkins-plugin">Hygieia Jenkins Plugin</a></li>
+</ul>
+
+<p>You can use GitHub webhooks to publish commit information to Hygieia. If you use webhooks, you will not need to run the github collector.</p>
+<ul>
+  <li>Your Github webhook’s payload url should be set to: http://hygieia-base-url/api/commit/github/v3</li>
+  <li>Select to publish just the “push” events</li>
+</ul>
+
+<h2 id="configure-proxy">Configure Proxy</h2>
+
+<p>Hygieia supports proxy authentication for working behind corporate firewalls.  For development, please refer to the following configuration differences; for deployment/operations, please refer to the subsequent sub-section:</p>
+
+<h3 id="proxy-config-developer">Proxy Config: Developer</h3>
+
+<p>Update your Maven settings.xml file:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>...
+&lt;proxies&gt;
+       ...
+       &lt;proxy&gt;
+               &lt;id&gt;your-proxy-id&lt;/id&gt;
+               &lt;active&gt;true&lt;/active&gt;
+               &lt;protocol&gt;http&lt;/protocol&gt;
+               &lt;host&gt;your.proxy.domain.name&lt;/host&gt;
+               &lt;port&gt;8080&lt;/port&gt;
+               &lt;!-- For authenticated proxy, please set the following, as well --&gt;
+               &lt;username&gt;companyId999&lt;/username&gt;
+               &lt;password&gt;yourPassword&lt;/password&gt;
+               &lt;nonProxyHosts&gt;*.local&lt;/nonProxyHosts&gt;
+       &lt;/proxy&gt;
+       ...
+ &lt;/proxies&gt;
+...
+</code></pre>
+</div>
+
+<p>Additionally, set the following export variables:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">export </span><span class="nv">HTTP_PROXY</span><span class="o">=</span>http://companyId999:yourPassword@your.proxy.domain.name:8080
+<span class="nb">export </span><span class="nv">HTTPS_PROXY</span><span class="o">=</span>http://companyId999:yourPassword@your.proxy.domain.name:8080
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=companyId999 -Dhttp.proxyPassword=yourPassword"</span>
+<span class="c"># This option may be duplicative if you have already updated your</span>
+<span class="c"># Maven settings.xml file, but will only help:</span>
+<span class="nb">export </span><span class="nv">MAVEN_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$MAVEN_OPTS</span><span class="s2"> -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=companyId999 -Dhttp.proxyPassword=yourPassword"</span>
+</code></pre>
+</div>
+
+<p>Tests should now run/pass when built from behind a corporate proxy, even if it is an authenticated proxy</p>
+
+<h5 id="proxy-config-deployment--operations">Proxy Config: Deployment / Operations</h5>
+
+<p>Only the above proxy settings (non-authentication) may required to be set on your deployment instance.  Additionally, please update all property files for each collector/API configuration with their specific proxy setting property.</p>
+
+<h3 id="build-docker-images-and-setup-id-for-mongodb">Build Docker images and setup id for mongodb</h3>
+
+<ul>
+  <li>Build the containers</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mvn docker:build
+</code></pre>
+</div>
+
+<ul>
+  <li>Bring up the container images</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>docker-compose up -d
+</code></pre>
+</div>
+
+<ul>
+  <li>Create a user in Mongo (if you log into the container then you don’t have to install Mongo locally)</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>docker <span class="nb">exec</span> -t -i mongodb2 bash
+</code></pre>
+</div>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mongo 192.168.64.2/admin  --eval <span class="s1">'db.getSiblingDB("dashboard").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'</span>
+</code></pre>
+</div>
+
+<h2 id="create-a-docker-composeoverrideyml-to-configure-your-environment">Create a <code class="highlighter-rouge">docker-compose.override.yml</code> to configure your environment</h2>
+<p>These are the most common entries, the uncommented ones are mandatory if you want the collector to work.
+For dev/testing you will find it useful to change the CRON entries to <code class="highlighter-rouge">"0 * * * * *"</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>hygieia-github-scm-collector:
+  environment:
+  - GITHUB_HOST=github.com
+  - GITHUB_CRON=0 * * * * *
+  - GITHUB_COMMIT_THRESHOLD_DAYS=300
+hygieia-jira-feature-collector:
+  environment:
+  - JIRA_BASE_URL=https://mycompany.atlassian.net/
+  - JIRA_CREDENTIALS=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  - JIRA_ISSUE_TYPE_ID=10200
+  - JIRA_SPRINT_DATA_FIELD_NAME=customfield_10007
+  - JIRA_EPIC_FIELD_NAME=customfield_10008
+hygieia-jenkins-build-collector:
+  environment:
+  - JENKINS_CRON=0 * * * * *
+  - JENKINS_MASTER=http://192.168.99.100:9100
+  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
+  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXX
+hygieia-jenkins-cucumber-test-collector:
+  environment:
+  - JENKINS_CRON=0 * * * * *
+  - JENKINS_MASTER=http://192.168.99.100:9100
+  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
+  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXX
+  - JENKINS_CUCUMBER_JSON_FILENAME=cucumber-report.json
+hygieia-sonar-codequality-collector:
+  environment:
+  - SONAR_URL=http://192.168.99.100:9000
+  - SONAR_CRON=0 * * * * *
+</code></pre>
+</div>
+
+<ul>
+  <li>Make sure everything is restarted - <em>it may fail if the user doesn’t exist at start-up</em></li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>docker-compose restart
+</code></pre>
+</div>
+
+<ul>
+  <li>Get the port for the UI</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>docker port hygieia-ui
+</code></pre>
+</div>
+
+<h2 id="how-to-set-up-test-data">How to set up test data</h2>
+<h3 id="1-set-up-git---by-configuring-it-to-point-to-the-github-master-branch-for-hygieia">1. Set up Git - by configuring it to point to the Github master branch for Hygieia</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>a. In the SCM panel, select _git_
+b. Enter the URL: `https://github.com/capitalone/Hygieia.git`
+c. Set the branch to `master`
+ote: For this to work you will need to have set your credentials on the ID that the collectors is running under, the best way to do this is first clone the repo to set your credentials.
+</code></pre>
+</div>
+
+<h3 id="2-setup-sonar----by-running-a-test-instance-of-sonar">2. Setup Sonar -  by running a test instance of sonar</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>a. `docker-compose -f test-servers/sonar/sonar.yml up -d`
+b. Fill it with data from the Hygieia project ```bash mvn sonar:sonar -Dsonar.host.url=http://$(docker-machine ip default):9000 -Dsonar.jdbc.url="jdbc:h2:tcp://$(docker-machine ip default)/sonar" ```
+c. You can now go in and configure the quality panel in the UI.
+</code></pre>
+</div>
+
+<h3 id="3-set-up-jenkins-wcucumber-output---by-starting-a-test-jenkins-master">3. Set up Jenkins w/cucumber output - by starting a test jenkins master</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>a. `docker-compose -f test-servers/jenkins/jenkins.yml up -d`
+b. Run the job: http://192.168.99.100:9100/job/Hygieia_Example_Job/build
+c. Configure the Jenkins Build and Jenkins Cucumber panels using this jobs output.
+</code></pre>
+</div>
+
+<h2 id="start-collectors-in-the-background-optional-as-they-are-all-running-in-containers-by-default">Start Collectors in the background (optional as they are all running in containers by default)</h2>
+<ul>
+  <li>To start individual collector as background processes, use this format:
+    <ul>
+      <li>On linux platform
+        <div class="language-bash highlighter-rouge"><pre class="highlight"><code>nohup java -jar &lt;collector-name&gt;.jar --spring.config.name<span class="o">=</span>&lt;property file name&gt; &amp; &gt;/dev/null
+</code></pre>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+    <div class="tags">
+        
+    </div>
+
+    
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               <!--&copy;2017 Capital One. All rights reserved. <br /> -->
+ Site last generated: Aug 4, 2017 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
+
+</body>
+
+</html>

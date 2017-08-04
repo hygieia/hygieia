@@ -1,0 +1,213 @@
+---
+title: Database Setup
+tags:
+keywords:
+summary: Know the basics of installing and configuring the Database 
+sidebar: hygieia_sidebar
+permalink: database.html
+folder: kb
+---
+
+ <div class="row">
+        <div class="col-lg-12">
+            <h3 class="page-header">Database Setup for Supported Platforms</h3>
+			<p> Hygieia uses MongoDB (version 3.0 and above) as the database for storage and retrieval of data. 
+			It is recommended to download any MongoDB GUI client (for example, Robo 3T) to create the database dashboard and successfully connect to it.
+			</p>
+        </div>
+        <div class="col-lg-12">
+
+            <ul id="myTab" class="nav nav-tabs nav-justified">
+                <li class="active"><a href="#windows" data-toggle="tab"><i class="fa fa-database"></i> Windows</a>
+                </li>
+                <li class=""><a href="#mac" data-toggle="tab"><i class="fa fa-database"></i> MAC</a>
+                </li>
+                <li class=""><a href="#linux" data-toggle="tab"><i class="fa fa-database"></i> Linux</a>
+                </li>
+            </ul>
+
+				<div id="myTabContent" class="tab-content">
+                <div class="tab-pane fade active in" id="windows">
+                    <h4>Download and Install Instructions</h4>
+					<p> If you do not already have MongoDB installed, download the Installation Package from <a href="https://www.mongodb.org/downloads#previous">MongoDB download 	page</a> and follow the installation instructions in the <a href="https://docs.mongodb.com/manual/">MongoDB manual</a>.
+					</p> 
+					<h4 class="page-header">Configuration Steps</h4>
+
+				<p>Follow the configuration steps to run Hygieia in your MongoDB installation.</p>
+
+			<ul> 
+				<li> <b>Step 1: Create Data Directory</b></li>
+					<p>Create a data directory on the drive from which you start MongoDB to store your data files.</p> 
+	
+					<p> For example, create the data directory in the following path:</p>
+					<code>C:\Users\[usernname]\dev\data\db</code> 
+    
+				<li> <b>Step 2: Change Directory</b></li>
+					<p>Change the current working directory to the <code>bin</code> directory of your MongoDB installation.</p>
+					<p> In the command prompt, run th following command:</p>
+					<code> cd C:\Program Files\MongoDB\Server\3.2\bin</code>
+				<li> <b>Step 3: Start MongoDB </b> </li>
+					<p>Specify the path to use as data directory:</p>
+					<code>mongod --dbpath [path to the data directory]</code>
+					<p> Execute the following commands to start MongoDB, switch to db dashbaord, and then add dashboard user:</p>
+	  <pre code>
+#Start mongo
+
+Command: > mongo
+Output:  MongoDB shell version: 3.2
+		 connecting to: test
+			
+#Switch to db dashboard
+
+Command: > use dashboarddb
+Output:  switched to db dashboard
+
+#Create db user
+
+Command: > db.createUser(
+			{
+			  user: "dashboarduser",
+			  pwd: "dbpassword",
+			  roles: [
+			  {role: "readWrite", db: "dashboarddb"}
+			  ]
+			})
+			
+Output:  Successfully added user: {
+         "user" : "dashboarduser",
+         "roles" : [
+		  {
+			"role" : "readWrite",
+			"db" : "dashboarddb"
+		  }
+		  ]
+		  }
+	  </pre code>
+       	
+  </ul>	
+				</div>
+                <div class="tab-pane fade" id="mac">
+                    <h4>Download and Install Instructions</h4>
+					<p> If you do not already have MongoDB installed, download the Installation Package from <a href="https://www.mongodb.org/downloads#previous">MongoDB download 	page</a> and follow the installation instructions in the <a href="https://docs.mongodb.com/manual/">MongoDB manual</a>.
+					</p> 
+					<h4 class="page-header">Configuration Steps</h4>
+
+				<p>Follow the configuration steps to run Hygieia in your MongoDB installation.</p>
+
+			<ul> 
+				<li> <b>Step 1: Create Data Directory</b></li>
+					<p>Create a data directory on the drive from which you start MongoDB to store your data files.</p> 
+	
+					<p> For example, create the data directory in the following path:</p>
+					<code>cd C:/Users/[usernname]/dev/data/db</code> 
+    
+				<li> <b>Step 2: Change Directory</b></li>
+					<p>Change the current working directory to the <code>bin</code> directory of your MongoDB installation.</p>
+					<p> For example, in the Windows command prompt, run th following command:</p>
+					<code> cd C:/Program Files/MongoDB/Server/3.2/bin</code>
+				<li> <b>Step 3: Start MongoDB </b> </li>
+					<p>Specify the path to use as data directory:</p>
+					<code>mongod --dbpath [path to the data directory]</code>
+					<p> Execute the following commands to start MongoDB, switch to db dashbaord, and then add dashboard user:</p>
+	  <pre code>
+#Start mongo
+
+Command: > mongo
+Output:  MongoDB shell version: 3.2
+		 connecting to: test
+			
+#Switch to db dashboard
+
+Command: > use dashboarddb
+Output:  switched to db dashboard
+
+#Create db user
+
+Command: > db.createUser(
+			{
+			  user: "dashboarduser",
+			  pwd: "dbpassword",
+			  roles: [
+			  {role: "readWrite", db: "dashboarddb"}
+			  ]
+			})
+			
+Output:  Successfully added user: {
+         "user" : "dashboarduser",
+         "roles" : [
+		  {
+			"role" : "readWrite",
+			"db" : "dashboarddb"
+		  }
+		  ]
+		  }
+	  </pre code>
+       	
+  </ul>	
+</div>
+                <div class="tab-pane fade" id="linux">
+                    <h4>Download and Install Instructions</h4>
+					<p> If you do not already have MongoDB installed, download the Installation Package from <a href="https://www.mongodb.org/downloads#previous">MongoDB download 	page</a> and follow the installation instructions in the <a href="https://docs.mongodb.com/manual/">MongoDB manual</a>.
+					</p> 
+					<h4 class="page-header">Configuration Steps</h4>
+
+				<p>Follow the configuration steps to run Hygieia in your MongoDB installation.</p>
+
+			<ul> 
+				<li> <b>Step 1: Create Data Directory</b></li>
+					<p>Create a data directory on the drive from which you start MongoDB to store your data files.</p> 
+	
+					<p> For example, in the Windows command prompt, run the following command:</p>
+					<code>C:/Users/[usernname]/dev/data/db</code> 
+    
+				<li> <b>Step 2: Change Directory</b></li>
+					<p>Change the current working directory to the <code>bin</code> directory of your MongoDB installation.</p>
+					<p> For example, in the Windows command prompt, run th following command:</p>
+					<code> cd C:/Program Files/MongoDB/Server/3.2/bin</code>
+				<li> <b>Step 3: Start MongoDB </b> </li>
+					<p>Specify the path to use as data directory:</p>
+					<code>mongod --dbpath [path to the data directory]</code>
+					<p> Execute the following commands to start MongoDB, switch to db dashbaord, and then add dashboard user:</p>
+	  <pre code>
+#Start mongo
+
+Command: > mongo
+Output:  MongoDB shell version: 3.2
+		 connecting to: test
+			
+#Switch to db dashboard
+
+Command: > use dashboarddb
+Output:  switched to db dashboard
+
+#Create db user
+
+Command: > db.createUser(
+			{
+			  user: "dashboarduser",
+			  pwd: "dbpassword",
+			  roles: [
+			  {role: "readWrite", db: "dashboarddb"}
+			  ]
+			})
+			
+Output:  Successfully added user: {
+         "user" : "dashboarduser",
+         "roles" : [
+		  {
+			"role" : "readWrite",
+			"db" : "dashboarddb"
+		  }
+		  ]
+		  }
+	  </pre code>
+       	
+  </ul>	
+
+                </div>
+            </div>
+		</div>
+	</div>	
+				 
+
+				
