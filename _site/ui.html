@@ -1,309 +1,581 @@
 <!DOCTYPE html>
-<html lang="en">
-
 <head>
-
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Santhi Sridharan">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content=" ">
+<title>UI Configuration | Hygieia</title>
+<link rel="stylesheet" href="css/syntax.css">
 
-    <title>Setup UI</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-blue.css">
 
-    <!-- Custom CSS -->
-     <link href="css/docs.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
 
-    <script src="js/jquery.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/docs.min.js"></script>
 
-    <!-- Favicons -->
-    <link rel="icon" href="/favicon.ico">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+<script src="js/csi.min.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    
 
 </head>
-<style>
-.bs-docs-header {
-  padding-right: 10px;
-  padding-top: 10px;
-  padding-bottom: 5px;
-    }
-.bs-docs-header h1,p {
-  margin-right: 100px !important;
-  margin-top: 0px !important;
-  margin-bottom: 10px !important;
-font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-.titlelead{
-font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-    font-style: italic !important;
-color: #fff !important;
-}
-
-.lead {
-  font-size: 15px !important;
-}
-
-.bs-docs-header p{
-  align: justify !important;
-};
-
-
-</style>
-
 <body>
-    <!-- Docs master nav -->
-    <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
-     <div class="container">
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
         <div class="navbar-header">
-            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html">Hygieia</a>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> Hygieia Documentation</span></a>
         </div>
-        <nav id="bs-navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-
-                <li><a href="getting_started.html">Getting Started</a></li>
-                <li><a href="ui.html">UI</a></li>
-                <li><a href="api.html">API </a></li>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="https://github/capitalone/Hygieia" target="_blank">GitHub</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
                 <li class="dropdown">
-                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">Collectors
-                    <span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                      <li><a href="chatops_collector.html">ChatOps</a></li>
-                      <li><a href="githubsourcecode_collector.html">GithubSourceCode</a></li>
-                      <li><a href="jenkinsbuild_collector.html">Jenkins Build</a></li>
-                      <li><a href="jenkinscucumbertest_collector.html">Jenkins Cucumber Test</a></li>
-                      <li><a href="jirafeature_collector.html">Jira Feature</a></li>
-                      <li><a href="sonarcodequality_collector.html">SONAR CodeQuality</a></li>
-                      <li><a href="stashsourcecode_collector.html">StashSourceCode</a></li>
-                      <li><a href="subversionsourcecode_collector.html">SubversionSourceCode</a></li>
-                      <li><a href="udeploy_collector.html">UDeploy</a></li>
-                      <li><a href="versionone_collector.html">VersionOne</a></li>
+                        
+                        
+                        <li><a href="">Dashboard Configuration</a></li>
+                        
+                        
+                        
+                        <li><a href="p1_landing_page.html">Supported Collectors List</a></li>
+                        
+                        
                     </ul>
-                  </li>
+                </li>
+                
+                
+                
+			<li>
 
-                <li><a href="plugin_webhook.html">Plugin WebHook</a></li>
-                <li><a href="contact.html">Contact us</a></li>
+
+
+  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:hygieia@capitalone.com?subject=Hygieia Documentation feedback&body=I have some feedback about the UI Configuration page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
+
+</li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="UI Configuration">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
             </ul>
-        </nav>
-    </div>
-</header>
-
-
-    <!-- Docs page layout -->
-    <div class="bs-docs-header" id="content" tabindex="-1">
-      <div class="container">
-        <h1>Setup UI</h1>
-        <p class="titlelead">Know the steps to set-up Hygieia UI</p>
-      </div>
-    </div>
-
-   <div class="container bs-docs-container">
-      <div class="row">
-	<div class="col-md-9" role="main">
-          <div class="bs-docs-section">
-  <h2 id="software_requirements" class="page-header">
-    <a class="anchorjs-link " href="#software_requirements" aria-label="Anchor link for:software_requirements" data-anchorjs-icon=""
-    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
-    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Software Requirements
-  </h2>
-  <ul>
-    <li>NodeJS</li>
-    <li>npm</li>
-    <li>gulp</li>
-    <li>bower</li>
-    <li>Mac OS X</li>
-  </ul>
-</div>
-
-
-<div class="bs-docs-section">
-  <h2 id="install_on_macosx" class="page-header">
-    <a class="anchorjs-link " href="#install_on_macosx" aria-label="Anchor link for: install_on_macosx" data-anchorjs-icon=""
-    style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
-    position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Install on Mac OS X
-  </h2>
-  <p> Run the following commands: </p>
-  <pre code>
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install node
-    npm install -g bower
-    npm install -g gulp
-  </pre code>
-
-  <p>Pull down everything that's configured with bower and npm. It may be as follows:
-    <pre code>
-      npm install
-      bower install
-    </pre code>
-    <p> Update the ngFitText bower.json file to point to <code>'src/ng-FitText.js'</code> instead of <code>'/src/ng-FitText.js'</code></p>
-
-  </div>
-
-  <div class="bs-docs-section">
-    <h2 id="install_on_windows" class="page-header">
-      <a class="anchorjs-link " href="#install_on_windows" aria-label="Anchor link for:install_on_windows" data-anchorjs-icon=""
-      style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
-      position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Install on Windows
-    </h2>
-    <p>Install NodeJS using the MSI package available at: http://nodejs.org/download/</p>
-    <p> Run the following commands: </p>
-    <pre code>
-      npm install -g bower
-      npm install -g gulp
-    </pre code>
-    <p>Navigate to your project root via command line and use the following command:  </p>
-    <pre code>npm install</pre code>
-    <p>Use Git Shell to install bower in the following manner; do so from your project's root directory:</p>
-    <pre code>
-      bower install
-      select option 2 when prompted for user input</pre code>
-
-      <p>Run the dashboard from the following command:</p>
-      <pre code>
-        gulp serve
-      </pre code>
-    </div>
-
-    <div class="bs-docs-section">
-      <h2 id="layouts" class="page-header">
-        <a class="anchorjs-link " href="#layouts" aria-label="Anchor link for:layouts" data-anchorjs-icon=""
-        style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
-        position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Layouts
-      </h2>
-      <p>
-        The layouts are under <code>src/components/templates</code>.<br><br>
-
-        Currently only capone is used. Just add <code>&lt; widget name="[your new widget name]"&gt;&lt;\widget&gt;</code> and you're good to go.
-        <br><br>
-        All widgets have to be hardcoded into the layout right now.</p>
-      </p>
-    </div>
-
-    <div class="bs-docs-section">
-      <h2 id="running" class="page-header">
-        <a class="anchorjs-link " href="#running" aria-label="Anchor link for:running" data-anchorjs-icon=""
-        style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
-        position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Running
-      </h2>
-      <p>
-        In terminal navigate to the project root and run gulp serve. Should serve up on port 3000.<br>
-      <br>
-      For local Testing with Mocks, run the following command:
-      <pre code>
-        gulp serve --local true
-      </pre code>
-      Or For local testing of the UI layer, you can run via maven from UI project root folder:
-      <pre code>
-        mvn clean package integration-test
-      </pre code>
-      All data is currently coming from the test-data folder so you shouldn't need an api, but this also means no settings will be saved..
-    </div>
-
-    <div class="bs-docs-section">
-      <h2 id="docker" class="page-header">
-        <a class="anchorjs-link " href="#docker" aria-label="Anchor link for:docker" data-anchorjs-icon=""
-        style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
-        position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Docker
-      </h2>
-      <h3 id='create'>Create</h3>
-      <pre code>
-        # from top-level project
-        mvn clean package -pl UI docker:build
-      </pre code>
-      <h3 id='run'> Run</h3>
-      <pre code>
-        docker run -t -p 8088:80 --link hygieia-api -i hygieia-ui:latest
-      </pre code>
-    </div>
-
-    <div class="bs-docs-section">
-      <h2 id="api_check" class="page-header">
-        <a class="anchorjs-link " href="#api_check" aria-label="Anchor link for: api_check" data-anchorjs-icon=""
-        style="font-family: anchorjs-icons; font-style: normal; font-variant: normal; font-weight: normal;
-        position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>API Check
-      </h2>
-
-      <h3>API layer successfully connected</h3>
-      <img src="images/apiup.png" style="width:50%;">
-
-      <h3>API layer successfully connected</h3>
-      <img src="/images/apiup.png" style="width:50%;">
-
-      <h3>API layer connection unsuccessful</h3>
-      <img src="/images/apidown.png" style="width:50%;">
-
-      <h3>ScreenShot of login page with API Layer up</h3>
-      <img src="/images/loginpage.png" style="width:50%;">
-    </div>
-
         </div>
-	
-        <div class="col-md-3" role="complementary">
-          <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm">
-            <ul class="nav bs-docs-sidenav">
-    <!-- make sure that there is a html page for sidebar nav for each onne of the HTML files using this template
-    and ensure that the sidebar nav file name is [page name_nav.html] -->
-    		<li>
-  <a href="#software_requirements">Software Requirements</a>
+        </div>
+        <!-- /.container -->
+</nav>
 
-</li>
-<li>
-  <a href="#install_on_macosx">Install on MAC OS X</a>
-</li>
-<li>
-  <a href="#install_on_windows">Install on windows</a>
-</li>
-<li>
-  <a href="#layouts">Layouts</a>
-</li>
-<li>
-  <a href="#running">Running</a>
-</li>
-<li>
-  <a href="#docker">Docker</a>
-	<ul class="nav">
-	    <li><a href="#create">Create</a></li>
-	    <li><a href="#run">Run</a></li>
-	  </ul>
-</li>
-<li>
-  <a href="#api_check">API Check</a>
-</li>
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3">
 
-            <a class="back-to-top" href="#top">
-              Back to top
-            </a>
-	    </ul>
-	    </nav>
-</div>
-	
+          
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle">
+    <!-- <span><img src="./images/devops_logo.png"/></span> -->
+     </li>
+    
+    
+    
+        
+    
+    <li>
+        <a href="#">Home/Getting Started</a>
+        <ul>
+            
+            
+            
+            <li><a href="home.html">Introduction</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Installation/Setup Instructions</a>
+        <ul>
+            
+            
+            
+            <li><a href="prerequisites.html">Installation Prerequisites</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="setup.html">Choose a Setup</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="environmentdetails.html">Environment Details</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Configuration Procedure</a>
+        <ul>
+            
+            
+            
+            <li><a href="database.html">Database Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="api.html">API Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li class="active"><a href="ui.html">UI Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="collectors.html">Collectors</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Additional Configuration</a>
+        <ul>
+            
+            
+            
+            <li><a href="pluginjenkins.html">Plugins/Webhook</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="proxyauthentication.html">Proxy Authentication</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Build</a>
+        <ul>
+            
+            
+            
+            <li><a href="builddocker.html">Build Docker</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="buildhygieia.html">Build Hygieia</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Test the Installation</a>
+        <ul>
+            
+            
+            
+            <li><a href="gitsetup.html">Set up Git</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="sonarsetup.html">Set up Sonar</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="jenkinssetup.html">Set up Jenkins</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Troubleshooting</a>
+        <ul>
+            
+            
+            
+            <li><a href="troubleshoot.html">Troubleshoot Instructions</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
 </div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    <!-- Content Column -->
+    <div class="col-md-9">
+        
+<div class="post-header">
+   <h1 class="post-title-main">UI Configuration</h1>
 </div>
-<footer class="bs-docs-footer">
-  <div class"container-fluid">
-    <ul class="bs-docs-footer-links">
-      <li><a href="https://github.com/capitalone/hygieia">GitHub</a>&nbsp;&nbsp;&nbsp;</li>
-      <li><a href="https://gitter.im/capitalone/Hygieia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">Gitter Chat &nbsp;&nbsp;&nbsp;&nbsp;
-   </li>
-      <li><a href="https://www.codacy.com/app/amit-mawkin/Hygieia/dashboard">Codacy&nbsp;&nbsp;&nbsp;</a>
-      <li><a href="../contact.html">Contact Us &nbsp;&nbsp;&nbsp</a></li>
+
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+    
+
+  <p><a href="https://hub.docker.com/r/capitalone/hygieia-api/"><img src="https://img.shields.io/docker/stars/capitalone/hygieia-ui.svg" alt="Docker Stars" /></a>
+<a href="https://hub.docker.com/r/capitalone/hygieia-api/"><img src="https://img.shields.io/docker/pulls/capitalone/hygieia-ui.svg" alt="Docker Stars" /></a></p>
+
+<h2 id="hygieia-ui">Hygieia℠ UI</h2>
+
+<h3 id="requirements">Requirements</h3>
+
+<ul>
+  <li>NodeJS</li>
+  <li>npm</li>
+  <li>gulp</li>
+  <li>bower</li>
 </ul>
 
-    <p> Maintained by Capital One Hygieia Team</a> with the help of <a href="https://github.com/capitalone/hygieia/contributors">our contributors</a>.</p>
-  </div>
+<h4 id="mac-os-x">Mac OS X</h4>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew install node
+npm install -g bower
+npm install -g gulp
+</code></pre>
+</div>
+
+<p>Pull down everything that’s configured with bower and npm. I think it’s:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>npm install
+bower install
+</code></pre>
+</div>
+
+<p>Will need up update the ngFitText bower.json file to point to ‘src/ng-FitText.js’ instead of ‘/src/ng-FitText.js’</p>
+
+<h4 id="windows">Windows</h4>
+
+<p>Install NodeJS using the MSI package available at: http://nodejs.org/download/</p>
+
+<p>Issue the following commands via command line:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>npm install -g bower
+npm install -g gulp
+</code></pre>
+</div>
+
+<p>Navigate to your project root via command line and use the following command:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>npm install
+</code></pre>
+</div>
+
+<p>Use Git Shell to install bower in the following manner; do so from your project’s root directory:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>bower install
+select option 2 when prompted for user input
+</code></pre>
+</div>
+
+<p>Run the dashboard from the following command:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>gulp serve
+</code></pre>
+</div>
+
+<h3 id="layouts">Layouts</h3>
+<p>Are under src/components/templates. Currently only capone is used. Just add <code class="highlighter-rouge">&lt;widget name="[your new widget name]"&gt;&lt;/widget&gt;</code> and you’re good to go.
+All widgets have to be hardcoded into the layout right now.</p>
+
+<h3 id="running">Running</h3>
+<p>In terminal navigate to the project root and run <code class="highlighter-rouge">gulp serve</code>. Should serve up on port 3000.</p>
+
+<p>Local Testing with Mocks:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code> gulp serve --local <span class="nb">true</span>
+</code></pre>
+</div>
+
+<p>Using browser-sync’s <a href="https://www.browsersync.io/docs/options#option-ghostMode"><code class="highlighter-rouge">ghostMode</code></a> functionality:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>gulp serve:ghost-mode
+</code></pre>
+</div>
+
+<p>or you can run via maven from UI project root folder</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code> mvn clean package integration-test
+</code></pre>
+</div>
+<p>for local testing of Hygieia UI layer</p>
+
+<p>All data is currently coming from the test-data folder so you shouldn’t need an api, but also means no settings will be saved..</p>
+
+<h3 id="docker">Docker</h3>
+
+<h4 id="create">Create</h4>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="c"># from top-level project</span>
+mvn clean package -pl UI docker:build
+</code></pre>
+</div>
+
+<h4 id="run">Run</h4>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>docker run -t -p 8088:80 --link hygieia-api -i hygieia-ui:latest
+</code></pre>
+</div>
+
+<h3 id="api-check">API check</h3>
+
+<h4 id="api-layer-successfully-connected">API layer successfully connected</h4>
+<p><img src="/media/images/apiup.png" alt="Image" /></p>
+
+<h4 id="api-layer-connection-unsuccessful">API layer connection unsuccessful</h4>
+<p><img src="/media/images/apidown.png" alt="Image" /></p>
+
+<h3 id="screenshot-of-login-page-with-api-layer-up">ScreenShot of login page with API Layer up</h3>
+<p><img src="/media/images/loginpage.png" alt="Image" /></p>
+
+<h3 id="encryption-for-private-repos">Encryption for private repos</h3>
+<ol>
+  <li>From module core generate a secret key.
+    <div class="highlighter-rouge"><pre class="highlight"><code>java -jar &lt;path-to-jar&gt;/core-2.0.5-SNAPSHOT.jar com.capitalone.dashboard.util.Encryption
+</code></pre>
+    </div>
+  </li>
+  <li>Add this generated key to api.properties
+    <h3 id="apiproperties">api.properties</h3>
+    <div class="highlighter-rouge"><pre class="highlight"><code>key=&lt;your-generated-key&gt;
+</code></pre>
+    </div>
+  </li>
+  <li>Add the same key to your repo settings file.
+This is needed for the target collector to decrypt your saved repo password.
+For example, if your repo is github add the following.
+    <h3 id="githubproperties">github.properties</h3>
+    <div class="highlighter-rouge"><pre class="highlight"><code>github.key=&lt;your-generated-key&gt;
+</code></pre>
+    </div>
+  </li>
+</ol>
+
+
+    <div class="tags">
+        
+    </div>
+
+    
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               <!--&copy;2017 Capital One. All rights reserved. <br /> -->
+ Site last generated: Aug 4, 2017 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
 </footer>
 
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
 
 </body>
 

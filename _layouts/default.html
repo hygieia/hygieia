@@ -1,96 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
-
 <head>
+    {% include head.html %}
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Santhi Sridharan">
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
 
-    <title>{{page.title}}</title>
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+        });
 
-    <!-- Custom CSS -->
-     <link href="css/docs.min.css" rel="stylesheet">
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    {% if page.datatable == true %}
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.5/js/jquery.dataTables.js"></script>
+    <script>
+        $(document).ready(function(){
 
-    <script src="js/jquery.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/docs.min.js"></script>
-
-    <!-- Favicons -->
-    <link rel="icon" href="/favicon.ico">
+            $('table.datatable').DataTable( {
+                        paging: false,
+                        stateSave: true
+                    }
+            );
+    </script>
+    {% endif %}
 
 </head>
-<style>
-.bs-docs-header {
-  padding-right: 10px;
-  padding-top: 10px;
-  padding-bottom: 5px;
-    }
-.bs-docs-header h1,p {
-  margin-right: 100px !important;
-  margin-top: 0px !important;
-  margin-bottom: 10px !important;
-font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-.titlelead{
-font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-    font-style: italic !important;
-color: #fff !important;
-}
-
-.lead {
-  font-size: 15px !important;
-}
-
-.bs-docs-header p{
-  align: justify !important;
-};
-
-
-</style>
-
 <body>
-    <!-- Docs master nav -->
-    {% include main_nav.html %}
+{% include topnav.html %}
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3">
 
-    <!-- Docs page layout -->
-    <div class="bs-docs-header" id="content" tabindex="-1">
-      <div class="container">
-        <h1>{{ page.title }}</h1>
-        <p class="titlelead">{{ page.lead }}</p>
-      </div>
+          {% include sidebar.html %}
+    <!-- Content Column -->
+    <div class="col-md-9">
+        {{content}}
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
     </div>
 
-   <div class="container bs-docs-container">
-      <div class="row">
-	<div class="col-md-{% if page.fullwidth == true %}12{% else %}9{% endif %}" role="main">
-          {{ content }}
-        </div>
-	{% unless page.fullwidth == true %}
-        <div class="col-md-3" role="complementary">
-          <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm">
-            <ul class="nav bs-docs-sidenav">
-    <!-- make sure that there is a html page for sidebar nav for each onne of the HTML files using this template
-    and ensure that the sidebar nav file name is [page name_nav.html] -->
-    		{% include {{ page.slug }}_nav.html %}
-            <a class="back-to-top" href="#top">
-              Back to top
-            </a>
-	    </ul>
-	    </nav>
-</div>
-	{% endunless %}
-
-</div>
-</div>
-{% include footer.html %}
-
 </body>
-
+{% if site.google_analytics %}
+{% include google_analytics.html %}
+{% endif %}
 </html>
