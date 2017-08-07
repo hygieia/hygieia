@@ -34,7 +34,10 @@
         ctrl.filterNotOwnedList = filterNotOwnedList;
         ctrl.filterDashboards = filterDashboards;
         ctrl.editDashboard = editDashboard;
-        ctrl.getInvalidAppOrCompError = getInvalidAppOrCompError;
+        ctrl.getInvalidAppOrCompError = getInvalidAppOrCompError;      
+        ctrl.deleteDashboard = deleteDashboard;
+       
+
 
         if (userService.isAdmin()) {
             ctrl.myadmin = true;
@@ -176,23 +179,39 @@
         }
 
 
+              
+              function deleteDashboard(item)
+              {
+                  // open modal for renaming dashboard
+              	var id = item.id;
+             
+                  var modalInstance = $uibModal.open({
+                  	scope : $scope,
+                  
+                      templateUrl: 'app/dashboard/views/deleteDashboard.html',
+                      controller: 'DeleteDashboardController',
+                      controllerAs: 'ctrl',
+                      resolve: {
+                          dashboardItem: function() {
+                          	$scope.item =item;
+                         
+                          	$scope.det =[];
+                         	$scope.det[0]=$scope.item;
+                         	$scope.det[1]=ctrl.dashboards;
+                         	$scope.det[2]=ctrl.mydash;
+                         	
+                         	return $scope.det;
+                       
+                          }
+                 
+                      }
+                  });
+                  modalInstance.result.then(function success() {
+                      pullDashboards()                  	
+                  });
+              }
+              
 
-
-        function deleteDashboard(item) {
-            var id = item.id;
-            dashboardData.delete(id).then(function () {
-                _.remove(ctrl.dashboards, {id: id});
-                _.remove(ctrl.mydash, {id: id});
-            }, function(response) {
-                var msg = 'An error occurred while deleting the dashboard';
-
-                if(response.status > 204 && response.status < 500) {
-                    msg = 'The Team Dashboard is currently being used by a Product Dashboard/s. You cannot delete at this time.';
-                }
-
-                swal(msg);
-            });
-        }
 
         function filterNotOwnedList(db1, db2) {
 
