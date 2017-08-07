@@ -1,0 +1,25 @@
+<!-- <widget-modal widget-modal-title="Administer Your Dashboard">
+    <div class="row">
+        <ul class="nav nav-tabs custom-tabs">
+            <li class="auth-modal-tab" ng-repeat="tab in ctrl.tabs" ng-click="ctrl.tabToggleView($index)"
+                ng-class="tab.name == ctrl.tabView ? 'active' : ''">
+                <a data-toggle="tab" >{{tab.name}}</a>
+            </li>
+        </ul>
+
+        <div class="container-fluid" ng-if="ctrl.tabView == 'Dashboard Title'">
+            <form name="cdf" class="form" ng-submit="ctrl.submit(cdf)" novalidate>
+
+ -->
+
+<widget-modal widget-modal-title="Delete your Dashboard">
+     <form name="cdf" class="form" ng-submit="ctrl.deleteDashboard(item)" novalidate>  
+ 
+          <p class="modal-label">Are you sure you want to delete Dashboard : {{item.name}}?</p>
+           <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Delete</button>
+          <!--   <button type="submit" class="btn btn-primary btn-wide">Cancel</button> -->
+            </div>
+
+    </form>
+</widget-modal>
