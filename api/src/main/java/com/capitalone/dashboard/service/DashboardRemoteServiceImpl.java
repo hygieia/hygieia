@@ -119,21 +119,6 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
         return (dashboard != null) ? dashboardService.get(dashboard.getId()) : null;
     }
 
-/**
- * WidgetRequest request.
-    Component component = dashboardService.associateCollectorToComponent(
-            request.getComponentId(), request.getCollectorItemIds());
-
-    Dashboard dashboard = dashboardService.get(id);
-    Widget widget = request.updateWidget(dashboardService.getWidget(dashboard, widgetId));
-    widget = dashboardService.updateWidget(dashboard, widget);
-
- **/
-    /**
-     * Creates a collector item from an entry in the request.
-     * @param entry
-     * @return CollectorItem
-     */
 
     private CollectorItem entryToCollectorItem(DashboardRemoteRequest.Entry entry, Collector collector) throws HygieiaException {
         CollectorItem item = entry.toCollectorItem(collector);
@@ -185,6 +170,6 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             if (service == null) throw new HygieiaException("Invalid Business Service Name.", HygieiaException.BAD_DATA);
             serviceId = service.getId();
         }
-        return new Dashboard(metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceId, appId);
+        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceId, appId);
     }
 }
