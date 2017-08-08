@@ -22,7 +22,7 @@ entries:
     output: web, pdf
     folderitems:
     - title: Introduction
-      url: /home.html
+      url: /getting_started.html
       output: web, pdf
       type: homepage
       
