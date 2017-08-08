@@ -33,8 +33,8 @@ public class SonarCollector extends Collector {
             protoType.getSonarServers().addAll(servers);
             protoType.getSonarVersions().addAll(versions);
             protoType.getSonarMetrics().addAll(metrics);
-        } catch(NullPointerException npe) {
-            LOG.error("Could not parse 'sonar' properties [servers/versions/metrics] : "+ npe.getMessage());
+        } catch(Exception exception) {
+            LOG.error("Could not parse 'sonar' properties [servers/versions/metrics] : "+ exception.getMessage());
         }
         return protoType;
     }
