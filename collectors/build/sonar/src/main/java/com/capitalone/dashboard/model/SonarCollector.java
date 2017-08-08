@@ -3,7 +3,11 @@ package com.capitalone.dashboard.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class SonarCollector extends Collector {
+    private static final Log LOG = LogFactory.getLog(SonarCollector.class);
     private List<String> sonarServers = new ArrayList<>();
     private List<Double> sonarVersions = new ArrayList<>();
     private List<String> sonarMetrics = new ArrayList<>();
@@ -25,9 +29,13 @@ public class SonarCollector extends Collector {
         protoType.setCollectorType(CollectorType.CodeQuality);
         protoType.setOnline(true);
         protoType.setEnabled(true);
-        protoType.getSonarServers().addAll(servers);
-        protoType.getSonarVersions().addAll(versions);
-        protoType.getSonarMetrics().addAll(metrics);
+        try {
+            protoType.getSonarServers().addAll(servers);
+            protoType.getSonarVersions().addAll(versions);
+            protoType.getSonarMetrics().addAll(metrics);
+        } catch(NullPointerException npe) {
+            LOG.error("Could not parse 'sonar' properties [servers/versions/metrics] : "+ npe.getMessage());
+        }
         return protoType;
     }
 }
