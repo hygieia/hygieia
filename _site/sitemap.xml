@@ -98,6 +98,12 @@
   
   
   <url>
+    <loc>http://localhost:4000/contact.html</loc>
+  </url>
+  
+  
+  
+  <url>
     <loc>http://localhost:4000/cucumber.html</loc>
   </url>
   
@@ -289,6 +295,12 @@
   
   <url>
     <loc>http://localhost:4000/hygieia/getting_started.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/media/</loc>
   </url>
   
   

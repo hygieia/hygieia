@@ -5,8 +5,8 @@
         <description>Intended as a documentation theme based on Jekyll for technical writers documenting software and other technical products, this theme has all the elements you would need to handle multiple products with both multi-level sidebar navigation, tags, and other documentation features.</description>
         <link>http://localhost:4000/</link>
         <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Fri, 04 Aug 2017 16:01:02 -0400</pubDate>
-        <lastBuildDate>Fri, 04 Aug 2017 16:01:02 -0400</lastBuildDate>
+        <pubDate>Thu, 10 Aug 2017 15:14:40 -0400</pubDate>
+        <lastBuildDate>Thu, 10 Aug 2017 15:14:40 -0400</lastBuildDate>
         <generator>Jekyll v3.4.5</generator>
         
         <item>
@@ -18,8 +18,6 @@
 &lt;p&gt;but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.&lt;/p&gt;
 
 &lt;p&gt;Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries&lt;/p&gt;
-
-&lt;p&gt;[]:&lt;/p&gt;
 
 &lt;p&gt;[]:&lt;/p&gt;
 
@@ -67,8 +65,6 @@
 
 &lt;p&gt;[]:&lt;/p&gt;
 
-&lt;p&gt;[]:&lt;/p&gt;
-
 </description>
             <pubDate>Wed, 24 Feb 2016 00:00:00 -0500</pubDate>
             <link>http://localhost:4000/myupdate.html</link>
@@ -82,8 +78,6 @@
         <item>
             <title>Test post from last year</title>
             <description>&lt;p&gt;This is just a test post from the previous year.&lt;/p&gt;
-
-&lt;p&gt;[]:&lt;/p&gt;
 
 &lt;p&gt;[]:&lt;/p&gt;
 
