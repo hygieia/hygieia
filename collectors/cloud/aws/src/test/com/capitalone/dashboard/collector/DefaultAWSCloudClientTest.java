@@ -99,7 +99,7 @@ public class DefaultAWSCloudClientTest {
     }
 
     @Test
-    public void getCloundInstances() throws Exception {
+    public void getCloudInstances() throws Exception {
         when(ec2Client.describeInstances()).thenReturn(describeInstancesResult);
         when(autoScalingClient.describeAutoScalingInstances()).thenReturn(describeAutoScalingInstancesResult);
 
@@ -113,7 +113,7 @@ public class DefaultAWSCloudClientTest {
         defaultAWSCloudClient.setAutoScalingClient(autoScalingClient);
         defaultAWSCloudClient.setCloudWatchClient(cloudWatchClient);
         when(cloudWatchClient.getMetricStatistics(any(GetMetricStatisticsRequest.class))).thenReturn(new GetMetricStatisticsResult());
-        Map<String, List<CloudInstance>> results = defaultAWSCloudClient.getCloundInstances(cloudInstanceRepository);
+        Map<String, List<CloudInstance>> results = defaultAWSCloudClient.getCloudInstances(cloudInstanceRepository);
         assertEquals(results.size(),1);
         assertEquals(results.keySet().size(), 1);
         Collection<CloudInstance> instances = results.get("123456789123");
@@ -150,7 +150,7 @@ public class DefaultAWSCloudClientTest {
 
 
     @Test
-    public void getCloundInstancesEmpty() throws Exception {
+    public void getCloudInstancesEmpty() throws Exception {
         when(ec2Client.describeInstances()).thenReturn(new DescribeInstancesResult());
         when(autoScalingClient.describeAutoScalingInstances()).thenReturn(new DescribeAutoScalingInstancesResult());
 
@@ -164,7 +164,7 @@ public class DefaultAWSCloudClientTest {
         defaultAWSCloudClient.setAutoScalingClient(autoScalingClient);
         defaultAWSCloudClient.setCloudWatchClient(cloudWatchClient);
         when(cloudWatchClient.getMetricStatistics(any(GetMetricStatisticsRequest.class))).thenReturn(new GetMetricStatisticsResult());
-        Map<String, List<CloudInstance>> results = defaultAWSCloudClient.getCloundInstances(cloudInstanceRepository);
+        Map<String, List<CloudInstance>> results = defaultAWSCloudClient.getCloudInstances(cloudInstanceRepository);
         assertEquals(results.size(), 0);
         verify(cloudWatchClient, times(0)).getMetricStatistics(any(GetMetricStatisticsRequest.class));
     }
