@@ -97,7 +97,7 @@
                 
                 
                 
-                <li><a href="https://github/capitalone/Hygieia" target="_blank">GitHub</a></li>
+                <li><a href="https://github.com/capitalone/Hygieia" target="_blank">GitHub</a></li>
                 
                 
                 
@@ -108,10 +108,6 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        
-                        
-                        <li><a href="">Dashboard Configuration</a></li>
-                        
                         
                         
                         <li><a href="p1_landing_page.html">Supported Collectors List</a></li>
@@ -196,7 +192,7 @@
             
             
             
-            <li><a href="home.html">Introduction</a></li>
+            <li><a href="getting_started.html">Introduction</a></li>
             
             
             
@@ -211,21 +207,7 @@
             
             
             
-            <li><a href="prerequisites.html">Installation Prerequisites</a></li>
-            
-            
-            
-            
-            
-            
-            <li class="active"><a href="setup.html">Choose a Setup</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="environmentdetails.html">Environment Details</a></li>
+            <li class="active"><a href="setup.html">Setup Instructions</a></li>
             
             
             
@@ -342,21 +324,6 @@
         </ul>
         
         
-    
-    <li>
-        <a href="#">Troubleshooting</a>
-        <ul>
-            
-            
-            
-            <li><a href="troubleshoot.html">Troubleshoot Instructions</a></li>
-            
-            
-            
-            
-        </ul>
-        
-        
         
         <!-- if you aren't using the accordion, uncomment this block:
            <p class="external">
@@ -414,9 +381,7 @@ $('#toc').on('click', 'a', function() {
 
     
 
-  <h2><img src="/UI/src/assets/img/hygieia_b.png" alt="Image" /></h2>
-
-<h2 id="build-hygieia">Build Hygieia℠</h2>
+  <h2 id="build-hygieia">Build Hygieia℠</h2>
 <p>Needs Java 1.8.</p>
 
 <div class="language-bash highlighter-rouge"><pre class="highlight"><code>mvn clean install package
@@ -485,7 +450,7 @@ running database and make sure that database: dashboard is created, and you are 
 <h2 id="api-layer">API Layer</h2>
 <p>Please click on the link below to learn about how to build and run the API layer</p>
 <ul>
-  <li><a href="/api">API</a></li>
+  <li><a href="api.html">API</a></li>
 </ul>
 
 <h2 id="tool-collectors">Tool Collectors</h2>
@@ -494,20 +459,20 @@ running database and make sure that database: dashboard is created, and you are 
 </code></pre>
 </div>
 
-<p>You can view the collector inventory <a href="collectors/README.md">here</a>.</p>
+<p>You can view the collector inventory <a href="collectors.html">here</a>.</p>
 
 <p>You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.</p>
 
 <h2 id="ui-layer">UI Layer</h2>
 <p>Please click on the link below to learn about how to build and run the UI layer</p>
 <ul>
-  <li><a href="/UI">UI</a></li>
+  <li><a href="ui.html">UI</a></li>
 </ul>
 
 <h2 id="pluginwebhook">Plugin/Webhook</h2>
 <p>You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia. Currently, you can publish build, artifact info, sonar results, deployment results and Cucumber test results. You may not need to run corresponding collectors if you use Jenkins for build, deploy, sonar analysis and running cucumber tests.</p>
 <ul>
-  <li><a href="/hygieia-jenkins-plugin">Hygieia Jenkins Plugin</a></li>
+  <li><a href="pluginjenkins.html">Hygieia Jenkins Plugin</a></li>
 </ul>
 
 <p>You can use GitHub webhooks to publish commit information to Hygieia. If you use webhooks, you will not need to run the github collector.</p>
@@ -692,7 +657,7 @@ c. Configure the Jenkins Build and Jenkins Cucumber panels using this jobs outpu
             <div class="row">
                 <div class="col-lg-12 footer">
                <!--&copy;2017 Capital One. All rights reserved. <br /> -->
- Site last generated: Aug 4, 2017 <br />
+ Site last generated: Aug 10, 2017 <br />
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
                 </div>
             </div>

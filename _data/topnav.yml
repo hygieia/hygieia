@@ -13,7 +13,7 @@ topnav_dropdowns:
   folders:
     - title: Resources
       folderitems:
-        - title: Dashboard Configuration
+       # - title: Dashboard Configuration
           #external_url: https://
         - title: Supported Collectors List
           url: /p1_landing_page.html

@@ -97,7 +97,7 @@
                 
                 
                 
-                <li><a href="https://github/capitalone/Hygieia" target="_blank">GitHub</a></li>
+                <li><a href="https://github.com/capitalone/Hygieia" target="_blank">GitHub</a></li>
                 
                 
                 
@@ -108,10 +108,6 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        
-                        
-                        <li><a href="">Dashboard Configuration</a></li>
-                        
                         
                         
                         <li><a href="p1_landing_page.html">Supported Collectors List</a></li>
@@ -196,7 +192,7 @@
             
             
             
-            <li><a href="home.html">Introduction</a></li>
+            <li><a href="getting_started.html">Introduction</a></li>
             
             
             
@@ -211,21 +207,7 @@
             
             
             
-            <li><a href="prerequisites.html">Installation Prerequisites</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="setup.html">Choose a Setup</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="environmentdetails.html">Environment Details</a></li>
+            <li><a href="setup.html">Setup Instructions</a></li>
             
             
             
@@ -342,21 +324,6 @@
         </ul>
         
         
-    
-    <li>
-        <a href="#">Troubleshooting</a>
-        <ul>
-            
-            
-            
-            <li><a href="troubleshoot.html">Troubleshoot Instructions</a></li>
-            
-            
-            
-            
-        </ul>
-        
-        
         
         <!-- if you aren't using the accordion, uncomment this block:
            <p class="external">
@@ -445,13 +412,13 @@ $('#toc').on('click', 'a', function() {
   <li>Install the plugin by using “Advanced” option in Jenkins Plugin Management option to manually upload the file from local disk.</li>
   <li>Restart jenkins.</li>
   <li>Configure Global Hygieia Publisher in Jenkins Manage Jenkins/Configure System. Enter Hygieia API url such as <code class="highlighter-rouge">http://localhost:8090/api</code>. There is no API token implented at this time and it is work in progress.
-<img src="../media/images/jenkins-global.png" alt="Image" /></li>
+<img src="../Hygieia/media/images/jenkins-global.png" alt="Image" /></li>
   <li>In Jenkins pipeline syntax page, Hygieia publish steps will show up:
-<img src="../media/images/jenkins2.0-steplist.png" alt="Image" /></li>
+<img src="../Hygieia/media/images/jenkins2.0-steplist.png" alt="Image" /></li>
   <li>Select a step (say Hygieia Deploy Step ), fill in the required information and click “Generate Pipeline Script”. The generated scirpt now can be copied to the pipeline script:
-<img src="../media/images/jenkins2.0-hygieia-deploy-step.png" alt="Image" /></li>
+<img src="../Hygieia/media/images/jenkins2.0-hygieia-deploy-step.png" alt="Image" /></li>
   <li>Screen shot below shows a simple pipeline script with maven build, hygieia artifact and deploy publishing.
-<img src="../media/images/jenkins2.0-pipeline-deploy-publish.png" alt="Image" /></li>
+<img src="../Hygieia/media/images/jenkins2.0-pipeline-deploy-publish.png" alt="Image" /></li>
 </ol>
 
 <h2 id="jenkins-pre-jenkins-20">Jenkins (pre Jenkins 2.0)</h2>
@@ -462,14 +429,14 @@ $('#toc').on('click', 'a', function() {
   <li>Configure Global Hygieia Publisher in Jenkins Manage Jenkins/Configure System. Enter Hygieia API url such as <code class="highlighter-rouge">http://localhost:8090/api</code>. There is no API token implented at this time and it is work in progress.</li>
 </ol>
 
-<p><img src="../media/images/jenkins-global.png" alt="Image" /></p>
+<p><img src="../Hygieia/media/images/jenkins-global.png" alt="Image" /></p>
 
 <ol>
   <li>For a build job, add a Post build action “Hygieia Publisher”.</li>
   <li>Select what to send to Hygieia. Currently, “Build”, “Artifact Info”, “Sonar Anslysis”, “Deployment” and “Cucumber Test Results” can be published.</li>
 </ol>
 
-<p><img src="../media/images/jenkins-job-config.png" alt="Image" /></p>
+<p><img src="../Hygieia/media/images/jenkins-job-config.png" alt="Image" /></p>
 
 
 
@@ -487,7 +454,7 @@ $('#toc').on('click', 'a', function() {
             <div class="row">
                 <div class="col-lg-12 footer">
                <!--&copy;2017 Capital One. All rights reserved. <br /> -->
- Site last generated: Aug 4, 2017 <br />
+ Site last generated: Aug 10, 2017 <br />
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
                 </div>
             </div>
