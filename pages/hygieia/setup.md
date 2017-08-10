@@ -81,7 +81,7 @@ In general, all the collectors can be run using the following command
 java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>
 ```
 
-You can view the collector inventory [here](collectors/README.md).
+You can view the collector inventory [here](collectors.html).
 
 You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.
 
