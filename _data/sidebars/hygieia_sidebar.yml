@@ -29,16 +29,10 @@ entries:
   - title: Installation/Setup Instructions
     output: web, pdf
     folderitems:
-    - title: Installation Prerequisites
-      url: /prerequisites.html
-      output: web, pdf
-    - title: Choose a Setup
+    - title: Setup Instructions
       url: /setup.html
       output: web, pdf
-    - title: Environment Details
-      url: environmentdetails.html
-      output: web, pdf
-
+ 
   - title: Configuration Procedure
     output: web, pdf
     folderitems:
@@ -88,12 +82,12 @@ entries:
       url: /jenkinssetup.html
       output: web, pdf    
         
-  - title: Troubleshooting
-    output: web, pdf
-    folderitems:
-    - title: Troubleshoot Instructions
-      url: /troubleshoot.html
-      output: web, pdf
+#  - title: Troubleshooting
+#    output: web, pdf
+#    folderitems:
+#    - title: Troubleshoot Instructions
+#      url: /troubleshoot.html
+#      output: web, pdf
 
  
 #  - title: WhiteSource
