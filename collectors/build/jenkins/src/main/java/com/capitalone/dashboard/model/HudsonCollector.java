@@ -13,6 +13,7 @@ import java.util.Map;
 public class HudsonCollector extends Collector {
     private List<String> buildServers = new ArrayList<>();
     private List<String> niceNames = new ArrayList<>();
+    private List<String> environments = new ArrayList<>();
 
     public List<String> getBuildServers() {
         return buildServers;
@@ -26,11 +27,20 @@ public class HudsonCollector extends Collector {
         this.niceNames = niceNames;
     }
 
+    public List<String> getEnvironments() {
+        return environments;
+    }
+
+    public void setEnvironments(List<String> environments) {
+        this.environments = environments;
+    }
+
     public void setBuildServers(List<String> buildServers) {
         this.buildServers = buildServers;
     }
 
-    public static HudsonCollector prototype(List<String> buildServers, List<String> niceNames) {
+    public static HudsonCollector prototype(List<String> buildServers, List<String> niceNames,
+                                            List<String> environments) {
         HudsonCollector protoType = new HudsonCollector();
         protoType.setName("Hudson");
         protoType.setCollectorType(CollectorType.Build);
@@ -39,6 +49,9 @@ public class HudsonCollector extends Collector {
         protoType.getBuildServers().addAll(buildServers);
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
+        }
+        if (!CollectionUtils.isEmpty(environments)) {
+            protoType.getEnvironments().addAll(environments);
         }
         Map<String, Object> options = new HashMap<>();
         options.put(HudsonJob.INSTANCE_URL,"");

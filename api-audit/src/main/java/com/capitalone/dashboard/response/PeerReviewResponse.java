@@ -1,19 +1,15 @@
 package com.capitalone.dashboard.response;
 
-import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
 
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
-public class PeerReviewResponse {
+public class PeerReviewResponse extends AuditReviewResponse {
     private GitRequest pullRequest;
     private List<Commit> commits;
     private List<Commit> mergeCommits;
     private List<Commit> directCommits;
-    private Set<AuditStatus> auditStatuses = EnumSet.noneOf(AuditStatus.class);
 
     public GitRequest getPullRequest() {
         return pullRequest;
@@ -45,13 +41,5 @@ public class PeerReviewResponse {
 
     public void setDirectCommits(List<Commit> directCommits) {
         this.directCommits = directCommits;
-    }
-
-    public void addAuditStatus(AuditStatus status) {
-        auditStatuses.add(status);
-    }
-
-    public Set<AuditStatus> getAuditStatuses() {
-        return auditStatuses;
     }
 }
