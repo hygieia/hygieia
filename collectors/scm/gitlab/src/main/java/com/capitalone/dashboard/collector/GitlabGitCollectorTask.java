@@ -1,19 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
-
 import com.capitalone.dashboard.gitlab.DefaultGitlabGitClient;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -24,6 +10,22 @@ import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
 import com.capitalone.dashboard.repository.GitlabGitCollectorRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by benathmane on 23/06/16.
@@ -69,6 +71,19 @@ public class GitlabGitCollectorTask  extends CollectorTask<Collector> {
 		protoType.setCollectorType(CollectorType.SCM);
 		protoType.setOnline(true);
 		protoType.setEnabled(true);
+
+		Map<String, Object> allOptions = new HashMap<>();
+		allOptions.put(GitlabGitRepo.REPO_URL, "");
+		allOptions.put(GitlabGitRepo.BRANCH, "");
+		allOptions.put(GitlabGitRepo.USER_ID, "");
+		allOptions.put(GitlabGitRepo.PASSWORD, "");
+		allOptions.put(GitlabGitRepo.LAST_UPDATE_TIME, new Date());
+		protoType.setAllFields(allOptions);
+
+		Map<String, Object> uniqueOptions = new HashMap<>();
+		uniqueOptions.put(GitlabGitRepo.REPO_URL, "");
+		uniqueOptions.put(GitlabGitRepo.BRANCH, "");
+		protoType.setUniqueFields(uniqueOptions);
 		return protoType;
 	}
 

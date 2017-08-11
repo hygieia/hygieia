@@ -6,18 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-/**
- * A specific commit in a version control repository.
- *
- * Possible collectors:
- *  Subversion (in scope)
- *  Git (in scope)
- *  GitHub
- *  TFS
- *  BitBucket
- *  Unfuddle
- *
- */
+
 @Document(collection="gitrequests")
 public class GitRequest extends SCM {
     @Id
@@ -30,10 +19,12 @@ public class GitRequest extends SCM {
     private String targetBranch;
     private String number;
     private ObjectId collectorItemId;
+    private long updatedAt;
     private long createdAt;
     private long closedAt;
     private String state;
     private long mergedAt;
+
     private long timestamp;
     private long resolutiontime;
     private String userId = null;
@@ -228,5 +219,13 @@ public class GitRequest extends SCM {
 
     public void setBaseSha(String baseSha) {
         this.baseSha = baseSha;
+    }
+
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
