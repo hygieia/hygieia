@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.CollectionError;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -22,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -52,7 +54,7 @@ public class GitHubCollectorTaskTest {
     @InjectMocks private GitHubCollectorTask task;
 
     @Test
-    public void collect_testCollect() {
+    public void collect_testCollect() throws MalformedURLException, HygieiaException {
         when(dbComponentRepository.findAll()).thenReturn(components());
 
         Set<ObjectId> gitID = new HashSet<>();
@@ -89,7 +91,7 @@ public class GitHubCollectorTaskTest {
 
 
     @Test
-    public void collect_testCollect_with_Threshold_0() {
+    public void collect_testCollect_with_Threshold_0() throws MalformedURLException, HygieiaException {
         when(dbComponentRepository.findAll()).thenReturn(components());
 
         Set<ObjectId> gitID = new HashSet<>();
@@ -125,7 +127,7 @@ public class GitHubCollectorTaskTest {
     }
 
     @Test
-    public void collect_testCollect_with_Threshold_1() {
+    public void collect_testCollect_with_Threshold_1() throws MalformedURLException, HygieiaException {
         when(dbComponentRepository.findAll()).thenReturn(components());
 
         Set<ObjectId> gitID = new HashSet<>();
@@ -142,8 +144,8 @@ public class GitHubCollectorTaskTest {
         when(gitHubSettings.getErrorThreshold()).thenReturn(1);
 
         when(gitHubClient.getCommits(repo1, true)).thenReturn(getCommits());
-        when(gitHubClient.getIssues(repo1, true, gitRequestRepository)).thenReturn(getGitRequests());
-        when(gitHubClient.getPulls(repo1, true, gitRequestRepository)).thenReturn(getGitRequests());
+        when(gitHubClient.getIssues(repo1, true)).thenReturn(getGitRequests());
+//  Need to correct - Topo - 7/31      when(gitHubClient.getPulls(repo1, "close",true)).thenReturn(getGitRequests());
 
         when(commitRepository.findByCollectorItemIdAndScmRevisionNumber(
                 repo1.getId(), "1")).thenReturn(null);
@@ -163,7 +165,7 @@ public class GitHubCollectorTaskTest {
     }
 
     @Test
-    public void collect_testCollect_with_Threshold_1_Error_1() {
+    public void collect_testCollect_with_Threshold_1_Error_1() throws MalformedURLException, HygieiaException {
         when(dbComponentRepository.findAll()).thenReturn(components());
 
         Set<ObjectId> gitID = new HashSet<>();

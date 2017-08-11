@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.model;
 
 public class UDeployApplication extends CollectorItem {
-    private static final String INSTANCE_URL = "instanceUrl";
-    private static final String APP_NAME = "applicationName";
-    private static final String APP_ID = "applicationId";
+    protected static final String INSTANCE_URL = "instanceUrl";
+    protected static final String APP_NAME = "applicationName";
+    protected static final String APP_ID = "applicationId";
 
 
     public String getInstanceUrl() {

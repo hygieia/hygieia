@@ -51,6 +51,8 @@ jenkins.folderDepth=10
 
 # Jenkins server (required) - Can provide multiple
 jenkins.servers[0]=http://jenkins.company.com
+jenkins.niceNames[0]=[YourJenkins]
+jenkins.environments[0]=[DEV,QA,INT,PERF,PROD]
 
 # If using username/token for api authentication
 #   (required for Cloudbees Jenkins Ops Center) see sample

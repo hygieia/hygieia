@@ -13,10 +13,13 @@ public class GitHubSettings {
     private String cron;
     private String host;
     private String key;
+	@Value("${github.firstRunHistoryDays:14}")
     private int firstRunHistoryDays;
     private String[] notBuiltCommits;
 	@Value("${github.errorThreshold:2}")
     private int errorThreshold;
+	@Value("${github.rateLimitThreshold:10}")
+	private int rateLimitThreshold;
 
 
 	public String getHost() {
@@ -65,5 +68,13 @@ public class GitHubSettings {
 
 	public void setErrorThreshold(int errorThreshold) {
 		this.errorThreshold = errorThreshold;
+	}
+
+	public int getRateLimitThreshold() {
+		return rateLimitThreshold;
+	}
+
+	public void setRateLimitThreshold(int rateLimitThreshold) {
+		this.rateLimitThreshold = rateLimitThreshold;
 	}
 }
