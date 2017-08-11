@@ -20,13 +20,16 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommitServiceImpl implements CommitService {
@@ -127,6 +130,9 @@ public class CommitServiceImpl implements CommitService {
         private static final String REPO_URL = "url";
         private static final String BRANCH = "branch";
         private static final String SCM_TAG = "scm";
+        public static final String USER_ID = "userID";
+        public static final String PASSWORD = "password";
+
         private CollectorItem collectorItem;
         private Collector collector;
         private List<Commit> commits = new ArrayList<>();
@@ -154,6 +160,18 @@ public class CommitServiceImpl implements CommitService {
             collector.setOnline(true);
             collector.setEnabled(true);
             collector.setName("GitHub");
+            Map<String, Object> allOptions = new HashMap<>();
+            allOptions.put(REPO_URL, "");
+            allOptions.put(BRANCH, "");
+            allOptions.put(USER_ID, "");
+            allOptions.put(PASSWORD, "");
+
+            collector.setAllFields(allOptions);
+
+            Map<String, Object> uniqueOptions = new HashMap<>();
+            uniqueOptions.put(REPO_URL, "");
+            uniqueOptions.put(BRANCH, "");
+            collector.setUniqueFields(uniqueOptions);
         }
 
         private void buildCollectorItem() {
