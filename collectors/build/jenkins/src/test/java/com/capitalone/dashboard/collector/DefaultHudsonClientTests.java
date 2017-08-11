@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.model.BaseModel;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.BuildStatus;
 import com.capitalone.dashboard.model.HudsonJob;
@@ -180,7 +181,7 @@ public class DefaultHudsonClientTests {
         when(rest.exchange(Matchers.any(URI.class), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>("", HttpStatus.OK));
 
-        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
+        Map<HudsonJob, Map<HudsonClient.jobData, Set<BaseModel>>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
 
         assertThat(jobs.size(), is(0));
     }
@@ -190,14 +191,14 @@ public class DefaultHudsonClientTests {
     	when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs")), 
         		eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
 		    	.thenReturn(new ResponseEntity<>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
-        when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs[name,url,builds[number,url],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn]]" + URLEncoder.encode("{0," + settings.getPageSize() + "}", "UTF-8"))),
+        when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs[name,url,builds[number,url],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn],actions[jobConfigHistory[currentName,date,hasConfig,job,oldName,operation,user,userID]]]" + URLEncoder.encode("{0," + settings.getPageSize() + "}", "UTF-8"))),
         		eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(getJson("instanceJobs_twoJobsTwoBuilds.json"), HttpStatus.OK));
         when(rest.exchange(eq(URI.create("http://server/job/job2/2/api/json?tree=jobs[name,url,builds[number,url],jobs[name,url]]" + URLEncoder.encode("{" + settings.getPageSize() + "," + 2*settings.getPageSize() + "}", "UTF-8"))), 
         		eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class)))
                 .thenReturn(new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR));
 
-        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
+        Map<HudsonJob, Map<HudsonClient.jobData, Set<BaseModel>>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
 
         assertThat(jobs.size(), is(2));
         Iterator<HudsonJob> jobIt = jobs.keySet().iterator();
@@ -206,18 +207,18 @@ public class DefaultHudsonClientTests {
         HudsonJob job = jobIt.next();
         assertJob(job, "job1", "http://server/job/job1/");
 
-        Iterator<Build> buildIt = jobs.get(job).iterator();
-        assertBuild(buildIt.next(),"2", "http://server/job/job1/2/");
-        assertBuild(buildIt.next(),"1", "http://server/job/job1/1/");
+        Iterator<BaseModel> buildIt = jobs.get(job).get(HudsonClient.jobData.BUILD).iterator();
+        assertBuild((Build)buildIt.next(),"2", "http://server/job/job1/2/");
+        assertBuild((Build)buildIt.next(),"1", "http://server/job/job1/1/");
         assertThat(buildIt.hasNext(), is(false));
 
         //Second job
         job = jobIt.next();
         assertJob(job, "job2", "http://server/job/job2/");
 
-        buildIt = jobs.get(job).iterator();
-        assertBuild(buildIt.next(),"2", "http://server/job/job2/2/");
-        assertBuild(buildIt.next(),"1", "http://server/job/job2/1/");
+        buildIt = jobs.get(job).get(HudsonClient.jobData.BUILD).iterator();
+        assertBuild((Build)buildIt.next(),"2", "http://server/job/job2/2/");
+        assertBuild((Build)buildIt.next(),"1", "http://server/job/job2/1/");
         assertThat(buildIt.hasNext(), is(false));
 
         assertThat(jobIt.hasNext(), is(false));
@@ -237,12 +238,12 @@ public class DefaultHudsonClientTests {
                 .thenReturn(new ResponseEntity<>(getJson("instanceJobs_multibranchPipeline-master.json"), HttpStatus.OK));
 
         when(rest.exchange(eq(URI.create(URL_TEST +
-                            "api/json?tree=jobs[name,url,builds[number,url],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn]]" +
+                            "api/json?tree=jobs[name,url,builds[number,url],lastSuccessfulBuild[timestamp,builtOn],lastBuild[timestamp,builtOn],actions[jobConfigHistory[currentName,date,hasConfig,job,oldName,operation,user,userID]]]" +
                             URLEncoder.encode("{0," + settings.getPageSize() +
                             "}", "UTF-8"))), eq(HttpMethod.GET), Matchers.any(HttpEntity.class), eq(String.class))
         ).thenReturn(new ResponseEntity<>(getJson("instanceJobs_multibranchPipeline.json"), HttpStatus.OK));
-        
-        Map<HudsonJob, Set<Build>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
+
+        Map<HudsonJob, Map<HudsonClient.jobData, Set<BaseModel>>> jobs = hudsonClient.getInstanceJobs(URL_TEST);
         
         assertThat(jobs.size(), is(2));
         Iterator<HudsonJob> jobIt = jobs.keySet().iterator();
@@ -250,9 +251,9 @@ public class DefaultHudsonClientTests {
         HudsonJob job = jobIt.next();
         assertJob(job, "job1", "http://server/job/job1/");
 
-        Iterator<Build> buildIt = jobs.get(job).iterator();
-        assertBuild(buildIt.next(),"2", "http://server/job/job1/2/");
-        assertBuild(buildIt.next(),"1", "http://server/job/job1/1/");
+        Iterator<BaseModel> buildIt = jobs.get(job).get(HudsonClient.jobData.BUILD).iterator();
+        assertBuild((Build)buildIt.next(),"2", "http://server/job/job1/2/");
+        assertBuild((Build)buildIt.next(),"1", "http://server/job/job1/1/");
         assertThat(buildIt.hasNext(), is(false));
         
         assertThat(jobIt.hasNext(), is(true));

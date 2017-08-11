@@ -114,9 +114,9 @@ public class CollectorServiceImpl implements CollectorService {
     // This is to handle scenarios where the option contains user credentials etc. We do not want to create a new collector item -
     // just update the new credentials.
     @Override
-    public CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> selecOptions) {
+    public CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> selectOptions) {
         List<CollectorItem> existing = customRepositoryQuery.findCollectorItemsBySubsetOptions(
-                item.getCollectorId(), allOptions, selecOptions);
+                item.getCollectorId(), allOptions, selectOptions);
 
         if (!CollectionUtils.isEmpty(existing)) {
             item.setId(existing.get(0).getId());   //
@@ -124,6 +124,7 @@ public class CollectorServiceImpl implements CollectorService {
 
         return collectorItemRepository.save(item);
     }
+
 
     @Override
     public CollectorItem createCollectorItemByNiceNameAndProjectId(CollectorItem item, String projectId) throws HygieiaException {
