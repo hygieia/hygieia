@@ -48,7 +48,7 @@
                 </excludes>
             </resource>
         </resources>
-        <finalName>api</finalName>
+        <finalName>apiaudit</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

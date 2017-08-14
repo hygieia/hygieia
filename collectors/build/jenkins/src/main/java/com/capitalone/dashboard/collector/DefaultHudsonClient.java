@@ -214,6 +214,7 @@ public class DefaultHudsonClient implements HudsonClient {
     	return result;
     }
 
+    @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
     private void recursiveGetJobDetails(JSONObject jsonJob, String jobName, String jobURL, String instanceUrl, 
             JSONParser parser, Map<HudsonJob, Map<jobData, Set<BaseModel>>> result) {
         LOG.debug("recursiveGetJobDetails: jobName " + jobName + " jobURL: " + jobURL);
@@ -259,7 +260,10 @@ public class DefaultHudsonClient implements HudsonClient {
         JSONArray jsonActions = getJsonArray(jsonJob, "actions");
         for (Object jsonAction : jsonActions) {
             JSONObject jsonActionJob = (JSONObject) jsonAction;
-            JSONArray jsonConfigs = getJsonArray(jsonActionJob, "jobConfigHistory");
+            JSONArray jsonConfigs = null;
+            if (jsonActionJob != null) {
+                jsonConfigs = getJsonArray(jsonActionJob, "jobConfigHistory");
+            }
 
             if (jsonConfigs != null && jsonConfigs.size() > 0) {
                 Set<BaseModel> configs = new LinkedHashSet<>();
