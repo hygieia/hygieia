@@ -27,6 +27,7 @@ public class CollectorItem extends BaseModel {
 
     private String description;
     private String niceName;
+    private String environment;
     private boolean enabled;
     private List<CollectionError> errors = new ArrayList<>();
     private boolean pushed;
@@ -95,6 +96,14 @@ public class CollectorItem extends BaseModel {
 
     public void setNiceName(String niceName) {
         this.niceName = niceName;
+    }
+
+    public String getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
     }
 
     public List<CollectionError> getErrors() {
