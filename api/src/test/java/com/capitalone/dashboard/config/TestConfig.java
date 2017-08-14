@@ -3,7 +3,7 @@ package com.capitalone.dashboard.config;
 import com.capitalone.dashboard.service.ApiTokenService;
 import com.capitalone.dashboard.service.LibraryPolicyService;
 import com.capitalone.dashboard.service.MaturityModelService;
-import com.capitalone.dashboard.service.TemplateService;
+
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -204,8 +204,5 @@ public class TestConfig {
         return Mockito.mock(BusCompOwnerService.class);
     }
 
-    @Bean
-    public TemplateService templateService() {
-        return Mockito.mock(TemplateService.class);
-    }
+   
 }
