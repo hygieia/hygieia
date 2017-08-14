@@ -14,6 +14,8 @@ import com.capitalone.dashboard.repository.FeatureRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.mysema.query.BooleanBuilder;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +53,7 @@ import java.util.TimeZone;
  */
 @Service
 public class FeatureServiceImpl implements FeatureService {
+	private static final Log LOG = LogFactory.getLog(FeatureServiceImpl.class);
 
 	private final ComponentRepository componentRepository;
 	private final FeatureRepository featureRepository;
@@ -489,7 +492,14 @@ public class FeatureServiceImpl implements FeatureService {
 		} else {
 			// default to story points since that should be the most common use case
 			if (!StringUtils.isEmpty(feature.getsEstimate())) {
-				rt = Integer.parseInt(feature.getsEstimate());
+				try {
+					rt = Integer.parseInt(feature.getsEstimate());
+				}
+				catch(NumberFormatException nfe) {
+					rt = 0;
+					LOG.error("Could not parse estimate for '"+ feature.getsName()+ "', number '"+ feature.getsNumber()
+							+ "', have estimate: "+ feature.getsEstimate(), nfe);
+				}
 			}
 		}
 		
