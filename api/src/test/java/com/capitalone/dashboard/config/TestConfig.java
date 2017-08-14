@@ -204,5 +204,4 @@ public class TestConfig {
 
 	@Bean
 	public DashboardRemoteService dashboardRemoteService() {return Mockito.mock(DashboardRemoteService.class);}
-
 }
