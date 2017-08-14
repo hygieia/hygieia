@@ -1,5 +1,5 @@
 ---
-title: Sonar Collector
+title: Artifactory Collector
 tags:
 keywords:
 summary:

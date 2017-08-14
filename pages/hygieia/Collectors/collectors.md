@@ -5,7 +5,7 @@ keywords:
 summary: Know the basics of installing and configuring Hygieia 
 sidebar: hygieia_sidebar
 permalink: collectors.html
-folder: kb
+folder: hygieia
 ---
 
 ## Tool Collectors
@@ -21,7 +21,7 @@ Hygieia supports the following collectors Inventory:
 - **Build Collectors**
   - [Bamboo](bamboo.html)
   - [Jenkins](jenkins.html)
-  - [Jenkins Cucumber](cucumber.html)
+  - [Jenkins Cucumber](jenkins-cucumber.html)
   - [Sonar](sonar.html)
 - **Cloud Collectors**
   - [AWS](aws.html)
@@ -31,10 +31,19 @@ Hygieia supports the following collectors Inventory:
 - **Feature Collectors**
   - [Jira](jira.html)
   - [VersionOne](versionone.html)
+  - [Gitlab](feature-gitlab.html)
 - **Miscellaneous Collectors**
-  - [Chat Ops](chatops.html)
+  - [Chat Ops](chat-ops.html)
 - **SCM Collectors** 
   - [Bitbucket](bitbucket.html)
   - [Github](github.html)
   - [Gitlab](gitlab.html)
   - [Subversion](subversion.html)
+- **Performance Collector**
+  - [AppDynamics](appdynamics.html)
+- **Configuration Management Database (CMDB)**
+  - [HP Service Manager (HPSM)](hpsm.html)
+- **Library Policy**
+  - [Nexus IQ](nexus-iq-collector.html)
+- **Artifact Repository**
+  - [Artifactory](artifactory.html)

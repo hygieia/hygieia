@@ -4,7 +4,7 @@ tags:
 keywords:
 summary:
 sidebar: hygieia_sidebar
-permalink: chatops.html
+permalink: chat-ops.html
 ---
 
 # Hygieia Misc Collectors / Chat Ops

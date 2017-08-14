@@ -4,7 +4,7 @@ tags:
 keywords:
 summary:
 sidebar: hygieia_sidebar
-permalink: pluginjenkins.html
+permalink: hygieia-jenkins-plugin.html
 ---
 # Hygieia℠ plugin for Jenkins - (started with Slack publisher)
 

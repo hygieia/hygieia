@@ -1,14 +1,7 @@
----
-title: Sonar Collector
-tags:
-keywords:
-summary:
-sidebar: hygieia_sidebar
-permalink: sonar.html
----
-# Hygieia Nexus IQ Collector
+# Hygieia Build Collectors / Junit/Findbugs/PMD/Jacoco
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
+It assumes that the junit/findbugs/pmd/checkstyle/jacoco artefacts are archived in the job
 
 ## Building and Deploying
 
@@ -19,7 +12,7 @@ mvn install
 
 Copy this file to your server and launch it using :
 ```
-java -JAR nexus-iq-collector.jar
+java -jar jenkins-codequality.jar
 ```
 
 ## application.properties
@@ -49,16 +42,19 @@ dbusername=db
 dbpassword=dbpass
 
 # Collector schedule (required)
-nexusiq.cron=0 0/5 * * * *
+jenkins-codequality.cron=0 0/1 * * * *
 
-# Nexus IQ server(s) (required) - Can provide multiple
-nexusiq.servers[0]=http://nexusiq.company.com
+# Collector servers (required) - can be multiple
+jenkins-codequality.servers[0]=https://jenkins
 
-# Nexus IQ username/password - that has read access to all reports etc.
-nexusiq.username=mynexusiquserid
-nexusiq.password=mynexusiqpassword
+# Collector types (note not required, but the regex should be match only the type specified)
+jenkins-codequality.artifactRegex.junit=TEST-.*\\.xml
+jenkins-codequality.artifactRegex.findbugs=findbugsXml.xml
+jenkins-codequality.artifactRegex.pmd=pmd.xml
+jenkins-codequality.artifactRegex.checkstyle=checkstyle-result.xml
+jenkins-codequality.artifactRegex.jacoco=jacoco.xml
 
+# Collector job depth (required) should be set to at least 1, and more if you use folder jobs etc
+jenkins-codequality.jobDepth=4
 
-#In case of multiple licsense violations for a given library, consider the most strict violation
-nexusiq.selectStricterLicense=true
-
+```

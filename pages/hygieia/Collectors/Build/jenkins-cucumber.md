@@ -4,7 +4,7 @@ tags:
 keywords:
 summary:
 sidebar: hygieia_sidebar
-permalink: cucumber.html
+permalink: jenkins-cucumber.html
 ---
 
 # Hygieia Build Collectors / Jenkins Cucumber
