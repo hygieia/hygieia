@@ -19,8 +19,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -62,6 +64,16 @@ public class SubversionCollectorTask extends CollectorTask<Collector> {
         protoType.setCollectorType(CollectorType.SCM);
         protoType.setOnline(true);
         protoType.setEnabled(true);
+
+        Map<String, Object> allOptions = new HashMap<>();
+        allOptions.put(SubversionRepo.URL, "");
+        allOptions.put(SubversionRepo.LATEST_REV, "");
+        protoType.setAllFields(allOptions);
+
+        Map<String, Object> uniqueOptions = new HashMap<>();
+        uniqueOptions.put(SubversionRepo.URL, "");
+        protoType.setUniqueFields(uniqueOptions);
+
         return protoType;
     }
 
