@@ -83,6 +83,8 @@ jenkins.folderDepth=${JENKINS_FOLDER_DEPTH:-10}
 
 #Jenkins server (required) - Can provide multiple
 #jenkins.servers[0]=http://jenkins.company.com
+#jenkins.niceNames[0]=[YourJenkins]
+#jenkins.environments[0]=[DEV,QA,INT,PERF,PROD]
 #Another option: If using same username/password Jenkins auth - set username/apiKey to use HTTP Basic Auth (blank=no auth)
 #jenkins.usernames[0]=user
 #jenkins.apiKeys[0]=12345
