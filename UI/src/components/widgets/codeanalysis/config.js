@@ -30,7 +30,21 @@
         	});
         };
 
+        $scope.getSACollectors = function(filter){
+            return collectorData.itemsByType('staticSecurityScan', {"search": filter, "size": 20}).then(function (response){
+                return response;
+            });
+        };
+
+        $scope.getOpenSourceCodeCollectors = function(filter){
+            return collectorData.itemsByType('libraryPolicy', {"search": filter, "size": 20}).then(function (response){
+                return response;
+            });
+        };
+
         loadSavedCodeQualityJob();
+        loadSavedSAJob();
+        loadSavedOpenSourceCodeJob();
 
         console.log(collectorData);
         // request all the codequality and test collector items
@@ -45,6 +59,33 @@
             if(savedCodeQualityJob){
             	$scope.getCodeQualityCollectors(savedCodeQualityJob).then(getCodeQualityCollectorsCallback) ;
             }
+        }
+
+        function loadSavedSAJob(){
+            var saCollectorItems = component.collectorItems.StaticSecurityScan,
+                savedSAJob = saCollectorItems ? saCollectorItems[0].description : null;
+
+            if(savedSAJob){
+                $scope.getSACollectors(savedSAJob).then(getSACollectorsCallback) ;
+            }
+        }
+
+        function loadSavedOpenSourceCodeJob(){
+            var ossCollectorItems = component.collectorItems.LibraryPolicy,
+                savedOSSJob = ossCollectorItems ? ossCollectorItems[0].description : null;
+
+            if(savedOSSJob){
+                $scope.getOpenSourceCodeCollectors(savedOSSJob).then(getOpenSourceCodeCollectorsCallback) ;
+            }
+        }
+
+        function getOpenSourceCodeCollectorsCallback(data) {
+            ctrl.ossCollectorItem = data[0];
+        }
+
+
+        function getSACollectorsCallback(data) {
+            ctrl.saCollectorItem = data[0];
         }
 
         function getCodeQualityCollectorsCallback(data) {
