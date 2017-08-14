@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.config;
 
 import com.capitalone.dashboard.service.ApiTokenService;
+import com.capitalone.dashboard.service.DashboardRemoteService;
 import com.capitalone.dashboard.service.LibraryPolicyService;
 import com.capitalone.dashboard.service.MaturityModelService;
 import org.mockito.Mockito;
@@ -198,4 +199,7 @@ public class TestConfig {
 
 	@Bean
 	public BusCompOwnerService busCompOwnerService() {return Mockito.mock(BusCompOwnerService.class);}
+
+	@Bean
+	public DashboardRemoteService dashboardRemoteService() {return Mockito.mock(DashboardRemoteService.class);}
 }
