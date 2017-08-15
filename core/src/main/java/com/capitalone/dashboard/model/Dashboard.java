@@ -46,6 +46,8 @@ public class Dashboard extends BaseModel {
 
     private boolean validAppName;
 
+    private boolean remoteCreated;
+
     @Transient
     String errorMessage;
 
@@ -56,6 +58,10 @@ public class Dashboard extends BaseModel {
     }
 
     public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, ObjectId configurationItemBusServObjectId, ObjectId configurationItemBusAppObjectId) {
+        this(false, template, title, application, owner, type,configurationItemBusServObjectId, configurationItemBusAppObjectId);
+    }
+
+    public Dashboard(boolean remoteCreated, String template, String title, Application application, Owner owner, DashboardType type, ObjectId configurationItemBusServObjectId, ObjectId configurationItemBusAppObjectId) {
         this.template = template;
         this.title = title;
         this.configurationItemBusServObjectId = configurationItemBusServObjectId;
@@ -176,4 +182,14 @@ public class Dashboard extends BaseModel {
     public void setErrorCode(int errorCode) {
         this.errorCode = errorCode;
     }
+
+    public boolean isRemoteCreated() {
+        return remoteCreated;
+    }
+
+    public void setRemoteCreated(boolean remoteCreated) {
+        this.remoteCreated = remoteCreated;
+    }
+
+
 }

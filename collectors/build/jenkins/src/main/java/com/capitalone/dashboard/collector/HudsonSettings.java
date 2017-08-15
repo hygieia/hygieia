@@ -18,6 +18,8 @@ public class HudsonSettings {
     private boolean saveLog = false;
     private List<String> servers;
     private List<String> niceNames;
+    //eg. DEV, QA, PROD etc
+    private List<String> environments;
     private List<String> usernames;
     private List<String> apiKeys;
     private String dockerLocalHostIP; //null if not running in docker on http://localhost
@@ -77,7 +79,15 @@ public class HudsonSettings {
         this.niceNames = niceNames;
     }
 
-	//Docker NATs the real host localhost to 10.0.2.2 when running in docker
+    public List<String> getEnvironments() {
+        return environments;
+    }
+
+    public void setEnvironments(List<String> environments) {
+        this.environments = environments;
+    }
+
+    //Docker NATs the real host localhost to 10.0.2.2 when running in docker
 	//as localhost is stored in the JSON payload from jenkins we need
 	//this hack to fix the addresses
     public String getDockerLocalHostIP() {
