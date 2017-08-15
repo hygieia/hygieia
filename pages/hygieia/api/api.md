@@ -5,7 +5,7 @@ keywords:
 summary: Learn how to install and configure API
 sidebar: hygieia_sidebar
 permalink: api.html
-folder: kb
+folder: hygieia
 ---
 
 

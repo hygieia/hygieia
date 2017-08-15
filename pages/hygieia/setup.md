@@ -91,7 +91,7 @@ Please click on the link below to learn about how to build and run the UI layer
 
 ## Plugin/Webhook
 You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia. Currently, you can publish build, artifact info, sonar results, deployment results and Cucumber test results. You may not need to run corresponding collectors if you use Jenkins for build, deploy, sonar analysis and running cucumber tests.
-* [Hygieia Jenkins Plugin](pluginjenkins.html)
+* [Hygieia Jenkins Plugin](hygieia-jenkins-plugin.html)
 
 You can use GitHub webhooks to publish commit information to Hygieia. If you use webhooks, you will not need to run the github collector.
 * Your Github webhook's payload url should be set to: http://hygieia-base-url/api/commit/github/v3

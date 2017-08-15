@@ -53,7 +53,7 @@ entries:
     output: web, pdf
     folderitems:
     - title: Plugins/Webhook
-      url: /pluginjenkins.html
+      url: /hygieia-jenkins-plugin.html
       output: web, pdf
     - title: Proxy Authentication
       url: /proxyauthentication.html
