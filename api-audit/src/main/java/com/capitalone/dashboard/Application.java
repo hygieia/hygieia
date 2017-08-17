@@ -55,10 +55,10 @@ public class Application extends SpringBootServletInitializer {
 
     private ApiInfo metadata() {
         return new ApiInfoBuilder()
-                .title("Hygieia API")
-                .description("API Documentation for Hygieia")
+                .title("Hygieia Apiaudit")
+                .description("Apiaudit Documentation for Hygieia")
                 .version("2.0")
-                .contact(new Contact("Amit Mawkin/Tapabrata Pal", "https://github.com/capitalone/Hygieia", "hygieia@capitalone.com"))
+                .contact(new Contact("Tapabrata Pal", "https://github.com/capitalone/Hygieia", "hygieia@capitalone.com"))
                 .build();
     }
 }
