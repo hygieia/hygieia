@@ -127,17 +127,19 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
      * @return
      */
     private List<Dashboard> findAllDashboardsForBuild(Build build) {
+        List<Dashboard> dashboards = new ArrayList<>();
         if (build == null || build.getCollectorItemId() == null) {
             //return an empty list if the build is not associated with a Dashboard
-            return new ArrayList<>();
+            return dashboards;
         }
         CollectorItem buildCollectorItem = collectorItemRepository.findOne(build.getCollectorItemId());
         List<Component> components = componentRepository.findByBuildCollectorItemId(buildCollectorItem.getId());
         if (components == null || components.size() == 0) {
             //return an empty list if the build is not associated with a Dashboard
-            return new ArrayList<>();
+            return dashboards;
         }
-        return dashboardRepository.findByApplicationComponentsIn(components);
+        dashboards = dashboardRepository.findByApplicationComponentsIn(components);
+        return dashboards;
     }
 
 
