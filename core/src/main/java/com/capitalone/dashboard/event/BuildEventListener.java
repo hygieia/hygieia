@@ -135,11 +135,10 @@ public class BuildEventListener extends HygieiaMongoEventListener<Build> {
         CollectorItem buildCollectorItem = collectorItemRepository.findOne(build.getCollectorItemId());
         if(buildCollectorItem != null) {
             List<Component> components = componentRepository.findByBuildCollectorItemId(buildCollectorItem.getId());
-            if (components == null || components.size() == 0) {
+            if (!components.isEmpty()) {
                 //return an empty list if the build is not associated with a Dashboard
-                return dashboards;
+                dashboards = dashboardRepository.findByApplicationComponentsIn(components);
             }
-            dashboards = dashboardRepository.findByApplicationComponentsIn(components);
         }
         return dashboards;
     }
