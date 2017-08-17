@@ -27,9 +27,15 @@ public class SonarCollector extends Collector {
         protoType.setCollectorType(CollectorType.CodeQuality);
         protoType.setOnline(true);
         protoType.setEnabled(true);
-        protoType.getSonarServers().addAll(servers);
-        protoType.getSonarVersions().addAll(versions);
-        protoType.getSonarMetrics().addAll(metrics);
+        if(servers!=null) {
+            protoType.getSonarServers().addAll(servers);
+        }
+        if(versions!=null) {
+            protoType.getSonarVersions().addAll(versions);
+        }
+        if(metrics!=null) {
+            protoType.getSonarMetrics().addAll(metrics);
+        }
 
         Map<String, Object> allOptions = new HashMap<>();
         allOptions.put(SonarProject.INSTANCE_URL,"");
