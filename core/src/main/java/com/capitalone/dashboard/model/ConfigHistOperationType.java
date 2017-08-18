@@ -2,7 +2,9 @@ package com.capitalone.dashboard.model;
 
 public enum ConfigHistOperationType {
     CREATED,
-    CHANGED;
+    CHANGED,
+    RENAMED,
+    DELETED;
 
     public static ConfigHistOperationType fromString(String value) {
         for (ConfigHistOperationType opType : values()) {
