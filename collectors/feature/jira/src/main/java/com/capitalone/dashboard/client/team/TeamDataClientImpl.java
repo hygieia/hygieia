@@ -7,10 +7,12 @@ import com.capitalone.dashboard.repository.TeamRepository;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 import com.capitalone.dashboard.util.FeatureSettings;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,8 +55,14 @@ public class TeamDataClientImpl implements TeamDataClient {
 	 */
 	public int updateTeamInformation() {
 		int count = 0;
-		
-		List<Team> teams = jiraClient.getTeams();
+
+		List<Team> teams = null;
+		String jiraBoardAsTeam = featureSettings.getJiraBoardAsTeam();
+		if (!StringUtils.isEmpty(jiraBoardAsTeam) && Boolean.parseBoolean(jiraBoardAsTeam)) {
+			teams = jiraClient.getBoards(0, new ArrayList<Team>());
+		} else {
+			teams = jiraClient.getTeams();
+		}
 		
 		if (CollectionUtils.isNotEmpty(teams)) {
 			updateMongoInfo(teams);
@@ -94,6 +102,9 @@ public class TeamDataClientImpl implements TeamDataClient {
 
 			// name
 			team.setName(jiraTeam.getName());
+
+			// teamType
+			team.setTeamType(jiraTeam.getTeamType());
 
 			// changeDate - does not exist for jira
 			team.setChangeDate("");
