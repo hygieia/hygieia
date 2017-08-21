@@ -42,56 +42,22 @@ public class GitlabUriUtility {
 	public URI updatePage(URI uri, String page) {
 		return UriComponentsBuilder.fromUri(uri).queryParam(PAGE_QUERY_PARAM_KEY, page).build(true).toUri();
 	}
-
-	public URI buildTeamsUri() {
-		UriComponentsBuilder builder = buildApiUri();
-		URI uri = builder.pathSegment(GROUPS_PATH_SEGMENT)
-						.build()
-						.toUri();
-		return uri;
-	}
-	
-	public URI buildProjectsUri() {
-		UriComponentsBuilder builder = buildApiUri();
-		URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).build().toUri();
-		return uri;
-	}
 	
     public URI buildProjectsForTeamUri(String teamName) {
         UriComponentsBuilder builder = buildApiUri();
         URI uri = builder.pathSegment(GROUPS_PATH_SEGMENT).pathSegment(teamName).pathSegment(PROJECTS_PATH_SEGMENT).build().toUri();
         return uri;
     }
-    
-    public URI buildProjectsByIdUri(String projectId) {
-        UriComponentsBuilder builder = buildApiUri();
-        URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(projectId).build().toUri();
-        return uri;
-    }
 	
 	public URI buildBoardsUri(Project project) {
 		UriComponentsBuilder builder = buildApiUri();
-		String projectId = buildProjectId(project);
-		URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(projectId).pathSegment(BOARDS_PATH_SEGMENT).build(true).toUri();
+		URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(buildGitlabProjectId(project)).pathSegment(BOARDS_PATH_SEGMENT).build(true).toUri();
 		return uri;
 	}
 	
-	private String buildProjectId(Project project) {
-	    String projectId = project.getTeamId() + "/" + project.getProjectId();
-	    String result;
-        try {
-            result = URLEncoder.encode(projectId, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            result = StringUtils.replace(projectId, "/", "%2F"); 
-        }
-        
-        return result;
-    }
-
     public URI buildIssuesForProjectUri(Project project) {
 		UriComponentsBuilder builder = buildApiUri();
-		String projectId = buildProjectId(project);
-		URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(projectId).pathSegment(ISSUES_PATH_SEGMENT).build(true).toUri();
+		URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(buildGitlabProjectId(project)).pathSegment(ISSUES_PATH_SEGMENT).build(true).toUri();
 		return uri;
 	}
 	
@@ -131,6 +97,18 @@ public class GitlabUriUtility {
 
     private String getProtocol() {
         return StringUtils.isBlank(settings.getProtocol()) ? DEFAULT_PROTOCOL : settings.getProtocol();
+    }
+    
+    private String buildGitlabProjectId(Project project) {
+        String projectId = project.getTeamId() + "/" + project.getProjectId();
+        String result;
+        try {
+            result = URLEncoder.encode(projectId, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            result = StringUtils.replace(projectId, "/", "%2F"); 
+        }
+        
+        return result;
     }
 
 }

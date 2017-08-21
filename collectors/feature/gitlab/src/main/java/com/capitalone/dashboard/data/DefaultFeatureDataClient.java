@@ -1,11 +1,7 @@
 package com.capitalone.dashboard.data;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -43,6 +39,11 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		this.featureRepo = featureRepo;
 		this.widgetRepo = widgetRepo;
 	}
+	
+    @Override
+    public List<CollectorItem> getEnabledWidgets(ObjectId collectorId) {
+        return widgetRepo.findByCollectorIdAndEnabled(collectorId, true);
+    }
 
 	@Override
 	public UpdateResult updateIssues(Collector collector, Project project, List<GitlabIssue> issues, List<GitlabLabel> inProgressLabelsForProject) {
@@ -52,50 +53,26 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		}
 		
 		List<Feature> savedFeatures = issueItemRepo.getFeaturesByCollectorAndTeamNameAndProjectName(collector.getId(), project.getTeamId(), project.getProjectId());
+		List<Feature> featuresFromGitlab = convertGitlabIssuesToFeatures(project, issues, collector, inProgressLabels);
+		Collection<Feature> deletedFeatures = subtractFeatures(savedFeatures, featuresFromGitlab);
+        
+        issueItemRepo.save(featuresFromGitlab);
+        issueItemRepo.delete(deletedFeatures);
+        UpdateResult updateResult = new UpdateResult(featuresFromGitlab.size(), deletedFeatures.size());
+                
+        return updateResult;
 		
-		return updateAll(project, issues, collector, inProgressLabels, savedFeatures);
 	}
 
-	@SuppressWarnings("unchecked")
-	private UpdateResult updateAll(Project project, List<GitlabIssue> gitlabIssues, Collector collector, List<String> inProgressLabels, List<Feature> savedFeatures) {
-		
-		List<Feature> updatedFeatures = new ArrayList<>();
-		List<Feature> existingFeatures = new ArrayList<>();
+    private List<Feature> convertGitlabIssuesToFeatures(Project project, List<GitlabIssue> gitlabIssues, Collector collector, List<String> inProgressLabels) {
+        List<Feature> features = new ArrayList<>();
 		for(GitlabIssue issue : gitlabIssues) {
 			String issueId = String.valueOf(issue.getId());
 			ObjectId existingId = getExistingId(featureRepo.getFeatureIdById(issueId));
 			Feature feature = featureDataMapper.mapToFeatureItem(project, issue, inProgressLabels, existingId, collector.getId());
-			existingFeatures.add(feature);
-    		if(updatedSinceLastRunOrFirstRun(collector.getLastExecuted(), issue, true)) {
-    			updatedFeatures.add(feature);
-		    }
+			features.add(feature);
 		}
-		
-		Collection<Feature> deletedFeatures = CollectionUtils.subtract(savedFeatures, existingFeatures);
-		
-		issueItemRepo.save(updatedFeatures);
-		issueItemRepo.delete(deletedFeatures);
-		UpdateResult updateResult = new UpdateResult(updatedFeatures.size(), deletedFeatures.size());
-				
-		return updateResult;
-	}
-	
-    private boolean updatedSinceLastRunOrFirstRun(long lastExecuted, GitlabIssue issue, boolean firstRun) {
-        boolean needsUpdate = false;
-        OffsetDateTime lastExecutedDate = OffsetDateTime.ofInstant(new Date(lastExecuted).toInstant(), ZoneId.systemDefault());
-        // Adding 10 minutes to account for issues that could potentially be created after the issues have been collected, but before the collector finishes running.
-        OffsetDateTime issueLastUpdatedDate = OffsetDateTime.parse(issue.getUpdatedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusMinutes(10);
-        if(issue.getMilestone() != null) {
-            OffsetDateTime milestoneLastUpdatedDate = OffsetDateTime.parse(issue.getMilestone().getUpdatedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME).plusMinutes(10);
-            needsUpdate = milestoneLastUpdatedDate.isAfter(lastExecutedDate);
-        }
-        
-        return issueLastUpdatedDate.isAfter(lastExecutedDate) || needsUpdate || firstRun;
-    }
-
-    @Override
-    public List<CollectorItem> getEnabledWidgets(ObjectId collectorId) {
-        return widgetRepo.findByCollectorIdAndEnabled(collectorId, true);
+        return features;
     }
 	
 	private ObjectId getExistingId(List<? extends BaseModel> list) {
@@ -109,5 +86,10 @@ public class DefaultFeatureDataClient implements FeatureDataClient {
 		
 		return null;
 	}
+	
+    @SuppressWarnings("unchecked")
+    private Collection<Feature> subtractFeatures(List<Feature> savedFeatures, List<Feature> newFeatures) {
+        return CollectionUtils.subtract(savedFeatures, newFeatures);
+    }
 
 }

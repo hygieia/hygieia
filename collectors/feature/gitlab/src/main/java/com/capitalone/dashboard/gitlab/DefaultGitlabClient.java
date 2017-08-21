@@ -22,7 +22,6 @@ import com.capitalone.dashboard.gitlab.model.GitlabIssue;
 import com.capitalone.dashboard.gitlab.model.GitlabLabel;
 import com.capitalone.dashboard.gitlab.model.GitlabList;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
-import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.Project;
 
 @Component
@@ -38,18 +37,6 @@ public class DefaultGitlabClient implements GitlabClient {
 	public DefaultGitlabClient(RestOperations restOperations, GitlabUriUtility urlUtility) {
 		this.restOperations = restOperations;
 		this.urlUtility = urlUtility;
-	}
-
-	@Override
-	public List<GitlabTeam> getTeams() {
-		URI gitlabTeamUri = urlUtility.buildTeamsUri();
-		return makePaginatedGitlabRequest(gitlabTeamUri, GitlabTeam[].class);
-	}
-	
-	@Override
-	public List<GitlabProject> getProjects() {
-		URI uri = urlUtility.buildProjectsUri();
-		return makePaginatedGitlabRequest(uri, GitlabProject[].class);
 	}
 	
     @Override
@@ -98,7 +85,7 @@ public class DefaultGitlabClient implements GitlabClient {
 
             }
         } catch (HttpClientErrorException e) {
-            LOGGER.info("The following url has an issue: " + restUri);
+            LOGGER.info("Could not retrieve data from the following URI: " + restUri);
         }
 
         return body;

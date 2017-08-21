@@ -8,8 +8,6 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -20,16 +18,14 @@ import com.capitalone.dashboard.gitlab.GitlabClient;
 import com.capitalone.dashboard.gitlab.model.GitlabIssue;
 import com.capitalone.dashboard.gitlab.model.GitlabLabel;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
+import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.FeatureCollector;
 import com.capitalone.dashboard.model.Project;
 import com.capitalone.dashboard.model.UpdateResult;
 import com.google.common.collect.Sets;
 
 @Service
 public class FeatureService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(FeatureService.class);
 
 	private final GitlabClient gitlabClient;
 	private final FeatureDataClient featureDataClient;
@@ -41,17 +37,15 @@ public class FeatureService {
 	}
     
     @Async
-    public Future<UpdateResult> updateIssuesForProject(FeatureCollector collector, Project project) {
+    public Future<UpdateResult> updateIssuesForProject(Collector collector, Project project) {
         List<GitlabLabel> inProgressLabelsForProject = gitlabClient.getInProgressLabelsForProject(project);
         List<GitlabIssue> issues = gitlabClient.getIssuesForProject(project);
         UpdateResult result = featureDataClient.updateIssues(collector, project, issues, inProgressLabelsForProject);
-        LOGGER.debug("{}: Added/Updated {} issues and deleted {} issues", project, result.getItemsAdded(),
-                result.getItemsDeleted());
         
         return new AsyncResult<UpdateResult>(result);
     }
     
-    public Set<Project> getProjectsForWidgets(ObjectId collectorId) {
+    public Set<Project> getProjectsToUpdate(ObjectId collectorId) {
         List<CollectorItem> widgets = featureDataClient.getEnabledWidgets(collectorId);
         Set<Project> projects = new HashSet<>();
         for (CollectorItem widget : widgets) {

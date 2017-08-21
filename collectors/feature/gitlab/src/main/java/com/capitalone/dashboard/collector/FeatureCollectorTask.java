@@ -89,7 +89,7 @@ public class FeatureCollectorTask extends CollectorTask<FeatureCollector> {
 		logBanner("Starting...");
 		Long startTime = System.currentTimeMillis();
 		
-		Set<Project> projects = featureService.getProjectsForWidgets(collector.getId());
+		Set<Project> projects = featureService.getProjectsToUpdate(collector.getId());
 		List<Future<UpdateResult>> updateIssuesFutures = updateIssuesForProjects(collector, projects);
 		logResults(updateIssuesFutures, startTime);
 	}

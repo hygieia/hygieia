@@ -10,12 +10,8 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.gitlab.model.GitlabIssue;
-import com.capitalone.dashboard.gitlab.model.GitlabProject;
-import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.Feature;
 import com.capitalone.dashboard.model.Project;
-import com.capitalone.dashboard.model.Scope;
-import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 
 @Component
@@ -27,37 +23,6 @@ public class FeatureDataMapper {
 	private static final String FEATURE_IN_PROGRESS_STATUS = "In Progress";
 	private static final String FEATURE_DONE_STATUS = "Done";
 	private static final String GITLAB_DONE_STATUS = "closed";
-
-	public Team mapToTeam(GitlabTeam gitlabTeam, ObjectId existingTeamId, ObjectId gitlabFeatureCollectorId) {
-		String teamId = String.valueOf(gitlabTeam.getId());
-		
-		Team team = new Team(teamId, gitlabTeam.getName());
-		team.setId(existingTeamId);
-		team.setCollectorId(gitlabFeatureCollectorId);
-		team.setChangeDate(EMPTY_STRING);
-		team.setAssetState(ACTIVE_ASSET_STATE);
-		team.setIsDeleted(FALSE_DELETED_STATE);
-		
-		return team;
-	}
-	
-	public Scope mapToScopeItem(GitlabProject gitlabProject, ObjectId existingProjectId, ObjectId gitlabFeatureCollectorId) {
-		String projectId = String.valueOf(gitlabProject.getId());
-		
-		Scope project = new Scope();
-		project.setId(existingProjectId);
-		project.setCollectorId(gitlabFeatureCollectorId);
-		project.setpId(projectId);
-		project.setName(gitlabProject.getName());
-		project.setBeginDate(EMPTY_STRING);
-		project.setEndDate(EMPTY_STRING);
-		project.setChangeDate(EMPTY_STRING);
-		project.setAssetState(ACTIVE_ASSET_STATE);
-		project.setIsDeleted(FALSE_DELETED_STATE);
-		project.setProjectPath(gitlabProject.getPath());
-		
-		return project;
-	}
 	
 	public Feature mapToFeatureItem(Project project, GitlabIssue gitlabIssue, List<String> inProgressLabelsForProject, ObjectId existingIssueId, ObjectId gitlabCollectorId) {
 		String issueId = String.valueOf(gitlabIssue.getId());
