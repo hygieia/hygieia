@@ -201,6 +201,9 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
             // process new builds in the order of their build numbers - this has implication to handling of commits in BuildEventListener
 
             Map<HudsonClient.jobData, Set<BaseModel>> jobDataSetMap = dataByJob.get(job);
+            if (jobDataSetMap == null) {
+                continue;
+            }
             Set<BaseModel> buildsSet = jobDataSetMap.get(HudsonClient.jobData.BUILD);
 
             ArrayList<BaseModel> builds = Lists.newArrayList(nullSafe(buildsSet));
@@ -231,6 +234,9 @@ public class HudsonCollectorTask extends CollectorTask<HudsonCollector> {
             // process new builds in the order of their build numbers - this has implication to handling of commits in BuildEventListener
 
             Map<HudsonClient.jobData, Set<BaseModel>> jobDataSetMap = dataByJob.get(job);
+            if (jobDataSetMap == null) {
+                continue;
+            }
             Set<BaseModel> configsSet = jobDataSetMap.get(HudsonClient.jobData.CONFIG);
 
             ArrayList<BaseModel> configs = Lists.newArrayList(nullSafe(configsSet));
