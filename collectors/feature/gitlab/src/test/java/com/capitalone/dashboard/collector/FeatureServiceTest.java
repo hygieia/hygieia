@@ -59,7 +59,7 @@ public class FeatureServiceTest {
 		when(gitlabClient.getProjectsForTeam("213213")).thenReturn(projects1);
 		when(gitlabClient.getProjectById("309")).thenReturn(new GitlabProject());
 		
-		Collection<GitlabProject> projects = service.getEnabledProjects(id);
+		Collection<GitlabProject> projects = service.getEnabledWidgets(id);
 		
 		assertEquals(1, projects.size());
 		assertTrue(projects.containsAll(projects1));
@@ -101,7 +101,7 @@ public class FeatureServiceTest {
 		when(gitlabClient.getIssuesForProject(project)).thenReturn(issues);
 		when(dataClient.updateIssues(id, projectId, String.valueOf(projectId), issues, labels)).thenReturn(new UpdateResult(2, 1));
 		
-		assertNotNull(service.updateIssuesForProject(id, projectId, project));
+		assertNotNull(service.updateIssuesForWidget(id, projectId, project));
 		
 		verify(dataClient).updateIssues(id, projectId, String.valueOf(projectId), issues, labels);
 	}

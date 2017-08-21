@@ -13,6 +13,7 @@ import com.capitalone.dashboard.gitlab.model.GitlabIssue;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.Feature;
+import com.capitalone.dashboard.model.Project;
 import com.capitalone.dashboard.model.Scope;
 import com.capitalone.dashboard.model.Team;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
@@ -58,11 +59,11 @@ public class FeatureDataMapper {
 		return project;
 	}
 	
-	public Feature mapToFeatureItem(GitlabIssue gitlabIssue, List<String> inProgressLabelsForProject, ObjectId existingIssueId, ObjectId gitlabCollectorId) {
+	public Feature mapToFeatureItem(Project project, GitlabIssue gitlabIssue, List<String> inProgressLabelsForProject, ObjectId existingIssueId, ObjectId gitlabCollectorId) {
 		String issueId = String.valueOf(gitlabIssue.getId());
 		String storyNumber = String.valueOf(gitlabIssue.getIid());
-		String projectId = String.valueOf(gitlabIssue.getProjectId());
-		String teamId = String.valueOf(gitlabIssue.getProject().getNamespace().getId());
+		String projectId = String.valueOf(project);
+		String teamId = String.valueOf(project.getTeamId());
 		
 		Feature issue = new Feature();
 		issue.setId(existingIssueId);
@@ -78,7 +79,7 @@ public class FeatureDataMapper {
 		
 		//Project Data
 		issue.setsProjectID(projectId);
-		issue.setsProjectName(EMPTY_STRING);
+		issue.setsProjectName(project.getProjectId());
 		issue.setsProjectBeginDate(EMPTY_STRING);
 		issue.setsProjectEndDate(EMPTY_STRING);
 		issue.setsProjectChangeDate(EMPTY_STRING);
@@ -89,7 +90,7 @@ public class FeatureDataMapper {
 		//Team Data
 		issue.setsTeamID(teamId);
 		issue.setsTeamAssetState(EMPTY_STRING);
-		issue.setsTeamName(gitlabIssue.getProject().getNamespace().getName());
+		issue.setsTeamName(project.getTeamId());
 		issue.setsTeamChangeDate(EMPTY_STRING);
 		issue.setsTeamIsDeleted(FALSE_DELETED_STATE);
 

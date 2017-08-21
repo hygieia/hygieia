@@ -61,14 +61,14 @@ public class GitlabUriUtilityTest {
 	@Test
 	public void shouldBuildBoardsUriWithCustomProtocol() {
 		when(settings.getProtocol()).thenReturn("https");
-		URI result = urlUtility.buildBoardsUri("23"); 
-		assertEquals("https://gitlab.com/api/v4/projects/23/boards?per_page=100", result.toString());
+		URI result = urlUtility.buildBoardsUri("capitalone", "hygieia"); 
+		assertEquals("https://gitlab.com/api/v4/projects/capitalone%2Fhygieia/boards?per_page=100", result.toString());
 	}
 	
 	@Test
 	public void shouldBuildIssuesForProjectUri() {
-		URI result = urlUtility.buildIssuesForProjectUri("23"); 
-		assertEquals("http://gitlab.com/api/v4/projects/23/issues?per_page=100", result.toString());
+		URI result = urlUtility.buildIssuesForProjectUri("capitalone", "hygieia"); 
+		assertEquals("http://gitlab.com/api/v4/projects/capitalone%2Fhygieia/issues?per_page=100", result.toString());
 	}
 	
 	@Test
@@ -85,9 +85,9 @@ public class GitlabUriUtilityTest {
 	
 	@Test
 	public void shouldUpdatePage() {
-		URI uri = urlUtility.buildIssuesForProjectUri("23"); 
+		URI uri = urlUtility.buildIssuesForProjectUri("capitalone", "hygieia"); 
 		URI result = urlUtility.updatePage(uri, "2");
-		assertEquals("http://gitlab.com/api/v4/projects/23/issues?per_page=100&page=2", result.toString());
+		assertEquals("http://gitlab.com/api/v4/projects/capitalone%2Fhygieia/issues?per_page=100&page=2", result.toString());
 	}
 	
 	@Test

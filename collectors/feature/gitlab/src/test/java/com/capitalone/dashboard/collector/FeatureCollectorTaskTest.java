@@ -71,17 +71,17 @@ public class FeatureCollectorTaskTest {
 		collector.setLastExecuted(lastExecuted);
 		List<GitlabProject> projects = new ArrayList<>();
 		projects.add(new GitlabProject());
-		when(featureService.getEnabledProjects(id)).thenReturn(projects);
+		when(featureService.getEnabledWidgets(id)).thenReturn(projects);
 		when(featureService.updateSelectableTeams(id)).thenReturn(future);
 		when(featureService.updateProjects(id)).thenReturn(future);
-		when(featureService.updateIssuesForProject(eq(id), eq(lastExecuted), isA(GitlabProject.class))).thenReturn(future);
+		when(featureService.updateIssuesForWidget(eq(id), eq(lastExecuted), isA(GitlabProject.class))).thenReturn(future);
 		when(future.get()).thenReturn(new UpdateResult(1, 1));
 		
 		featureCollectorTask.collect(collector);
 		
 		verify(featureService).updateSelectableTeams(id);
 		verify(featureService).updateProjects(id);
-		verify(featureService).updateIssuesForProject(id, lastExecuted, projects.get(0));
+		verify(featureService).updateIssuesForWidget(id, lastExecuted, projects.get(0));
 	}
 	
 	@Test
@@ -93,17 +93,17 @@ public class FeatureCollectorTaskTest {
 		collector.setLastExecuted(lastExecuted);
 		List<GitlabProject> projects = new ArrayList<>();
 		projects.add(new GitlabProject());
-		when(featureService.getEnabledProjects(id)).thenReturn(projects);
+		when(featureService.getEnabledWidgets(id)).thenReturn(projects);
 		when(featureService.updateSelectableTeams(id)).thenReturn(future);
 		when(featureService.updateProjects(id)).thenReturn(future);
-		when(featureService.updateIssuesForProject(eq(id), eq(lastExecuted), isA(GitlabProject.class))).thenReturn(future);
+		when(featureService.updateIssuesForWidget(eq(id), eq(lastExecuted), isA(GitlabProject.class))).thenReturn(future);
 		when(future.get()).thenThrow(new InterruptedException());
 		
 		featureCollectorTask.collect(collector);
 		
 		verify(featureService).updateSelectableTeams(id);
 		verify(featureService).updateProjects(id);
-		verify(featureService).updateIssuesForProject(id, lastExecuted, projects.get(0));
+		verify(featureService).updateIssuesForWidget(id, lastExecuted, projects.get(0));
 	}
 
 }

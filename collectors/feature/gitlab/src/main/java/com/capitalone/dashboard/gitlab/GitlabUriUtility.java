@@ -1,6 +1,9 @@
 package com.capitalone.dashboard.gitlab;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.capitalone.dashboard.collector.FeatureSettings;
+import com.capitalone.dashboard.model.Project;
 
 @Component
 public class GitlabUriUtility {
@@ -53,9 +57,9 @@ public class GitlabUriUtility {
 		return uri;
 	}
 	
-    public URI buildProjectsForTeamUri(String teamId) {
+    public URI buildProjectsForTeamUri(String teamName) {
         UriComponentsBuilder builder = buildApiUri();
-        URI uri = builder.pathSegment(GROUPS_PATH_SEGMENT).pathSegment(teamId).pathSegment(PROJECTS_PATH_SEGMENT).build().toUri();
+        URI uri = builder.pathSegment(GROUPS_PATH_SEGMENT).pathSegment(teamName).pathSegment(PROJECTS_PATH_SEGMENT).build().toUri();
         return uri;
     }
     
@@ -65,15 +69,29 @@ public class GitlabUriUtility {
         return uri;
     }
 	
-	public URI buildBoardsUri(String projectId) {
+	public URI buildBoardsUri(Project project) {
 		UriComponentsBuilder builder = buildApiUri();
-		URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(projectId).pathSegment(BOARDS_PATH_SEGMENT).build().toUri();
+		String projectId = buildProjectId(project);
+		URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(projectId).pathSegment(BOARDS_PATH_SEGMENT).build(true).toUri();
 		return uri;
 	}
 	
-	public URI buildIssuesForProjectUri(String projectId) {
+	private String buildProjectId(Project project) {
+	    String projectId = project.getTeamId() + "/" + project.getProjectId();
+	    String result;
+        try {
+            result = URLEncoder.encode(projectId, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            result = StringUtils.replace(projectId, "/", "%2F"); 
+        }
+        
+        return result;
+    }
+
+    public URI buildIssuesForProjectUri(Project project) {
 		UriComponentsBuilder builder = buildApiUri();
-		URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(projectId).pathSegment(ISSUES_PATH_SEGMENT).build().toUri();
+		String projectId = buildProjectId(project);
+		URI uri = builder.pathSegment(PROJECTS_PATH_SEGMENT).pathSegment(projectId).pathSegment(ISSUES_PATH_SEGMENT).build(true).toUri();
 		return uri;
 	}
 	
