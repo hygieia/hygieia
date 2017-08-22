@@ -160,8 +160,8 @@ public class PipelineServiceTest {
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-
-        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemAppId, configItemComponentId);
+        List<String> activeWidgets = new ArrayList<>();
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemAppId, configItemComponentId,activeWidgets);
         return dashboard;
     }
 
