@@ -170,6 +170,7 @@ public class DashboardRemoteServiceImpl implements DashboardRemoteService {
             if (service == null) throw new HygieiaException("Invalid Business Service Name.", HygieiaException.BAD_DATA);
             serviceId = service.getId();
         }
-        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceId, appId);
+        List<String> activeWidgets = new ArrayList<>();
+        return new Dashboard(true, metaData.getTemplate(), metaData.getTitle(), application, metaData.getOwner(), DashboardType.fromString(metaData.getType()), serviceId, appId,activeWidgets);
     }
 }

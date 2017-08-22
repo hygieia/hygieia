@@ -22,7 +22,8 @@
         var dashboardRoute = '/api/dashboard';
         var mydashboardRoute = "/api/dashboard/mydashboard";
         var myownerRoute = "/api/dashboard/myowner";
-        var updateBusItemsRoute = '/api/dashboard/updateBusItems'
+        var updateBusItemsRoute = '/api/dashboard/updateBusItems';
+        var updateDashboardWidgetsRoute = '/api/dashboard/updateDashboardWidgets';
 
         return {
             search: search,
@@ -37,7 +38,8 @@
             upsertWidget: upsertWidget,
             types: types,
             getComponent:getComponent,
-            updateBusItems:updateBusItems
+            updateBusItems:updateBusItems,
+            updateDashboardWidgets:updateDashboardWidgets
         };
 
         // reusable helper
@@ -167,5 +169,16 @@
                     return null;
                 });
         }
+
+        function updateDashboardWidgets(id, data) {
+            return $http.put(updateDashboardWidgetsRoute + "/" + id, data)
+                .success(function (response) {
+                    return response.data;
+                })
+                .error(function (response) {
+                    return null;
+                });
+        }
+
     }
 })();
