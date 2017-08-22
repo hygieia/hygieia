@@ -9,8 +9,8 @@
         .module(HygieiaConfig.module)
         .controller('CreateDashboardController', CreateDashboardController);
 
-    CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', 'userService', 'DashboardType', 'cmdbData', 'dashboardService', 'templateMangerData'];
-    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType, cmdbData, dashboardService, templateMangerData) {
+    CreateDashboardController.$inject = ['$location', '$uibModalInstance', 'dashboardData', 'userService', 'DashboardType', 'cmdbData', 'dashboardService', 'templateMangerData','$uibModal'];
+    function CreateDashboardController($location, $uibModalInstance, dashboardData, userService, DashboardType, cmdbData, dashboardService, templateMangerData,$uibModal) {
         var ctrl = this;
 
         // public variables
@@ -21,6 +21,7 @@
         ctrl.configurationItemBusApp = '';
         ctrl.configurationItemBusServId = "";
         ctrl.configurationItemBusAppId = "";
+        ctrl.configureSelect =  "widgets";
 
         // TODO: dynamically register templates with script
         ctrl.templates = [
@@ -30,6 +31,8 @@
             {value: 'splitview', name: 'Split View', type: DashboardType.TEAM},
             {value: 'product-dashboard', name: 'Product Dashboard', type: DashboardType.PRODUCT}
         ];
+
+        ctrl.selectWidgetOrTemplateToolTip="Customize your dashboard layout by selecting widgets while creating dashboard or you can choose from pre-existing/custom templates";
 
         // public methods
         ctrl.submit = submit;
@@ -42,6 +45,7 @@
         ctrl.setConfigItemComponentId = setConfigItemComponentId;
         ctrl.getBusAppToolText = getBusAppToolText;
         ctrl.getBusSerToolText = getBusSerToolText;
+        ctrl.configureWidgets = configureWidgets;
         (function () {
             var types = dashboardData.types();
             ctrl.dashboardTypes = [];
@@ -106,13 +110,14 @@
 
         // method implementations
         function submit(form) {
-
-            resetFormValidation(form);
-            // perform basic validation and send to the api
-            if (form.$valid) {
-                var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
+            var templateValue = "";
+            if (ctrl.configureSelect == 'widgets' && ctrl.dashboardType.id == 'team') {
+                templateValue = "widgets";
+                form.selectedTemplate.$setValidity('required', true);
+                var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value;
+                if (form.$valid) {
                     submitData = {
-                        template: document.cdf.selectedTemplate.value,
+                        template: templateValue,
                         title: document.cdf.dashboardTitle.value,
                         type: document.cdf.dashboardType.value,
                         applicationName: appName,
@@ -120,32 +125,51 @@
                         configurationItemBusServObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemBusServ),
                         configurationItemBusAppObjectId: dashboardService.getBusinessApplicationId(ctrl.configurationItemBusApp)
                     };
+                    $uibModalInstance.dismiss();
+                    configureWidgets(submitData);
+                }
+            } else {
+                templateValue = document.cdf.selectedTemplate.value;
+                resetFormValidation(form);
+                // perform basic validation and send to the api
+                if (form.$valid) {
+                    var appName = document.cdf.applicationName ? document.cdf.applicationName.value : document.cdf.dashboardType.value,
+                        submitData = {
+                            template: templateValue,
+                            title: document.cdf.dashboardTitle.value,
+                            type: document.cdf.dashboardType.value,
+                            applicationName: appName,
+                            componentName: appName,
+                            configurationItemBusServObjectId: dashboardService.getBusinessServiceId(ctrl.configurationItemBusServ),
+                            configurationItemBusAppObjectId: dashboardService.getBusinessApplicationId(ctrl.configurationItemBusApp)
+                        };
 
-                dashboardData
-                    .create(submitData)
-                    .success(function (data) {
-                        // redirect to the new dashboard
-                        $location.path('/dashboard/' + data.id);
-                        // close dialog
-                        $uibModalInstance.dismiss();
-                    })
-                    .error(function (data) {
-                        if (data.errorCode === 401) {
-                            $modalInstance.close();
-                        } else if (data.errorCode === -13) {
+                    dashboardData
+                        .create(submitData)
+                        .success(function (data) {
+                            // redirect to the new dashboard
+                            $location.path('/dashboard/' + data.id);
+                            // close dialog
+                            $uibModalInstance.dismiss();
+                        })
+                        .error(function (data) {
+                            if (data.errorCode === 401) {
+                                $modalInstance.close();
+                            } else if (data.errorCode === -13) {
 
-                            if (data.errorMessage) {
-                                ctrl.dupErroMessage = data.errorMessage;
+                                if (data.errorMessage) {
+                                    ctrl.dupErroMessage = data.errorMessage;
+                                }
+
+                                form.configurationItemBusServ.$setValidity('dupBusServError', false);
+                                form.configurationItemBusApp.$setValidity('dupBusAppError', false);
+
+                            } else {
+                                form.dashboardTitle.$setValidity('createError', false);
                             }
 
-                            form.configurationItemBusServ.$setValidity('dupBusServError', false);
-                            form.configurationItemBusApp.$setValidity('dupBusAppError', false);
-
-                        } else {
-                            form.dashboardTitle.$setValidity('createError', false);
-                        }
-
-                    });
+                        });
+                }
             }
         }
 
@@ -175,5 +199,20 @@
         function getBusSerToolText() {
             return dashboardService.getBusSerToolTipText();
         }
+
+        function configureWidgets(submitData) {
+            var modalInstance = $uibModal.open({
+                templateUrl: 'app/dashboard/views/widgetConfigManager.html',
+                controller: 'WidgetConfigManager',
+                controllerAs: 'ctrl',
+                size: 'lg',
+                resolve: {
+                    createDashboardData: submitData
+                }
+            }).result.then(function (config) {
+                window.location.reload(true);
+            });
+        }
+
     }
 })();

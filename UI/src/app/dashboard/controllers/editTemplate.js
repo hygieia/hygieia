@@ -69,7 +69,7 @@
             var submitData = {
                 template: ctrl.templateName,
                 widgets: ctrl.selectedWidgets,
-                order:ctrl.adjustedOrder,
+                order:ctrl.adjustedOrder
             };
 
             var dashboardsList = [];

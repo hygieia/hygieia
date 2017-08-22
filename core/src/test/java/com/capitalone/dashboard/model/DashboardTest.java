@@ -6,7 +6,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -55,8 +57,8 @@ public class DashboardTest {
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-
-        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team,configItemAppId, configItemComponentId);
+        List<String> activeWidgets = new ArrayList<>();
+        Dashboard dashboard = new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team,configItemAppId, configItemComponentId,activeWidgets);
         return dashboard;
     }
 

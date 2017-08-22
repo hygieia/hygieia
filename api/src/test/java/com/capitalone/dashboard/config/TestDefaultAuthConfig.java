@@ -8,7 +8,7 @@ import com.capitalone.dashboard.service.GitRequestService;
 import com.capitalone.dashboard.service.LibraryPolicyService;
 import com.capitalone.dashboard.service.Monitor2Service;
 import com.capitalone.dashboard.service.PerformanceService;
-
+import com.capitalone.dashboard.service.TemplateService;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -217,5 +217,10 @@ import com.capitalone.dashboard.util.PaginationHeaderUtility;
 
 	 @Bean
 	 public DashboardRemoteService dashboardRemoteService() {return Mockito.mock(DashboardRemoteService.class);}
+
+@Bean
+    public TemplateService templateService() {
+        return Mockito.mock(TemplateService.class);
+    }
  }
 

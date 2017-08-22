@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.fixture;
  
+ import java.util.ArrayList;
  import java.util.List;
 
  import com.capitalone.dashboard.request.DashboardRemoteRequest;
@@ -58,9 +59,9 @@ import com.capitalone.dashboard.request.DashboardRequest;
  			component.setName(compName);
  			application = new Application(appName, component);
  		}
- 
- 		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppId, configItemComponentId);
- 	}
+		List<String> activeWidgets = new ArrayList<>();
+		return new Dashboard(template, title, application, new Owner(owner, AuthType.STANDARD), type,configItemAppId, configItemComponentId,activeWidgets);
+	}
  
  	public static Component makeComponent(ObjectId id, String name, CollectorType type, ObjectId collItemId) {
  		Component c = new Component();
