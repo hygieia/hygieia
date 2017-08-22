@@ -91,6 +91,8 @@ public class FeatureSettings {
 	
 	private String jiraTeamFieldName;
 
+	private String jiraBoardAsTeam;
+
 	public String getCron() {
 		return this.cron;
 	}
@@ -329,5 +331,13 @@ public class FeatureSettings {
 
 	public void setJiraTeamFieldName(String jiraTeamFieldName) {
 		this.jiraTeamFieldName = jiraTeamFieldName;
+	}
+
+	public String getJiraBoardAsTeam() {
+		return jiraBoardAsTeam;
+	}
+
+	public void setJiraBoardAsTeam(String jiraBoardAsTeam) {
+		this.jiraBoardAsTeam = jiraBoardAsTeam;
 	}
 }
