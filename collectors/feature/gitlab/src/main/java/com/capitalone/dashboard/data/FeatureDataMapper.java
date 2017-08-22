@@ -27,8 +27,6 @@ public class FeatureDataMapper {
 	public Feature mapToFeatureItem(Project project, GitlabIssue gitlabIssue, List<String> inProgressLabelsForProject, ObjectId existingIssueId, ObjectId gitlabCollectorId) {
 		String issueId = String.valueOf(gitlabIssue.getId());
 		String storyNumber = String.valueOf(gitlabIssue.getIid());
-		String projectId = String.valueOf(project);
-		String teamId = String.valueOf(project.getTeamId());
 		
 		Feature issue = new Feature();
 		issue.setId(existingIssueId);
@@ -43,7 +41,7 @@ public class FeatureDataMapper {
 		issue.setChangeDate(gitlabIssue.getUpdatedAt());
 		
 		//Project Data
-		issue.setsProjectID(projectId);
+		issue.setsProjectID(project.getProjectId());
 		issue.setsProjectName(project.getProjectId());
 		issue.setsProjectBeginDate(EMPTY_STRING);
 		issue.setsProjectEndDate(EMPTY_STRING);
@@ -53,7 +51,7 @@ public class FeatureDataMapper {
 		issue.setsProjectPath(EMPTY_STRING);
 		
 		//Team Data
-		issue.setsTeamID(teamId);
+		issue.setsTeamID(project.getTeamId());
 		issue.setsTeamAssetState(EMPTY_STRING);
 		issue.setsTeamName(project.getTeamId());
 		issue.setsTeamChangeDate(EMPTY_STRING);
