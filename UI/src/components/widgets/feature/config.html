@@ -118,7 +118,7 @@
 					a valid feature data source</p>
 			</form-group>
 
-			<form-group input="teamName" ng-hide="ctrl.hideTeamDropDown"  class="col-sm-push-2 col-sm-8" errors="{required:'Please select a valid team',teamError:'Project and/or Team selection required'}">
+			<form-group input="teamName" ng-hide="ctrl.hideTeamDropDown"  class="col-sm-push-2 col-sm-8" errors="{required:'Please enter a valid team name',teamError:'Team is required'}">
 				<label class="modal-label">Team Name (required):</label>
 				<input
 						type="text"
@@ -129,7 +129,7 @@
 						autocomplete="off"
 						required>
 			</form-group>
-			<form-group input="projectName" ng-hide="ctrl.hideProjectDropDown" class="col-sm-push-2 col-sm-8"  errors="{required:'Please select a valid project',anyError:'Project and/or Team selection required'}" >
+			<form-group input="projectName" ng-hide="ctrl.hideProjectDropDown" class="col-sm-push-2 col-sm-8"  errors="{required:'Please select a valid project',anyError:'Team is required'}" >
 				<label class="modal-label">Project Name (optional):</label>
 				<input
 						type="text"
