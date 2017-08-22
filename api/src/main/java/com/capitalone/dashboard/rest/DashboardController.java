@@ -266,4 +266,23 @@ public class DashboardController {
 
     }
 
+    @DashboardOwnerOrAdmin
+    @RequestMapping(value = "/dashboard/updateDashboardWidgets/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateDashboardWidgets(@PathVariable ObjectId id, @RequestBody Dashboard request) {
+        try {
+            Dashboard dashboard = dashboardService.updateDashboardWidgets(id, request);
+            if(dashboard != null){
+                return ResponseEntity.ok("Updated");
+            }else{
+                return ResponseEntity.ok("Unchanged");
+            }
+
+        } catch (HygieiaException he) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(he.getMessage());
+        }
+
+    }
+
 }
