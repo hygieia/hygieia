@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class WebMVCConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-        configurer.enable("api-audit");
+        configurer.enable("apiaudit");
     }
 
     @Override

@@ -166,6 +166,9 @@ public interface DashboardService {
      * @return dashboard instance
      */
     Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard dashboard) throws HygieiaException;
+
+    Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException;
+
 }
 
 

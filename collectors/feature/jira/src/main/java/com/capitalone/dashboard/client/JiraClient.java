@@ -11,6 +11,8 @@ public interface JiraClient {
 	List<Issue> getIssues(long startTime, int pageStart);
 	
 	List<BasicProject> getProjects();
+
+	List<Team> getBoards(int startAt, List<Team> result);
 	
 	List<Team> getTeams();
 	

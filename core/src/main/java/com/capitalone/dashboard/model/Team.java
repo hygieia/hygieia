@@ -19,6 +19,7 @@ public class Team extends BaseModel {
     private String assetState;
     private String isDeleted;
     private boolean enabled;
+    private String teamType;
 
     @Transient
     private Collector collector;
@@ -90,6 +91,14 @@ public class Team extends BaseModel {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getTeamType() {
+        return teamType;
+    }
+
+    public void setTeamType(String teamType) {
+        this.teamType = teamType;
     }
 
     /* (non-Javadoc)

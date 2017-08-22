@@ -7,6 +7,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -183,7 +184,8 @@ public class CommitEventListenerTest {
         ObjectId configItemComponentId = new ObjectId();
 
         Application application = new Application("app", component);
-        Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD),  DashboardType.Team , configItemAppId, configItemComponentId);
+        List<String> activeWidgets = new ArrayList<>();
+        Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD),  DashboardType.Team , configItemAppId, configItemComponentId,activeWidgets);
         dashboard.setId(ObjectId.get());
         return dashboard;
     }
