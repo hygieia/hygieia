@@ -5,10 +5,10 @@
     'use strict';
 
     angular.module(HygieiaConfig.module)
-        .controller('TemplateController', TemplateController);
+        .controller('WidgetConfigManager', TemplateController);
 
-    TemplateController.$inject = [ '$scope', '$location', 'userService', 'widgetManager', 'DashboardType','templateMangerData','$uibModalInstance'];
-    function TemplateController($scope, $location, userService, widgetManager, DashboardType,templateMangerData,$uibModalInstance) {
+    TemplateController.$inject = [ '$scope', '$location', 'userService', 'widgetManager', 'DashboardType','$uibModalInstance','createDashboardData','dashboardData'];
+    function TemplateController($scope, $location, userService, widgetManager,DashboardType,$uibModalInstance,createDashboardData,dashboardData) {
         var ctrl = this;
 
         // public variables
@@ -20,22 +20,20 @@
         ctrl.dashboardTypeEnum = DashboardType;
 
         // public methods
-        ctrl.createTemplate = createTemplate;
-        ctrl.goToManager = goToManager;
         ctrl.admin = admin;
-
         ctrl.toggleWidget = toggleWidget;
         ctrl.removeWidget = removeWidget;
         ctrl.onChange = onChange;
         ctrl.onDragStart = onDragStart;
         ctrl.onResizeStart = onResizeStart;
         ctrl.onResizeStop = onResizeStop;
-        ctrl.saveTemplate = saveTemplate;
+        ctrl.saveDashboard = saveDashboard;
 
         ctrl.templateName ='';
         ctrl.count = 0;
         ctrl.templateDetails ={};
 
+        ctrl.createDashboardData = createDashboardData;
         if (ctrl.username === 'admin') {
             ctrl.myadmin = true;
         }
@@ -69,7 +67,7 @@
             ctrl.count--;
         };
 
-        function saveTemplate($event,form) {
+        function saveDashboard($event,form) {
             var widgets = [];
             var order=[];
             _($scope.widgets).forEach(function(widget){
@@ -82,23 +80,45 @@
                 removeWidget(title, $event);
                 order[obj.order] = title;
             }
+
             var submitData = {
-                template: ctrl.templateName,
-                widgets: widgets,
-                order:order
+                template: ctrl.createDashboardData.template,
+                title: ctrl.createDashboardData.title,
+                type: ctrl.createDashboardData.type,
+                applicationName: ctrl.createDashboardData.applicationName,
+                componentName: ctrl.createDashboardData.componentName,
+                configurationItemBusServObjectId: ctrl.createDashboardData.configurationItemBusServObjectId,
+                configurationItemBusAppObjectId: ctrl.createDashboardData.configurationItemBusAppObjectId,
+                activeWidgets: widgets
             };
 
+
             if(form.$valid ){
-                templateMangerData.createTemplate(submitData) .then(function (data) {
-                    var result = data;
-                    var res = result;
-                    ctrl.templateName ="";
-                    var obj = false;
-                    obj = {
-                        tabName: 'templates'
-                    };
-                    $uibModalInstance.close(obj);
-                });
+                dashboardData
+                    .create(submitData)
+                    .success(function (data) {
+                        // redirect to the new dashboard
+                        $location.path('/dashboard/' + data.id);
+                        // close dialog
+                        $uibModalInstance.dismiss();
+                    })
+                    .error(function (data) {
+                        if (data.errorCode === 401) {
+                            $modalInstance.close();
+                        } else if (data.errorCode === -13) {
+
+                            if (data.errorMessage) {
+                                ctrl.dupErroMessage = data.errorMessage;
+                            }
+
+                            form.configurationItemBusServ.$setValidity('dupBusServError', false);
+                            form.configurationItemBusApp.$setValidity('dupBusAppError', false);
+
+                        } else {
+                            form.dashboardTitle.$setValidity('createError', false);
+                        }
+
+                    });
             }
 
         }
@@ -128,17 +148,5 @@
             $location.path('/admin');
         }
 
-        // method implementations
-        function createTemplate() {
-            $modal.open({
-                templateUrl: 'app/dashboard/views/createDashboard.html',
-                controller: 'CreateDashboardController',
-                controllerAs: 'ctrl'
-            });
-        }
-
-        function goToManager() {
-            $location.path('/templates/create');
-        }
     }
 })();

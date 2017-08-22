@@ -54,7 +54,8 @@ public class PipelineUtilsTest {
     private Dashboard setupDashboard() {
         ObjectId configItemAppId = new ObjectId();
         ObjectId configItemComponetId = new ObjectId();
-        Dashboard rt = new Dashboard("Capone", "hygieia", new Application("hygieia", new Component()), new Owner("owner", AuthType.STANDARD), DashboardType.Team, configItemAppId, configItemComponetId);
+        List<String> activeWidgets = new ArrayList<>();
+        Dashboard rt = new Dashboard("Capone", "hygieia", new Application("hygieia", new Component()), new Owner("owner", AuthType.STANDARD), DashboardType.Team, configItemAppId, configItemComponetId,activeWidgets);
 
         Widget pipelineWidget = new Widget();
         pipelineWidget.setName("pipeline");
