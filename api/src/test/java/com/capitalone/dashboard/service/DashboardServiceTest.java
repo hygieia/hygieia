@@ -675,8 +675,9 @@ public class DashboardServiceTest {
     	Iterable<Owner> owners = Lists.newArrayList();
         ObjectId configItemBusServId = ObjectId.get();
         ObjectId configItemBusAppId = ObjectId.get();
-    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), null, DashboardType.Team, configItemBusServId, configItemBusAppId);
-    	
+        List<String> activeWidgets = new ArrayList<>();
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), null, DashboardType.Team, configItemBusServId, configItemBusAppId,activeWidgets);
+
     	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
     	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
     	
@@ -709,8 +710,8 @@ public class DashboardServiceTest {
     	UserInfo existingInfo = new UserInfo();
     	existingInfo.setUsername("existing");
     	existingInfo.setAuthType(AuthType.LDAP);
-    	
-    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwner, DashboardType.Team,configItemBusServId,configItemBusAppId);
+        List<String> activeWidgets = new ArrayList<>();
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwner, DashboardType.Team,configItemBusServId,configItemBusAppId,activeWidgets);
     	
     	when(userInfoRepository.findByUsernameAndAuthType("existing", AuthType.LDAP)).thenReturn(existingInfo);
     	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
@@ -760,12 +761,24 @@ public class DashboardServiceTest {
 
         assertNotNull(dashboardService.updateDashboardBusinessItems(id,dashboardRequest));
     }
+
+    @Test
+    public void updateDashboardWidgets() throws HygieiaException{
+        ObjectId id = ObjectId.get();
+        myDashboard = makeTeamDashboard("template", "title", "appName", "amit",null, null, "comp1", "comp2");
+        Dashboard dashboardRequest = makeTeamDashboard("template", "title", "appName", "amit",null, null, "comp1", "comp2");
+        when(dashboardRepository.findOne(id)).thenReturn(myDashboard);
+        when(dashboardService.update(myDashboard)).thenReturn(myDashboard);
+        assertNotNull(dashboardService.updateDashboardWidgets(id,dashboardRequest));
+    }
+
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,ObjectId configItemBusServId,ObjectId configItemBusAppId, String... compNames) {
         Application app = new Application(appName);
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServId, configItemBusAppId);
+        List<String> activeWidgets = new ArrayList<>();
+        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServId, configItemBusAppId,activeWidgets);
     }
 
     private Widget makeWidget(ObjectId id, String name) {

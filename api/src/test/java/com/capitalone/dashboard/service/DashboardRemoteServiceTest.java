@@ -261,7 +261,8 @@ public class DashboardRemoteServiceTest {
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServId, configItemBusAppId);
+        List<String> activeWidgets = new ArrayList<>();
+        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServId, configItemBusAppId,activeWidgets);
     }
 
     private Collector makeCollector(String name, CollectorType type) {
