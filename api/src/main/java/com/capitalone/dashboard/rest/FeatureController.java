@@ -61,10 +61,10 @@ public class FeatureController {
 	 * @return A data response list of type Feature containing all features for
 	 *         the given team and current sprint
 	 */
-	@RequestMapping(value = "/feature", method = GET, produces = APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/feature/{number}", method = GET, produces = APPLICATION_JSON_VALUE)
 	public DataResponse<List<Feature>> story(
 			@RequestParam(value = "component", required = true) String cId,
-			@RequestParam(value = "number", required = true) String storyNumber) {
+			@PathVariable(value = "number") String storyNumber) {
 		ObjectId componentId = new ObjectId(cId);
 		return this.featureService.getStory(componentId, storyNumber);
 	}
