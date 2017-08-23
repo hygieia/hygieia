@@ -133,7 +133,8 @@ public class EnvironmentComponentEventListenerTest {
         ObjectId configItemComponentId = new ObjectId();
 
         Application application = new Application("app", component);
-        Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD),  DashboardType.Team , configItemAppId, configItemComponentId);
+        List<String> activeWidgets = new ArrayList<>();
+        Dashboard dashboard = new Dashboard("template", "title", application, new Owner("owner", AuthType.STANDARD),  DashboardType.Team , configItemAppId, configItemComponentId,activeWidgets);
         dashboard.setId(ObjectId.get());
         return dashboard;
     }

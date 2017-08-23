@@ -14,6 +14,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -51,7 +54,8 @@ public class DashboardCreateTests extends FongoBaseRepositoryTest {
 
         Application application = new Application("Jay's App", component);
 
-        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application, new Owner("amit", AuthType.STANDARD), DashboardType.Team,  configItemApp.getId(), configItemComp.getId());
+        List<String> activeWidgets = new ArrayList<>();
+        Dashboard dashboard = new Dashboard("Topo", "Jays's Dashboard", application, new Owner("amit", AuthType.STANDARD), DashboardType.Team,  configItemApp.getId(), configItemComp.getId(),activeWidgets);
 
         Widget build = new Widget();
         build.setName("build");

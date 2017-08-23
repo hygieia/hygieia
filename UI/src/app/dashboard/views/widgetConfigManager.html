@@ -5,28 +5,16 @@
         color: #fff;
     }
 </style>
-<widget-modal widget-modal-title="Create Custom Template">
-    <form name ="templateForm">
+<widget-modal widget-modal-title="Widget Management">
+    <form name ="widgetForm">
         <div class="wrapper">
             <div class="sidebar">
-                <h3>Manage templates</h3>
-                <form-group input="template"
-                            class="text-center">
-
-                    <label class="modal-label">Template Name</label>
-                    <input type="text"
-                           name="template"
-                           class="form-control text-center"
-                           ng-model="ctrl.templateName"
-                           placeholder="Enter Template Name"
-                           autocomplete="off"
-                           required />
-                </form-group>
                 <ul>
-                    <li ng-repeat="(title, widget) in ctrl.widgets"  ng-if="title!='cloud' && title!='product' && title!='pipeline' && title!='monitor2' && title!='chatops'"><a id="{{title}}-button" ng-click="ctrl.toggleWidget(title, $event)">
+                    <li ng-repeat="(title, widget) in ctrl.widgets"  ng-if="title!='product' && title!='monitor2'"><a id="{{title}}-button" ng-click="ctrl.toggleWidget(title, $event)">
                         {{title}}</a></li>
                 </ul>
                 <br>
+
             </div>
             <div class="gui-view">
                 <br>
@@ -50,7 +38,7 @@
             </div>
         </div>
         <div class="button-row row text-center">
-            <button type="submit" class="btn btn-primary btn-wide" ng-click="ctrl.saveTemplate($event,templateForm)">Create</button>
+            <button type="submit" class="btn btn-primary btn-wide" ng-click="ctrl.saveDashboard($event,widgetForm)">Create</button>
         </div>
     </form>
 </widget-modal>
