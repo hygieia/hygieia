@@ -363,7 +363,9 @@ public class StoryDataClientImpl implements StoryDataClient {
 				try {
 					String teamName = (String)((JSONObject)teamObj).get("value");
 					scopeOwner = teamRepository.findByName(teamName);
-					teamID = scopeOwner.getTeamId();
+					if (scopeOwner != null) {
+						teamID = scopeOwner.getTeamId();
+					}
 				} catch (JSONException e) {
 					LOGGER.error("Unable to parse value for " + teamObj);
 				}
