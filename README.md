@@ -26,7 +26,7 @@
     <span>|</span>
     <a href="http://www.capitalone.io/Hygieia/screenshots.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/Buttons/Screenshots.png" alt="Screenshots" width="125" align="center"></a>
     <span>|</span>
-    <a href="Contribute - http://www.capitalone.io/Hygieia/contribute.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/Buttons/Contribute.png" alt="Contribute" width="125" align="center"></a>
+    <a href="http://www.capitalone.io/Hygieia/contribute.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/Buttons/Contribute.png" alt="Contribute" width="125" align="center"></a>
     <span>|</span>
     <a href="http://www.capitalone.io/Hygieia/contact.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/Buttons/Contact.png" alt="Contact" width="125" align="center"></a>
   </h2>
