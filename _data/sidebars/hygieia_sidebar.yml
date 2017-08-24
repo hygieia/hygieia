@@ -25,6 +25,10 @@ entries:
       url: /getting_started.html
       output: web, pdf
       type: homepage
+    - title: Architecture
+      url: /architecture.html
+      output: web, pdf
+      type: homepage
       
   - title: Installation/Setup Instructions
     output: web, pdf
