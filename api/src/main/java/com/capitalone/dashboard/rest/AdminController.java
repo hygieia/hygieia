@@ -8,6 +8,7 @@ import com.capitalone.dashboard.request.ApiTokenRequest;
 import com.capitalone.dashboard.service.ApiTokenService;
 import com.capitalone.dashboard.service.UserInfoService;
 import com.capitalone.dashboard.util.EncryptionException;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -68,7 +70,23 @@ public class AdminController {
                     .body(e.getMessage());
         }
     }
-
+    @RequestMapping(value = "/updateToken/{id}", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateToken(@Valid @RequestBody ApiTokenRequest apiTokenRequest, @PathVariable ObjectId id) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(apiTokenService.updateToken(apiTokenRequest.getExpirationDt(),id));
+        } catch (HygieiaException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+    @RequestMapping(value = "/deleteToken/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> deleteToken(@PathVariable ObjectId id) {
+        apiTokenService.deleteToken(id);
+        return ResponseEntity.noContent().build();
+    }
     @RequestMapping(path = "/apitokens", method = RequestMethod.GET)
     public Collection<ApiToken> getApiTokens() {
         Collection<ApiToken> tokens = apiTokenService.getApiTokens();
