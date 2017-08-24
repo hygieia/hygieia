@@ -35,8 +35,8 @@ The following components are required to run Hygieia℠:
          MongoDB shell version: 3.0.4
          connecting to: test  
          
-         > use dashboarddb
-         switched to db dashboarddb
+         > use dashboard
+         switched to db dashboard
          > db.createUser(
                   {
                     user: "dashboarduser",
