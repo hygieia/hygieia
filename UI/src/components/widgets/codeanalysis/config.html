@@ -31,7 +31,7 @@
             <div class="text-center modal-label">Security Scan:</div>
                 <input type="text" name="saCollectorItem" class="form-control" placeholder="Search your SecurityAnalysis job"
                        ng-model="caWidget.saCollectorItem"
-                       uib-typeahead="item as item.description for item in getSACollectors($viewValue)" typeahead-focus
+                       uib-typeahead="item as (item.collector.name + ' - ' + item.description) for item in getSACollectors($viewValue)" typeahead-focus
                        typeahead-template-url="sonarProjectUrlTemplate.html"
                        typeahead-wait-ms="250" autocomplete="off"
                        typeahead-min-length="0"
@@ -48,7 +48,7 @@
             <div class="text-center modal-label">Open Source Scan:</div>
                 <input type="text" name="ossCollectorItem" class="form-control" placeholder="Search your Open Source scan job"
                        ng-model="caWidget.ossCollectorItem"
-                       uib-typeahead="item as item.description for item in getOpenSourceCodeCollectors($viewValue)" typeahead-focus
+                       uib-typeahead="item as (item.collector.name + ' - ' + item.description) for item in getOpenSourceCodeCollectors($viewValue)" typeahead-focus
                        typeahead-template-url="sonarProjectUrlTemplate.html"
                        typeahead-wait-ms="250" autocomplete="off"
                        typeahead-min-length="0"
