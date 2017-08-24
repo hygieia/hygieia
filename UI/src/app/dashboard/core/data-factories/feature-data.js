@@ -7,17 +7,6 @@
 	angular.module(HygieiaConfig.module + '.core').factory('featureData', featureData);
 
 	function featureData($http) {
-		var param = '?component=';
-		var projectParam = '&projectId=';
-		var teamParam = '&teamId=';
-
-		var agileType = {
-			kanban : "&agileType=kanban",
-			scrum : "&agileType=scrum",
-		};
-		var estimateMetricTypeParam = "&estimateMetricType=";
-		var agileTypeParam = "&agileType=";
-
 		var testAggregateSprintEstimates = 'test-data/feature-aggregate-sprint-estimates.json';
 		var buildAggregateSprintEstimates = '/api/feature/estimates/aggregatedsprints';
 
@@ -54,12 +43,14 @@
 		};
 
 		function aggregateSprintEstimates(componentId, filterTeamId, filterProjectId, estimateMetricType, agileType) {
-			return $http.get(HygieiaConfig.local ? testAggregateSprintEstimates : buildAggregateSprintEstimates
-					+ param + componentId
-					+ projectParam + filterProjectId
-					+ teamParam + filterTeamId
-					+ (estimateMetricType != null? estimateMetricTypeParam + estimateMetricType : "")
-					+ (agileType != null? agileTypeParam + agileType : ""))
+			var params = {component: componentId,
+					projectId: filterProjectId,
+					teamId: filterTeamId,
+					agileType: agileType,
+					estimateMetricType: estimateMetricType
+				};
+
+			return $http.get(HygieiaConfig.local ? testAggregateSprintEstimates : buildAggregateSprintEstimates, {params: params})
 					.then(function(response) {
 						return response.data;
 					});
@@ -73,12 +64,14 @@
 		 * @param filterTeamId
 		 */
 		function featureWip(componentId, filterTeamId, filterProjectId, estimateMetricType, agileType) {
-			return $http.get(HygieiaConfig.local ? testFeatureWip : buildFeatureWip
-				  + param + componentId
-					+ projectParam + filterProjectId
-					+ teamParam + filterTeamId
-					+ (estimateMetricType != null? estimateMetricTypeParam + estimateMetricType : "")
-					+ (agileType != null? agileTypeParam + agileType : ""))
+			var params = {component: componentId,
+					projectId: filterProjectId,
+					teamId: filterTeamId,
+					agileType: agileType,
+					estimateMetricType: estimateMetricType
+				};
+
+			return $http.get(HygieiaConfig.local ? testFeatureWip : buildFeatureWip, {params: params})
 					.then(function(response) {
 						return response.data;
 					});
@@ -91,11 +84,13 @@
 		 * @param filterTeamId
 		 */
 		function sprint(componentId, filterTeamId, filterProjectId, agileType) {
-			return $http.get(HygieiaConfig.local ? testSprint : buildSprint
-				  + param + componentId
-					+ projectParam + filterProjectId
-					+ teamParam + filterTeamId
-					+ (agileType != null? agileTypeParam + agileType : ""))
+			var params = {component: componentId,
+					projectId: filterProjectId,
+					teamId: filterTeamId,
+					agileType: agileType
+				};
+
+			return $http.get(HygieiaConfig.local ? testSprint : buildSprint, {params: params})
 					.then(function(response) {
 						return response.data;
 					});
