@@ -180,6 +180,8 @@
                                             <div class="btn-block col-xs-15">
                                                 <span class="col-xs-3">{{apitoken.apiUser}}</span>
                                                 <span>{{::apitoken.expirationDt | date:'MM/dd/yyyy HH:mm:ss'}}</span>
+                                                <dash-trash class="clickable pull-right" ng-click="ctrl.deleteToken(apitoken.id)"></dash-trash>
+                                                <dash-edit class="clickable pull-right" ng-click="ctrl.editToken(apitoken)"></dash-edit>
                                             </div>
                                         </div>
                                     </div>
