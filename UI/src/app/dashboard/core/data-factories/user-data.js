@@ -15,7 +15,9 @@
             promoteUserToAdmin: promoteUserToAdmin,
             demoteUserFromAdmin: demoteUserFromAdmin,
             createToken: createToken,
-            apitokens: apitokens
+            apitokens: apitokens,
+            deleteToken: deleteToken,
+            updateToken: updateToken
         };
 
 
@@ -60,5 +62,16 @@
         return $http.get(route);
     }
 
+    function deleteToken(id) {
+        var route = adminRoute + "/deleteToken";
+        return $http.delete(route + '/' + id)
+            .then(function (response) {
+                return response.data;
+            });
+    }
+    function updateToken(apiToken, id) {
+        var route = adminRoute + "/updateToken";
+        return $http.post(route + '/' + id, apiToken);
+    }
   }
 })();

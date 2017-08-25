@@ -33,6 +33,8 @@
         ctrl.deleteTemplate = deleteTemplate;
         ctrl.viewTemplateDetails = viewTemplateDetails;
         ctrl.editTemplate = editTemplate;
+        ctrl.deleteToken = deleteToken;
+        ctrl.editToken = editToken;
 
         $scope.tab = "dashboards";
 
@@ -121,7 +123,31 @@
             });
 
         }
+        function editToken(item)
+        {
+            console.log("Edit token in Admin");
 
+            var mymodalInstance=$uibModal.open({
+                templateUrl: 'app/dashboard/views/editApiToken.html',
+                controller: 'EditApiTokenController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    tokenItem: function() {
+                        return item;
+                    }
+                }
+            });
+
+            mymodalInstance.result.then(function() {
+                userData.apitokens().then(processTokenResponse);
+            });
+
+        }
+        function deleteToken(id) {
+            userData.deleteToken(id).then(function() {
+                _.remove( $scope.apitokens , {id: id});
+            });
+        }
         function generateToken() {
             console.log("Generate token in Admin");
 
