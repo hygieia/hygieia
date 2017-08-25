@@ -55,7 +55,7 @@
         }
 
         function encrypt(message) {
-            return $http.get(encryptRoute + message).then(function (response) {
+            return $http.get(encryptRoute + encodeURIComponent(message)).then(function (response) {
                 return response.data;
             });
         }
