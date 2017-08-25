@@ -42,7 +42,7 @@ The following components are required to run Hygieia℠:
                     user: "dashboarduser",
                     pwd: "dbpassword",
                     roles: [
-                       {role: "readWrite", db: "dashboard"}
+                       {role: "readWrite", db: "dashboarddb"}
                             ]
                     })
           
@@ -54,7 +54,7 @@ The following components are required to run Hygieia℠:
                   "roles" : [
                   {
                     "role" : "readWrite",
-                    "db" : "dashboard"
+                    "db" : "dashboarddb"
                   }
                   ]
                 }  
@@ -163,7 +163,7 @@ docker-compose up -d
 docker exec -t -i mongodb2 bash
 ```
 ```bash
-mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
+mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboarddb").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboarddb"}]})'
 ```
 
 ## Create a `docker-compose.override.yml` to configure your environment
