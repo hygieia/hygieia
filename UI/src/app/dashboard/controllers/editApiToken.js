@@ -3,30 +3,28 @@
 
     angular
         .module(HygieiaConfig.module)
-        .controller('GenerateApiTokenController', GenerateApiTokenController);
+        .controller('EditApiTokenController', EditApiTokenController);
 
-    GenerateApiTokenController.$inject = ['$uibModalInstance', 'userService', 'userData', '$scope'];
-    function GenerateApiTokenController($uibModalInstance, userService, userData, $scope) {
+    EditApiTokenController.$inject = ['$uibModalInstance','userData','tokenItem'];
+    function EditApiTokenController($uibModalInstance, userData, tokenItem) {
 
         var ctrl = this;
+        ctrl.apiUser = tokenItem.apiUser;
+        ctrl.date =  new Date(tokenItem.expirationDt);
 
         // public methods
         ctrl.submit = submit;
 
-        function processUserResponse(response) {
-            $scope.users = response;
-        }
-
         function submit(form) {
 
-            form.apiKey.$setValidity('apiTokenError', true);
+            form.expDt.$setValidity('apiTokenError', true);
 
             if (form.$valid) {
                 console.log('val is ' + document.cdf.apiUser);
                 console.log('val is ' + document.cdf.apiUser.value);
                 console.log('dt is ' + document.cdf.expDt);
                 console.log('dt is ' + document.cdf.expDt.value);
-
+                var id = tokenItem.id
                 var selectedDt = Date.parse(document.cdf.expDt.value);
                 var momentSelectedDt = moment(selectedDt);
                 var timemsendOfDay = momentSelectedDt.endOf('day').valueOf();
@@ -37,25 +35,16 @@
                 };
 
                 userData
-                    .createToken(apitoken)
+                    .updateToken(apitoken, id)
                     .success(function (response) {
                         console.log(response);
-                        //$scope.apiKey = response;
-                        ctrl.apiKey = response;
-                        //$uibModalInstance.close();
+                        $uibModalInstance.close();
                     })
                     .error(function(response) {
                         console.log(response);
-                        ctrl.apiKey = response;
-                        form.apiKey.$setValidity('apiTokenError', false);
+                        form.expDt.$setValidity('apiTokenError', false);
                     });
             }
-            else
-            {
-                //form.apiToken.$setValidity('apiTokenError', false);
-            }
-
         }
-
     }
 })();
