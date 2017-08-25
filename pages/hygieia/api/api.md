@@ -33,7 +33,7 @@ The API layer needs a property file in following format:
 
 ```properties
 # dashboard.properties
-dbname=dashboard
+dbname=dashboarddb
 dbusername=[MogoDb Database Username, defaults to empty]
 dbpassword=[MongoDb Database Password, defaults to empty]
 dbhost=[Host on which MongoDb is running, defaults to localhost]
@@ -125,12 +125,12 @@ docker run -d -p 27017:27017 --name mongodb -v ./mongo:/data/db mongo:latest  mo
 
 Create User:
 ```
-use db
-db.createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})
+use dashboarddb
+db.createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboarddb"}]})
 ```
 or from CLI:
 ```bash
-mongo 192.168.64.2/admin --eval 'db.getSiblingDB("db").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
+mongo 192.168.64.2/admin --eval 'db.getSiblingDB("dashboarddb").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboarddb"}]})'
 ```
 
 More details: <https://hub.docker.com/r/library/mongo/>
