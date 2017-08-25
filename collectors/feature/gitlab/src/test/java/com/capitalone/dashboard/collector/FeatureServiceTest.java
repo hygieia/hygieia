@@ -2,13 +2,14 @@ package com.capitalone.dashboard.collector;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -21,10 +22,13 @@ import com.capitalone.dashboard.data.FeatureDataClient;
 import com.capitalone.dashboard.gitlab.GitlabClient;
 import com.capitalone.dashboard.gitlab.model.GitlabIssue;
 import com.capitalone.dashboard.gitlab.model.GitlabLabel;
+import com.capitalone.dashboard.gitlab.model.GitlabNamespace;
 import com.capitalone.dashboard.gitlab.model.GitlabProject;
-import com.capitalone.dashboard.gitlab.model.GitlabTeam;
+import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.Project;
 import com.capitalone.dashboard.model.UpdateResult;
+import com.google.common.collect.Lists;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FeatureServiceTest {
@@ -39,71 +43,71 @@ public class FeatureServiceTest {
 	private FeatureService service;
 
 	@Test
-	public void shouldGetEnabledProjects() {
+	public void shouldGetProjectsToUpdateWithProjectName() {
+	    String teamId = "capitalone";
+	    String projectId = "hygieia";
 		ObjectId id = new ObjectId();
 		
 		List<CollectorItem> enabledWidgets = new ArrayList<>();
 		CollectorItem item1 = new CollectorItem();
-		item1.getOptions().put("teamId", "213213");
-		item1.getOptions().put("projectId", "209");
-		CollectorItem item2 = new CollectorItem();
-        item2.getOptions().put("teamId", "Any");
-        item2.getOptions().put("projectId", "309");
+		item1.getOptions().put("teamId", teamId);
+		item1.getOptions().put("projectId", projectId);
+
         enabledWidgets.add(item1);
-        enabledWidgets.add(item2);
         when(dataClient.getEnabledWidgets(id)).thenReturn(enabledWidgets);
 
-		List<GitlabProject> projects1 = new ArrayList<>();
-		projects1.add(new GitlabProject());
-		projects1.add(new GitlabProject());
-		when(gitlabClient.getProjectsForTeam("213213")).thenReturn(projects1);
-		when(gitlabClient.getProjectById("309")).thenReturn(new GitlabProject());
-		
-		Collection<GitlabProject> projects = service.getEnabledProjects(id);
+		Collection<Project> projects = service.getProjectsToUpdate(id);
 		
 		assertEquals(1, projects.size());
-		assertTrue(projects.containsAll(projects1));
+		projects.contains(new Project(teamId, projectId));
 	}
 	
 	@Test
-	public void shouldUpdateSelectableTeams() {
-	    ObjectId id = new ObjectId();
-		List<GitlabTeam> teams = new ArrayList<>();
-		when(gitlabClient.getTeams()).thenReturn(teams);
-		when(dataClient.updateTeams(id, teams)).thenReturn(new UpdateResult(2, 1));
-		
-		assertNotNull(service.updateSelectableTeams(id));
-		
-		verify(gitlabClient).getTeams();
-		verify(dataClient).updateTeams(id, teams);
-	}
+    public void shouldGetProjectsToUpdateWithoutProjectName() {
+        String teamId = "capitalone";
+        String projectId = "hygieia";
+        ObjectId id = new ObjectId();
+        
+        List<CollectorItem> enabledWidgets = new ArrayList<>();
+        CollectorItem item1 = new CollectorItem();
+        item1.getOptions().put("teamId", teamId);
+
+        enabledWidgets.add(item1);
+        when(dataClient.getEnabledWidgets(id)).thenReturn(enabledWidgets);
+        
+        GitlabProject project = new GitlabProject();
+        project.setName(projectId);
+        project.setNamespace(new GitlabNamespace());
+        project.getNamespace().setName(teamId);
+        List<GitlabProject> gitlabProjects = Lists.newArrayList();
+        gitlabProjects.add(project);
+        when(gitlabClient.getProjectsForTeam(teamId)).thenReturn(gitlabProjects);
+
+        Collection<Project> projects = service.getProjectsToUpdate(id);
+        
+        assertEquals(1, projects.size());
+        projects.contains(new Project(teamId, projectId));
+    }
 	
 	@Test
-	public void shouldUpdateProjects() {
+	public void shouldUpdateIssuesForProject() throws InterruptedException, ExecutionException {
 	    ObjectId id = new ObjectId();
-		List<GitlabProject> projects = new ArrayList<>();
-		when(dataClient.updateProjects(id, projects)).thenReturn(new UpdateResult(2, 1));
-		
-		assertNotNull(service.updateProjects(id));
-		
-		verify(dataClient).updateProjects(id, projects);
-	}
-	
-	@Test
-	public void shouldUpdateIssuesForProject() {
-	    ObjectId id = new ObjectId();
-		GitlabProject project = new GitlabProject();
-		Long projectId = 23L;
-		project.setId(projectId);
+	    Collector collector = new Collector();
+	    collector.setId(id);
+	   
+		Project project = new Project("capitalone", "hygieia");
 		List<GitlabLabel> labels = new ArrayList<>();
-		when(gitlabClient.getInProgressLabelsForProject(projectId)).thenReturn(labels);
+		when(gitlabClient.getInProgressLabelsForProject(project)).thenReturn(labels);
 		ArrayList<GitlabIssue> issues = new ArrayList<>();
 		when(gitlabClient.getIssuesForProject(project)).thenReturn(issues);
-		when(dataClient.updateIssues(id, projectId, String.valueOf(projectId), issues, labels)).thenReturn(new UpdateResult(2, 1));
+		when(dataClient.updateIssues(collector, project, issues, labels)).thenReturn(new UpdateResult(2, 1));
 		
-		assertNotNull(service.updateIssuesForProject(id, projectId, project));
+		Future<UpdateResult> result = service.updateIssuesForProject(collector, project);
+		assertEquals(2, result.get().getItemsAdded());
+		assertEquals(1, result.get().getItemsDeleted());
+        assertNotNull(result);
 		
-		verify(dataClient).updateIssues(id, projectId, String.valueOf(projectId), issues, labels);
+		verify(dataClient).updateIssues(collector, project, issues, labels);
 	}
 
 }
