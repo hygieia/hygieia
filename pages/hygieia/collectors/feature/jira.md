@@ -137,6 +137,9 @@ feature.jiraStoryPointsFieldName=customfield_10003
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
 #############################################################################
 feature.jiraTeamFieldName=
+
+# Set this to true if you use boards as team
+feature.jiraBoardAsTeam=false
 ```
 
 #### Troubleshooting
