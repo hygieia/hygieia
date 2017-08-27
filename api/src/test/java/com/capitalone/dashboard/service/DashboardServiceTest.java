@@ -55,6 +55,8 @@ import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import javax.validation.constraints.AssertTrue;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardServiceTest {
@@ -498,6 +500,132 @@ public class DashboardServiceTest {
     }
 
     @Test
+    public void deleteTestCollectorItemDisable() {
+        ObjectId id = ObjectId.get();
+        ObjectId configItemBusServId = ObjectId.get();
+        ObjectId configItemBusAppId = ObjectId.get();
+
+        ObjectId collId = ObjectId.get();
+
+        ObjectId collItemId1 = ObjectId.get();
+        ObjectId collItemId2 = ObjectId.get();
+
+        CollectorItem item1 = new CollectorItem();
+        item1.setCollectorId(collId);
+        item1.setId(collItemId1);
+        item1.setEnabled(true);
+
+        CollectorItem item2 = new CollectorItem();
+        item2.setCollectorId(collId);
+        item2.setId(collItemId2);
+        item2.setEnabled(true);
+
+        Component component = new Component();
+        component.addCollectorItem(CollectorType.Build, item1);
+        component.addCollectorItem(CollectorType.Build, item2);
+
+
+        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServId, configItemBusAppId,"comp1");
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item1);
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item2);
+        when(dashboardRepository.findOne(id)).thenReturn(expected);
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item1)).thenReturn(Arrays.asList());
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item2)).thenReturn(Arrays.asList());
+
+        dashboardService.delete(id);
+
+        verify(componentRepository).delete(expected.getApplication().getComponents());
+        verify(dashboardRepository).delete(expected);
+        assertThat(item1.isEnabled(), is(false));
+        assertThat(item2.isEnabled(),is(false));
+        verify(collectorItemRepository).save(item1);
+        verify(collectorItemRepository).save(item2);
+    }
+
+
+    @Test
+    public void deleteTestCollectorOneItemDisable() {
+        ObjectId id = ObjectId.get();
+        ObjectId configItemBusServId = ObjectId.get();
+        ObjectId configItemBusAppId = ObjectId.get();
+
+        ObjectId collId = ObjectId.get();
+
+        ObjectId collItemId1 = ObjectId.get();
+        ObjectId collItemId2 = ObjectId.get();
+
+        CollectorItem item1 = new CollectorItem();
+        item1.setCollectorId(collId);
+        item1.setId(collItemId1);
+        item1.setEnabled(true);
+
+        CollectorItem item2 = new CollectorItem();
+        item2.setCollectorId(collId);
+        item2.setId(collItemId2);
+        item2.setEnabled(true);
+
+        Component component = new Component();
+        component.addCollectorItem(CollectorType.Build, item1);
+
+        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServId, configItemBusAppId,"comp1");
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item1);
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item2);
+        when(dashboardRepository.findOne(id)).thenReturn(expected);
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item1)).thenReturn(Arrays.asList(component));
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item2)).thenReturn(Arrays.asList());
+
+        dashboardService.delete(id);
+
+        verify(componentRepository).delete(expected.getApplication().getComponents());
+        verify(dashboardRepository).delete(expected);
+        assertThat(item1.isEnabled(), is(true));
+        assertThat(item2.isEnabled(),is(false));
+        verify(collectorItemRepository).save(item2);
+    }
+
+    @Test
+    public void deleteTestCollectorNothingDisabled() {
+        ObjectId id = ObjectId.get();
+        ObjectId configItemBusServId = ObjectId.get();
+        ObjectId configItemBusAppId = ObjectId.get();
+
+        ObjectId collId = ObjectId.get();
+
+        ObjectId collItemId1 = ObjectId.get();
+        ObjectId collItemId2 = ObjectId.get();
+
+        CollectorItem item1 = new CollectorItem();
+        item1.setCollectorId(collId);
+        item1.setId(collItemId1);
+        item1.setEnabled(true);
+
+        CollectorItem item2 = new CollectorItem();
+        item2.setCollectorId(collId);
+        item2.setId(collItemId2);
+        item2.setEnabled(true);
+
+        Component component = new Component();
+        component.addCollectorItem(CollectorType.Build, item1);
+        component.addCollectorItem(CollectorType.Build, item2);
+
+        Dashboard expected = makeTeamDashboard("template", "title", "appName",  "",configItemBusServId, configItemBusAppId,"comp1");
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item1);
+        expected.getApplication().getComponents().get(0).addCollectorItem(CollectorType.Build, item2);
+        when(dashboardRepository.findOne(id)).thenReturn(expected);
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item1)).thenReturn(Arrays.asList(component));
+        when(customRepositoryQuery.findComponents(collId, CollectorType.Build, item2)).thenReturn(Arrays.asList(component));
+
+        dashboardService.delete(id);
+
+        verify(componentRepository).delete(expected.getApplication().getComponents());
+        verify(dashboardRepository).delete(expected);
+        assertThat(item1.isEnabled(), is(true));
+        assertThat(item2.isEnabled(),is(true));
+        verify(collectorItemRepository,never()).save(item1);
+        verify(collectorItemRepository,never()).save(item2);
+    }
+
+    @Test
     public void addWidget() {
         ObjectId configItemBusServId = ObjectId.get();
         ObjectId configItemBusAppId = ObjectId.get();
@@ -547,8 +675,9 @@ public class DashboardServiceTest {
     	Iterable<Owner> owners = Lists.newArrayList();
         ObjectId configItemBusServId = ObjectId.get();
         ObjectId configItemBusAppId = ObjectId.get();
-    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), null, DashboardType.Team, configItemBusServId, configItemBusAppId);
-    	
+        List<String> activeWidgets = new ArrayList<>();
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), null, DashboardType.Team, configItemBusServId, configItemBusAppId,activeWidgets);
+
     	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
     	when(dashboardRepository.save(dashboard)).thenReturn(dashboard);
     	
@@ -581,8 +710,8 @@ public class DashboardServiceTest {
     	UserInfo existingInfo = new UserInfo();
     	existingInfo.setUsername("existing");
     	existingInfo.setAuthType(AuthType.LDAP);
-    	
-    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwner, DashboardType.Team,configItemBusServId,configItemBusAppId);
+        List<String> activeWidgets = new ArrayList<>();
+    	Dashboard dashboard = new Dashboard("template", "title", new Application("Application"), existingOwner, DashboardType.Team,configItemBusServId,configItemBusAppId,activeWidgets);
     	
     	when(userInfoRepository.findByUsernameAndAuthType("existing", AuthType.LDAP)).thenReturn(existingInfo);
     	when(dashboardRepository.findOne(dashboard.getId())).thenReturn(dashboard);
@@ -632,12 +761,24 @@ public class DashboardServiceTest {
 
         assertNotNull(dashboardService.updateDashboardBusinessItems(id,dashboardRequest));
     }
+
+    @Test
+    public void updateDashboardWidgets() throws HygieiaException{
+        ObjectId id = ObjectId.get();
+        myDashboard = makeTeamDashboard("template", "title", "appName", "amit",null, null, "comp1", "comp2");
+        Dashboard dashboardRequest = makeTeamDashboard("template", "title", "appName", "amit",null, null, "comp1", "comp2");
+        when(dashboardRepository.findOne(id)).thenReturn(myDashboard);
+        when(dashboardService.update(myDashboard)).thenReturn(myDashboard);
+        assertNotNull(dashboardService.updateDashboardWidgets(id,dashboardRequest));
+    }
+
     private Dashboard makeTeamDashboard(String template, String title, String appName, String owner,ObjectId configItemBusServId,ObjectId configItemBusAppId, String... compNames) {
         Application app = new Application(appName);
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServId, configItemBusAppId);
+        List<String> activeWidgets = new ArrayList<>();
+        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServId, configItemBusAppId,activeWidgets);
     }
 
     private Widget makeWidget(ObjectId id, String name) {

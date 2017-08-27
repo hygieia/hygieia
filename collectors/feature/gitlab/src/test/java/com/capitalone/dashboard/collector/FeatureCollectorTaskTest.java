@@ -8,8 +8,8 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.bson.types.ObjectId;
@@ -20,8 +20,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import com.capitalone.dashboard.gitlab.model.GitlabProject;
 import com.capitalone.dashboard.model.FeatureCollector;
+import com.capitalone.dashboard.model.Project;
 import com.capitalone.dashboard.model.UpdateResult;
 import com.capitalone.dashboard.repository.FeatureCollectorRepository;
 
@@ -69,19 +69,16 @@ public class FeatureCollectorTaskTest {
 		FeatureCollector collector = new FeatureCollector();
 		collector.setId(id);
 		collector.setLastExecuted(lastExecuted);
-		List<GitlabProject> projects = new ArrayList<>();
-		projects.add(new GitlabProject());
-		when(featureService.getEnabledProjects(id)).thenReturn(projects);
-		when(featureService.updateSelectableTeams(id)).thenReturn(future);
-		when(featureService.updateProjects(id)).thenReturn(future);
-		when(featureService.updateIssuesForProject(eq(id), eq(lastExecuted), isA(GitlabProject.class))).thenReturn(future);
+		Set<Project> projects = new HashSet<>();
+		Project project = new Project("capitalone", "hygieia");
+        projects.add(project);
+		when(featureService.getProjectsToUpdate(id)).thenReturn(projects);
+		when(featureService.updateIssuesForProject(eq(collector), isA(Project.class))).thenReturn(future);
 		when(future.get()).thenReturn(new UpdateResult(1, 1));
 		
 		featureCollectorTask.collect(collector);
 		
-		verify(featureService).updateSelectableTeams(id);
-		verify(featureService).updateProjects(id);
-		verify(featureService).updateIssuesForProject(id, lastExecuted, projects.get(0));
+		verify(featureService).updateIssuesForProject(collector, project);
 	}
 	
 	@Test
@@ -91,19 +88,16 @@ public class FeatureCollectorTaskTest {
 		FeatureCollector collector = new FeatureCollector();
 		collector.setId(id);
 		collector.setLastExecuted(lastExecuted);
-		List<GitlabProject> projects = new ArrayList<>();
-		projects.add(new GitlabProject());
-		when(featureService.getEnabledProjects(id)).thenReturn(projects);
-		when(featureService.updateSelectableTeams(id)).thenReturn(future);
-		when(featureService.updateProjects(id)).thenReturn(future);
-		when(featureService.updateIssuesForProject(eq(id), eq(lastExecuted), isA(GitlabProject.class))).thenReturn(future);
+        Set<Project> projects = new HashSet<>();
+        Project project = new Project("capitalone", "hygieia");
+        projects.add(project);
+        when(featureService.getProjectsToUpdate(id)).thenReturn(projects);
+        when(featureService.updateIssuesForProject(eq(collector), isA(Project.class))).thenReturn(future);
 		when(future.get()).thenThrow(new InterruptedException());
 		
 		featureCollectorTask.collect(collector);
 		
-		verify(featureService).updateSelectableTeams(id);
-		verify(featureService).updateProjects(id);
-		verify(featureService).updateIssuesForProject(id, lastExecuted, projects.get(0));
+		verify(featureService).updateIssuesForProject(collector, project);
 	}
 
 }

@@ -88,7 +88,7 @@ public class DefaultHpsmClient implements HpsmClient {
         hpsmSoapModel.setConfigurationItemSubType(hpsmSettings.getAppSubType());
         hpsmSoapModel.setRequestTypeName(hpsmSettings.getDetailsRequestType());
         hpsmSoapModel.setSoapAction(hpsmSettings.getDetailsSoapAction());
-        hpsmSoapModel.setStatus(hpsmSettings.getStatus());
+        hpsmSoapModel.setStatus(hpsmSettings.getAppStatus());
 
 		appList = getConfigurationItemList(hpsmSoapModel);
 
@@ -107,7 +107,7 @@ public class DefaultHpsmClient implements HpsmClient {
         hpsmSoapModel.setConfigurationItemType(hpsmSettings.getCompType());
         hpsmSoapModel.setSoapAction(hpsmSettings.getDetailsSoapAction());
         hpsmSoapModel.setRequestTypeName(hpsmSettings.getDetailsRequestType());
-        hpsmSoapModel.setStatus(hpsmSettings.getStatus());
+        hpsmSoapModel.setStatus(hpsmSettings.getAppStatus());
 
 		componentList = getConfigurationItemList(hpsmSoapModel);
 
@@ -386,7 +386,7 @@ public class DefaultHpsmClient implements HpsmClient {
             SOAPBodyElement instanceTag = body.addBodyElement(envelope.createName("instance","ns", ""));
 
             if(itemType != null && !itemType.isEmpty() ){
-                SOAPBodyElement configItemType= body.addBodyElement(envelope.createName("ConfigerationItemType","ns", ""));
+                SOAPBodyElement configItemType= body.addBodyElement(envelope.createName("ConfigurationItemType","ns", ""));
                 configItemType.addTextNode(itemType);
 				keysTag.addChildElement(configItemType);
 

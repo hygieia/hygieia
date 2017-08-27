@@ -91,7 +91,7 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
      * @return List of CloudInstance
      */
     @Override
-    public Map<String, List<CloudInstance>> getCloundInstances(CloudInstanceRepository repository) {
+    public Map<String, List<CloudInstance>> getCloudInstances(CloudInstanceRepository repository) {
         DescribeInstancesResult instanceResult = ec2Client.describeInstances();
         DescribeAutoScalingInstancesResult autoScaleResult = autoScalingClient.describeAutoScalingInstances();
         List<AutoScalingInstanceDetails> autoScalingInstanceDetails = autoScaleResult.getAutoScalingInstances();
@@ -140,8 +140,8 @@ public class DefaultAWSCloudClient implements AWSCloudClient {
      *
      * @param account      Cloud Account
      * @param currInstance Cloud Instance
-     * @param repository   CloundInstnceRepository
-     * @return A single CloundInstance
+     * @param repository   CloudInstnceRepository
+     * @return A single CloudInstance
      */
     private CloudInstance getCloudInstanceDetails(String account,
                                                   Instance currInstance, Map<String, String> autoScaleMap, CloudInstanceRepository repository) {

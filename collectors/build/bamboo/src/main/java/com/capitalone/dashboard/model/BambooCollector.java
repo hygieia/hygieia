@@ -3,7 +3,9 @@ package com.capitalone.dashboard.model;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Extension of Collector that stores current build server configuration.
@@ -38,6 +40,12 @@ public class BambooCollector extends Collector {
         if (!CollectionUtils.isEmpty(niceNames)) {
             protoType.getNiceNames().addAll(niceNames);
         }
+        Map<String, Object> options = new HashMap<>();
+        options.put(BambooJob.INSTANCE_URL,"");
+        options.put(BambooJob.JOB_URL,"");
+        options.put(BambooJob.JOB_NAME,"");
+        protoType.setAllFields(options);
+        protoType.setUniqueFields(options);
         return protoType;
     }
 }

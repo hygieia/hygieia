@@ -5,33 +5,43 @@
         color: #fff;
     }
 </style>
+<widget-modal widget-modal-title="Create Custom Template">
+    <form name ="templateForm">
+        <div class="wrapper">
+            <div class="sidebar">
+                <h3>Manage templates</h3>
+                <form-group input="template"
+                            class="text-center">
 
-<ng-include src="ctrl.templateUrl"></ng-include>
-<div class="wrapper">
-    <div class="sidebar">
-        <div class="header">
-            <h1>Hygieia Widgets</h1>
-            <div class="btn btn-primary" ng-click="ctrl.clearWidgets($event)">Save Template</div>
-        </div>
-        <ul>
-            <li ng-repeat="(title, widget) in ctrl.widgets"><a id="{{title}}-button" ng-click="ctrl.toggleWidget(title, $event)">{{ title }}</a></li>
-        </ul>
-        <br>
-        <div class="btn btn-primary" ng-click="ctrl.clearWidgets($event)">Delete All</div>
-        <div class="btn btn-warning" ng-click="ctrl.clearWidgets($event)">Erase Template</div>
-    </div>
-    <div class="gui-view">
-        <br>
-        <div class="row">
-            <div class="col-md-12">
-                <div gridstack class="grid-stack" options="options" on-change="ctrl.onChange(event,items)" on-drag-start="ctrl.onDragStart(event,ui)" on-drag-stop="ctrl.onDragStop(event,ui)" on-resize-start="ctrl.onResizeStart(event,ui)" on-resize-stop="ctrl.onResizeStop(event,ui)">
-                    <div gridstack-item ng-repeat="(title, w) in widgets" class="grid-stack-item" gs-item-x="w.x" gs-item-y="w.y"
-                         gs-item-width="w.width" gs-item-height="w.height" gs-item-autopos="1">
-                        <div class="grid-stack-item-content widget">
-                            <div class="widget-body-config">
-                                <div>
-                                    <div class="fa fa-cog fa-lg"></div>
-                                    <div>{{title}}</div>
+                    <label class="modal-label">Template Name</label>
+                    <input type="text"
+                           name="template"
+                           class="form-control text-center"
+                           ng-model="ctrl.templateName"
+                           placeholder="Enter Template Name"
+                           autocomplete="off"
+                           required />
+                </form-group>
+                <ul>
+                    <li ng-repeat="(title, widget) in ctrl.widgets"  ng-if="title!='cloud' && title!='product' && title!='pipeline' && title!='monitor2' && title!='chatops'"><a id="{{title}}-button" ng-click="ctrl.toggleWidget(title, $event)">
+                        {{title}}</a></li>
+                </ul>
+                <br>
+            </div>
+            <div class="gui-view">
+                <br>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div gridstack class="grid-stack" options="options" on-change="ctrl.onChange(event,items)" on-drag-start="ctrl.onDragStart(event,ui)" on-drag-stop="ctrl.onDragStop(event,ui)" on-resize-start="ctrl.onResizeStart(event,ui)" on-resize-stop="ctrl.onResizeStop(event,ui)">
+                            <div gridstack-item ng-repeat="(title, w) in widgets" class="grid-stack-item" gs-item-x="w.x" gs-item-y="w.y"
+                                 gs-item-width="w.width" gs-item-height="w.height" gs-item-autopos="1">
+                                <div class="grid-stack-item-content widget">
+                                    <div class="widget-body-config">
+                                        <div>
+                                            <div class="fa fa-cog fa-lg"></div>
+                                            <div>{{title}}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -39,5 +49,8 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide" ng-click="ctrl.saveTemplate($event,templateForm)">Create</button>
+        </div>
+    </form>
+</widget-modal>

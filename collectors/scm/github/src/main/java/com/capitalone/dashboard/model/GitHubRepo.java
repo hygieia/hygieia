@@ -6,11 +6,13 @@ import java.util.Date;
  * CollectorItem extension to store the github repo url and branch.
  */
 public class GitHubRepo extends CollectorItem {
-    private static final String REPO_URL = "url"; // http://github.company.com/jack/somejavacode
-    private static final String BRANCH = "branch"; // master, development etc.
-    private static final String USER_ID = "userID";
-    private static final String PASSWORD = "password";
-    private static final String LAST_UPDATE_TIME = "lastUpdate";
+    public static final String REPO_URL = "url"; // http://github.company.com/jack/somejavacode
+    public static final String BRANCH = "branch"; // master, development etc.
+    public static final String USER_ID = "userID";
+    public static final String PASSWORD = "password";
+    public static final String LAST_UPDATE_TIME = "lastUpdate";
+    private int lastPrPage;
+
 
     public String getUserId() {
         return (String) getOptions().get(USER_ID);
@@ -45,6 +47,13 @@ public class GitHubRepo extends CollectorItem {
         getOptions().put(BRANCH, branch);
     }
 
+    public int getLastPrPage() {
+        return lastPrPage;
+    }
+
+    public void setLastPrPage(int lastPrPage) {
+        this.lastPrPage = lastPrPage;
+    }
 
     public Date getLastUpdateTime() {
         Object latest = getOptions().get(LAST_UPDATE_TIME);

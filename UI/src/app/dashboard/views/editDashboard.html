@@ -145,5 +145,29 @@
                 </div>
             </div>
         </div>
+
+        <div class="container-fluid" ng-if="ctrl.tabView == 'Widget Management'">
+            <div class="row">
+                <div class="col-xs-12 gap">
+                    <label class="modal-label">Add/Remove Widgets</label>
+                    <form name="editForm">
+                        <ul class="list-animate list-group text-left">
+                            <li class="list-group-item" ng-repeat="(title,enabled) in ctrl.widgetSelections"
+                                ng-if="title!='product' && title!='monitor2' && title!='undefined'">
+                                <span class="fa fa-lg left-icon"></span>
+                                <input type="checkbox" name="widgetSelections" ng-disabled="ctrl.selectWidgetsDisabled" ng-model="ctrl.widgetSelections[title]">
+                                <span>{{title | uppercase}}</span>
+                            </li>
+
+                        </ul>
+
+                        <div class="button-row row text-center">
+                            <button type="submit" class="btn btn-primary btn-wide" ng-click="ctrl.saveWidgets(editForm)" ng-disabled="ctrl.selectWidgetsDisabled">Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </widget-modal>

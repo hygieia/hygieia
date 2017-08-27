@@ -19,6 +19,7 @@ public class Team extends BaseModel {
     private String assetState;
     private String isDeleted;
     private boolean enabled;
+    private String teamType;
 
     @Transient
     private Collector collector;
@@ -32,8 +33,8 @@ public class Team extends BaseModel {
     }
 
     public Team(String teamId, String name) {
-        this.teamId = teamId;
-        this.name = name;
+        this.teamId = (teamId != null ? teamId.trim() : "");
+        this.name = (name != null ? name.trim() : "");
     }
 
     public ObjectId getCollectorId() {
@@ -90,6 +91,14 @@ public class Team extends BaseModel {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getTeamType() {
+        return teamType;
+    }
+
+    public void setTeamType(String teamType) {
+        this.teamType = teamType;
     }
 
     /* (non-Javadoc)

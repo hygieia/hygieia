@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -152,7 +153,6 @@ public class DashboardServiceImpl implements DashboardService {
             throw new UnsafeDeleteException("Cannot delete team dashboard " + dashboard.getTitle() + " as it is referenced by program dashboards.");
         }
 
-        componentRepository.delete(dashboard.getApplication().getComponents());
 
         // Remove this Dashboard's services and service dependencies
         serviceRepository.delete(serviceRepository.findByDashboardId(id));
@@ -161,7 +161,32 @@ public class DashboardServiceImpl implements DashboardService {
             serviceRepository.save(service);
         }
 
+        /**
+         * Delete Dashboard. Then delete component. Then disable collector items if needed
+         */
         dashboardRepository.delete(dashboard);
+        componentRepository.delete(dashboard.getApplication().getComponents());
+        handleCollectorItems(dashboard.getApplication().getComponents());
+    }
+
+    /**
+     * For the dashboard, get all the components and get all the collector items for the components.
+     * If a collector item is NOT associated with any Component, disable it.
+     * @param components
+     */
+    private void handleCollectorItems(List<Component> components) {
+        for (Component component : components) {
+            Map<CollectorType, List<CollectorItem>> itemMap = component.getCollectorItems();
+            for (CollectorType type : itemMap.keySet()) {
+                List<CollectorItem> items = itemMap.get(type);
+                for (CollectorItem i : items) {
+                    if (CollectionUtils.isEmpty(customRepositoryQuery.findComponents(i.getCollectorId(),type,i))) {
+                        i.setEnabled(false);
+                        collectorItemRepository.save(i);
+                    }
+                }
+            }
+        }
     }
 
     private boolean isSafeDelete(Dashboard dashboard) {
@@ -453,6 +478,71 @@ public class DashboardServiceImpl implements DashboardService {
             rt = dashboardRepository.findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(cmdbAppItem.getId(),cmdbCompItem.getId());
         }
         return new DataResponse<>(rt, System.currentTimeMillis());
+    }
+
+
+    @Override
+    public Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException {
+        Dashboard dashboard = get(dashboardId);
+        List<String> existingActiveWidgets = dashboard.getActiveWidgets();
+        List<Component> components = dashboard.getApplication().getComponents();
+        List<String> widgetToDelete =  findUpdateCollectorItems(existingActiveWidgets,request.getActiveWidgets());
+        List<Widget> widgets = dashboard.getWidgets();
+        ObjectId componentId = components.get(0)!=null?components.get(0).getId():null;
+        List<Integer> indexList = new ArrayList<>();
+        List<CollectorType> collectorTypesToDelete = new ArrayList<>();
+        List<Widget> updatedWidgets = new ArrayList<>();
+
+        for (String widgetName: widgetToDelete) {
+            for (Widget widget:widgets) {
+                if(widgetName.equalsIgnoreCase(widget.getName())){
+                    int widgetIndex = widgets.indexOf(widget);
+                    indexList.add(widgetIndex);
+                    collectorTypesToDelete.add(findCollectorType(widgetName));
+                    if(widgetName.equalsIgnoreCase("codeanalysis")){
+                        collectorTypesToDelete.add(CollectorType.CodeQuality);
+                        collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
+                        collectorTypesToDelete.add(CollectorType.LibraryPolicy);
+                    }
+                }
+            }
+        }
+        //iterate through index and remove widgets
+        for (Integer i:indexList) {
+            widgets.set(i,null);
+        }
+        for (Widget w:widgets) {
+            if(w!=null)
+                updatedWidgets.add(w);
+        }
+        dashboard.setWidgets(updatedWidgets);
+        dashboard.setActiveWidgets(request.getActiveWidgets());
+        dashboard = update(dashboard);
+        if(componentId!=null){
+            com.capitalone.dashboard.model.Component component = componentRepository.findOne(componentId);
+            for (CollectorType cType :collectorTypesToDelete) {
+                component.getCollectorItems().remove(cType);
+            }
+            componentRepository.save(component);
+        }
+        return dashboard;
+    }
+
+
+    private List<String> findUpdateCollectorItems(List<String> existingWidgets,List<String> currentWidgets){
+        List<String> result = existingWidgets.stream().filter(elem -> !currentWidgets.contains(elem)).collect(Collectors.toList());
+        return result;
+    }
+
+    private static CollectorType findCollectorType(String widgetName){
+        if(widgetName.equalsIgnoreCase("build")) return CollectorType.Build;
+        if(widgetName.equalsIgnoreCase("feature")) return CollectorType.AgileTool;
+        if(widgetName.equalsIgnoreCase("deploy")) return CollectorType.Deployment;
+        if(widgetName.equalsIgnoreCase("repo")) return CollectorType.SCM;
+        if(widgetName.equalsIgnoreCase("performanceanalysis")) return CollectorType.AppPerformance;
+        if(widgetName.equalsIgnoreCase("cloud")) return CollectorType.Cloud;
+        if(widgetName.equalsIgnoreCase("chatops")) return CollectorType.ChatOps;
+        return null;
     }
 
     private void getAppAndComponentNames(List<Dashboard> findByOwnersList) {
