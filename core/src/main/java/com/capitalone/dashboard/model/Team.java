@@ -33,8 +33,8 @@ public class Team extends BaseModel {
     }
 
     public Team(String teamId, String name) {
-        this.teamId = teamId;
-        this.name = name;
+        this.teamId = (teamId != null ? teamId.trim() : "");
+        this.name = (name != null ? name.trim() : "");
     }
 
     public ObjectId getCollectorId() {
