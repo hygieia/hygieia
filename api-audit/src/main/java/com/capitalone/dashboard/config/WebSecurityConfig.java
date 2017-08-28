@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntr
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,8 +34,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/ping").permitAll()
+                .antMatchers("/swagger/**").permitAll()
                 //TODO: sample call secured with ROLE_API
                 //.antMatchers("/ping").hasAuthority("ROLE_API")
+                //.antMatchers(HttpMethod.GET, "/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/v2/api-docs").permitAll()
 
                 .anyRequest().authenticated()
                 .and()

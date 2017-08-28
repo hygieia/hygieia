@@ -1,0 +1,23 @@
+<widget-modal id="edit-template-details"
+              class="team-environment-commit-detail"
+              widget-modal-title="Edit Template Details"
+              widget-modal-close="true">
+
+    <form name="editForm">
+        <ul class="list-animate list-group text-left">
+            <h4> Template : {{ctrl.templateName}}</h4>
+            <li class="list-group-item" ng-repeat="(title, enabled) in ctrl.widgetSelections"
+                ng-if="title!='cloud' && title!='product' && title!='pipeline' && title!='monitor2' && title!='chatops'   && title!='undefined'">
+                <span class="fa fa-lg left-icon"></span>
+                <input type="checkbox" name="widgetSelections" ng-model="ctrl.widgetSelections[title]">
+                <span>{{title | uppercase}}</span>
+            </li>
+
+        </ul>
+
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide" ng-click="ctrl.saveTemplate($event,editForm)">Save
+            </button>
+        </div>
+    </form>
+</widget-modal>
