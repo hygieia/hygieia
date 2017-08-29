@@ -103,14 +103,14 @@ docker run -t -p 8088:80 --link hygieia-api -i hygieia-ui:latest
 ### API check
 
 #### API layer successfully connected
-![Image](../Hygieia/media/images/apiup.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/apiup.png)
 
 #### API layer connection unsuccessful
-![Image](../Hygieia/media/images/apidown.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/apidown.png)
 
 
 ### ScreenShot of login page with API Layer up
-![Image](../Hygieia/media/images/loginpage.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/loginpage.png)
 
 ### Encryption for private repos
 1. From module core generate a secret key.

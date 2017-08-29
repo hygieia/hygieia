@@ -1,5 +1,5 @@
 ---
-title: Sonar Collector
+title: Hygieia 2.0 Features
 tags:
 keywords:
 summary:
@@ -32,22 +32,22 @@ Hygieia 2.0 attempts to achieve this by "rolling up" data from individual Team D
 Jenkins plugin allows Hygieia to create link between code commit, build, artifact, deployments etc. 
 
 - Optionally, if you are using Github Enterprise, you can set up Webhook (see screenshot below):
-![Image](/media/images/webhook.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/webhook.png)
 
 - Now, setup Team Dashboards as you would with Hygieia 1.0. For each Team Dashboard, create your pipeline:
-![Image](/media/images/team-pipeline-config.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/team-pipeline-config.png)
 
 
 #### Hygieia 2.0, Screen Flows
 
 ##### Select Dashboard:
-![Image](/media/images/h2-select-dashboard.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/h2-select-dashboard.png)
 
 ##### Create New Dashboard:
-![Image](/media/images/h2-create-dashboard.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/h2-create-dashboard.png)
 
 ##### Add Team Dashboard(s) to New Product Dashboard:
-![Image](/media/images/h2-add-teamdashboard.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/h2-add-teamdashboard.png)
 
 
 
@@ -55,22 +55,22 @@ Jenkins plugin allows Hygieia to create link between code commit, build, artifac
 #### Hygieia 2.0 Dashboard - Each part explained
 
 ##### Commit Stage:
-![Image](/media/images/h2-commit-stage.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/h2-commit-stage.png)
 
 ##### Build Stage:
-![Image](/media/images/h2-build-stage.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/h2-build-stage.png)
 
 ##### Deployment Stages:
-![Image](/media/images/h2-deploy-stages.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/h2-deploy-stages.png)
 
 ##### Production Stage:
-![Image](/media/images/h2-prod-stage.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/h2-prod-stage.png)
 
 ##### Commit Details at every stage:
-![Image](/media/images/h2-commit-details-stage.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/h2-commit-details-stage.png)
 
 ##### Pipeline Health:
-![Image](/media/images/h2-health.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/h2-health.png)
 
 ##### Pipeline Health Details:
-![Image](/media/images/h2-health-details.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/h2-health-details.png)
