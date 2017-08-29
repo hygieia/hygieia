@@ -98,15 +98,17 @@ public class DashboardServiceImpl implements DashboardService {
 
         if (!dashboard.getApplication().getComponents().isEmpty()) {
             // Add transient Collector instance to each CollectorItem
-            Map<CollectorType, List<CollectorItem>> itemMap = dashboard.getApplication().getComponents().get(0).getCollectorItems();
+        	if(dashboard.getApplication().getComponents().get(0) != null) {
+        		Map<CollectorType, List<CollectorItem>> itemMap = dashboard.getApplication().getComponents().get(0).getCollectorItems();
 
-            Iterable<Collector> collectors = collectorsFromItems(itemMap);
+                Iterable<Collector> collectors = collectorsFromItems(itemMap);
 
-            for (List<CollectorItem> collectorItems : itemMap.values()) {
-                for (CollectorItem collectorItem : collectorItems) {
-                    collectorItem.setCollector(getCollector(collectorItem.getCollectorId(), collectors));
+                for (List<CollectorItem> collectorItems : itemMap.values()) {
+                    for (CollectorItem collectorItem : collectorItems) {
+                        collectorItem.setCollector(getCollector(collectorItem.getCollectorId(), collectors));
+                    }
                 }
-            }
+        	}
         }
 
         return dashboard;
@@ -164,8 +166,19 @@ public class DashboardServiceImpl implements DashboardService {
         /**
          * Delete Dashboard. Then delete component. Then disable collector items if needed
          */
+        if(dashboard.getApplication().getComponents() != null && dashboard.getApplication().getComponents().size() > 0) {
+        	if(dashboard.getApplication().getComponents().contains(null)) {
+        		for(Component component : dashboard.getApplication().getComponents()) {
+        			if(component != null) {
+        				componentRepository.delete(component);
+        			}
+        		}
+        	}
+        	else {
+        		componentRepository.delete(dashboard.getApplication().getComponents());
+        	}
+        }
         dashboardRepository.delete(dashboard);
-        componentRepository.delete(dashboard.getApplication().getComponents());
         handleCollectorItems(dashboard.getApplication().getComponents());
     }
 
@@ -176,16 +189,18 @@ public class DashboardServiceImpl implements DashboardService {
      */
     private void handleCollectorItems(List<Component> components) {
         for (Component component : components) {
-            Map<CollectorType, List<CollectorItem>> itemMap = component.getCollectorItems();
-            for (CollectorType type : itemMap.keySet()) {
-                List<CollectorItem> items = itemMap.get(type);
-                for (CollectorItem i : items) {
-                    if (CollectionUtils.isEmpty(customRepositoryQuery.findComponents(i.getCollectorId(),type,i))) {
-                        i.setEnabled(false);
-                        collectorItemRepository.save(i);
+        	if(component != null) {
+        		Map<CollectorType, List<CollectorItem>> itemMap = component.getCollectorItems();
+                for (CollectorType type : itemMap.keySet()) {
+                    List<CollectorItem> items = itemMap.get(type);
+                    for (CollectorItem i : items) {
+                        if (CollectionUtils.isEmpty(customRepositoryQuery.findComponents(i.getCollectorId(),type,i))) {
+                            i.setEnabled(false);
+                            collectorItemRepository.save(i);
+                        }
                     }
                 }
-            }
+        	}
         }
     }
 
