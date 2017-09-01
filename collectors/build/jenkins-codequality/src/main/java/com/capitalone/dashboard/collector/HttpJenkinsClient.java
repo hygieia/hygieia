@@ -94,6 +94,6 @@ public class HttpJenkinsClient implements JenkinsClient {
             securityHeader.add(HttpHeaders.AUTHORIZATION, authHeader);
             return new HttpEntity<>(securityHeader);
         }
-        return null;
+        return HttpEntity.EMPTY;
     }
 }

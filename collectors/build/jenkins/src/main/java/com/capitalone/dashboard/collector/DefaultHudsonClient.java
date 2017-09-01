@@ -116,6 +116,8 @@ public class DefaultHudsonClient implements HudsonClient {
         	pageSize = 1000;
         }
         while (i < jobsCount) {
+        	LOG.info("Fetching jobs " + i + "/" + jobsCount + " pageSize " + settings.getPageSize() + "...");
+        	
 	        try {
                 String url = joinURL(instanceUrl, API_SUFFIX + buildJobQueryString() + URLEncoder.encode("{" + i + "," + (i + pageSize) + "}", "UTF-8"));
 	            ResponseEntity<String> responseEntity = makeRestCall(url);
