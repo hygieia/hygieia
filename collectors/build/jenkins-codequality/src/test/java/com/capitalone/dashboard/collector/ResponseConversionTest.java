@@ -2,7 +2,6 @@ package com.capitalone.dashboard.collector;
 
 import com.capitalone.dashboard.jenkins.JobContainer;
 import org.junit.Test;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +39,7 @@ public class ResponseConversionTest {
                         "            \"url\": \"http://localhost:8080/job/sss/1/\",\n" +
                         "            \"lastSuccessfulBuild\": {\n" +
                         "                \"timestamp\":123455,\n" +
-                        "                \"artifacts\":[{\"relativePath\":\"rel\",\"fileMame\":\"name\"}]\n" +
+                        "                \"artifacts\":[{\"relativePath\":\"rel\",\"fileName\":\"name\"}]\n" +
                         "            }\n"+
                         "        }\n" +
                         "    ]\n" +
@@ -55,6 +54,8 @@ public class ResponseConversionTest {
 
         assertThat(jobResponse.getBody().getJobs()).hasSize(2);
         assertThat(jobResponse.getBody().getJobs().get(0).getName()).isEqualTo("job1");
+        assertThat(jobResponse.getBody().getJobs().get(0).getLastSuccessfulBuild().getArtifacts()).hasSize(1);
+        assertThat(jobResponse.getBody().getJobs().get(0).getLastSuccessfulBuild().getArtifacts().get(0).getFileName()).isEqualTo("name");
     }
 
 }
