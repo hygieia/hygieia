@@ -42,7 +42,7 @@ public class HttpJenkinsClientTest {
     @Test
     public void artifactsReturnedInJunitFormatOnlyForMatchingArtifacts() throws Exception {
 
-        when(mockRestTemplate.exchange(argThat(is(equalTo(new URI("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml")))), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JunitXmlReport.class)))
+        when(mockRestTemplate.exchange(argThat(is(equalTo(new URI("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml")))), eq(HttpMethod.GET), eq(HttpEntity.EMPTY), eq(JunitXmlReport.class)))
                 .thenReturn(ResponseEntity.ok().body(new JunitXmlReport()));
 
         JenkinsJob job = JenkinsJob.newBuilder()
@@ -62,13 +62,13 @@ public class HttpJenkinsClientTest {
 
         List<JunitXmlReport> xmlReports = testee.getLatestArtifacts(JunitXmlReport.class, job, Pattern.compile("TEST-.*-test\\.xml"));
 
-        verify(mockRestTemplate).exchange(argThat(is(equalTo(new URI("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml")))), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JunitXmlReport.class));
+        verify(mockRestTemplate).exchange(argThat(is(equalTo(new URI("http://myBuildServer/myJob/lastSuccessfulBuild/artifact/mysubmodule/TEST-someSuite-test.xml")))), eq(HttpMethod.GET), eq(HttpEntity.EMPTY), eq(JunitXmlReport.class));
         assertThat(xmlReports).size().isEqualTo(1);
     }
 
     @Test
     public void getJobsShouldReturnAListOfJobs() throws Exception {
-        when(mockRestTemplate.exchange(eq(new URI("http://buildserver1/api/json?tree=jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]]]]")), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JobContainer.class)))
+        when(mockRestTemplate.exchange(eq(new URI("http://buildserver1/api/json?tree=jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]]]]")), eq(HttpMethod.GET), isNotNull(HttpEntity.class), eq(JobContainer.class)))
                 .thenReturn(ResponseEntity.ok()
                     .body(JobContainer.newBuilder()
                         .job(JenkinsJob.newBuilder()
@@ -76,7 +76,7 @@ public class HttpJenkinsClientTest {
                             .url("http://buildserver1/job1")
                             .build())
                         .build()));
-        when(mockRestTemplate.exchange(eq(new URI("http://buildserver2/api/json?tree=jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]]]]")), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JobContainer.class)))
+        when(mockRestTemplate.exchange(eq(new URI("http://buildserver2/api/json?tree=jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]]]]")), eq(HttpMethod.GET), isNotNull(HttpEntity.class), eq(JobContainer.class)))
                 .thenReturn(ResponseEntity.ok()
                     .body(JobContainer.newBuilder()
                         .job(JenkinsJob.newBuilder()
@@ -87,8 +87,8 @@ public class HttpJenkinsClientTest {
 
         final List<JenkinsJob> jobs = testee.getJobs(Arrays.asList("http://buildserver1", "http://buildserver2"));
 
-        verify(mockRestTemplate).exchange(eq(new URI("http://buildserver1/api/json?tree=jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]]]]")), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JobContainer.class));
-        verify(mockRestTemplate).exchange(eq(new URI("http://buildserver2/api/json?tree=jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]]]]")), eq(HttpMethod.GET), isNull(HttpEntity.class), eq(JobContainer.class));
+        verify(mockRestTemplate).exchange(eq(new URI("http://buildserver1/api/json?tree=jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]]]]")), eq(HttpMethod.GET), eq(HttpEntity.EMPTY), eq(JobContainer.class));
+        verify(mockRestTemplate).exchange(eq(new URI("http://buildserver2/api/json?tree=jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]],jobs[name,url,lastSuccessfulBuild[timestamp,artifacts[*]]]]]")), eq(HttpMethod.GET), eq(HttpEntity.EMPTY), eq(JobContainer.class));
         assertThat(jobs).isNotNull();
         assertThat(jobs).hasSize(2);
         assertThat(jobs).extracting("url")
