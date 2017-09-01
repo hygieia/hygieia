@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,9 +24,24 @@ public class CmdbServiceImpl implements CmdbService {
 
     @Override
     public Page<Cmdb> configurationItemsByTypeWithFilter(String itemType, String filter, Pageable pageable) {
-        Page<Cmdb> configItemString = cmdbRepository.findAllByItemTypeAndConfigurationItemContainingIgnoreCaseAndValidConfigItem(
-                itemType, filter, pageable, true);
 
+        Page<Cmdb> configItemString;
+
+        if(filter != null && !filter.isEmpty() && !itemType.equals("app")){
+
+            List<Cmdb> cmdbList = cmdbRepository.findAllByConfigurationItemContainingOrCommonNameContainingAllIgnoreCase(filter,filter);
+
+            List<ObjectId> cmdbIdsList = new ArrayList<>();
+            for (Cmdb cmdb : cmdbList) {
+                cmdbIdsList.add(cmdb.getId());
+            }
+
+            configItemString = cmdbRepository.findAllByItemTypeAndValidConfigItemAndIdIn(itemType,true, cmdbIdsList, pageable);
+
+        }else{
+            configItemString = cmdbRepository.findAllByItemTypeAndConfigurationItemContainingIgnoreCaseAndValidConfigItem(
+                    itemType, filter, pageable, true);
+        }
         return configItemString;
     }
     @Override
