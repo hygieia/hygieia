@@ -52,6 +52,7 @@
                                     placeholder="Select a Business Service (Optional)"
                                     uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue) "
                                     typeahead-wait-ms="250" autocomplete="off"
+                                    typeahead-focus
                                     typeahead-min-length="0"
                                     typeahead-editable="false"
                                     typeahead-on-select="ctrl.setConfigItemAppId(ctrl.configurationItemBusServ.id)"
@@ -69,8 +70,9 @@
                                     ng-model="ctrl.configurationItemBusApp"
                                     class="form-control"
                                     placeholder="Select a Business Application (Optional)"
-                                    uib-typeahead="configItemComp as configItemComp.configurationItem for configItemComp in ctrl.getConfigItem('component',$viewValue)"
+                                    uib-typeahead="configItemComp as configItemComp.configurationItem + ' - (' + configItemComp.commonName + ')' for configItemComp in ctrl.getConfigItem('component',$viewValue)"
                                     typeahead-wait-ms="250" autocomplete="off"
+                                    typeahead-focus
                                     typeahead-min-length="0"
                                     typeahead-editable="false"
                                     typeahead-on-select="ctrl.setConfigItemComponentId(ctrl.configurationItemBusApp.id)"
