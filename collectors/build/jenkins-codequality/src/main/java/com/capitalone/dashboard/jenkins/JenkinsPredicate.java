@@ -15,11 +15,11 @@ public class JenkinsPredicate {
 
     public static Predicate<Artifact> artifactContaining(List<Pattern> patterns) {
         return artifact -> patterns.stream().anyMatch(
-                pattern -> pattern.asPredicate().test(artifact.getName()));
+                pattern -> pattern.asPredicate().test(artifact.getFileName()));
     }
 
     public static Predicate<Artifact> artifactContaining(Pattern pattern) {
-        return artifact -> pattern.asPredicate().test(artifact.getName());
+        return artifact -> pattern.asPredicate().test(artifact.getFileName());
     }
 
 }
