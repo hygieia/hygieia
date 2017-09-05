@@ -42,7 +42,7 @@
         <artifactId>docker-maven-plugin</artifactId>
         <configuration>
           <skipDockerBuild>false</skipDockerBuild>
-          <imageName>hygieia-jenkins-build-collector</imageName>
+          <imageName>hygieia-bamboo-build-collector</imageName>
           <dockerDirectory>${project.basedir}/docker</dockerDirectory>
           <resources>
             <resource>
