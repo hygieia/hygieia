@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -113,7 +114,7 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
 					+ "\"},\"repo\":{\"$eq\":\"" + repoName
 					+ "\"}}).include(\"repo\", \"name\", \"path\", \"created\", \"modified\", \"property\")";
 			
-			ResponseEntity<String> responseEntity = makeRestPost(instanceUrl, AQL_URL_SUFFIX, body);
+			ResponseEntity<String> responseEntity = makeRestPost(instanceUrl, AQL_URL_SUFFIX, MediaType.TEXT_PLAIN, body);
 			String returnJSON = responseEntity.getBody();
 	        JSONParser parser = new JSONParser();
 	        
@@ -290,11 +291,13 @@ public class DefaultArtifactoryClient implements ArtifactoryClient {
         return response;
     }
     
-    private ResponseEntity<String> makeRestPost(String instanceUrl, String suffix, Object body) {
+    private ResponseEntity<String> makeRestPost(String instanceUrl, String suffix, MediaType contentType, Object body) {
         ResponseEntity<String> response = null;
         try {
         	HttpHeaders headers = createHeaders(instanceUrl);
-        	headers.setContentType(MediaType.APPLICATION_JSON);
+        	headers.setContentType(contentType);
+        	headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        	
             response = restOperations.exchange(joinUrl(instanceUrl, artifactorySettings.getEndpoint(), suffix), HttpMethod.POST,
                     new HttpEntity<>(body, headers), String.class);
 
