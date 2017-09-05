@@ -1,7 +1,6 @@
 package jenkins.plugins.hygieia.workflow;
 
 import com.capitalone.dashboard.model.BuildStatus;
-import com.capitalone.dashboard.request.BinaryArtifactCreateRequest;
 import com.capitalone.dashboard.request.DeployDataCreateRequest;
 import hudson.Extension;
 import hudson.FilePath;
@@ -9,7 +8,6 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import hygieia.builder.ArtifactBuilder;
 import hygieia.builder.BuildBuilder;
 import hygieia.builder.DeployBuilder;
 import jenkins.model.Jenkins;
