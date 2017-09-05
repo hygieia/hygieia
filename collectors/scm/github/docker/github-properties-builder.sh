@@ -13,7 +13,7 @@ then
         #for testing locally
         PROP_FILE=application.properties
 else 
-	PROP_FILE=hygieia-github-scm-collector.properties
+	PROP_FILE=config/hygieia-github-scm-collector.properties
 fi
   
 if [ "$MONGO_PORT" != "" ]; then
