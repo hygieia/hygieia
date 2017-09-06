@@ -13,7 +13,7 @@ public class Artifact {
     this.fileName = builder.fileName;
   }
 
-  public String getName() {
+  public String getFileName() {
     return fileName;
   }
 
