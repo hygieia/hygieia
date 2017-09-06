@@ -19,31 +19,31 @@ You can pick and choose which collectors are applicable for your DevOps toolset 
 Hygieia supports the following collectors Inventory:
 
 - **Build Collectors**
-  - [Bamboo](bamboo.html)
-  - [Jenkins](jenkins.html)
-  - [Jenkins Cucumber](jenkins-cucumber.html)
-  - [Sonar](sonar.html)
+  - [Bamboo](build/bamboo.md)
+  - [Jenkins](build/jenkins.md)
+  - [Jenkins Cucumber](build/jenkins-cucumber.md)
+  - [Sonar](build/sonar.md)
 - **Cloud Collectors**
-  - [AWS](aws.html)
+  - [AWS](cloud/aws.md)
 - **Deploy Collectors**
-  - [uDeploy](udeploy.html)
-  - [XLDeploy](xldeploy.html)
+  - [uDeploy](deploy/udeploy.md)
+  - [XLDeploy](deploy/xldeploy.md)
 - **Feature Collectors**
-  - [Jira](jira.html)
-  - [VersionOne](versionone.html)
-  - [Gitlab](feature-gitlab.html)
+  - [Jira](feature/jira.md)
+  - [VersionOne](feature/versionone.md)
+  - [Gitlab](feature/feature-gitlab.md)
 - **Miscellaneous Collectors**
-  - [Chat Ops](chat-ops.html)
+  - [Chat Ops](misc/chat-ops.md)
 - **SCM Collectors** 
-  - [Bitbucket](bitbucket.html)
-  - [Github](github.html)
-  - [Gitlab](gitlab.html)
-  - [Subversion](subversion.html)
+  - [Bitbucket](scm/bitbucket.md)
+  - [GitHub](scm/github.md)
+  - [Gitlab](scm/gitlab.md)
+  - [Subversion](scm/subversion.md)
 - **Performance Collector**
-  - [AppDynamics](appdynamics.html)
+  - [AppDynamics](performance/appdynamics.md)
 - **Configuration Management Database (CMDB)**
-  - [HP Service Manager (HPSM)](hpsm.html)
+  - [HP Service Manager (HPSM)](cmdb/hpsm.md)
 - **Library Policy**
-  - [Nexus IQ](nexus-iq-collector.html)
+  - [Nexus IQ](library-policy/nexus-iq-collector.md)
 - **Artifact Repository**
-  - [Artifactory](artifactory.html)
+  - [Artifactory](artifact/artifactory.md)

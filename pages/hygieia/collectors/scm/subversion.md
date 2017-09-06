@@ -7,7 +7,7 @@ sidebar: hygieia_sidebar
 permalink: subversion.html
 ---
 
-# Hygieia SCM Collectors / Github
+# Hygieia SCM Collectors / Subversion
 
 This project uses Spring Boot to package the collector as an executable JAR with dependencies.
 
