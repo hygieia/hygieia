@@ -20,7 +20,12 @@
         		return response;
         	});
         }
-        
+
+        $scope.getJobsById = function (id) {
+            return collectorData.getCollectorItemById(id).then(function (response){
+                return response;
+            });
+        }
         loadSavedBuildJob();
         // set values from config
         if (widgetConfig) {
@@ -42,16 +47,12 @@
 
             if(savedCollectorBuildJob) {
                 ctrl.buildId = buildCollector[0].id;
-            	$scope.getJobs(savedCollectorBuildJob).then(getBuildsCallback) 
+            	$scope.getJobsById(ctrl.buildId).then(getBuildsCallback)
             }
         }
         
         function getBuildsCallback(data) {
-            _(data).forEach(function (item) {
-                if(item.id == ctrl.buildId){
-                    ctrl.collectorItemId = item;
-                }
-            });
+            ctrl.collectorItemId = data;
         }
 
         function submitForm(valid, collector) {
