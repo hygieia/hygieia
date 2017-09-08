@@ -67,6 +67,12 @@ public class JenkinsCodeQualityCollectorTaskTest {
         assertThat(collector.getBuildServers()).contains("server1", "server2");
         assertThat(collector.getCollectorType()).isEqualTo(CollectorType.CodeQuality);
         assertThat(collector.getName()).isEqualTo("JenkinsCodeQuality");
+        assertThat(collector.getAllFields().get("instanceUrl")).isEqualTo("");
+        assertThat(collector.getAllFields().get("jobName")).isEqualTo("");
+        assertThat(collector.getAllFields().get("jobUrl")).isEqualTo("");
+        assertThat(collector.getUniqueFields().get("instanceUrl")).isEqualTo("");
+        assertThat(collector.getUniqueFields().get("jobName")).isEqualTo("");
+        assertThat(collector.getUniqueFields().get("jobUrl")).isEqualTo("");
     }
 
 
