@@ -176,6 +176,8 @@ public class JenkinsCodeQualityCollectorTaskTest {
         verify(this.mockJobRepository, times(1)).delete(deletedJobsCaptor.capture());
         JenkinsCodeQualityJob capturedValues = deletedJobsCaptor.getValue();
         assertThat(capturedValues.getOptions().get("jenkinsServer")).isEqualTo("http://buildserver0/job1");
+        assertThat(capturedValues.getOptions().get("instanceUrl")).isEqualTo("http://buildserver0/job1");
+        assertThat(capturedValues.getOptions().get("jobUrl")).isEqualTo("job1");
     }
 
     @Test
