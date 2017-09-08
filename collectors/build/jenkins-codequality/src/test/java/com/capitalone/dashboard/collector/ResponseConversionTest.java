@@ -39,7 +39,7 @@ public class ResponseConversionTest {
                         "            \"url\": \"http://localhost:8080/job/sss/1/\",\n" +
                         "            \"lastSuccessfulBuild\": {\n" +
                         "                \"timestamp\":123455,\n" +
-                        "                \"artifacts\":[{\"relativePath\":\"rel\",\"fileName\":\"name\"}]\n" +
+                        "                \"artifacts\":[{\"relativePath\":\"rel\",\"fileMame\":\"name\"}]\n" +
                         "            }\n"+
                         "        }\n" +
                         "    ]\n" +
