@@ -15,6 +15,10 @@ public class JobContainer {
         return jobs;
     }
 
+    public JobContainer() {
+        // required for converter
+    }
+
     @SuppressWarnings("PMD.AccessorClassGeneration")
     public static Builder newBuilder() {
         return new Builder();
