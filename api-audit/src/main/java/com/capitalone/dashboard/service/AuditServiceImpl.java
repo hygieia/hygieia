@@ -314,7 +314,15 @@ public class AuditServiceImpl implements AuditService {
             String baseSha = pr.getBaseSha();
             Commit baseCommit = commitRepository.findByScmRevisionNumberAndScmUrl(baseSha, pr.getScmUrl());
             if (baseCommit.getType() == CommitType.New) {
-                peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+                if (baseCommit.getScmParentRevisionNumbers() != null) {
+                    if (baseCommit.getScmParentRevisionNumbers().isEmpty()) {
+                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                    } else {
+                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+                    }
+                } else {
+                    peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                }
             } else {
                 //merge commit
             }
@@ -330,7 +338,15 @@ public class AuditServiceImpl implements AuditService {
             if (!mapCommitsRelatedToAllPrs.containsKey(commitSha)) {
                 if (commit.getType() == CommitType.New) {
                     commitsNotDirectlyTiedToPr.add(commit);
-                    peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+                    if (commit.getScmParentRevisionNumbers() != null) {
+                        if (commit.getScmParentRevisionNumbers().isEmpty()) {
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                        } else {
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+                        }
+                    } else {
+                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                    }
                 } else {
                     //merge commit
                 }
