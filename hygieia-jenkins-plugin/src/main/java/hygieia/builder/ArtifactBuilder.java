@@ -39,13 +39,14 @@ public class ArtifactBuilder {
     public ArtifactBuilder(AbstractBuild<?, ?> build, HygieiaPublisher publisher, TaskListener listener, String hygieiaBuildId) {
         //fixme: Need to fix the run and build dual!
         this.run = build;
-        directory = publisher.getHygieiaArtifact().getArtifactDirectory().trim();
-        filePattern = publisher.getHygieiaArtifact().getArtifactName().trim();
-        group = publisher.getHygieiaArtifact().getArtifactGroup().trim();
-        version = publisher.getHygieiaArtifact().getArtifactVersion().trim();
+        HygieiaPublisher.HygieiaArtifact hygieiaArtifact = publisher.getHygieiaArtifact();
+        directory = hygieiaArtifact.getArtifactDirectory().trim();
+        filePattern = hygieiaArtifact.getArtifactName().trim();
+        group = hygieiaArtifact.getArtifactGroup().trim();
+        version = hygieiaArtifact.getArtifactVersion().trim();
         this.hygieiaBuildId = hygieiaBuildId;
         this.listener = listener;
-        this.rootDirectory = build.getWorkspace().withSuffix(directory);
+        this.rootDirectory = new FilePath(build.getWorkspace(), directory);
 
         buildArtifacts();
     }
@@ -58,7 +59,7 @@ public class ArtifactBuilder {
         version = publisher.getArtifactVersion().trim();
         this.hygieiaBuildId = hygieiaBuildId;
         this.listener = listener;
-        this.rootDirectory = filePath.withSuffix(directory);
+        this.rootDirectory = new FilePath(filePath, directory);
         buildArtifacts();
     }
 

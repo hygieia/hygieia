@@ -11,6 +11,7 @@ public enum AuditStatus {
 
     //direct commits to master
     DIRECT_COMMITS_TO_BASE,
+    DIRECT_COMMITS_TO_BASE_FIRST_COMMIT,
 
     //which environment is the build job in
     //which folder is the build job in

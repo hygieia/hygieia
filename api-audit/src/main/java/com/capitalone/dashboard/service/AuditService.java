@@ -15,11 +15,11 @@ import java.util.List;
 
 public interface AuditService {
 
-    List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> gitRequests);
+    List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> gitRequests, List<Commit> commits);
 
     List<GitRequest> getPullRequests(String repo, String branch, long beginDt, long endDt);
 
-    List<Commit> getCommitsBySha (String scmRevisionNumber);
+    List<Commit> getCommits(String repo, String branch, long beginDt, long endDt);
 
     String getJobEnvironment(String instanceUrl, String jobName);
 
