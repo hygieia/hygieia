@@ -45,7 +45,7 @@ public class GitlabUriUtility {
 	
     public URI buildProjectsForTeamUri(String teamName) {
         UriComponentsBuilder builder = buildApiUri();
-        URI uri = builder.pathSegment(GROUPS_PATH_SEGMENT).pathSegment(teamName).pathSegment(PROJECTS_PATH_SEGMENT).build().toUri();
+        URI uri = builder.pathSegment(GROUPS_PATH_SEGMENT).pathSegment(urlEncode(teamName)).pathSegment(PROJECTS_PATH_SEGMENT).build(true).toUri();
         return uri;
     }
 	
@@ -102,13 +102,17 @@ public class GitlabUriUtility {
     private String buildGitlabProjectId(Project project) {
         String projectId = project.getTeamId() + "/" + project.getProjectId();
         String result;
-        try {
-            result = URLEncoder.encode(projectId, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            result = StringUtils.replace(projectId, "/", "%2F"); 
-        }
+        result = urlEncode(projectId);
         
         return result;
+    }
+
+    private String urlEncode(String stringToEncode) {
+        try {
+            return URLEncoder.encode(stringToEncode, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            return StringUtils.replace(stringToEncode, "/", "%2F"); 
+        }
     }
 
 }
