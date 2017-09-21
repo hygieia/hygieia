@@ -310,21 +310,40 @@ public class AuditServiceImpl implements AuditService {
                 peerReviewResponse.addAuditStatus(AuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             }
 
+            //type of branching strategy
+            String sourceRepo = pr.getSourceRepo();
+            String sourceBranch = pr.getSourceBranch();
+            String targetRepo = pr.getTargetRepo();
+            String targetBranch = pr.getTargetBranch();
+
+            if (sourceRepo.equalsIgnoreCase(targetRepo)) {
+                peerReviewResponse.addAuditStatus(AuditStatus.GIT_BRANCH_STRATEGY);
+            } else {
+                peerReviewResponse.addAuditStatus(AuditStatus.GIT_FORK_STRATEGY);
+            }
+
             //direct commit to master
             String baseSha = pr.getBaseSha();
-            Commit baseCommit = commitRepository.findByScmRevisionNumberAndScmUrl(baseSha, pr.getScmUrl());
-            if (baseCommit.getType() == CommitType.New) {
-                if (baseCommit.getScmParentRevisionNumbers() != null) {
-                    if (baseCommit.getScmParentRevisionNumbers().isEmpty()) {
-                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+            String headSha = pr.getHeadSha();
+            for(Commit commit: commitsRelatedToPr) {
+                if (commit.getType() == CommitType.New) {
+                    if (commit.getScmParentRevisionNumbers() != null) {
+                        if (commit.getScmParentRevisionNumbers().isEmpty()) {
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                        } else {
+
+                            List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
+                            for (String parentCommitSha : parentCommitShas) {
+                                computeParentCommit(commit.getScmRevisionNumber(), peerReviewResponse, baseSha, headSha, pr);
+                            }
+
+                        }
                     } else {
-                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                     }
                 } else {
-                    peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                    //merge commit
                 }
-            } else {
-                //merge commit
             }
 
             mapCommitsRelatedToAllPrs.putAll(mapCommitsRelatedToPr);
@@ -342,6 +361,7 @@ public class AuditServiceImpl implements AuditService {
                         if (commit.getScmParentRevisionNumbers().isEmpty()) {
                             peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                         } else {
+                            peerReviewResponse.addAuditStatus(AuditStatus.GIT_NO_WORKFLOW);
                             peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
                         }
                     } else {
@@ -358,6 +378,24 @@ public class AuditServiceImpl implements AuditService {
         }
 
         return allPeerReviews;
+    }
+
+    private void computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse, String baseSha, String headSha, GitRequest pr) {
+        boolean traceBack = true;
+        Commit commit = commitRepository.findByScmRevisionNumberAndScmUrl(commitSha, pr.getScmUrl());
+        while (traceBack) {
+            if (commit.getScmRevisionNumber().equalsIgnoreCase(baseSha)) {
+                peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+                traceBack = false;
+            } else if (commit.getScmRevisionNumber().equalsIgnoreCase(headSha)) {
+                traceBack = false;
+            } else {
+                List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
+                for (String parentCommitSha : parentCommitShas) {
+                    computeParentCommit(commit.getScmRevisionNumber(), peerReviewResponse, baseSha, headSha, pr);
+                }
+            }
+        }
     }
 
     public String getJobEnvironment(String jobUrl, String jobName) {
