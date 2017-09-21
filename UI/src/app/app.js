@@ -1,4 +1,3 @@
-
 // test to see if local storage is supported functionality
 var localStorageSupported = (function () {
     try {
@@ -17,9 +16,9 @@ var localStorageSupported = (function () {
     var theme = 'dash';
 
     // get theme from storage
-    if(localStorageSupported) {
+    if (localStorageSupported) {
         var tempTheme = localStorage.getItem('theme');
-        if(tempTheme && tempTheme != 'undefined' ) {
+        if (tempTheme && tempTheme != 'undefined') {
             theme = tempTheme;
         }
     }
@@ -50,91 +49,85 @@ var localStorageSupported = (function () {
         'angular-jwt'
     ])
 
-    .config(['$httpProvider', 'jwtOptionsProvider',
-        // intercepting the http provider allows us to use relative routes
-        // in data providers and then redirect them to a remote api if
-        // necessary
-        function ($httpProvider, jwtOptionsProvider) {
-            jwtOptionsProvider.config({
-              tokenGetter: ['tokenService', function(tokenService) {
-                return tokenService.getToken();
-              }]
-            });
-            $httpProvider.interceptors.push('jwtInterceptor');
-            $httpProvider.interceptors.push('authInterceptor');
-            $httpProvider.interceptors.push(function () {
-                return {
-                    request: function (config) {
-                        var path = config.url;
-                        if(config.url.substr(0, 1) != '/') {
-                            path = '/' + config.url;
+        .config(['$httpProvider', 'jwtOptionsProvider',
+            // intercepting the http provider allows us to use relative routes
+            // in data providers and then redirect them to a remote api if
+            // necessary
+            function ($httpProvider, jwtOptionsProvider) {
+                jwtOptionsProvider.config({
+                    tokenGetter: ['tokenService', function (tokenService) {
+                        return tokenService.getToken();
+                    }]
+                });
+                $httpProvider.interceptors.push('jwtInterceptor');
+                $httpProvider.interceptors.push('authInterceptor');
+                $httpProvider.interceptors.push(function () {
+                    return {
+                        request: function (config) {
+                            var path = config.url;
+                            if (config.url.substr(0, 1) != '/') {
+                                path = '/' + config.url;
+                            }
+
+                            if (!!HygieiaConfig.api && path.substr(0, 5) == '/api/') {
+                                config.url = HygieiaConfig.api + path;
+                            }
+
+                            return config;
+                        },
+                    };
+                });
+            }])
+        .config(function ($stateProvider, $urlRouterProvider) {
+
+            $urlRouterProvider.otherwise('/');
+
+            $stateProvider
+                .state('login', {
+                    url: '/login',
+                    controller: 'LoginController as login',
+                    templateUrl: 'app/dashboard/views/login.html'
+                })
+
+                .state('site', {
+                    url: '/',
+                    controller: 'SiteController as ctrl',
+                    templateUrl: 'app/dashboard/views/site.html'
+                })
+
+                .state('signup', {
+                    url: '/signup',
+                    controller: 'SignupController as signup',
+                    templateUrl: 'app/dashboard/views/signup.html'
+                })
+
+                .state('adminState', {
+                    url: '/admin',
+                    controller: 'AdminController as ctrl',
+                    templateUrl: 'app/dashboard/views/admin.html'
+                })
+
+                .state('dashboardState', {
+                    url: '/dashboard/:id?delete&reset',
+                    controller: 'DashboardController as ctrl',
+                    templateUrl: 'app/dashboard/views/dashboard.html',
+                    resolve: {
+                        dashboard: function ($stateParams, dashboardData) {
+                            return dashboardData.detail($stateParams.id);
                         }
+                    }
+                })
 
-                        if(!!HygieiaConfig.api && path.substr(0, 5) == '/api/') {
-                            config.url = HygieiaConfig.api + path;
-                        }
+                .state('templates', {
+                    url: '/templates',
+                    controller: 'TemplateController as ctrl',
+                    templateUrl: 'app/dashboard/views/templates.html'
+                })
 
-                        return config;
-                    },
-                };
+        })
+        .run(function ($rootScope, loginRedirectService) {
+            $rootScope.$on('$locationChangeStart', function (event, nextPath, currentPath) {
+                loginRedirectService.saveCurrentPath(currentPath);
             });
-        }])
-    .config(function($stateProvider, $urlRouterProvider) {
-
-      $urlRouterProvider.otherwise('/');
-
-      $stateProvider
-      .state('login', {
-          url: '/login',
-          controller: 'LoginController as login',
-          templateUrl: 'app/dashboard/views/login.html'
-      })
-
-      .state('site', {
-        url: '/',
-        controller: 'SiteController as ctrl',
-        templateUrl: 'app/dashboard/views/site.html'
-      })
-
-      .state('signup', {
-        url: '/signup',
-        controller: 'SignupController as signup',
-        templateUrl: 'app/dashboard/views/signup.html'
-      })
-
-      .state('adminState', {
-        url: '/admin',
-        controller: 'AdminController as ctrl',
-        templateUrl: 'app/dashboard/views/admin.html'
-      })
-
-      .state('dashboardState', {
-        url: '/dashboard/:id?delete&reset',
-        controller: 'DashboardController as ctrl',
-        templateUrl: 'app/dashboard/views/dashboard.html',
-        resolve: {
-          dashboard: function ($stateParams, dashboardData) {
-            return dashboardData.detail($stateParams.id);
-          }
-        }
-      })
-
-      .state('templates', {
-        url: '/templates',
-        controller: 'TemplateController as ctrl',
-        templateUrl: 'app/dashboard/views/templates.html'
-      })
-
-      .state('createTemplate', {
-        url: '/templates/create',
-        controller: 'TemplateController as ctrl',
-        templateUrl: 'app/dashboard/views/templatesManager.html'
-      });
-
-    })
-    .run(function ($rootScope, loginRedirectService) {
-      $rootScope.$on('$locationChangeStart', function (event, nextPath, currentPath) {
-        loginRedirectService.saveCurrentPath(currentPath);
-      });
-    });
+        });
 })();

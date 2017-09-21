@@ -87,9 +87,11 @@ public class AuditControllerTest {
         commit.setScmCommitLog("some commit log");
         baseCommits.add(commit);
         
-        when(auditService.getCommitsBySha("acd323e123abc323a123a")).thenReturn(baseCommits);
+        //when(auditService.getCommitsBySha("acd323e123abc323a123a")).thenReturn(baseCommits);
 
         when(auditService.getPullRequests("http://test.git.com", "master", 1l, 2l)).thenReturn(gitRequests);
+        when(auditService.getCommits("http://test.git.com", "master", 1l, 2l)).thenReturn(new ArrayList());
+
         mockMvc.perform(get("/peerReview" + "?repo=" + request.getRepo()
                 + "&branch=" + request.getBranch()
                 + "&beginDate=" + request.getBeginDate()

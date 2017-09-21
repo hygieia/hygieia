@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.request.DashboardReviewRequest;
 import com.capitalone.dashboard.request.JobReviewRequest;
@@ -57,7 +58,8 @@ public class AuditController {
     @RequestMapping(value = "/peerReview", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Iterable<PeerReviewResponse>> peerReview(@Valid PeerReviewRequest request) {
         List<GitRequest> pullRequests = auditService.getPullRequests(request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
-        List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests);
+        List<Commit> commits = auditService.getCommits(request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
+        List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits);
         return ResponseEntity.ok().body(allPeerReviews);
     }
 

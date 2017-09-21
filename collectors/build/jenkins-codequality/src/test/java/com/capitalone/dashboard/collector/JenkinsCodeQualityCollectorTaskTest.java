@@ -67,6 +67,12 @@ public class JenkinsCodeQualityCollectorTaskTest {
         assertThat(collector.getBuildServers()).contains("server1", "server2");
         assertThat(collector.getCollectorType()).isEqualTo(CollectorType.CodeQuality);
         assertThat(collector.getName()).isEqualTo("JenkinsCodeQuality");
+        assertThat(collector.getAllFields().get("instanceUrl")).isEqualTo("");
+        assertThat(collector.getAllFields().get("jobName")).isEqualTo("");
+        assertThat(collector.getAllFields().get("jobUrl")).isEqualTo("");
+        assertThat(collector.getUniqueFields().get("instanceUrl")).isEqualTo("");
+        assertThat(collector.getUniqueFields().get("jobName")).isEqualTo("");
+        assertThat(collector.getUniqueFields().get("jobUrl")).isEqualTo("");
     }
 
 
@@ -170,6 +176,8 @@ public class JenkinsCodeQualityCollectorTaskTest {
         verify(this.mockJobRepository, times(1)).delete(deletedJobsCaptor.capture());
         JenkinsCodeQualityJob capturedValues = deletedJobsCaptor.getValue();
         assertThat(capturedValues.getOptions().get("jenkinsServer")).isEqualTo("http://buildserver0/job1");
+        assertThat(capturedValues.getOptions().get("instanceUrl")).isEqualTo("http://buildserver0/job1");
+        assertThat(capturedValues.getOptions().get("jobUrl")).isEqualTo("job1");
     }
 
     @Test

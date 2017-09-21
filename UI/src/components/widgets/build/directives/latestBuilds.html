@@ -3,14 +3,16 @@
         Latest Builds
     </div>
     <div class="widget-body latest-builds">
-        <div class="dash-row clickable" ng-repeat="build in buildView.recentBuilds"
-             ng-click="buildView.detail(build)">
-            <span ng-if="build.status=='success'" dash-status='ok'></span>
-            <span ng-if="build.status!='success' && build.status != 'inprogress'" dash-status='alert'></span>
-            <span ng-if="build.status=='inprogress'" class="fa fa-refresh fa-spin product-text-active"></span>
-            <span class="build-number">{{::build.number}}</span>
-            <span class="text-standard-date">{{::build.endTime | fromNow}}</span>
-            <span class="build-chevron pull-right fa fa-lg fa-angle-right"></span>
-        </div>
+        <table class="table">
+            <tr class="dash-row clickable" ng-repeat="build in buildView.recentBuilds"
+                 ng-click="buildView.detail(build)">
+                <td ng-if="build.status=='success'"><span  dash-status='ok'></span></td>
+                <td ng-if="build.status!='success' && build.status != 'inprogress'"><span  dash-status='alert'></span></td>
+                <td ng-if="build.status=='inprogress'"><span  class="fa fa-refresh fa-spin product-text-active"></span></td>
+                <td><span class="build-number">{{::build.number}}</span></td>
+                <td><span class="text-standard-date">{{::build.endTime | fromNow}}</span></td>
+                <td><span class="build-chevron pull-right fa fa-lg fa-angle-right"></span></td>
+            </tr>
+        </table>
     </div>
 </div>
