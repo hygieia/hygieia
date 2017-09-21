@@ -22,6 +22,7 @@ import com.capitalone.dashboard.repository.CollItemCfgHistRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
+import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.JobRepository;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +46,7 @@ public class AuditServiceImpl implements AuditService {
 
     private GitRequestRepository gitRequestRepository;
     private final CommitRepository commitRepository;
+    private final CustomRepositoryQuery customRepositoryQuery;
     private JobRepository jobRepository;
     private CollectorRepository collectorRepository;
     private CollItemCfgHistRepository collItemCfgHistRepository;
@@ -54,6 +57,7 @@ public class AuditServiceImpl implements AuditService {
 
     @Autowired
     public AuditServiceImpl(GitRequestRepository gitRequestRepository, CommitRepository commitRepository,
+                            CustomRepositoryQuery customRepositoryQuery,
                             JobRepository jobRepository, CollectorRepository collectorRepository,
                             CollItemCfgHistRepository collItemCfgHistRepository,
                             DashboardRepository dashboardRepository,
@@ -62,6 +66,7 @@ public class AuditServiceImpl implements AuditService {
                             BuildRepository buildRepository) {
         this.gitRequestRepository = gitRequestRepository;
         this.commitRepository = commitRepository;
+        this.customRepositoryQuery = customRepositoryQuery;
         this.jobRepository = jobRepository;
         this.collectorRepository = collectorRepository;
         this.collItemCfgHistRepository = collItemCfgHistRepository;
@@ -118,6 +123,7 @@ public class AuditServiceImpl implements AuditService {
         String scmWidgetbranch = null;
         String scmWidgetrepoUrl = null;
         List<GitRequest> pullRequests = null;
+        List<Commit> commits = null;
         if (repoItems != null && !repoItems.isEmpty()) {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_CONFIGURED);
 
@@ -127,7 +133,8 @@ public class AuditServiceImpl implements AuditService {
 
             if (scmWidgetbranch != null && scmWidgetrepoUrl != null) {
                 pullRequests = this.getPullRequests(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
-                List<PeerReviewResponse> allPeerReviews = this.getPeerReviewResponses(pullRequests);
+                commits = this.getCommits(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
+                List<PeerReviewResponse> allPeerReviews = this.getPeerReviewResponses(pullRequests, commits);
 
                 dashboardReviewResponse.setAllPeerReviewResponses(allPeerReviews);
             }
@@ -221,30 +228,53 @@ public class AuditServiceImpl implements AuditService {
         return pullRequests;
     }
 
-    public List<Commit> getCommitsBySha (String scmRevisionNumber) {
-        return commitRepository.findByScmRevisionNumber(scmRevisionNumber);
+    public List<Commit> getCommits(String repo, String branch, long beginDt, long endDt) {
+        List<Commit> commits = customRepositoryQuery.findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(repo, branch, beginDt, endDt);
+        return commits;
+    }
+
+    private void getRelatedCommits(String aCommit, HashMap<String, Commit> mapCommitsRelatedToPr, GitRequest pr) {
+        Commit relatedCommit = commitRepository.findByScmRevisionNumberAndScmUrl(aCommit, pr.getScmUrl());
+        if (relatedCommit != null) {
+
+            if (!mapCommitsRelatedToPr.containsKey(relatedCommit.getScmRevisionNumber())) {
+                mapCommitsRelatedToPr.put(relatedCommit.getScmRevisionNumber(), relatedCommit);
+            }
+
+            //uncomment if tracing back all the previous parent commits
+//            List<String> relatedCommitShas = relatedCommit.getScmParentRevisionNumbers();
+//            for(String relatedCommitSha: relatedCommitShas) {
+//                getRelatedCommits(relatedCommitSha, mapCommitsRelatedToPr, pr);
+//            }
+        }
     }
 
     @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
-    public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests) {
+    public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits) {
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
 
+        HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
+
         for(GitRequest pr : pullRequests) {
-            List commitsRelatedToPr = new ArrayList();
+            HashMap<String, Commit> mapCommitsRelatedToPr = new HashMap();
             String mergeSha = pr.getScmRevisionNumber();
-            List<Commit> mergeCommits = this.getCommitsBySha(mergeSha);
-            String mergeAuthor = "";
-            for(Commit mergeCommit: mergeCommits) {
-                List<String> relatedCommitShas = mergeCommit.getScmParentRevisionNumbers();
-                mergeAuthor = mergeCommit.getScmAuthorLogin();
-                for(String relatedCommitSha: relatedCommitShas) {
-                    List<Commit> relatedCommits = this.getCommitsBySha(relatedCommitSha);
-                    commitsRelatedToPr.addAll(relatedCommits);
-                }
-                break;
+            Commit mergeCommit = commitRepository.findByScmRevisionNumberAndScmUrl(mergeSha, pr.getScmUrl());
+            if (mergeCommit == null) {
+                continue;
             }
+            String mergeAuthor = mergeCommit.getScmAuthorLogin();
+
+            List<String> relatedCommitShas = mergeCommit.getScmParentRevisionNumbers();
+            for(String relatedCommitSha: relatedCommitShas) {
+                getRelatedCommits(relatedCommitSha, mapCommitsRelatedToPr, pr);
+            }
+
             PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
             peerReviewResponse.setPullRequest(pr);
+
+            List<Commit> commitsRelatedToPr = new ArrayList(mapCommitsRelatedToPr.values());
+            commitsRelatedToPr.sort((e1, e2) -> new Long(e1.getScmCommitTimestamp()).compareTo(new Long(e2.getScmCommitTimestamp())));
+
             peerReviewResponse.setCommits(commitsRelatedToPr);
 
             //check for pr author <> pr merger
@@ -280,19 +310,92 @@ public class AuditServiceImpl implements AuditService {
                 peerReviewResponse.addAuditStatus(AuditStatus.PULLREQ_NOT_PEER_REVIEWED);
             }
 
+            //type of branching strategy
+            String sourceRepo = pr.getSourceRepo();
+            String sourceBranch = pr.getSourceBranch();
+            String targetRepo = pr.getTargetRepo();
+            String targetBranch = pr.getTargetBranch();
+
+            if (sourceRepo.equalsIgnoreCase(targetRepo)) {
+                peerReviewResponse.addAuditStatus(AuditStatus.GIT_BRANCH_STRATEGY);
+            } else {
+                peerReviewResponse.addAuditStatus(AuditStatus.GIT_FORK_STRATEGY);
+            }
+
             //direct commit to master
             String baseSha = pr.getBaseSha();
-            List<Commit> baseCommits = this.getCommitsBySha(baseSha);
-            for(Commit baseCommit: baseCommits) {
-                if (baseCommit.getType() == CommitType.New) {
-                    peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+            String headSha = pr.getHeadSha();
+            for(Commit commit: commitsRelatedToPr) {
+                if (commit.getType() == CommitType.New) {
+                    if (commit.getScmParentRevisionNumbers() != null) {
+                        if (commit.getScmParentRevisionNumbers().isEmpty()) {
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                        } else {
+
+                            List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
+                            for (String parentCommitSha : parentCommitShas) {
+                                computeParentCommit(commit.getScmRevisionNumber(), peerReviewResponse, baseSha, headSha, pr);
+                            }
+
+                        }
+                    } else {
+                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                    }
                 } else {
                     //merge commit
                 }
             }
 
+            mapCommitsRelatedToAllPrs.putAll(mapCommitsRelatedToPr);
         }
+
+        PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
+        List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
+        //check any commits not directly tied to pr
+        for(Commit commit: commits) {
+            String commitSha = commit.getScmRevisionNumber();
+            if (!mapCommitsRelatedToAllPrs.containsKey(commitSha)) {
+                if (commit.getType() == CommitType.New) {
+                    commitsNotDirectlyTiedToPr.add(commit);
+                    if (commit.getScmParentRevisionNumbers() != null) {
+                        if (commit.getScmParentRevisionNumbers().isEmpty()) {
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                        } else {
+                            peerReviewResponse.addAuditStatus(AuditStatus.GIT_NO_WORKFLOW);
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+                        }
+                    } else {
+                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                    }
+                } else {
+                    //merge commit
+                }
+            }
+        }
+        if (!commitsNotDirectlyTiedToPr.isEmpty()) {
+            peerReviewResponse.setCommits(commitsNotDirectlyTiedToPr);
+            allPeerReviews.add(peerReviewResponse);
+        }
+
         return allPeerReviews;
+    }
+
+    private void computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse, String baseSha, String headSha, GitRequest pr) {
+        boolean traceBack = true;
+        Commit commit = commitRepository.findByScmRevisionNumberAndScmUrl(commitSha, pr.getScmUrl());
+        while (traceBack) {
+            if (commit.getScmRevisionNumber().equalsIgnoreCase(baseSha)) {
+                peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+                traceBack = false;
+            } else if (commit.getScmRevisionNumber().equalsIgnoreCase(headSha)) {
+                traceBack = false;
+            } else {
+                List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
+                for (String parentCommitSha : parentCommitShas) {
+                    computeParentCommit(commit.getScmRevisionNumber(), peerReviewResponse, baseSha, headSha, pr);
+                }
+            }
+        }
     }
 
     public String getJobEnvironment(String jobUrl, String jobName) {
