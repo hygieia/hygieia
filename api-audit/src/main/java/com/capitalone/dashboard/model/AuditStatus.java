@@ -13,6 +13,11 @@ public enum AuditStatus {
     DIRECT_COMMITS_TO_BASE,
     DIRECT_COMMITS_TO_BASE_FIRST_COMMIT,
 
+    //type of git workflow
+    GIT_FORK_STRATEGY,
+    GIT_BRANCH_STRATEGY,
+    GIT_NO_WORKFLOW,
+
     //which environment is the build job in
     //which folder is the build job in
     BUILD_JOB_IS_PROD,
