@@ -316,10 +316,15 @@ public class AuditServiceImpl implements AuditService {
             String targetRepo = pr.getTargetRepo();
             String targetBranch = pr.getTargetBranch();
 
-            if (sourceRepo.equalsIgnoreCase(targetRepo)) {
-                peerReviewResponse.addAuditStatus(AuditStatus.GIT_BRANCH_STRATEGY);
-            } else {
+            if (sourceRepo == null) {
+                //fork could be deleted
                 peerReviewResponse.addAuditStatus(AuditStatus.GIT_FORK_STRATEGY);
+            } else {
+                if (sourceRepo.equalsIgnoreCase(targetRepo)) {
+                    peerReviewResponse.addAuditStatus(AuditStatus.GIT_BRANCH_STRATEGY);
+                } else {
+                    peerReviewResponse.addAuditStatus(AuditStatus.GIT_FORK_STRATEGY);
+                }
             }
 
             //direct commit to master
