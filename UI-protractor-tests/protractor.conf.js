@@ -6,7 +6,7 @@
 
 exports.config = {
 
-    baseUrl: 'http://todomvc.com',
+    baseUrl: 'http://localhost:3000/',
 
     // seleniumServerJar: seleniumJar,
 
@@ -25,7 +25,7 @@ exports.config = {
     specs: [ 'src/main/js/features/**/*.feature' ],
 
     cucumberOpts: {
-        require:    [ 'src/main/js/features/**/*.js' ],
+        require:    [ 'src/main/js/step_definitions/*.steps.js' ],
         format:     'pretty'
         // compiler:   'ts:ts-node/register'
     },

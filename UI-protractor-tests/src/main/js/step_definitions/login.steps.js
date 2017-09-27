@@ -1,4 +1,5 @@
 const
+    homePage = require('../pages/home.page'),
     loginPage = require('../pages/login.page'),
     listOf = require('../text').listOf,
     expect = require('../expect').expect;
@@ -7,35 +8,40 @@ module.exports = function loginSteps() {
 
     this.setDefaultTimeout(60 * 1000);
 
-    this.Given(/^.*I navigate to the login page$/, () => {
-        loginPage.startWithAnEmptyTodoList();
+    this.Given(/^I navigate to the login page$/, () => {
+        homePage.navigateToLoginPage();
     });
 
-    this.Given(/^.*that I have a todo list containing (.*)$/, (items) => {
-        todoListPage.startWithATodoListContaining(listOf(items));
+    this.When(/^I enter login credentials (.*) and (.*)$/, (invalidUser, invalidPassword) => {
+        loginPage.setUsername(invalidUser);
+        loginPage.setPassword(invalidPassword);
     });
 
-    this.When(/^I add (.*?) to my list$/, (item) => {
-        todoListPage.addATodoItemCalled(item);
+    this.When(/^I attempt to login$/, () => {
+        loginPage.clickLogin();
     });
 
-    this.When(/^I complete (.*)$/, (item) => {
-        todoListPage.completeATodoItemCalled(item);
+
+    this.Then(/^I should be on the login page$/, () => {
+        loginPage.isLoginPage().then((result) => {
+            expect(result).to.be.true;
+        });
     });
 
-    this.When(/^I filter my list to show (?:only )?(.*) tasks$/, (taskType) => {
-        todoListPage.filterItemsToShowOnly(taskType);
+    this.Then(/^I should see an error for wrong username or password$/, () => {
+        loginPage.getErrorMessage().then((errorMessage) => {
+            expect(errorMessage).to.equal("Incorrect username and password");
+        });
     });
 
-    this.Then(/^(.*?) should be recorded in my list$/, (item) => {
-        expect(todoListPage.itemsDisplayed()).to.eventually.contain(item);
+    this.Then(/^I should be redirected to the home page$/, () => {
+
     });
 
-    this.Then(/^(.*?) should be marked as (.*?)$/, (item, status) => {
-        expect(todoListPage.statusOf(item)).to.eventually.equal(status);
+    this.Then(/^the welcome header should contain username (.*)$/, (userName) => {
+        homePage.getWelcomeText().then((welcomeText) => {
+            expect(welcomeText).to.include(userName.toUpperCase());
+        });
     });
 
-    this.Then(/^.* todo list should contain (.*?)$/, (items) => {
-        expect(todoListPage.itemsDisplayed()).to.eventually.eql(listOf(items));
-    });
 };

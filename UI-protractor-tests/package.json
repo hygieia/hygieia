@@ -30,6 +30,7 @@
     "protractor-cucumber-framework": "3.1.2",
     "serenity-cli": "^0.5.0",
     "serenity-js": ">= 1.7.0",
+    "loglevel": "1.5.0",
     "rimraf": "2.5.4"
   },
   "dependencies": {
