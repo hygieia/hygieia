@@ -4,6 +4,9 @@
 //     node_modules = protractor.substring(0, protractor.lastIndexOf('node_modules') + 'node_modules'.length),
 //     seleniumJar  = glob.sync(`${node_modules}/protractor/**/selenium-server-standalone-*.jar`).pop();
 
+var rootCas = require('ssl-root-cas/latest').create();
+require('https').globalAgent.options.ca = rootCas;
+
 exports.config = {
 
     baseUrl: 'https://hygieia-qa.cloud.capitalone.com/',
