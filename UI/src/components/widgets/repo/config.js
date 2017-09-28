@@ -123,7 +123,7 @@
 		}
 
 		function removeGit(url){
-			if (url.endsWith(".git")) {
+			if (!angular.isUndefined(url) && url.endsWith(".git")) {
 				url = url.substring(0, url.lastIndexOf(".git"));
 			}
 			return url;
