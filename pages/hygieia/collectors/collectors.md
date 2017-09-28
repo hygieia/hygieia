@@ -21,6 +21,7 @@ Hygieia supports the following collectors Inventory:
 - **Build Collectors**
   - [Bamboo](build/bamboo.md)
   - [Jenkins](build/jenkins.md)
+  - [Jenkins-codequality](build/jenkins-codequality.md)
   - [Jenkins Cucumber](build/jenkins-cucumber.md)
   - [Sonar](build/sonar.md)
 - **Cloud Collectors**
