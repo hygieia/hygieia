@@ -10,6 +10,7 @@ import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
 import com.capitalone.dashboard.service.AuditService;
+import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,9 +57,11 @@ public class AuditController {
      * @return
      */
     @RequestMapping(value = "/peerReview", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Iterable<PeerReviewResponse>> peerReview(@Valid PeerReviewRequest request) {
-        List<GitRequest> pullRequests = auditService.getPullRequests(request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
-        List<Commit> commits = auditService.getCommits(request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
+    public ResponseEntity<Iterable<PeerReviewResponse>> peerReview(@Valid PeerReviewRequest request)  {
+        GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(request.getRepo());
+        String repoUrl = gitHubParsed.getUrl();
+        List<GitRequest> pullRequests = auditService.getPullRequests(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
+        List<Commit> commits = auditService.getCommits(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
         List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits);
         return ResponseEntity.ok().body(allPeerReviews);
     }

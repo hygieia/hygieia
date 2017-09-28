@@ -42,7 +42,7 @@
 			ctrl.repoOption=ctrl.repoOptions[myindex];
 		}
 
-		ctrl.repoUrl = widgetConfig.options.url;
+		ctrl.repoUrl = removeGit(widgetConfig.options.url);
 		ctrl.gitBranch = widgetConfig.options.branch;
 		ctrl.repouser = widgetConfig.options.userID;
 		ctrl.repopass = widgetConfig.options.password;
@@ -122,10 +122,16 @@
 			return _.isEmpty(value)||_.isUndefined(value)?"":value
 		}
 
+		function removeGit(url){
+			if (url.endsWith(".git")) {
+				url = url.substring(0, url.lastIndexOf(".git"));
+			}
+			return url;
+		}
 		function getOptions(scm) {
 			return {
 				scm: scm,
-				url: ctrl.repoUrl,
+				url: removeGit(ctrl.repoUrl),
 				branch: getNonNullString(ctrl.gitBranch),
                 userID: getNonNullString(ctrl.repouser),
                 password: getNonNullString(ctrl.repopass)
@@ -135,7 +141,7 @@
 		function getUniqueOptions (scm) {
 			return {
                 scm: scm,
-                url: ctrl.repoUrl,
+                url: removeGit(ctrl.repoUrl),
                 branch: ctrl.gitBranch,
                 userID: getNonNullString(ctrl.repouser)
             }
