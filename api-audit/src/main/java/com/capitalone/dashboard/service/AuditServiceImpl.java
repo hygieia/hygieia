@@ -29,6 +29,7 @@ import com.capitalone.dashboard.repository.JobRepository;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
+import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,6 +135,9 @@ public class AuditServiceImpl implements AuditService {
             scmWidgetbranch = (String)repoItem.getOptions().get("branch");
             scmWidgetrepoUrl = (String)repoItem.getOptions().get("url");
 
+            GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmWidgetrepoUrl);
+            scmWidgetrepoUrl = gitHubParsed.getUrl();
+
             if (scmWidgetbranch != null && scmWidgetrepoUrl != null) {
                 pullRequests = this.getPullRequests(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
                 commits = this.getCommits(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
@@ -185,7 +189,7 @@ public class AuditServiceImpl implements AuditService {
                     String buildWidgetBranch = repoBranch.getBranch();
                     String buildWidgetUrl = repoBranch.getUrl();
 
-                    if (scmWidgetbranch != null && scmWidgetrepoUrl != null
+                    if (scmWidgetbranch != null &&  scmWidgetrepoUrl!= null
                             && buildWidgetBranch != null && buildWidgetUrl != null) {
                         if (scmWidgetbranch.equalsIgnoreCase(buildWidgetBranch) && scmWidgetrepoUrl.equalsIgnoreCase(buildWidgetUrl)) {
                             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_VALID);
