@@ -9,6 +9,9 @@ public enum AuditStatus {
     PULLREQ_REVIEWED_BY_PEER,
     PULLREQ_NOT_PEER_REVIEWED,
 
+    //no pull requests for queried date range
+    NO_PULL_REQ_FOR_DATE_RANGE,
+
     //direct commits to master
     DIRECT_COMMITS_TO_BASE,
     DIRECT_COMMITS_TO_BASE_FIRST_COMMIT,
@@ -30,6 +33,7 @@ public enum AuditStatus {
     DASHBOARD_BUILD_NOT_CONFIGURED,
     DASHBOARD_CODEQUALITY_CONFIGURED,
     DASHBOARD_CODEQUALITY_NOT_CONFIGURED,
+    DASHBOARD_NOT_REGISTERED,
 
     //whether or not repo and build point to same repo url
     DASHBOARD_REPO_BUILD_VALID,
