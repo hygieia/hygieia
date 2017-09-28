@@ -192,7 +192,7 @@
 				options : {
 					id : widgetConfig.options.id,
 					scm : ctrl.repoOption,
-					url : ctrl.repoUrl,
+					url : removeGit(ctrl.repoUrl),
 					branch : ctrl.gitBranch,
 					userID : getNonNullString(ctrl.repouser),
 					password: getNonNullString(ctrl.repopass)
