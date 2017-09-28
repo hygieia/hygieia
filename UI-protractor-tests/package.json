@@ -34,6 +34,7 @@
     "rimraf": "2.5.4"
   },
   "dependencies": {
-    "serenity-js": "^1.8.0"
+    "serenity-js": "^1.8.0",
+    "ssl-root-cas": "^1.2.4"
   }
 }
