@@ -111,12 +111,14 @@ public class AuditServiceImpl implements AuditService {
             dashboard = dashboardRepository.findByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(busServItem.getId(), busAppItem.getId());
         }
 
+        DashboardReviewResponse dashboardReviewResponse = new DashboardReviewResponse();
         if (dashboard == null) {
-            throw new HygieiaException("Unable to locate dashboard for title: " + title + " type: " + type +
-                    " busServ: " + busServ + " busApp: " + busApp, HygieiaException.BAD_DATA);
+            //if looking up by valid ASV and BAP and its not tied to a dashboard
+            //or if looking up by title and its not found
+            dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_NOT_REGISTERED);
+            return dashboardReviewResponse;
         }
 
-        DashboardReviewResponse dashboardReviewResponse = new DashboardReviewResponse();
         dashboardReviewResponse.setDashboardTitle(dashboard.getTitle());
 
         List<CollectorItem> repoItems = this.getCollectorItems(dashboard, "repo", CollectorType.SCM);
@@ -129,6 +131,7 @@ public class AuditServiceImpl implements AuditService {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_CONFIGURED);
 
             CollectorItem repoItem = repoItems.get(0);
+            dashboardReviewResponse.setRepoLastUpdated(repoItem.getLastUpdated());
             scmWidgetbranch = (String)repoItem.getOptions().get("branch");
             scmWidgetrepoUrl = (String)repoItem.getOptions().get("url");
 
@@ -153,6 +156,7 @@ public class AuditServiceImpl implements AuditService {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_CONFIGURED);
 
             CollectorItem buildItem = buildItems.get(0);
+            dashboardReviewResponse.setBuildJobLastUpdated(buildItem.getLastUpdated());
             String jobUrl = (String)buildItem.getOptions().get("jobUrl");
             String jobName = (String)buildItem.getOptions().get("jobName");
 
@@ -259,6 +263,12 @@ public class AuditServiceImpl implements AuditService {
 
         HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
 
+        if (pullRequests == null || pullRequests.isEmpty()) {
+            PeerReviewResponse noPRsPeerReviewResponse = new PeerReviewResponse();
+            noPRsPeerReviewResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+            allPeerReviews.add(noPRsPeerReviewResponse);
+        }
+
         for(GitRequest pr : pullRequests) {
             HashMap<String, Commit> mapCommitsRelatedToPr = new HashMap();
             String mergeSha = pr.getScmRevisionNumber();
@@ -320,10 +330,15 @@ public class AuditServiceImpl implements AuditService {
             String targetRepo = pr.getTargetRepo();
             String targetBranch = pr.getTargetBranch();
 
-            if (sourceRepo.equalsIgnoreCase(targetRepo)) {
-                peerReviewResponse.addAuditStatus(AuditStatus.GIT_BRANCH_STRATEGY);
-            } else {
+            if (sourceRepo == null) {
+                //fork could be deleted
                 peerReviewResponse.addAuditStatus(AuditStatus.GIT_FORK_STRATEGY);
+            } else {
+                if (sourceRepo.equalsIgnoreCase(targetRepo)) {
+                    peerReviewResponse.addAuditStatus(AuditStatus.GIT_BRANCH_STRATEGY);
+                } else {
+                    peerReviewResponse.addAuditStatus(AuditStatus.GIT_FORK_STRATEGY);
+                }
             }
 
             //direct commit to master
