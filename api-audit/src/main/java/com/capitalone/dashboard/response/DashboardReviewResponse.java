@@ -4,6 +4,8 @@ import java.util.List;
 
 public class DashboardReviewResponse extends AuditReviewResponse {
     private String dashboardTitle;
+    private long repoLastUpdated;
+    private long buildJobLastUpdated;
 
     List<PeerReviewResponse> allPeerReviewResponses;
 
@@ -15,6 +17,22 @@ public class DashboardReviewResponse extends AuditReviewResponse {
 
     public void setDashboardTitle(String dashboardTitle) {
         this.dashboardTitle = dashboardTitle;
+    }
+
+    public long getRepoLastUpdated() {
+        return repoLastUpdated;
+    }
+
+    public void setRepoLastUpdated(long repoLastUpdated) {
+        this.repoLastUpdated = repoLastUpdated;
+    }
+
+    public long getBuildJobLastUpdated() {
+        return buildJobLastUpdated;
+    }
+
+    public void setBuildJobLastUpdated(long buildJobLastUpdated) {
+        this.buildJobLastUpdated = buildJobLastUpdated;
     }
 
     public List<PeerReviewResponse> getAllPeerReviewResponses() {
