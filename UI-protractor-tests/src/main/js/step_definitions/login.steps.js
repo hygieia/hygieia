@@ -12,18 +12,26 @@ module.exports = function loginSteps() {
         homePage.navigateToLoginPage();
     });
 
+    this.When(/^I select standard login page$/, () => {
+        loginPage.clickStandardLogin();
+    });
+
+    this.When(/^I select ldap login page$/, () => {
+        loginPage.clickLdapLogin();
+    });
+
     this.When(/^I enter login credentials (.*) and (.*)$/, (invalidUser, invalidPassword) => {
         loginPage.setUsername(invalidUser);
         loginPage.setPassword(invalidPassword);
     });
 
     this.When(/^I attempt to login$/, () => {
-        loginPage.clickLogin();
+        loginPage.clickLoginButton();
     });
 
 
     this.Then(/^I should be on the login page$/, () => {
-        loginPage.isLoginPage().then((result) => {
+        loginPage.isStandardLoginPage().then((result) => {
             expect(result).to.be.true;
         });
     });
@@ -35,7 +43,9 @@ module.exports = function loginSteps() {
     });
 
     this.Then(/^I should be redirected to the home page$/, () => {
-
+        homePage.isHomePage().then((result) => {
+            expect(result).to.be.true;
+        });
     });
 
     this.Then(/^the welcome header should contain username (.*)$/, (userName) => {

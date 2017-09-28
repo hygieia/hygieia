@@ -6,7 +6,7 @@
 
 exports.config = {
 
-    baseUrl: 'http://localhost:3000/',
+    baseUrl: 'https://hygieia-qa.cloud.capitalone.com/',
 
     // seleniumServerJar: seleniumJar,
 
@@ -14,6 +14,8 @@ exports.config = {
     allScriptsTimeout: 110000,
 
     disableChecks: true,
+
+    directConnect: true,
 
     // https://github.com/protractor-cucumber-framework/protractor-cucumber-framework#uncaught-exceptions
     ignoreUncaughtExceptions: true,

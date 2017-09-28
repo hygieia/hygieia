@@ -34,17 +34,17 @@ const HomePage = function() {
         });
     };
 
-    po.isLoginPage = () => {
-        return po.loginSection.isDisplayed().then((result) => {
+    po.isHomePage = () => {
+        return po.welcomeHeader.isDisplayed().then((result) => {
             if (result) {
-                log.info(`Login Page displayed`);
+                log.info(`Home Page displayed`);
                 return result;
             } else {
-                log.info(`Login Page not displayed`);
+                log.info(`Home Page not displayed`);
                 return result;
             }
         }, (err) => {
-            log.error(`Unable to locate login section. ERROR: ${err}`);
+            log.error(`Unable to locate home page welcome header. ERROR: ${err}`);
         });
     };
 

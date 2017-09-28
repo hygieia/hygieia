@@ -7,7 +7,8 @@ Feature: Standard Login
   @issues:TEART-2800
   Scenario: User attempts to log in with invalid credentials
     Given I navigate to the login page
-    When I enter login credentials invalidUser and invalidPassword
+    When I select standard login page
+    And I enter login credentials invalidUser and invalidPassword
     And I attempt to login
     Then I should be on the login page
     And I should see an error for wrong username or password
@@ -15,7 +16,8 @@ Feature: Standard Login
   @issue:TEART-2800
   Scenario: User attempts to log in with valid credentials
     Given I navigate to the login page
-    When I enter login credentials hygieia_test_user and password
+    When I select standard login page
+    And I enter login credentials hygieia_test_user and password
     And I attempt to login
-#    Then I should be redirected to the home page
-    Then the welcome header should contain username hygieia_test_user
+    Then I should be redirected to the home page
+    And the welcome header should contain username hygieia_test_user
