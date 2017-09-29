@@ -85,10 +85,13 @@ The sample `application.properties` file lists parameter values to configure the
 		# Maximum number of previous days from current date, when fetching commits
 		github.commitThresholdDays=15
 
-		# Optional: Error threshold count after which the collector stops collecting for a collector item. Default is 2.
-		github.errorThreshold=1
-		
-		# GitHub key for private repos
-		github.key=<your-generated-key>
+    # Optional: Error threshold count after which collector stops collecting for a collector item. Default is 2.
+    github.errorThreshold=1
+
+    # This is the key generated using the Encryption class in core
+    github.key=<your-generated-key>
+
+    # Personal access token generated from github and used for making authentiated calls
+    github.personalAccessToken=
 ```
 **Note**: For information on generating your GitHub key for private repos, refer to [Encryption of Private Repos](https://github.com/capitalone/Hygieia/blob/gh-pages/pages/hygieia/UI/ui.md#encryption-for-private-repos).
