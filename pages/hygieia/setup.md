@@ -73,7 +73,7 @@ To execute the above via a script in an automated fashion, use `mongosrc.js`:
 
 ## API Layer
 Please click on the link below to learn about how to build and run the API layer
-* [API](api.html)
+* [API](api/api.md)
 
 ## Tool Collectors
 In general, all the collectors can be run using the following command
@@ -81,17 +81,17 @@ In general, all the collectors can be run using the following command
 java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>
 ```
 
-You can view the collector inventory [here](collectors.html).
+You can view the collector inventory [here](collectors/collectors.md).
 
 You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.
 
 ## UI Layer
 Please click on the link below to learn about how to build and run the UI layer
- * [UI](ui.html)
+ * [UI](UI/ui.md)
 
 ## Plugin/Webhook
 You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia. Currently, you can publish build, artifact info, sonar results, deployment results and Cucumber test results. You may not need to run corresponding collectors if you use Jenkins for build, deploy, sonar analysis and running cucumber tests.
-* [Hygieia Jenkins Plugin](hygieia-jenkins-plugin.html)
+* [Hygieia Jenkins Plugin](hygieia-jenkins-plugin/hygieia-jenkins-plugin.md)
 
 You can use GitHub webhooks to publish commit information to Hygieia. If you use webhooks, you will not need to run the github collector.
 * Your Github webhook's payload url should be set to: http://hygieia-base-url/api/commit/github/v3

@@ -24,11 +24,11 @@ I have tested this with Enterprise Hipchat version, It is not tested against pub
 
 ### Widget
 
-![Image](/media/images/chatops.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/chatops.png)
 
 ### ChatOps Configure Screen
 
-![Image](/media/images/chatopsconfig.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/chatopsconfig.png)
 
 ## ChatOps widget configuration parameter
  - Need to provide hipchat server name.

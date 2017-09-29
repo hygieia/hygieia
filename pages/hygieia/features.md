@@ -1,5 +1,5 @@
 ---
-title: Sonar Collector
+title: New Features
 tags:
 keywords:
 summary:
