@@ -32,10 +32,12 @@
     "serenity-cli": "^0.5.0",
     "serenity-js": ">= 1.7.0",
     "loglevel": "1.5.0",
-    "rimraf": "2.5.4"
+    "rimraf": "2.5.4",
+    "xvfb": "^0.2.3"
   },
   "dependencies": {
     "serenity-js": "^1.8.0",
-    "ssl-root-cas": "^1.2.4"
+    "ssl-root-cas": "^1.2.4",
+    "xvfb": "^0.2.3"
   }
 }
