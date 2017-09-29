@@ -491,14 +491,15 @@ public class AuditServiceImpl implements AuditService {
                 .filter((p) -> {
                     if (p.getCollectorItems() != null) {
                         for (CollectorItem c : p.getCollectorItems(CollectorType.SCM)) {
-                            if ("Github".equalsIgnoreCase((String) c.getOptions().get("scm"))) {
+                           //TODO: fix for repos created with remote dashboard create
+                            //if ("Github".equalsIgnoreCase((String) c.getOptions().get("scm"))) {
                                 String repoUrl = (String) c.getOptions().get("url");
                                 String branchName = (String) c.getOptions().get("branch");
                                 if ((url.equalsIgnoreCase(repoUrl) || urlGit.equalsIgnoreCase(repoUrl)) && branch.equalsIgnoreCase(branchName)) {
                                     cs.add(p);
                                     return true;
                                 }
-                            }
+                            //}
                         }
                     }
                     return false;
