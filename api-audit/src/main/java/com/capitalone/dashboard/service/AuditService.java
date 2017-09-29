@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface AuditService {
 
-    List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> gitRequests, List<Commit> commits);
+    List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> gitRequests, List<Commit> commits, String scmUrl, String scmBranch);
 
     List<GitRequest> getPullRequests(String repo, String branch, long beginDt, long endDt);
 

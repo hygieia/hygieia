@@ -59,7 +59,7 @@ public class AuditController {
     public ResponseEntity<Iterable<PeerReviewResponse>> peerReview(@Valid PeerReviewRequest request) {
         List<GitRequest> pullRequests = auditService.getPullRequests(request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
         List<Commit> commits = auditService.getCommits(request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
-        List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits);
+        List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits,request.getRepo(), request.getBranch());
         return ResponseEntity.ok().body(allPeerReviews);
     }
 
