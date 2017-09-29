@@ -63,4 +63,10 @@ github.commitThresholdDays=15
 
 #Optional: Error threshold count after which collector stops collecting for a collector item. Default is 2.
 github.errorThreshold=1
+
+#This is the key generated using the Encryption class in core
+github.key=
+
+#personal access token generated from github and used for making authentiated calls
+github.personalAccessToken=
 ```
