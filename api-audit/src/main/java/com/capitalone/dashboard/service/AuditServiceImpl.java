@@ -454,4 +454,55 @@ public class AuditServiceImpl implements AuditService {
 
         return jobReviewResponse;
     }
+
+    @Override
+    public boolean isGitRepoConfigured(String url, String branch) {
+        List<com.capitalone.dashboard.model.Component> components = customRepositoryQuery.findComponents(CollectorType.SCM);
+        return findSCMUrlAndBranch(url, branch, components);
+    }
+
+    private boolean findSCMUrlAndBranch(String url, String branch, List<com.capitalone.dashboard.model.Component> components) {
+        List<com.capitalone.dashboard.model.Component> cs = new ArrayList<>();
+        String urlGit = url != null ? url + ".git" : url;
+        components.stream()
+                .filter((p) -> {
+                    if (p.getCollectorItems() != null) {
+                        for (CollectorItem c : p.getCollectorItems(CollectorType.SCM)) {
+                            if ("Github".equalsIgnoreCase((String) c.getOptions().get("scm"))) {
+                                String repoUrl = (String) c.getOptions().get("url");
+                                String branchName = (String) c.getOptions().get("branch");
+                                if ((url.equalsIgnoreCase(repoUrl) || urlGit.equalsIgnoreCase(repoUrl)) && branch.equalsIgnoreCase(branchName)) {
+                                    cs.add(p);
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }).findAny().orElse(null);
+        if (cs.size() > 0) {
+            List<Dashboard> d = dashboardRepository.findByApplicationComponentsIn(cs);
+            if (d != null && !d.isEmpty()) {
+                return findGitHubUrlFromDashboard(d.get(0), branch, url);
+            }
+        }
+        return false;
+    }
+
+    private boolean findGitHubUrlFromDashboard(Dashboard d, String branchName, String url) {
+        String urlGit = url != null ? url + ".git" : url;
+        List<Widget> dl = new ArrayList<>();
+        d.getWidgets().stream().filter(
+                w -> {
+                    if ((url.equalsIgnoreCase((String) w.getOptions().get("url")) || urlGit.equalsIgnoreCase((String) w.getOptions().get("url"))) && branchName.equalsIgnoreCase((String) w.getOptions().get("branch"))) {
+                        dl.add(w);
+                        return true;
+                    }
+                    return false;
+                }).findAny().orElse(null);
+
+        if (dl.size() > 0) return true;
+        return false;
+    }
+
 }
