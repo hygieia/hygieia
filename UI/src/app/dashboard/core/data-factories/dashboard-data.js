@@ -39,7 +39,8 @@
             types: types,
             getComponent:getComponent,
             updateBusItems:updateBusItems,
-            updateDashboardWidgets:updateDashboardWidgets
+            updateDashboardWidgets:updateDashboardWidgets,
+            deleteWidget:deleteWidget
         };
 
         // reusable helper
@@ -180,5 +181,22 @@
                 });
         }
 
-    }
+        // can be used to delete existing widget
+        function deleteWidget(dashboardId, widget) {
+            widget = angular.copy(widget);
+            console.log('Delete widget config', widget);
+            var widgetId = widget.id;
+            if (widgetId) {
+                // remove the id since that would cause an api failure
+                delete widget.id;
+            }
+            var route = $http.put(dashboardRoute + '/' + dashboardId + '/deleteWidget/' + widgetId, widget) ;
+            return route.success(function (response) {
+                return response.data;
+            }).error(function (response) {
+                return null;
+            });
+
+        }
+  }
 })();
