@@ -30,4 +30,6 @@ public interface AuditService {
     DashboardReviewResponse getDashboardReviewResponse(String title, String type, String busServ, String busApp, long beginDate, long endDate) throws HygieiaException;
 
     List<CollectorItem> getCollectorItems(Dashboard dashboard, String widgetName, CollectorType collectorType);
+
+    boolean isGitRepoConfigured(String url,String branch);
 }

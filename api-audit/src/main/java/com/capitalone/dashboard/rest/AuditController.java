@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.request.DashboardReviewRequest;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -60,6 +63,14 @@ public class AuditController {
     public ResponseEntity<Iterable<PeerReviewResponse>> peerReview(@Valid PeerReviewRequest request)  {
         GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(request.getRepo());
         String repoUrl = gitHubParsed.getUrl();
+
+        boolean isGitConfigured = auditService.isGitRepoConfigured(repoUrl,request.getBranch());
+        if(!isGitConfigured){
+            PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
+            peerReviewResponse.addAuditStatus(AuditStatus.REPO_NOT_CONFIGURED);
+            return  ResponseEntity.ok().body(Stream.of(peerReviewResponse).collect(Collectors.toList()));
+        }
+
         List<GitRequest> pullRequests = auditService.getPullRequests(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
         List<Commit> commits = auditService.getCommits(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
         List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits);
