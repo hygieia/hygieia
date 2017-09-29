@@ -6,6 +6,7 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Owner;
+import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -13,6 +14,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -270,8 +272,14 @@ public class DashboardRemoteRequest {
             opts.put("name", "repo");
             opts.put("id", "repo0");
             for (String key : options.keySet()) {
-                opts.put(key, options.get(key));
-            }
+                if("url".equalsIgnoreCase(key)){
+                    GitHubParsedUrl gitHubParsed = new GitHubParsedUrl((String)options.get(key));
+                    String repoUrl = gitHubParsed.getUrl();
+                    opts.put(key, repoUrl);
+                }else{
+                    opts.put(key, options.get(key));
+                }
+             }
             Map<String, String> scm = new HashMap<>();
             scm.put("name", toolName);
             scm.put("value", toolName);

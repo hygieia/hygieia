@@ -15,7 +15,7 @@
                 link: function(scope,element, attrs, ctrl) {
                 	element.bind('click',function(){                		
                 		swal({
-                      	   title: "Are you sure you want to delete?",
+                      	   title: attrs.title,
                            showCancelButton: true,
                       	   confirmButtonColor: "#DD6B55",confirmButtonText: "Delete",
                       	   cancelButtonText: "Cancel",                      	   
