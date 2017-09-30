@@ -444,6 +444,10 @@ public class DefaultGitHubClient implements GitHubClient {
                     new HttpEntity<>(createHeaders(userId, password)),
                     String.class);
 
+        } else if (settings.getPersonalAccessToken() != null && !"".equals(settings.getPersonalAccessToken())) {
+            return restOperations.exchange(url, HttpMethod.GET,
+                    new HttpEntity<>(createHeaders(settings.getPersonalAccessToken())),
+                    String.class);
         } else {
             return restOperations.exchange(url, HttpMethod.GET, null,
                     String.class);
@@ -455,6 +459,14 @@ public class DefaultGitHubClient implements GitHubClient {
         String auth = userId + ":" + password;
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
         String authHeader = "Basic " + new String(encodedAuth);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authHeader);
+        return headers;
+    }
+
+    private HttpHeaders createHeaders(final String token) {
+        String authHeader = "token " + token;
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", authHeader);

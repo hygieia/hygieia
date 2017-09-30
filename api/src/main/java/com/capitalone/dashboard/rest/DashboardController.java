@@ -285,4 +285,22 @@ public class DashboardController {
 
     }
 
+
+    @DashboardOwnerOrAdmin
+    @RequestMapping(value = "/dashboard/{id}/deleteWidget/{widgetId}", method = PUT,
+            consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<WidgetResponse> deleteWidget(@PathVariable ObjectId id,
+                                                       @PathVariable ObjectId widgetId,
+                                                       @RequestBody WidgetRequest request) {
+        Component component = dashboardService.associateCollectorToComponent(
+                request.getComponentId(), request.getCollectorItemIds());
+
+        Dashboard dashboard = dashboardService.get(id);
+        Widget widget =dashboardService.getWidget(dashboard, widgetId);
+        dashboardService.deleteWidget(dashboard, widget,request.getComponentId());
+
+        return ResponseEntity.ok().body(new WidgetResponse(component, null));
+    }
+
+
 }

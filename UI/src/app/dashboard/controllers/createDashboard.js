@@ -188,8 +188,9 @@
             dashboardService.setBusinessServiceId(id);
         }
 
-        function setConfigItemComponentId(id) {
-            dashboardService.setBusinessApplicationId(id);
+        function setConfigItemComponentId(item) {
+            dashboardService.setBusinessApplicationId(item.id);
+            ctrl.configurationItemBusApp = item.configurationItem;
         }
 
         function getBusAppToolText() {

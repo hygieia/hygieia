@@ -15,11 +15,11 @@ import java.util.List;
 
 public interface AuditService {
 
-    List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> gitRequests);
+    List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> gitRequests, List<Commit> commits);
 
     List<GitRequest> getPullRequests(String repo, String branch, long beginDt, long endDt);
 
-    List<Commit> getCommitsBySha (String scmRevisionNumber);
+    List<Commit> getCommits(String repo, String branch, long beginDt, long endDt);
 
     String getJobEnvironment(String instanceUrl, String jobName);
 
@@ -30,4 +30,6 @@ public interface AuditService {
     DashboardReviewResponse getDashboardReviewResponse(String title, String type, String busServ, String busApp, long beginDate, long endDate) throws HygieiaException;
 
     List<CollectorItem> getCollectorItems(Dashboard dashboard, String widgetName, CollectorType collectorType);
+
+    boolean isGitRepoConfigured(String url,String branch);
 }
