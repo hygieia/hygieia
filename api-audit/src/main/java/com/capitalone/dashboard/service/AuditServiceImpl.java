@@ -26,6 +26,7 @@ import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.JobRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
@@ -55,6 +56,7 @@ public class AuditServiceImpl implements AuditService {
     private CmdbRepository cmdbRepository;
     private ComponentRepository componentRepository;
     private BuildRepository buildRepository;
+    private CollectorItemRepository collectorItemRepository;
 
     @Autowired
     public AuditServiceImpl(GitRequestRepository gitRequestRepository, CommitRepository commitRepository,
@@ -64,7 +66,8 @@ public class AuditServiceImpl implements AuditService {
                             DashboardRepository dashboardRepository,
                             CmdbRepository cmdbRepository,
                             ComponentRepository componentRepository,
-                            BuildRepository buildRepository) {
+                            BuildRepository buildRepository,
+                            CollectorItemRepository collectorItemRepository) {
         this.gitRequestRepository = gitRequestRepository;
         this.commitRepository = commitRepository;
         this.customRepositoryQuery = customRepositoryQuery;
@@ -75,6 +78,7 @@ public class AuditServiceImpl implements AuditService {
         this.cmdbRepository = cmdbRepository;
         this.componentRepository = componentRepository;
         this.buildRepository = buildRepository;
+        this.collectorItemRepository = collectorItemRepository;
     }
 
     public List<CollectorItem> getCollectorItems(Dashboard dashboard, String widgetName, CollectorType collectorType) {
@@ -123,28 +127,30 @@ public class AuditServiceImpl implements AuditService {
 
         List<CollectorItem> repoItems = this.getCollectorItems(dashboard, "repo", CollectorType.SCM);
 
-        String scmWidgetbranch = null;
-        String scmWidgetrepoUrl = null;
+
         List<GitRequest> pullRequests = null;
         List<Commit> commits = null;
         if (repoItems != null && !repoItems.isEmpty()) {
+            String scmWidgetbranch;
+            String scmWidgetrepoUrl;
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_CONFIGURED);
+            List<List<PeerReviewResponse>> allRepos = new ArrayList<>();
 
-            CollectorItem repoItem = repoItems.get(0);
-            dashboardReviewResponse.setRepoLastUpdated(repoItem.getLastUpdated());
-            scmWidgetbranch = (String)repoItem.getOptions().get("branch");
-            scmWidgetrepoUrl = (String)repoItem.getOptions().get("url");
 
-            GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmWidgetrepoUrl);
-            scmWidgetrepoUrl = gitHubParsed.getUrl();
+            for(CollectorItem repoItem: repoItems) {
+                scmWidgetbranch = (String)repoItem.getOptions().get("branch");
+                scmWidgetrepoUrl = (String)repoItem.getOptions().get("url");
+				GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmWidgetrepoUrl);
+            	scmWidgetrepoUrl = gitHubParsed.getUrl();
+                if (scmWidgetbranch != null && scmWidgetrepoUrl != null) {
+                    pullRequests = this.getPullRequests(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
+                    commits = this.getCommits(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
+                    List<PeerReviewResponse> inside = this.getPeerReviewResponses(pullRequests, commits, scmWidgetrepoUrl, scmWidgetbranch);
+                    allRepos.add(inside);
+                }
 
-            if (scmWidgetbranch != null && scmWidgetrepoUrl != null) {
-                pullRequests = this.getPullRequests(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
-                commits = this.getCommits(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
-                List<PeerReviewResponse> allPeerReviews = this.getPeerReviewResponses(pullRequests, commits);
-
-                dashboardReviewResponse.setAllPeerReviewResponses(allPeerReviews);
             }
+            dashboardReviewResponse.setAllPeerReviewResponses(allRepos);
         } else {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_NOT_CONFIGURED);
         }
@@ -156,7 +162,7 @@ public class AuditServiceImpl implements AuditService {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_CONFIGURED);
 
             CollectorItem buildItem = buildItems.get(0);
-            dashboardReviewResponse.setBuildJobLastUpdated(buildItem.getLastUpdated());
+
             String jobUrl = (String)buildItem.getOptions().get("jobUrl");
             String jobName = (String)buildItem.getOptions().get("jobName");
 
@@ -182,6 +188,9 @@ public class AuditServiceImpl implements AuditService {
 
             CollectorItem buildItem = buildItems.get(0);
             Build build = buildRepository.findTop1ByCollectorItemIdOrderByTimestampDesc(buildItem.getId());
+            //TODO: fix by checking all repos registered for a dashboard
+            String scmWidgetbranch = "tdb";
+            String scmWidgetrepoUrl = "tbd";
             if (build != null) {
                 List<RepoBranch> repoBranches = build.getCodeRepos();
                 if (repoBranches != null && !repoBranches.isEmpty()) {
@@ -258,7 +267,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
-    public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits) {
+    public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits, String scmUrl, String scmBranch) {
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
 
         HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
@@ -395,7 +404,21 @@ public class AuditServiceImpl implements AuditService {
             peerReviewResponse.setCommits(commitsNotDirectlyTiedToPr);
             allPeerReviews.add(peerReviewResponse);
         }
-
+        for(PeerReviewResponse peerReviewResponseList: allPeerReviews){
+                boolean itemFound = false;
+                //TODO: search by options instead of findAll()
+                for(CollectorItem collectorItem : collectorItemRepository.findAll()){
+                    String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
+                    String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
+                    if(!itemFound && collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
+                            && collectorItemScmBranch != null && collectorItemScmBranch.equals(scmBranch)){
+                        peerReviewResponseList.setLastUpdated(collectorItem.getLastUpdated());
+                        itemFound = true;
+                    }
+                }
+            peerReviewResponseList.setScmBranch(scmBranch);
+            peerReviewResponseList.setScmUrl(scmUrl);
+        }
         return allPeerReviews;
     }
 
@@ -468,14 +491,15 @@ public class AuditServiceImpl implements AuditService {
                 .filter((p) -> {
                     if (p.getCollectorItems() != null) {
                         for (CollectorItem c : p.getCollectorItems(CollectorType.SCM)) {
-                            if ("Github".equalsIgnoreCase((String) c.getOptions().get("scm"))) {
+                           //TODO: fix for repos created with remote dashboard create
+                            //if ("Github".equalsIgnoreCase((String) c.getOptions().get("scm"))) {
                                 String repoUrl = (String) c.getOptions().get("url");
                                 String branchName = (String) c.getOptions().get("branch");
                                 if ((url.equalsIgnoreCase(repoUrl) || urlGit.equalsIgnoreCase(repoUrl)) && branch.equalsIgnoreCase(branchName)) {
                                     cs.add(p);
                                     return true;
                                 }
-                            }
+                            //}
                         }
                     }
                     return false;
