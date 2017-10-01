@@ -136,7 +136,6 @@ public class AuditServiceImpl implements AuditService {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_CONFIGURED);
             List<List<PeerReviewResponse>> allRepos = new ArrayList<>();
 
-
             for(CollectorItem repoItem: repoItems) {
                 scmWidgetbranch = (String)repoItem.getOptions().get("branch");
                 scmWidgetrepoUrl = (String)repoItem.getOptions().get("url");
@@ -188,9 +187,7 @@ public class AuditServiceImpl implements AuditService {
 
             CollectorItem buildItem = buildItems.get(0);
             Build build = buildRepository.findTop1ByCollectorItemIdOrderByTimestampDesc(buildItem.getId());
-            //TODO: fix by checking all repos registered for a dashboard
-            String scmWidgetbranch = "tdb";
-            String scmWidgetrepoUrl = "tbd";
+
             if (build != null) {
                 List<RepoBranch> repoBranches = build.getCodeRepos();
                 if (repoBranches != null && !repoBranches.isEmpty()) {
@@ -198,16 +195,33 @@ public class AuditServiceImpl implements AuditService {
                     String buildWidgetBranch = repoBranch.getBranch();
                     String buildWidgetUrl = repoBranch.getUrl();
 
-                    if (scmWidgetbranch != null &&  scmWidgetrepoUrl!= null
-                            && buildWidgetBranch != null && buildWidgetUrl != null) {
-                        if (scmWidgetbranch.equalsIgnoreCase(buildWidgetBranch) && scmWidgetrepoUrl.equalsIgnoreCase(buildWidgetUrl)) {
-                            dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_VALID);
-                        } else {
+                    if (repoItems != null && !repoItems.isEmpty()) {
+
+                        boolean matchFound = false;
+                        for(CollectorItem repoItem: repoItems) {
+
+                            String aRepoItembranch = (String)repoItem.getOptions().get("branch");
+                            String aRepoItemUrl = (String)repoItem.getOptions().get("url");
+                            GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(aRepoItemUrl);
+                            aRepoItemUrl = gitHubParsed.getUrl();
+
+                            if (aRepoItembranch != null &&  aRepoItemUrl != null
+                                    && buildWidgetBranch != null && buildWidgetUrl != null) {
+                                if (aRepoItembranch.equalsIgnoreCase(buildWidgetBranch) && aRepoItemUrl.equalsIgnoreCase(buildWidgetUrl)) {
+                                    dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_VALID);
+                                    matchFound = true;
+                                    break;
+                                }
+                            }
+
+                        }
+
+                        if (!matchFound) {
                             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_INVALID);
                         }
-                    } else {
-                        dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_INVALID);
+
                     }
+
                 }
             }
         } else {
@@ -404,18 +418,17 @@ public class AuditServiceImpl implements AuditService {
             peerReviewResponse.setCommits(commitsNotDirectlyTiedToPr);
             allPeerReviews.add(peerReviewResponse);
         }
+
+        Collector githubCollector = collectorRepository.findByName("GitHub");
+        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
+                scmUrl, scmBranch, true);
         for(PeerReviewResponse peerReviewResponseList: allPeerReviews){
-                boolean itemFound = false;
-                //TODO: search by options instead of findAll()
-                for(CollectorItem collectorItem : collectorItemRepository.findAll()){
-                    String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
-                    String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
-                    if(!itemFound && collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
-                            && collectorItemScmBranch != null && collectorItemScmBranch.equals(scmBranch)){
-                        peerReviewResponseList.setLastUpdated(collectorItem.getLastUpdated());
-                        itemFound = true;
-                    }
-                }
+            String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
+            String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
+            if(collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
+                    && collectorItemScmBranch != null && collectorItemScmBranch.equals(scmBranch)){
+                peerReviewResponseList.setLastUpdated(collectorItem.getLastUpdated());
+            }
             peerReviewResponseList.setScmBranch(scmBranch);
             peerReviewResponseList.setScmUrl(scmUrl);
         }
@@ -491,15 +504,12 @@ public class AuditServiceImpl implements AuditService {
                 .filter((p) -> {
                     if (p.getCollectorItems() != null) {
                         for (CollectorItem c : p.getCollectorItems(CollectorType.SCM)) {
-                           //TODO: fix for repos created with remote dashboard create
-                            //if ("Github".equalsIgnoreCase((String) c.getOptions().get("scm"))) {
-                                String repoUrl = (String) c.getOptions().get("url");
-                                String branchName = (String) c.getOptions().get("branch");
-                                if ((url.equalsIgnoreCase(repoUrl) || urlGit.equalsIgnoreCase(repoUrl)) && branch.equalsIgnoreCase(branchName)) {
-                                    cs.add(p);
-                                    return true;
-                                }
-                            //}
+                            String repoUrl = (String) c.getOptions().get("url");
+                            String branchName = (String) c.getOptions().get("branch");
+                            if ((url.equalsIgnoreCase(repoUrl) || urlGit.equalsIgnoreCase(repoUrl)) && branch.equalsIgnoreCase(branchName)) {
+                                cs.add(p);
+                                return true;
+                            }
                         }
                     }
                     return false;
