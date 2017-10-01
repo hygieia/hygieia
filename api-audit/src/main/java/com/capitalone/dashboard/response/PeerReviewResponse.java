@@ -10,6 +10,9 @@ public class PeerReviewResponse extends AuditReviewResponse {
     private List<Commit> commits;
     private List<Commit> mergeCommits;
     private List<Commit> directCommits;
+    protected String scmUrl;
+    protected String scmBranch;
+    protected long lastUpdated;
 
     public GitRequest getPullRequest() {
         return pullRequest;
@@ -41,5 +44,29 @@ public class PeerReviewResponse extends AuditReviewResponse {
 
     public void setDirectCommits(List<Commit> directCommits) {
         this.directCommits = directCommits;
+    }
+
+    public String getScmUrl() {
+        return scmUrl;
+    }
+
+    public void setScmUrl(String scmUrl) {
+        this.scmUrl = scmUrl;
+    }
+
+    public String getScmBranch() {
+        return scmBranch;
+    }
+
+    public void setScmBranch(String scmBranch) {
+        this.scmBranch = scmBranch;
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 }
