@@ -12,6 +12,9 @@ public enum AuditStatus {
     //no pull requests for queried date range
     NO_PULL_REQ_FOR_DATE_RANGE,
 
+    // Git repo not configured
+    REPO_NOT_CONFIGURED,
+
     //direct commits to master
     DIRECT_COMMITS_TO_BASE,
     DIRECT_COMMITS_TO_BASE_FIRST_COMMIT,

@@ -4,10 +4,8 @@ import java.util.List;
 
 public class DashboardReviewResponse extends AuditReviewResponse {
     private String dashboardTitle;
-    private long repoLastUpdated;
-    private long buildJobLastUpdated;
 
-    List<PeerReviewResponse> allPeerReviewResponses;
+    List<List<PeerReviewResponse>> allPeerReviewResponses;
 
     JobReviewResponse jobReviewResponse;
 
@@ -19,27 +17,11 @@ public class DashboardReviewResponse extends AuditReviewResponse {
         this.dashboardTitle = dashboardTitle;
     }
 
-    public long getRepoLastUpdated() {
-        return repoLastUpdated;
-    }
-
-    public void setRepoLastUpdated(long repoLastUpdated) {
-        this.repoLastUpdated = repoLastUpdated;
-    }
-
-    public long getBuildJobLastUpdated() {
-        return buildJobLastUpdated;
-    }
-
-    public void setBuildJobLastUpdated(long buildJobLastUpdated) {
-        this.buildJobLastUpdated = buildJobLastUpdated;
-    }
-
-    public List<PeerReviewResponse> getAllPeerReviewResponses() {
+    public List<List<PeerReviewResponse>> getAllPeerReviewResponses() {
         return allPeerReviewResponses;
     }
 
-    public void setAllPeerReviewResponses(List<PeerReviewResponse> allPeerReviewResponses) {
+    public void setAllPeerReviewResponses(List<List<PeerReviewResponse>> allPeerReviewResponses) {
         this.allPeerReviewResponses = allPeerReviewResponses;
     }
 
