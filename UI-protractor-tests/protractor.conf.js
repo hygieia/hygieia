@@ -33,9 +33,7 @@ exports.config = {
     capabilities: {
         browserName: 'chrome',
         chromeOptions: {
-            args: [
-                'disable-infobars'
-            ]
+            args: [ "--headless", "--disable-gpu", "--window-size=1600,1200" ]
         }
     }
 };
