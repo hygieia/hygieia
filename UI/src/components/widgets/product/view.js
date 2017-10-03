@@ -77,9 +77,21 @@
             ctrl.configuredTeams = widgetOptions.teams;
         }
 
+        // tabs to switch between product dashboard and gamification dashboard
+        ctrl.tabs = [
+            { name: "Dashboard" },
+            { name: "Gamification" }
+        ];
+
         ctrl.teamCrlStages = {};
         ctrl.prodStages={};
         ctrl.orderedStages = {};
+        ctrl.widgetView = ctrl.tabs[0].name;
+
+        // method to toggle tabs
+        function toggleView(index) {
+            ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
+        }
 
         // pull all the stages from pipeline. Create a map for all ctrl stages for each team.
         ctrl.load = function() {
@@ -125,11 +137,13 @@
         // public methods
         ctrl.addTeam = addTeam;
         ctrl.editTeam = editTeam;
+        ctrl.gamification = gamification;
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
         ctrl.viewQualityDetails = viewQualityDetails;
         ctrl.viewGatesDetails = viewGatesDetails;
         ctrl.initPerc = initPerc;
+        ctrl.toggleView = toggleView;
 
         // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
@@ -309,6 +323,25 @@
                 }
 
                 updateWidgetOptions(newOptions);
+            });
+        }
+
+        function gamification(configuredTeams) {
+            $uibModal.open({
+                templateUrl: 'components/widgets/product/gamification/gamification.html',
+                controller: 'gamificationController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    gamificationConfig: function() {
+                        return {
+                            teams: ctrl.configuredTeams
+                        }
+                    }
+                }
+            }).result.then(function(config) {
+                if(!config) {
+                    return;
+                }
             });
         }
 

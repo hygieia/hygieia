@@ -1,13 +1,22 @@
 
 <div id="product-dashboard">
 
-    <div class="product-dash-header clearfix">
+    <div class="container-fluid">
+        <ul class="nav nav-tabs">
+            <li class="text-lg auth-modal-tab" ng-repeat="tab in ctrl.tabs" ng-click="ctrl.toggleView($index)"
+                ng-class="tab.name == ctrl.widgetView ? 'active' : ''">
+                <a class="textColor-Performance" data-toggle="tab" >{{tab.name}}</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="product-dash-header clearfix" ng-if="ctrl.widgetView == 'Dashboard'">
         <div class="product-dash-header-text">
             Averages and trends are calculated over a 90 Day period.
         </div>
         <div class="product-dash-header-legend clearfix">
             <span class="commit-blocks-legend town-city">
-          <div class="commit-blocks-legend-block">
+                <div class="commit-blocks-legend-block">
                     <div class="state"></div> 1000 commits
                 </div>
                 <div class="commit-blocks-legend-block">
@@ -23,7 +32,7 @@
         </div>
     </div>
 
-    <div class="product-table">
+    <div class="product-table" ng-if="ctrl.widgetView == 'Dashboard'">
         <div class="product-table-tbody" as-sortable="ctrl.sortableOptions" ng-model="ctrl.configuredTeams">
             <div class="product-table-tr"
                  as-sortable-item
@@ -199,4 +208,18 @@
         </div>
     </div>
 
+    <div id="gamification-view" ng-if="ctrl.widgetView == 'Gamification'">
+        <table class="gamification-table">
+            <tr>
+                <th>Team Name</th>
+                <th>Code Coverage</th>
+                <th>Total</th>
+            </tr>
+            <tr ng-repeat="team in ctrl.configuredTeams">
+                <td>{{team.name}}</td>
+                <td>37</td>
+                <td>37</td>
+            </tr>
+        </table>
+    </div>
 </div>
