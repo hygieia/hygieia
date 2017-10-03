@@ -59,6 +59,7 @@
         ctrl.isValidBusServName = isValidBusServName;
         ctrl.isValidBusAppName = isValidBusAppName;
         ctrl.saveWidgets = saveWidgets;
+        ctrl.onConfigurationItemBusAppSelect = onConfigurationItemBusAppSelect;
 
         ctrl.validBusServName = isValidBusServName();
         ctrl.validBusAppName = isValidBusAppName();
@@ -274,5 +275,8 @@
             }
         }
 
+        function onConfigurationItemBusAppSelect(value){
+            ctrl.configurationItemBusApp = value;
+        }
     }
 })();

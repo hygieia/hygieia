@@ -20,6 +20,7 @@ public class GitHubSettings {
     private int errorThreshold;
 	@Value("${github.rateLimitThreshold:10}")
 	private int rateLimitThreshold;
+	private String personalAccessToken;
 
 
 	public String getHost() {
@@ -76,5 +77,13 @@ public class GitHubSettings {
 
 	public void setRateLimitThreshold(int rateLimitThreshold) {
 		this.rateLimitThreshold = rateLimitThreshold;
+	}
+
+	public String getPersonalAccessToken() {
+		return personalAccessToken;
+	}
+
+	public void setPersonalAccessToken(String personalAccessToken) {
+		this.personalAccessToken = personalAccessToken;
 	}
 }

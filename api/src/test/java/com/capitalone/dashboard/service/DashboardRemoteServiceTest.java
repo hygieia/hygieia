@@ -164,7 +164,7 @@ public class DashboardRemoteServiceTest {
         DashboardRemoteRequest.CodeRepoEntry validSCM = new DashboardRemoteRequest.CodeRepoEntry();
         validSCM.setToolName("GitHub");
         Map options = new HashMap();
-        options.put("url", "http://git.test.com");
+        options.put("url", "http://git.test.com/capone/better.git");
         options.put("branch", "master");
         validSCM.setOptions(options);
         entries.add(validSCM);

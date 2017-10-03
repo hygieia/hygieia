@@ -529,6 +529,41 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
 
+    @Override
+    public void deleteWidget(Dashboard dashboard, Widget widget,ObjectId componentId) {
+        int index = dashboard.getWidgets().indexOf(widget);
+        dashboard.getWidgets().set(index, null);
+        List<Widget> widgets = dashboard.getWidgets();
+        List<Widget> updatedWidgets = new ArrayList<>();
+        for (Widget w: widgets) {
+            if(w!=null)
+                updatedWidgets.add(w);
+        }
+        dashboard.setWidgets(updatedWidgets);
+        dashboardRepository.save(dashboard);
+
+        String widgetName = widget.getName();
+
+        List<CollectorType> collectorTypesToDelete = new ArrayList<>();
+        CollectorType cType = findCollectorType(widgetName);
+        collectorTypesToDelete.add(cType);
+        if(widgetName.equalsIgnoreCase("codeanalysis")){
+            collectorTypesToDelete.add(CollectorType.CodeQuality);
+            collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
+            collectorTypesToDelete.add(CollectorType.LibraryPolicy);
+        }
+        if(componentId!=null){
+            Component component = componentRepository.findOne(componentId);
+            for (CollectorType c:collectorTypesToDelete) {
+                component.getCollectorItems().remove(c);
+            }
+
+            componentRepository.save(component);
+        }
+
+    }
+
+
     private List<String> findUpdateCollectorItems(List<String> existingWidgets,List<String> currentWidgets){
         List<String> result = existingWidgets.stream().filter(elem -> !currentWidgets.contains(elem)).collect(Collectors.toList());
         return result;
