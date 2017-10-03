@@ -419,6 +419,15 @@ public class AuditServiceImpl implements AuditService {
             allPeerReviews.add(peerReviewResponse);
         }
 
+        //pull requests in date range, but merged prior to 14 days so no commits available in hygieia
+        if (pullRequests != null && !pullRequests.isEmpty()) {
+            if (allPeerReviews.isEmpty()) {
+                PeerReviewResponse prsButNoCommitsInRangePeerReviewResponse = new PeerReviewResponse();
+                prsButNoCommitsInRangePeerReviewResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+                allPeerReviews.add(prsButNoCommitsInRangePeerReviewResponse);
+            }
+        }
+
         Collector githubCollector = collectorRepository.findByName("GitHub");
         CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
                 scmUrl, scmBranch, true);
