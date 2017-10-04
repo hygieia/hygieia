@@ -76,7 +76,6 @@
         if (widgetOptions && widgetOptions.teams) {
             ctrl.configuredTeams = widgetOptions.teams;
         }
-
         // tabs to switch between product dashboard and gamification dashboard
         ctrl.tabs = [
             { name: "Dashboard" },
@@ -91,6 +90,15 @@
         // method to toggle tabs
         function toggleView(index) {
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
+        }
+
+        function populateScoreboardData() {
+            console.log("In the populate Scoreboard data function with the configured teams : ", ctrl.configuredTeams)
+            var tempScoreBoardData = null;
+            _(ctrl.configuredTeams).forEach(function (configuredTeam, i) {
+
+
+            });
         }
 
         // pull all the stages from pipeline. Create a map for all ctrl stages for each team.
@@ -117,6 +125,7 @@
                         ctrl.orderedStages[collectId] = response.orderMap;
                     }).then(processLoad);
             });
+            ctrl.populateScoreboardData();
         };
 
         // make ordered list
@@ -144,6 +153,7 @@
         ctrl.viewGatesDetails = viewGatesDetails;
         ctrl.initPerc = initPerc;
         ctrl.toggleView = toggleView;
+        ctrl.populateScoreboardData = populateScoreboardData;
 
         // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
@@ -591,6 +601,16 @@
 
                 productCommitData.process(commitDependencyObject);
             });
+        }
+
+        $scope.getLinesCoverageMetric = function(collectorItemId) {
+            var linesCoverageScore = 0;
+            _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
+                if(configuredTeam.collectorItemId == collectorItemId) {
+                    linesCoverageScore = configuredTeam.data.codeAnalysis[0].lineCoverage;
+                }
+            });
+            return linesCoverageScore;
         }
         //endregion
     }

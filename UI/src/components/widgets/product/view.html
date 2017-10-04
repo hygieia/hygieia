@@ -212,13 +212,15 @@
         <table class="gamification-table">
             <tr>
                 <th>Team Name</th>
-                <th>Code Coverage</th>
+                <th>Line Coverage (%)</th>
+                <th>Unit Test Success (%)</th>
                 <th>Total</th>
             </tr>
             <tr ng-repeat="team in ctrl.configuredTeams">
                 <td>{{team.name}}</td>
-                <td>37</td>
-                <td>37</td>
+                <td>{{getLinesCoverageMetric(team.collectorItemId)}}</td>
+                <td>{{team.data.codeAnalysis[0].testSuccessDensity}}</td>
+                <td>{{team.data.codeAnalysis[0].lineCoverage + team.data.codeAnalysis[0].testSuccessDensity}}</td>
             </tr>
         </table>
     </div>
