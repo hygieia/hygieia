@@ -4,16 +4,9 @@ const HomePage = function() {
 
     const po = this;
 
-    // One responsibility of a traditional Page Object
-    // is to define the structure of a page the test will interact with.
-
     po.loginHeader    =   element(by.cssContainingText('.welcome-header', 'Login'));
     po.welcomeHeader    =   element(by.cssContainingText('.welcome-header', 'Welcome'));
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    // The second responsibility of a traditional Page Object
-    // is to define the interactions a user can have with a specific page the Page Object models.
+    po.createDashboardButton    = element(by.className(`reate-dashboard-button`));
 
     po.navigateToLoginPage = () => {
         browser.get('/#/');
@@ -47,6 +40,14 @@ const HomePage = function() {
             log.error(`Unable to locate home page welcome header. ERROR: ${err}`);
         });
     };
+
+    po.clickOnCreateDashboard = () => {
+        po.createDashboardButton.click().then(() => {
+            log.info(`Open create dashboard bubble`);
+        }, (err) => {
+            log.error(`Unable to locate create dashboard button. ERROR: ${err}`);
+        });
+    }
 
 };
 

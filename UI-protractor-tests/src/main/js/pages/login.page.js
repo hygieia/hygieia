@@ -5,21 +5,13 @@ const LoginPage = function() {
 
     const po = this;
 
-
     po.usernameInput    =   element(by.name('username'));
-
     po.passwordInput    =   element(by.name('password'));
-
     po.loginButton      =   element(by.tagName('button'));
-
     po.helpBlock        =   element(by.className('help-block'));
-
     po.standardLoginSection     =   element(by.css('[ng-show="isStandardLogin()"]'));
-
     po.ldapLoginSection     =   element(by.css('[ng-show="isLdapLogin()"]'));
-
     po.standardLogin    =   element(by.css('[ng-click="showStandard()"]'));
-
     po.ldapLogin        =   element(by.css('[ng-click="showLdap()"]'));
 
 
