@@ -38,6 +38,8 @@ import com.capitalone.dashboard.util.FeatureSettings;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -353,9 +355,25 @@ public class StoryDataClientImpl implements StoryDataClient {
 
 		IssueField team = fields.get(featureSettings.getJiraTeamFieldName());
 		if (team != null && team.getValue() != null && !TOOLS.sanitizeResponse(team.getValue()).isEmpty()) {
-			String teamID = TOOLS.sanitizeResponse(team.getValue());
+			Object teamObj = team.getValue();
 
-			Team scopeOwner = teamRepository.findByTeamId(teamID);
+			String teamID = "";
+			Team scopeOwner = null;
+			if (teamObj instanceof JSONObject) {
+				try {
+					String teamName = (String)((JSONObject)teamObj).get("value");
+					scopeOwner = teamRepository.findByName(teamName);
+					if (scopeOwner != null) {
+						teamID = scopeOwner.getTeamId();
+					}
+				} catch (JSONException e) {
+					LOGGER.error("Unable to parse value for " + teamObj);
+				}
+			} else {
+				teamID = TOOLS.sanitizeResponse(team.getValue());
+				scopeOwner = teamRepository.findByTeamId(teamID);
+			}
+
 			// sTeamID
 			feature.setsTeamID(teamID);
 			if (scopeOwner != null && StringUtils.isNotEmpty(scopeOwner.getName())) {

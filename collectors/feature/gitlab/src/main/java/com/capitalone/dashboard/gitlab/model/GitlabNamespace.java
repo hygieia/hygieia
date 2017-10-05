@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class GitlabNamespace {
 
 	private Long id;
+	@JsonProperty("full_path")
 	private String name;
 	private String path;
 	@JsonProperty("updated_at")

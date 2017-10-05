@@ -12,6 +12,7 @@ public class SCM {
 	protected String scmRevisionNumber;
     protected String scmCommitLog;
     protected String scmAuthor;
+    protected String scmAuthorLogin;
     protected List<String> scmParentRevisionNumbers;
     protected long scmCommitTimestamp;
     protected long numberOfChanges;
@@ -27,18 +28,21 @@ public class SCM {
         this.scmRevisionNumber = scm.scmRevisionNumber;
         this.scmCommitLog = scm.scmCommitLog;
         this.scmAuthor = scm.scmAuthor;
+        this.scmAuthorLogin = scm.scmAuthorLogin;
         this.scmParentRevisionNumbers = scm.scmParentRevisionNumbers;
         this.scmCommitTimestamp = scm.scmCommitTimestamp;
         this.numberOfChanges = scm.numberOfChanges;
         this.type = scm.type;
     }
 
-    public SCM(String scmUrl, String scmBranch, String scmRevisionNumber, String scmCommitLog, String scmAuthor, List<String> scmParentRevisionNumbers, long scmCommitTimestamp, long numberOfChanges, CommitType type) {
+    @SuppressWarnings({"PMD.ExcessiveParameterList"})
+    public SCM(String scmUrl, String scmBranch, String scmRevisionNumber, String scmCommitLog, String scmAuthor, String scmAuthorLogin, List<String> scmParentRevisionNumbers, long scmCommitTimestamp, long numberOfChanges, CommitType type) {
         this.scmUrl = scmUrl;
         this.scmBranch = scmBranch;
         this.scmRevisionNumber = scmRevisionNumber;
         this.scmCommitLog = scmCommitLog;
         this.scmAuthor = scmAuthor;
+        this.scmAuthorLogin = scmAuthorLogin;
         this.scmParentRevisionNumbers = scmParentRevisionNumbers;
         this.scmCommitTimestamp = scmCommitTimestamp;
         this.numberOfChanges = numberOfChanges;
@@ -83,6 +87,14 @@ public class SCM {
 
     public void setScmAuthor(String scmAuthor) {
         this.scmAuthor = scmAuthor;
+    }
+
+    public String getScmAuthorLogin() {
+        return scmAuthorLogin;
+    }
+
+    public void setScmAuthorLogin(String scmAuthorLogin) {
+        this.scmAuthorLogin = scmAuthorLogin;
     }
     
     // can return null

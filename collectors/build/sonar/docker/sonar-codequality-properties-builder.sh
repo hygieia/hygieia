@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
+  echo "Skipping properties builder"
+  exit 0
+fi
+
 # mongo container provides the HOST/PORT
 # api container provided DB Name, ID & PWD
 
@@ -38,6 +43,29 @@ then
         SONAR_URL=$MAPPED_URL
 fi
 
+if [ $SONAR_VERSION ]
+then
+	if [ $SONAR_METRICS ]
+	then
+		echo Sonar Version and Metrics explictly set
+		echo if not set would default to config for Sonar earlier than version 6
+	else
+		if [[ $SONAR_VERSION -lt 6 ]]
+		then
+			SONAR_METRICS=ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,sqale_index,test_success_density,test_failures,test_errors,tests
+		else
+			SONAR_METRICS=ncloc,violations,new_vulnerabilities,critical_violations,major_violations,blocker_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,alert_status,quality_gate_details
+
+		fi
+	fi
+else
+	#sonar.version defaults to sonar before v6
+	SONAR_VERSION=1
+	SONAR_METRICS=ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,sqale_index,test_success_density,test_failures,test_errors,tests
+fi
+echo SONAR_VERSION: $SONAR_VERSION
+echo SONAR_METRICS: $SONAR_METRICS
+
 cat > $PROP_FILE <<EOF
 #Database Name
 dbname=${HYGIEIA_API_ENV_SPRING_DATA_MONGODB_DATABASE:-dashboard}
@@ -66,7 +94,10 @@ sonar.username=$SONAR_USERNAME
 sonar.password=$SONAR_PASSWORD
 
 #Sonar Metrics
-sonar.metrics=${SONAR_METRICS:-ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,sqale_index,test_success_density,test_failures,test_errors,tests}
+sonar.metrics[0]=${SONAR_METRICS:-ncloc,line_coverage,violations,critical_violations,major_violations,blocker_violations,sqale_index,test_success_density,test_failures,test_errors,tests}
+
+#Sonar Version - see above for semantics between version/metrics
+sonar.versions[0]=${SONAR_VERSION}
 
 EOF
 

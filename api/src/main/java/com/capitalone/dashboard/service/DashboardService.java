@@ -5,13 +5,11 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
-import com.capitalone.dashboard.model.UserInfo;
 import com.capitalone.dashboard.model.Widget;
-
+import com.capitalone.dashboard.model.DataResponse;
 
 public interface DashboardService {
 
@@ -90,7 +88,17 @@ public interface DashboardService {
      */
     Widget updateWidget(Dashboard dashboard, Widget widget);
 
-    
+    /**
+     * Deletes an existing Widget.
+     *
+     * @param dashboard delete widget on this Dashboard
+     * @param widget Widget to delete
+     *
+     */
+    void deleteWidget(Dashboard dashboard, Widget widget,ObjectId componentId);
+
+
+
     /**
      * Gets all dashboard belonging to the authenticated user
      * @return List of dashboards
@@ -98,13 +106,28 @@ public interface DashboardService {
     
     List<Dashboard> getOwnedDashboards();
 
-    Iterable<UserInfo> getAllUsers();
+    /**
+     * Gets all dashboard ObjectIds belonging to the authenticated user
+     * @return List of dashboard ObjectIds
+     */
+    List<ObjectId> getOwnedDashboardsObjectIds();
 
+    /**
+     * Get the set of owners for a given dashboard
+     * 
+     * @param id get owners for this dashboard
+     * @return the set of owners for provided dashboard
+     */
     Iterable<Owner> getOwners(ObjectId id);
 
-    UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType);
-
-    UserInfo demoteFromOwner(ObjectId dashboardId, String username, AuthType authType);
+    /**
+     * Updates the owners of the given dashboard with the set of given owners
+     * 
+     * @param dashboardId update owners on this dashboard
+     * @param owners full collection of owners
+     * @return the new set of owners for provided dashboard
+     */
+    Iterable<Owner> updateOwners(ObjectId dashboardId, Iterable<Owner> owners);
     
     /**
      * Get owner of dashboard on supplying dashboard Title
@@ -123,6 +146,38 @@ public interface DashboardService {
      */
 
     Component getComponent(ObjectId componentId);
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessService(String configItem) throws HygieiaException;
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItem dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByBusinessApplication(String configItem) throws HygieiaException;
+    /**
+     * Fetches a Dashboards.
+     *
+     * @param configItemApplication dashboard unique identifier
+     * @param configItemService dashboard unique identifier
+     * @return Dashboard instances
+     */
+    DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String configItemService, String configItemApplication) throws HygieiaException;
+
+    /**
+     *  Updates Dashboard Business Items
+     * @param dashboardId
+     * @param dashboard
+     * @return dashboard instance
+     */
+    Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard dashboard) throws HygieiaException;
+
+    Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException;
 
 }
 

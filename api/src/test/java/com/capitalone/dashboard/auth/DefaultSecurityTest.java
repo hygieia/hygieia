@@ -110,8 +110,9 @@ import com.google.common.collect.Lists;
      @Test
      public void owner_deleteDashboard() throws Exception{
      	String jwtHeader = authenticateAs("someUser", "someUserPassword", UserRole.ROLE_USER);
-     	
-     	Dashboard dashboard = makeDashboard("t1", "title", "app", "comp","someUser", DashboardType.Team);
+     	ObjectId configItemAppId = ObjectId.get();
+     	ObjectId configItemComponentId = ObjectId.get();
+     	Dashboard dashboard = makeDashboard("t1", "title", "app", "comp","someUser", DashboardType.Team, configItemAppId, configItemComponentId);
      	String stringObjectId = "54b982620364c80a6136c9f2";
      	ObjectId objectId = new ObjectId(stringObjectId);
      	when(dashboardTestRepository.findOne(objectId)).thenReturn(dashboard);

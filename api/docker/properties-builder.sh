@@ -1,10 +1,16 @@
 #!/bin/bash
 
+if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
+  echo "Skipping properties builder"
+  exit 0
+fi
+
 # if we are linked, use that info
-if [ "$MONGO_PORT" != "" ]; then
-  # Sample: MONGO_PORT=tcp://172.17.0.20:27017
-  export SPRING_DATA_MONGODB_HOST=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\1;'`
-  export SPRING_DATA_MONGODB_PORT=`echo $MONGO_PORT|sed 's;.*://\([^:]*\):\(.*\);\2;'`
+if [ "$MONGO_STARTED" != "" ]; then
+  # links now use hostnames
+  # todo: retrieve linked information such as hostname and port exposition
+  export SPRING_DATA_MONGODB_HOST=mongodb
+  export SPRING_DATA_MONGODB_PORT=27017
 fi
 
 echo "SPRING_DATA_MONGODB_HOST: $SPRING_DATA_MONGODB_HOST"
@@ -27,6 +33,9 @@ dbusername=${SPRING_DATA_MONGODB_USERNAME:-db}
 #Database Password - default is blank
 dbpassword=${SPRING_DATA_MONGODB_PASSWORD:-dbpass}
 
+logRequest=${LOG_REQUEST:-false}
+logSplunkRequest=${LOG_SPLUNK_REQUEST:-false}
+
 corsEnabled=${CORS_ENABLED:-false}
 
 corsWhitelist=${CORS_WHITELIST:-http://domain1.com:port,http://domain2.com:port}
@@ -38,6 +47,8 @@ feature.dynamicPipeline=${FEATURE_DYNAMIC_PIPELINE:-disabled}
 auth.expirationTime=${AUTH_EXPIRATION_TIME:-}
 # Secret Key used to validate the JWT tokens
 auth.secret=${AUTH_SECRET:-}
+auth.authenticationProviders=${AUTH_AUTHENTICATION_PROVIDERS:-}
+
 # LDAP Server Url, including port of your LDAP server
 auth.ldapServerUrl=${AUTH_LDAP_SERVER_URL:-}
 
@@ -52,6 +63,10 @@ auth.adDomain=${AUTH_AD_DOMAIN:-}
 auth.adRootDn=${AUTH_AD_ROOT_DN:-}
 # This is your active directory url
 auth.adUrl=${AUTH_AD_URL:-}
+
+# Needed if you want to query ldap
+auth.ldapBindUser=${AUTH_LDAP_BIND_USER:-}
+auth.ldapBindPass=${AUTH_LDAP_BIND_PASS:-}
 
 #Monitor Widget proxy credentials
 monitor.proxy.username=${MONITOR_PROXY_USERNAME:-}

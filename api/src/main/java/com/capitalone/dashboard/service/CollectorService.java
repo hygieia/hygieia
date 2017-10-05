@@ -48,7 +48,9 @@ public interface CollectorService {
      */
     CollectorItem createCollectorItem(CollectorItem item);
 
-    CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> selectOptions);
+
+
+
     /**
      * Creates a new CollectorItem. If a CollectorItem already exists with the
      * same collector id and niceName, that CollectorItem will be returned instead
@@ -58,6 +60,11 @@ public interface CollectorService {
      * @return created CollectorItem
      */
     CollectorItem createCollectorItemByNiceNameAndJobName(CollectorItem item, String jobName) throws HygieiaException;
+
+
+    // This is to handle scenarios where the option contains user credentials etc. We do not want to create a new collector item -
+    // just update the new credentials.
+    CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> selecOptions);
 
 
     /**

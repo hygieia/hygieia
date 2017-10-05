@@ -10,6 +10,9 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
+import org.bson.types.ObjectId;
+
+import java.util.List;
 
 public class DashboardRequest {
     @NotNull
@@ -24,9 +27,15 @@ public class DashboardRequest {
 
     private String componentName;
 
+    private ObjectId configurationItemBusServObjectId;
+
+    private ObjectId configurationItemBusAppObjectId;
+
     @NotNull
     @Size(min=1, message="Please select a type")
     private String type;
+
+    private List<String> activeWidgets;
 
     public String getTemplate() {
         return template;
@@ -70,11 +79,37 @@ public class DashboardRequest {
 
     public void setType(String type) { this.type = type; }
 
-	public Dashboard toDashboard() {
+    public ObjectId getConfigurationItemBusServObjectId() {
+        return configurationItemBusServObjectId;
+    }
+
+    public void setConfigurationItemBusServObjectId(ObjectId configurationItemBusServObjectId) {
+        this.configurationItemBusServObjectId = configurationItemBusServObjectId;
+    }
+
+    public ObjectId getConfigurationItemBusAppObjectId() {
+        return configurationItemBusAppObjectId;
+    }
+
+    public void setConfigurationItemBusAppObjectId(ObjectId configurationItemBusAppObjectId) {
+        this.configurationItemBusAppObjectId = configurationItemBusAppObjectId;
+    }
+
+    public List<String> getActiveWidgets() {
+        return activeWidgets;
+    }
+
+    public void setActiveWidgets(List<String> activeWidgets) {
+        this.activeWidgets = activeWidgets;
+    }
+
+    public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-        return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type);
+        return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type , configurationItemBusServObjectId, configurationItemBusAppObjectId,activeWidgets);
+
+
     }
 
     public Dashboard copyTo(Dashboard dashboard) {

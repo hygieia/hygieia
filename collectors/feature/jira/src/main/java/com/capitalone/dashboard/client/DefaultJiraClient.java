@@ -62,6 +62,7 @@ public class DefaultJiraClient implements JiraClient {
 	private static final ClientUtil TOOLS = ClientUtil.getInstance();
 	
 	private static final String TEMPO_TEAMS_REST_SUFFIX = "rest/tempo-teams/1/team";
+	private static final String BOARD_TEAMS_REST_SUFFIX = "rest/agile/1.0/board";
 	
 	private final DateFormat QUERY_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
@@ -150,6 +151,93 @@ public class DefaultJiraClient implements JiraClient {
 		}
 		
 		return rt;
+	}
+
+	@Override
+	@SuppressWarnings({"PMD.NPathComplexity"})
+	public List<Team> getBoards(int startAt, List<Team> result) {
+		LOGGER.debug("startAt " + startAt);
+		if (StringUtils.isEmpty(featureSettings.getJiraTeamFieldName())) {
+			return result;
+		}
+
+		try {
+			URL url = new URL(featureSettings.getJiraBaseUrl() + (featureSettings.getJiraBaseUrl().endsWith("/")? "" : "/")
+					+ BOARD_TEAMS_REST_SUFFIX + "?startAt=" + startAt);
+			URLConnection connection = null;
+
+			if (featureSettings.getJiraProxyUrl() != null && !featureSettings.getJiraProxyUrl().isEmpty() && (featureSettings.getJiraProxyPort() != null)) {
+				String fullProxyUrl = featureSettings.getJiraProxyUrl() + ":" + featureSettings.getJiraProxyPort();
+				URL proxyUrl = new URL(fullProxyUrl);
+				URI proxyUri = new URI(proxyUrl.getProtocol(), proxyUrl.getUserInfo(),
+						proxyUrl.getHost(), proxyUrl.getPort(), proxyUrl.getPath(), proxyUrl.getQuery(), null);
+				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUri.getHost(), proxyUri.getPort()));
+				connection = url.openConnection(proxy);
+
+				if (!StringUtils.isEmpty(featureSettings.getJiraCredentials())) {
+					String[] creds = (new String(Base64.decodeBase64(featureSettings.getJiraCredentials()))).split(":");
+					final String uname = creds[0];
+					final String pword = creds.length > 1? creds[1] : null;
+					Authenticator.setDefault(new Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(uname, pword.toCharArray());
+						}
+					});
+					connection.setRequestProperty("Proxy-Authorization", "Basic " + featureSettings.getJiraCredentials());
+				}
+			} else {
+				connection = url.openConnection();
+			}
+
+			HttpURLConnection request = (HttpURLConnection) connection;
+			request.setRequestProperty("Authorization" , "Basic " + featureSettings.getJiraCredentials());
+			request.connect();
+
+			try (InputStreamReader streamReader = new InputStreamReader((InputStream) request.getContent(), Charset.forName("UTF-8"));
+				 BufferedReader inReader = new BufferedReader(streamReader)) {
+				StringBuilder sb = new StringBuilder();
+				int cp;
+				while ((cp = inReader.read()) != -1) {
+					sb.append((char) cp);
+				}
+
+				JSONParser parser = new JSONParser();
+				try {
+					JSONObject teamsJson = (JSONObject) parser.parse(sb.toString());
+
+					if (teamsJson != null) {
+						JSONArray valuesArray = (JSONArray)teamsJson.get("values");
+						for (Object obj : valuesArray) {
+							String teamId = TOOLS.sanitizeResponse(((JSONObject) obj).get("id"));
+							String teamName = TOOLS.sanitizeResponse(getJSONString((JSONObject) obj, "name"));
+							String teamType = TOOLS.sanitizeResponse(getJSONString((JSONObject) obj, "type"));
+							Team team = new Team(teamId, teamName);
+							team.setTeamType(teamType);
+							result.add(team);
+						}
+
+						boolean isLast = (boolean)teamsJson.get("isLast");
+
+						if (!isLast) {
+							getBoards(startAt + 50, result);
+						}
+					}
+				} catch (ParseException pe) {
+					LOGGER.error("Parser exception when parsing teams", pe);
+				}
+			}
+		} catch (org.springframework.web.client.RestClientException rce) {
+			LOGGER.error("Client exception when loading teams", rce);
+			throw rce;
+		}  catch (MalformedURLException mfe) {
+			LOGGER.error("Malformed url for loading teams", mfe);
+		} catch (IOException ioe) {
+			LOGGER.error("IOException", ioe);
+		} catch (URISyntaxException urie) {
+			LOGGER.error("URISyntaxException for Jira connection", urie);
+		}
+
+		return result;
 	}
 	
 	@Override

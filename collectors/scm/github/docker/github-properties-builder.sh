@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
+  echo "Skipping properties builder"
+  exit 0
+fi
+
 # mongo container provides the HOST/PORT
 # api container provided DB Name, ID & PWD
 
@@ -51,6 +56,13 @@ github.commitThresholdDays=${GITHUB_COMMIT_THRESHOLD_DAYS:-15}
 
 #Optional: Error threshold count after which collector stops collecting for a collector item. Default is 2.
 github.errorThreshold=${GITHUB_ERROR_THRESHOLD:-1}
+
+#This is the key generated using the Encryption class in core
+github.key=${GITHUB_KEY}
+
+#personal access token generated from github and used for making authentiated calls
+github.personalAccessToken=${PERSONAL_ACCESS_TOKEN}
+
 EOF
 
 echo "

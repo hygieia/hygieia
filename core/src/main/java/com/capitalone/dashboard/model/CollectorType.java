@@ -5,6 +5,7 @@ package com.capitalone.dashboard.model;
  */
 public enum CollectorType {
     SCM,
+    CMDB,
     Build,
     Artifact,
     Deployment,

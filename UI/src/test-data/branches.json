@@ -1,0 +1,25 @@
+{
+ "id": "58e276be86458d2204185660",
+ "enabled": true,
+ "pushed": false,
+ "collectorId": "58238b49e40cea3ea8af279f",
+ "lastUpdated": 1491407566680,
+ "options": {
+   "scm": "Github",
+   "branch": "master",
+   "url": "https://github.kdc.capitalone.com/hlsaturn/saturnweb",
+   "branches": [
+     "Saturn-KYC",
+     "master",
+     "release"
+   ]
+ },
+ "collector": {
+   "id": "58238b49e40cea3ea8af279f",
+   "name": "GitHub",
+   "collectorType": "SCM",
+   "enabled": true,
+   "online": true,
+   "lastExecuted": 1491407566909
+ }
+}

@@ -98,7 +98,7 @@ function server(ghostMode) {
   ghostMode = typeof ghostMode == 'undefined' ? false : true
   return function () {
       /*
-       * Location of your backend server
+       * Location of your backend (API) server--default port 8080
        */
       var proxyTarget = config.api || 'http://localhost:8080';
 
@@ -238,7 +238,7 @@ gulp.task('fonts', function() {
         .src([
             'bower_components/**/*'
         ])
-        .pipe(filter('**/*.{eot,ttf,woff}'))
+        .pipe(filter('**/*.{eot,ttf,woff,woff2}'))
         .pipe(flatten())
         .pipe(gulp.dest(hygieia.dist + 'fonts'));
 });

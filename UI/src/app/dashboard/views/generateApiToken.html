@@ -1,0 +1,55 @@
+<widget-modal widget-modal-title="Generate Api Token">
+    <form name="cdf" class="form" ng-submit="ctrl.submit(cdf)" novalidate>
+        <form-group input="apiUser" errors="{required: 'Api user name is required',
+                                                minlength: 'Min length of 6 characters',
+                                                maxlength: 'Max length of 50 characters',
+                                                pattern : 'Special character(s) found. Please enter only letters, numbers or spaces.'}">
+            <label class="modal-label">Api User</label>
+            <input
+                    type="text"
+                    name="apiUser"
+                    class="form-control"
+                    placeholder="Api User"
+                    ng-model="ctrl.apiUser"
+                    required
+                    maxlength="50"
+                    autocomplete="off"
+                    minlength="6"
+                    ng-pattern="/^[a-zA-Z0-9 ]*$/"/>
+            <span class="text-danger"></span>
+        </form-group>
+
+        <form-group input="expDt"
+                    class="text-center">
+            <br>
+            <label class="modal-label" id="dtLabel">Expiration Date</label>
+
+            <div class="row">
+
+                <div class="col-xs-offset-3 col-xs-6">
+                    <date-picker disable-before-today="true" dp-Name="expDt"></date-picker>
+                </div>
+
+            </div>
+
+        </form-group>
+
+        <form-group input="apiKey" errors="{apiTokenError: 'Error generating api token.'}">
+            <label class="modal-label">Api Key</label>
+            <input
+                    type="text"
+                    name="apiKey"
+                    class="form-control"
+                    placeholder="Api Key will only be visible till this dialog box is open"
+                    ng-model="ctrl.apiKey"
+                    disabled="true"
+                    maxlength="100"
+                    autocomplete="off"/>
+            <span class="text-danger"></span>
+        </form-group>
+
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Create</button>
+        </div>
+    </form>
+</widget-modal>

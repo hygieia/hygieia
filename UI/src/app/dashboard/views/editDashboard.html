@@ -1,0 +1,175 @@
+<widget-modal widget-modal-title="Administer Your Dashboard">
+    <div class="row">
+        <ul class="nav nav-tabs custom-tabs">
+            <li class="auth-modal-tab" ng-repeat="tab in ctrl.tabs" ng-click="ctrl.tabToggleView($index)"
+                ng-class="tab.name == ctrl.tabView ? 'active' : ''">
+                <a data-toggle="tab" >{{tab.name}}</a>
+            </li>
+        </ul>
+
+        <div class="container-fluid" ng-if="ctrl.tabView == 'Dashboard Title'">
+            <form name="cdf" class="form" ng-submit="ctrl.submit(cdf)" novalidate>
+                <div class="help-block text-danger" ng-show="error">
+                    {{error}}
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 gap">
+                        <form-group input="dashboardTitle" errors="{required: 'New Dashboard name is required', minlength: 'Min length of 6 characters', maxlength: 'Max length of 50 characters', renameError: 'Error renaming dashboard. Change title and try again.', pattern : 'Special character(s) found. Please enter only letters, numbers or spaces.'}">
+                            <label class="modal-label">Dashboard Title</label>
+                            <input
+                                    type="text"
+                                    name="dashboardTitle"
+                                    class="form-control"
+                                    placeholder="Dashboard title"
+                                    ng-model="ctrl.dashboardTitle"
+                                    required
+                                    maxlength="50"
+                                    autocomplete="off"
+                                    minlength="6"
+                                    ng-pattern="/^[a-zA-Z0-9 ]*$/"/>
+                            <span class="text-danger"></span>
+                        </form-group>
+                        <div class="text-center"><button type="submit" class="btn btn-primary btn-wide">Save</button></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+
+        <div class="container-fluid" ng-if="ctrl.tabView == 'Business Service/ Application'">
+            <form name="formBusinessService" class="form" ng-submit="ctrl.submitBusServOrApp(formBusinessService)">
+                <div class="row">
+                    <div class="col-xs-12 gap">
+                        <p class="text-danger">{{ctrl.dupErroMessage}}</p>
+                        <form-group  input="configurationItemBusServ" errors="{dupBusServError: 'Existing Dashboard found for this Business Service/ Business Application combination', invalid: 'Invalid Business Service'}">
+                            <label ng-class="{'text-danger':ctrl.validBusServName == false}" class="modal-label">Business Service <i class="fa fa-info-circle" uib-tooltip = "{{ctrl.getBusSerToolText()}}" tooltip-trigger="focus" tooltip-placement="top" aria-hidden="true"></i></label>
+                            <input
+                                    type="text"
+                                    name="configurationItemBusServ"
+                                    ng-model="ctrl.configurationItemBusServ"
+                                    class="form-control"
+                                    placeholder="Select a Business Service (Optional)"
+                                    uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue) "
+                                    typeahead-wait-ms="250" autocomplete="off"
+                                    typeahead-focus
+                                    typeahead-min-length="0"
+                                    typeahead-editable="false"
+                                    typeahead-on-select="ctrl.setConfigItemAppId(ctrl.configurationItemBusServ.id)"
+                                    typeahead-no-results="noResults" />
+                            <div class="form-control" ng-show="noResults">
+                                No Results Found
+                            </div>
+                        </form-group>
+
+                        <form-group input="configurationItemBusApp" ng-if="ctrl.dashboardType != 'Product'"  errors="{dupBusAppError: 'Existing Dashboard found for this Business Service/ Business Application combination', invalid: 'Invalid Business Application'}">
+                            <label ng-class="{'text-danger':ctrl.validBusAppName == false}"  class="modal-label">Business Application <i class="fa fa-info-circle" uib-tooltip = "{{ctrl.getBusAppToolText()}}" tooltip-trigger="focus" tooltip-placement="top" aria-hidden="true"></i></label>
+                            <input
+                                    type="text"
+                                    name="configurationItemBusApp"
+                                    ng-model="ctrl.configurationItemBusApp"
+                                    class="form-control"
+                                    placeholder="Select a Business Application (Optional)"
+                                    uib-typeahead="configItemComp as configItemComp.configurationItem + ' - (' + configItemComp.commonName + ')' for configItemComp in ctrl.getConfigItem('component',$viewValue)"
+                                    typeahead-wait-ms="250" autocomplete="off"
+                                    typeahead-focus
+                                    typeahead-min-length="0"
+                                    typeahead-editable="false"
+                                    typeahead-on-select="ctrl.onConfigurationItemBusAppSelect(ctrl.configurationItemBusApp.configurationItem)"
+                                    typeahead-no-results="noResults" />
+                            <div class="form-control" ng-show="noResults">
+                                No Results Found
+                            </div>
+                        </form-group>
+                        <div class="text-center"><button type="submit" class="btn btn-primary btn-wide">Save</button></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="container-fluid" ng-if="ctrl.tabView == 'Owner Information'">
+            <div class="row">
+                <div class="col-xs-12 gap">
+                    <label class="modal-label">Add/Remove Owners</label>
+                    <form name="ownerForm" class="form" ng-submit="ctrl.ownerFormSubmit(ownerForm)" novalidate>
+                        <div class="widget-modal-body" style="width: 500px;height: 300px;overflow: auto;">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="text-center" ng-hide="users">Loading Users...</div>
+
+                                    <div class="row">
+                                        <div class="col-xs-5">
+                                            <h3>Users</h3>
+                                            <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch">
+
+                                            <div class="dash-modal-row delete-dashboard-row clearfix"
+                                                 ng-repeat="user in users | filter:{username:userSearch} | ownerFilter:owners | orderBy:'username'">
+
+                                                <div class="btn-block">
+                                                    <span class="label label-primary" ng-show="isActiveUser(user)">You</span>
+                                                    {{user.username}}
+                                                    <span class="badge">{{user.authType}}</span>
+                                                    <div title="Promote User" class="clickable pull-right" ng-click="promoteUserToOwner(user)">
+                                                            <span class="clickable fa fa-stack">
+                                                                <span class="fa-circle-thin fa-stack-2x text-success"></span>
+                                                                <span class="fa-angle-right fa-stack-1x text-success"></span>
+                                                            </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-push-2 col-xs-5">
+                                            <h3>Owners</h3>
+                                            <div class="dash-modal-row delete-dashboard-row clearfix"
+                                                 ng-repeat="owner in owners | orderBy:'username'">
+                                                <div class="btn-block">
+                                                    <span class="label label-primary" ng-show="isActiveUser(owner)">You</span>
+                                                    {{owner.username}}
+                                                    <span class="badge">{{owner.authType}}</span>
+                                                    <div title="Demote User" ng-show="owners.length > 1" class="clickable pull-right" ng-click="demoteUserFromOwner(owner)">
+                                                            <span class="clickable fa fa-stack">
+                                                                <span class="fa-circle-thin fa-stack-2x text-danger"></span>
+                                                                <span class="fa-angle-left fa-stack-1x text-danger"></span>
+                                                            </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center" ng-show="users && !users.length">
+                                        No results
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center"><button type="submit" class="btn btn-primary btn-wide">Save</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid" ng-if="ctrl.tabView == 'Widget Management'">
+            <div class="row">
+                <div class="col-xs-12 gap">
+                    <label class="modal-label">Add/Remove Widgets</label>
+                    <form name="editForm">
+                        <ul class="list-animate list-group text-left">
+                            <li class="list-group-item" ng-repeat="(title,enabled) in ctrl.widgetSelections"
+                                ng-if="title!='product' && title!='monitor2' && title!='undefined'">
+                                <span class="fa fa-lg left-icon"></span>
+                                <input type="checkbox" name="widgetSelections" ng-disabled="ctrl.selectWidgetsDisabled" ng-model="ctrl.widgetSelections[title]">
+                                <span>{{title | uppercase}}</span>
+                            </li>
+
+                        </ul>
+
+                        <div class="button-row row text-center">
+                            <button type="submit" class="btn btn-primary btn-wide" ng-click="ctrl.saveWidgets(editForm)" ng-disabled="ctrl.selectWidgetsDisabled">Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</widget-modal>

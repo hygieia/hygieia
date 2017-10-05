@@ -8,7 +8,7 @@ public class HygieiaException extends Exception {
     public static final int COLLECTOR_ITEM_CREATE_ERROR = -11;
     public static final int ERROR_INSERTING_DATA = -12;
     public static final int DUPLICATE_DATA = -13;
-    
+    public static final int BAD_DATA = -14;
     
     public static final int INVALID_CONFIGURATION = -999;
     

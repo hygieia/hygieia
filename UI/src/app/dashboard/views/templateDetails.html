@@ -1,0 +1,15 @@
+<widget-modal id="template-details"
+              class="team-environment-commit-detail"
+              widget-modal-title="Template details"
+              widget-modal-close="true">
+
+    <ul class="list-animate list-group text-left">
+        <h4> Template : {{ctrl.templateDetails.template}}</h4>
+        <li class="list-group-item" ng-repeat="widgetName in ctrl.templateDetails.widgets">
+            <a class="btn-block clickable">
+                <span class="fa fa-lg left-icon"></span>
+                {{widgetName | uppercase}}
+            </a>
+        </li>
+    </ul>
+</widget-modal>

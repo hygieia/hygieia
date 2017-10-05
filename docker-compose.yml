@@ -1,21 +1,24 @@
 mongodb:
   image: mongo:latest
-  container_name: mongodb
-  command: mongod --smallfiles
-  ports:
-   - "27017:27017"
-  volumes:
-   - ./mongo:/data/db:rw
-  volume_driver: local
+  environment:
+    - MONGODB_USERNAME=db
+    - MONGODB_DATABASE=dashboard
+    - MONGODB_PASSWORD=dashboard
+
 hygieia-api:
   image: hygieia-api:latest
-  container_name: hygieia-api
-  ports:
-  - "8080:8080"
   volumes:
   - ./logs:/hygieia/logs
+  environment:
+    - jasypt.encryptor.password=hygieiasecret
+    - SPRING_DATA_MONGODB_DATABASE=dashboard
+    - SPRING_DATA_MONGODB_HOST=mongodb
+    - SPRING_DATA_MONGODB_PORT=27017
+    - SPRING_DATA_MONGODB_USERNAME=db
+    - SPRING_DATA_MONGODB_PASSWORD=dashboard
   links:
-  - mongodb:mongo
+  - mongodb
+
 hygieia-ui:
   image: hygieia-ui:latest
   container_name: hygieia-ui
@@ -38,8 +41,6 @@ hygieia-github-scm-collector:
 #  - GITHUB_HOST=github.com
 #  - GITHUB_CRON='0 0/5 * * * *'
 #  - GITHUB_COMMIT_THREASHOLD_DAYS=15
-
-
 
 hygieia-jira-feature-collector:
   image: hygieia-jira-feature-collector:latest
@@ -330,5 +331,3 @@ hygieia-artifactory-artifact-collector:
 #  - ARTIFACTORY_REPO=prerelease,release
 # Artifactory REST endpoint
 #  - ARTIFACTORY_ENDPOINT=artifactory/
-
-

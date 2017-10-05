@@ -1,10 +1,10 @@
 package com.capitalone.dashboard.model;
 
 public class XLDeployApplication extends CollectorItem {
-    private static final String INSTANCE_URL = "instanceUrl";
-    private static final String APP_NAME = "applicationName";
-    private static final String APP_ID = "applicationId";
-    private static final String APP_TYPE = "applicationType";
+    protected static final String INSTANCE_URL = "instanceUrl";
+    protected static final String APP_NAME = "applicationName";
+    protected static final String APP_ID = "applicationId";
+    protected static final String APP_TYPE = "applicationType";
 
     public String getInstanceUrl() {
         return (String) getOptions().get(INSTANCE_URL);

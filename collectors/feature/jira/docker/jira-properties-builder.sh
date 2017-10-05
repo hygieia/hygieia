@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$SKIP_PROPERTIES_BUILDER" = true ]; then
+  echo "Skipping properties builder"
+  exit 0
+fi
+
 # mongo container provides the HOST/PORT
 # api container provided DB Name, ID & PWD
 
@@ -135,6 +140,9 @@ feature.jiraStoryPointsFieldName=${JIRA_STORY_POINTS_FIELD_NAME:-customfield_100
 # team value you expect to see:
 # https://[your-jira-domain-name]/rest/api/2/issue/[some-issue-name]
 feature.jiraTeamFieldName=${JIRA_TEAM_FIELD_NAME}
+
+# Set this to true if you use boards as team
+feature.jiraBoardAsTeam=${JIRA_BOARD_AS_TEAM:-false}
 
 EOF
 

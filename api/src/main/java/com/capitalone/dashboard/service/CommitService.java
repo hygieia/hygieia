@@ -7,6 +7,8 @@ import com.capitalone.dashboard.request.CommitRequest;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import java.util.List;
+
 public interface CommitService {
 
     /**
@@ -18,4 +20,6 @@ public interface CommitService {
     DataResponse<Iterable<Commit>> search(CommitRequest request);
 
     String createFromGitHubv3(JSONObject request) throws ParseException, HygieiaException;
+
+    List<Commit> getCommitsBySha (String scmRevisionNumber);
 }

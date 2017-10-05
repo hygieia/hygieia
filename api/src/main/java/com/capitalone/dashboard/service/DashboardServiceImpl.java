@@ -1,19 +1,13 @@
 package com.capitalone.dashboard.service;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-import com.capitalone.dashboard.auth.exceptions.DeleteLastAdminException;
-import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
-import com.capitalone.dashboard.model.UserInfo;
-import com.capitalone.dashboard.model.UserRole;
-import com.capitalone.dashboard.repository.UserInfoRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.capitalone.dashboard.auth.AuthenticationUtil;
+import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuthType;
 import com.capitalone.dashboard.model.Collector;
@@ -31,6 +26,8 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -38,6 +35,7 @@ import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.PipelineRepository;
 import com.capitalone.dashboard.repository.ServiceRepository;
+import com.capitalone.dashboard.repository.UserInfoRepository;
 import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -55,6 +53,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final PipelineRepository pipelineRepository; //NOPMD
     private final ServiceRepository serviceRepository;
     private final UserInfoRepository userInfoRepository;
+    private final CmdbService cmdbService;
 
     @Autowired
     public DashboardServiceImpl(DashboardRepository dashboardRepository,
@@ -64,7 +63,8 @@ public class DashboardServiceImpl implements DashboardService {
                                 CustomRepositoryQuery customRepositoryQuery,
                                 ServiceRepository serviceRepository,
                                 PipelineRepository pipelineRepository,
-                                UserInfoRepository userInfoRepository) {
+                                UserInfoRepository userInfoRepository,
+                                CmdbService cmdbService) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
@@ -73,16 +73,28 @@ public class DashboardServiceImpl implements DashboardService {
         this.serviceRepository = serviceRepository;
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
         this.userInfoRepository = userInfoRepository;
+        this.cmdbService = cmdbService;
     }
 
     @Override
     public Iterable<Dashboard> all() {
-        return dashboardRepository.findAll(new Sort(Sort.Direction.ASC, "title"));
+        Iterable<Dashboard> dashboards = dashboardRepository.findAll(new Sort(Sort.Direction.ASC, "title"));
+        for(Dashboard dashboard: dashboards){
+            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+
+            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+        }
+        return dashboards;
     }
 
     @Override
     public Dashboard get(ObjectId id) {
         Dashboard dashboard = dashboardRepository.findOne(id);
+        ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+        ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+
+        setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
 
         if (!dashboard.getApplication().getComponents().isEmpty()) {
             // Add transient Collector instance to each CollectorItem
@@ -100,20 +112,37 @@ public class DashboardServiceImpl implements DashboardService {
         return dashboard;
     }
 
-    @Override
-    public Dashboard create(Dashboard dashboard) throws HygieiaException {
-        Iterable<Component> components = componentRepository.save(dashboard.getApplication().getComponents());
+    private Dashboard create(Dashboard dashboard, boolean isUpdate) throws HygieiaException {
+        Iterable<Component> components = null;
+
+        if(!isUpdate) {
+            components = componentRepository.save(dashboard.getApplication().getComponents());
+        }
+
         try {
+            duplicateDashboardErrorCheck(dashboard);
             return dashboardRepository.save(dashboard);
-        } catch (Exception e) {
-            componentRepository.delete(components);
-            throw new HygieiaException("Failed creating dashboard.", HygieiaException.ERROR_INSERTING_DATA);
+        }  catch (Exception e) {
+            //Exclude deleting of components if this is an update request
+            if(!isUpdate) {
+                componentRepository.delete(components);
+            }
+
+            if(e instanceof HygieiaException){
+                throw e;
+            }else{
+                throw new HygieiaException("Failed creating dashboard.", HygieiaException.ERROR_INSERTING_DATA);
+            }
         }
     }
 
     @Override
+    public Dashboard create(Dashboard dashboard) throws HygieiaException {
+        return create(dashboard, false);
+    }
+    @Override
     public Dashboard update(Dashboard dashboard) throws HygieiaException {
-        return create(dashboard);
+        return create(dashboard, true);
     }
 
     @Override
@@ -124,7 +153,6 @@ public class DashboardServiceImpl implements DashboardService {
             throw new UnsafeDeleteException("Cannot delete team dashboard " + dashboard.getTitle() + " as it is referenced by program dashboards.");
         }
 
-        componentRepository.delete(dashboard.getApplication().getComponents());
 
         // Remove this Dashboard's services and service dependencies
         serviceRepository.delete(serviceRepository.findByDashboardId(id));
@@ -133,7 +161,32 @@ public class DashboardServiceImpl implements DashboardService {
             serviceRepository.save(service);
         }
 
+        /**
+         * Delete Dashboard. Then delete component. Then disable collector items if needed
+         */
         dashboardRepository.delete(dashboard);
+        componentRepository.delete(dashboard.getApplication().getComponents());
+        handleCollectorItems(dashboard.getApplication().getComponents());
+    }
+
+    /**
+     * For the dashboard, get all the components and get all the collector items for the components.
+     * If a collector item is NOT associated with any Component, disable it.
+     * @param components
+     */
+    private void handleCollectorItems(List<Component> components) {
+        for (Component component : components) {
+            Map<CollectorType, List<CollectorItem>> itemMap = component.getCollectorItems();
+            for (CollectorType type : itemMap.keySet()) {
+                List<CollectorItem> items = itemMap.get(type);
+                for (CollectorItem i : items) {
+                    if (CollectionUtils.isEmpty(customRepositoryQuery.findComponents(i.getCollectorId(),type,i))) {
+                        i.setEnabled(false);
+                        collectorItemRepository.save(i);
+                    }
+                }
+            }
+        }
     }
 
     private boolean isSafeDelete(Dashboard dashboard) {
@@ -287,21 +340,31 @@ public class DashboardServiceImpl implements DashboardService {
 		Set<Dashboard> myDashboards = new HashSet<Dashboard>();
 		
 		Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-		myDashboards.addAll(dashboardRepository.findByOwners(owner));
+        List<Dashboard> findByOwnersList = dashboardRepository.findByOwners(owner);
+        getAppAndComponentNames(findByOwnersList);
+		myDashboards.addAll(findByOwnersList);
 		
 		// TODO: This if check is to ensure backwards compatibility for dashboards created before AuthenticationTypes were introduced.
 		if (AuthenticationUtil.getAuthTypeFromContext() == AuthType.STANDARD) {
-			myDashboards.addAll(dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext()));
+            List<Dashboard> findByOwnersListOld = dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext());
+            getAppAndComponentNames(findByOwnersListOld);
+			myDashboards.addAll(findByOwnersListOld);
 		}
 		
 		return Lists.newArrayList(myDashboards);
 	}
 
     @Override
-    public Iterable<UserInfo> getAllUsers() {
-        return userInfoRepository.findByOrderByUsernameAsc();
-    }
+    public List<ObjectId> getOwnedDashboardsObjectIds() {
+        List<ObjectId> dashboardIdList = new ArrayList<>();
+        List<Dashboard> ownedDashboards =  getOwnedDashboards();
 
+        for(Dashboard dashboard: ownedDashboards){
+            dashboardIdList.add(dashboard.getId());
+        }
+
+        return dashboardIdList;
+    }
     @Override
     public Iterable<Owner> getOwners(ObjectId id) {
         Dashboard dashboard = get(id);
@@ -309,53 +372,24 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public UserInfo promoteToOwner(ObjectId dashboardId, String username, AuthType authType) {
-        Dashboard dashboard = dashboardRepository.findOne(dashboardId);
-        List<Owner> owners = dashboard.getOwners();
-        Owner promotedOwner = new Owner(username, authType);
-        owners.add(promotedOwner);
-        dashboardRepository.save(dashboard);
-
-        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
-        if (user == null) {
-            throw new UserNotFoundException(username, authType);
+    public Iterable<Owner> updateOwners(ObjectId dashboardId, Iterable<Owner> owners) {
+        for(Owner owner : owners) {
+        	String username = owner.getUsername();
+        	AuthType authType = owner.getAuthType();
+        	if(userInfoRepository.findByUsernameAndAuthType(username, authType) == null) {
+        		throw new UserNotFoundException(username, authType);
+        	}
         }
-        user.getAuthorities().add(UserRole.ROLE_ADMIN);
+    	
+    	Dashboard dashboard = dashboardRepository.findOne(dashboardId);
+        dashboard.setOwners(Lists.newArrayList(owners));
+        Dashboard result = dashboardRepository.save(dashboard);
 
-        return user;
+        return result.getOwners();
     }
-
-    @Override
-    public UserInfo demoteFromOwner(ObjectId dashboardId, String username, AuthType authType) {
-        Dashboard dashboard = dashboardRepository.findOne(dashboardId);
-        int numberOfOwners = dashboard.getOwners().size();
-
-        //get admin users
-        Collection<UserInfo> adminUsers = userInfoRepository.findByAuthoritiesIn(UserRole.ROLE_ADMIN);
-
-        numberOfOwners += adminUsers.size();
-
-        if(numberOfOwners <= 1) {
-            throw new DeleteLastAdminException();
-        }
-
-        Owner demotedOwner = new Owner(username, authType);
-        dashboard.getOwners().remove(demotedOwner);
-        dashboardRepository.save(dashboard);
-
-        UserInfo user = userInfoRepository.findByUsernameAndAuthType(username, authType);
-        if (user == null) {
-            throw new UserNotFoundException(username, authType);
-        }
-
-        user.getAuthorities().remove(UserRole.ROLE_ADMIN);
-        return user;
-
-    }
-
+    
 	@Override
 	public String getDashboardOwner(String dashboardTitle) {
-
 		String dashboardOwner=dashboardRepository.findByTitle(dashboardTitle).get(0).getOwner();
 		
 		return dashboardOwner;
@@ -375,6 +409,222 @@ public class DashboardServiceImpl implements DashboardService {
         Component component = componentRepository.findOne(componentId);
         return component;
     }
+    @Override
+    public Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard request) throws HygieiaException {
+        Dashboard dashboard = get(dashboardId);
+        String updatedBusServiceName = request.getConfigurationItemBusServName();
+        String updatedBusApplicationName = request.getConfigurationItemBusAppName();
+        String originalBusServiceName = dashboard.getConfigurationItemBusServName();
+        String originalBusApplicationName = dashboard.getConfigurationItemBusAppName();
+        boolean updateDashboard = false;
+
+        if(updatedBusServiceName != null && !updatedBusServiceName.isEmpty()){
+            Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(updatedBusServiceName);
+            if(cmdb != null){
+                updateDashboard = true;
+                dashboard.setConfigurationItemBusServObjectId(cmdb.getId());
+            }
+        } else if(originalBusServiceName != null && !originalBusServiceName.isEmpty()){
+
+            updateDashboard = true;
+            dashboard.setConfigurationItemBusServObjectId(null);
+        }
+
+        if(updatedBusApplicationName != null && !updatedBusApplicationName.isEmpty()){
+            Cmdb cmdb = cmdbService.configurationItemByConfigurationItem(updatedBusApplicationName);
+            if(cmdb != null){
+                updateDashboard = true;
+                dashboard.setConfigurationItemBusAppObjectId(cmdb.getId());
+            }
+        } else if(originalBusApplicationName != null && !originalBusApplicationName.isEmpty()){
+                updateDashboard = true;
+                dashboard.setConfigurationItemBusAppObjectId(null);
+        }
+        if(updateDashboard){
+            dashboard = update(dashboard);
+        }else{
+            dashboard = null;
+        }
+
+        return dashboard;
+    }
+    @Override
+    public DataResponse<Iterable<Dashboard>> getByBusinessService(String app) throws HygieiaException {
+        Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(app);
+        Iterable<Dashboard> rt = null;
+
+        if(cmdb != null){
+            rt = dashboardRepository.findAllByConfigurationItemBusServObjectId(cmdb.getId());
+        }
+        return new DataResponse<>(rt, System.currentTimeMillis());
+    }
+    @Override
+    public DataResponse<Iterable<Dashboard>> getByBusinessApplication(String component) throws HygieiaException {
+        Cmdb cmdb =  cmdbService.configurationItemByConfigurationItem(component);
+        Iterable<Dashboard> rt = null;
+
+        if(cmdb != null){
+           rt = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId());
+        }
+        return new DataResponse<>(rt, System.currentTimeMillis());
+    }
+    @Override
+    public DataResponse<Iterable<Dashboard>> getByServiceAndApplication(String component, String app) throws HygieiaException {
+        Cmdb cmdbCompItem =  cmdbService.configurationItemByConfigurationItem(component);
+        Cmdb cmdbAppItem =  cmdbService.configurationItemByConfigurationItem(app);
+        Iterable<Dashboard> rt = null;
+
+        if(cmdbAppItem != null && cmdbCompItem != null){
+            rt = dashboardRepository.findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(cmdbAppItem.getId(),cmdbCompItem.getId());
+        }
+        return new DataResponse<>(rt, System.currentTimeMillis());
+    }
 
 
+    @Override
+    public Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException {
+        Dashboard dashboard = get(dashboardId);
+        List<String> existingActiveWidgets = dashboard.getActiveWidgets();
+        List<Component> components = dashboard.getApplication().getComponents();
+        List<String> widgetToDelete =  findUpdateCollectorItems(existingActiveWidgets,request.getActiveWidgets());
+        List<Widget> widgets = dashboard.getWidgets();
+        ObjectId componentId = components.get(0)!=null?components.get(0).getId():null;
+        List<Integer> indexList = new ArrayList<>();
+        List<CollectorType> collectorTypesToDelete = new ArrayList<>();
+        List<Widget> updatedWidgets = new ArrayList<>();
+
+        for (String widgetName: widgetToDelete) {
+            for (Widget widget:widgets) {
+                if(widgetName.equalsIgnoreCase(widget.getName())){
+                    int widgetIndex = widgets.indexOf(widget);
+                    indexList.add(widgetIndex);
+                    collectorTypesToDelete.add(findCollectorType(widgetName));
+                    if(widgetName.equalsIgnoreCase("codeanalysis")){
+                        collectorTypesToDelete.add(CollectorType.CodeQuality);
+                        collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
+                        collectorTypesToDelete.add(CollectorType.LibraryPolicy);
+                    }
+                }
+            }
+        }
+        //iterate through index and remove widgets
+        for (Integer i:indexList) {
+            widgets.set(i,null);
+        }
+        for (Widget w:widgets) {
+            if(w!=null)
+                updatedWidgets.add(w);
+        }
+        dashboard.setWidgets(updatedWidgets);
+        dashboard.setActiveWidgets(request.getActiveWidgets());
+        dashboard = update(dashboard);
+        if(componentId!=null){
+            com.capitalone.dashboard.model.Component component = componentRepository.findOne(componentId);
+            for (CollectorType cType :collectorTypesToDelete) {
+                component.getCollectorItems().remove(cType);
+            }
+            componentRepository.save(component);
+        }
+        return dashboard;
+    }
+
+
+    @Override
+    public void deleteWidget(Dashboard dashboard, Widget widget,ObjectId componentId) {
+        int index = dashboard.getWidgets().indexOf(widget);
+        dashboard.getWidgets().set(index, null);
+        List<Widget> widgets = dashboard.getWidgets();
+        List<Widget> updatedWidgets = new ArrayList<>();
+        for (Widget w: widgets) {
+            if(w!=null)
+                updatedWidgets.add(w);
+        }
+        dashboard.setWidgets(updatedWidgets);
+        dashboardRepository.save(dashboard);
+
+        String widgetName = widget.getName();
+
+        List<CollectorType> collectorTypesToDelete = new ArrayList<>();
+        CollectorType cType = findCollectorType(widgetName);
+        collectorTypesToDelete.add(cType);
+        if(widgetName.equalsIgnoreCase("codeanalysis")){
+            collectorTypesToDelete.add(CollectorType.CodeQuality);
+            collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
+            collectorTypesToDelete.add(CollectorType.LibraryPolicy);
+        }
+        if(componentId!=null){
+            Component component = componentRepository.findOne(componentId);
+            for (CollectorType c:collectorTypesToDelete) {
+                component.getCollectorItems().remove(c);
+            }
+
+            componentRepository.save(component);
+        }
+
+    }
+
+
+    private List<String> findUpdateCollectorItems(List<String> existingWidgets,List<String> currentWidgets){
+        List<String> result = existingWidgets.stream().filter(elem -> !currentWidgets.contains(elem)).collect(Collectors.toList());
+        return result;
+    }
+
+    private static CollectorType findCollectorType(String widgetName){
+        if(widgetName.equalsIgnoreCase("build")) return CollectorType.Build;
+        if(widgetName.equalsIgnoreCase("feature")) return CollectorType.AgileTool;
+        if(widgetName.equalsIgnoreCase("deploy")) return CollectorType.Deployment;
+        if(widgetName.equalsIgnoreCase("repo")) return CollectorType.SCM;
+        if(widgetName.equalsIgnoreCase("performanceanalysis")) return CollectorType.AppPerformance;
+        if(widgetName.equalsIgnoreCase("cloud")) return CollectorType.Cloud;
+        if(widgetName.equalsIgnoreCase("chatops")) return CollectorType.ChatOps;
+        return null;
+    }
+
+    private void getAppAndComponentNames(List<Dashboard> findByOwnersList) {
+        for(Dashboard dashboard: findByOwnersList){
+
+
+            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+        }
+    }
+
+    /**
+     *  Sets business service, business application and valid flag for each to the give Dashboard
+     * @param dashboard
+     * @param appObjectId
+     * @param compObjectId
+     */
+    private void setAppAndComponentNameToDashboard(Dashboard dashboard, ObjectId appObjectId, ObjectId compObjectId) {
+        if(appObjectId != null && !"".equals(appObjectId)){
+
+            Cmdb cmdb =  cmdbService.configurationItemsByObjectId(appObjectId);
+            dashboard.setConfigurationItemBusServName(cmdb.getConfigurationItem());
+            dashboard.setValidServiceName(cmdb.isValidConfigItem());
+        }
+        if(compObjectId != null && !"".equals(compObjectId)){
+            Cmdb cmdb = cmdbService.configurationItemsByObjectId(compObjectId);
+            dashboard.setConfigurationItemBusAppName(cmdb.getConfigurationItem());
+            dashboard.setValidAppName(cmdb.isValidConfigItem());
+        }
+    }
+
+    /**
+     *  Takes Dashboard and checks to see if there is an existing Dashboard with the same business service and business application
+     *  Throws error if found
+     * @param dashboard
+     * @throws HygieiaException
+     */
+    private void duplicateDashboardErrorCheck(Dashboard dashboard) throws HygieiaException {
+        ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+        ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+
+        if(appObjectId != null && compObjectId != null){
+            Dashboard existingDashboard = dashboardRepository.findByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(appObjectId, compObjectId);
+            if(existingDashboard != null && !existingDashboard.getId().equals(dashboard.getId())){
+                throw new HygieiaException("Existing Dashboard: " + existingDashboard.getTitle(), HygieiaException.DUPLICATE_DATA);
+            }
+        }
+    }
 }

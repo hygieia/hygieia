@@ -37,7 +37,7 @@
                 <div class="row gap">
                     <div class="col-sm-4 col-sm-push-8 text-center">
                         <div>
-                            <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.createDashboard()">
+                            <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.createDashboard()" ng-show="ctrl.showAuthentication">
                                 <span class="fa fa-stack fa-lg">
                                     <span class="fa-circle-thin fa-stack-2x"></span>
                                     <span class="fa-plus fa-stack-1x"></span>
@@ -49,7 +49,7 @@
 
                     </div>
                     <div class="col-sm-8 col-sm-pull-4">
-                        <div ng-show="ctrl.showAuthentication">
+                        <div ng-show="ctrl.showAuthentication" id="myDashboardsSection">
                             <div class="text-2x">My Dashboards <span class="label label-default"></span></div>
 
                             <div class="text-center" ng-hide="ctrl.mydash">Loading Your Dashboards...</div>
@@ -62,18 +62,20 @@
                                     <span class="pull-right">
 
 
-                                       <a href ng-click="ctrl.renameDashboard(myitem)">
+                                       <a href ng-click="ctrl.editDashboard(myitem,'lg')">
                                            <span class="fa fa-lg fa-cog text-success"></span>
                                        </a>
 
-                                       <a href ng-click="ctrl.deleteDashboard(myitem)">
-                                           <span class="fa fa-lg fa-trash text-danger"></span>
+                                       <a href id="deleteDashboardButton" delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteDashboard(myitem)">
+                                            <span class="fa fa-lg fa-trash text-danger"></span>
                                        </a>
                                     </span>
 
-                                    <a class="btn-block clickable" ng-click="ctrl.open(myitem.id)">
+                                    <a class="btn-block clickable" title="{{myitem.name}}" ng-click="ctrl.open(myitem.id)">
                                         <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : myitem.isProduct}"></span>
-                                        {{ myitem.name }}
+                                        <span   ng-class="{'text-danger' : myitem.showError}">
+                                            {{ myitem.name | trunText:50 }}
+                                        </span>
                                     </a>
                                 </li>
                             </ul>
@@ -85,14 +87,14 @@
                             <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
 
                             <ul class="list-animate list-group text-left">
-                                <li class="list-group-item clickable" ng-click="ctrl.open(item.id)"
+                                <li  title="{{item.name}}"class="list-group-item clickable" ng-click="ctrl.open(item.id)"
                                     ng-repeat="item in filteredDashboards = (ctrl.dashboards | filter: ctrl.filterDashboards | orderBy:'name')">
                                     <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : item.isProduct}"></span>
 
                                     <span class="fa fa-angle-right list-group-item-right"></span>
 
                                 </span>
-                                    {{item.name}}
+                                    {{item.name | trunText:50}}
                                 </li>
                             </ul>
 

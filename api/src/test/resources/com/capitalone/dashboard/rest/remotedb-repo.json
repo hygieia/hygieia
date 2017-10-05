@@ -1,0 +1,24 @@
+{
+  "metaData": {
+    "applicationName": "AppNm",
+    "businessApplication": "BusApp",
+    "businessService": "BusSvc",
+    "componentName": "BusComp",
+    "owner": {
+      "authType": "STANDARD",
+      "username": "topopal"
+    },
+    "template": "CapOne",
+    "title": "AutoDashTitle",
+    "type": "Team"
+  },
+  "codeRepoEntries": [
+    {
+      "toolName": "GitHub",
+      "options": {
+        "branch": "master",
+        "url": "http://test.git.com"
+      }
+    }
+  ]
+}
