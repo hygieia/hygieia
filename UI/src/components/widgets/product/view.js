@@ -76,6 +76,7 @@
         if (widgetOptions && widgetOptions.teams) {
             ctrl.configuredTeams = widgetOptions.teams;
         }
+
         // tabs to switch between product dashboard and gamification dashboard
         ctrl.tabs = [
             { name: "Dashboard" },
@@ -613,5 +614,67 @@
             return linesCoverageScore;
         }
         //endregion
+
+        ctrl.getOffset = function getAxisOffset() {
+            var offset = 0;
+            ctrl.configuredTeams.forEach(function(configuredTeam, i) {
+                if (offset < configuredTeam.name.length)
+                    offset = configuredTeam.name.length;
+            });
+            return offset*10;
+        };
+
+        ctrl.buildDurationOptions = {
+            // plugins: [
+            //     Chartist.plugins.threshold({
+            //         threshold: $scope.widgetConfig.options.buildDurationThreshold || 10
+            //     }),
+            //     Chartist.plugins.gridBoundaries(),
+            //     Chartist.plugins.tooltip(),
+            //     Chartist.plugins.axisLabels({
+            //         stretchFactor: 1.4,
+            //         axisX: {
+            //             labels: [
+            //                 moment().subtract(14, 'days').format('MMM DD'),
+            //                 moment().subtract(7, 'days').format('MMM DD'),
+            //                 moment().format('MMM DD')
+            //             ]
+            //         }
+            //     })
+            // ],
+            stackBars: true,
+            centerLabels: true,
+            horizontalBars: true,
+            axisX: {
+                labelInterpolationFnc: function(value) {
+                    return value === 0 ? 0 : ((Math.round(value * 100) / 100) + '');
+                }
+            },
+            axisY: {
+                offset: ctrl.getOffset()
+            }
+        };
+
+        var tableData = [
+            { name: "Mike", score: 9001},
+            { name: "Not Mike", score: 0}
+        ];
+
+        ctrl.getChartData = function getChartData() {
+            var labels = [];
+            var series1 = [];
+            var series2 = [];
+
+            ctrl.configuredTeams.forEach(function(configuredTeam, i) {
+                labels.push(configuredTeam.name);
+                series1.push(Math.random() * 100);
+                series2.push(Math.random() * 100);
+
+            });
+
+            return {labels: labels, series: [series1, series2] };
+        };
+
+        ctrl.chartData = ctrl.getChartData();
     }
 })();

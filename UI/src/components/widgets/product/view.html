@@ -209,19 +209,37 @@
     </div>
 
     <div id="gamification-view" ng-if="ctrl.widgetView == 'Gamification'">
-        <table class="gamification-table">
-            <tr>
-                <th>Team Name</th>
-                <th>Line Coverage (%)</th>
-                <th>Unit Test Success (%)</th>
-                <th>Total</th>
-            </tr>
-            <tr ng-repeat="team in ctrl.configuredTeams">
-                <td>{{team.name}}</td>
-                <td>{{getLinesCoverageMetric(team.collectorItemId)}}</td>
-                <td>{{team.data.codeAnalysis[0].testSuccessDensity}}</td>
-                <td>{{team.data.codeAnalysis[0].lineCoverage + team.data.codeAnalysis[0].testSuccessDensity}}</td>
+
+        <div class="gamification-leaderboard">
+            <chartist class="ct-chart ct-major-twelfth"
+                      chartist-chart-type="Bar"
+                      chartist-data="ctrl.chartData"
+                      chartist-chart-options="ctrl.buildDurationOptions"
+            ></chartist>
+        </div>
+
+        <table ng-table="ctrl.tableParams" class="table" show-filter="true">
+            <tr ng-repeat="user in $data">
+                <td title="'Name'" filter="{ name: 'text'}" sortable="'name'">
+                    {{user.name}}</td>
+                <td title="'Score'" filter="{ score: 'number'}" sortable="'score'">
+                    {{user.score}}</td>
             </tr>
         </table>
+
+        <!--<table class="gamification-table">-->
+            <!--<tr>-->
+                <!--<th>Team Name</th>-->
+                <!--<th>Line Coverage (%)</th>-->
+                <!--<th>Unit Test Success (%)</th>-->
+                <!--<th>Total</th>-->
+            <!--</tr>-->
+            <!--<tr ng-repeat="team in ctrl.configuredTeams">-->
+                <!--<td>{{team.name}}</td>-->
+                <!--<td>{{ getLinesCoverageMetric(team.collectorItemId) }}</td>-->
+                <!--<td>{{team.data.codeAnalysis[0].testSuccessDensity}}</td>-->
+                <!--<td>{{team.data.codeAnalysis[0].lineCoverage + team.data.codeAnalysis[0].testSuccessDensity}}</td>-->
+            <!--</tr>-->
+        <!--</table>-->
     </div>
 </div>
