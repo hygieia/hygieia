@@ -1,12 +1,27 @@
 <widget-modal widget-modal-title="{{displayName}} details for {{teamName}}" class="edit-team-modal" widget-modal-close="true" id="scoreboard-details">
     <table class="scoreboard-table">
         <tr>
-            <th>Your Current Score</th>
+            <th>Your Current Score : </th>
             <td>{{score}}</td>
         </tr>
         <tr>
-            <th>Your Current Value</th>
+            <th>Your Current Value : </th>
             <td>{{value}}</td>
         </tr>
     </table>
+
+    <label class="modal-label">Scoring Details</label>
+
+    <table class="scoreboard-range-table">
+        <tr>
+            <th>Range</th>
+            <th>Score</th>
+        </tr>
+        <tr ng-repeat="rangeData in rangeMatrix">
+            <td>{{rangeData.range}}</td>
+            <td>{{rangeData.score}}</td>
+        </tr>
+    </table>
+
+    <label class="modal-label">*Scoring is performed on rounded values</label>
 </widget-modal>
