@@ -315,7 +315,7 @@ public class StoryDataClientImpl implements StoryDataClient {
 		
 		// sStoryPoints
 		IssueField storyPointsField = fields.get(featureSettings.getJiraStoryPointsFieldName());
-		if (storyPointsField != null && storyPointsField.getValue() != null && !TOOLS.sanitizeResponse(storyPointsField.getValue()).isEmpty()) {
+		if (storyPointsField != null && storyPointsField.getValue() != null && !TOOLS.sanitizeResponse(storyPointsField.getValue()).isEmpty() && isNumeric(TOOLS.sanitizeResponse(storyPointsField.getValue()))) {
 			Double value = Double.parseDouble(TOOLS.sanitizeResponse(storyPointsField.getValue()));
 			feature.setsEstimate(String.valueOf(value.intValue()));
 		} else {
