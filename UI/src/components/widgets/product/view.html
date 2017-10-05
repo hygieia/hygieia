@@ -213,14 +213,12 @@
         <table class="gamification-table">
             <tr>
                 <th>Team Name</th>
-                <th>Line Coverage Score</th>
-                <th>Unit Test Success</th>
+                <th ng-repeat="metric in ctrl.scoreBoardMetrics">{{ metric.displayName }}</th>
                 <th>Total</th>
             </tr>
             <tr ng-repeat="teamScoreRecord in ctrl.scoreBoardData">
                 <td>{{ teamScoreRecord.name }}</td>
-                <td class="clickable" ng-click="ctrl.viewScoreDetails(teamScoreRecord, 'lineCoverage')">{{ teamScoreRecord.data.lineCoverage.score == -1 ? 0 : teamScoreRecord.data.lineCoverage.score }}</td>
-                <td>{{ teamScoreRecord.data.testSuccessDensity.score == -1 ? 0 : teamScoreRecord.data.testSuccessDensity.score }}</td>
+                <td ng-repeat="metricData in teamScoreRecord.data" class="clickable" ng-click="ctrl.viewScoreDetails(teamScoreRecord, metricData.metricName)">{{ metricData.score == -1 ? 0 : metricData.score }}</td>
                 <td>{{ teamScoreRecord.totalScore }}</td>
             </tr>
         </table>

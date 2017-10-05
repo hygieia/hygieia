@@ -1,14 +1,12 @@
-<widget-modal widget-modal-title="{{ctrl.metricName}} details for {{ctrl.teamName}}" class="edit-team-modal" widget-modal-close="true" id="scoreboard-details">
-    <!--<label class="modal-label">Team name: {{ctrl.teamName}}</label>-->
-    <!--<label class="modal-label">Metric name: {{ctrl.metricName}}</label>-->
+<widget-modal widget-modal-title="{{displayName}} details for {{teamName}}" class="edit-team-modal" widget-modal-close="true" id="scoreboard-details">
     <table class="scoreboard-table">
         <tr>
             <th>Your Current Score</th>
-            <td>{{ctrl.score}}</td>
+            <td>{{score}}</td>
         </tr>
         <tr>
             <th>Your Current Value</th>
-            <td>{{ctrl.value}}</td>
+            <td>{{value}}</td>
         </tr>
     </table>
 </widget-modal>

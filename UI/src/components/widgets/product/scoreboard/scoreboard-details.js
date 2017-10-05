@@ -5,15 +5,21 @@
         .module(HygieiaConfig.module)
         .controller('scoreBoardDetailsController', scoreBoardDetailsController);
 
-    scoreBoardDetailsController.$inject = ['$scope', '$uibModalInstance', 'productViewController', 'scoreBoardDetailsConfig'];
-    function scoreBoardDetailsController($scope, $uibModalInstance, productViewController, scoreBoardDetailsConfig) {
+    scoreBoardDetailsController.$inject = ['$scope', '$uibModalInstance', 'scoreBoardDetailsConfig'];
+    function scoreBoardDetailsController($scope, $uibModalInstance, scoreBoardDetailsConfig) {
         /*jshint validthis:true */
         var ctrl = this;
 
-        ctrl.metricName = scoreBoardDetailsConfig.metricName;
-        ctrl.teamName = scoreBoardDetailsConfig.teamName;
-        ctrl.score = scoreBoardDetailsConfig.metricScore;
-        ctrl.value = scoreBoardDetailsConfig.metricValue;
+        $scope.metricName = scoreBoardDetailsConfig.metricName;
+        $scope.teamName = scoreBoardDetailsConfig.teamName;
+        $scope.score = scoreBoardDetailsConfig.metricScore;
+        $scope.value = scoreBoardDetailsConfig.metricValue;
+
+        scoreBoardDetailsConfig.scoreBoardMetrics.forEach(function(metricData) {
+           if(metricData.metricName == $scope.metricName) {
+               $scope.displayName = metricData.displayName;
+           }
+        });
 
     }
 })();
