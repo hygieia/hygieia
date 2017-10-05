@@ -366,6 +366,27 @@ public class DashboardControllerTest {
                 .content(TestUtil.convertObjectToJsonBytes(request)))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void deleteWidget() throws Exception {
+        ObjectId dashId = ObjectId.get();
+        ObjectId widgetId = ObjectId.get();
+        ObjectId compId = ObjectId.get();
+        ObjectId collId = ObjectId.get();
+        List<ObjectId> collIds = Arrays.asList(collId);
+        Map<String, Object> options = new WidgetOptionsBuilder().put("option1", 2).put("option2", "3").get();
+        WidgetRequest request = makeWidgetRequest("build", compId, collIds, options);
+        Dashboard d1 = makeDashboard("t1", "title", "app", "comp","amit", DashboardType.Team, configItemAppId, configItemComponentId);
+        Widget widget = makeWidget(widgetId, "build", compId, options);
+        when(dashboardService.get(dashId)).thenReturn(d1);
+        when(dashboardService.getWidget(d1, widgetId)).thenReturn(widget);
+        dashboardService.deleteWidget(Matchers.any(Dashboard.class), Matchers.any(Widget.class),Matchers.any(ObjectId.class));
+        mockMvc.perform(put("/dashboard/" + dashId.toString() + "/deleteWidget/" + widgetId.toString())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(request)))
+                .andExpect(status().isOk());
+    }
+
     
     @Test
     public void updateOwners() throws Exception {

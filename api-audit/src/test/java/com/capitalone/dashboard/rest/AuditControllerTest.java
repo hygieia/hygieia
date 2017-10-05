@@ -49,7 +49,7 @@ public class AuditControllerTest {
     @Test
     public void performPeerReview() throws Exception {
         PeerReviewRequest request = new PeerReviewRequest();
-        request.setRepo("http://test.git.com");
+        request.setRepo("http://test.git.com/capone/better.git");
         request.setBranch("master");
         request.setBeginDate(1l);
         request.setEndDate(2l);
@@ -87,9 +87,11 @@ public class AuditControllerTest {
         commit.setScmCommitLog("some commit log");
         baseCommits.add(commit);
         
-        when(auditService.getCommitsBySha("acd323e123abc323a123a")).thenReturn(baseCommits);
+        //when(auditService.getCommitsBySha("acd323e123abc323a123a")).thenReturn(baseCommits);
 
-        when(auditService.getPullRequests("http://test.git.com", "master", 1l, 2l)).thenReturn(gitRequests);
+        when(auditService.getPullRequests("http://test.git.com/capone/better.git", "master", 1l, 2l)).thenReturn(gitRequests);
+        when(auditService.getCommits("http://test.git.com/capone/better.git", "master", 1l, 2l)).thenReturn(new ArrayList());
+
         mockMvc.perform(get("/peerReview" + "?repo=" + request.getRepo()
                 + "&branch=" + request.getBranch()
                 + "&beginDate=" + request.getBeginDate()

@@ -402,8 +402,43 @@
     }
 
     #gamification-view {
+
+        padding-top: 100px;
+
         .gamification-table {
-            width: 100%;
+            @dash-chart-alt-color:    contrast('blue');
+
+            tr {
+
+                td {
+                    .text-lg;
+                    vertical-align: top;
+                    text-align: center;
+                    width: 20%;
+                    padding: .1rem .1rem;
+
+                    &:first-child {
+                        .text-standard;
+                        text-align: left;
+                        width: 40%;
+                    }
+
+                    &:nth-child(even) {
+                        background: @dash-widget-section-highlight;
+                    }
+                }
+
+                td:last-of-type {
+                    .text-standard;
+                    background: none;
+                    vertical-align: top;
+                    &:not(:first-child) {
+                        border-top: 1px solid @dash-divider;
+                    }
+                }
+            }
+
+            width: 75%
         }
     }
 }
