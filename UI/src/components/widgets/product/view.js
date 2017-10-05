@@ -99,6 +99,7 @@
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
             if (ctrl.tabs[index].name == "Gamification") {
                 ctrl.populateScoreboardData();
+                $scope.chartData = ctrl.getChartData();
             }
         }
 
@@ -690,7 +691,7 @@
             return offset*10;
         };
 
-        ctrl.buildDurationOptions = {
+        $scope.chartOptions = {
             // plugins: [
             //     Chartist.plugins.threshold({
             //         threshold: $scope.widgetConfig.options.buildDurationThreshold || 10
@@ -721,26 +722,25 @@
             }
         };
 
-        var tableData = [
-            { name: "Mike", score: 9001},
-            { name: "Not Mike", score: 0}
-        ];
-
-        ctrl.getChartData = function getChartData() {
+        ctrl.getChartData = function() {
             var labels = [];
-            var series1 = [];
-            var series2 = [];
+            var scores = [];
 
-            ctrl.configuredTeams.forEach(function(configuredTeam, i) {
-                labels.push(configuredTeam.name);
-                series1.push(Math.random() * 100);
-                series2.push(Math.random() * 100);
+            ctrl.scoreBoardData.forEach(function(teamInfo, i) {
+                labels.push(teamInfo.name);
+                teamInfo.data.forEach(function(metric, j) {
+                    if (!scores[j])
+                        scores[j] = [];
 
+                    scores[j].push(metric.score)
+                });
             });
 
-            return {labels: labels, series: [series1, series2] };
+            return {
+                labels: labels,
+                series: scores
+            };
         };
 
-        ctrl.chartData = ctrl.getChartData();
     }
 })();
