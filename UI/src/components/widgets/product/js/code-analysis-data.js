@@ -69,6 +69,7 @@
                 });
             }
 
+            console.log("Code Analysis Response : ", response.result)
             // put all results in the database
             _(response.result).forEach(function(result) {
                 var metrics = result.metrics,

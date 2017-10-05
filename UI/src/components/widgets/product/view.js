@@ -76,10 +76,119 @@
         if (widgetOptions && widgetOptions.teams) {
             ctrl.configuredTeams = widgetOptions.teams;
         }
+        // tabs to switch between product dashboard and gamification dashboard
+        ctrl.tabs = [
+            { name: "Dashboard" },
+            { name: "Gamification" }
+        ];
 
         ctrl.teamCrlStages = {};
         ctrl.prodStages={};
         ctrl.orderedStages = {};
+        ctrl.scoreBoardData = {};
+        ctrl.widgetView = ctrl.tabs[0].name;
+        ctrl.scoreDetails = {};
+
+        // method to toggle tabs
+        function toggleView(index) {
+            ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
+            if (ctrl.tabs[index].name == "Gamification") {
+                ctrl.populateScoreboardData();
+            }
+        }
+
+        function populateScoreboardData() {
+            var teamScoreBoardData = {};
+
+            _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
+                teamScoreBoardData.collectorItemId = configuredTeam.collectorItemId;
+                teamScoreBoardData.name = configuredTeam.name;
+                teamScoreBoardData.data = {
+                    lineCoverage : {
+                        value : configuredTeam.data["codeAnalysis"][0].lineCoverage,
+                        score : getScoreForMetric("lineCoverage", configuredTeam)
+                    },
+                    testSuccessDensity : {
+                        value : configuredTeam.data["codeAnalysis"][0].testSuccessDensity,
+                        score : getScoreForMetric("testSuccessDensity", configuredTeam)
+                    }
+                };
+                var totalScore = 0;
+                for(var metricName in teamScoreBoardData.data) {
+                    totalScore += teamScoreBoardData.data[metricName].score;
+                }
+                teamScoreBoardData.totalScore = totalScore;
+                ctrl.scoreBoardData[i] = teamScoreBoardData;
+                teamScoreBoardData = {};
+            });
+            console.log("Scoreboard data :", ctrl.scoreBoardData);
+        }
+
+        function viewScoreDetails(teamScoreRecord, metricName) {
+            $uibModal.open({
+                templateUrl: 'components/widgets/product/scoreboard/scoreboard-details.html',
+                controller: 'scoreBoardDetailsController',
+                controllerAs: 'ctrl',
+                size: 'lg',
+                resolve: {
+                    scoreBoardDetailsConfig: function() {
+                        return {
+                            teamName: teamScoreRecord.name,
+                            metricName: metricName,
+                            metricScore: teamScoreRecord.data[metricName].score,
+                            metricValue: teamScoreRecord.data[metricName].value
+                        }
+                    },
+                    productViewController: function() {
+                        return this
+                    }
+                }
+            });
+        }
+
+        function getScoreForMetric(metricName, configuredTeam) {
+            var score = 0;
+            if(configuredTeam.data == undefined) {
+                return false;
+            }
+            switch(metricName) {
+                case "lineCoverage":
+                    if(configuredTeam.data.codeAnalysis == undefined) {
+                        score = -1;
+                    } else {
+                        var metricValue = configuredTeam.data.codeAnalysis[0].lineCoverage;
+                        if(metricValue < 50) {
+                            score = 0;
+                        } else if (metricValue >= 50 && metricValue < 60 ) {
+                            score = 4;
+                        } else if (metricValue >= 60 && metricValue < 70 ) {
+                            score = 8;
+                        } else if (metricValue >= 70 && metricValue < 80 ) {
+                            score = 12;
+                        } else if (metricValue >= 80 && metricValue < 90 ) {
+                            score = 16;
+                        } else if (metricValue >= 90 && metricValue < 95 ) {
+                            score = 18;
+                        } else if (metricValue >= 95 && metricValue <= 100 ) {
+                            score = 20;
+                        }
+                    }
+                    break;
+                case "testSuccessDensity":
+                    if(configuredTeam.data.codeAnalysis == undefined) {
+                        score = -1;
+                    } else {
+                        var metricValue = configuredTeam.data.codeAnalysis[0].testSuccessDensity;
+                        if(metricValue == 100) {
+                            score = 20;
+                        } else {
+                            score = 0;
+                        }
+                    }
+                    break;
+            }
+            return score;
+        }
 
         // pull all the stages from pipeline. Create a map for all ctrl stages for each team.
         ctrl.load = function() {
@@ -105,6 +214,7 @@
                         ctrl.orderedStages[collectId] = response.orderMap;
                     }).then(processLoad);
             });
+            // ctrl.populateScoreboardData();
         };
 
         // make ordered list
@@ -125,11 +235,15 @@
         // public methods
         ctrl.addTeam = addTeam;
         ctrl.editTeam = editTeam;
+        ctrl.gamification = gamification;
         ctrl.openDashboard = openDashboard;
         ctrl.viewTeamStageDetails = viewTeamStageDetails;
         ctrl.viewQualityDetails = viewQualityDetails;
         ctrl.viewGatesDetails = viewGatesDetails;
         ctrl.initPerc = initPerc;
+        ctrl.toggleView = toggleView;
+        ctrl.populateScoreboardData = populateScoreboardData;
+        ctrl.viewScoreDetails = viewScoreDetails;
 
         // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
@@ -309,6 +423,25 @@
                 }
 
                 updateWidgetOptions(newOptions);
+            });
+        }
+
+        function gamification(configuredTeams) {
+            $uibModal.open({
+                templateUrl: 'components/widgets/product/gamification/gamification.html',
+                controller: 'gamificationController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    gamificationConfig: function() {
+                        return {
+                            teams: ctrl.configuredTeams
+                        }
+                    }
+                }
+            }).result.then(function(config) {
+                if(!config) {
+                    return;
+                }
             });
         }
 
@@ -558,6 +691,16 @@
 
                 productCommitData.process(commitDependencyObject);
             });
+        }
+
+        $scope.getLinesCoverageMetric = function(collectorItemId) {
+            var linesCoverageScore = 0;
+            _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
+                if(configuredTeam.collectorItemId == collectorItemId) {
+                    linesCoverageScore = configuredTeam.data.codeAnalysis[0].lineCoverage;
+                }
+            });
+            return linesCoverageScore;
         }
         //endregion
     }
