@@ -27,6 +27,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -371,7 +372,14 @@ public class DefaultGitHubClient implements GitHubClient {
         int pageNumber = 1;
         String queryUrlPage = commentsUrl;
         while (!lastPage) {
-            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            ResponseEntity<String> response = null;
+            try {
+                response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            } catch (HttpStatusCodeException hc) {
+                LOG.info("comments page not found:" + queryUrlPage);
+                lastPage = true;
+                break;
+            }
             JSONArray jsonArray = paresAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
