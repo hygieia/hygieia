@@ -18,8 +18,16 @@
         scoreBoardDetailsConfig.scoreBoardMetrics.forEach(function(metricData) {
            if(metricData.metricName == $scope.metricName) {
                $scope.displayName = metricData.displayName;
+               $scope.rangeMatrix = [];
+               metricData.scoreRanges.forEach(function(rangeData) {
+                    var range = (rangeData.rangeMin == rangeData.rangeMax) ? "SCORE = " + rangeData.rangeMax : rangeData.rangeMin + "  <= SCORE <=  " + rangeData.rangeMax;
+                    var rangeMatrixElement = {
+                      range : range,
+                      score : rangeData.score
+                    };
+                    $scope.rangeMatrix.push(rangeMatrixElement);
+               });
            }
         });
-
     }
 })();

@@ -88,10 +88,26 @@
         ctrl.orderedStages = {};
         ctrl.scoreBoardData = [];
         ctrl.widgetView = ctrl.tabs[0].name;
-        ctrl.scoreDetails = {};
         ctrl.scoreBoardMetrics = [
-            { metricName: "lineCoverage", displayName: "Code Coverage", category: "codeAnalysis" },
-            { metricName: "testSuccessDensity", displayName: "Unit Test Success (%)", category: "codeAnalysis"}
+            {
+                metricName: "lineCoverage",
+                displayName: "Code Coverage",
+                category: "codeAnalysis",
+                scoreRanges: [{ rangeMin: 0, rangeMax: 50, score: 0 },
+                    { rangeMin: 51, rangeMax: 60, score: 4 },
+                    { rangeMin: 61, rangeMax: 70, score: 8 },
+                    { rangeMin: 71, rangeMax: 80, score: 12 },
+                    { rangeMin: 81, rangeMax: 90, score: 16 },
+                    { rangeMin: 91, rangeMax: 95, score: 18 },
+                    { rangeMin: 96, rangeMax: 100, score: 20 }]
+            },
+            {
+                metricName: "testSuccessDensity",
+                displayName: "Unit Test Success (%)",
+                category: "codeAnalysis",
+                scoreRanges: [{ rangeMin: 0, rangeMax: 99, score: 0 },
+                    { rangeMin: 100, rangeMax: 100, score: 20 }]
+            }
         ];
 
         // method to toggle tabs
@@ -161,42 +177,22 @@
             if(configuredTeam.data == undefined) {
                 return false;
             }
-            switch(metricName) {
-                case "lineCoverage":
-                    if(configuredTeam.data.codeAnalysis == undefined) {
-                        score = -1;
-                    } else {
-                        var metricValue = configuredTeam.data.codeAnalysis[0].lineCoverage;
-                        if(metricValue < 50) {
-                            score = 0;
-                        } else if (metricValue >= 50 && metricValue < 60 ) {
-                            score = 4;
-                        } else if (metricValue >= 60 && metricValue < 70 ) {
-                            score = 8;
-                        } else if (metricValue >= 70 && metricValue < 80 ) {
-                            score = 12;
-                        } else if (metricValue >= 80 && metricValue < 90 ) {
-                            score = 16;
-                        } else if (metricValue >= 90 && metricValue < 95 ) {
-                            score = 18;
-                        } else if (metricValue >= 95 && metricValue <= 100 ) {
-                            score = 20;
-                        }
-                    }
-                    break;
-                case "testSuccessDensity":
-                    if(configuredTeam.data.codeAnalysis == undefined) {
-                        score = -1;
-                    } else {
-                        var metricValue = configuredTeam.data.codeAnalysis[0].testSuccessDensity;
-                        if(metricValue == 100) {
-                            score = 20;
-                        } else {
-                            score = 0;
-                        }
-                    }
-                    break;
-            }
+            ctrl.scoreBoardMetrics.forEach(function(scoreMetaData) {
+               if(scoreMetaData.metricName == metricName) {
+                   if(configuredTeam.data[scoreMetaData.category] == undefined) {
+                       score = -1;
+                   } else {
+                       var metricValue = Math.round(configuredTeam.data[scoreMetaData.category][0][metricName]);
+                       scoreMetaData.scoreRanges.forEach(function(rangeObj) {
+                           if (metricValue >= rangeObj.rangeMin && metricValue <= rangeObj.rangeMax) {
+                               console.log(metricValue, rangeObj.rangeMin, rangeObj.rangeMax, rangeObj.score);
+                               score = rangeObj.score;
+                               return score;
+                           }
+                       });
+                   }
+               }
+            });
             return score;
         }
 
