@@ -754,4 +754,8 @@ public class StoryDataClientImpl implements StoryDataClient {
 			}
 		}
 	}
+	
+	private boolean isNumeric(String s) {
+    		return s != null && s.matches("[-+]?\\d*\\.?\\d+");
+  	}
 }
