@@ -27,7 +27,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -132,9 +131,13 @@ public class DefaultGitHubClient implements GitHubClient {
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
             } else {
-                lastPage = isThisLastPage(response);
-                pageNumber++;
-                queryUrlPage = queryUrl + "&page=" + pageNumber;
+                if (isThisLastPage(response, queryUrlPage)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                    pageNumber++;
+                }
             }
         }
         return commits;
@@ -176,11 +179,11 @@ public class DefaultGitHubClient implements GitHubClient {
         boolean lastPage = false;
         boolean stop = false;
         int pageNumber = 1;
-        String queryUrl = pageUrl;
+        String queryUrlPage = pageUrl;
 
         while (!lastPage && !stop) {
-            LOG.info("Executing [" + queryUrl);
-            ResponseEntity<String> response = makeRestCall(queryUrl, repo.getUserId(), decryptedPassword);
+            LOG.info("Executing [" + queryUrlPage);
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
             JSONArray jsonArray = paresAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
@@ -261,9 +264,13 @@ public class DefaultGitHubClient implements GitHubClient {
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
             } else {
-                lastPage = isThisLastPage(response) || isRateLimitReached(response);
-                pageNumber++;
-                queryUrl = pageUrl + "&page=" + pageNumber;
+                if (isThisLastPage(response, queryUrlPage)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                    pageNumber++;
+                }
             }
         }
         return pulls;
@@ -344,9 +351,13 @@ public class DefaultGitHubClient implements GitHubClient {
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
             } else {
-                lastPage = isThisLastPage(response);
-                pageNumber++;
-                queryUrlPage = queryUrl + "&page=" + pageNumber;
+                if (isThisLastPage(response, queryUrlPage)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                    pageNumber++;
+                }
             }
         }
         return issues;
@@ -372,14 +383,7 @@ public class DefaultGitHubClient implements GitHubClient {
         int pageNumber = 1;
         String queryUrlPage = commentsUrl;
         while (!lastPage) {
-            ResponseEntity<String> response = null;
-            try {
-                response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            } catch (HttpStatusCodeException hc) {
-                LOG.info("comments page not found:" + queryUrlPage);
-                lastPage = true;
-                break;
-            }
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
             JSONArray jsonArray = paresAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
@@ -397,9 +401,13 @@ public class DefaultGitHubClient implements GitHubClient {
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
             } else {
-                lastPage = isThisLastPage(response);
-                pageNumber++;
-                queryUrlPage = commentsUrl + "&page=" + pageNumber;
+                if (isThisLastPage(response, queryUrlPage)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                    pageNumber++;
+                }
             }
         }
         return comments;
@@ -413,7 +421,7 @@ public class DefaultGitHubClient implements GitHubClient {
      * @param response
      * @return
      */
-    private boolean isThisLastPage(ResponseEntity<String> response) {
+    private boolean isThisLastPage(ResponseEntity<String> response, String queryUrlPage) {
         HttpHeaders header = response.getHeaders();
         List<String> link = header.get("Link");
         if (link == null || link.isEmpty()) {
@@ -423,10 +431,31 @@ public class DefaultGitHubClient implements GitHubClient {
                 if (l.contains("rel=\"next\"")) {
                     return false;
                 }
-
             }
         }
         return true;
+    }
+
+    private String getNextPageUrl(ResponseEntity<String> response) {
+        String nextPageUrl = "";
+        HttpHeaders header = response.getHeaders();
+        List<String> link = header.get("Link");
+        if (link == null || link.isEmpty()) {
+            return nextPageUrl;
+        } else {
+            for (String l : link) {
+                if (l.contains("rel=\"next\"")) {
+                    String[] parts = link.get(0).split(";");
+                    if (parts.length > 0) {
+                        nextPageUrl = parts[0].replaceFirst("<","");
+                        nextPageUrl = nextPageUrl.replaceFirst(">","").trim();
+
+                    }
+                    return nextPageUrl;
+                }
+            }
+        }
+        return nextPageUrl;
     }
 
     /**
