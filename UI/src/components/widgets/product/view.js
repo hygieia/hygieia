@@ -688,27 +688,13 @@
         };
 
         $scope.chartOptions = {
-            // plugins: [
-            //     Chartist.plugins.threshold({
-            //         threshold: $scope.widgetConfig.options.buildDurationThreshold || 10
-            //     }),
-            //     Chartist.plugins.gridBoundaries(),
-            //     Chartist.plugins.tooltip(),
-            //     Chartist.plugins.axisLabels({
-            //         stretchFactor: 1.4,
-            //         axisX: {
-            //             labels: [
-            //                 moment().subtract(14, 'days').format('MMM DD'),
-            //                 moment().subtract(7, 'days').format('MMM DD'),
-            //                 moment().format('MMM DD')
-            //             ]
-            //         }
-            //     })
-            // ],
             stackBars: true,
             centerLabels: true,
             horizontalBars: true,
             axisX: {
+                scaleMinSpace: 100,
+                low: 0,
+                onlyInteger: true,
                 labelInterpolationFnc: function(value) {
                     return value === 0 ? 0 : ((Math.round(value * 100) / 100) + '');
                 }

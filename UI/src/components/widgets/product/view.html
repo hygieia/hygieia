@@ -217,14 +217,14 @@
             ></chartist>
         </div>
 
-        <table class="gamification-table">
+        <table class="gamification-table" style="overflow-x:auto;">
             <tr>
                 <th>Team Name</th>
                 <th ng-repeat="metric in ctrl.scoreBoardMetrics">{{ metric.displayName }}</th>
                 <th>Total</th>
             </tr>
             <tr ng-repeat="teamScoreRecord in ctrl.scoreBoardData">
-                <td>{{ teamScoreRecord.name }}</td>
+                <td class="team-name">{{ teamScoreRecord.name }}</td>
                 <td ng-repeat="metricData in teamScoreRecord.data" class="clickable" ng-click="ctrl.viewScoreDetails(teamScoreRecord, metricData.metricName)">{{ metricData.score == -1 ? 0 : metricData.score }}</td>
                 <td>{{ teamScoreRecord.totalScore }}</td>
             </tr>

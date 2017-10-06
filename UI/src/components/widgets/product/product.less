@@ -402,44 +402,25 @@
     }
 
     #gamification-view {
-
-        .gamification-table {
+        .gamification-leaderboard {
+          .ct-bar {
+            stroke-width: 30px;
             @dash-chart-alt-color:    contrast('blue');
-
-            //tr {
-            //
-            //    td {
-            //        .text-lg;
-            //        vertical-align: top;
-            //        text-align: center;
-            //        width: 20%;
-            //        padding: .1rem .1rem;
-            //
-            //        &:first-child {
-            //            .text-standard;
-            //            text-align: left;
-            //            width: 40%;
-            //        }
-            //
-            //        &:nth-child(even) {
-            //            background: @dash-widget-section-highlight;
-            //        }
-            //    }
-            //
-            //    td:last-of-type {
-            //        .text-standard;
-            //        background: none;
-            //        vertical-align: top;
-            //        &:not(:first-child) {
-            //            border-top: 1px solid @dash-divider;
-            //        }
-            //    }
-            //}
-
-            padding-top: 100px;
-            width: 100%;
-            left-margin: auto;
-            right-margin: auto;
+          }
+        }
+        .gamification-table {
+            margin-top: 50px;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+            table, th, td {
+              border: 1px solid white;
+              text-align: center;
+              padding: 10px;
+            }
+            .team-name {
+              text-align: left;
+            }
         }
     }
 }
