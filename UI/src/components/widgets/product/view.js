@@ -119,6 +119,13 @@
                     { rangeMin: 91, rangeMax: 95, score: 18 },
                     { rangeMin: 96, rangeMax: 100, score: 20 }],
                 displaySymbol: "%"
+            },
+            {
+                metricName: "FortifyViolations",
+                displayName: "Fortify Violations",
+                category: "build",
+                scoreRanges: [{ rangeMin: 0, rangeMax: 0, score: 20 },
+                    { rangeMin: 1, rangeMax: 100, score: 0 }]
             }
         ];
 
