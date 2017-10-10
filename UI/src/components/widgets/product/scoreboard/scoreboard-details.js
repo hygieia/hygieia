@@ -9,6 +9,7 @@
     function scoreBoardDetailsController($scope, $uibModalInstance, scoreBoardDetailsConfig) {
         /*jshint validthis:true */
         var ctrl = this;
+        ctrl.isScoreDefined = isScoreDefined;
 
         $scope.metricName = scoreBoardDetailsConfig.metricName;
         $scope.teamName = scoreBoardDetailsConfig.teamName;
@@ -18,6 +19,7 @@
         scoreBoardDetailsConfig.scoreBoardMetrics.forEach(function(metricData) {
            if(metricData.metricName == $scope.metricName) {
                $scope.displayName = metricData.displayName;
+               $scope.displaySymbol = metricData.displaySymbol;
                $scope.rangeMatrix = [];
                metricData.scoreRanges.forEach(function(rangeData) {
                     var range = (rangeData.rangeMin == rangeData.rangeMax) ? "VALUE = " + rangeData.rangeMax : rangeData.rangeMin + "  <= VALUE <=  " + rangeData.rangeMax;
@@ -29,5 +31,9 @@
                });
            }
         });
+
+        function isScoreDefined() {
+            return $scope.score != -1;
+        }
     }
 })();

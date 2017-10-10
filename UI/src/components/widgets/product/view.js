@@ -90,23 +90,35 @@
         ctrl.widgetView = ctrl.tabs[0].name;
         ctrl.scoreBoardMetrics = [
             {
-                metricName: "lineCoverage",
+                metricName: "codeCoverage",
                 displayName: "Code Coverage",
-                category: "codeAnalysis",
                 scoreRanges: [{ rangeMin: 0, rangeMax: 50, score: 0 },
                     { rangeMin: 51, rangeMax: 60, score: 4 },
                     { rangeMin: 61, rangeMax: 70, score: 8 },
                     { rangeMin: 71, rangeMax: 80, score: 12 },
                     { rangeMin: 81, rangeMax: 90, score: 16 },
                     { rangeMin: 91, rangeMax: 95, score: 18 },
-                    { rangeMin: 96, rangeMax: 100, score: 20 }]
+                    { rangeMin: 96, rangeMax: 100, score: 20 }],
+                displaySymbol: "%"
             },
             {
-                metricName: "testSuccessDensity",
-                displayName: "Unit Test Success (%)",
-                category: "codeAnalysis",
+                metricName: "unitTests",
+                displayName: "Unit Test Success",
                 scoreRanges: [{ rangeMin: 0, rangeMax: 99, score: 0 },
-                    { rangeMin: 100, rangeMax: 100, score: 20 }]
+                    { rangeMin: 100, rangeMax: 100, score: 20 }],
+                displaySymbol: "%"
+            },
+            {
+                metricName: "buildSuccess",
+                displayName: "Build Success",
+                scoreRanges: [{ rangeMin: 0, rangeMax: 50, score: 0 },
+                    { rangeMin: 51, rangeMax: 60, score: 4 },
+                    { rangeMin: 61, rangeMax: 70, score: 8 },
+                    { rangeMin: 71, rangeMax: 80, score: 12 },
+                    { rangeMin: 81, rangeMax: 90, score: 16 },
+                    { rangeMin: 91, rangeMax: 95, score: 18 },
+                    { rangeMin: 96, rangeMax: 100, score: 20 }],
+                displaySymbol: "%"
             }
         ];
 
@@ -114,7 +126,6 @@
         function toggleView(index) {
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
             if (ctrl.tabs[index].name == "Gamification") {
-                console.log(ctrl.configuredTeams);
                 ctrl.populateScoreboardData();
                 $scope.chartData = ctrl.getChartData();
             }
@@ -129,14 +140,16 @@
                 ctrl.scoreBoardMetrics.forEach(function(metric) {
                     var teamScoreBoardDataElement = {
                         metricName: metric.metricName,
-                        value: configuredTeam.data[metric.category][0][metric.metricName],
+                        value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
                         score: getScoreForMetric(metric.metricName, configuredTeam)
                     };
                     teamScoreBoardData.data.push(teamScoreBoardDataElement);
                 });
                 var totalScore = 0;
                 teamScoreBoardData.data.forEach(function(element) {
-                    totalScore += element.score
+                    if(element.score != -1) {
+                        totalScore += element.score
+                    }
                 });
                 teamScoreBoardData.totalScore = totalScore;
                 ctrl.scoreBoardData[i] = teamScoreBoardData;
@@ -175,25 +188,24 @@
 
         function getScoreForMetric(metricName, configuredTeam) {
             var score = 0;
-            if(configuredTeam.data == undefined) {
-                return -1;
+            if(configuredTeam.summary != undefined) {
+                                ctrl.scoreBoardMetrics.forEach(function(scoreMetaData) {
+                                if(scoreMetaData.metricName == metricName) {
+                                if(configuredTeam.summary[metricName] == undefined) {
+                                score = -1;
+                                } else {
+                                var metricValue = Math.round(configuredTeam.summary[metricName].number);
+                                scoreMetaData.scoreRanges.forEach(function(rangeObj) {
+                                                                  if (metricValue >= rangeObj.rangeMin && metricValue <= rangeObj.rangeMax) {
+                                                                  score = rangeObj.score;
+                                                                  return score;
+                                                                  }
+                                                                  });
+                                }
+                                }
+                                });
+
             }
-            ctrl.scoreBoardMetrics.forEach(function(scoreMetaData) {
-               if(scoreMetaData.metricName == metricName) {
-                   if(configuredTeam.data[scoreMetaData.category] == undefined) {
-                       score = -1;
-                   } else {
-                       var metricValue = Math.round(configuredTeam.data[scoreMetaData.category][0][metricName]);
-                       scoreMetaData.scoreRanges.forEach(function(rangeObj) {
-                           if (metricValue >= rangeObj.rangeMin && metricValue <= rangeObj.rangeMax) {
-                               console.log(metricValue, rangeObj.rangeMin, rangeObj.rangeMax, rangeObj.score);
-                               score = rangeObj.score;
-                               return score;
-                           }
-                       });
-                   }
-               }
-            });
             return score;
         }
 
@@ -726,14 +738,6 @@
                     tempObj[teamInfo.totalScore] = [];
 
                 tempObj[teamInfo.totalScore].push(team);
-
-                // labels.push(teamInfo.name);
-                // teamInfo.data.forEach(function(metric, j) {
-                //     if (!scores[j])
-                //         scores[j] = [];
-                //
-                //     scores[j].push(metric.score)
-                // });
             });
 
             Object.keys(tempObj)
