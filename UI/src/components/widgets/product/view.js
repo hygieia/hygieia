@@ -114,6 +114,7 @@
         function toggleView(index) {
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
             if (ctrl.tabs[index].name == "Gamification") {
+                console.log(ctrl.configuredTeams);
                 ctrl.populateScoreboardData();
                 $scope.chartData = ctrl.getChartData();
             }
@@ -175,7 +176,7 @@
         function getScoreForMetric(metricName, configuredTeam) {
             var score = 0;
             if(configuredTeam.data == undefined) {
-                return false;
+                return -1;
             }
             ctrl.scoreBoardMetrics.forEach(function(scoreMetaData) {
                if(scoreMetaData.metricName == metricName) {
@@ -680,6 +681,9 @@
 
         ctrl.getOffset = function getAxisOffset() {
             var offset = 0;
+            if (!ctrl.configuredTeams)
+                return 0;
+
             ctrl.configuredTeams.forEach(function(configuredTeam, i) {
                 if (offset < configuredTeam.name.length)
                     offset = configuredTeam.name.length;
@@ -708,15 +712,43 @@
             var labels = [];
             var scores = [];
 
-            ctrl.scoreBoardData.forEach(function(teamInfo, i) {
-                labels.push(teamInfo.name);
-                teamInfo.data.forEach(function(metric, j) {
-                    if (!scores[j])
-                        scores[j] = [];
+            var tempObj = {};
 
-                    scores[j].push(metric.score)
+            ctrl.scoreBoardData.forEach(function(teamInfo) {
+                var team = {};
+                team.name = teamInfo.name;
+                team.scores = [];
+                teamInfo.data.forEach(function(metric) {
+                    team.scores.push(metric.score);
                 });
+
+                if (!tempObj[teamInfo.totalScore])
+                    tempObj[teamInfo.totalScore] = [];
+
+                tempObj[teamInfo.totalScore].push(team);
+
+                // labels.push(teamInfo.name);
+                // teamInfo.data.forEach(function(metric, j) {
+                //     if (!scores[j])
+                //         scores[j] = [];
+                //
+                //     scores[j].push(metric.score)
+                // });
             });
+
+            Object.keys(tempObj)
+                .sort()
+                .forEach(function(key) {
+                    tempObj[key].forEach(function(team) {
+                        labels.push(team.name);
+                        team.scores.forEach(function(score, i) {
+                            if (!scores[i])
+                                scores[i] = [];
+
+                            score != -1 ? scores[i].push(score) : scores[i].push(0);
+                        });
+                    });
+                });
 
             return {
                 labels: labels,
