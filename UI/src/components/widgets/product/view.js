@@ -704,6 +704,13 @@
         };
 
         $scope.chartOptions = {
+            plugins: [
+                Chartist.plugins.ctBarLabels({
+                    labelInterpolationFnc: function(text, value) {
+                        return value > 0 ? text + " (" + value + ")" : "";
+                    }
+                })
+            ],
             stackBars: true,
             centerLabels: true,
             horizontalBars: true,
@@ -731,7 +738,7 @@
                 team.name = teamInfo.name;
                 team.scores = [];
                 teamInfo.data.forEach(function(metric) {
-                    team.scores.push(metric.score);
+                    metric.score !== -1 ? team.scores.push(metric.score) : team.scores.push(0);
                 });
 
                 if (!tempObj[teamInfo.totalScore])
@@ -743,20 +750,30 @@
             Object.keys(tempObj)
                 .sort()
                 .forEach(function(key) {
-                    tempObj[key].forEach(function(team) {
+                    tempObj[key].forEach(function(team, j) {
                         labels.push(team.name);
                         team.scores.forEach(function(score, i) {
                             if (!scores[i])
                                 scores[i] = [];
 
-                            score !== -1 ? scores[i].push(score) : scores[i].push(0);
+                            scores[i].push(score);
                         });
                     });
                 });
 
+            var series = [];
+            scores.forEach(function(scoreArr, i) {
+               var scoreElem = {
+                   name: ctrl.scoreBoardMetrics[i].displayName,
+                   data: scoreArr
+               }
+
+               series.push(scoreElem);
+            });
+
             return {
                 labels: labels,
-                series: scores
+                series: series
             };
         };
 
