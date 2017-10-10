@@ -20,7 +20,7 @@
                $scope.displayName = metricData.displayName;
                $scope.rangeMatrix = [];
                metricData.scoreRanges.forEach(function(rangeData) {
-                    var range = (rangeData.rangeMin == rangeData.rangeMax) ? "SCORE = " + rangeData.rangeMax : rangeData.rangeMin + "  <= SCORE <=  " + rangeData.rangeMax;
+                    var range = (rangeData.rangeMin == rangeData.rangeMax) ? "VALUE = " + rangeData.rangeMax : rangeData.rangeMin + "  <= VALUE <=  " + rangeData.rangeMax;
                     var rangeMatrixElement = {
                       range : range,
                       score : rangeData.score

@@ -188,7 +188,6 @@
                         metric: buildFixRateMetric
                     };
                 }
-
                 // use $timeout so that it will apply on the next digest
                 $timeout(function() {
                     // update data for the UI
