@@ -745,7 +745,7 @@
                             if (!scores[i])
                                 scores[i] = [];
 
-                            score != -1 ? scores[i].push(score) : scores[i].push(0);
+                            score !== -1 ? scores[i].push(score) : scores[i].push(0);
                         });
                     });
                 });
