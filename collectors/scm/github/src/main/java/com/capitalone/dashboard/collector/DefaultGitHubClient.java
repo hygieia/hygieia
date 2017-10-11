@@ -3,6 +3,7 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitHubParsed;
 import com.capitalone.dashboard.model.GitHubRepo;
@@ -90,7 +91,7 @@ public class DefaultGitHubClient implements GitHubClient {
         while (!lastPage) {
             LOG.info("Executing " + queryUrlPage);
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            JSONArray jsonArray = paresAsArray(response);
+            JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
                 String sha = str(jsonObject, "sha");
@@ -181,7 +182,7 @@ public class DefaultGitHubClient implements GitHubClient {
         while (!lastPage && !stop) {
             LOG.info("Executing [" + queryUrlPage);
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            JSONArray jsonArray = paresAsArray(response);
+            JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
                 String message = str(jsonObject, "title");
@@ -226,24 +227,31 @@ public class DefaultGitHubClient implements GitHubClient {
                 pull.setOrgName(gitHubParsed.getOrgName());
                 pull.setRepoName(gitHubParsed.getRepoName());
 
+                String commitStatusesUrl = null;
                 JSONObject headObject = (JSONObject) jsonObject.get("head");
-                JSONObject headRepoObject = (JSONObject) headObject.get("repo");
                 if (headObject != null) {
-                    pull.setHeadSha(str(headObject, "sha"));
+                    String headSha = str(headObject, "sha");
+                    pull.setHeadSha(headSha);
                     pull.setSourceBranch(str(headObject, "ref"));
-                }
-                if (headRepoObject != null) {
-                    pull.setSourceRepo(str(headRepoObject, "full_name"));
+                    JSONObject headRepoObject = (JSONObject) headObject.get("repo");
+                    if (headRepoObject != null) {
+                        pull.setSourceRepo(str(headRepoObject, "full_name"));
+                        commitStatusesUrl = str(headRepoObject, "commits_url");
+                        if (commitStatusesUrl != null) {
+                            commitStatusesUrl = commitStatusesUrl.replace("{/sha}", "/" + headSha);
+                            commitStatusesUrl += "/status";
+                        }
+                    }
                 }
 
                 JSONObject baseObject = (JSONObject) jsonObject.get("base");
-                JSONObject baseRepoObject = (JSONObject) baseObject.get("repo");
                 if (baseObject != null) {
                     pull.setBaseSha(str(baseObject, "sha"));
                     pull.setTargetBranch(str(baseObject, "ref"));
-                }
-                if (baseRepoObject != null) {
-                    pull.setTargetRepo(str(baseRepoObject, "full_name"));
+                    JSONObject baseRepoObject = (JSONObject) baseObject.get("repo");
+                    if (baseRepoObject != null) {
+                        pull.setTargetRepo(str(baseRepoObject, "full_name"));
+                    }
                 }
 
                 pull.setCommentsUrl(commentsUrl);
@@ -252,6 +260,8 @@ public class DefaultGitHubClient implements GitHubClient {
                 List<Comment> reviewComments = getComments(reviewCommentsUrl, repo);
                 pull.setReviewComments(reviewComments);
                 pull.setReviewCommentsUrl(reviewCommentsUrl);
+                List<CommitStatus> commitStatuses = getCommitStatuses(commitStatusesUrl, repo);
+                pull.setCommitStatuses(commitStatuses);
                 pulls.add(pull);
                 stop = (!MapUtils.isEmpty(prMap) && prMap.get(pull.getUpdatedAt()) != null) && (prMap.get(pull.getUpdatedAt()).equals(pull.getNumber()));
                 if (stop) {
@@ -299,7 +309,7 @@ public class DefaultGitHubClient implements GitHubClient {
         while (!lastPage) {
             LOG.info("Executing " + queryUrlPage);
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            JSONArray jsonArray = paresAsArray(response);
+            JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
 
@@ -365,7 +375,6 @@ public class DefaultGitHubClient implements GitHubClient {
      * @return
      * @throws RestClientException
      */
-
     public List<Comment> getComments(String commentsUrl, GitHubRepo repo) throws RestClientException {
 
         List<Comment> comments = new ArrayList<>();
@@ -377,7 +386,7 @@ public class DefaultGitHubClient implements GitHubClient {
         String queryUrlPage = commentsUrl;
         while (!lastPage) {
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            JSONArray jsonArray = paresAsArray(response);
+            JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
 
@@ -403,6 +412,49 @@ public class DefaultGitHubClient implements GitHubClient {
             }
         }
         return comments;
+    }
+
+    /**
+     * Get commit statuses from the given commit status url
+     * @param statusUrl
+     * @param repo
+     * @return
+     * @throws RestClientException
+     */
+    public List<CommitStatus> getCommitStatuses(String statusUrl, GitHubRepo repo) throws RestClientException {
+
+        List<CommitStatus> statuses = new ArrayList<>();
+
+        // decrypt password
+        String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+
+        boolean lastPage = false;
+        String queryUrlPage = statusUrl;
+        while (!lastPage) {
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            JSONObject root = parseAsObject(response);
+            JSONArray jsonArray = (JSONArray) root.get("statuses");
+            for (Object item : jsonArray) {
+                JSONObject jsonObject = (JSONObject) item;
+
+                CommitStatus status = new CommitStatus();
+                status.setContext(str(jsonObject, "context"));
+                status.setDescription(str(jsonObject, "description"));
+                status.setState(str(jsonObject, "state"));
+                statuses.add(status);
+            }
+            if (CollectionUtils.isEmpty(jsonArray)) {
+                lastPage = true;
+            } else {
+                if (isThisLastPage(response)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                }
+            }
+        }
+        return statuses;
     }
 
 
@@ -502,13 +554,22 @@ public class DefaultGitHubClient implements GitHubClient {
         return headers;
     }
 
-    private JSONArray paresAsArray(ResponseEntity<String> response) {
+    private JSONArray parseAsArray(ResponseEntity<String> response) {
         try {
             return (JSONArray) new JSONParser().parse(response.getBody());
         } catch (ParseException pe) {
             LOG.error(pe.getMessage());
         }
         return new JSONArray();
+    }
+
+    private JSONObject parseAsObject(ResponseEntity<String> response) {
+        try {
+            return (JSONObject) new JSONParser().parse(response.getBody());
+        } catch (ParseException pe) {
+            LOG.error(pe.getMessage());
+        }
+        return new JSONObject();
     }
 
     private String str(JSONObject json, String key) {

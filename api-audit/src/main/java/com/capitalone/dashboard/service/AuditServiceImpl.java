@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Build;
@@ -10,6 +11,7 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
@@ -37,11 +39,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Component
 public class AuditServiceImpl implements AuditService {
@@ -57,6 +61,7 @@ public class AuditServiceImpl implements AuditService {
     private ComponentRepository componentRepository;
     private BuildRepository buildRepository;
     private CollectorItemRepository collectorItemRepository;
+    private ApiSettings settings;
 
     @Autowired
     public AuditServiceImpl(GitRequestRepository gitRequestRepository, CommitRepository commitRepository,
@@ -67,7 +72,8 @@ public class AuditServiceImpl implements AuditService {
                             CmdbRepository cmdbRepository,
                             ComponentRepository componentRepository,
                             BuildRepository buildRepository,
-                            CollectorItemRepository collectorItemRepository) {
+                            CollectorItemRepository collectorItemRepository,
+                            ApiSettings settings) {
         this.gitRequestRepository = gitRequestRepository;
         this.commitRepository = commitRepository;
         this.customRepositoryQuery = customRepositoryQuery;
@@ -79,6 +85,7 @@ public class AuditServiceImpl implements AuditService {
         this.componentRepository = componentRepository;
         this.buildRepository = buildRepository;
         this.collectorItemRepository = collectorItemRepository;
+        this.settings = settings;
     }
 
     public List<CollectorItem> getCollectorItems(Dashboard dashboard, String widgetName, CollectorType collectorType) {
@@ -280,6 +287,23 @@ public class AuditServiceImpl implements AuditService {
         }
     }
 
+    boolean computePeerReviewStatus(GitRequest pr) {
+        List<CommitStatus> statuses = pr.getCommitStatuses();
+        if (statuses != null) {
+            Set<String> contexts = new HashSet<>();
+            String allContexts = settings.getPeerReviewContexts();
+            if (allContexts != null) {
+                contexts.addAll(Arrays.asList(allContexts.trim().split(",")));
+            }
+            for (CommitStatus status : statuses) {
+                if (contexts.contains(status.getContext())) {
+                    return "success".equals(status.getState());
+                }
+            }
+        }
+        return false;
+    }
+
     @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
     public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits, String scmUrl, String scmBranch) {
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
@@ -325,21 +349,7 @@ public class AuditServiceImpl implements AuditService {
             allPeerReviews.add(peerReviewResponse);
 
             //check to see if pr was reviewed
-            List<Comment> comments = pr.getComments();
-            boolean peerReviewed = false;
-            for(Comment comment: comments) {
-                if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                    peerReviewed = true;
-                    break;
-                }
-            }
-            List<Comment> reviewComments = pr.getReviewComments();
-            for(Comment comment: reviewComments) {
-                if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                    peerReviewed = true;
-                    break;
-                }
-            }
+            boolean peerReviewed = computePeerReviewStatus(pr);
 
             if (peerReviewed) {
                 peerReviewResponse.addAuditStatus(AuditStatus.PULLREQ_REVIEWED_BY_PEER);

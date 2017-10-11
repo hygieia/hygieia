@@ -1,7 +1,9 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.CommitRepository;
@@ -17,6 +19,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -27,9 +30,30 @@ public class AuditServiceTest {
     private GitRequestRepository gitRequestRepository;
     @Mock
     private CommitRepository commitRepository;
+    @Mock
+    private ApiSettings settings;
 
     @InjectMocks
     private AuditServiceImpl auditService;
+
+    @Test
+    public void shouldPeerReview() {
+        when(settings.getPeerReviewContexts()).thenReturn("foo");
+        GitRequest gitRequest = new GitRequest();
+        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        List<CommitStatus> commitStatuses = new ArrayList<>();
+        CommitStatus status = new CommitStatus();
+        status.setContext("bar");
+        status.setState("success");
+        commitStatuses.add(status);
+        gitRequest.setCommitStatuses(commitStatuses);
+        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        status.setContext("foo");
+        status.setState(null);
+        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        status.setState("success");
+        assertTrue(auditService.computePeerReviewStatus(gitRequest));
+    }
 
     @Test
     public void shouldGetPullRequestsForRepoAndBranch() {
