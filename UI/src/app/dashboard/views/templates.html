@@ -1,43 +1,27 @@
-<div id="templates" class="main-content">
+<div id="templates" class="main-content" data-ng-init="ctrl.getAllTemplates()">
     <ng-include src="ctrl.templateUrl"></ng-include>
 
     <div class="col-md-8 col-md-push-2">
         <div class="widget-modal r">
             <div class="widget-modal-heading">
-                Select Your Template
+                All Templates
             </div>
             <div class="widget-modal-body">
-                <div class="text-center">
-                    <div class="btn-group dashboard-type-list" role="group" aria-label="Basic example">
-                        <button type="button"
-                                class="btn btn-secondary"
-                                ng-class="{'btn-info': ctrl.templateType == undefined}"
-                                ng-click="ctrl.setType()">All Templates</button>
 
-                        <button type="button"
-                                class="btn btn-secondary"
-                                ng-repeat="item in ctrl.templateTypes"
-                                ng-class="{'btn-info': ctrl.templateType == item.id}"
-                                ng-click="ctrl.setType(item.id)">
-                            <span class="fa {{item.icon}}" ng-if="item.icon"></span>
-
-                            {{item.name}} templates
-                        </button>
-                    </div>
-                </div>
 
                 <div class="gap">
                     <input type="search"
                            id="filter"
                            class="form-control text-center"
                            ng-model="ctrl.search"
-                           placeholder="Type to find template" />
+                           placeholder="Type to find template"/>
                 </div>
 
                 <div class="row gap">
                     <div class="col-sm-4 col-sm-push-8 text-center">
                         <div>
-                            <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.goToManager()">
+                            <div class="create-dashboard-button btn btn-default btn-wide-2x"
+                                 ng-click="ctrl.goToManager()">
                                 <span class="fa fa-stack fa-lg">
                                     <span class="fa-circle-thin fa-stack-2x"></span>
                                     <span class="fa-plus fa-stack-1x"></span>
@@ -49,54 +33,28 @@
                     </div>
                     <div class="col-sm-8 col-sm-pull-4">
                         <div>
-                            <div class="text-2x">My Templates <span class="label label-default"></span></div>
-
-                            <div class="text-center" ng-hide="ctrl.mytemplate">Loading Your Templates...</div>
-                            <div class="text-center" ng-show="ctrl.mytemplate && !mytemplates.length">
-                                No results
-                            </div>
+                            <div class="text-2x">All Templates <span class="label label-default"></span></div>
 
                             <ul class="list-animate list-group text-left">
-                                <li class="list-group-item" ng-repeat="myitem in mytemplates = (ctrl.mytemplate | filter:ctrl.filterTemplates | orderBy: 'name')">
+                                <li class="list-group-item" ng-repeat="myitem in ctrl.templates">
                                     <span class="pull-right">
                                        <a href ng-click="ctrl.deleteTemplate(myitem)">
                                            <span class="fa fa-lg fa-trash text-danger"></span>
                                        </a>
                                     </span>
 
-                                    <a class="btn-block clickable" ng-click="ctrl.open(myitem.id)">
-                                        <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : myitem.isProduct}"></span>
-                                        {{ myitem.name }}
+                                    <a class="btn-block clickable" ng-click="ctrl.viewTemplateDetails(myitem)">
+                                        <span class="fa fa-lg left-icon"></span>
+                                        {{ myitem.template }}
                                     </a>
                                 </li>
                             </ul>
                         </div>
 
-                        <div class="gap">
-                            <div class="text-2x">All Templates</span></div>
 
-                            <div class="text-center" ng-hide="ctrl.templates">Loading Templates...</div>
-
-                            <ul class="list-animate list-group text-left">
-                                <li class="list-group-item clickable" ng-click="ctrl.open(item.id)"
-                                    ng-repeat="item in filteredTemplates = (ctrl.templates | filter: ctrl.filterTemplates | orderBy:'name')">
-                                    <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : item.isProduct}"></span>
-
-                                    <span class="fa fa-angle-right list-group-item-right"></span>
-
-                                    </span>
-                                    {{item.name}}
-                                </li>
-                            </ul>
-
-                            <div class="text-center" ng-show="ctrl.templates && !filteredTemplates.length">
-                                No results
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-

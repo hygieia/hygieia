@@ -3,6 +3,7 @@ package com.capitalone.dashboard.repository;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.Component;
 import org.bson.types.ObjectId;
 
@@ -17,4 +18,5 @@ public interface CustomRepositoryQuery {
     List<Component> findComponents(Collector collector, CollectorItem collectorItem);
     List<Component> findComponents(ObjectId collectorId, CollectorType collectorType, CollectorItem collectorItem);
     List<Component> findComponents(ObjectId collectorId, CollectorType collectorType, ObjectId collectorItemId);
+    List<Commit> findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(String scmUrl, String scmBranch, long beginDt, long endDt);
 }

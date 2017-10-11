@@ -12,13 +12,22 @@
 
         </form-group>
 
-        <form-group input="selectedTemplate" errors="{required: 'Please select a template'}">
+        <div class="form-group" ng-if="ctrl.dashboardType.id == 'team'">
+            <div>
+                 <span class="col-sm-8"> <label class="radio-inline" for="widgets"> <input id="widgets" type="radio" name="content" ng-model="ctrl.configureSelect" value="widgets"  ng-checked="true"> Select Widgets </label>
+                <label class="radio-inline" for="templates"> <input id="templates" type="radio" name="content" ng-model="ctrl.configureSelect" value="templates"> Select Templates </label></span>
+                <span class="col-sm-4 pull-left"> <i class="fa fa-stack-1x fa-info-circle pull-right" uib-tooltip = "{{ctrl.selectWidgetOrTemplateToolTip}}" tooltip-trigger="focus" tooltip-placement="top" aria-hidden="true"></i></span>
+            </div>
+            <br>
+        </div>
+
+        <form-group  ng-show="ctrl.configureSelect == 'templates'" input="selectedTemplate" errors="{required: 'Please select a template'}">
             <select name="selectedTemplate"
-                    class="form-control"
-                    ng-model="ctrl.selectedTemplate"
-                    ng-options="item.name for item in ctrl.availableTemplates track by item.value"
-                    required>
-                <option value="" disabled>Select a template</option>
+                        class="form-control"
+                        ng-model="ctrl.selectedTemplate"
+                        ng-options="item.name for item in ctrl.availableTemplates track by item.value"
+                        required>
+                    <option value="" disabled>Select a template</option>
             </select>
         </form-group>
 
@@ -63,6 +72,7 @@
                               placeholder="Select a Business Service (Optional)"
                               uib-typeahead="configItem as configItem.configurationItem for configItem in ctrl.getConfigItem('app',$viewValue) "
                               typeahead-wait-ms="250" autocomplete="off"
+                              typeahead-focus
                               typeahead-min-length="0"
                               typeahead-editable="false"
                               typeahead-on-select="ctrl.setConfigItemAppId(ctrl.configurationItemBusServ.id)"
@@ -86,11 +96,12 @@
                             ng-model="ctrl.configurationItemBusApp"
                             class="form-control"
                             placeholder="Select a Business Application (Optional)"
-                            uib-typeahead="configItemComp as configItemComp.configurationItem for configItemComp in ctrl.getConfigItem('component',$viewValue)"
+                            uib-typeahead="configItemComp as configItemComp.configurationItem + ' - (' + configItemComp.commonName + ')' for configItemComp in ctrl.getConfigItem('component',$viewValue)"
                             typeahead-wait-ms="250" autocomplete="off"
+                            typeahead-focus
                             typeahead-min-length="0"
                             typeahead-editable="false"
-                            typeahead-on-select="ctrl.setConfigItemComponentId(ctrl.configurationItemBusApp.id)"
+                            typeahead-on-select="ctrl.setConfigItemComponentId(ctrl.configurationItemBusApp)"
                             typeahead-no-results="noResults" />
                     <div class="form-control" ng-show="noResults">
                         No Results Found

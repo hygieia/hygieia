@@ -62,12 +62,12 @@
                                     <span class="pull-right">
 
 
-                                       <a href ng-click="ctrl.editDashboard(myitem)">
+                                       <a href ng-click="ctrl.editDashboard(myitem,'lg')">
                                            <span class="fa fa-lg fa-cog text-success"></span>
                                        </a>
 
-                                       <a href ng-click="ctrl.deleteDashboard(myitem)" id="deleteDashboardButton">
-                                           <span class="fa fa-lg fa-trash text-danger"></span>
+                                       <a href id="deleteDashboardButton" delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteDashboard(myitem)">
+                                            <span class="fa fa-lg fa-trash text-danger"></span>
                                        </a>
                                     </span>
 

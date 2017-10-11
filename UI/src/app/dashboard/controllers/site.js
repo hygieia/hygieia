@@ -96,13 +96,14 @@
             });
         }
 
-        function editDashboard(item)
+        function editDashboard(item,size)
         {
             // open modal for renaming dashboard
             var modalInstance = $uibModal.open({
                 templateUrl: 'app/dashboard/views/editDashboard.html',
                 controller: 'EditDashboardController',
                 controllerAs: 'ctrl',
+                size:size,
                 resolve: {
                     dashboardItem: function() {
                         return item;

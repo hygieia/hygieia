@@ -88,7 +88,17 @@ public interface DashboardService {
      */
     Widget updateWidget(Dashboard dashboard, Widget widget);
 
-    
+    /**
+     * Deletes an existing Widget.
+     *
+     * @param dashboard delete widget on this Dashboard
+     * @param widget Widget to delete
+     *
+     */
+    void deleteWidget(Dashboard dashboard, Widget widget,ObjectId componentId);
+
+
+
     /**
      * Gets all dashboard belonging to the authenticated user
      * @return List of dashboards
@@ -166,6 +176,9 @@ public interface DashboardService {
      * @return dashboard instance
      */
     Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard dashboard) throws HygieiaException;
+
+    Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException;
+
 }
 
 

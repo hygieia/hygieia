@@ -10,11 +10,8 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import com.capitalone.dashboard.gitlab.model.GitlabIssue;
-import com.capitalone.dashboard.gitlab.model.GitlabProject;
-import com.capitalone.dashboard.gitlab.model.GitlabTeam;
 import com.capitalone.dashboard.model.Feature;
-import com.capitalone.dashboard.model.Scope;
-import com.capitalone.dashboard.model.Team;
+import com.capitalone.dashboard.model.Project;
 import com.capitalone.dashboard.util.FeatureCollectorConstants;
 
 @Component
@@ -26,43 +23,10 @@ public class FeatureDataMapper {
 	private static final String FEATURE_IN_PROGRESS_STATUS = "In Progress";
 	private static final String FEATURE_DONE_STATUS = "Done";
 	private static final String GITLAB_DONE_STATUS = "closed";
-
-	public Team mapToTeam(GitlabTeam gitlabTeam, ObjectId existingTeamId, ObjectId gitlabFeatureCollectorId) {
-		String teamId = String.valueOf(gitlabTeam.getId());
-		
-		Team team = new Team(teamId, gitlabTeam.getName());
-		team.setId(existingTeamId);
-		team.setCollectorId(gitlabFeatureCollectorId);
-		team.setChangeDate(EMPTY_STRING);
-		team.setAssetState(ACTIVE_ASSET_STATE);
-		team.setIsDeleted(FALSE_DELETED_STATE);
-		
-		return team;
-	}
 	
-	public Scope mapToScopeItem(GitlabProject gitlabProject, ObjectId existingProjectId, ObjectId gitlabFeatureCollectorId) {
-		String projectId = String.valueOf(gitlabProject.getId());
-		
-		Scope project = new Scope();
-		project.setId(existingProjectId);
-		project.setCollectorId(gitlabFeatureCollectorId);
-		project.setpId(projectId);
-		project.setName(gitlabProject.getName());
-		project.setBeginDate(EMPTY_STRING);
-		project.setEndDate(EMPTY_STRING);
-		project.setChangeDate(EMPTY_STRING);
-		project.setAssetState(ACTIVE_ASSET_STATE);
-		project.setIsDeleted(FALSE_DELETED_STATE);
-		project.setProjectPath(gitlabProject.getPath());
-		
-		return project;
-	}
-	
-	public Feature mapToFeatureItem(GitlabIssue gitlabIssue, List<String> inProgressLabelsForProject, ObjectId existingIssueId, ObjectId gitlabCollectorId) {
+	public Feature mapToFeatureItem(Project project, GitlabIssue gitlabIssue, List<String> inProgressLabelsForProject, ObjectId existingIssueId, ObjectId gitlabCollectorId) {
 		String issueId = String.valueOf(gitlabIssue.getId());
 		String storyNumber = String.valueOf(gitlabIssue.getIid());
-		String projectId = String.valueOf(gitlabIssue.getProjectId());
-		String teamId = String.valueOf(gitlabIssue.getProject().getNamespace().getId());
 		
 		Feature issue = new Feature();
 		issue.setId(existingIssueId);
@@ -77,8 +41,8 @@ public class FeatureDataMapper {
 		issue.setChangeDate(gitlabIssue.getUpdatedAt());
 		
 		//Project Data
-		issue.setsProjectID(projectId);
-		issue.setsProjectName(EMPTY_STRING);
+		issue.setsProjectID(project.getProjectId());
+		issue.setsProjectName(project.getProjectId());
 		issue.setsProjectBeginDate(EMPTY_STRING);
 		issue.setsProjectEndDate(EMPTY_STRING);
 		issue.setsProjectChangeDate(EMPTY_STRING);
@@ -87,9 +51,9 @@ public class FeatureDataMapper {
 		issue.setsProjectPath(EMPTY_STRING);
 		
 		//Team Data
-		issue.setsTeamID(teamId);
+		issue.setsTeamID(project.getTeamId());
 		issue.setsTeamAssetState(EMPTY_STRING);
-		issue.setsTeamName(gitlabIssue.getProject().getNamespace().getName());
+		issue.setsTeamName(project.getTeamId());
 		issue.setsTeamChangeDate(EMPTY_STRING);
 		issue.setsTeamIsDeleted(FALSE_DELETED_STATE);
 

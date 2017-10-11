@@ -164,7 +164,7 @@ public class DashboardRemoteServiceTest {
         DashboardRemoteRequest.CodeRepoEntry validSCM = new DashboardRemoteRequest.CodeRepoEntry();
         validSCM.setToolName("GitHub");
         Map options = new HashMap();
-        options.put("url", "http://git.test.com");
+        options.put("url", "http://git.test.com/capone/better.git");
         options.put("branch", "master");
         validSCM.setOptions(options);
         entries.add(validSCM);
@@ -261,7 +261,8 @@ public class DashboardRemoteServiceTest {
         for (String compName : compNames) {
             app.addComponent(new Component(compName));
         }
-        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServId, configItemBusAppId);
+        List<String> activeWidgets = new ArrayList<>();
+        return new Dashboard(template, title, app, new Owner(owner, AuthType.STANDARD), DashboardType.Team, configItemBusServId, configItemBusAppId,activeWidgets);
     }
 
     private Collector makeCollector(String name, CollectorType type) {

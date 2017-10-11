@@ -4,9 +4,9 @@
         <form-group class="text-center" input="collectorItemId" errors="{required: 'Please select a collector'}">
 
             <label class="modal-label">Build Job</label>
- 			 <input type="text" name="collectorItemId" class="form-control" placeholder="Search a build job"
+ 			 <input type="text" name="collectorItemId" class="form-control" placeholder="Search a build job in format <Server Name> : <Job Name>"
        ng-model="buildConfig.collectorItemId"
- 			 uib-typeahead="item as item.niceName + '-' + item.description for item in getJobs($viewValue)" typeahead-focus
+ 			 uib-typeahead="item as item.niceName + ' : ' + item.description for item in getJobs($viewValue)" typeahead-focus
  			 typeahead-template-url="jobUrlTemplate.html"
  			 typeahead-min-length="0"
  			 typeahead-wait-ms="250"
