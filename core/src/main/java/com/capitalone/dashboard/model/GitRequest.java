@@ -32,6 +32,7 @@ public class GitRequest extends SCM {
     private String reviewCommentsUrl;
     private List<Comment> comments;
     private List<Comment> reviewComments;
+    private List<Review> reviews;
     private List<CommitStatus> commitStatuses;
     private String headSha;
     private String baseSha;
@@ -204,6 +205,14 @@ public class GitRequest extends SCM {
 
     public void setReviewComments(List<Comment> reviewComments) {
         this.reviewComments = reviewComments;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 
     public List<CommitStatus> getCommitStatuses() {

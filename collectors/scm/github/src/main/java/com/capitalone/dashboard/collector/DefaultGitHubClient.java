@@ -8,6 +8,7 @@ import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitHubParsed;
 import com.capitalone.dashboard.model.GitHubRepo;
 import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
@@ -198,6 +199,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 long createdTimestamp = new DateTime(created).getMillis();
                 String commentsUrl = str(jsonObject, "comments_url");
                 String reviewCommentsUrl = str(jsonObject, "review_comments_url");
+                String reviewsUrl = str(jsonObject, "url") + "/reviews";
 
                 GitRequest pull = new GitRequest();
 
@@ -261,6 +263,9 @@ public class DefaultGitHubClient implements GitHubClient {
                 pull.setReviewComments(reviewComments);
                 pull.setReviewCommentsUrl(reviewCommentsUrl);
                 List<CommitStatus> commitStatuses = getCommitStatuses(commitStatusesUrl, repo);
+                pull.setCommitStatuses(commitStatuses);
+                List<Review> reviews = getReviews(reviewsUrl, repo);
+                pull.setReviews(reviews);
                 pull.setCommitStatuses(commitStatuses);
                 pulls.add(pull);
                 stop = (!MapUtils.isEmpty(prMap) && prMap.get(pull.getUpdatedAt()) != null) && (prMap.get(pull.getUpdatedAt()).equals(pull.getNumber()));
@@ -457,6 +462,47 @@ public class DefaultGitHubClient implements GitHubClient {
         return statuses;
     }
 
+    /**
+     * Get reviews from the given reviews url
+     * @param reviewsUrl
+     * @param repo
+     * @return
+     * @throws RestClientException
+     */
+    public List<Review> getReviews(String reviewsUrl, GitHubRepo repo) throws RestClientException {
+
+        List<Review> reviews = new ArrayList<>();
+
+        // decrypt password
+        String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+
+        boolean lastPage = false;
+        String queryUrlPage = reviewsUrl;
+        while (!lastPage) {
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            JSONArray jsonArray = parseAsArray(response);
+            for (Object item : jsonArray) {
+                JSONObject jsonObject = (JSONObject) item;
+
+                Review review = new Review();
+                review.setState(str(jsonObject, "state"));
+                review.setBody(str(jsonObject, "body"));
+                review.setId(asInt(jsonObject, "id"));
+                reviews.add(review);
+            }
+            if (CollectionUtils.isEmpty(jsonArray)) {
+                lastPage = true;
+            } else {
+                if (isThisLastPage(response)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                }
+            }
+        }
+        return reviews;
+    }
 
     // Utilities
 
@@ -570,6 +616,18 @@ public class DefaultGitHubClient implements GitHubClient {
             LOG.error(pe.getMessage());
         }
         return new JSONObject();
+    }
+
+    private int asInt(JSONObject json, String key) {
+        String val = str(json, key);
+        try {
+            if (val != null) {
+                return Integer.parseInt(val);
+            }
+        } catch (NumberFormatException ex) {
+            LOG.error(ex.getMessage());
+        }
+        return 0;
     }
 
     private String str(JSONObject json, String key) {

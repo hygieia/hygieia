@@ -17,6 +17,7 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.JobCollectorItem;
 import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
@@ -289,15 +290,23 @@ public class AuditServiceImpl implements AuditService {
 
     boolean computePeerReviewStatus(GitRequest pr) {
         List<CommitStatus> statuses = pr.getCommitStatuses();
+        List<Review> reviews = pr.getReviews();
         if (statuses != null) {
-            Set<String> contexts = new HashSet<>();
-            String allContexts = settings.getPeerReviewContexts();
-            if (allContexts != null) {
-                contexts.addAll(Arrays.asList(allContexts.trim().split(",")));
+            Set<String> prContexts = new HashSet<>();
+            String contextString = settings.getPeerReviewContexts();
+            if (contextString != null) {
+                prContexts.addAll(Arrays.asList(contextString.trim().split(",")));
             }
             for (CommitStatus status : statuses) {
-                if (contexts.contains(status.getContext())) {
-                    return "success".equals(status.getState());
+                if (prContexts.contains(status.getContext())) {
+                    return "success".equalsIgnoreCase(status.getState());
+                }
+            }
+        }
+        if (reviews != null) {
+            for (Review review : reviews) {
+                if ("approved".equalsIgnoreCase(review.getState())) {
+                    return true;
                 }
             }
         }
