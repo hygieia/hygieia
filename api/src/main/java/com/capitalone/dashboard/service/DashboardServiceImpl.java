@@ -1,20 +1,34 @@
 package com.capitalone.dashboard.service;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 import com.capitalone.dashboard.ApiSettings;
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import com.capitalone.dashboard.auth.AuthenticationUtil;
 import com.capitalone.dashboard.auth.exceptions.UserNotFoundException;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuthType;
-import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.DashboardType;
-import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -688,7 +702,7 @@ public class DashboardServiceImpl implements DashboardService {
      * @return Integer
      */
     @Override
-    public Integer getPageSize() {
+    public int getPageSize() {
         return settings.getPageSize();
     }
 

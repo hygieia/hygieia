@@ -1,16 +1,17 @@
 package com.capitalone.dashboard.service;
 
+import java.util.List;
+
+import org.bson.types.ObjectId;
+
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
-import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
-import org.bson.types.ObjectId;
+import com.capitalone.dashboard.model.DataResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface DashboardService {
 
@@ -188,7 +189,7 @@ public interface DashboardService {
 
     Integer getAllDashboardsByTitleCount(String title);
 
-    Integer getPageSize();
+    int getPageSize();
 
 }
 
