@@ -98,13 +98,13 @@ public class DashboardController {
     @DashboardOwnerOrAdmin
     @RequestMapping(path = "/dashboard/{id}/owners", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Iterable<Owner>> updateOwners(@PathVariable ObjectId id, @RequestBody Iterable<Owner> owners) {
-        return new ResponseEntity<Iterable<Owner>>(dashboardService.updateOwners(id, owners), HttpStatus.ACCEPTED);
+    	return new ResponseEntity<Iterable<Owner>>(dashboardService.updateOwners(id, owners), HttpStatus.ACCEPTED);
     }
 
     @DashboardOwnerOrAdmin
     @RequestMapping(value = "/dashboard/rename/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> renameDashboard(@PathVariable ObjectId id,
-                                                  @Valid @RequestBody DashboardRequestTitle request) {
+    		@Valid @RequestBody DashboardRequestTitle request) {
 
 
         Dashboard dashboard = getDashboard(id);
@@ -119,13 +119,15 @@ public class DashboardController {
         Iterable<Dashboard> allDashboard = dashboards();
         boolean titleExist = false;
 
-        for (Dashboard l : allDashboard) {
+        for(Dashboard l :allDashboard)
+        {
             if (id.compareTo(l.getId()) == 0) {
                 //skip the current dashboard
                 continue;
             }
-            if (l.getTitle().equals(request.getTitle())) {
-                titleExist = true;
+            if(l.getTitle().equals(request.getTitle()))
+            {
+                titleExist=true;
             }
         }
 
@@ -190,7 +192,7 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard/mydashboard", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public List<Dashboard> getOwnedDashboards() {
-        List<Dashboard> myDashboard = dashboardService.getOwnedDashboards();
+    	List<Dashboard> myDashboard = dashboardService.getOwnedDashboards();
         return myDashboard;
 
     }
@@ -205,7 +207,7 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard/myowner/{id}", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public String getDashboardOwner(@PathVariable ObjectId id) {
-        return "Authorized";
+    	return "Authorized";
     }
 
     @RequestMapping(value = "/dashboard/component/{componentId}", method = GET,
@@ -220,7 +222,7 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard/configItemApp/{configItem}", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity getDashboardByApp(@PathVariable String configItem) {
-        try {
+        try{
             return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getByBusinessService(configItem));
         } catch (HygieiaException he) {
             return ResponseEntity
@@ -231,7 +233,7 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard/configItemComponent/{configItem}", method = GET,
             produces = APPLICATION_JSON_VALUE)
     public ResponseEntity getDashboardByComp(@PathVariable String configItem) {
-        try {
+        try{
             return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getByBusinessApplication(configItem));
         } catch (HygieiaException he) {
             return ResponseEntity
@@ -241,9 +243,9 @@ public class DashboardController {
     }
     @RequestMapping(value = "/dashboard/configItemComponentAndApp/{configItemComp}/{configItemApp}", method = GET,
             produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity getDashboardByCompAndApp(@PathVariable String configItemComp, @PathVariable String configItemApp) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getByServiceAndApplication(configItemComp, configItemApp));
+    public ResponseEntity getDashboardByCompAndApp(@PathVariable String configItemComp,@PathVariable String configItemApp) {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(dashboardService.getByServiceAndApplication(configItemComp,configItemApp));
         } catch (HygieiaException he) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -256,9 +258,9 @@ public class DashboardController {
     public ResponseEntity<String> updateDashboardBusinessItems(@PathVariable ObjectId id, @RequestBody Dashboard request) {
         try {
             Dashboard dashboard = dashboardService.updateDashboardBusinessItems(id, request);
-            if (dashboard != null) {
+            if(dashboard != null){
                 return ResponseEntity.ok("Updated");
-            } else {
+            }else{
                 return ResponseEntity.ok("Unchanged");
             }
 
@@ -275,9 +277,9 @@ public class DashboardController {
     public ResponseEntity<String> updateDashboardWidgets(@PathVariable ObjectId id, @RequestBody Dashboard request) {
         try {
             Dashboard dashboard = dashboardService.updateDashboardWidgets(id, request);
-            if (dashboard != null) {
+            if(dashboard != null){
                 return ResponseEntity.ok("Updated");
-            } else {
+            }else{
                 return ResponseEntity.ok("Unchanged");
             }
 
@@ -300,8 +302,8 @@ public class DashboardController {
                 request.getComponentId(), request.getCollectorItemIds());
 
         Dashboard dashboard = dashboardService.get(id);
-        Widget widget = dashboardService.getWidget(dashboard, widgetId);
-        dashboardService.deleteWidget(dashboard, widget, request.getComponentId());
+        Widget widget =dashboardService.getWidget(dashboard, widgetId);
+        dashboardService.deleteWidget(dashboard, widget,request.getComponentId());
 
         return ResponseEntity.ok().body(new WidgetResponse(component, null));
     }
