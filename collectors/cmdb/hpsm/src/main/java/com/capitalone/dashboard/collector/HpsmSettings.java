@@ -24,11 +24,22 @@ public class HpsmSettings {
 	private String compSubType;
 	private String compType;
 
+	private String envSubType;
+	private String envType;
+
 	private String detailsRequestType;
 	private String detailsSoapAction;
 
+	private String changeOrderRequestType;
+	private String changeOrderSoapAction;
+
+	private String incidentRequestType;
+	private String incidentSoapAction;
+
 	private int port;
     private int firstRunHistoryDays;
+    private int changeOrderDays;
+	private int incidentDays;
 
 	public String getServer() {
 		return server;
@@ -173,4 +184,36 @@ public class HpsmSettings {
 	public void setFirstRunHistoryDays(int firstRunHistoryDays) {
 		this.firstRunHistoryDays = firstRunHistoryDays;
 	}
+
+	public String getEnvSubType() { return envSubType; }
+
+	public void setEnvSubType(String envSubType) { this.envSubType = envSubType; }
+
+	public String getEnvType() { return envType; }
+
+	public void setEnvType(String envType) { this.envType = envType; }
+
+	public String getChangeOrderRequestType() {	return changeOrderRequestType; 	}
+
+	public void setChangeOrderRequestType(String changeOrderRequestType) { this.changeOrderRequestType = changeOrderRequestType; }
+
+	public String getChangeOrderSoapAction() { return changeOrderSoapAction; }
+
+	public void setChangeOrderSoapAction(String changeOrderSoapAction) { this.changeOrderSoapAction = changeOrderSoapAction; }
+
+	public String getIncidentRequestType() { return incidentRequestType; }
+
+	public void setIncidentRequestType(String incidentRequestType) { this.incidentRequestType = incidentRequestType; }
+
+	public String getIncidentSoapAction() { return incidentSoapAction; }
+
+	public void setIncidentSoapAction(String incidentSoapAction) { this.incidentSoapAction = incidentSoapAction; }
+
+	public int getChangeOrderDays() { return changeOrderDays; }
+
+	public void setChangeOrderDays(int changeOrderDays) { this.changeOrderDays = changeOrderDays; }
+
+	public int getIncidentDays() { return incidentDays; }
+
+	public void setIncidentDays(int incidentDays) { this.incidentDays = incidentDays; }
 }
