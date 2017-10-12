@@ -111,14 +111,22 @@
             {
                 metricName: "buildSuccess",
                 displayName: "Build Success",
-                scoreRanges: [{ rangeMin: 0, rangeMax: 50, score: 0 },
-                    { rangeMin: 51, rangeMax: 60, score: 4 },
+                scoreRanges: [{ rangeMin: 0, rangeMax: 10, score: 0 },
+                    { rangeMin: 11, rangeMax: 60, score: 4 },
                     { rangeMin: 61, rangeMax: 70, score: 8 },
                     { rangeMin: 71, rangeMax: 80, score: 12 },
                     { rangeMin: 81, rangeMax: 90, score: 16 },
                     { rangeMin: 91, rangeMax: 95, score: 18 },
                     { rangeMin: 96, rangeMax: 100, score: 20 }],
                 displaySymbol: "%"
+            },
+            {
+                metricName: "codeIssues",
+                displayName: "Code Violations",
+                scoreRanges: [{ rangeMin: 0, rangeMax: 0, score: 20 },
+                    { rangeMin: 1, rangeMax: 10, score: 10 },
+                    { rangeMin: 11, rangeMax: 100, score: 0 }],
+                displaySymbol: ""
             }
         ];
 
@@ -133,6 +141,7 @@
 
         function populateScoreboardData() {
             var teamScoreBoardData = {};
+            console.log(ctrl.configuredTeams);
             _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
                 teamScoreBoardData.collectorItemId = configuredTeam.collectorItemId;
                 teamScoreBoardData.name = configuredTeam.name;
@@ -189,22 +198,21 @@
         function getScoreForMetric(metricName, configuredTeam) {
             var score = 0;
             if(configuredTeam.summary != undefined) {
-                                ctrl.scoreBoardMetrics.forEach(function(scoreMetaData) {
-                                if(scoreMetaData.metricName == metricName) {
-                                if(configuredTeam.summary[metricName] == undefined) {
-                                score = -1;
-                                } else {
-                                var metricValue = Math.round(configuredTeam.summary[metricName].number);
-                                scoreMetaData.scoreRanges.forEach(function(rangeObj) {
-                                                                  if (metricValue >= rangeObj.rangeMin && metricValue <= rangeObj.rangeMax) {
-                                                                  score = rangeObj.score;
-                                                                  return score;
-                                                                  }
-                                                                  });
-                                }
-                                }
-                                });
-
+                ctrl.scoreBoardMetrics.forEach(function(scoreMetaData) {
+                if(scoreMetaData.metricName == metricName) {
+                    if(configuredTeam.summary[metricName] == undefined) {
+                        score = -1;
+                    } else {
+                        var metricValue = Math.round(configuredTeam.summary[metricName].number);
+                        scoreMetaData.scoreRanges.forEach(function(rangeObj) {
+                            if (metricValue >= rangeObj.rangeMin && metricValue <= rangeObj.rangeMax) {
+                                score = rangeObj.score;
+                                return score;
+                            }
+                        });
+                    }
+                }
+            });
             }
             return score;
         }
@@ -261,6 +269,7 @@
         ctrl.toggleView = toggleView;
         ctrl.populateScoreboardData = populateScoreboardData;
         ctrl.viewScoreDetails = viewScoreDetails;
+        ctrl.getGamificationMetricDisplayNames = getGamificationMetricDisplayNames;
 
         // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
@@ -600,7 +609,6 @@
                         if (team.collectorItemId == board.id) {
                             dashboardData.detail(board.options.dashboardId).then(function(result) {
                                 teamDashboardDetails[team.collectorItemId] = result;
-
                                 getTeamComponentData(team.collectorItemId);
                             });
                         }
@@ -705,27 +713,47 @@
 
         $scope.chartOptions = {
             plugins: [
-                Chartist.plugins.ctBarLabels({
-                    labelInterpolationFnc: function(text, value) {
-                        return value > 0 ? text + " (" + value + ")" : "";
-                    }
-                })
+                // Chartist.plugins.ctBarLabels({
+                //     labelInterpolationFnc: function(text, value) {
+                //         return value > 0 ? value : "";
+                //     }
+                // }),
+                Chartist.plugins.legend({
+                    legendNames: ctrl.getGamificationMetricDisplayNames(),
+                    position: 'bottom'
+                }),
+                Chartist.plugins.tooltip()
             ],
             stackBars: true,
             centerLabels: true,
             horizontalBars: true,
+            height: 220,
             axisX: {
-                scaleMinSpace: 100,
+                showLabel: false,
+                showGrid: false,
+                scaleMinSpace: 20,
                 low: 0,
-                onlyInteger: true,
-                labelInterpolationFnc: function(value) {
-                    return value === 0 ? 0 : ((Math.round(value * 100) / 100) + '');
-                }
+                high: 100,
+                onlyInteger: true
             },
             axisY: {
-                offset: ctrl.getOffset()
+                showGrid: false,
+                scaleMinSpace: 20,
+                offset: ctrl.getOffset(),
+                labeloffset: {
+                    x: 0,
+                    y: 10
+                }
             }
         };
+
+        function getGamificationMetricDisplayNames() {
+            var metricDisplayNames = [];
+            ctrl.scoreBoardMetrics.forEach(function(metric) {
+                metricDisplayNames.push(metric.displayName);
+            });
+            return metricDisplayNames;
+        }
 
         ctrl.getChartData = function() {
             var labels = [];
