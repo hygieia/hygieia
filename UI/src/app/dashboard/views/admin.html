@@ -8,6 +8,7 @@
         <li role="presentation" ng-class="{active:tab === 'users'}"><a href ng-click="navigateToTab('users')">Manage Admins</a></li>
         <li role="presentation" ng-class="{active:tab === 'apitokens'}"><a href ng-click="navigateToTab('apitokens')">Generate ApiTokens</a></li>
         <li role="presentation"  ng-class="{active:tab === 'templates'}"><a href ng-click="navigateToTab('templates')">Manage Templates</a></li>
+          <li role="presentation"  ng-class="{active:tab === 'gamification'}"><a href ng-click="navigateToTab('gamification')">Manage Gamification Metrics</a></li>
       </ul>
     </div>
 
@@ -189,6 +190,59 @@
 
                                 <div class="text-center" ng-show="apitokens && !apitokens.length">
                                     No results
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="tab === 'gamification'">
+                <div class="widget-modal">
+                    <div class="widget-modal-heading">
+                        Manage Gamification Metrics
+                    </div>
+                    <div class="widget-modal-body">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="text-center" ng-hide="ctrl.metricData">Loading Metric Data...</div>
+
+                                <div class="list-animate">
+                                    <div class="dash-modal-row delete-dashboard-row clearfix text-center">
+                                        Metrics
+                                    </div>
+                                    <div class="dash-modal-row delete-dashboard-row clearfix clickable"
+                                         ng-repeat="metric in ctrl.metricData | orderBy:'displayName'" ng-click="switchMetric(metric)">
+                                        <div title="{{metric.displayName}}" class="btn-block">{{metric.displayName |  trunText:30}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 text-center">
+                                <div class="list">
+                                    <div class="dash-modal-row delete-dashboard-row clearfix range-buttons">
+                                        Ranges
+                                        <button type="button" class="btn btn-primary btn-wide pull-right" ng-click="">Save</button>
+                                        <button type="button" class="btn btn-primary btn-wide pull-right" ng-click="ctrl.addMetricRange()">Add</button>
+                                    </div>
+                                    <div class="dash-modal-row delete-dashboard-row clearfix"
+                                         ng-repeat="range in selectedMetric.scoringRanges">
+                                        <div class="range-edit">
+                                            <label>
+                                                Min:
+                                                <input type="string" ng-model="range.rangeMin" />
+                                            </label>
+                                            <label>
+                                                Max:
+                                                <input type="string" ng-model="range.rangeMax" />
+                                            </label>
+                                            <label>
+                                                Score:
+                                                <input type="string" ng-model="range.score" />
+                                            </label>
+
+                                            <dash-trash class="clickable pull-right" ng-click="ctrl.deleteMetricRange(range)"></dash-trash>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
