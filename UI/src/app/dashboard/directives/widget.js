@@ -247,6 +247,7 @@
                         if(typeof lastUpdated === 'object'){
                             lastUpdated = lastUpdated.collectorItem[0].lastUpdated;
                         }
+                        $scope.lastUpdatedActual = lastUpdated;
                         $scope.lastUpdatedDisplay = moment(lastUpdated).dash('ago');
                         $scope.collectorItems = collectorItems;
                         if (collectorItems) {
