@@ -86,7 +86,6 @@ public class DefaultGitHubClient implements GitHubClient {
 
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
         boolean lastPage = false;
-        int pageNumber = 1;
         String queryUrlPage = queryUrl;
         while (!lastPage) {
             LOG.info("Executing " + queryUrlPage);
@@ -131,9 +130,12 @@ public class DefaultGitHubClient implements GitHubClient {
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
             } else {
-                lastPage = isThisLastPage(response);
-                pageNumber++;
-                queryUrlPage = queryUrl + "&page=" + pageNumber;
+                if (isThisLastPage(response)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                }
             }
         }
         return commits;
@@ -174,12 +176,11 @@ public class DefaultGitHubClient implements GitHubClient {
 
         boolean lastPage = false;
         boolean stop = false;
-        int pageNumber = 1;
-        String queryUrl = pageUrl;
+        String queryUrlPage = pageUrl;
 
         while (!lastPage && !stop) {
-            LOG.info("Executing [" + queryUrl);
-            ResponseEntity<String> response = makeRestCall(queryUrl, repo.getUserId(), decryptedPassword);
+            LOG.info("Executing [" + queryUrlPage);
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
             JSONArray jsonArray = paresAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
@@ -260,9 +261,12 @@ public class DefaultGitHubClient implements GitHubClient {
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
             } else {
-                lastPage = isThisLastPage(response) || isRateLimitReached(response);
-                pageNumber++;
-                queryUrl = pageUrl + "&page=" + pageNumber;
+                if (isThisLastPage(response)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                }
             }
         }
         return pulls;
@@ -290,7 +294,6 @@ public class DefaultGitHubClient implements GitHubClient {
         String queryUrl = apiUrl.concat("/issues?state=all&since=" + getTimeForApi(getRunDate(repo, firstRun)));
 
         boolean lastPage = false;
-        int pageNumber = 1;
         String queryUrlPage = queryUrl;
 
         while (!lastPage) {
@@ -343,9 +346,12 @@ public class DefaultGitHubClient implements GitHubClient {
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
             } else {
-                lastPage = isThisLastPage(response);
-                pageNumber++;
-                queryUrlPage = queryUrl + "&page=" + pageNumber;
+                if (isThisLastPage(response)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                }
             }
         }
         return issues;
@@ -368,7 +374,6 @@ public class DefaultGitHubClient implements GitHubClient {
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
 
         boolean lastPage = false;
-        int pageNumber = 1;
         String queryUrlPage = commentsUrl;
         while (!lastPage) {
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
@@ -389,9 +394,12 @@ public class DefaultGitHubClient implements GitHubClient {
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
             } else {
-                lastPage = isThisLastPage(response);
-                pageNumber++;
-                queryUrlPage = commentsUrl + "&page=" + pageNumber;
+                if (isThisLastPage(response)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                }
             }
         }
         return comments;
@@ -415,10 +423,31 @@ public class DefaultGitHubClient implements GitHubClient {
                 if (l.contains("rel=\"next\"")) {
                     return false;
                 }
-
             }
         }
         return true;
+    }
+
+    private String getNextPageUrl(ResponseEntity<String> response) {
+        String nextPageUrl = "";
+        HttpHeaders header = response.getHeaders();
+        List<String> link = header.get("Link");
+        if (link == null || link.isEmpty()) {
+            return nextPageUrl;
+        } else {
+            for (String l : link) {
+                if (l.contains("rel=\"next\"")) {
+                    String[] parts = link.get(0).split(";");
+                    if (parts.length > 0) {
+                        nextPageUrl = parts[0].replaceFirst("<","");
+                        nextPageUrl = nextPageUrl.replaceFirst(">","").trim();
+
+                    }
+                    return nextPageUrl;
+                }
+            }
+        }
+        return nextPageUrl;
     }
 
     /**
