@@ -1,27 +1,6 @@
 
 package com.capitalone.dashboard.rest;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
-
-import java.util.List;
-
-import javax.validation.Valid;
-
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Component;
@@ -33,17 +12,42 @@ import com.capitalone.dashboard.request.DashboardRequest;
 import com.capitalone.dashboard.request.DashboardRequestTitle;
 import com.capitalone.dashboard.request.WidgetRequest;
 import com.capitalone.dashboard.service.DashboardService;
+import com.capitalone.dashboard.util.PaginationHeaderUtility;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 public class DashboardController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
     private final DashboardService dashboardService;
+    private PaginationHeaderUtility paginationHeaderUtility;
 
 
     @Autowired
-    public DashboardController(DashboardService dashboardService) {
+    public DashboardController(DashboardService dashboardService,PaginationHeaderUtility paginationHeaderUtility) {
         this.dashboardService = dashboardService;
+        this.paginationHeaderUtility = paginationHeaderUtility;
     }
 
     @RequestMapping(value = "/dashboard", method = GET, produces = APPLICATION_JSON_VALUE)
@@ -300,6 +304,64 @@ public class DashboardController {
         dashboardService.deleteWidget(dashboard, widget,request.getComponentId());
 
         return ResponseEntity.ok().body(new WidgetResponse(component, null));
+    }
+
+    /**
+     * Get list of dashboards by page (default = 10)
+     *
+     * @return List of dashboards
+     */
+    @RequestMapping(value = "/dashboard/page", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dashboard>> dashboardByPage(@RequestParam(value = "search", required = false, defaultValue = "") String search, Pageable pageable) {
+        Page<Dashboard> pageDashboardItems = dashboardService.findDashboardsByPage(pageable);
+        return ResponseEntity
+                .ok()
+                .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
+                .body(pageDashboardItems.getContent());
+    }
+
+    /**
+     * Get count of all dashboards
+     *
+     * @return Integer
+     */
+    @RequestMapping(value = "/dashboard/count", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long dashboardsCount() {
+        return dashboardService.count();
+    }
+
+    /**
+     * Get count of all filtered dashboards
+     *
+     * @return Integer
+     */
+    @RequestMapping(value = "/dashboard/filter/count/{title}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long dashboardsFilterCount(@PathVariable String title) {
+        return dashboardService.getAllDashboardsByTitleCount(title);
+    }
+
+    /**
+     * Get dashboards filtered by title (pageable)
+     *
+     * @return List of Dashboards
+     */
+    @RequestMapping(value = "/dashboard/page/filter", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dashboard>> dashboardByTitlePage(@RequestParam(value = "search", required = false, defaultValue = "") String search, Pageable pageable) throws HygieiaException {
+        Page<Dashboard> pageDashboardItems = dashboardService.getDashboardByTitleWithFilter(search, pageable);
+        return ResponseEntity
+                .ok()
+                .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
+                .body(pageDashboardItems.getContent());
+    }
+
+    /**
+     * Get page size
+     *
+     * @return Integer
+     */
+    @RequestMapping(value = "/dashboard/pagesize", method = GET, produces = APPLICATION_JSON_VALUE)
+    public Integer getPageSize() {
+        return dashboardService.getPageSize();
     }
 
 

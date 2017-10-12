@@ -16,6 +16,7 @@ public class ApiSettings {
     private boolean corsEnabled;
     private String corsWhitelist;
     private boolean logRequest;
+    private Integer pageSize;
     
     public String getKey() {
         return key;
@@ -48,4 +49,13 @@ public class ApiSettings {
     public void setLogRequest(boolean logRequest) {
         this.logRequest = logRequest;
     }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
 }
