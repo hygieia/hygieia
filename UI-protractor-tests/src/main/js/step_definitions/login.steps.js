@@ -54,4 +54,12 @@ module.exports = function loginSteps() {
         });
     });
 
+    this.Given(/^I login with valid credentials (.*) and (.*)/, (validUser, validPassword) => {
+        homePage.navigateToLoginPage();
+        loginPage.clickStandardLogin();
+        loginPage.setUsername(validUser);
+        loginPage.setPassword(validPassword);
+        loginPage.clickLoginButton();
+    });
+
 };

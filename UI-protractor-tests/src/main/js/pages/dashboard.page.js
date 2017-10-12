@@ -14,6 +14,9 @@ const CreateDashboardBubble = function() {
     po.businessService      =   element(by.name(`configurationItemBusServ`));
     po.businessApplication  =   element(by.name(`configurationItemBusApp`));
     po.createButton         =   element(by.cssContainingText(`.btn.btn-primary`, `Create`));
+    po.myDashboardList      =   element(by.id(`myDashboardsSection`)).all(by.className(`list-group-item`));
+    po.dashboardHeader      =   element(by.css(`#header h4`));
+    po.templateDropdown     =   element(by.css(`[name='selectedTemplate']`));
 
     po.setDashboardType = (dashboardType) => {
         po.dashboardType.sendKeys(dashboardType).then(() => {
@@ -24,10 +27,18 @@ const CreateDashboardBubble = function() {
     };
 
     po.setLayout = (layoutType) => {
-        element(by.cssContainingText(po.selectLayout, layoutType)).click().then(() => {
+        element(by.cssContainingText(`.form-group .radio-inline`, layoutType)).click().then(() => {
             log.info(`Set Layout Type : ${layoutType}`);
         }, (err) => {
             log.error(`Unable to set layout type. ERROR: ${err}`);
+        });
+    };
+
+    po.selectTemplate = (template) => {
+        po.templateDropdown.element(by.cssContainingText(`option`, template)).click().then(() => {
+            log.info(`Select Template : ${template}`);
+        }, (err) => {
+            log.error(`Unable to select template. ERROR: ${err}`);
         });
     };
 
@@ -60,6 +71,14 @@ const CreateDashboardBubble = function() {
             log.info(`Set Business Application : ${businessApplication}`);
         }, (err) => {
             log.error(`Unable to set business application. ERROR: ${err}`);
+        });
+    };
+
+    po.clickCreate = () => {
+        po.createButton.click().then(() => {
+            log.info(`Click Create Button`);
+        }, (err) => {
+            log.error(`Unable to click create button. ERROR: ${err}`);
         });
     };
 
