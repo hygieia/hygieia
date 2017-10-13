@@ -22,6 +22,11 @@
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
 
+        // pagination variables
+        $scope.currentPage = 0;
+        $scope.pageSize = 10;
+        ctrl.searchFilter="";
+
         // public methods
         ctrl.createDashboard = createDashboard;
         ctrl.deleteDashboard = deleteDashboard;
@@ -35,6 +40,8 @@
         ctrl.filterDashboards = filterDashboards;
         ctrl.editDashboard = editDashboard;
         ctrl.getInvalidAppOrCompError = getInvalidAppOrCompError;
+        ctrl.pageChangeHandler = pageChangeHandler;
+        ctrl.filterByTitle = filterByTitle;
 
         if (userService.isAdmin()) {
             ctrl.myadmin = true;
@@ -52,6 +59,11 @@
             ctrl.dashboardTypes = types;
 
             pullDashboards();
+            dashboardData.getPageSize().then(function (data) {
+                 if(data!=null && data>0){
+                    $scope.pageSize = data;
+                }
+            });
 
         })();
 
@@ -141,6 +153,31 @@
             }
 
             ctrl.dashboards = dashboards;
+            dashboardData.count().then(function (data) {
+                ctrl.totalItems = data;
+            });
+        }
+
+        function processDashboardFilterResponse(data) {
+            ctrl.dashboards = [];
+            var dashboards = [];
+            for (var x = 0; x < data.length; x++) {
+                var board = {
+                    id: data[x].id,
+                    name: dashboardService.getDashboardTitle(data[x]),
+                    isProduct: data[x].type && data[x].type.toLowerCase() === DashboardType.PRODUCT.toLowerCase()
+                };
+                if(board.isProduct) {
+                    //console.log(board);
+                }
+                dashboards.push(board);
+            }
+            ctrl.dashboards = dashboards;
+            if(ctrl.searchFilter==""){
+                dashboardData.count().then(function (data) {
+                    ctrl.totalItems = data;
+                });
+            }
         }
 
         function processDashboardError(data) {
@@ -220,10 +257,37 @@
         }
         function pullDashboards(){
             // request dashboards
-            dashboardData.search().then(processDashboardResponse, processDashboardError);
+            dashboardData.searchByPage({"search": '', "size": $scope.pageSize, "page": 0}).then(processDashboardResponse, processDashboardError);
 
             // request my dashboards
             dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
+
+            dashboardData.count().then(function (data) {
+                ctrl.totalItems = data;
+            });
+        }
+
+        function pageChangeHandler(pageNumber){
+            if(ctrl.searchFilter==""){
+                dashboardData.searchByPage({"search": '', "size": $scope.pageSize, "page": pageNumber-1}).then(processDashboardResponse, processDashboardError);
+            }else{
+                dashboardData.filterByTitle({"search": ctrl.searchFilter, "size": $scope.pageSize, "page": pageNumber-1}).then(processDashboardFilterResponse, processDashboardError);
+            }
+            $scope.currentPage = pageNumber;
+        }
+
+        function filterByTitle(title){
+            $scope.currentPage = 0;
+            ctrl.searchFilter = title;
+            if(title==""){
+                dashboardData.searchByPage({"search": '', "size": $scope.pageSize, "page": 0}).then(processDashboardResponse, processDashboardError);
+            }else{
+                dashboardData.filterCount(title).then(function (data) {
+                    var response = data;
+                    ctrl.totalItems = data;
+                });
+                dashboardData.filterByTitle({"search": title, "size": $scope.pageSize, "page": 0}).then(processDashboardFilterResponse, processDashboardError);
+            }
         }
     }
 
