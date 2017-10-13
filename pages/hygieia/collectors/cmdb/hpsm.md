@@ -1,82 +1,105 @@
 ---
-title: Hygieia CMDB Collector - HPSM
+title: HPSM Collector
 tags:
 keywords:
 summary:
 sidebar: hygieia_sidebar
 permalink: hpsm.html
 ---
+Configure the HPSM Collector to display and monitor information (related to configuration management) on the Hygieia Dashboard, from HP Service Manager. Hygieia uses Spring Boot to package the collector as an executable JAR file with dependencies.
 
-# Hygieia CMDB Collectors / HPSM
+### Setup Instructions
 
-This project uses Spring Boot to package the collector as an executable JAR with dependencies.
+To configure the HPSM Collector, execute the following steps:
 
-## Building and Deploying
+*   **Step 1: Change Directory**
 
-To package the collector into an executable JAR file, run:
+Change the current working directory to the `hpsm` directory of your Hygieia source code installation.
+
+For example, in the Windows command prompt, run the following command:
+
+```
+cd C:\Users\[username]\hygieia\collectors\scm\hpsm
+```
+
+*   **Step 2: Run Maven Build**
+
+Run the maven build to package the collector into an executable JAR file:
+
 ```bash
 mvn install
 ```
 
-Copy this file to your server and launch it using:
+The output file `hpsm-collector.jar` is generated in the `hpsm\target` folder.
+
+*   **Step 3: Set Parameters in Application Properties File**
+
+Set the configurable parameters in the `application.properties` file to connect to the Dashboard MongoDB database instance, including properties required by the HPSM Collector.
+
+To configure parameters for the HPSM Collector, refer to the sample [application.properties](#sample-application-properties-file) file.
+
+For information about sourcing the application properties file, refer to the [Spring Boot Documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
+
+*   **Step 4: Deploy the Executable File**
+
+To deploy the `hpsm-collector.jar` file, change directory to `hpsm\target`, and then execute the following from the command prompt:
+
+```bash
+java -jar hpsm-collector.jar --spring.config.name=hpsm --spring.config.location=[path to application.properties file]
 ```
-java -JAR hpsm-collector.jar
-```
 
-## application.properties
+### Sample Application Properties File
 
-You will need to provide an **application.properties** file that contains information about how to connect to the Dashboard MongoDB database instance, as well as properties the HPSM collector requires. See the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files) for information about sourcing this properties file.
-
-### Sample application.properties file
+The sample `application.properties` file lists parameters with sample values to configure the HPSM Collector. Set the parameters based on your environment setup.
 
 ```properties
-# Database Name
-dbname=dashboard
+		# Database Name
+		dbname=dashboarddb
 
-# Database HostName - default is localhost
-dbhost=localhost
+		# Database HostName - default is localhost
+		dbhost=localhost
 
-# Database Port - default is 27017
-dbport=27017
+		# Database Port - default is 27017
+		dbport=27017
 
-# MongoDB replicaset
-dbreplicaset=[false if you are not using MongoDB replicaset]
-dbhostport=[host1:port1,host2:port2,host3:port3]
+		# MongoDB replicaset
+		dbreplicaset=[false if you are not using MongoDB replicaset]
+		dbhostport=[host1:port1,host2:port2,host3:port3]
 
-# Database Username - default is blank
-dbusername=db
+		# Database Username - default is blank
+		dbusername=dashboarduser
 
-# Database Password - default is blank
-dbpassword=dbpass
+		# Database Password - default is blank
+		dbpassword=dbpassword
 
-# Logging File location
-logging.file=./logs/hpsm.log
+		# Logging File location
+		logging.file=./logs/hpsm.log
 
-#Collector schedule (required)
-hpsm.cron=* * 23 * * *
+		#Collector schedule (required)
+		hpsm.cron=* * 23 * * *
 
-#Api Details
-hpsm.server=[Your server URL]
-hpsm.port=[Your server port]
-hpsm.protocol=http
-hpsm.resource=SM/7/ws/
-hpsm.contentType=text/xml
-hpsm.charset=UTF-8
+		#API Details
+		hpsm.server=[Your server URL]
+		hpsm.port=[Your server port]
+		hpsm.protocol=http
+		hpsm.resource=SM/7/ws/
+		hpsm.contentType=text/xml
+		hpsm.charset=UTF-8
 
-#Api User/ Pass
-hpsm.user=[Your WSDL Username]
-hpsm.pass=[You WSDL Password]
+		#API Username and Password
+		hpsm.user=[Your WSDL Username]
+		hpsm.pass=[You WSDL Password]
 
-#Api App Query settings
-hpsm.appSubType=[Your APP configuration Subtype]
-hpsm.appType= [Your APP configuration Type. Leave empty if not required]
-hpsm.appStatus=[Status of APPs]
+		#API App Query settings
+		hpsm.appSubType=[Your APP configuration Subtype]
+		hpsm.appType= [Your APP configuration Type. Leave empty if not required]
+		hpsm.appStatus=[Status of APPs]
 
-#Api Component Query settings
-hpsm.compSubType=[Your Component Subtype]
-hpsm.compType=[Your Component Type]
+		#API Component Query settings
+		hpsm.compSubType=[Your Component Subtype]
+		hpsm.compType=[Your Component Type]
 
-#API app details
-hpsm.detailsRequestType=RetrieveDeviceListRequest
-hpsm.detailsSoapAction=RetrieveList
+		#API App details
+		hpsm.detailsRequestType=RetrieveDeviceListRequest
+		hpsm.detailsSoapAction=RetrieveList
 ```

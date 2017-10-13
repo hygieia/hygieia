@@ -46,6 +46,9 @@ entries:
     - title: API Configuration
       url: /api.html
       output: web, pdf
+    - title: Audit API Configuration
+      url: /api-audit.html
+      output: web, pdf
     - title: UI Configuration
       url: /ui.html
       output: web, pdf
@@ -111,57 +114,3 @@ entries:
 #           - title: Which Plugin Should I Use?
 #             external_url: http://docs.whitesourcesoftware.com/pages/viewpage.action?pageId=16908870
 #             output: web, pdf
-#           - title: Maven Plugin
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/Maven+plugin
-#             output: web, pdf
-#           - title: Ant Plugin
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/Ant+plugin
-#             output: web, pdf
-#           - title: NAnt Plugin
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/NAnt+plugin
-#             output: web, pdf
-#           - title: File System Agent
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/File+System+Agent
-#             output: web, pdf
-#           - title: Python Plugin
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/Python+plugin
-#             output: web, pdf
-#           - title: Gradle Plugin
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/Gradle+plugin
-#             output: web, pdf
-#           - title: NPM Plugin
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/NPM+Plugin
-#             output: web, pdf
-#           - title: Bundler Plugin
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/Bundler+Plugin
-#             output: web, pdf
-#           - title: Grunt Plugin
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/Grunt+Plugin
-#             output: web, pdf
-#           - title: Bower Plugin
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/Bower+Plugin
-#             output: web, pdf
-#           - title: Docker Agent
-#             external_url: http://docs.whitesourcesoftware.com/display/serviceDocs/Docker+Agent
-#             output: web, pdf
-
-
-  # - title: Tag archives
-  #   output: web
-  #   folderitems:
-  #   - title: Tag archives overview
-  #     url: /tag_archives_overview.html
-  #     output: web
-  #     subfolders:
-  #     - title: Tag archive pages
-  #       output: web
-  #       subfolderitems:
-  #       - title: Getting Started
-  #         url: /tag_getting_started.html
-  #         output: web
-  #       - title: News
-  #         url: /tag_news.html
-  #         output: web
-  #       - title: Troubleshooting pages
-  #         url: /tag_troubleshooting.html
-  #         output: web
