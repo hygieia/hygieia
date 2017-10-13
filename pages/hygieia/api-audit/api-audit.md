@@ -1,126 +1,147 @@
+---
+title: All About Hygieia audit API
+tags:
+keywords:
+summary: Learn how to install and configure Hygieia audit API
+sidebar: hygieia_sidebar
+permalink: api-audit.html
+---
 [![Docker Stars](https://img.shields.io/docker/stars/capitalone/hygieia-api.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
 [![Docker Stars](https://img.shields.io/docker/pulls/capitalone/hygieia-api.svg)](https://hub.docker.com/r/capitalone/hygieia-api/)
 
-# Hygieia℠ Audit API
+Hygieia audit API is a collection of API endpoints that serve to audit CICD data gathered by Hygieia collectors. The audit API provides endpoints to audit individual widgets on the Dashboard. In addition to these endpoints, Hygieia also provides a dashboard-level audit API. 
 
+The audit API logic adds various audit flags depending on the data. For a  detailed listing of the audit flags, see the audit-api module's [model package](https://github.com/capitalone/Hygieia/blob/master/api-audit/src/main/java/com/capitalone/dashboard/model/AuditStatus.java).
 
+For detailed information on audit APIs, see the Swagger documentation. 
 
-This project uses Spring Boot to package the api as an executable JAR with dependencies.
+Hygieia project uses Spring Boot to package the API as an executable JAR file with dependencies.
 
+## Setup Instructions
 
-## Building
+To configure the Hygieia audit API layer, execute the following steps:
 
-Run `mvn install` to package the collector into an executable JAR file.
+*	**Step 1: Run Maven Build**
 
+	To package the audit API source code into an executable JAR file, run the maven build from the `\Hygieia` directory of your source code installation:
 
-## API Properties file
+	```bash
+	mvn install
+	```
 
-The API layer needs a property file in following format:
+	The output file `apiaudit.jar` is generated in the `\api-audit\target` folder.
+
+*	**Step 2: Set Parameters in the API Properties File**
+
+	Set the configurable parameters in the `dashboard.properties` file to connect to the Dashboard MongoDB database instance, including properties required by the audit API module. To configure the parameters, refer to the [API properties](#api-properties-file) file.
+
+	For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
+
+*	**Step 3: Run the API**
+
+	To run the executable file, change directory to 'api-audit\target' and then execute the following command from the command prompt:
+
+	```bash
+	java -jar apiaudit.jar --spring.config.location=C:\[path to]\Hygieia\api-audit\api-audit.properties
+	```
+	Verify API access from the web browser using the url: http://localhost:8080/apiaudit/ping.
+
+	By default, the server starts at port `8080` and uses the context path `/api-audit`. You can configure these values in the `api-audit.properties` file for the following properties:
+
+	```properties
+	server.contextPath=/api-audit
+	server.port=8080
+	```
+
+	**Note**: The 'jasypt.encryptor.password' system property is used to decrypt the database password. For more information, refer to [Encrypted Properties](https://github.com/capitalone/Hygieia/blob/gh-pages/pages/hygieia/api/api.md#encrypted-properties)
+
+## API Properties File
+
+The sample `api-audit.properties` file lists parameters with sample values to configure the audit API layer. Set the parameters based on your environment setup.
 
 ```properties
-# dashboard.properties
-dbname=dashboard
-dbusername=[MogoDb Database Username, defaults to empty]
-dbpassword=[MongoDb Database Password, defaults to empty]
-dbhost=[Host on which MongoDb is running, defaults to localhost]
-dbport=[Port on which MongoDb is listening, defaults to 27017]
-dbreplicaset=[false if you are not using MongoDB replicaset]
+# api-audit.properties
+dbname=dashboarddb
+dbusername=dashboarduser[MogoDb Database Username, defaults to empty]
+dbpassword=dbpassword[MongoDB Database Password, defaults to empty]
+dbhost=[Host on which MongoDB is running, defaults to localhost]
+dbport=[Port on which MongoDB is listening, defaults to 27017]
+dbreplicaset=[False if you are not using MongoDB replicaset]
 dbhostport=[host1:port1,host2:port2,host3:port3]
-server.contextPath=[Web Context path if any]
+server.contextPath=[Web Context path, if any]
 server.port=[Web server port - default is 8080]
 logRequest=false
 logSplunkRequest=false
-
 ```
 
-All the above values are optional. Even without the property file you must be able to run the api (assuming you have mongodb installed with no authorization).
+All the above values are optional. If you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
 
-**Note:** When `dbusername` is not present or the value is empty then it skips the mongodb authorization part.
+**Note**: If the value of `dbusername` is empty, then system skips MongoDB authorization.
 
+## Docker Image for API
 
-## Run the API
+To configure the Hygieia audit API layer, execute the following steps:
 
-After you have build your project, from the target folder run the below command,
+*	**Step 1: Run Maven Build**
 
-```bash
-java -jar api-audit.jar --spring.config.location=api-audit.properties 
-```
+	To package the audit API source code into an executable JAR file, run the maven build from the `\Hygieia` directory of your source code installation:
 
-By default the server starts at port `8080` and uses the context path `/api`.
-These values are configurable by using the below 2 properties in `dashboard.properties`.
-The jasypt.encryptor.password system property is used to decrypt the database password. For more information, refer to encrypted properties.
+	```bash
+	mvn clean package -pl api-audit docker:build
+	```
+	
+*	**Step 2: Start MongoDB Docker Container**
 
-```properties
-server.contextPath=/api-audit
-server.port=8090
-```
+	Execute the following commands to start MongoDB, switch to db dashbaord, and then add dashboard user:
 
-For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
+	``` bash
+	docker run -d -p 27017:27017 --name mongodb -v ./mongo:/data/db mongo:latest  mongod --smallfiles
 
-## Docker image
+	# Connect to MongoDB
+	docker exec -t -i mongodb bash
 
+	# Switch to db dashbaord
+	use dashboarddb
 
-### Create
+	# Create dashboard user
+	db.createUser({user: "dashoarduser", pwd: "dbpassword", roles: [{role: "readWrite", db: "dashboarddb"}]})
 
-```bash
-# from top-level project
-mvn clean package -pl api docker:build
-```
+	# To execute from CLI:
 
-### Run
+	mongo 192.168.64.2/admin --eval 'db.getSiblingDB("dashboarddb").createUser({user: "dashboarduser", pwd: "dbpassword", roles: [{role: "readWrite", db: "dashboarddb"}]})'
+	```
 
-First start Mongodb
+	For more information on creating Docker image for MongoDB, refer to the [Docker Hub Document](https://hub.docker.com/r/library/mongo/).
 
-For example:
-```
-docker run -d -p 27017:27017 --name mongodb -v ./mongo:/data/db mongo:latest  mongod --smallfiles
-```
+*   **Step 3: Set Environment Variables**
 
+	Specify the Environment Variables for dashboard properties:
 
-Create User:
-```
-use db
-db.createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})
-```
-or from CLI:
-```bash
-mongo 192.168.64.2/admin --eval 'db.getSiblingDB("db").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
-```
+	```
+	docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -i hygieia-apiaudit:latest
+	```
 
-More details: <https://hub.docker.com/r/library/mongo/>
+	To define more properties, refer to the [Dockerfile](https://github.com/capitalone/Hygieia/blob/master/api-audit/docker/Dockerfile).
 
+*	**Step 4: Run the API**
 
-Then running the API from docker is easy:
+	To run the API from Docker, execute the following command from the command prompt:
 
-```
-docker run -t -p 8080:8080 --link mongodb:mongo -v ./logs:/hygieia/logs -i hygieia-api:latest
-```
+	```
+	docker run -t -p 8080:8080 --link mongodb:mongo -v ./logs:/hygieia/logs -i hygieia-apiaudit:latest
+	```
+	To verify audit API access from the web browser, take the port mapping and the IP for your docker-machine <env> ip and then verify using url: `http://<docker-machine env ip>:<docker port for hygieia_api>/apiaudit/dashboard`
 
-### Environment variables
+	To list the running containers in the local repository, execute the following command:
 
-Environment variables for dashboard properties can be specified like:
+	```bash
+	docker ps
+	```
 
-```
-docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -i hygieia-api:latest
-```
+## Create New API
 
-For more properties see the [Dockerfile](Dockerfile)
+1. Create a new rest controller or add to an existing controller.
+2. Create a new service interface and new service implementation.
+3. Add new request and response classes.
 
-### List containers
-
-View port by running
-```bash
-docker ps
-```
-
-### API Access
-
-Take the port mapping and the IP for your docker-machine <env> ip and verify by ```http://<docker-machine env ip>:<docker port for hygieia_api>/api/dashboard```
-
-
-## Create new API
-1. Create a new rest controller or add to an existing controller
-2. Create a new service interface and new service implementation. 
-3. Add new request and response classes 
-
-Note: For common data models used in the audit api's, look into core module's model package. 
+**Note**: For common data models used in the audit APIs, refer the core module's model package.
