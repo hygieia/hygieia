@@ -107,7 +107,7 @@
                                 <div class="row">
                                   <div class="col-xs-5">
                                     <h3>Users</h3>
-                                    <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch">
+                                    <input class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch">
 
                                     <div class="dash-modal-row delete-dashboard-row clearfix"
                                         ng-repeat="user in users | filter:{username:userSearch, authorities:'!ROLE_ADMIN'} | orderBy:'username'">
@@ -211,8 +211,10 @@
                                         Metrics
                                     </div>
                                     <div class="dash-modal-row delete-dashboard-row clearfix clickable"
-                                         ng-repeat="metric in ctrl.metricData | orderBy:'displayName'" ng-click="switchMetric(metric)">
-                                        <div title="{{metric.displayName}}" class="btn-block">{{metric.displayName |  trunText:30}}
+                                         ng-repeat="metric in ctrl.metricData | orderBy:'displayName'" ng-click="switchMetric(metric)"
+                                         ng-class="{'selected': metric.metricName === selectedMetric.metricName}">
+                                        <div title="{{metric.displayName}}" class="btn-block metric-name">{{metric.displayName |  trunText:30}}
+                                            <input type="checkbox" ng-model="metric.enabled" class="pull-right checkbox">
                                         </div>
                                     </div>
                                 </div>
