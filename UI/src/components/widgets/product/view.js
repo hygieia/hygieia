@@ -121,7 +121,7 @@
                 displaySymbol: "%"
             },
             {
-                metricName: "FortifyViolations",
+                metricName: "securityIssues",
                 displayName: "Fortify Violations",
                 category: "build",
                 scoreRanges: [{ rangeMin: 0, rangeMax: 0, score: 20 },
