@@ -35,8 +35,40 @@
         ctrl.editTemplate = editTemplate;
         ctrl.deleteToken = deleteToken;
         ctrl.editToken = editToken;
+        ctrl.deleteMetricRange = deleteMetricRange;
+        ctrl.addMetricRange = addMetricRange;
 
         $scope.tab = "dashboards";
+
+        ctrl.metricData = [
+            {
+                metricName: "codeCoverage",
+                displayName: "Code Coverage",
+                scoringRanges: [{ rangeMin: 0, rangeMax: 50, score: 0 },
+                    { rangeMin: 51, rangeMax: 60, score: 4 },
+                    { rangeMin: 61, rangeMax: 70, score: 8 },
+                    { rangeMin: 71, rangeMax: 80, score: 12 },
+                    { rangeMin: 81, rangeMax: 90, score: 16 },
+                    { rangeMin: 91, rangeMax: 95, score: 18 },
+                    { rangeMin: 96, rangeMax: 100, score: 20 }],
+                enabled: false
+            },
+            {
+                metricName: "unitTests",
+                displayName: "Unit Test Success",
+                scoringRanges: [{ rangeMin: 0, rangeMax: 99, score: 0 },
+                    { rangeMin: 100, rangeMax: 100, score: 20 }],
+                enabled: false
+            },
+            {
+                metricName: "buildSuccess",
+                displayName: "Build Success",
+                scoringRanges: [],
+                enabled: false
+            }
+        ];
+
+        $scope.selectedMetric = ctrl.metricData[0];
 
         // list of available themes. Must be updated manually
         ctrl.themes = [
@@ -282,6 +314,30 @@
             });
         }
 
+        function deleteMetricRange(sel) {
+            var idx = -1;
+            $scope.selectedMetric.scoringRanges.forEach(function(range, i) {
+                if (sel.rangeMin === range.rangeMin && sel.rangeMax == range.rangeMax && sel.score === range.score)
+                    idx = i;
+            });
+
+            $scope.selectedMetric.scoringRanges.splice(idx, 1);
+
+            ctrl.metricData.forEach(function(metric, i) {
+               if (metric.metricName === $scope.selectedMetric.metricName)
+                   ctrl.metricData[i] = $scope.selectedMetric;
+            });
+        }
+
+        function addMetricRange() {
+            ctrl.metricData.forEach(function(metric, i) {
+                if (metric.metricName === $scope.selectedMetric.metricName) {
+                    ctrl.metricData[i].scoringRanges.push({rangeMin: 0, rangeMax: 0, score: 0});
+                    $scope.selectedMetric = ctrl.metricData[i];
+                }
+            });
+        }
+
         $scope.navigateToTab = function (tab) {
             $scope.tab = tab;
         }
@@ -317,5 +373,11 @@
             );
         }
 
+        $scope.switchMetric = function(metric) {
+            ctrl.metricData.forEach(function(obj) {
+                if (obj.metricName === metric.metricName)
+                    $scope.selectedMetric = metric;
+            });
+        }
     }
 })();

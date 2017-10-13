@@ -523,6 +523,10 @@ body {
         color: @state-success-text !important;
     }
 
+    .text-info {
+        color: @state-info-text !important;
+    }
+
     .fa, .glyphicon {
         color: @dash-modal-icon-text;
     }
@@ -755,6 +759,23 @@ tr.dash-row > td {
         position: absolute;
         top: 5rem;
         right: 2rem;
+    }
+
+    .range-edit {
+        label {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        input {
+            width: 40px;
+            text-align: center;
+        }
+    }
+
+    .range-buttons button {
+        padding-right: 10px;
+        padding-left: 10px;
     }
 }
 

@@ -5,10 +5,10 @@
 @import 'environment-commits/environment-commits';
 @import 'quality-details/quality-details.less';
 
+@ct-series-colors: lightgreen, deepskyblue, pink, lightyellow;
+
 #product-dashboard {
     margin-top: -2rem;
-
-
 
     .quality-cell-style(@dash-dashboard-text-hover, @dash-dashboard-text-light);
 
@@ -399,6 +399,127 @@
                 }
             }
         }
+    }
+
+    #gamification-view {
+        .gamification-leaderboard {
+          margin-top: 70px;
+          ul {
+            list-style-type: none;
+            margin-left: 200px;
+          }
+          .ct-legend {
+            position: relative;
+            z-index: 10;
+
+            li {
+              position: relative;
+              padding-left: 23px;
+              margin-right: 30px;
+              margin-bottom: 3px;
+              cursor: pointer;
+              display: inline-block;
+            }
+
+            li:before {
+              width: 12px;
+              height: 12px;
+              position: absolute;
+              left: 0;
+              content: '';
+              border: 3px solid transparent;
+              border-radius: 2px;
+            }
+
+            li.inactive:before {
+              background: transparent;
+            }
+
+            &.ct-legend-inside {
+              position: absolute;
+              top: 0;
+              right: 0;
+            }
+            .ct-series-0:before {
+              background-color: lightgreen;
+              border-color: lightgreen;
+            }
+            .ct-series-1:before {
+              background-color: deepskyblue;
+              border-color: deepskyblue
+            }
+            .ct-series-2:before {
+              background-color: pink;
+              border-color: pink;
+            }
+            .ct-series-3:before {
+              background-color: lightyellow;
+              border-color: lightyellow;
+            }
+          }
+
+          .ct-bar {
+            show-grid: false;
+            show-grid-background: false;
+            stroke-width: 30px;
+          }
+          .ct-series-a .ct-bar {
+            stroke: lightgreen;
+          }
+          .ct-series-b .ct-bar {
+            stroke: deepskyblue;
+          }
+          .ct-series-c .ct-bar {
+            stroke: pink;
+          }
+          .ct-series-d .ct-bar {
+            stroke: lightyellow;
+          }
+        }
+        .gamification-table {
+            margin-top: 100px;
+            width: 60%;
+            margin-left: 200px;
+            margin-right: auto;
+            table, th, td {
+              border: 1px solid white;
+              text-align: center;
+              padding: 10px;
+            }
+            th {
+              background-color: #167F92;
+              opacity: 5;
+            }
+            .team-name {
+              text-align: left;
+              font-weight: bold;
+            }
+        }
+    }
+}
+
+#scoreboard-details {
+    .scoreboard-table {
+        width: 25%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 50px;
+    }
+    .scoreboard-range-table {
+      width: 30%;
+      table, th, td {
+        border: 1px solid black;
+        text-align: center;
+      }
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 30px;
+    }
+    .modal-label {
+      font-weight: 600;
+      width: 100%;
+      text-align: center;
+      padding-bottom: 20px;
     }
 }
 

@@ -144,7 +144,7 @@
                     totalSuccessfulBuilds = _(rows).filter({success:true}).value().length,
                     totalBuilds = rows.length,
                     successRateAverage = totalBuilds ? totalSuccessfulBuilds / totalBuilds : 0;
-
+                console.log("Total builds : ", totalBuilds, " Total Successful builds : ", totalSuccessfulBuilds);
                 var buildData = {
                     data: {
                         buildSuccess: successRateData,
@@ -188,7 +188,6 @@
                         metric: buildFixRateMetric
                     };
                 }
-
                 // use $timeout so that it will apply on the next digest
                 $timeout(function() {
                     // update data for the UI

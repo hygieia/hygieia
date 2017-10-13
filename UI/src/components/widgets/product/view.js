@@ -77,9 +77,152 @@
             ctrl.configuredTeams = widgetOptions.teams;
         }
 
+        // tabs to switch between product dashboard and gamification dashboard
+        ctrl.tabs = [
+            { name: "Dashboard" },
+            { name: "Gamification" }
+        ];
+
         ctrl.teamCrlStages = {};
         ctrl.prodStages={};
         ctrl.orderedStages = {};
+        ctrl.scoreBoardData = [];
+        ctrl.widgetView = ctrl.tabs[0].name;
+        ctrl.scoreBoardMetrics = [
+            {
+                metricName: "codeCoverage",
+                displayName: "Code Coverage",
+                scoreRanges: [{ rangeMin: 0, rangeMax: 50, score: 0 },
+                    { rangeMin: 51, rangeMax: 60, score: 4 },
+                    { rangeMin: 61, rangeMax: 70, score: 8 },
+                    { rangeMin: 71, rangeMax: 80, score: 12 },
+                    { rangeMin: 81, rangeMax: 90, score: 16 },
+                    { rangeMin: 91, rangeMax: 95, score: 18 },
+                    { rangeMin: 96, rangeMax: 100, score: 20 }],
+                displaySymbol: "%"
+            },
+            {
+                metricName: "unitTests",
+                displayName: "Unit Test Success",
+                scoreRanges: [{ rangeMin: 0, rangeMax: 99, score: 0 },
+                    { rangeMin: 100, rangeMax: 100, score: 20 }],
+                displaySymbol: "%"
+            },
+            {
+                metricName: "buildSuccess",
+                displayName: "Build Success",
+                scoreRanges: [{ rangeMin: 0, rangeMax: 10, score: 0 },
+                    { rangeMin: 11, rangeMax: 60, score: 4 },
+                    { rangeMin: 61, rangeMax: 70, score: 8 },
+                    { rangeMin: 71, rangeMax: 80, score: 12 },
+                    { rangeMin: 81, rangeMax: 90, score: 16 },
+                    { rangeMin: 91, rangeMax: 95, score: 18 },
+                    { rangeMin: 96, rangeMax: 100, score: 20 }],
+                displaySymbol: "%"
+            },
+            {
+                metricName: "securityIssues",
+                displayName: "Fortify Violations",
+                category: "build",
+                scoreRanges: [{ rangeMin: 0, rangeMax: 0, score: 20 },
+                    { rangeMin: 1, rangeMax: 100, score: 0 }]
+            },
+	    {
+                metricName: "codeIssues",
+                displayName: "Code Violations",
+                scoreRanges: [{ rangeMin: 0, rangeMax: 0, score: 20 },
+                    { rangeMin: 1, rangeMax: 10, score: 10 },
+                    { rangeMin: 11, rangeMax: 100, score: 0 }],
+                displaySymbol: ""
+            }
+        ];
+
+        // method to toggle tabs
+        function toggleView(index) {
+            ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
+            if (ctrl.tabs[index].name == "Gamification") {
+                ctrl.populateScoreboardData();
+                $scope.chartData = ctrl.getChartData();
+            }
+        }
+
+        function populateScoreboardData() {
+            var teamScoreBoardData = {};
+            console.log(ctrl.configuredTeams);
+            _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
+                teamScoreBoardData.collectorItemId = configuredTeam.collectorItemId;
+                teamScoreBoardData.name = configuredTeam.name;
+                teamScoreBoardData.data = [];
+                ctrl.scoreBoardMetrics.forEach(function(metric) {
+                    var teamScoreBoardDataElement = {
+                        metricName: metric.metricName,
+                        value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
+                        score: getScoreForMetric(metric.metricName, configuredTeam)
+                    };
+                    teamScoreBoardData.data.push(teamScoreBoardDataElement);
+                });
+                var totalScore = 0;
+                teamScoreBoardData.data.forEach(function(element) {
+                    if(element.score != -1) {
+                        totalScore += element.score
+                    }
+                });
+                teamScoreBoardData.totalScore = totalScore;
+                ctrl.scoreBoardData[i] = teamScoreBoardData;
+                teamScoreBoardData = {};
+            });
+            console.log("Scoreboard data :", ctrl.scoreBoardData);
+        }
+
+        function viewScoreDetails(teamScoreRecord, metricName) {
+            var metricScore = null;
+            var metricValue = null;
+            teamScoreRecord.data.forEach(function(element) {
+               if(element.metricName == metricName) {
+                   metricScore = element.score;
+                   metricValue = element.value;
+               }
+            });
+            $uibModal.open({
+                templateUrl: 'components/widgets/product/scoreboard/scoreboard-details.html',
+                controller: 'scoreBoardDetailsController',
+                controllerAs: 'ctrl',
+                size: 'lg',
+                resolve: {
+                    scoreBoardDetailsConfig: function() {
+                        return {
+                            teamName: teamScoreRecord.name,
+                            metricName: metricName,
+                            metricScore: metricScore,
+                            metricValue: metricValue,
+                            scoreBoardMetrics: ctrl.scoreBoardMetrics
+                        }
+                    }
+                }
+            });
+        }
+
+        function getScoreForMetric(metricName, configuredTeam) {
+            var score = 0;
+            if(configuredTeam.summary != undefined) {
+                ctrl.scoreBoardMetrics.forEach(function(scoreMetaData) {
+                if(scoreMetaData.metricName == metricName) {
+                    if(configuredTeam.summary[metricName] == undefined) {
+                        score = -1;
+                    } else {
+                        var metricValue = Math.round(configuredTeam.summary[metricName].number);
+                        scoreMetaData.scoreRanges.forEach(function(rangeObj) {
+                            if (metricValue >= rangeObj.rangeMin && metricValue <= rangeObj.rangeMax) {
+                                score = rangeObj.score;
+                                return score;
+                            }
+                        });
+                    }
+                }
+            });
+            }
+            return score;
+        }
 
         // pull all the stages from pipeline. Create a map for all ctrl stages for each team.
         ctrl.load = function() {
@@ -130,10 +273,13 @@
         ctrl.viewQualityDetails = viewQualityDetails;
         ctrl.viewGatesDetails = viewGatesDetails;
         ctrl.initPerc = initPerc;
+        ctrl.toggleView = toggleView;
+        ctrl.populateScoreboardData = populateScoreboardData;
+        ctrl.viewScoreDetails = viewScoreDetails;
+        ctrl.getGamificationMetricDisplayNames = getGamificationMetricDisplayNames;
 
         // public data methods
         ctrl.teamStageHasCommits = teamStageHasCommits;
-
 
         //region public methods
         function processLoad() {
@@ -470,7 +616,6 @@
                         if (team.collectorItemId == board.id) {
                             dashboardData.detail(board.options.dashboardId).then(function(result) {
                                 teamDashboardDetails[team.collectorItemId] = result;
-
                                 getTeamComponentData(team.collectorItemId);
                             });
                         }
@@ -560,5 +705,112 @@
             });
         }
         //endregion
+
+        ctrl.getOffset = function getAxisOffset() {
+            var offset = 0;
+            if (!ctrl.configuredTeams)
+                return 0;
+
+            ctrl.configuredTeams.forEach(function(configuredTeam, i) {
+                if (offset < configuredTeam.name.length)
+                    offset = configuredTeam.name.length;
+            });
+            return offset*10;
+        };
+
+        $scope.chartOptions = {
+            plugins: [
+                // Chartist.plugins.ctBarLabels({
+                //     labelInterpolationFnc: function(text, value) {
+                //         return value > 0 ? value : "";
+                //     }
+                // }),
+                Chartist.plugins.legend({
+                    legendNames: ctrl.getGamificationMetricDisplayNames(),
+                    position: 'bottom'
+                }),
+                Chartist.plugins.tooltip()
+            ],
+            stackBars: true,
+            centerLabels: true,
+            horizontalBars: true,
+            height: 220,
+            axisX: {
+                showLabel: false,
+                showGrid: false,
+                scaleMinSpace: 20,
+                low: 0,
+                high: 100,
+                onlyInteger: true
+            },
+            axisY: {
+                showGrid: false,
+                scaleMinSpace: 20,
+                offset: ctrl.getOffset(),
+                labeloffset: {
+                    x: 0,
+                    y: 10
+                }
+            }
+        };
+
+        function getGamificationMetricDisplayNames() {
+            var metricDisplayNames = [];
+            ctrl.scoreBoardMetrics.forEach(function(metric) {
+                metricDisplayNames.push(metric.displayName);
+            });
+            return metricDisplayNames;
+        }
+
+        ctrl.getChartData = function() {
+            var labels = [];
+            var scores = [];
+
+            var tempObj = {};
+
+            ctrl.scoreBoardData.forEach(function(teamInfo) {
+                var team = {};
+                team.name = teamInfo.name;
+                team.scores = [];
+                teamInfo.data.forEach(function(metric) {
+                    metric.score !== -1 ? team.scores.push(metric.score) : team.scores.push(0);
+                });
+
+                if (!tempObj[teamInfo.totalScore])
+                    tempObj[teamInfo.totalScore] = [];
+
+                tempObj[teamInfo.totalScore].push(team);
+            });
+
+            Object.keys(tempObj)
+                .sort()
+                .forEach(function(key) {
+                    tempObj[key].forEach(function(team, j) {
+                        labels.push(team.name);
+                        team.scores.forEach(function(score, i) {
+                            if (!scores[i])
+                                scores[i] = [];
+
+                            scores[i].push(score);
+                        });
+                    });
+                });
+
+            var series = [];
+            scores.forEach(function(scoreArr, i) {
+               var scoreElem = {
+                   name: ctrl.scoreBoardMetrics[i].displayName,
+                   data: scoreArr
+               }
+
+               series.push(scoreElem);
+            });
+
+            return {
+                labels: labels,
+                series: series
+            };
+        };
+
     }
 })();

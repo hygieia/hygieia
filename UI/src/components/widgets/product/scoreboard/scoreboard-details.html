@@ -1,0 +1,23 @@
+<widget-modal widget-modal-title="{{displayName}} details for {{teamName}}" class="edit-team-modal" widget-modal-close="true" id="scoreboard-details">
+    <div ng-if="ctrl.isScoreDefined() == true">
+        <label class="modal-label">Your {{displayName}} is {{value}}{{displaySymbol}} which gives you the score {{score}} based on the below scoring mechanism </label>
+
+        <label class="modal-label">Scoring Details</label>
+
+        <table class="scoreboard-range-table">
+            <tr>
+                <th>Range</th>
+                <th>Score</th>
+            </tr>
+            <tr ng-repeat="rangeData in rangeMatrix">
+                <td>{{rangeData.range}}</td>
+                <td>{{rangeData.score}}</td>
+            </tr>
+        </table>
+
+        <label class="modal-label">*Scoring is performed on rounded values</label>
+    </div>
+    <div ng-if="ctrl.isScoreDefined() == false">
+        <label class="modal-label">Metric not defined to calculate the score</label>
+    </div>
+</widget-modal>

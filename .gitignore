@@ -35,6 +35,8 @@ logs
 .pmdruleset.xml
 .classpath
 .README.md.html
+nohup.out
+package-lock.json
 
 # Eclipse specific ignore settings
 .settings/
