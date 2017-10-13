@@ -102,6 +102,9 @@ monitor.proxy.type=[http|socks|direct]
 monitor.proxy.port=[port enabled on proxy server]
 monitor.proxy.username=[proxy username]
 monitor.proxy.password=[proxy password]
+
+# This will be page size for pagination on Hygieia landing page
+pageSize=[Integer value]
 ```
 
 All the above values are optional. If you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
