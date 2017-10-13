@@ -210,14 +210,14 @@
 
     <div id="gamification-view" ng-if="ctrl.widgetView == 'Gamification'">
         <div class="gamification-leaderboard">
-            <chartist class="ct-chart ct-major-twelfth"
+            <chartist class="ct-chart"
                       chartist-chart-type="Bar"
                       chartist-data="chartData"
                       chartist-chart-options="chartOptions"
             ></chartist>
         </div>
 
-        <table class="gamification-table" style="overflow-x:auto;">
+        <table class="gamification-table" >
             <tr>
                 <th>Team Name</th>
                 <th ng-repeat="metric in ctrl.scoreBoardMetrics">{{ metric.displayName }}</th>

@@ -1,5 +1,7 @@
 @import 'chartist-settings';
 
+@ct-legend-colors: lightgreen, deepskyblue, pink, lightyellow;
+
 .ct-series(@len) when (@len > 0) {
     @tmp: extract(@ct-series-names, @len);
     @color: extract(@ct-series-colors, @len);
