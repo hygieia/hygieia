@@ -4,6 +4,8 @@ import com.capitalone.dashboard.model.Component;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -34,5 +36,12 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 	Iterable<Dashboard> findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(ObjectId appObjectId, ObjectId compObjectId);
 
 	Dashboard findByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(ObjectId appObjectId, ObjectId compObjectId);
+	Page<Dashboard> findAll(Pageable page);
+
+	Page<Dashboard> findAllByTitleContainingIgnoreCase(String name, Pageable pageable);
+
+	List<Dashboard> findAllByTitleContainingIgnoreCase(String name);
+
+	long count();
 
 }
