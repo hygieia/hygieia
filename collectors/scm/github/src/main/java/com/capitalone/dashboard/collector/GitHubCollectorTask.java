@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -191,7 +192,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     repo.setLastUpdated(System.currentTimeMillis());
                 } catch (HttpStatusCodeException hc) {
                     LOG.error("Error fetching commits for:" + repo.getRepoUrl(), hc);
-                    if (!isRateLimitError(hc)) {
+                    if (! (isRateLimitError(hc) || hc.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) ) {
                         CollectionError error = new CollectionError(hc.getStatusCode().toString(), hc.getMessage());
                         repo.getErrors().add(error);
                     }
