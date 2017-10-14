@@ -1,5 +1,6 @@
 const format = require('util').format;
 const log = require('../util/logger');
+const waitFor = require('../util/waitFor');
 const HomePage = function() {
 
     const po = this;
@@ -8,7 +9,7 @@ const HomePage = function() {
     po.welcomeHeader    =   element(by.cssContainingText('.welcome-header', 'Welcome'));
     po.createDashboardButton    =   element(by.className(`create-dashboard-button`));
     po.dashboardSearch  =   element(by.id(`filter`));
-    po.myDashboards     =   element(by.id(`myDashboardsSection`)).all(by.className(`list-group-item`));
+    po.myDashboards     =   element.all(by.css(`#myDashboardsSection .list-group-item`));
     po.logoutIcon       =   element(by.css(`.welcome-header .fa-power-off`));
     po.dashboardLogo    =   element(by.className(`dashboard-logo`));
 
@@ -28,7 +29,7 @@ const HomePage = function() {
         }, (err) => {
             log.error(`Unable to navigate to home page. ERROR: ${err}`);
         });
-    }
+    };
 
     po.getWelcomeText = () => {
         return po.welcomeHeader.getText().then((text) => {
@@ -62,7 +63,7 @@ const HomePage = function() {
     };
 
     po.searchDashboard = (dashboardName) => {
-        po.dashboardSearch.sendKeys(dashboardName).than(() => {
+        po.dashboardSearch.sendKeys(dashboardName).then(() => {
             log.info(`Set Search String : ${dashboardName}`);
         }, (err) => {
             log.error(`Unable to set search string. ERROR: ${err}`);
@@ -70,19 +71,18 @@ const HomePage = function() {
     };
 
     po.getMyDashboardList = () => {
-        return po.myDashboardList.each((element) => {
-            element.getText().then(function (text) {
-                log.info(`Dashboard Name: ${text}`);
-            }, (err) => {
-                log.error(`Unable to get dashboard name. ERROR: ${err}`);
-            });
+        return po.myDashboards.getText().then((allMyDashboards) => {
+            log.info(`All My Dashboards : ${allMyDashboards}`);
+            return allMyDashboards;
+        }, (err) => {
+            log.error(`Unable to get all my dashboards. ERROR: ${err}`);
         });
     };
 
     po.selectDashboard = (dashboardName) => {
-        po.myDashboardList.filter(function(elem) {
-            return elem.getText().then(function(text) {
-                return text === dashboardName;
+        po.myDashboards.filter((elem) => {
+            return elem.getText().then((text) => {
+                return text.includes(dashboardName);
             });
         }).first().click().then(() => {
             log.info(`Select Dashboard : ${dashboardName}`);
@@ -91,11 +91,19 @@ const HomePage = function() {
         });
     };
 
-    po.getDashboardHeader = () => {
-        po.dashboardHeader.getText().then((dashboardName) => {
-            log.info(`Dashboard Name : ${dashboardName}`);
+    po.clickOnDeleteDashboard = (dashboardName) => {
+        po.myDashboards.filter((elem) => {
+            return elem.getText().then((text) => {
+                return text.includes(dashboardName);
+            }, (err) => {
+                log.info(`Unable to get dashboard name: ERROR: ${err}`);
+            });
         }, (err) => {
-            log.error(`Unable to get dashboadr name. ERROR: ${err}`);
+            log.info(`Unable to filter elements: ERROR: ${err}`);
+        }).first().element(by.id(`deleteDashboardButton`)).click().then(() => {
+            log.info(`Click on Delete Dashboard Button for : ${dashboardName}`);
+        }, (err) => {
+            log.error(`Unable to click on delete dashboard: ERROR: ${err}`);
         });
     };
 

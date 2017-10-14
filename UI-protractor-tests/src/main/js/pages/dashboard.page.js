@@ -14,7 +14,6 @@ const CreateDashboardBubble = function() {
     po.businessService      =   element(by.name(`configurationItemBusServ`));
     po.businessApplication  =   element(by.name(`configurationItemBusApp`));
     po.createButton         =   element(by.cssContainingText(`.btn.btn-primary`, `Create`));
-    po.myDashboardList      =   element(by.id(`myDashboardsSection`)).all(by.className(`list-group-item`));
     po.dashboardHeader      =   element(by.css(`#header h4`));
     po.templateDropdown     =   element(by.css(`[name='selectedTemplate']`));
 
@@ -96,6 +95,14 @@ const CreateDashboardBubble = function() {
         });
     };
 
+    po.getDashboardHeader = () => {
+        return po.dashboardHeader.getText().then((headerText) => {
+            log.info(`Dashboard Header Text : ${headerText}`);
+            return headerText;
+        }, (err) => {
+            log.error(`Unable to get dashboard name. ERROR: ${err}`);
+        });
+    };
 };
 
 module.exports = new CreateDashboardBubble();

@@ -12,6 +12,12 @@ module.exports = function loginSteps() {
         homePage.navigateToLoginPage();
     });
 
+    this.Given(/^I am logged in with valid credentials$/, () => {
+        homePage.getWelcomeText().then((welcomeText) => {
+            expect(welcomeText).to.include("Welcome");
+        });
+    });
+
     this.When(/^I select standard login page$/, () => {
         loginPage.clickStandardLogin();
     });
@@ -28,7 +34,6 @@ module.exports = function loginSteps() {
     this.When(/^I attempt to login$/, () => {
         loginPage.clickLoginButton();
     });
-
 
     this.Then(/^I should be on the login page$/, () => {
         loginPage.isStandardLoginPage().then((result) => {

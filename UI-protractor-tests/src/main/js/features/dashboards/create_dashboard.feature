@@ -15,8 +15,6 @@ Feature: Create Dashboard
     And I set the dashboard title DummyTeamDashboard
     And I set the application name DummyApplication
     And I create the dashboard
-    And I navigate to home page
-    Then verify the new dashboard DummyTeamDashboard is created
     Then the current dashboard header should read DummyTeamDashboard
 #
 #  @issues:TEART-2801

@@ -1,9 +1,9 @@
-Feature: Standard Login
-
-  As a software project stakeholder,
-  I want to ensure that I am able to log in to Hygieia
-  In order to interact with my dashboards.
-
+#Feature: Standard Login
+#
+#  As a software project stakeholder,
+#  I want to ensure that I am able to log in to Hygieia
+#  In order to interact with my dashboards.
+#
 #  @issues:TEART-2800
 #  Scenario: User attempts to log in with invalid credentials
 #    Given I navigate to the login page

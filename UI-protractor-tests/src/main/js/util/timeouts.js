@@ -7,7 +7,7 @@
 class Timeouts {
 
     constructor() {
-        this.defaultTimeOut = 3000;
+        this.defaultTimeOut = 30000;
         this.shortTimeOut = 5000;
         this.mediumTimeOut = 30000;
         this.longTimeOut = 120000;

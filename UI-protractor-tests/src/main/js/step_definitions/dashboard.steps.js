@@ -1,6 +1,7 @@
 const
     homePage = require('../pages/home.page'),
-    createDashboardBubble = require('../pages/dashboard.page'),
+    dashboardPage = require('../pages/dashboard.page'),
+    deleteConfirmationPage = require('../pages/deleteConfirmation.page'),
     listOf = require('../text').listOf,
     expect = require('../expect').expect;
 
@@ -8,45 +9,59 @@ module.exports = function dashboardSteps() {
 
     this.setDefaultTimeout(60 * 1000);
 
-    this.Given(/^I click on the create dashboard button/, () => {
+    this.When(/^I click on the create dashboard button/, () => {
         homePage.clickOnCreateDashboard();
     });
 
-    this.Given(/^I set the dashboard type (.*)/, (dashboardType) => {
-        createDashboardBubble.setDashboardType(dashboardType)
+    this.When(/^I set the dashboard type (.*)/, (dashboardType) => {
+        dashboardPage.setDashboardType(dashboardType)
     });
 
-    this.Given(/^I set the layout type (.*)/, (layoutType) => {
-        createDashboardBubble.setLayout(layoutType);
+    this.When(/^I set the layout type (.*)/, (layoutType) => {
+        dashboardPage.setLayout(layoutType);
     });
 
-    this.Given(/^I select a template (.*)/, (template) => {
-        createDashboardBubble.selectTemplate(template);
+    this.When(/^I select a template (.*)/, (template) => {
+        dashboardPage.selectTemplate(template);
     });
 
-    this.Given(/^I set the dashboard title (.*)/, (dashboardName) => {
-        createDashboardBubble.setDashboardTitle(dashboardName);
+    this.When(/^I set the dashboard title (.*)/, (dashboardName) => {
+        dashboardPage.setDashboardTitle(dashboardName);
     });
 
-    this.Given(/^I set the application name (.*)/, (applicationName) => {
-        createDashboardBubble.setApplicationName(applicationName)
+    this.When(/^I set the application name (.*)/, (applicationName) => {
+        dashboardPage.setApplicationName(applicationName)
     });
 
-    this.Given(/^I create the dashboard/, () => {
-        createDashboardBubble.clickCreate();
+    this.When(/^I create the dashboard/, () => {
+        dashboardPage.clickCreate();
     });
 
     this.Given(/^I navigate to home page/, () => {
         homePage.navigateToHomePage();
     });
 
-    this.Then(/^verify the new dashboard (.*) is created/, (dashboardName) => {
-        expect(homePage.getMyDashboardList()).to.contain(dashboardName);
+    this.When(/^I click on delete button for (.*)/, (dashboardName) => {
+        homePage.clickOnDeleteDashboard(dashboardName);
     });
 
+    this.When(/^I confirm delete/, () => {
+        deleteConfirmationPage.confirmDelete();
+    });
+
+    this.Then(/^the dashboard (.*) should be deleted/, (dashboardName) => {
+        homePage.getMyDashboardList().then((allMyDashboards) => {
+            expect(allMyDashboards).not.to.include(dashboardName);
+        });
+    });
+
+    // this.Then(/^verify the new dashboard (.*) is created/, (dashboardName) => {
+    //     expect(homePage.getMyDashboardList()).to.include(dashboardName);
+    // });
+
     this.Then(/^the current dashboard header should read (.*)/, (dashboardName) => {
-        homePage.selectDashboard(dashboardName).then(() => {
-            expect(homePage.getDashboardHeader()).to.equal(dashboardName);
+        dashboardPage.getDashboardHeader().then((headerText) => {
+            expect(headerText).to.include(dashboardName);
         });
 
         homePage.logout();
