@@ -1,6 +1,8 @@
 package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -18,6 +20,9 @@ import java.util.Collection;
  *
  */
 @Document(collection="test_results")
+@CompoundIndexes({
+        @CompoundIndex(name = "test_results_collItemId_ts_idx", def = "{'collectorItemId' : 1, 'timestamp': -1}")
+})
 public class TestResult extends BaseModel {
     /**
      * ID of {@link CollectorItem}
