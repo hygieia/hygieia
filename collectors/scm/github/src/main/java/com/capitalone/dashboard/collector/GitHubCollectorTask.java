@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 
 import java.net.MalformedURLException;
@@ -194,6 +195,15 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     LOG.error("Error fetching commits for:" + repo.getRepoUrl(), hc);
                     if (! (isRateLimitError(hc) || hc.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) ) {
                         CollectionError error = new CollectionError(hc.getStatusCode().toString(), hc.getMessage());
+                        repo.getErrors().add(error);
+                    }
+                } catch (ResourceAccessException ex) {
+                    //handle case where repo is valid but github returns connection refused due to outages??
+                    if (ex.getMessage() != null && ex.getMessage().contains("Connection refused")) {
+                        LOG.error("Error fetching commits for:" + repo.getRepoUrl(), ex);
+                    } else {
+                        LOG.error("Error fetching commits for:" + repo.getRepoUrl(), ex);
+                        CollectionError error = new CollectionError(CollectionError.UNKNOWN_HOST, repo.getRepoUrl());
                         repo.getErrors().add(error);
                     }
                 } catch (RestClientException | MalformedURLException ex) {
