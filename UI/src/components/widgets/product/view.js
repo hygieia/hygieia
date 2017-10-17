@@ -763,13 +763,12 @@
             stackBars: true,
             centerLabels: true,
             horizontalBars: true,
-            height: 220,
+            height: "80%",
+            width: "80%",
             axisX: {
                 showLabel: false,
                 showGrid: false,
                 scaleMinSpace: 20,
-                low: 0,
-                high: 100,
                 onlyInteger: true
             },
             axisY: {
