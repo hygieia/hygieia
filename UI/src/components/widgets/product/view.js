@@ -120,19 +120,19 @@
                     { rangeMin: 96, rangeMax: 100, score: 20 }],
                 displaySymbol: "%"
             },
-            {
-                metricName: "securityIssues",
-                displayName: "Fortify Violations",
-                category: "build",
-                scoreRanges: [{ rangeMin: 0, rangeMax: 0, score: 20 },
-                    { rangeMin: 1, rangeMax: 100, score: 0 }]
-            },
-	    {
+	        {
                 metricName: "codeIssues",
                 displayName: "Code Violations",
                 scoreRanges: [{ rangeMin: 0, rangeMax: 0, score: 20 },
                     { rangeMin: 1, rangeMax: 10, score: 10 },
                     { rangeMin: 11, rangeMax: 100, score: 0 }],
+                displaySymbol: ""
+            },
+            {
+                metricName: "commitMessageMatch1",
+                displayName: "Fixed Builds",
+                scorePerCommit: 2,
+                commitMatchRegex: "FIX_BUILD",
                 displaySymbol: ""
             }
         ];
@@ -154,13 +154,31 @@
                 teamScoreBoardData.name = configuredTeam.name;
                 teamScoreBoardData.data = [];
                 ctrl.scoreBoardMetrics.forEach(function(metric) {
-                    var teamScoreBoardDataElement = {
-                        metricName: metric.metricName,
-                        value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
-                        score: getScoreForMetric(metric.metricName, configuredTeam)
-                    };
+                    var teamScoreBoardDataElement;
+
+                    // Any metrics that start with this pattern are processed by the commit parser
+                    var commitMetricNameRegex = "^commitMessageMatch";
+                    if(metric.metricName.match(commitMetricNameRegex)){
+
+                        // Commit data is in a different part of the configured teams object
+                        var commits = configuredTeam["stages"]["Commit"]["commits"];
+                        var filtered_commit_messages = parseCommitMessages(commits, metric.commitMatchRegex);
+                        teamScoreBoardDataElement = {
+                            metricName: metric.metricName,
+                            value: filtered_commit_messages.length,
+                            score: filtered_commit_messages.length * metric.scorePerCommit
+                        };
+                    }
+                    else {
+                        teamScoreBoardDataElement = {
+                            metricName: metric.metricName,
+                            value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
+                            score: getScoreForMetric(metric.metricName, configuredTeam)
+                        };
+                    }
                     teamScoreBoardData.data.push(teamScoreBoardDataElement);
                 });
+
                 var totalScore = 0;
                 teamScoreBoardData.data.forEach(function(element) {
                     if(element.score != -1) {
@@ -172,6 +190,17 @@
                 teamScoreBoardData = {};
             });
             console.log("Scoreboard data :", ctrl.scoreBoardData);
+        }
+
+        function parseCommitMessages(commits, regex){
+            // TODO: refactor to use filter function
+            var commit_messages = [];
+            commits.forEach(function(commit) {
+                if(commit["message"].match(regex)){
+                    commit_messages.push(commit["message"]);
+                }
+            });
+            return commit_messages
         }
 
         function viewScoreDetails(teamScoreRecord, metricName) {

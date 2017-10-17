@@ -4,16 +4,30 @@
 
         <label class="modal-label">Scoring Details</label>
 
-        <table class="scoreboard-range-table">
-            <tr>
-                <th>Range</th>
-                <th>Score</th>
-            </tr>
-            <tr ng-repeat="rangeData in rangeMatrix">
-                <td>{{rangeData.range}}</td>
-                <td>{{rangeData.score}}</td>
-            </tr>
-        </table>
+        <div ng-if="commitMessageMatch">
+            <table class="scoreboard-range-table">
+                <tr>
+                    <th>Points per Commit</th>
+                    <th>Regex to Match</th>
+                </tr>
+                <tr>
+                    <td>{{scorePerCommit}}</td>
+                    <td>{{commitMatchRegex}}</td>
+                </tr>
+            </table>
+        </div>
+        <div ng-if="!commitMessageMatch">
+            <table class="scoreboard-range-table">
+                <tr>
+                    <th>Range</th>
+                    <th>Score</th>
+                </tr>
+                <tr ng-repeat="rangeData in rangeMatrix">
+                    <td>{{rangeData.range}}</td>
+                    <td>{{rangeData.score}}</td>
+                </tr>
+            </table>
+        <div>
 
         <label class="modal-label">*Scoring is performed on rounded values</label>
     </div>
