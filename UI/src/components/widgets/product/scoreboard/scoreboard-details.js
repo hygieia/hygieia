@@ -15,20 +15,31 @@
         $scope.teamName = scoreBoardDetailsConfig.teamName;
         $scope.score = scoreBoardDetailsConfig.metricScore;
         $scope.value = scoreBoardDetailsConfig.metricValue;
+        $scope.commitMessageMatch = false;
 
         scoreBoardDetailsConfig.scoreBoardMetrics.forEach(function(metricData) {
+
            if(metricData.metricName == $scope.metricName) {
-               $scope.displayName = metricData.displayName;
-               $scope.displaySymbol = metricData.displaySymbol;
-               $scope.rangeMatrix = [];
-               metricData.scoreRanges.forEach(function(rangeData) {
-                    var range = (rangeData.rangeMin == rangeData.rangeMax) ? "VALUE = " + rangeData.rangeMax : rangeData.rangeMin + "  <= VALUE <=  " + rangeData.rangeMax;
-                    var rangeMatrixElement = {
-                      range : range,
-                      score : rangeData.score
-                    };
-                    $scope.rangeMatrix.push(rangeMatrixElement);
-               });
+               if(metricData.metricName.match("^commitMessageMatch")){
+                   $scope.commitMessageMatch = true;
+                   $scope.displayName = metricData.displayName;
+                   $scope.displaySymbol = metricData.displaySymbol;
+                   $scope.scorePerCommit = metricData.scorePerCommit;
+                   $scope.commitMatchRegex = metricData.commitMatchRegex;
+               } else {
+                   $scope.commitMessageMatch = false;
+                   $scope.displayName = metricData.displayName;
+                   $scope.displaySymbol = metricData.displaySymbol;
+                   $scope.rangeMatrix = [];
+                   metricData.scoreRanges.forEach(function (rangeData) {
+                       var range = (rangeData.rangeMin == rangeData.rangeMax) ? "VALUE = " + rangeData.rangeMax : rangeData.rangeMin + "  <= VALUE <=  " + rangeData.rangeMax;
+                       var rangeMatrixElement = {
+                           range: range,
+                           score: rangeData.score
+                       };
+                       $scope.rangeMatrix.push(rangeMatrixElement);
+                   });
+               }
            }
         });
 

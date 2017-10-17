@@ -5,7 +5,7 @@
 @import 'environment-commits/environment-commits';
 @import 'quality-details/quality-details.less';
 
-@ct-series-colors: lightgreen, deepskyblue, pink, lightyellow;
+@ct-series-colors: lightgreen, deepskyblue, pink, lightyellow, teal, maroon, silver;
 
 #product-dashboard {
     margin-top: -2rem;
@@ -456,6 +456,18 @@
               background-color: lightyellow;
               border-color: lightyellow;
             }
+            .ct-series-4:before {
+              background-color: teal;
+              border-color: teal;
+            }
+              .ct-series-5:before {
+                  background-color: maroon;
+                  border-color: maroon;
+              }
+              .ct-series-6:before {
+                  background-color: silver;
+                  border-color: silver;
+              }
           }
 
           .ct-bar {
@@ -475,6 +487,15 @@
           .ct-series-d .ct-bar {
             stroke: lightyellow;
           }
+          .ct-series-e .ct-bar {
+            stroke: teal;
+          }
+            .ct-series-f .ct-bar {
+                stroke: maroon;
+            }
+            .ct-series-g .ct-bar {
+                stroke: silver;
+            }
         }
         .gamification-table {
             margin-top: 100px;
