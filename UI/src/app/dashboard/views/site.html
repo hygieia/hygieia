@@ -77,8 +77,8 @@
 
                                     <a class="btn-block clickable" title="{{myitem.name}}" ng-click="ctrl.open(myitem.id)">
                                         <span class="fa fa-lg left-icon" ng-class="{'fa-cubes' : myitem.isProduct}"></span>
-                                        <span   ng-class="{'text-danger' : myitem.showError}">
-                                            {{ myitem.name | trunText:50 }}
+                                        <span   ng-class="{'text-danger' : myitem.showError}" class="word-overflow-wrap">
+                                            {{ myitem.name}}
                                         </span>
                                     </a>
                                 </li>
@@ -100,8 +100,7 @@
 
                                     <span class="fa fa-angle-right list-group-item-right"></span>
 
-                                </span>
-                                    {{item.name | trunText:50}}
+                                <span class="word-overflow-wrap">{{item.name}}</span>
                                 </li>
                             </ul>
 
