@@ -99,14 +99,16 @@
                     { rangeMin: 81, rangeMax: 90, score: 16 },
                     { rangeMin: 91, rangeMax: 95, score: 18 },
                     { rangeMin: 96, rangeMax: 100, score: 20 }],
-                displaySymbol: "%"
+                displaySymbol: "%",
+                description: "This metric is based on the percentage of code covered by unit tests as measured by Sonar."
             },
             {
                 metricName: "unitTests",
                 displayName: "Unit Test Success",
                 scoreRanges: [{ rangeMin: 0, rangeMax: 99, score: 0 },
                     { rangeMin: 100, rangeMax: 100, score: 20 }],
-                displaySymbol: "%"
+                displaySymbol: "%",
+                description: "This metric is based on whether or not the unit tests are passing."
             },
             {
                 metricName: "buildSuccess",
@@ -118,7 +120,8 @@
                     { rangeMin: 81, rangeMax: 90, score: 16 },
                     { rangeMin: 91, rangeMax: 95, score: 18 },
                     { rangeMin: 96, rangeMax: 100, score: 20 }],
-                displaySymbol: "%"
+                displaySymbol: "%",
+                description: "This metric is based on the number of successful builds."
             },
 	        {
                 metricName: "codeIssues",
@@ -126,14 +129,16 @@
                 scoreRanges: [{ rangeMin: 0, rangeMax: 0, score: 20 },
                     { rangeMin: 1, rangeMax: 10, score: 10 },
                     { rangeMin: 11, rangeMax: 100, score: 0 }],
-                displaySymbol: ""
+                displaySymbol: "",
+                description: "This metric is based on the number of source code issues discovered by Sonar."
             },
             {
                 metricName: "commitMessageMatch1",
                 displayName: "Fixed Builds",
                 scorePerCommit: 2,
                 commitMatchRegex: "FIX_BUILD",
-                displaySymbol: ""
+                displaySymbol: "",
+                description: "This metric is based on the number of commits that fixed broken builds. Note that the commit message must match the regular expression."
             }
         ];
 
@@ -193,14 +198,10 @@
         }
 
         function parseCommitMessages(commits, regex){
-            // TODO: refactor to use filter function
-            var commit_messages = [];
-            commits.forEach(function(commit) {
-                if(commit["message"].match(regex)){
-                    commit_messages.push(commit["message"]);
-                }
+            var commit_messages = commits.filter(function(commit){
+                return commit["message"].match(regex);
             });
-            return commit_messages
+            return commit_messages;
         }
 
         function viewScoreDetails(teamScoreRecord, metricName) {
