@@ -193,14 +193,10 @@
         }
 
         function parseCommitMessages(commits, regex){
-            // TODO: refactor to use filter function
-            var commit_messages = [];
-            commits.forEach(function(commit) {
-                if(commit["message"].match(regex)){
-                    commit_messages.push(commit["message"]);
-                }
+            var commit_messages = commits.filter(function(commit){
+                return commit["message"].match(regex);
             });
-            return commit_messages
+            return commit_messages;
         }
 
         function viewScoreDetails(teamScoreRecord, metricName) {
