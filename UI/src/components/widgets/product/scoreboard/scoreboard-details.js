@@ -22,12 +22,14 @@
            if(metricData.metricName == $scope.metricName) {
                if(metricData.metricName.match("^commitMessageMatch")){
                    $scope.commitMessageMatch = true;
+                   $scope.description = metricData.description;
                    $scope.displayName = metricData.displayName;
                    $scope.displaySymbol = metricData.displaySymbol;
                    $scope.scorePerCommit = metricData.scorePerCommit;
                    $scope.commitMatchRegex = metricData.commitMatchRegex;
                } else {
                    $scope.commitMessageMatch = false;
+                   $scope.description = metricData.description;
                    $scope.displayName = metricData.displayName;
                    $scope.displaySymbol = metricData.displaySymbol;
                    $scope.rangeMatrix = [];
