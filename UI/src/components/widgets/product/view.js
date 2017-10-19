@@ -764,7 +764,7 @@
             stackBars: true,
             centerLabels: true,
             horizontalBars: true,
-            height: "80%",
+            height: "220",
             width: "80%",
             axisX: {
                 showLabel: false,
@@ -810,9 +810,16 @@
 
                 tempObj[teamInfo.totalScore].push(team);
             });
-
             Object.keys(tempObj)
-                .sort()
+                .sort(function(firstKey, secondKey) {
+                    if(parseInt(firstKey) > parseInt(secondKey)) {
+                        return 1;
+                    } else if (parseInt(firstKey) < parseInt(secondKey)) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                })
                 .forEach(function(key) {
                     tempObj[key].forEach(function(team, j) {
                         labels.push(team.name);
@@ -824,6 +831,8 @@
                         });
                     });
                 });
+
+            console.log("Scores sorted: ", scores);
 
             var series = [];
             scores.forEach(function(scoreArr, i) {

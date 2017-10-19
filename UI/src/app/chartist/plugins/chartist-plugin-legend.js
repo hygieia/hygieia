@@ -1,3 +1,7 @@
+/**
+ * Chartist.js plugin to display legend for the charts
+ *
+ */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
