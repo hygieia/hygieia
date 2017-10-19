@@ -31,7 +31,10 @@ import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -58,6 +61,8 @@ public class AuditServiceImpl implements AuditService {
     private BuildRepository buildRepository;
     private CollectorItemRepository collectorItemRepository;
 
+    private static final Log LOGGER = LogFactory.getLog(AuditServiceImpl.class);
+
     @Autowired
     public AuditServiceImpl(GitRequestRepository gitRequestRepository, CommitRepository commitRepository,
                             CustomRepositoryQuery customRepositoryQuery,
@@ -80,6 +85,13 @@ public class AuditServiceImpl implements AuditService {
         this.buildRepository = buildRepository;
         this.collectorItemRepository = collectorItemRepository;
     }
+
+//    public List<CollectorItem> getAllRepos() {
+//        Collector githubCollector = collectorRepository.findByName("GitHub");
+//        List<CollectorItem> collectorItems = collectorItemRepository.findAllRepos(githubCollector.getId(), true);
+//
+//        return collectorItems;
+//    }
 
     public List<CollectorItem> getCollectorItems(Dashboard dashboard, String widgetName, CollectorType collectorType) {
         List<Widget> widgets = dashboard.getWidgets();
@@ -302,8 +314,10 @@ public class AuditServiceImpl implements AuditService {
             String mergeAuthor = mergeCommit.getScmAuthorLogin();
 
             List<String> relatedCommitShas = mergeCommit.getScmParentRevisionNumbers();
-            for(String relatedCommitSha: relatedCommitShas) {
-                getRelatedCommits(relatedCommitSha, mapCommitsRelatedToPr, pr);
+            if (!CollectionUtils.isEmpty(relatedCommitShas)) {
+                for (String relatedCommitSha : relatedCommitShas) {
+                    getRelatedCommits(relatedCommitSha, mapCommitsRelatedToPr, pr);
+                }
             }
 
             PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
@@ -374,9 +388,10 @@ public class AuditServiceImpl implements AuditService {
                             peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                         } else {
 
+                            //New commit has ONLY one parent
                             List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
-                            for (String parentCommitSha : parentCommitShas) {
-                                computeParentCommit(commit.getScmRevisionNumber(), peerReviewResponse, baseSha, headSha, pr);
+                            if (!CollectionUtils.isEmpty(parentCommitShas)) {
+                                computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, pr);
                             }
 
                         }
@@ -444,9 +459,13 @@ public class AuditServiceImpl implements AuditService {
         return allPeerReviews;
     }
 
-    private void computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse, String baseSha, String headSha, GitRequest pr) {
+    private boolean computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse, String baseSha, String headSha, GitRequest pr) {
         boolean traceBack = true;
         Commit commit = commitRepository.findByScmRevisionNumberAndScmUrl(commitSha, pr.getScmUrl());
+        if (commit == null || commit.getType() == null || commit.getType() == CommitType.Merge) {
+            return false;
+        }
+        LOGGER.warn("Enter computeParentCommit " + commitSha + " " + commit.getType());
         while (traceBack) {
             if (commit.getScmRevisionNumber().equalsIgnoreCase(baseSha)) {
                 peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
@@ -454,12 +473,17 @@ public class AuditServiceImpl implements AuditService {
             } else if (commit.getScmRevisionNumber().equalsIgnoreCase(headSha)) {
                 traceBack = false;
             } else {
+                //New commit has ONLY one parent
                 List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
-                for (String parentCommitSha : parentCommitShas) {
-                    computeParentCommit(commit.getScmRevisionNumber(), peerReviewResponse, baseSha, headSha, pr);
+                if (!CollectionUtils.isEmpty(parentCommitShas)) {
+                    traceBack = computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, pr);
+                } else {
+                    //reached first commit
+                    traceBack = false;
                 }
             }
         }
+        return traceBack;
     }
 
     public String getJobEnvironment(String jobUrl, String jobName) {
