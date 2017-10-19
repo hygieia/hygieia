@@ -11,6 +11,7 @@ Feature: Delete Dashboard
     When I click on delete button for DummyTeamDashboard
     And I confirm delete
     Then the dashboard DummyTeamDashboard should be deleted
+    And click on logout
 #
 #  @issues:TEART-2801
 #  Scenario: User deletes a product dashboard

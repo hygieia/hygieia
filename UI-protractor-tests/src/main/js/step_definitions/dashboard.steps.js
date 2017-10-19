@@ -63,8 +63,6 @@ module.exports = function dashboardSteps() {
         dashboardPage.getDashboardHeader().then((headerText) => {
             expect(headerText).to.include(dashboardName);
         });
-
-        homePage.logout();
     });
 
 };

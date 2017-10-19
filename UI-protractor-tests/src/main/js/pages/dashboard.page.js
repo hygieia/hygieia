@@ -15,7 +15,10 @@ const CreateDashboardBubble = function() {
     po.businessApplication  =   element(by.name(`configurationItemBusApp`));
     po.createButton         =   element(by.cssContainingText(`.btn.btn-primary`, `Create`));
     po.dashboardHeader      =   element(by.css(`#header h4`));
-    po.templateDropdown     =   element(by.css(`[name='selectedTemplate']`));
+    po.templateDropdown     =   element(by.name(`selectedTemplate`));
+    po.configFeatureWidget  =   element(by.css(`[name="feature"] .widget-body-config .fa`));
+    po.configBuildWidget    =   element(by.css(`[name="build"] .widget-body-config .fa`));
+    po.configCodeRepoWidget =   element(by.css(`[name="repo"] .widget-body-config .fa`));
 
     po.setDashboardType = (dashboardType) => {
         po.dashboardType.sendKeys(dashboardType).then(() => {
@@ -101,6 +104,30 @@ const CreateDashboardBubble = function() {
             return headerText;
         }, (err) => {
             log.error(`Unable to get dashboard name. ERROR: ${err}`);
+        });
+    };
+
+    po.configureFeatureWidget = () => {
+        po.configFeatureWidget.click().then(() => {
+            log.info(`Configure Feature Widget`);
+        }, (err) => {
+            log.error(`Unable to click on config button for feature widget. ERROR: ${err}`);
+        });
+    };
+
+    po.configureBuildWidget = () => {
+        po.configBuildWidget.click().then(() => {
+            log.info(`Configure Build Widget`);
+        }, (err) => {
+            log.error(`Unable to click on config button for build widget. ERROR: ${err}`);
+        });
+    };
+
+    po.configureCodeRepoWidget = () => {
+        po.configCodeRepoWidget.click().then(() => {
+            log.info(`Configure Code Repo Widget`);
+        }, (err) => {
+            log.error(`Unable to click on config button for code repo widget. ERROR: ${err}`);
         });
     };
 };

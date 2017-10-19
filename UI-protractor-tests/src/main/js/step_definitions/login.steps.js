@@ -59,6 +59,10 @@ module.exports = function loginSteps() {
         });
     });
 
+    this.Then(/^click on logout$/, () => {
+        homePage.clickOnLogoutButton();
+    });
+
     this.Given(/^I login with valid credentials (.*) and (.*)/, (validUser, validPassword) => {
         homePage.navigateToLoginPage();
         loginPage.clickStandardLogin();

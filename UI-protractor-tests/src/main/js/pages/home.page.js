@@ -107,7 +107,8 @@ const HomePage = function() {
         });
     };
 
-    po.logout = () => {
+    po.clickOnLogoutButton = () => {
+        browser.sleep(3000);
         po.logoutIcon.click().then(() => {
             log.info(`Logging Out`);
         }, (err) => {
