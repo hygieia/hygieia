@@ -32,4 +32,6 @@ public interface AuditService {
     List<CollectorItem> getCollectorItems(Dashboard dashboard, String widgetName, CollectorType collectorType);
 
     boolean isGitRepoConfigured(String url,String branch);
+
+//    List<CollectorItem> getAllRepos();
 }
