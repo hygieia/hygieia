@@ -12,6 +12,8 @@ import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
 import com.capitalone.dashboard.service.AuditService;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +30,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 public class AuditController {
     private final AuditService auditService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuditController.class);
 
     @Autowired
     public AuditController(AuditService auditService) {
@@ -64,6 +68,8 @@ public class AuditController {
         GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(request.getRepo());
         String repoUrl = gitHubParsed.getUrl();
 
+        LOGGER.warn("********************* repo " + repoUrl + " branch " + request.getBranch()
+                + " " + request.getBeginDate() + " " + request.getEndDate());
         boolean isGitConfigured = auditService.isGitRepoConfigured(repoUrl,request.getBranch());
         if(!isGitConfigured){
             PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
@@ -76,6 +82,26 @@ public class AuditController {
         List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits,request.getRepo(), request.getBranch());
         return ResponseEntity.ok().body(allPeerReviews);
     }
+
+//    @RequestMapping(value = "/allPeerReviews", method = GET, produces = APPLICATION_JSON_VALUE)
+//    public ResponseEntity<Iterable<Iterable<PeerReviewResponse>>> allPeerReviews(@Valid PeerReviewRequest request)  {
+//        List<CollectorItem> repos = auditService.getAllRepos();
+//
+//        List<Iterable<PeerReviewResponse>> allRepoPeerReviews = new ArrayList<>();
+//        for(CollectorItem repo : repos) {
+//            String repoUrl = (String)repo.getOptions().get("url");
+//            String branch = (String)repo.getOptions().get("branch");
+//
+//            request.setRepo(repoUrl);
+//            request.setBranch(branch);
+//
+//            ResponseEntity<Iterable<PeerReviewResponse>> allPeerReviews = this.peerReview(request);
+//
+//            allRepoPeerReviews.add(allPeerReviews.getBody());
+//        }
+//
+//        return ResponseEntity.ok().body(allRepoPeerReviews);
+//    }
 
     /**
      * Build Job Review
