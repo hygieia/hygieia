@@ -24,7 +24,6 @@
 
         // pagination variables
         $scope.currentPage = 0;
-        $scope.pageSize = 10;
         ctrl.searchFilter="";
 
         // public methods
