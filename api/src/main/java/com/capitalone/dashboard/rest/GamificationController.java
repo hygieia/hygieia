@@ -4,6 +4,7 @@ import com.capitalone.dashboard.model.GamificationMetric;
 import com.capitalone.dashboard.service.GamificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,10 +22,9 @@ public class GamificationController {
     public GamificationController(GamificationService gamificationService) {
         this.gamificationService = gamificationService;
     }
-
-    //@PathVariable String metricName, @PathVariable boolean enabled
+    
     @RequestMapping(value = "/gamification/metrics", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Iterable<GamificationMetric>> getGamificationMetrics() {
+    public ResponseEntity<Iterable<GamificationMetric>> getGamificationMetrics(@PathVariable String metricName, @PathVariable boolean enabled) {
         Collection<GamificationMetric> gamificationMetricCollection = gamificationService.getGamificationMetrics();
         return ResponseEntity
                 .ok()

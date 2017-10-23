@@ -1,7 +1,14 @@
 package com.capitalone.dashboard.config;
 
-import java.util.List;
-
+import com.capitalone.dashboard.auth.AuthProperties;
+import com.capitalone.dashboard.auth.AuthenticationResultHandler;
+import com.capitalone.dashboard.auth.apitoken.ApiTokenAuthenticationProvider;
+import com.capitalone.dashboard.auth.apitoken.ApiTokenRequestFilter;
+import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
+import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
+import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
+import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
+import com.capitalone.dashboard.model.AuthType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
@@ -18,15 +25,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.capitalone.dashboard.auth.AuthProperties;
-import com.capitalone.dashboard.auth.AuthenticationResultHandler;
-import com.capitalone.dashboard.auth.apitoken.ApiTokenAuthenticationProvider;
-import com.capitalone.dashboard.auth.apitoken.ApiTokenRequestFilter;
-import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
-import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
-import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
-import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
-import com.capitalone.dashboard.model.AuthType;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -54,23 +53,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.headers().cacheControl();
 		http.csrf().disable()
 			.authorizeRequests().antMatchers("/appinfo").permitAll()
-								.antMatchers("/registerUser").permitAll()
-								.antMatchers("/login**").permitAll()
+//								.antMatchers("/registerUser").permitAll()
+//								.antMatchers("/login**").permitAll()
 								//TODO: sample call secured with ROLE_API
 								//.antMatchers("/ping").hasAuthority("ROLE_API")
 								.antMatchers(HttpMethod.GET, "/**").permitAll()
 								
 								// Temporary solution to allow jenkins plugin to send data to the api
 							    //TODO: Secure with API Key
-								.antMatchers(HttpMethod.POST, "/build").permitAll()
-					            .antMatchers(HttpMethod.POST, "/deploy").permitAll()
-								.antMatchers(HttpMethod.POST, "/performance").permitAll()
-					            .antMatchers(HttpMethod.POST, "/artifact").permitAll()
-					            .antMatchers(HttpMethod.POST, "/quality/test").permitAll()
-					            .antMatchers(HttpMethod.POST, "/quality/static-analysis").permitAll()
-                                //Temporary solution to allow Github webhook
-                                .antMatchers(HttpMethod.POST, "/commit/github/v3").permitAll()
-								.anyRequest().authenticated()
+//								.antMatchers(HttpMethod.POST, "/build").permitAll()
+//					            .antMatchers(HttpMethod.POST, "/deploy").permitAll()
+//								.antMatchers(HttpMethod.POST, "/performance").permitAll()
+//					            .antMatchers(HttpMethod.POST, "/artifact").permitAll()
+//					            .antMatchers(HttpMethod.POST, "/quality/test").permitAll()
+//					            .antMatchers(HttpMethod.POST, "/quality/static-analysis").permitAll()
+//								.antMatchers(HttpMethod.POST, "/gamification/metrics").permitAll()
+//                                Temporary solution to allow Github webhook
+//                                .antMatchers(HttpMethod.POST, "/commit/github/v3").permitAll()
+//								.anyRequest().authenticated()
 									.and()
 								.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(ldapLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)

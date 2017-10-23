@@ -3,11 +3,11 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.model.GamificationMetric;
 import com.capitalone.dashboard.repository.GamificationMetricRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
-@Service
+@Component
 public class GamificationServiceImpl implements GamificationService {
 
     private GamificationMetricRepository gamificationMetricRepository;
