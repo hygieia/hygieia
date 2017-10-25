@@ -18,7 +18,7 @@ echo "SPRING_DATA_MONGODB_PORT: $SPRING_DATA_MONGODB_PORT"
 
 cat > appdynamics.properties <<EOF
 #Database Name - default is test
-database=${SPRING_DATA_MONGODB_DATABASE:-dashboard}
+dbname=${SPRING_DATA_MONGODB_DATABASE:-dashboard}
 
 #Database HostName - default is localhost
 dbhost=${SPRING_DATA_MONGODB_HOST:-10.0.1.1}
