@@ -7,7 +7,7 @@ exports.config = {
 
     disableChecks: true,
 
-    directConnect: true,
+    // directConnect: true,
 
     ignoreUncaughtExceptions: true,
 
