@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.request.DashboardReviewRequest;
@@ -10,6 +11,9 @@ import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
 import com.capitalone.dashboard.service.AuditService;
+import com.capitalone.dashboard.util.GitHubParsedUrl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -24,6 +30,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 public class AuditController {
     private final AuditService auditService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuditController.class);
 
     @Autowired
     public AuditController(AuditService auditService) {
@@ -56,12 +64,44 @@ public class AuditController {
      * @return
      */
     @RequestMapping(value = "/peerReview", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Iterable<PeerReviewResponse>> peerReview(@Valid PeerReviewRequest request) {
-        List<GitRequest> pullRequests = auditService.getPullRequests(request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
-        List<Commit> commits = auditService.getCommits(request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
-        List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits);
+    public ResponseEntity<Iterable<PeerReviewResponse>> peerReview(@Valid PeerReviewRequest request)  {
+        GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(request.getRepo());
+        String repoUrl = gitHubParsed.getUrl();
+
+        LOGGER.warn("********************* repo " + repoUrl + " branch " + request.getBranch()
+                + " " + request.getBeginDate() + " " + request.getEndDate());
+        boolean isGitConfigured = auditService.isGitRepoConfigured(repoUrl,request.getBranch());
+        if(!isGitConfigured){
+            PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
+            peerReviewResponse.addAuditStatus(AuditStatus.REPO_NOT_CONFIGURED);
+            return  ResponseEntity.ok().body(Stream.of(peerReviewResponse).collect(Collectors.toList()));
+        }
+
+        List<GitRequest> pullRequests = auditService.getPullRequests(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
+        List<Commit> commits = auditService.getCommits(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
+        List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits,request.getRepo(), request.getBranch());
         return ResponseEntity.ok().body(allPeerReviews);
     }
+
+//    @RequestMapping(value = "/allPeerReviews", method = GET, produces = APPLICATION_JSON_VALUE)
+//    public ResponseEntity<Iterable<Iterable<PeerReviewResponse>>> allPeerReviews(@Valid PeerReviewRequest request)  {
+//        List<CollectorItem> repos = auditService.getAllRepos();
+//
+//        List<Iterable<PeerReviewResponse>> allRepoPeerReviews = new ArrayList<>();
+//        for(CollectorItem repo : repos) {
+//            String repoUrl = (String)repo.getOptions().get("url");
+//            String branch = (String)repo.getOptions().get("branch");
+//
+//            request.setRepo(repoUrl);
+//            request.setBranch(branch);
+//
+//            ResponseEntity<Iterable<PeerReviewResponse>> allPeerReviews = this.peerReview(request);
+//
+//            allRepoPeerReviews.add(allPeerReviews.getBody());
+//        }
+//
+//        return ResponseEntity.ok().body(allRepoPeerReviews);
+//    }
 
     /**
      * Build Job Review

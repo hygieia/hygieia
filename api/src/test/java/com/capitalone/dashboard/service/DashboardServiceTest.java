@@ -669,6 +669,25 @@ public class DashboardServiceTest {
 
         verify(dashboardRepository).save(d);
     }
+
+    @Test
+    public void deleteWidget() {
+        ObjectId widgetId = ObjectId.get();
+        ObjectId configItemBusServId = ObjectId.get();
+        ObjectId configItemBusAppId = ObjectId.get();
+        ObjectId compId = ObjectId.get();
+        Dashboard d = makeTeamDashboard("template", "title", "appName", "amit",configItemBusServId, configItemBusAppId);
+        d.getWidgets().add(makeWidget(widgetId, "existing"));
+        Widget expected = makeWidget(widgetId, "updated");
+
+        Component c = new Component();
+        c.setId(compId);
+
+        when(componentRepository.findOne(compId)).thenReturn(c);
+        dashboardService.deleteWidget(d, expected,compId);
+        verify(componentRepository, times(1)).save(any(Component.class));
+    }
+
     
     @Test
     public void updateOwners_empty_owner_set() {

@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Build;
@@ -10,11 +11,13 @@ import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.JobCollectorItem;
 import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
@@ -26,20 +29,27 @@ import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.JobRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
+import com.capitalone.dashboard.util.GitHubParsedUrl;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Component
 public class AuditServiceImpl implements AuditService {
@@ -54,6 +64,10 @@ public class AuditServiceImpl implements AuditService {
     private CmdbRepository cmdbRepository;
     private ComponentRepository componentRepository;
     private BuildRepository buildRepository;
+    private CollectorItemRepository collectorItemRepository;
+    private ApiSettings settings;
+
+    private static final Log LOGGER = LogFactory.getLog(AuditServiceImpl.class);
 
     @Autowired
     public AuditServiceImpl(GitRequestRepository gitRequestRepository, CommitRepository commitRepository,
@@ -63,7 +77,9 @@ public class AuditServiceImpl implements AuditService {
                             DashboardRepository dashboardRepository,
                             CmdbRepository cmdbRepository,
                             ComponentRepository componentRepository,
-                            BuildRepository buildRepository) {
+                            BuildRepository buildRepository,
+                            CollectorItemRepository collectorItemRepository,
+                            ApiSettings settings) {
         this.gitRequestRepository = gitRequestRepository;
         this.commitRepository = commitRepository;
         this.customRepositoryQuery = customRepositoryQuery;
@@ -74,7 +90,16 @@ public class AuditServiceImpl implements AuditService {
         this.cmdbRepository = cmdbRepository;
         this.componentRepository = componentRepository;
         this.buildRepository = buildRepository;
+        this.collectorItemRepository = collectorItemRepository;
+        this.settings = settings;
     }
+
+//    public List<CollectorItem> getAllRepos() {
+//        Collector githubCollector = collectorRepository.findByName("GitHub");
+//        List<CollectorItem> collectorItems = collectorItemRepository.findAllRepos(githubCollector.getId(), true);
+//
+//        return collectorItems;
+//    }
 
     public List<CollectorItem> getCollectorItems(Dashboard dashboard, String widgetName, CollectorType collectorType) {
         List<Widget> widgets = dashboard.getWidgets();
@@ -110,34 +135,41 @@ public class AuditServiceImpl implements AuditService {
             dashboard = dashboardRepository.findByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(busServItem.getId(), busAppItem.getId());
         }
 
+        DashboardReviewResponse dashboardReviewResponse = new DashboardReviewResponse();
         if (dashboard == null) {
-            throw new HygieiaException("Unable to locate dashboard for title: " + title + " type: " + type +
-                    " busServ: " + busServ + " busApp: " + busApp, HygieiaException.BAD_DATA);
+            //if looking up by valid ASV and BAP and its not tied to a dashboard
+            //or if looking up by title and its not found
+            dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_NOT_REGISTERED);
+            return dashboardReviewResponse;
         }
 
-        DashboardReviewResponse dashboardReviewResponse = new DashboardReviewResponse();
         dashboardReviewResponse.setDashboardTitle(dashboard.getTitle());
 
         List<CollectorItem> repoItems = this.getCollectorItems(dashboard, "repo", CollectorType.SCM);
 
-        String scmWidgetbranch = null;
-        String scmWidgetrepoUrl = null;
+
         List<GitRequest> pullRequests = null;
         List<Commit> commits = null;
         if (repoItems != null && !repoItems.isEmpty()) {
+            String scmWidgetbranch;
+            String scmWidgetrepoUrl;
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_CONFIGURED);
+            List<List<PeerReviewResponse>> allRepos = new ArrayList<>();
 
-            CollectorItem repoItem = repoItems.get(0);
-            scmWidgetbranch = (String)repoItem.getOptions().get("branch");
-            scmWidgetrepoUrl = (String)repoItem.getOptions().get("url");
+            for(CollectorItem repoItem: repoItems) {
+                scmWidgetbranch = (String)repoItem.getOptions().get("branch");
+                scmWidgetrepoUrl = (String)repoItem.getOptions().get("url");
+				GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmWidgetrepoUrl);
+            	scmWidgetrepoUrl = gitHubParsed.getUrl();
+                if (scmWidgetbranch != null && scmWidgetrepoUrl != null) {
+                    pullRequests = this.getPullRequests(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
+                    commits = this.getCommits(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
+                    List<PeerReviewResponse> inside = this.getPeerReviewResponses(pullRequests, commits, scmWidgetrepoUrl, scmWidgetbranch);
+                    allRepos.add(inside);
+                }
 
-            if (scmWidgetbranch != null && scmWidgetrepoUrl != null) {
-                pullRequests = this.getPullRequests(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
-                commits = this.getCommits(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
-                List<PeerReviewResponse> allPeerReviews = this.getPeerReviewResponses(pullRequests, commits);
-
-                dashboardReviewResponse.setAllPeerReviewResponses(allPeerReviews);
             }
+            dashboardReviewResponse.setAllPeerReviewResponses(allRepos);
         } else {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_NOT_CONFIGURED);
         }
@@ -149,6 +181,7 @@ public class AuditServiceImpl implements AuditService {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_BUILD_CONFIGURED);
 
             CollectorItem buildItem = buildItems.get(0);
+
             String jobUrl = (String)buildItem.getOptions().get("jobUrl");
             String jobName = (String)buildItem.getOptions().get("jobName");
 
@@ -174,6 +207,7 @@ public class AuditServiceImpl implements AuditService {
 
             CollectorItem buildItem = buildItems.get(0);
             Build build = buildRepository.findTop1ByCollectorItemIdOrderByTimestampDesc(buildItem.getId());
+
             if (build != null) {
                 List<RepoBranch> repoBranches = build.getCodeRepos();
                 if (repoBranches != null && !repoBranches.isEmpty()) {
@@ -181,16 +215,33 @@ public class AuditServiceImpl implements AuditService {
                     String buildWidgetBranch = repoBranch.getBranch();
                     String buildWidgetUrl = repoBranch.getUrl();
 
-                    if (scmWidgetbranch != null && scmWidgetrepoUrl != null
-                            && buildWidgetBranch != null && buildWidgetUrl != null) {
-                        if (scmWidgetbranch.equalsIgnoreCase(buildWidgetBranch) && scmWidgetrepoUrl.equalsIgnoreCase(buildWidgetUrl)) {
-                            dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_VALID);
-                        } else {
+                    if (repoItems != null && !repoItems.isEmpty()) {
+
+                        boolean matchFound = false;
+                        for(CollectorItem repoItem: repoItems) {
+
+                            String aRepoItembranch = (String)repoItem.getOptions().get("branch");
+                            String aRepoItemUrl = (String)repoItem.getOptions().get("url");
+                            GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(aRepoItemUrl);
+                            aRepoItemUrl = gitHubParsed.getUrl();
+
+                            if (aRepoItembranch != null &&  aRepoItemUrl != null
+                                    && buildWidgetBranch != null && buildWidgetUrl != null) {
+                                if (aRepoItembranch.equalsIgnoreCase(buildWidgetBranch) && aRepoItemUrl.equalsIgnoreCase(buildWidgetUrl)) {
+                                    dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_VALID);
+                                    matchFound = true;
+                                    break;
+                                }
+                            }
+
+                        }
+
+                        if (!matchFound) {
                             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_INVALID);
                         }
-                    } else {
-                        dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_INVALID);
+
                     }
+
                 }
             }
         } else {
@@ -249,11 +300,42 @@ public class AuditServiceImpl implements AuditService {
         }
     }
 
+    boolean computePeerReviewStatus(GitRequest pr) {
+        List<CommitStatus> statuses = pr.getCommitStatuses();
+        List<Review> reviews = pr.getReviews();
+        if (statuses != null) {
+            Set<String> prContexts = new HashSet<>();
+            String contextString = settings.getPeerReviewContexts();
+            if (contextString != null) {
+                prContexts.addAll(Arrays.asList(contextString.trim().split(",")));
+            }
+            for (CommitStatus status : statuses) {
+                if (prContexts.contains(status.getContext())) {
+                    return "success".equalsIgnoreCase(status.getState());
+                }
+            }
+        }
+        if (reviews != null) {
+            for (Review review : reviews) {
+                if ("approved".equalsIgnoreCase(review.getState())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
-    public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits) {
+    public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits, String scmUrl, String scmBranch) {
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
 
         HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
+
+        if (pullRequests == null || pullRequests.isEmpty()) {
+            PeerReviewResponse noPRsPeerReviewResponse = new PeerReviewResponse();
+            noPRsPeerReviewResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+            allPeerReviews.add(noPRsPeerReviewResponse);
+        }
 
         for(GitRequest pr : pullRequests) {
             HashMap<String, Commit> mapCommitsRelatedToPr = new HashMap();
@@ -265,8 +347,10 @@ public class AuditServiceImpl implements AuditService {
             String mergeAuthor = mergeCommit.getScmAuthorLogin();
 
             List<String> relatedCommitShas = mergeCommit.getScmParentRevisionNumbers();
-            for(String relatedCommitSha: relatedCommitShas) {
-                getRelatedCommits(relatedCommitSha, mapCommitsRelatedToPr, pr);
+            if (!CollectionUtils.isEmpty(relatedCommitShas)) {
+                for (String relatedCommitSha : relatedCommitShas) {
+                    getRelatedCommits(relatedCommitSha, mapCommitsRelatedToPr, pr);
+                }
             }
 
             PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
@@ -288,21 +372,7 @@ public class AuditServiceImpl implements AuditService {
             allPeerReviews.add(peerReviewResponse);
 
             //check to see if pr was reviewed
-            List<Comment> comments = pr.getComments();
-            boolean peerReviewed = false;
-            for(Comment comment: comments) {
-                if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                    peerReviewed = true;
-                    break;
-                }
-            }
-            List<Comment> reviewComments = pr.getReviewComments();
-            for(Comment comment: reviewComments) {
-                if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                    peerReviewed = true;
-                    break;
-                }
-            }
+            boolean peerReviewed = computePeerReviewStatus(pr);
 
             if (peerReviewed) {
                 peerReviewResponse.addAuditStatus(AuditStatus.PULLREQ_REVIEWED_BY_PEER);
@@ -316,10 +386,15 @@ public class AuditServiceImpl implements AuditService {
             String targetRepo = pr.getTargetRepo();
             String targetBranch = pr.getTargetBranch();
 
-            if (sourceRepo.equalsIgnoreCase(targetRepo)) {
-                peerReviewResponse.addAuditStatus(AuditStatus.GIT_BRANCH_STRATEGY);
-            } else {
+            if (sourceRepo == null) {
+                //fork could be deleted
                 peerReviewResponse.addAuditStatus(AuditStatus.GIT_FORK_STRATEGY);
+            } else {
+                if (sourceRepo.equalsIgnoreCase(targetRepo)) {
+                    peerReviewResponse.addAuditStatus(AuditStatus.GIT_BRANCH_STRATEGY);
+                } else {
+                    peerReviewResponse.addAuditStatus(AuditStatus.GIT_FORK_STRATEGY);
+                }
             }
 
             //direct commit to master
@@ -332,9 +407,10 @@ public class AuditServiceImpl implements AuditService {
                             peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                         } else {
 
+                            //New commit has ONLY one parent
                             List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
-                            for (String parentCommitSha : parentCommitShas) {
-                                computeParentCommit(commit.getScmRevisionNumber(), peerReviewResponse, baseSha, headSha, pr);
+                            if (!CollectionUtils.isEmpty(parentCommitShas)) {
+                                computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, pr);
                             }
 
                         }
@@ -377,12 +453,38 @@ public class AuditServiceImpl implements AuditService {
             allPeerReviews.add(peerReviewResponse);
         }
 
+        //pull requests in date range, but merged prior to 14 days so no commits available in hygieia
+        if (pullRequests != null && !pullRequests.isEmpty()) {
+            if (allPeerReviews.isEmpty()) {
+                PeerReviewResponse prsButNoCommitsInRangePeerReviewResponse = new PeerReviewResponse();
+                prsButNoCommitsInRangePeerReviewResponse.addAuditStatus(AuditStatus.NO_PULL_REQ_FOR_DATE_RANGE);
+                allPeerReviews.add(prsButNoCommitsInRangePeerReviewResponse);
+            }
+        }
+
+        Collector githubCollector = collectorRepository.findByName("GitHub");
+        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
+                scmUrl, scmBranch, true);
+        for(PeerReviewResponse peerReviewResponseList: allPeerReviews){
+            String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
+            String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
+            if(collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
+                    && collectorItemScmBranch != null && collectorItemScmBranch.equals(scmBranch)){
+                peerReviewResponseList.setLastUpdated(collectorItem.getLastUpdated());
+            }
+            peerReviewResponseList.setScmBranch(scmBranch);
+            peerReviewResponseList.setScmUrl(scmUrl);
+        }
         return allPeerReviews;
     }
 
-    private void computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse, String baseSha, String headSha, GitRequest pr) {
+    private boolean computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse, String baseSha, String headSha, GitRequest pr) {
         boolean traceBack = true;
         Commit commit = commitRepository.findByScmRevisionNumberAndScmUrl(commitSha, pr.getScmUrl());
+        if (commit == null || commit.getType() == null || commit.getType() == CommitType.Merge) {
+            return false;
+        }
+        LOGGER.warn("Enter computeParentCommit " + commitSha + " " + commit.getType());
         while (traceBack) {
             if (commit.getScmRevisionNumber().equalsIgnoreCase(baseSha)) {
                 peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
@@ -390,12 +492,17 @@ public class AuditServiceImpl implements AuditService {
             } else if (commit.getScmRevisionNumber().equalsIgnoreCase(headSha)) {
                 traceBack = false;
             } else {
+                //New commit has ONLY one parent
                 List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
-                for (String parentCommitSha : parentCommitShas) {
-                    computeParentCommit(commit.getScmRevisionNumber(), peerReviewResponse, baseSha, headSha, pr);
+                if (!CollectionUtils.isEmpty(parentCommitShas)) {
+                    traceBack = computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, pr);
+                } else {
+                    //reached first commit
+                    traceBack = false;
                 }
             }
         }
+        return traceBack;
     }
 
     public String getJobEnvironment(String jobUrl, String jobName) {
@@ -435,4 +542,16 @@ public class AuditServiceImpl implements AuditService {
 
         return jobReviewResponse;
     }
+
+    @Override
+    public boolean isGitRepoConfigured(String url, String branch) {
+        Collector githubCollector = collectorRepository.findByName("GitHub");
+        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
+                url, branch, true);
+        if (collectorItem != null) {
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -147,7 +147,6 @@ public class CollectorServiceImpl implements CollectorService {
         if (!CollectionUtils.isEmpty(existing)) {
             item.setId(existing.get(0).getId());   //
         }
-
         return collectorItemRepository.save(item);
     }
 

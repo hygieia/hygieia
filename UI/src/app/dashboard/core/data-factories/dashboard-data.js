@@ -24,6 +24,11 @@
         var myownerRoute = "/api/dashboard/myowner";
         var updateBusItemsRoute = '/api/dashboard/updateBusItems';
         var updateDashboardWidgetsRoute = '/api/dashboard/updateDashboardWidgets';
+        var dashboardRoutePage = '/api/dashboard/page';
+        var dashboardFilterRoutePage = '/api/dashboard/page/filter';
+        var dashboardCountRoute = '/api/dashboard/count';
+        var dashboardFilterCountRoute = '/api/dashboard/filter/count';
+        var dashboardPageSize = '/api/dashboard/pagesize';
 
         return {
             search: search,
@@ -39,7 +44,13 @@
             types: types,
             getComponent:getComponent,
             updateBusItems:updateBusItems,
-            updateDashboardWidgets:updateDashboardWidgets
+            updateDashboardWidgets:updateDashboardWidgets,
+            deleteWidget:deleteWidget,
+            searchByPage: searchByPage,
+            filterByTitle:filterByTitle,
+            count:count,
+            filterCount: filterCount,
+            getPageSize:getPageSize
         };
 
         // reusable helper
@@ -178,6 +189,55 @@
                 .error(function (response) {
                     return null;
                 });
+        }
+
+        // can be used to delete existing widget
+        function deleteWidget(dashboardId, widget) {
+            widget = angular.copy(widget);
+            console.log('Delete widget config', widget);
+            var widgetId = widget.id;
+            if (widgetId) {
+                // remove the id since that would cause an api failure
+                delete widget.id;
+            }
+            var route = $http.put(dashboardRoute + '/' + dashboardId + '/deleteWidget/' + widgetId, widget) ;
+            return route.success(function (response) {
+                return response.data;
+            }).error(function (response) {
+                return null;
+            });
+
+        }
+
+        // gets count of all dashboards
+        function count() {
+            return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardCountRoute);
+        }
+
+        // gets list of dashboards according to page size (default = 10)
+        function searchByPage(params) {
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardRoutePage,{params: params}).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // gets list of dashboards filtered by title with page size (default = 10)
+        function filterByTitle(params) {
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardFilterRoutePage,{params: params}).then(function (response) {
+                return response.data;
+            });
+        }
+
+        //gets count of filtered dashboards for pagination
+        function filterCount(title){
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardFilterCountRoute+ '/'+title).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // gets page size
+        function getPageSize() {
+            return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardPageSize);
         }
 
     }
