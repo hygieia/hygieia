@@ -7,7 +7,7 @@ exports.config = {
 
     disableChecks: true,
 
-    // directConnect: true,
+    directConnect: true,
 
     ignoreUncaughtExceptions: true,
 
@@ -23,7 +23,11 @@ exports.config = {
     },
 
     capabilities: {
-        browserName: 'firefox'
+        browserName: 'firefox',
+
+        firefoxOptions: {
+            binary: '/usr/bin/firefox'
+        }
         // chromeOptions: {
         //     binary: '/prod/msp/build/slave1/workspace/Non-PAR/Non-Prod-Jobs/Hygieia/Hygieia_UI-tests/Hygieia/UI-protractor-tests/node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.33',
         //     args: [ "--headless", "--disable-gpu", "--window-size=1600,1200" ]
