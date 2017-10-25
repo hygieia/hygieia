@@ -14,7 +14,7 @@ module.exports = function dashboardSteps() {
     });
 
     this.When(/^I set the dashboard type (.*)/, (dashboardType) => {
-        dashboardPage.setDashboardType(dashboardType)
+        dashboardPage.setDashboardType(dashboardType);
     });
 
     this.When(/^I set the layout type (.*)/, (layoutType) => {
@@ -25,12 +25,12 @@ module.exports = function dashboardSteps() {
         dashboardPage.selectTemplate(template);
     });
 
-    this.When(/^I set the dashboard title (.*)/, (dashboardName) => {
-        dashboardPage.setDashboardTitle(dashboardName);
+    this.When(/^I set the dashboard title (.*)/, (dashboardTitle) => {
+        dashboardPage.setDashboardTitle(dashboardTitle);
     });
 
     this.When(/^I set the application name (.*)/, (applicationName) => {
-        dashboardPage.setApplicationName(applicationName)
+        dashboardPage.setApplicationName(applicationName);
     });
 
     this.When(/^I create the dashboard/, () => {
@@ -45,8 +45,24 @@ module.exports = function dashboardSteps() {
         homePage.clickOnDeleteDashboard(dashboardName);
     });
 
+    this.When(/^I click on settings button for feature widget/, () => {
+        dashboardPage.configureFeatureWidget();
+    });
+
+
+
     this.When(/^I confirm delete/, () => {
         deleteConfirmationPage.confirmDelete();
+    });
+
+    this.When(/^I create a dashboard with "(.*?)" "(.*?)" "(.*?)" "(.*?)" "(.*?)"/, (dashboardType, layoutType, template, dashboardTitle, applicationName) => {
+        homePage.clickOnCreateDashboard();
+        dashboardPage.setDashboardType(dashboardType);
+        dashboardPage.setLayout(layoutType);
+        dashboardPage.selectTemplate(template);
+        dashboardPage.setDashboardTitle(dashboardTitle);
+        dashboardPage.setApplicationName(applicationName);
+        dashboardPage.clickCreate();
     });
 
     this.Then(/^the dashboard (.*) should be deleted/, (dashboardName) => {

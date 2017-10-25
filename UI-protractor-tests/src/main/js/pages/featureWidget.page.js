@@ -1,5 +1,6 @@
 const format = require('util').format;
 const log = require('../util/logger');
+const waitFor = require('../util/waitFor');
 
 const FeatureWidgetPage = function() {
 
@@ -7,23 +8,31 @@ const FeatureWidgetPage = function() {
 
     po.featureDataSourceDropDown    =   element(by.name(`collectorId`));
     po.projectName                  =   element(by.name(`projectName`));
+    po.projectNameDropDown          =   element(by.css(`[input="projectName"] ul`));
     po.teamName                     =   element(by.name(`teamName`));
+    po.teamNameDropDown             =   element(by.css(`[input="teamName"] ul`));
     po.estimateMetricType           =   element(by.name(`estimateMetricType`));
     po.sprintType                   =   element(by.name(`sprintType`));
     po.listFeatureType              =   element(by.name(`listType`));
     po.saveButton                   =   element(by.css(`[name="configForm"] .btn`));
+    po.kanbanProjectNameLabel       =   element(by.cssContainingText(`#kanban-widget-view .text-standard-sm`, "Project:"));
+    po.projectNameInWidget          =   po.kanbanProjectNameLabel.element(by.tagName(`em`));
 
-    po.selectFeatureDataSource = (datasource) => {
+    po.selectAgileContentToolType = (datasource) => {
         po.featureDataSourceDropDown.element(by.cssContainingText(`option`, datasource)).click().then(() => {
-            log.info(`Select Feature Data Source : ${datasource}`);
+            log.info(`Select Agile Content Tool Type : ${datasource}`);
         }, (err) => {
-            log.error(`Unable to select feature data source. ERROR: ${err}`);
+            log.error(`Unable to select agile content tool type. ERROR: ${err}`);
         });
     };
 
     po.setProjectName = (projectName) => {
         po.projectName.sendKeys(projectName).then(() => {
-            log.info(`Set Project Name : ${projectName}`);
+            po.projectNameDropDown.element(by.cssContainingText(`li a`, projectName)).click().then(() => {
+                log.info(`Select Project Name : ${projectName}`);
+            }, (err) => {
+                log.error(`Unable to select project name. ERROR: ${err}`);
+            });
         }, (err) => {
             log.error(`Unable to set project name. ERROR: ${err}`);
         });
@@ -31,7 +40,11 @@ const FeatureWidgetPage = function() {
 
     po.setTeamName = (teamName) => {
         po.teamName.sendKeys(teamName).then(() => {
-            log.info(`Set Team Name : ${teamName}`);
+            po.teamNameDropDown.element(by.cssContainingText(`li a`, teamName)).click().then(() => {
+                log.info(`Select Team Name : ${teamName}`);
+            }, (err) => {
+                log.error(`Unable to select team name. ERROR: ${err}`);
+            });
         }, (err) => {
             log.error(`Unable to set team name. ERROR: ${err}`);
         });
@@ -68,6 +81,16 @@ const FeatureWidgetPage = function() {
             log.error(`Unable to click save button. ERROR: ${err}`);
         });
     };
+
+    po.getProjectName = () => {
+        waitFor.elementToBeVisible("Project Name", po.projectNameInWidget, 5);
+        return po.projectNameInWidget.getText().then((text) => {
+            log.info(`Project Name : ${text}`);
+            return text;
+        }, (err) => {
+            log.error(`Unable to get project name. ERROR: ${err}`);
+        });
+    }
 
 };
 

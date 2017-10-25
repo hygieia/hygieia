@@ -1,17 +1,17 @@
-Feature: Delete Dashboard
-
-  As a software project stakeholder
-  I want to ensure that I am able delete a dashboard for my project
-  In order to clean up unwanted dashboards.
-
-  @issues:TEART-2801
-  Scenario: User deletes a team dashboard
-    Given I navigate to home page
-    And I should be redirected to the home page
-    When I click on delete button for DummyTeamDashboard
-    And I confirm delete
-    Then the dashboard DummyTeamDashboard should be deleted
-    And click on logout
+#Feature: Delete Dashboard
+#
+#  As a software project stakeholder
+#  I want to ensure that I am able delete a dashboard for my project
+#  In order to clean up unwanted dashboards.
+#
+#  @issues:TEART-2801
+#  Scenario: User deletes a team dashboard
+#    Given I navigate to home page
+#    And I should be redirected to the home page
+#    When I click on delete button for DummyTeamDashboard
+#    And I confirm delete
+#    Then the dashboard DummyTeamDashboard should be deleted
+#    And click on logout
 #
 #  @issues:TEART-2801
 #  Scenario: User deletes a product dashboard
