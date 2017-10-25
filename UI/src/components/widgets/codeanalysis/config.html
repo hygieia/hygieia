@@ -27,40 +27,37 @@
 
 
         <div class="form-group text-center">
+            <form-group input="saCollectorItem" class="text-center">
             <div class="text-center modal-label">Security Scan:</div>
-
-            <ui-select ng-model="caWidget.saCollectorItem" theme="bootstrap" ng-disabled="caWidget.saJobs.length === 0">
-                <ui-select-match placeholder="Select your SecurityAnalysis job">{{$select.selected.description}}
-                </ui-select-match>
-                <ui-select-choices
-                        repeat="item in (caWidget.saJobs | orderBy:['item.collector.name','description'] | filter: $select.search ) track by item.id"
-                        refresh="refreshPatients($select.search)"
-                        refresh-delay="0">
-                    <div ng-bind-html="(item.collector.name + ' - ' + item.description) | highlight: $select.search"></div>
-                </ui-select-choices>
-                <ui-select-no-choice>
-                    No Jobs were found
-                </ui-select-no-choice>
-            </ui-select>
+                <input type="text" name="saCollectorItem" class="form-control" placeholder="Search your SecurityAnalysis job"
+                       ng-model="caWidget.saCollectorItem"
+                       uib-typeahead="item as (item.collector.name + ' : ' + item.description) for item in getSACollectors($viewValue)" typeahead-focus
+                       typeahead-template-url="sonarProjectUrlTemplate.html"
+                       typeahead-wait-ms="250" autocomplete="off"
+                       typeahead-min-length="0"
+                       typeahead-no-results="noResults"
+                       required>
+                <div class="form-control" ng-show="noResults">
+                    No Results Found
+                </div>
+            </form-group>
         </div>
 
         <div class="form-group text-center">
+            <form-group input="ossCollectorItem" class="text-center">
             <div class="text-center modal-label">Open Source Scan:</div>
-
-            <ui-select ng-model="caWidget.ossCollectorItem" theme="bootstrap" ng-disabled="caWidget.ossJobs.length === 0">
-                <ui-select-match placeholder="Select your Open Source scan job">{{$select.selected.description}}
-                </ui-select-match>
-                <ui-select-choices
-                        repeat="item in (caWidget.ossJobs | orderBy:['item.collector.name','description'] | filter: $select.search ) track by item.id"
-                        refresh="refreshPatients($select.search)"
-                        refresh-delay="0">
-                    <div ng-bind-html="(item.collector.name + ' - ' + item.options.applicationName) | highlight: $select.search"></div>
-                </ui-select-choices>
-                <ui-select-no-choice>
-                    No Jobs were found
-                </ui-select-no-choice>
-            </ui-select>
-
+                <input type="text" name="ossCollectorItem" class="form-control" placeholder="Search your Open Source scan job"
+                       ng-model="caWidget.ossCollectorItem"
+                       uib-typeahead="item as (item.collector.name + ' : ' + item.description) for item in getOpenSourceCodeCollectors($viewValue)" typeahead-focus
+                       typeahead-template-url="sonarProjectUrlTemplate.html"
+                       typeahead-wait-ms="250" autocomplete="off"
+                       typeahead-min-length="0"
+                       typeahead-no-results="noResults"
+                       required>
+            <div class="form-control" ng-show="noResults">
+                    No Results Found
+                </div>
+          </form-group>
         </div>
 
 
@@ -87,7 +84,7 @@
                         </ui-select-match>
                         <ui-select-choices allow-clear="true"
                                            repeat="item in (configItem.testJob | orderBy:['collector.name','description'] | filter: $select.search ) track by item.id">
-                            <div ng-bind-html="(item.niceName + '-' + item.description) | highlight: $select.search"></div>
+                            <div ng-bind-html="(item.niceName + ' : ' + item.description) | highlight: $select.search"></div>
                         </ui-select-choices>
                         <ui-select-no-choice>
                             No Jobs were found

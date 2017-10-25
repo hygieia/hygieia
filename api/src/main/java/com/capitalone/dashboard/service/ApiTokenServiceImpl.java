@@ -9,8 +9,10 @@ import com.capitalone.dashboard.model.UserRole;
 import com.capitalone.dashboard.repository.ApiTokenRepository;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
+import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -82,7 +84,29 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 
         throw new BadCredentialsException("Login Failed: Invalid credentials for user " + username);
     }
+    @Override
+    public void deleteToken(ObjectId id) {
+        ApiToken apiToken = apiTokenRepository.findOne(id);
 
+        if(apiToken == null) {
+            throw new UnsafeDeleteException("Cannot delete token " + apiToken.getApiUser());
+        }else{
+            apiTokenRepository .delete(apiToken);
+        }
+    }
+    @Override
+    public String updateToken(Long expirationDt, ObjectId id) throws HygieiaException{
+        ApiToken apiToken = apiTokenRepository.findOne(id);
+        if(apiToken == null) {
+            throw new HygieiaException("Cannot find token for " + apiToken.getApiUser(), HygieiaException.BAD_DATA);
+        }else{
+
+            apiToken.setExpirationDt(expirationDt);
+            apiTokenRepository.save(apiToken);
+        }
+
+        return apiToken.getId().toString();
+    }
     private Collection<? extends GrantedAuthority> createAuthorities(Collection<UserRole> authorities) {
         Collection<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
         authorities.forEach(authority -> {

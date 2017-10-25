@@ -12,6 +12,8 @@ import com.capitalone.dashboard.model.DashboardType;
 import com.capitalone.dashboard.model.Owner;
 import org.bson.types.ObjectId;
 
+import java.util.List;
+
 public class DashboardRequest {
     @NotNull
     @Size(min=1, message="Please select a template")
@@ -32,6 +34,8 @@ public class DashboardRequest {
     @NotNull
     @Size(min=1, message="Please select a type")
     private String type;
+
+    private List<String> activeWidgets;
 
     public String getTemplate() {
         return template;
@@ -91,11 +95,19 @@ public class DashboardRequest {
         this.configurationItemBusAppObjectId = configurationItemBusAppObjectId;
     }
 
+    public List<String> getActiveWidgets() {
+        return activeWidgets;
+    }
+
+    public void setActiveWidgets(List<String> activeWidgets) {
+        this.activeWidgets = activeWidgets;
+    }
+
     public Dashboard toDashboard() {
         DashboardType type = DashboardType.fromString(this.type);
         Application application = new Application(applicationName, new Component(componentName));
         Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
-       return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type , configurationItemBusServObjectId, configurationItemBusAppObjectId);
+        return new Dashboard(template, dashboardRequestTitle.getTitle(), application, owner, type , configurationItemBusServObjectId, configurationItemBusAppObjectId,activeWidgets);
 
 
     }

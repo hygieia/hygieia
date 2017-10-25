@@ -18,7 +18,6 @@ public class GitlabIssue {
 	private String weight;
 	private List<String> labels;
 	private GitlabMilestone milestone;
-	private GitlabProject project;
 
 	public Long getId() {
 		return id;
@@ -98,14 +97,6 @@ public class GitlabIssue {
 
 	public void setMilestone(GitlabMilestone milestone) {
 		this.milestone = milestone;
-	}
-
-	public GitlabProject getProject() {
-		return project;
-	}
-
-	public void setProject(GitlabProject project) {
-		this.project = project;
 	}
 
 }

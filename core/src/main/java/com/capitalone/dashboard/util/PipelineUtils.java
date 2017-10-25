@@ -1,12 +1,23 @@
 package com.capitalone.dashboard.util;
 
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.Pipeline;
 import com.capitalone.dashboard.model.PipelineCommit;
 import com.capitalone.dashboard.model.PipelineStage;
+import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.model.SCM;
 import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.repository.CommitRepository;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -92,6 +103,62 @@ public final class PipelineUtils {
 
                 widget.getOptions().put("mappings", mappingsMap);
             }
+        }
+    }
+
+    /**
+     * Iterate over failed builds, if the failed build collector item id matches the successful builds collector item id
+     * take all the commits from the changeset of the failed build and add them to the pipeline.
+     * Then remove the failed build from the collection after it has been processed.
+     *
+     * @param successfulBuild
+     * @param pipeline
+     */
+    public static void processPreviousFailedBuilds(Build successfulBuild, Pipeline pipeline) {
+
+        if (!pipeline.getFailedBuilds().isEmpty()) {
+            Iterator<Build> failedBuilds = pipeline.getFailedBuilds().iterator();
+
+            while (failedBuilds.hasNext()) {
+                Build b = failedBuilds.next();
+                if (b.getCollectorItemId().equals(successfulBuild.getCollectorItemId())) {
+                    for (SCM scm : b.getSourceChangeSet()) {
+                        PipelineCommit failedBuildCommit = new PipelineCommit(scm, successfulBuild.getStartTime());
+                        pipeline.addCommit(PipelineStage.BUILD.getName(), failedBuildCommit);
+                    }
+                    failedBuilds.remove();
+                }
+            }
+        }
+    }
+
+
+    public static boolean isMoveCommitToBuild(Build build, SCM scm, CommitRepository commitRepository) {
+        List<Commit> commitsFromRepo = getCommitsFromCommitRepo(scm, commitRepository);
+        List<RepoBranch> codeReposFromBuild = build.getCodeRepos();
+        Set<String> codeRepoUrlsFromCommits = new HashSet<>();
+        for (Commit c : commitsFromRepo) {
+            codeRepoUrlsFromCommits.add(getRepoNameOnly(c.getScmUrl()));
+        }
+
+        for (RepoBranch rb : codeReposFromBuild) {
+            if (codeRepoUrlsFromCommits.contains(getRepoNameOnly(rb.getUrl()))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static List<Commit> getCommitsFromCommitRepo(SCM scm, CommitRepository commitRepository) {
+        return commitRepository.findByScmRevisionNumber(scm.getScmRevisionNumber());
+    }
+
+    private static String getRepoNameOnly(String url) {
+        try {
+            URL temp = new URL(url);
+            return temp.getHost() + temp.getPath();
+        } catch (MalformedURLException e) {
+            return url;
         }
     }
 }

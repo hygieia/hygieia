@@ -134,7 +134,7 @@ public class AWSCloudCollectorTask extends CollectorTask<AWSCloudCollector> {
     }
 
     private Map<String, List<CloudInstance>> collectInstances() {
-        Map<String, List<CloudInstance>> cloudInstanceMap = awsClient.getCloundInstances(cloudInstanceRepository);
+        Map<String, List<CloudInstance>> cloudInstanceMap = awsClient.getCloudInstances(cloudInstanceRepository);
         for (String account : cloudInstanceMap.keySet()) {
             Collection<CloudInstance> collectedInstances = cloudInstanceMap.get(account);
             Set<CloudInstance> saveList = new HashSet<>();

@@ -46,6 +46,10 @@ public class Dashboard extends BaseModel {
 
     private boolean validAppName;
 
+    private boolean remoteCreated;
+
+    private List<String> activeWidgets;
+
     @Transient
     String errorMessage;
 
@@ -55,7 +59,11 @@ public class Dashboard extends BaseModel {
     Dashboard() {
     }
 
-    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, ObjectId configurationItemBusServObjectId, ObjectId configurationItemBusAppObjectId) {
+    public Dashboard(String template, String title, Application application, Owner owner, DashboardType type, ObjectId configurationItemBusServObjectId, ObjectId configurationItemBusAppObjectId,List<String> activeWidgets) {
+        this(false, template, title, application, owner, type,configurationItemBusServObjectId, configurationItemBusAppObjectId,activeWidgets);
+    }
+
+    public Dashboard(boolean remoteCreated, String template, String title, Application application, Owner owner, DashboardType type, ObjectId configurationItemBusServObjectId, ObjectId configurationItemBusAppObjectId,List<String> activeWidgets) {
         this.template = template;
         this.title = title;
         this.configurationItemBusServObjectId = configurationItemBusServObjectId;
@@ -63,6 +71,7 @@ public class Dashboard extends BaseModel {
         this.application = application;
         this.type = type;
         this.owners.add(owner);
+        this.activeWidgets = activeWidgets;
     }
 
     public String getTemplate() {
@@ -93,7 +102,11 @@ public class Dashboard extends BaseModel {
         return widgets;
     }
 
-	public String getOwner() {
+    public void setWidgets(List<Widget> widgets) {
+        this.widgets = widgets;
+    }
+
+    public String getOwner() {
 		return owner;
 	}
 
@@ -176,4 +189,21 @@ public class Dashboard extends BaseModel {
     public void setErrorCode(int errorCode) {
         this.errorCode = errorCode;
     }
+
+    public boolean isRemoteCreated() {
+        return remoteCreated;
+    }
+
+    public void setRemoteCreated(boolean remoteCreated) {
+        this.remoteCreated = remoteCreated;
+    }
+
+    public List<String> getActiveWidgets() {
+        return activeWidgets;
+    }
+
+    public void setActiveWidgets(List<String> activeWidgets) {
+        this.activeWidgets = activeWidgets;
+    }
+
 }

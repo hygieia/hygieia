@@ -25,6 +25,8 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CollectorServiceImpl implements CollectorService {
@@ -54,16 +56,40 @@ public class CollectorServiceImpl implements CollectorService {
     @Override
     public Page<CollectorItem> collectorItemsByTypeWithFilter(CollectorType collectorType, String descriptionFilter, Pageable pageable) {
         List<Collector> collectors = collectorRepository.findByCollectorType(collectorType);
-
         List<ObjectId> collectorIds = Lists.newArrayList(Iterables.transform(collectors, new ToCollectorId()));
-
-        Page<CollectorItem> collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(collectorIds, descriptionFilter, pageable);
-
+        Page<CollectorItem> collectorItems = null;
+        String niceName = "";
+        String jobName = "";
+        List<String> l= findJobNameAndNiceName(descriptionFilter);
+        if (!l.isEmpty()){
+            niceName =  l.get(0).trim();
+            if(l.size()>1){
+                jobName =  findIndex(descriptionFilter);
+            }
+        }
+        if(!niceName.isEmpty() && collectorType == CollectorType.Build){
+           collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingAndNiceNameContainingAllIgnoreCase(collectorIds, jobName,niceName, pageable);
+        }else{
+           collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(collectorIds, descriptionFilter, pageable);
+        }
         for (CollectorItem options : collectorItems) {
             options.setCollector(collectorById(options.getCollectorId(), collectors));
         }
 
         return collectorItems;
+    }
+
+    private List<String> findJobNameAndNiceName(String descriptionFilter){
+        if(descriptionFilter.contains(":"))
+          return  Stream.of(descriptionFilter.split(":"))
+                            .collect(Collectors.toList());
+        return new ArrayList<>();
+    }
+
+
+    private static String findIndex(String descriptionFilter){
+        return descriptionFilter.substring(descriptionFilter.indexOf(":")+1,descriptionFilter.length());
+
     }
 
     /**
@@ -114,16 +140,16 @@ public class CollectorServiceImpl implements CollectorService {
     // This is to handle scenarios where the option contains user credentials etc. We do not want to create a new collector item -
     // just update the new credentials.
     @Override
-    public CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> selecOptions) {
+    public CollectorItem createCollectorItemSelectOptions(CollectorItem item, Map<String, Object> allOptions, Map<String, Object> selectOptions) {
         List<CollectorItem> existing = customRepositoryQuery.findCollectorItemsBySubsetOptions(
-                item.getCollectorId(), allOptions, selecOptions);
+                item.getCollectorId(), allOptions, selectOptions);
 
         if (!CollectionUtils.isEmpty(existing)) {
             item.setId(existing.get(0).getId());   //
         }
-
         return collectorItemRepository.save(item);
     }
+
 
     @Override
     public CollectorItem createCollectorItemByNiceNameAndProjectId(CollectorItem item, String projectId) throws HygieiaException {

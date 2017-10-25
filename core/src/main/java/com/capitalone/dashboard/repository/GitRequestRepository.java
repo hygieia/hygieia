@@ -13,14 +13,12 @@ import java.util.List;
  */
 public interface GitRequestRepository  extends CrudRepository<GitRequest, ObjectId>, QueryDslPredicateExecutor<GitRequest> {
 
-    /**
-     * Finds the {@link .} with the given revision number for a specific
-     * {@link com.capitalone.dashboard.model.CollectorItem}.
-     *
-     * @param collectorItemId collector item id
-     * @param revisionNumber revision number
-     * @return a {@link GitRequest}
-     */
+
+    List<GitRequest> findByCollectorItemIdAndRequestType(ObjectId collectorItemId, String requestType);
+
+    @Query(value="{ 'collectorItemId' : ?0, 'requestType' : ?1}", fields="{ 'number' : 2, 'updatedAt' : 3 }")
+    List<GitRequest> findRequestNumberAndLastUpdated(ObjectId collectorItemId, String requestType);
+
     GitRequest findByCollectorItemIdAndScmRevisionNumber(ObjectId collectorItemId, String revisionNumber);
 
     GitRequest findByCollectorItemIdAndNumberAndRequestType(ObjectId collectorItemId, String number, String requestType);
