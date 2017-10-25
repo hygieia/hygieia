@@ -68,7 +68,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 					            .antMatchers(HttpMethod.POST, "/artifact").permitAll()
 					            .antMatchers(HttpMethod.POST, "/quality/test").permitAll()
 					            .antMatchers(HttpMethod.POST, "/quality/static-analysis").permitAll()
-					            
+                                //Temporary solution to allow Github webhook
+                                .antMatchers(HttpMethod.POST, "/commit/github/v3").permitAll()
 								.anyRequest().authenticated()
 									.and()
 								.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)

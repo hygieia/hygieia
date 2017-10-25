@@ -48,14 +48,15 @@ public class DeployBuilder {
         //fixme: Need to settle on run vs build dual
         this.build = build;
         this.run = build;
-        this.artifactGroup = publisher.getHygieiaDeploy().getArtifactGroup().trim();
-        this.artifactName = publisher.getHygieiaDeploy().getArtifactName().trim();
-        this.artifactVersion = publisher.getHygieiaDeploy().getArtifactVersion().trim();
-        this.applicationName = publisher.getHygieiaDeploy().getApplicationName().trim();
-        this.environmentName = publisher.getHygieiaDeploy().getEnvironmentName().trim();
+        final HygieiaPublisher.HygieiaDeploy hygieiaDeploy = publisher.getHygieiaDeploy();
+        this.artifactGroup = hygieiaDeploy.getArtifactGroup().trim();
+        this.artifactName = hygieiaDeploy.getArtifactName().trim();
+        this.artifactVersion = hygieiaDeploy.getArtifactVersion().trim();
+        this.applicationName = hygieiaDeploy.getApplicationName().trim();
+        this.environmentName = hygieiaDeploy.getEnvironmentName().trim();
         this.buildId = buildId;
         this.listener = listener;
-        rootDirectory = build.getWorkspace().withSuffix(publisher.getHygieiaDeploy().getArtifactDirectory().trim());
+        rootDirectory = new FilePath(build.getWorkspace(), hygieiaDeploy.getArtifactDirectory().trim());
         this.jenkinsName = publisher.getDescriptor().getHygieiaJenkinsName();
         buildDeployRequests();
     }
@@ -69,7 +70,7 @@ public class DeployBuilder {
         this.environmentName = publisher.getEnvironmentName().trim();
         this.buildId = buildId;
         this.listener = listener;
-        rootDirectory = filePath.withSuffix(publisher.getArtifactDirectory().trim());
+        rootDirectory = new FilePath(filePath, publisher.getArtifactDirectory().trim());
         this.jenkinsName = jenkinsName;
         this.result = result;
         buildDeployRequests();

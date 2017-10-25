@@ -4,8 +4,8 @@ package com.capitalone.dashboard.model;
  * CollectorItem extension to store the subversion url.
  */
 public class SubversionRepo extends CollectorItem {
-    private static final String URL = "url";
-    private static final String LATEST_REV = "rev";
+    public static final String URL = "url";
+    public static final String LATEST_REV = "rev";
 
     public String getRepoUrl() {
         return (String) getOptions().get(URL);

@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
+import com.capitalone.dashboard.ApiSettings;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,21 @@ import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -55,6 +72,9 @@ public class DashboardServiceImpl implements DashboardService {
     private final CmdbService cmdbService;
 
     @Autowired
+    private ApiSettings settings;
+
+    @Autowired
     public DashboardServiceImpl(DashboardRepository dashboardRepository,
                                 ComponentRepository componentRepository,
                                 CollectorRepository collectorRepository,
@@ -63,7 +83,8 @@ public class DashboardServiceImpl implements DashboardService {
                                 ServiceRepository serviceRepository,
                                 PipelineRepository pipelineRepository,
                                 UserInfoRepository userInfoRepository,
-                                CmdbService cmdbService) {
+                                CmdbService cmdbService,
+                                ApiSettings settings) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
@@ -73,6 +94,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
         this.userInfoRepository = userInfoRepository;
         this.cmdbService = cmdbService;
+        this.settings = settings;
     }
 
     @Override
@@ -152,7 +174,6 @@ public class DashboardServiceImpl implements DashboardService {
             throw new UnsafeDeleteException("Cannot delete team dashboard " + dashboard.getTitle() + " as it is referenced by program dashboards.");
         }
 
-        componentRepository.delete(dashboard.getApplication().getComponents());
 
         // Remove this Dashboard's services and service dependencies
         serviceRepository.delete(serviceRepository.findByDashboardId(id));
@@ -161,7 +182,32 @@ public class DashboardServiceImpl implements DashboardService {
             serviceRepository.save(service);
         }
 
+        /**
+         * Delete Dashboard. Then delete component. Then disable collector items if needed
+         */
         dashboardRepository.delete(dashboard);
+        componentRepository.delete(dashboard.getApplication().getComponents());
+        handleCollectorItems(dashboard.getApplication().getComponents());
+    }
+
+    /**
+     * For the dashboard, get all the components and get all the collector items for the components.
+     * If a collector item is NOT associated with any Component, disable it.
+     * @param components
+     */
+    private void handleCollectorItems(List<Component> components) {
+        for (Component component : components) {
+            Map<CollectorType, List<CollectorItem>> itemMap = component.getCollectorItems();
+            for (CollectorType type : itemMap.keySet()) {
+                List<CollectorItem> items = itemMap.get(type);
+                for (CollectorItem i : items) {
+                    if (CollectionUtils.isEmpty(customRepositoryQuery.findComponents(i.getCollectorId(),type,i))) {
+                        i.setEnabled(false);
+                        collectorItemRepository.save(i);
+                    }
+                }
+            }
+        }
     }
 
     private boolean isSafeDelete(Dashboard dashboard) {
@@ -313,19 +359,19 @@ public class DashboardServiceImpl implements DashboardService {
 	@Override
 	public List<Dashboard> getOwnedDashboards() {
 		Set<Dashboard> myDashboards = new HashSet<Dashboard>();
-		
+
 		Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
         List<Dashboard> findByOwnersList = dashboardRepository.findByOwners(owner);
         getAppAndComponentNames(findByOwnersList);
 		myDashboards.addAll(findByOwnersList);
-		
+
 		// TODO: This if check is to ensure backwards compatibility for dashboards created before AuthenticationTypes were introduced.
 		if (AuthenticationUtil.getAuthTypeFromContext() == AuthType.STANDARD) {
             List<Dashboard> findByOwnersListOld = dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext());
             getAppAndComponentNames(findByOwnersListOld);
 			myDashboards.addAll(findByOwnersListOld);
 		}
-		
+
 		return Lists.newArrayList(myDashboards);
 	}
 
@@ -355,18 +401,18 @@ public class DashboardServiceImpl implements DashboardService {
         		throw new UserNotFoundException(username, authType);
         	}
         }
-    	
+
     	Dashboard dashboard = dashboardRepository.findOne(dashboardId);
         dashboard.setOwners(Lists.newArrayList(owners));
         Dashboard result = dashboardRepository.save(dashboard);
 
         return result.getOwners();
     }
-    
+
 	@Override
 	public String getDashboardOwner(String dashboardTitle) {
 		String dashboardOwner=dashboardRepository.findByTitle(dashboardTitle).get(0).getOwner();
-		
+
 		return dashboardOwner;
 	}
 
@@ -449,10 +495,110 @@ public class DashboardServiceImpl implements DashboardService {
         Cmdb cmdbAppItem =  cmdbService.configurationItemByConfigurationItem(app);
         Iterable<Dashboard> rt = null;
 
-        if(cmdbAppItem != null && cmdbAppItem != null){
+        if(cmdbAppItem != null && cmdbCompItem != null){
             rt = dashboardRepository.findAllByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(cmdbAppItem.getId(),cmdbCompItem.getId());
         }
         return new DataResponse<>(rt, System.currentTimeMillis());
+    }
+
+
+    @Override
+    public Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException {
+        Dashboard dashboard = get(dashboardId);
+        List<String> existingActiveWidgets = dashboard.getActiveWidgets();
+        List<Component> components = dashboard.getApplication().getComponents();
+        List<String> widgetToDelete =  findUpdateCollectorItems(existingActiveWidgets,request.getActiveWidgets());
+        List<Widget> widgets = dashboard.getWidgets();
+        ObjectId componentId = components.get(0)!=null?components.get(0).getId():null;
+        List<Integer> indexList = new ArrayList<>();
+        List<CollectorType> collectorTypesToDelete = new ArrayList<>();
+        List<Widget> updatedWidgets = new ArrayList<>();
+
+        for (String widgetName: widgetToDelete) {
+            for (Widget widget:widgets) {
+                if(widgetName.equalsIgnoreCase(widget.getName())){
+                    int widgetIndex = widgets.indexOf(widget);
+                    indexList.add(widgetIndex);
+                    collectorTypesToDelete.add(findCollectorType(widgetName));
+                    if(widgetName.equalsIgnoreCase("codeanalysis")){
+                        collectorTypesToDelete.add(CollectorType.CodeQuality);
+                        collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
+                        collectorTypesToDelete.add(CollectorType.LibraryPolicy);
+                    }
+                }
+            }
+        }
+        //iterate through index and remove widgets
+        for (Integer i:indexList) {
+            widgets.set(i,null);
+        }
+        for (Widget w:widgets) {
+            if(w!=null)
+                updatedWidgets.add(w);
+        }
+        dashboard.setWidgets(updatedWidgets);
+        dashboard.setActiveWidgets(request.getActiveWidgets());
+        dashboard = update(dashboard);
+        if(componentId!=null){
+            com.capitalone.dashboard.model.Component component = componentRepository.findOne(componentId);
+            for (CollectorType cType :collectorTypesToDelete) {
+                component.getCollectorItems().remove(cType);
+            }
+            componentRepository.save(component);
+        }
+        return dashboard;
+    }
+
+
+    @Override
+    public void deleteWidget(Dashboard dashboard, Widget widget,ObjectId componentId) {
+        int index = dashboard.getWidgets().indexOf(widget);
+        dashboard.getWidgets().set(index, null);
+        List<Widget> widgets = dashboard.getWidgets();
+        List<Widget> updatedWidgets = new ArrayList<>();
+        for (Widget w: widgets) {
+            if(w!=null)
+                updatedWidgets.add(w);
+        }
+        dashboard.setWidgets(updatedWidgets);
+        dashboardRepository.save(dashboard);
+
+        String widgetName = widget.getName();
+
+        List<CollectorType> collectorTypesToDelete = new ArrayList<>();
+        CollectorType cType = findCollectorType(widgetName);
+        collectorTypesToDelete.add(cType);
+        if(widgetName.equalsIgnoreCase("codeanalysis")){
+            collectorTypesToDelete.add(CollectorType.CodeQuality);
+            collectorTypesToDelete.add(CollectorType.StaticSecurityScan);
+            collectorTypesToDelete.add(CollectorType.LibraryPolicy);
+        }
+        if(componentId!=null){
+            Component component = componentRepository.findOne(componentId);
+            for (CollectorType c:collectorTypesToDelete) {
+                component.getCollectorItems().remove(c);
+            }
+
+            componentRepository.save(component);
+        }
+
+    }
+
+
+    private List<String> findUpdateCollectorItems(List<String> existingWidgets,List<String> currentWidgets){
+        List<String> result = existingWidgets.stream().filter(elem -> !currentWidgets.contains(elem)).collect(Collectors.toList());
+        return result;
+    }
+
+    private static CollectorType findCollectorType(String widgetName){
+        if(widgetName.equalsIgnoreCase("build")) return CollectorType.Build;
+        if(widgetName.equalsIgnoreCase("feature")) return CollectorType.AgileTool;
+        if(widgetName.equalsIgnoreCase("deploy")) return CollectorType.Deployment;
+        if(widgetName.equalsIgnoreCase("repo")) return CollectorType.SCM;
+        if(widgetName.equalsIgnoreCase("performanceanalysis")) return CollectorType.AppPerformance;
+        if(widgetName.equalsIgnoreCase("cloud")) return CollectorType.Cloud;
+        if(widgetName.equalsIgnoreCase("chatops")) return CollectorType.ChatOps;
+        return null;
     }
 
     private void getAppAndComponentNames(List<Dashboard> findByOwnersList) {
@@ -502,4 +648,62 @@ public class DashboardServiceImpl implements DashboardService {
             }
         }
     }
+
+    /**
+     * Get all dashboards filtered by title and Pageable ( default page size = 10)
+     *
+     * @param title, pageable
+     * @return Page<Dashboard>
+     */
+    @Override
+    public Page<Dashboard> getDashboardByTitleWithFilter(String title, Pageable pageable) {
+        Page<Dashboard> dashboardItems = dashboardRepository.findAllByTitleContainingIgnoreCase(title, pageable);
+        return dashboardItems;
+    }
+
+    /**
+     * Get count of all dashboards filtered by title
+     *
+     * @param title
+     * @return Integer
+     */
+    @Override
+    public Integer getAllDashboardsByTitleCount(String title) {
+        List<Dashboard> dashboards = dashboardRepository.findAllByTitleContainingIgnoreCase(title);
+        return dashboards != null ? dashboards.size() : 0;
+    }
+
+    /**
+     * Get count of all dashboards
+     *
+     * @param
+     * @return long
+     */
+    @Override
+    public long count() {
+        return dashboardRepository.count();
+    }
+
+    /**
+     * Get all dashboards with page size (default = 10)
+     *
+     * @param page size
+     * @return List of dashboards
+     */
+    @Override
+    public Page<Dashboard> findDashboardsByPage(Pageable page) {
+        return dashboardRepository.findAll(page);
+    }
+
+    /**
+     * Get page size
+     *
+     * @param
+     * @return Integer
+     */
+    @Override
+    public int getPageSize() {
+        return settings.getPageSize();
+    }
+
 }

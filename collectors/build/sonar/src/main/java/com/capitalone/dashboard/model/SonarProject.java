@@ -1,9 +1,9 @@
 package com.capitalone.dashboard.model;
 
 public class SonarProject extends CollectorItem {
-    private static final String INSTANCE_URL = "instanceUrl";
-    private static final String PROJECT_NAME = "projectName";
-    private static final String PROJECT_ID = "projectId";
+    protected static final String INSTANCE_URL = "instanceUrl";
+    protected static final String PROJECT_NAME = "projectName";
+    protected static final String PROJECT_ID = "projectId";
 
     public String getInstanceUrl() {
         return (String) getOptions().get(INSTANCE_URL);

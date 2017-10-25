@@ -18,6 +18,8 @@ public interface TeamRepository extends CrudRepository<Team, ObjectId>,
 
     Team findByTeamId(String teamId);
 
+    Team findByName(String name);
+
     /**
      * This essentially returns the max change date from the collection, based
      * on the last change date (or default delta change date property) available

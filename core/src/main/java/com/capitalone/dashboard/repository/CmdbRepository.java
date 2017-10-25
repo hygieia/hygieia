@@ -14,10 +14,16 @@ public interface CmdbRepository extends CrudRepository<Cmdb, ObjectId>  {
 
     Cmdb findByConfigurationItem(String configurationItem);
 
+    List<Cmdb> findAllByConfigurationItemContainingOrCommonNameContainingAllIgnoreCase(String configItemFilter, String commonNameFilter);
+
+    Page<Cmdb> findAllByItemTypeAndValidConfigItemAndIdIn(String itemType, boolean valid, List<ObjectId> idList, Pageable pageable);
+
     Page<Cmdb> findAllByItemTypeAndConfigurationItemContainingIgnoreCaseAndValidConfigItem(String itemType, String configurationItem, Pageable pageable, boolean valid);
 
     Cmdb findByConfigurationItemIgnoreCase(String configurationItem);
 
     List<Cmdb> findAllByItemType(String type);
+
+    Cmdb findByConfigurationItemAndItemType(String confiugrationItem, String itemType);
 
 }

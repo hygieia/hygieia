@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.collector;
 
+import com.capitalone.dashboard.model.BaseModel;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.HudsonJob;
 
@@ -11,6 +12,8 @@ import java.util.Set;
  */
 public interface HudsonClient {
 
+    enum jobData {BUILD, CONFIG};
+
     /**
      * Finds all of the configured jobs for a given instance and returns the set of
      * builds for each job. At a minimum, the number and url of each Build will be
@@ -19,7 +22,7 @@ public interface HudsonClient {
      * @param instanceUrl the URL for the Hudson instance
      * @return a summary of every build for each job on the instance
      */
-    Map<HudsonJob, Set<Build>> getInstanceJobs(String instanceUrl);
+    Map<HudsonJob, Map<HudsonClient.jobData, Set<BaseModel>>> getInstanceJobs(String instanceUrl);
 
     /**
      * Fetch full populated build information for a build.

@@ -10,6 +10,6 @@ import com.capitalone.dashboard.model.Feature;
 
 public interface IssueItemRepository extends CrudRepository<Feature, ObjectId> {
 
-	@Query(value = "{'collectorId' : ?0, 'sProjectID' : ?1}")
-	List<Feature> getFeaturesByCollectorAndProjectId(ObjectId collectorId, String sProjectID);
+	@Query(value = "{'collectorId' : ?0, 'sTeamName' : ?1, 'sProjectName' : ?2}")
+	List<Feature> getFeaturesByCollectorAndTeamNameAndProjectName(ObjectId collectorId, String team, String project);
 }
