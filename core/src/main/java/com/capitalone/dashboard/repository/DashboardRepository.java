@@ -44,4 +44,11 @@ public interface DashboardRepository extends PagingAndSortingRepository<Dashboar
 
 	long count();
 
+	Page<Dashboard> findByOwners(Owner owner,Pageable pageable);
+
+	List<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner,String name);
+
+	Page<Dashboard> findByOwnersAndTitleContainingIgnoreCase(Owner owner,String name, Pageable pageable);
+
+
 }
