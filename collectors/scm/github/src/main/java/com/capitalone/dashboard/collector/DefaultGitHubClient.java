@@ -3,10 +3,12 @@ package com.capitalone.dashboard.collector;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitHubParsed;
 import com.capitalone.dashboard.model.GitHubRepo;
 import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.util.Encryption;
 import com.capitalone.dashboard.util.EncryptionException;
 import com.capitalone.dashboard.util.Supplier;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -90,7 +93,7 @@ public class DefaultGitHubClient implements GitHubClient {
         while (!lastPage) {
             LOG.info("Executing " + queryUrlPage);
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            JSONArray jsonArray = paresAsArray(response);
+            JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
                 String sha = str(jsonObject, "sha");
@@ -181,7 +184,7 @@ public class DefaultGitHubClient implements GitHubClient {
         while (!lastPage && !stop) {
             LOG.info("Executing [" + queryUrlPage);
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            JSONArray jsonArray = paresAsArray(response);
+            JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
                 String message = str(jsonObject, "title");
@@ -196,7 +199,9 @@ public class DefaultGitHubClient implements GitHubClient {
                 String  updated = str(jsonObject, "updated_at");
                 long createdTimestamp = new DateTime(created).getMillis();
                 String commentsUrl = str(jsonObject, "comments_url");
+                String commitStatusesUrl = str(jsonObject, "statuses_url");
                 String reviewCommentsUrl = str(jsonObject, "review_comments_url");
+                String reviewsUrl = str(jsonObject, "url") + "/reviews";
 
                 GitRequest pull = new GitRequest();
 
@@ -227,23 +232,24 @@ public class DefaultGitHubClient implements GitHubClient {
                 pull.setRepoName(gitHubParsed.getRepoName());
 
                 JSONObject headObject = (JSONObject) jsonObject.get("head");
-                JSONObject headRepoObject = (JSONObject) headObject.get("repo");
                 if (headObject != null) {
-                    pull.setHeadSha(str(headObject, "sha"));
+                    String headSha = str(headObject, "sha");
+                    pull.setHeadSha(headSha);
                     pull.setSourceBranch(str(headObject, "ref"));
-                }
-                if (headRepoObject != null) {
-                    pull.setSourceRepo(str(headRepoObject, "full_name"));
+                    JSONObject headRepoObject = (JSONObject) headObject.get("repo");
+                    if (headRepoObject != null) {
+                        pull.setSourceRepo(str(headRepoObject, "full_name"));
+                    }
                 }
 
                 JSONObject baseObject = (JSONObject) jsonObject.get("base");
-                JSONObject baseRepoObject = (JSONObject) baseObject.get("repo");
                 if (baseObject != null) {
                     pull.setBaseSha(str(baseObject, "sha"));
                     pull.setTargetBranch(str(baseObject, "ref"));
-                }
-                if (baseRepoObject != null) {
-                    pull.setTargetRepo(str(baseRepoObject, "full_name"));
+                    JSONObject baseRepoObject = (JSONObject) baseObject.get("repo");
+                    if (baseRepoObject != null) {
+                        pull.setTargetRepo(str(baseRepoObject, "full_name"));
+                    }
                 }
 
                 pull.setCommentsUrl(commentsUrl);
@@ -252,6 +258,11 @@ public class DefaultGitHubClient implements GitHubClient {
                 List<Comment> reviewComments = getComments(reviewCommentsUrl, repo);
                 pull.setReviewComments(reviewComments);
                 pull.setReviewCommentsUrl(reviewCommentsUrl);
+                List<CommitStatus> commitStatuses = getCommitStatuses(commitStatusesUrl, repo);
+                pull.setCommitStatuses(commitStatuses);
+                List<Review> reviews = getReviews(reviewsUrl, repo);
+                pull.setReviews(reviews);
+                pull.setCommitStatuses(commitStatuses);
                 pulls.add(pull);
                 stop = (!MapUtils.isEmpty(prMap) && prMap.get(pull.getUpdatedAt()) != null) && (prMap.get(pull.getUpdatedAt()).equals(pull.getNumber()));
                 if (stop) {
@@ -299,7 +310,7 @@ public class DefaultGitHubClient implements GitHubClient {
         while (!lastPage) {
             LOG.info("Executing " + queryUrlPage);
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            JSONArray jsonArray = paresAsArray(response);
+            JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
 
@@ -365,7 +376,6 @@ public class DefaultGitHubClient implements GitHubClient {
      * @return
      * @throws RestClientException
      */
-
     public List<Comment> getComments(String commentsUrl, GitHubRepo repo) throws RestClientException {
 
         List<Comment> comments = new ArrayList<>();
@@ -377,7 +387,7 @@ public class DefaultGitHubClient implements GitHubClient {
         String queryUrlPage = commentsUrl;
         while (!lastPage) {
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            JSONArray jsonArray = paresAsArray(response);
+            JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
 
@@ -405,6 +415,97 @@ public class DefaultGitHubClient implements GitHubClient {
         return comments;
     }
 
+    /**
+     * Get commit statuses from the given commit status url
+     * Retrieve the most recent status for each unique context.
+     *
+     * See https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
+     * and https://developer.github.com/v3/repos/statuses/#get-the-combined-status-for-a-specific-ref
+     *
+     * @param statusUrl
+     * @param repo
+     * @return
+     * @throws RestClientException
+     */
+    public List<CommitStatus> getCommitStatuses(String statusUrl, GitHubRepo repo) throws RestClientException {
+
+        Map<String, CommitStatus> statuses = new HashMap<>();
+
+        // decrypt password
+        String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+
+        boolean lastPage = false;
+        String queryUrlPage = statusUrl;
+        while (!lastPage) {
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            JSONArray jsonArray = parseAsArray(response);
+            for (Object item : jsonArray) {
+                JSONObject jsonObject = (JSONObject) item;
+
+                String context = str(jsonObject, "context");
+                if ((context != null) && !statuses.containsKey(context)) {
+                    CommitStatus status = new CommitStatus();
+                    status.setContext(context);
+                    status.setDescription(str(jsonObject, "description"));
+                    status.setState(str(jsonObject, "state"));
+                    statuses.put(context, status);
+                }
+            }
+            if (CollectionUtils.isEmpty(jsonArray)) {
+                lastPage = true;
+            } else {
+                if (isThisLastPage(response)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                }
+            }
+        }
+        return new ArrayList<>(statuses.values());
+    }
+
+    /**
+     * Get reviews from the given reviews url
+     * @param reviewsUrl
+     * @param repo
+     * @return
+     * @throws RestClientException
+     */
+    public List<Review> getReviews(String reviewsUrl, GitHubRepo repo) throws RestClientException {
+
+        List<Review> reviews = new ArrayList<>();
+
+        // decrypt password
+        String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
+
+        boolean lastPage = false;
+        String queryUrlPage = reviewsUrl;
+        while (!lastPage) {
+            ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
+            JSONArray jsonArray = parseAsArray(response);
+            for (Object item : jsonArray) {
+                JSONObject jsonObject = (JSONObject) item;
+
+                Review review = new Review();
+                review.setState(str(jsonObject, "state"));
+                review.setBody(str(jsonObject, "body"));
+                review.setId(asInt(jsonObject, "id"));
+                reviews.add(review);
+            }
+            if (CollectionUtils.isEmpty(jsonArray)) {
+                lastPage = true;
+            } else {
+                if (isThisLastPage(response)) {
+                    lastPage = true;
+                } else {
+                    lastPage = false;
+                    queryUrlPage = getNextPageUrl(response);
+                }
+            }
+        }
+        return reviews;
+    }
 
     // Utilities
 
@@ -502,13 +603,34 @@ public class DefaultGitHubClient implements GitHubClient {
         return headers;
     }
 
-    private JSONArray paresAsArray(ResponseEntity<String> response) {
+    private JSONArray parseAsArray(ResponseEntity<String> response) {
         try {
             return (JSONArray) new JSONParser().parse(response.getBody());
         } catch (ParseException pe) {
             LOG.error(pe.getMessage());
         }
         return new JSONArray();
+    }
+
+    private JSONObject parseAsObject(ResponseEntity<String> response) {
+        try {
+            return (JSONObject) new JSONParser().parse(response.getBody());
+        } catch (ParseException pe) {
+            LOG.error(pe.getMessage());
+        }
+        return new JSONObject();
+    }
+
+    private int asInt(JSONObject json, String key) {
+        String val = str(json, key);
+        try {
+            if (val != null) {
+                return Integer.parseInt(val);
+            }
+        } catch (NumberFormatException ex) {
+            LOG.error(ex.getMessage());
+        }
+        return 0;
     }
 
     private String str(JSONObject json, String key) {
