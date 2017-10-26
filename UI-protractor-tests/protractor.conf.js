@@ -29,7 +29,7 @@ exports.config = {
         //     binary: '/usr/bin/firefox'
         // }
         chromeOptions: {
-            binary: 'node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.33',
+            binary: 'node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.28',
             // args: [ "--headless", "--disable-gpu", "--window-size=1600,1200" ]
             // args: [ "--start-maximized" ]
         }
