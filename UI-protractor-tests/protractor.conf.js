@@ -25,7 +25,7 @@ exports.config = {
     capabilities: {
         browserName: 'chrome',
         chromeOptions: {
-            binary: 'node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.28',
+            binary: 'node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.33',
             args: [
                 '--disable-infobars',
             ],
