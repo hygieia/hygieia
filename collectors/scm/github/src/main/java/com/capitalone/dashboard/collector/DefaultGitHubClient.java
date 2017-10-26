@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -198,6 +199,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 String  updated = str(jsonObject, "updated_at");
                 long createdTimestamp = new DateTime(created).getMillis();
                 String commentsUrl = str(jsonObject, "comments_url");
+                String commitStatusesUrl = str(jsonObject, "statuses_url");
                 String reviewCommentsUrl = str(jsonObject, "review_comments_url");
                 String reviewsUrl = str(jsonObject, "url") + "/reviews";
 
@@ -229,7 +231,6 @@ public class DefaultGitHubClient implements GitHubClient {
                 pull.setOrgName(gitHubParsed.getOrgName());
                 pull.setRepoName(gitHubParsed.getRepoName());
 
-                String commitStatusesUrl = null;
                 JSONObject headObject = (JSONObject) jsonObject.get("head");
                 if (headObject != null) {
                     String headSha = str(headObject, "sha");
@@ -238,11 +239,6 @@ public class DefaultGitHubClient implements GitHubClient {
                     JSONObject headRepoObject = (JSONObject) headObject.get("repo");
                     if (headRepoObject != null) {
                         pull.setSourceRepo(str(headRepoObject, "full_name"));
-                        commitStatusesUrl = str(headRepoObject, "commits_url");
-                        if (commitStatusesUrl != null) {
-                            commitStatusesUrl = commitStatusesUrl.replace("{/sha}", "/" + headSha);
-                            commitStatusesUrl += "/status";
-                        }
                     }
                 }
 
@@ -421,6 +417,11 @@ public class DefaultGitHubClient implements GitHubClient {
 
     /**
      * Get commit statuses from the given commit status url
+     * Retrieve the most recent status for each unique context.
+     *
+     * See https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
+     * and https://developer.github.com/v3/repos/statuses/#get-the-combined-status-for-a-specific-ref
+     *
      * @param statusUrl
      * @param repo
      * @return
@@ -428,7 +429,7 @@ public class DefaultGitHubClient implements GitHubClient {
      */
     public List<CommitStatus> getCommitStatuses(String statusUrl, GitHubRepo repo) throws RestClientException {
 
-        List<CommitStatus> statuses = new ArrayList<>();
+        Map<String, CommitStatus> statuses = new HashMap<>();
 
         // decrypt password
         String decryptedPassword = decryptString(repo.getPassword(), settings.getKey());
@@ -437,16 +438,18 @@ public class DefaultGitHubClient implements GitHubClient {
         String queryUrlPage = statusUrl;
         while (!lastPage) {
             ResponseEntity<String> response = makeRestCall(queryUrlPage, repo.getUserId(), decryptedPassword);
-            JSONObject root = parseAsObject(response);
-            JSONArray jsonArray = (JSONArray) root.get("statuses");
+            JSONArray jsonArray = parseAsArray(response);
             for (Object item : jsonArray) {
                 JSONObject jsonObject = (JSONObject) item;
 
-                CommitStatus status = new CommitStatus();
-                status.setContext(str(jsonObject, "context"));
-                status.setDescription(str(jsonObject, "description"));
-                status.setState(str(jsonObject, "state"));
-                statuses.add(status);
+                String context = str(jsonObject, "context");
+                if ((context != null) && !statuses.containsKey(context)) {
+                    CommitStatus status = new CommitStatus();
+                    status.setContext(context);
+                    status.setDescription(str(jsonObject, "description"));
+                    status.setState(str(jsonObject, "state"));
+                    statuses.put(context, status);
+                }
             }
             if (CollectionUtils.isEmpty(jsonArray)) {
                 lastPage = true;
@@ -459,7 +462,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 }
             }
         }
-        return statuses;
+        return new ArrayList<>(statuses.values());
     }
 
     /**
