@@ -4,6 +4,8 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.TestResult;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,4 +154,18 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
         );
         return template.find(query, Commit.class);
     }
+
+
+	@Override
+	public List<TestResult> findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(String jobUrl, long beginDt,long endDt) {
+		Query query = new Query(
+                Criteria.where("url").is(jobUrl)
+                        .andOperator(
+                                Criteria.where("timestamp").gte(beginDt),
+                                Criteria.where("timestamp").lte(endDt)
+                        )
+        );
+        return template.find(query, TestResult.class);
+
+	}
 }
