@@ -8,8 +8,15 @@ public class DashboardReviewResponse extends AuditReviewResponse {
     List<List<PeerReviewResponse>> allPeerReviewResponses;
 
     JobReviewResponse jobReviewResponse;
+    
+	StaticAnalysisResponse staticAnalysisResponse;
+	
+	CodeQualityProfileValidationResponse codeQualityProfileValidationResponse;
+	
+	TestResultsResponse testResultsResponse;
 
-    public String getDashboardTitle() {
+
+	public String getDashboardTitle() {
         return dashboardTitle;
     }
 
@@ -32,4 +39,32 @@ public class DashboardReviewResponse extends AuditReviewResponse {
     public void setJobReviewResponse(JobReviewResponse jobReviewResponse) {
         this.jobReviewResponse = jobReviewResponse;
     }
+    
+    
+	public StaticAnalysisResponse getStaticAnalysisResponse() {
+			return staticAnalysisResponse;
+	}
+
+	public void setStaticAnalysisResponse(StaticAnalysisResponse staticAnalysisResponse) {
+		this.staticAnalysisResponse = staticAnalysisResponse;
+	}
+	
+	public CodeQualityProfileValidationResponse getCodeQualityProfileValidationResponse() {
+		return codeQualityProfileValidationResponse;
+	}
+
+	public void setCodeQualityProfileValidationResponse(
+			CodeQualityProfileValidationResponse codeQualityProfileValidationResponse) {
+		this.codeQualityProfileValidationResponse = codeQualityProfileValidationResponse;
+	}
+	
+	public TestResultsResponse getTestResultsResponse() {
+		return testResultsResponse;
+	}
+
+	public void setTestResultsResponse(TestResultsResponse testResultsResponse) {
+		this.testResultsResponse = testResultsResponse;
+	}
+
+	
 }
