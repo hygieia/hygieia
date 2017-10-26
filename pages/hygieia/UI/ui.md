@@ -21,7 +21,7 @@ The Hygieia dashboard requires installation of:
 
 #### Mac OS X Installation
 
-If you do not already have NodeJS installed, download and install the NodeJS MSI package available at: https://nodejs.org/en/download/.
+If you do not already have NodeJS installed, download and install the [NodeJS MSI package](https://nodejs.org/en/download/) for your platform.
 
 *	**Step 1: Install Homebrew**
 
@@ -71,7 +71,7 @@ If you do not already have NodeJS installed, download and install the NodeJS MSI
 	
 #### Windows Installation
 
-If you do not already have NodeJS installed, download and install the NodeJS MSI package available at: https://nodejs.org/en/download/.
+If you do not already have NodeJS installed, download and install the [NodeJS MSI package](https://nodejs.org/en/download/) for your platform.
 
 *	**Step 1: Install npm**
 

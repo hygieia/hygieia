@@ -39,7 +39,7 @@ To build a Docker image for all components of Hygieia, execute the following ste
 	mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboarddb").createUser({user: "dashboarduser", pwd: "dbpassword", roles: [{role: "readWrite", db: "dashboarddb"}]})'
 	```
 
-*	**Step 4: Configure your Environment
+*	**Step 4: Configure your Environment**
 
 	To configure your environment, create a `docker-compose.override.yml`. The most commonly used properties are listed and the uncommented properties are mandatory for the collector to work:
 
@@ -74,11 +74,11 @@ To build a Docker image for all components of Hygieia, execute the following ste
 	  - SONAR_URL=http://192.168.99.100:9000
 	  - SONAR_CRON=0 * * * * *
 	```
-	**Note**: For dev/testing the project, change the CRON entries to ``"0 * * * * *"``.
+	**Note**: For dev/testing the project, change the CRON entries to `"0 * * * * *"`.
 
 	To refer to the generic properties, see the [docker-compose.yml](https://github.com/capitalone/Hygieia/blob/master/docker-compose.yml) file.
 
-*	**Step 5: Restart all Services**
+*	**Step 5: Restart All Services**
 
 	Ensure there is an existing user at start-up.
 
