@@ -25,8 +25,9 @@ exports.config = {
     capabilities: {
         browserName: 'chrome',
         chromeOptions: {
+            binary: 'node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.28',
             args: [
-                '--disable-infobars'
+                '--disable-infobars',
             ],
             prefs: {
                 // disable chrome's annoying password manager
