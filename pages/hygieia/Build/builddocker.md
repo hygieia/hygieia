@@ -1,5 +1,5 @@
 ---
-title: Build Docker
+title: Build Docker Image 
 tags:
 keywords:
 summary:
@@ -32,13 +32,13 @@ To build a Docker image for all components of Hygieia, execute the following ste
 	Execute the following commands to connect to MongoDB, and then add dashboard user:
 
 	```bash
-	# Connect to MongoDB
+	#Connect to MongoDB
 	docker exec -t -i mongodb2 bash
 
 	#Create dashboard user from the CLI
 	mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboarddb").createUser({user: "dashboarduser", pwd: "dbpassword", roles: [{role: "readWrite", db: "dashboarddb"}]})'
 	```
-
+	To build the Docker Image for the UI layer, refer to 
 *	**Step 4: Configure your Environment**
 
 	To configure your environment, create a `docker-compose.override.yml`. The most commonly used properties are listed and the uncommented properties are mandatory for the collector to work:
@@ -76,7 +76,7 @@ To build a Docker image for all components of Hygieia, execute the following ste
 	```
 	**Note**: For dev/testing the project, change the CRON entries to `"0 * * * * *"`.
 
-	To refer to the generic properties, see the [docker-compose.yml](https://github.com/capitalone/Hygieia/blob/master/docker-compose.yml) file.
+	For generic Docker configuration properties, refer to the [docker-compose.yml](https://github.com/capitalone/Hygieia/blob/master/docker-compose.yml) file.
 
 *	**Step 5: Restart All Services**
 
@@ -92,3 +92,5 @@ To build a Docker image for all components of Hygieia, execute the following ste
 	```bash
 	docker port hygieia-ui
 	```
+
+**Note**: You can build Docker images individually for the API and UI layers. For instructions, refer to the the [API](https://github.com/capitalone/Hygieia/blob/gh-pages/pages/hygieia/api/api.md#docker-image-for-api) and [UI](https://github.com/capitalone/Hygieia/blob/gh-pages/pages/hygieia/UI/ui.md#docker-image-for-ui-layer) documentation.
