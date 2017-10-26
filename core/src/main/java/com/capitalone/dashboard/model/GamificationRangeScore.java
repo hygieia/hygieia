@@ -2,31 +2,31 @@ package com.capitalone.dashboard.model;
 
 public class GamificationRangeScore {
 
-    private long min;
-    private long max;
-    private long score;
+    private Integer min;
+    private Integer max;
+    private Integer score;
 
-    public long getMin() {
+    public Integer getMin() {
         return min;
     }
 
-    public void setMin(long min) {
+    public void setMin(Integer min) {
         this.min = min;
     }
 
-    public long getMax() {
+    public Integer getMax() {
         return max;
     }
 
-    public void setMax(long max) {
+    public void setMax(Integer max) {
         this.max = max;
     }
 
-    public long getScore() {
+    public Integer getScore() {
         return score;
     }
 
-    public void setScore(long score) {
+    public void setScore(Integer score) {
         this.score = score;
     }
 }

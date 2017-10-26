@@ -2,16 +2,17 @@ package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.GamificationMetric;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface GamificationMetricRepository extends CrudRepository<GamificationMetric, ObjectId>, QueryDslPredicateExecutor<GamificationMetric> {
 
-    List<GamificationMetric> findAll();
+    Collection<GamificationMetric> findAll();
 
-    @Query(value = " {'metricName' : ?0 }")
-    GamificationMetric findMetricByName(String metricName);
+    GamificationMetric findByMetricName(String metricName);
+
+    Collection<GamificationMetric> findAllByEnabled(Boolean enabled);
+
 }

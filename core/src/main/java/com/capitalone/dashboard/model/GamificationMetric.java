@@ -2,16 +2,18 @@ package com.capitalone.dashboard.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Document(collection = "gamification_metrics")
 public class GamificationMetric extends BaseModel {
 
+    @NotNull
     private String metricName;
     private String formattedName;
     private String symbol;
     private String description;
-    private boolean status;
+    private Boolean enabled;
 
     private List<GamificationRangeScore> gamificationRangeScores;
 
@@ -55,11 +57,11 @@ public class GamificationMetric extends BaseModel {
         this.description = description;
     }
 
-    public boolean isStatus() {
-        return status;
+    public Boolean isEnabled() {
+        return enabled;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }
