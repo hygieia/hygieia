@@ -1,6 +1,9 @@
 package com.capitalone.dashboard.repository;
 
 import com.capitalone.dashboard.model.TestResult;
+
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -19,4 +22,6 @@ public interface TestResultRepository extends CrudRepository<TestResult, ObjectI
      * @return a TestSuite
      */
     TestResult findByCollectorItemIdAndExecutionId(ObjectId collectorItemId, String executionId);
+    
+    List<TestResult> findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(String jobUrl,long beginDt,long endDt);
 }

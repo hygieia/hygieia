@@ -12,4 +12,6 @@ public interface CollItemCfgHistRepository extends CrudRepository<CollItemCfgHis
     //List<CollItemCfgHist> findByCollectorItemIdAndJobAndJobUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqualOrderByTimestampDesc(ObjectId collectorItemId, String job, String jobUrl, long beginDt, long endDt);
 
     List<CollItemCfgHist> findByCollectorItemIdAndJobAndJobUrlAndTimestampBetweenOrderByTimestampDesc(ObjectId collectorItemId, String job, String jobUrl, long beginDt, long endDt);
+
+	List<CollItemCfgHist> findByJobUrlAndTimestampBetweenOrderByTimestampDesc(String url,long beginDate, long endDate);
 }
