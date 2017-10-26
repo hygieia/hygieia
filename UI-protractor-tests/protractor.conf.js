@@ -24,14 +24,16 @@ exports.config = {
 
     capabilities: {
         browserName: 'chrome',
-
-        // firefoxOptions: {
-        //     binary: '/usr/bin/firefox'
-        // }
         chromeOptions: {
-            binary: 'node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.28',
-            // args: [ "--headless", "--disable-gpu", "--window-size=1600,1200" ]
-            // args: [ "--start-maximized" ]
+            args: [
+                '--disable-infobars'
+            ],
+            prefs: {
+                // disable chrome's annoying password manager
+                'profile.password_manager_enabled': false,
+                'credentials_enable_service': false,
+                'password_manager_enabled': false
+            }
         }
     }
 };
