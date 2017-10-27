@@ -3,11 +3,11 @@ package com.capitalone.dashboard.service;
 import com.capitalone.dashboard.model.GamificationMetric;
 import com.capitalone.dashboard.repository.GamificationMetricRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
-@Service
+@Component
 public class GamificationServiceImpl implements GamificationService {
 
     private GamificationMetricRepository gamificationMetricRepository;
@@ -16,14 +16,16 @@ public class GamificationServiceImpl implements GamificationService {
     public GamificationServiceImpl(GamificationMetricRepository gamificationMetricRepository) { this.gamificationMetricRepository = gamificationMetricRepository; }
 
     @Override
-    public Collection<GamificationMetric> getGamificationMetrics() {
-        return gamificationMetricRepository.findAll();
+    public Collection<GamificationMetric> getGamificationMetrics(Boolean enabled) {
+        return (enabled == null) ? gamificationMetricRepository.findAll() : gamificationMetricRepository.findAllByEnabled(enabled);
     }
 
     @Override
-    public void saveGamificationMetrics(Collection<GamificationMetric> gamificationMetrics) {
-        for (GamificationMetric gamificationMetric : gamificationMetrics) {
-            gamificationMetricRepository.save(gamificationMetric);
+    public GamificationMetric saveGamificationMetric(GamificationMetric gamificationMetric) {
+        GamificationMetric existing = gamificationMetricRepository.findByMetricName(gamificationMetric.getMetricName());
+        if(existing != null) {
+            gamificationMetric.setId(existing.getId());
         }
+        return gamificationMetricRepository.save(gamificationMetric);
     }
 }
