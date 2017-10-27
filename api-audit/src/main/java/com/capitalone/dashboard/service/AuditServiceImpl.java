@@ -350,7 +350,7 @@ public class AuditServiceImpl implements AuditService {
         }
     }
 
-    boolean computePeerReviewStatus(GitRequest pr) {
+    boolean computePeerReviewStatus(GitRequest pr, PeerReviewResponse peerReviewResponse) {
         List<CommitStatus> statuses = pr.getCommitStatuses();
         List<Review> reviews = pr.getReviews();
         if (statuses != null) {
@@ -361,6 +361,8 @@ public class AuditServiceImpl implements AuditService {
             }
             for (CommitStatus status : statuses) {
                 if (prContexts.contains(status.getContext())) {
+                    //review done using LGTM workflow
+                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM);
                     return "success".equalsIgnoreCase(status.getState());
                 }
             }
@@ -368,6 +370,8 @@ public class AuditServiceImpl implements AuditService {
         if (reviews != null) {
             for (Review review : reviews) {
                 if ("approved".equalsIgnoreCase(review.getState())) {
+                    //review done using GitHub Review workflow
+                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_GHR);
                     return true;
                 }
             }
@@ -422,7 +426,27 @@ public class AuditServiceImpl implements AuditService {
             allPeerReviews.add(peerReviewResponse);
 
             //check to see if pr was reviewed
-            boolean peerReviewed = computePeerReviewStatus(pr);
+            boolean peerReviewed = computePeerReviewStatus(pr, peerReviewResponse);
+
+            if (!peerReviewed) {
+                //fallback check to see if pr has comments or reviewComments
+                List<Comment> comments = pr.getComments();
+                for(Comment comment: comments) {
+                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                        peerReviewed = true;
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REG_COMMENTS);
+                        break;
+                    }
+                }
+                List<Comment> reviewComments = pr.getReviewComments();
+                for(Comment comment: reviewComments) {
+                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                        peerReviewed = true;
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REV_COMMENTS);
+                        break;
+                    }
+                }
+            }
 
             if (peerReviewed) {
                 peerReviewResponse.addAuditStatus(AuditStatus.PULLREQ_REVIEWED_BY_PEER);
@@ -531,7 +555,7 @@ public class AuditServiceImpl implements AuditService {
     private boolean computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse, String baseSha, String headSha, GitRequest pr) {
         boolean traceBack = true;
         Commit commit = commitRepository.findByScmRevisionNumberAndScmUrl(commitSha, pr.getScmUrl());
-        if (commit == null || commit.getType() == null || commit.getType() == CommitType.Merge) {
+        if (commit == null || commit.getType() == null || commit.getType() == CommitType.Merge || commit.getType() == CommitType.NotBuilt) {
             return false;
         }
         LOGGER.warn("Enter computeParentCommit " + commitSha + " " + commit.getType());
