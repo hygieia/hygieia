@@ -25,9 +25,9 @@ exports.config = {
     capabilities: {
         browserName: 'chrome',
         chromeOptions: {
-            binary: '/prod/msp/build/slave1/workspace/Non-PAR/Non-Prod-Jobs/Hygieia/Hygieia_UI-tests/Hygieia/UI-protractor-tests/node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.28',
+            // binary: '/prod/msp/build/slave1/workspace/Non-PAR/Non-Prod-Jobs/Hygieia/Hygieia_UI-tests/Hygieia/UI-protractor-tests/node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.28',
             args: [
-                '--disable-infobars',
+                '--disable-infobars', "--disable-gpu", "--start-maximized"
             ],
             prefs: {
                 // disable chrome's annoying password manager

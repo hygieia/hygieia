@@ -2,6 +2,7 @@ const
     homePage = require('../pages/home.page'),
     loginPage = require('../pages/login.page'),
     featureWidgetPage = require('../pages/featureWidget.page'),
+    buildWidgetPage = require('../pages/buildWidget.page'),
     listOf = require('../text').listOf,
     expect = require('../expect').expect;
 
@@ -43,4 +44,29 @@ module.exports = function widgetSteps() {
         });
     });
 
+    // Step Definitions for Build Widget
+
+    this.When(/^I set a Build Job "(.*?)"/, (buildJob) => {
+        buildWidgetPage.setBuildJob(buildJob);
+    });
+
+    this.When(/^I set Build duration threshold "(.*?)"/, (buildDurationThreshold) => {
+        buildWidgetPage.setBuildDurationThreshold(buildDurationThreshold);
+    });
+
+    this.When(/^I set alert takeover criteria "(.*?)"/, (alertTakeoverCriteria) => {
+        buildWidgetPage.setAlertTakeoverCriteria(alertTakeoverCriteria);
+    });
+
+    this.Then(/^the build widget should display the latest builds label "(.*?)"/, (buildsLabel) => {
+        buildWidgetPage.getLatestBuildsLabel().then((text) => {
+            expect(text).to.equal(buildsLabel);
+        });
+    });
+
+    this.Then(/^the build widget should display the total builds label "(.*?)"/, (buildsLabel) => {
+        buildWidgetPage.getTotalBuildsLabel().then((text) => {
+            expect(text).to.equal(buildsLabel);
+        });
+    });
 };

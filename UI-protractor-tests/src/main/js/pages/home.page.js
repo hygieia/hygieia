@@ -15,7 +15,7 @@ const HomePage = function() {
 
     po.navigateToLoginPage = () => {
         browser.get('/#/');
-        // browser.manage().window().maximize();
+        browser.manage().window().maximize();
         // browser.manage().window().setSize(1680, 1024);
         po.loginHeader.click().then(() => {
             log.info(`Navigate to Login Page`);

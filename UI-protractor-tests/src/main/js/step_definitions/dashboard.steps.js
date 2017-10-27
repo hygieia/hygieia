@@ -49,7 +49,9 @@ module.exports = function dashboardSteps() {
         dashboardPage.configureFeatureWidget();
     });
 
-
+    this.When(/^I click on settings button for build widget/, () => {
+        dashboardPage.configureBuildWidget();
+    });
 
     this.When(/^I confirm delete/, () => {
         deleteConfirmationPage.confirmDelete();

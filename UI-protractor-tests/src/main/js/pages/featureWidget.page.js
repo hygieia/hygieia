@@ -14,7 +14,7 @@ const FeatureWidgetPage = function() {
     po.estimateMetricType           =   element(by.name(`estimateMetricType`));
     po.sprintType                   =   element(by.name(`sprintType`));
     po.listFeatureType              =   element(by.name(`listType`));
-    po.saveButton                   =   element(by.css(`[name="configForm"] .btn`));
+    po.saveButton                   =   element(by.cssContainingText(`.btn.btn-primary.btn-wide`, "Save"));
     po.kanbanProjectNameLabel       =   element(by.cssContainingText(`#kanban-widget-view .text-standard-sm`, "Project:"));
     po.projectNameInWidget          =   po.kanbanProjectNameLabel.element(by.tagName(`em`));
 
