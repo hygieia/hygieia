@@ -17,6 +17,7 @@ import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.request.PeerReviewRequest;
 import com.capitalone.dashboard.request.StaticAnalysisRequest;
+import com.capitalone.dashboard.response.PeerReviewResponse;
 import com.capitalone.dashboard.response.StaticAnalysisResponse;
 
 import org.apache.commons.collections.IteratorUtils;
@@ -55,7 +56,7 @@ public class AuditServiceTest {
     public void emptyPeerReview() {
         when(settings.getPeerReviewContexts()).thenReturn("foo");
         GitRequest gitRequest = new GitRequest();
-        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
     }
 
     @Test
@@ -68,12 +69,12 @@ public class AuditServiceTest {
         status.setState("SUCCESS");
         commitStatuses.add(status);
         gitRequest.setCommitStatuses(commitStatuses);
-        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
         status.setContext("foo");
         status.setState(null);
-        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
         status.setState("SUCCESS");
-        assertTrue(auditService.computePeerReviewStatus(gitRequest));
+        assertTrue(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
     }
 
     @Test
@@ -85,16 +86,16 @@ public class AuditServiceTest {
         List<Review> reviews = new ArrayList<>();
         reviews.add(review);
         gitRequest.setReviews(reviews);
-        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
         review.setState("APPROVED");
-        assertTrue(auditService.computePeerReviewStatus(gitRequest));
+        assertTrue(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
         List<CommitStatus> commitStatuses = new ArrayList<>();
         CommitStatus status = new CommitStatus();
         commitStatuses.add(status);
         gitRequest.setCommitStatuses(commitStatuses);
         status.setContext("foo");
         status.setState(null);
-        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
     }
 
     @Test
