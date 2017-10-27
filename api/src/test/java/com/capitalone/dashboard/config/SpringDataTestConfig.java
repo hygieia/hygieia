@@ -9,3 +9,5 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @EnableWebMvc
 @EnableSpringDataWebSupport
 public class SpringDataTestConfig extends WebMvcConfigurationSupport {}
+
+

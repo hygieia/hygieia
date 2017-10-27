@@ -9,8 +9,8 @@
         .controller('AdminController', AdminController);
 
 
-    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData'];
-    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData) {
+    AdminController.$inject = ['$scope', 'dashboardData', '$location', '$uibModal', 'userService', 'authService', 'userData', 'dashboardService', 'templateMangerData', 'gamificationMetricData'];
+    function AdminController($scope, dashboardData, $location, $uibModal, userService, authService, userData, dashboardService, templateMangerData, gamificationMetricData) {
         var ctrl = this;
         if (userService.isAuthenticated() && userService.isAdmin()) {
             $location.path('/admin');
@@ -44,20 +44,20 @@
             {
                 metricName: "codeCoverage",
                 displayName: "Code Coverage",
-                scoringRanges: [{ rangeMin: 0, rangeMax: 50, score: 0 },
-                    { rangeMin: 51, rangeMax: 60, score: 4 },
-                    { rangeMin: 61, rangeMax: 70, score: 8 },
-                    { rangeMin: 71, rangeMax: 80, score: 12 },
-                    { rangeMin: 81, rangeMax: 90, score: 16 },
-                    { rangeMin: 91, rangeMax: 95, score: 18 },
-                    { rangeMin: 96, rangeMax: 100, score: 20 }],
+                scoringRanges: [{ min: 0, max: 50, score: 0 },
+                    { min: 51, max: 60, score: 4 },
+                    { min: 61, max: 70, score: 8 },
+                    { min: 71, max: 80, score: 12 },
+                    { min: 81, max: 90, score: 16 },
+                    { min: 91, max: 95, score: 18 },
+                    { min: 96, max: 100, score: 20 }],
                 enabled: false
             },
             {
                 metricName: "unitTests",
                 displayName: "Unit Test Success",
-                scoringRanges: [{ rangeMin: 0, rangeMax: 99, score: 0 },
-                    { rangeMin: 100, rangeMax: 100, score: 20 }],
+                scoringRanges: [{ min: 0, max: 99, score: 0 },
+                    { min: 100, max: 100, score: 20 }],
                 enabled: false
             },
             {
@@ -67,6 +67,20 @@
                 enabled: false
             }
         ];
+
+        var testData = {
+            metricName: "codeCoverage2",
+            formattedName: "Code Coverage 2",
+            gamificationRangeScores: [{ min: 0, max: 50, score: 0 },
+                { min: 51, max: 60, score: 4 },
+                { min: 61, max: 70, score: 8 },
+                { min: 71, max: 80, score: 12 },
+                { min: 81, max: 90, score: 16 },
+                { min: 91, max: 95, score: 18 },
+                { min: 96, max: 100, score: 20 }],
+            enabled: false
+
+        };
 
         $scope.selectedMetric = ctrl.metricData[0];
 
@@ -107,6 +121,9 @@
         userData.getAllUsers().then(processUserResponse);
         userData.apitokens().then(processTokenResponse);
         templateMangerData.getAllTemplates().then(processTemplateResponse);
+        gamificationMetricData.getMetricData().then(processMetricResponse);
+        gamificationMetricData.getEnabledMetricData().then(processMetricResponse);
+        // gamificationMetricData.storeMetricData(testData).then(processMetricResponse);
 
 
         //implementation of logout
@@ -223,6 +240,10 @@
             ctrl.templates = data;
         }
 
+        function processMetricResponse(response) {
+            console.log(response);
+        }
+
         // navigate to create template modal
         function goToManager() {
             var modalInstance = $uibModal.open({
@@ -317,7 +338,7 @@
         function deleteMetricRange(sel) {
             var idx = -1;
             $scope.selectedMetric.scoringRanges.forEach(function(range, i) {
-                if (sel.rangeMin === range.rangeMin && sel.rangeMax == range.rangeMax && sel.score === range.score)
+                if (sel.min === range.min && sel.max == range.max && sel.score === range.score)
                     idx = i;
             });
 
@@ -332,7 +353,7 @@
         function addMetricRange() {
             ctrl.metricData.forEach(function(metric, i) {
                 if (metric.metricName === $scope.selectedMetric.metricName) {
-                    ctrl.metricData[i].scoringRanges.push({rangeMin: 0, rangeMax: 0, score: 0});
+                    ctrl.metricData[i].scoringRanges.push({min: 0, max: 0, score: 0});
                     $scope.selectedMetric = ctrl.metricData[i];
                 }
             });
