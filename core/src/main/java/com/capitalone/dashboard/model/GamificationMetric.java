@@ -15,14 +15,14 @@ public class GamificationMetric extends BaseModel {
     private String description;
     private Boolean enabled;
 
-    private List<GamificationRangeScore> gamificationRangeScores;
+    private List<GamificationScoringRange> gamificationScoringRanges;
 
-    public List<GamificationRangeScore> getGamificationRangeScores() {
-        return gamificationRangeScores;
+    public List<GamificationScoringRange> getGamificationScoringRanges() {
+        return gamificationScoringRanges;
     }
 
-    public void setGamificationRangeScores(List<GamificationRangeScore> gamificationRangeScores) {
-        this.gamificationRangeScores = gamificationRangeScores;
+    public void setGamificationScoringRanges(List<GamificationScoringRange> gamificationScoringRanges) {
+        this.gamificationScoringRanges = gamificationScoringRanges;
     }
 
     public String getMetricName() {
@@ -63,5 +63,19 @@ public class GamificationMetric extends BaseModel {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getId().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        GamificationMetric other = (GamificationMetric) obj;
+        return other.metricName.equals(this.metricName) && other.getId().equals(this.getId());
     }
 }
