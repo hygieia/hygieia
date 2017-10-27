@@ -1,20 +1,27 @@
-#Feature: Build Widget
-#
-#  As a software project stakeholder
-#  I want to ensure that I am able to build widget for my project
-#  In order to view project metrics.
-#
-#  @issues:TEART-2802
-#  Scenario: User configures a build widget
-#    Given I am an authorized project stakeholder
-#    And I am on the Hygieia home screen
-#    When I select a team dashboard named 'DummyTeamDashboard'
-#    And I click on the settings button for build widget
-#    And I enter a Build Job
-#    And I enter alert takeover criteria
-#    And I click on Save button
-#    Then the build widget should display the right information
-#
+Feature: Build Widget
+
+  As a software project stakeholder
+  I want to ensure that I am able to build widget for my project
+  In order to view project metrics.
+
+  @issues:TEART-2802
+  Scenario: User configures a build widget
+    Given I login with valid credentials hygieia_test_user and password
+    And I should be redirected to the home page
+    When I create a dashboard with "Team dashboard" "Select Templates" "Cap One" "BuildWidgetDashboard" "BuildWidgetApp"
+    And the current dashboard header should read BuildWidgetDashboard
+    And I click on settings button for build widget
+    And I set a Build Job "HygieiaJenkins : JenkinsHygProj-Dev"
+    And I set Build duration threshold "3"
+    And I set alert takeover criteria "5"
+    And I click on Save button
+    Then the build widget should display the latest builds label "LATEST BUILDS"
+    And the build widget should display the total builds label "TOTAL BUILDS"
+    And I navigate to home page
+    And I should be redirected to the home page
+    And I click on delete button for BuildWidgetDashboard
+    And I confirm delete
+
 #  @issues:TEART-2802
 #  Scenario: Verify the search functionality on the text box for Build Job
 #    Given I am an authorized project stakeholder
