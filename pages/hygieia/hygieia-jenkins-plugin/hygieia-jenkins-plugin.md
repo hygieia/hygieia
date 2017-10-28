@@ -1,58 +1,109 @@
 ---
-title: Hygieia-Jenkins Plugin
+title: 
 tags:
-keywords:
-summary:
+keywords: 
+summary: Jenkins Plugin for Hygieia
 sidebar: hygieia_sidebar
-permalink: hygieia-jenkins-plugin.html
+permalink: pluginjenkins.html
 ---
-# Hygieia℠ plugin for Jenkins - (started with Slack publisher)
+## Hygieia-Jenkins Plugin
 
-# Developer instructions
+Hygieia collectors are classified into the following types for data collection:
 
-Install Maven and JDK.  This was last built with Maven 3.3.9 and JDK 1.8. 
+- Pull-based Collectors - These collectors pull all information from the DevOps tools.
+- Push-based Collectors - These collectors collect a subset of data from the DevOps tools.
 
-Run unit tests
+The Hygieia-Jenkins plugin is a push-based collector that supports the Jenkins pipeline code for continuous integration and delivery. You can use the Hygieia-Jenkins plugin to publish data from Jenkins to the Hygieia dashboard. You can publish build and artifact information, sonar test results, deployment results, and Cucumber test results. Therefore, you need not run the corresponding collectors if you use Jenkins for build, deploy, sonar analysis, and Cucumber tests.
 
-    mvn test
+The Hygieia-Jenkins plugin requires installation of:
 
-Create an HPI file to install in Jenkins (HPI file will be in `target/hygieia-publisher.hpi`).
+- Maven (recommended version 3.3.9 and above)
+- JDK (recommended version 1.8)
 
-    mvn clean package 
+To configure the Hygieia-Jenkins Plugin, execute the following steps:
 
-If build fails due to a maven error that looks like this:
+*	**Step 1: Run Unit Test Cases**
 
-`[ERROR] Failed to execute goal on project hygieia-publisher: Could not resolve dependencies for project org.jenkins-ci.plugins:hygieia-publisher:hpi:1.3-SNAPSHOT: Could not find artifact com.capitalone.dashboard:core:jar:2.0.2-SNAPSHOT in anonymous (https://mycompany.nexus.com/nexus/content/groups/CLM) -> [Help 1][ERROR]`
+	From your project's root directory, run the unit test cases to check Hygieia code:
 
-Clone Hygieia root, `cd` to `core`, and do `mvn clean install` before building this plugin.
+	```bash
+	mvn test
+	```
+	
+*	**Step 2: Create HPI File**
 
+	Create an HPI file to install in Jenkins. The HPI file is stored at `\Hygieia\hygieia-jenkins-plugin\target\hygieia-publisher.hpi`. To build the Hygieia-Jenkins Plugin, execute the following command:
 
-# Important
-This plugin uses the Hygieia core package. The main project is JDK 1.8 compiled, if you have Jenkins running on previous Java versions, make sure to recompile core package with that previous version and then build this Jenkins plugin.
+	```bash
+	mvn clean package
+	```
+	
+	The output file `hygieia-publisher.jar` is generated in the `\hygieia-jenkins-plugin\target` folder.
 
-# Brief Instruction
-## Jenkins 2.0 w/ pipeline 
-1. Install the plugin by using "Advanced" option in Jenkins Plugin Management option to manually upload the file from local disk.
-2. Restart jenkins.
-3. Configure Global Hygieia Publisher in Jenkins Manage Jenkins/Configure System. Enter Hygieia API url such as `http://localhost:8090/api`. There is no API token implented at this time and it is work in progress.
-![Image](http://www.capitalone.io/Hygieia/media/images/jenkins-global.png)
-4. In Jenkins pipeline syntax page, Hygieia publish steps will show up:
+**Note**: The main project is compiled using JDK v1.8. If you are running Jenkins on Java versions prior to Java v1.8, recompile Hygieia’s core package with the prior version, and then build the Jenkins plugin.
+
+### Jenkins 2.0 with Pipeline
+
+To install the plugin in Jenkins:
+
+1. In the Jenkins toolbar, navigate to Manage Plugins > Advanced Tab.
+2. In the 'Upload Plugin' section, click 'Choose File', navigate to the `\hygieia-jenkins-plugin\target` folder, and then select the `hygieia-publisher.hpi` file. Click Upload. 
+   
+   Once the plugin is installed, you can view the plugin listed in the 'Installed' tab.
+3. Restart Jenkins.
+
+4. Configure Global Hygieia Publisher in Jenkins.
+
+   In the Jenkins toolbar, navigate to Manage Jenkins > Configure System. 
+   In the Jenkins URL, Enter the Hygieia API URL, `http://localhost:8080/api`.
+
+5. In Jenkins pipeline syntax page, Hygieia publish steps are displayed:
+
 ![Image](http://www.capitalone.io/Hygieia/media/images/jenkins2.0-steplist.png)
-5. Select a step (say Hygieia Deploy Step ), fill in the required information and click "Generate Pipeline Script". The generated scirpt now can be copied to the pipeline script:
+
+6. Select a step (for example, Hygieia Deploy Step), fill in the required information and click 'Generate Pipeline Script'. Copy the generated script to the pipeline script:
+
 ![Image](http://www.capitalone.io/Hygieia/media/images/jenkins2.0-hygieia-deploy-step.png)
-6. Screen shot below shows a simple pipeline script with maven build, hygieia artifact and deploy publishing.
+
+7. The following screenshot shows a simple pipeline script with Maven build, Hygieia artifact, and deploy publishing.
+
 ![Image](http://www.capitalone.io/Hygieia/media/images/jenkins2.0-pipeline-deploy-publish.png)
 
-## Jenkins (pre Jenkins 2.0) 
+### Jenkins (Versions Prior to 2.0)
 
-1. Install the plugin by using "Advanced" option in Jenkins Plugin Management option to manually upload the file from local disk.
-2. Restart jenkins.
-3. Configure Global Hygieia Publisher in Jenkins Manage Jenkins/Configure System. Enter Hygieia API url such as `http://localhost:8090/api`. There is no API token implented at this time and it is work in progress.
+1. In the Jenkins toolbar, navigate to Manage Plugins > Advanced Tab.
+2. In the 'Upload Plugin' section, click 'Choose File', navigate to the `\hygieia-jenkins-plugin\target` folder, and then select the `hygieia-publisher.hpi` file. Click Upload. 
+   
+   Once the plugin is installed, you can view the plugin listed in the 'Installed' tab.
+3. Restart Jenkins.
+4. Configure Global Hygieia Publisher in Jenkins.
+
+   In the Jenkins toolbar, navigate to Manage Jenkins > Configure System. 
+   In the Jenkins URL, Enter the Hygieia API URL, `http://localhost:8080/api`.
 
 ![Image](http://www.capitalone.io/Hygieia/media/images/jenkins-global.png)
 
-4. For a build job, add a Post build action "Hygieia Publisher". 
-5. Select what to send to Hygieia. Currently, "Build", "Artifact Info", "Sonar Anslysis", "Deployment" and "Cucumber Test Results" can be published. 
+5. For a build job, add the Post build action 'Hygieia Publisher'. 
+6. Select the data to be sent to Hygieia. Currently, 'Build', 'Artifact Info', 'Sonar Analysis', 'Deployment', and 'Cucumber Test Results' can be published.
 
 ![Image](http://www.capitalone.io/Hygieia/media/images/jenkins-job-config.png)
 
+### Troubleshooting Instructions
+
+The build fails due to the following maven error:
+
+`[ERROR] Failed to execute goal on project hygieia-publisher: Could not resolve dependencies for project org.jenkins-ci.plugins:hygieia-publisher:hpi:1.3-SNAPSHOT: Could not find artifact com.capitalone.dashboard:core:jar:2.0.2-SNAPSHOT in anonymous (https://mycompany.nexus.com/nexus/content/groups/CLM) > [Help 1][ERROR]`
+
+In this case, before you build the Hygieia-Jenkins Plugin, clone Hygieia root, change directory to `\Hygieia\core`, and then execute the following command:
+
+```bash
+mvn clean install
+```
+
+## GitHub Webhook
+
+You can use GitHub webhooks to publish commit information to the Feature widget in the Hygieia dashboard. If you use webhooks, you need not run the GitHub collector.
+
+* Your Github webhook’s payload URL should be set to: http://hygieia-base-url/api/commit/github/v3. 
+
+* Select the option of publishing just the 'push' events.

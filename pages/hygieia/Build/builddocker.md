@@ -1,5 +1,5 @@
 ---
-title: Build Docker
+title: Build Docker Image 
 tags:
 keywords:
 summary:
@@ -7,72 +7,90 @@ sidebar: hygieia_sidebar
 permalink: builddocker.html
 ---
 
-### Build Docker images and setup id for mongodb
+To build a Docker image for all components of Hygieia, execute the following steps:
 
-* Build the containers
+*	**Step 1: Build the Containers**
 
-```bash
-mvn docker:build
-```
+	To package the Hygieia source code into an executable JAR file, run the Maven build from the `\Hygieia` directory of your source code installation:
 
-* Bring up the container images
+	```bash
+	mvn docker:build
+	```
 
-```bash
-docker-compose up -d
-```
+*	**Step 2: Start the Container Images**
 
-* Create a user in Mongo (if you log into the container then you don't have to install Mongo locally)
+	Start containers in the background and keep them running:
 
-```bash
-docker exec -t -i mongodb2 bash
-```
-```bash
-mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboard").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboard"}]})'
-```
+	```bash
+	docker-compose up -d
+	```
 
-## Create a `docker-compose.override.yml` to configure your environment
-These are the most common entries, the uncommented ones are mandatory if you want the collector to work.
-For dev/testing you will find it useful to change the CRON entries to ``"0 * * * * *"``
-```
-hygieia-github-scm-collector:
-  environment:
-  - GITHUB_HOST=github.com
-  - GITHUB_CRON=0 * * * * *
-  - GITHUB_COMMIT_THRESHOLD_DAYS=300
-hygieia-jira-feature-collector:
-  environment:
-  - JIRA_BASE_URL=https://mycompany.atlassian.net/
-  - JIRA_CREDENTIALS=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  - JIRA_ISSUE_TYPE_ID=10200
-  - JIRA_SPRINT_DATA_FIELD_NAME=customfield_10007
-  - JIRA_EPIC_FIELD_NAME=customfield_10008
-hygieia-jenkins-build-collector:
-  environment:
-  - JENKINS_CRON=0 * * * * *
-  - JENKINS_MASTER=http://192.168.99.100:9100
-  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
-  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXX
-hygieia-jenkins-cucumber-test-collector:
-  environment:
-  - JENKINS_CRON=0 * * * * *
-  - JENKINS_MASTER=http://192.168.99.100:9100
-  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
-  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXX
-  - JENKINS_CUCUMBER_JSON_FILENAME=cucumber-report.json
-hygieia-sonar-codequality-collector:
-  environment:
-  - SONAR_URL=http://192.168.99.100:9000
-  - SONAR_CRON=0 * * * * *
-```
+*	**Step 3: Create a User in MongoDB**
 
-* Make sure everything is restarted - _it may fail if the user doesn't exist at start-up_
+	If you login to the container, then you do not have to install MongoDB locally.
 
-```bash
-docker-compose restart
-```
+	Execute the following commands to connect to MongoDB, and then add dashboard user:
 
-* Get the port for the UI
+	```bash
+	#Connect to MongoDB
+	docker exec -t -i mongodb2 bash
 
-```bash
-docker port hygieia-ui
-```
+	#Create dashboard user from the CLI
+	mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboarddb").createUser({user: "dashboarduser", pwd: "dbpassword", roles: [{role: "readWrite", db: "dashboarddb"}]})'
+	```
+	To build the Docker Image for the UI layer, refer to 
+*	**Step 4: Configure your Environment**
+
+	To configure your environment, create a `docker-compose.override.yml`. The most commonly used properties are listed and the uncommented properties are mandatory for the collector to work:
+
+	```bash
+	hygieia-github-scm-collector:
+	  environment:
+	  - GITHUB_HOST=github.com
+	  - GITHUB_CRON=0 * * * * *
+	  - GITHUB_COMMIT_THRESHOLD_DAYS=300
+	hygieia-jira-feature-collector:
+	  environment:
+	  - JIRA_BASE_URL=https://mycompany.atlassian.net/
+	  - JIRA_CREDENTIALS=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	  - JIRA_ISSUE_TYPE_ID=10200
+	  - JIRA_SPRINT_DATA_FIELD_NAME=customfield_10007
+	  - JIRA_EPIC_FIELD_NAME=customfield_10008
+	hygieia-jenkins-build-collector:
+	  environment:
+	  - JENKINS_CRON=0 * * * * *
+	  - JENKINS_MASTER=http://192.168.99.100:9100
+	  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
+	  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXX
+	hygieia-jenkins-cucumber-test-collector:
+	  environment:
+	  - JENKINS_CRON=0 * * * * *
+	  - JENKINS_MASTER=http://192.168.99.100:9100
+	  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
+	  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXX
+	  - JENKINS_CUCUMBER_JSON_FILENAME=cucumber-report.json
+	hygieia-sonar-codequality-collector:
+	  environment:
+	  - SONAR_URL=http://192.168.99.100:9000
+	  - SONAR_CRON=0 * * * * *
+	```
+	**Note**: For dev/testing the project, change the CRON entries to `"0 * * * * *"`.
+
+	For generic Docker configuration properties, refer to the [docker-compose.yml](https://github.com/capitalone/Hygieia/blob/master/docker-compose.yml) file.
+
+*	**Step 5: Restart All Services**
+
+	Ensure there is an existing user at start-up.
+
+	```bash
+	#Restarts all stopped and running services
+	docker-compose restart
+	```
+
+	To get the port for the UI Layer, execute the following command:
+
+	```bash
+	docker port hygieia-ui
+	```
+
+**Note**: You can build Docker images individually for the API and UI layers. For instructions, refer to the the [API](https://github.com/capitalone/Hygieia/blob/gh-pages/pages/hygieia/api/api.md#docker-image-for-api) and [UI](https://github.com/capitalone/Hygieia/blob/gh-pages/pages/hygieia/UI/ui.md#docker-image-for-ui-layer) documentation.
