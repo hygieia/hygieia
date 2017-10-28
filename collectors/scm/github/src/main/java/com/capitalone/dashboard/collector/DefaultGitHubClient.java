@@ -192,6 +192,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 JSONObject jsonObject = (JSONObject) item;
                 String message = str(jsonObject, "title");
                 String number = str(jsonObject, "number");
+                LOG.info("pr " + number + " " + message);
                 String sha = str(jsonObject, "merge_commit_sha");
 
                 JSONObject userObject = (JSONObject) jsonObject.get("user");
@@ -541,13 +542,17 @@ public class DefaultGitHubClient implements GitHubClient {
         } else {
             for (String l : link) {
                 if (l.contains("rel=\"next\"")) {
-                    String[] parts = link.get(0).split(";");
-                    if (parts.length > 0) {
-                        nextPageUrl = parts[0].replaceFirst("<","");
-                        nextPageUrl = nextPageUrl.replaceFirst(">","").trim();
-
+                    String[] parts = l.split(",");
+                    if (parts != null && parts.length > 0) {
+                        for(int i=0; i<parts.length; i++) {
+                            if (parts[i].contains("rel=\"next\"")) {
+                                nextPageUrl = parts[i].split(";")[0];
+                                nextPageUrl = nextPageUrl.replaceFirst("<","");
+                                nextPageUrl = nextPageUrl.replaceFirst(">","").trim();
+                                return nextPageUrl;
+                            }
+                        }
                     }
-                    return nextPageUrl;
                 }
             }
         }
