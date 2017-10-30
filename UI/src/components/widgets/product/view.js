@@ -10,8 +10,8 @@
         }});
 
 
-    productViewController.$inject = ['$scope', '$document', '$uibModal', '$location', '$q', '$stateParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData', 'cicdGatesData'];
-    function productViewController($scope, $document, $uibModal, $location, $q, $stateParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData, cicdGatesData) {
+    productViewController.$inject = ['$scope', '$document', '$uibModal', '$location', '$q', '$stateParams', '$timeout', 'buildData', 'codeAnalysisData', 'collectorData', 'dashboardData', 'pipelineData', 'testSuiteData', 'productBuildData', 'productCodeAnalysisData', 'productCommitData', 'productSecurityAnalysisData', 'productTestSuiteData', 'cicdGatesData', 'gamificationMetricData'];
+    function productViewController($scope, $document, $uibModal, $location, $q, $stateParams, $timeout, buildData, codeAnalysisData, collectorData, dashboardData, pipelineData, testSuiteData, productBuildData, productCodeAnalysisData, productCommitData, productSecurityAnalysisData, productTestSuiteData, cicdGatesData, gamificationMetricData) {
         /*jshint validthis:true */
         var ctrl = this;
 
@@ -88,70 +88,55 @@
         ctrl.orderedStages = {};
         ctrl.scoreBoardData = [];
         ctrl.widgetView = ctrl.tabs[0].name;
-        ctrl.scoreBoardMetrics = [
-            {
-                metricName: "codeCoverage",
-                displayName: "Code Coverage",
-                scoreRanges: [{ rangeMin: 0, rangeMax: 50, score: 0 },
-                    { rangeMin: 51, rangeMax: 60, score: 4 },
-                    { rangeMin: 61, rangeMax: 70, score: 8 },
-                    { rangeMin: 71, rangeMax: 80, score: 12 },
-                    { rangeMin: 81, rangeMax: 90, score: 16 },
-                    { rangeMin: 91, rangeMax: 95, score: 18 },
-                    { rangeMin: 96, rangeMax: 100, score: 20 }],
-                displaySymbol: "%",
-                description: "This metric is based on the percentage of code covered by unit tests as measured by Sonar."
-            },
-            {
-                metricName: "unitTests",
-                displayName: "Unit Test Success",
-                scoreRanges: [{ rangeMin: 0, rangeMax: 99, score: 0 },
-                    { rangeMin: 100, rangeMax: 100, score: 20 }],
-                displaySymbol: "%",
-                description: "This metric is based on whether or not the unit tests are passing."
-            },
-            {
-                metricName: "buildSuccess",
-                displayName: "Build Success",
-                scoreRanges: [{ rangeMin: 0, rangeMax: 10, score: 0 },
-                    { rangeMin: 11, rangeMax: 60, score: 4 },
-                    { rangeMin: 61, rangeMax: 70, score: 8 },
-                    { rangeMin: 71, rangeMax: 80, score: 12 },
-                    { rangeMin: 81, rangeMax: 90, score: 16 },
-                    { rangeMin: 91, rangeMax: 95, score: 18 },
-                    { rangeMin: 96, rangeMax: 100, score: 20 }],
-                displaySymbol: "%",
-                description: "This metric is based on the number of successful builds."
-            },
-	        {
-                metricName: "codeIssues",
-                displayName: "Code Violations",
-                scoreRanges: [{ rangeMin: 0, rangeMax: 0, score: 20 },
-                    { rangeMin: 1, rangeMax: 10, score: 10 },
-                    { rangeMin: 11, rangeMax: 100, score: 0 }],
-                displaySymbol: "",
-                description: "This metric is based on the number of source code issues discovered by Sonar."
-            },
-            {
-                metricName: "commitMessageMatch1",
-                displayName: "Fixed Builds",
-                scorePerCommit: 2,
-                commitMatchRegex: "FIX_BUILD",
-                displaySymbol: "",
-                description: "This metric is based on the number of commits that fixed broken builds. Note that the commit message must match the regular expression."
-            }
-        ];
 
         // method to toggle tabs
         function toggleView(index) {
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
             if (ctrl.tabs[index].name == "Gamification") {
-                ctrl.populateScoreboardData();
-                $scope.chartData = ctrl.getChartData();
+                gamificationMetricData.getEnabledMetricData().then(ctrl.populateScoreboardData);
             }
         }
 
-        function populateScoreboardData() {
+        function defineChartProperties() {
+            $scope.chartOptions = {
+                plugins: [
+                    // Chartist.plugins.ctBarLabels({
+                    //     labelInterpolationFnc: function(text, value) {
+                    //         return value > 0 ? value : "";
+                    //     }
+                    // }),
+                    Chartist.plugins.legend({
+                        legendNames: ctrl.getGamificationMetricDisplayNames(),
+                        position: 'bottom'
+                    }),
+                    Chartist.plugins.tooltip()
+                ],
+                stackBars: true,
+                centerLabels: true,
+                horizontalBars: true,
+                height: "220",
+                width: "80%",
+                axisX: {
+                    showLabel: false,
+                    showGrid: false,
+                    scaleMinSpace: 20,
+                    onlyInteger: true
+                },
+                axisY: {
+                    showGrid: false,
+                    scaleMinSpace: 20,
+                    offset: ctrl.getOffset(),
+                    labeloffset: {
+                        x: 0,
+                        y: 10
+                    }
+                }
+            };
+        }
+
+        function populateScoreboardData(response) {
+            ctrl.scoreBoardMetrics = response.data;
+            console.log(ctrl.scoreBoardMetrics);
             var teamScoreBoardData = {};
             console.log(ctrl.configuredTeams);
             _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
@@ -195,6 +180,9 @@
                 teamScoreBoardData = {};
             });
             console.log("Scoreboard data :", ctrl.scoreBoardData);
+
+            defineChartProperties();
+            $scope.chartData = ctrl.getChartData();
         }
 
         function parseCommitMessages(commits, regex){
@@ -241,7 +229,7 @@
                         score = -1;
                     } else {
                         var metricValue = Math.round(configuredTeam.summary[metricName].number);
-                        scoreMetaData.scoreRanges.forEach(function(rangeObj) {
+                        scoreMetaData.gamificationRangeScores.forEach(function(rangeObj) {
                             if (metricValue >= rangeObj.rangeMin && metricValue <= rangeObj.rangeMax) {
                                 score = rangeObj.score;
                                 return score;
@@ -746,41 +734,6 @@
                     offset = configuredTeam.name.length;
             });
             return offset*10;
-        };
-
-        $scope.chartOptions = {
-            plugins: [
-                // Chartist.plugins.ctBarLabels({
-                //     labelInterpolationFnc: function(text, value) {
-                //         return value > 0 ? value : "";
-                //     }
-                // }),
-                Chartist.plugins.legend({
-                    legendNames: ctrl.getGamificationMetricDisplayNames(),
-                    position: 'bottom'
-                }),
-                Chartist.plugins.tooltip()
-            ],
-            stackBars: true,
-            centerLabels: true,
-            horizontalBars: true,
-            height: "220",
-            width: "80%",
-            axisX: {
-                showLabel: false,
-                showGrid: false,
-                scaleMinSpace: 20,
-                onlyInteger: true
-            },
-            axisY: {
-                showGrid: false,
-                scaleMinSpace: 20,
-                offset: ctrl.getOffset(),
-                labeloffset: {
-                    x: 0,
-                    y: 10
-                }
-            }
         };
 
         function getGamificationMetricDisplayNames() {
