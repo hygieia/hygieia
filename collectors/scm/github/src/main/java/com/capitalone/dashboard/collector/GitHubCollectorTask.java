@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 
 import java.net.MalformedURLException;
@@ -33,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +53,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     private final ComponentRepository dbComponentRepository;
     private static final long FOURTEEN_DAYS_MILLISECONDS = 14 * 24 * 60 * 60 * 1000;
     private static final String API_RATE_LIMIT_MESSAGE = "API rate limit exceeded";
+    private List<Pattern> commitExclusionPatterns = new ArrayList<>();
 
     @Autowired
     public GitHubCollectorTask(TaskScheduler taskScheduler,
@@ -69,6 +72,12 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         this.gitHubSettings = gitHubSettings;
         this.dbComponentRepository = dbComponentRepository;
         this.gitRequestRepository = gitRequestRepository;
+        if (!CollectionUtils.isEmpty(gitHubSettings.getNotBuiltCommits())) {
+            for (String regExStr : gitHubSettings.getNotBuiltCommits()) {
+                Pattern pattern = Pattern.compile(regExStr, Pattern.CASE_INSENSITIVE);
+                commitExclusionPatterns.add(pattern);
+            }
+        }
     }
 
     @Override
@@ -163,7 +172,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 try {
                     LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + ":: get commits");
                     // Step 1: Get all the commits
-                    for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
+                    for (Commit commit : gitHubClient.getCommits(repo, firstRun, commitExclusionPatterns)) {
                         LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
                         if (isNewCommit(repo, commit)) {
                             commit.setCollectorItemId(repo.getId());
@@ -194,6 +203,15 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                     LOG.error("Error fetching commits for:" + repo.getRepoUrl(), hc);
                     if (! (isRateLimitError(hc) || hc.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) ) {
                         CollectionError error = new CollectionError(hc.getStatusCode().toString(), hc.getMessage());
+                        repo.getErrors().add(error);
+                    }
+                } catch (ResourceAccessException ex) {
+                    //handle case where repo is valid but github returns connection refused due to outages??
+                    if (ex.getMessage() != null && ex.getMessage().contains("Connection refused")) {
+                        LOG.error("Error fetching commits for:" + repo.getRepoUrl(), ex);
+                    } else {
+                        LOG.error("Error fetching commits for:" + repo.getRepoUrl(), ex);
+                        CollectionError error = new CollectionError(CollectionError.UNKNOWN_HOST, repo.getRepoUrl());
                         repo.getErrors().add(error);
                     }
                 } catch (RestClientException | MalformedURLException ex) {
