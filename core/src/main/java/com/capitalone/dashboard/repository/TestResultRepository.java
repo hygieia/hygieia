@@ -19,4 +19,5 @@ public interface TestResultRepository extends CrudRepository<TestResult, ObjectI
      * @return a TestSuite
      */
     TestResult findByCollectorItemIdAndExecutionId(ObjectId collectorItemId, String executionId);
+    TestResult findByCollectorItemId(ObjectId collectorItemId);
 }

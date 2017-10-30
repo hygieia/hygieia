@@ -5,6 +5,7 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.CodeQualityType;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.request.PerfTestDataCreateRequest;
 import com.capitalone.dashboard.request.TestDataCreateRequest;
 import com.capitalone.dashboard.request.TestResultRequest;
 import com.capitalone.dashboard.service.TestResultService;
@@ -42,10 +43,20 @@ public class TestResultController {
         return testResultService.search(request);
     }
 
+
     @RequestMapping(value = "/quality/test", method = POST,
+                consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+        public ResponseEntity<String> createTest(@Valid @RequestBody TestDataCreateRequest request) throws HygieiaException {
+            String response = testResultService.create(request);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(response);
+    }
+
+    @RequestMapping(value = "/quality/perftest", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createTest(@Valid @RequestBody TestDataCreateRequest request) throws HygieiaException {
-        String response = testResultService.create(request);
+    public ResponseEntity<String> createPerfTest(@Valid @RequestBody PerfTestDataCreateRequest request) throws HygieiaException {
+        String response = testResultService.createPerf(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
