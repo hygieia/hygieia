@@ -67,7 +67,7 @@ public class GamificationMetric extends BaseModel {
 
     @Override
     public int hashCode() {
-        return this.getId().hashCode();
+        return this.getId() != null ? this.getId().hashCode() : 0;
     }
 
     @Override
