@@ -178,9 +178,11 @@
                 teamScoreBoardData = {};
             });
             console.log("Scoreboard data :", ctrl.scoreBoardData);
+            console.log("Scoreboard metrics :", ctrl.scoreBoardMetrics);
 
             defineChartProperties();
             $scope.chartData = ctrl.getChartData();
+            $scope.scoreBoardMetrics = ctrl.scoreBoardMetrics;
         }
 
         function parseCommitMessages(commits, regex){
@@ -211,7 +213,7 @@
                             metricName: metricName,
                             metricScore: metricScore,
                             metricValue: metricValue,
-                            scoreBoardMetrics: ctrl.scoreBoardMetrics
+                            scoreBoardMetrics: $scope.scoreBoardMetrics
                         }
                     }
                 }
@@ -228,7 +230,7 @@
                     } else {
                         var metricValue = Math.round(configuredTeam.summary[metricName].number);
                         scoreMetaData.gamificationRangeScores.forEach(function(rangeObj) {
-                            if (metricValue >= rangeObj.rangeMin && metricValue <= rangeObj.rangeMax) {
+                            if (metricValue >= rangeObj.min && metricValue <= rangeObj.max) {
                                 score = rangeObj.score;
                                 return score;
                             }

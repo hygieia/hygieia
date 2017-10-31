@@ -220,7 +220,7 @@
         <table class="gamification-table" >
             <tr>
                 <th>Team Name</th>
-                <th ng-repeat="metric in ctrl.scoreBoardMetrics">{{ metric.displayName }}</th>
+                <th ng-repeat="metric in scoreBoardMetrics">{{ metric.formattedName }}</th>
                 <th>Total</th>
             </tr>
             <tr ng-repeat="teamScoreRecord in ctrl.scoreBoardData">
