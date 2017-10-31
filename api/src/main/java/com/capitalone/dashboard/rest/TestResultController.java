@@ -53,7 +53,7 @@ public class TestResultController {
                     .body(response);
     }
 
-    @RequestMapping(value = "/quality/perftest", method = POST,
+    @RequestMapping(value = "/quality/testresult", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createPerfTest(@Valid @RequestBody PerfTestDataCreateRequest request) throws HygieiaException {
         String response = testResultService.createPerf(request);
