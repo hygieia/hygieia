@@ -24,7 +24,7 @@
                $scope.formattedName = metricData.formattedName;
                $scope.symbol = metricData.symbol;
                $scope.rangeMatrix = [];
-               metricData.gamificationRangeScores.forEach(function (rangeData) {
+               metricData.gamificationScoringRanges.forEach(function (rangeData) {
                    var range = (rangeData.min == rangeData.max) ? "VALUE = " + rangeData.max : rangeData.min + "  <= VALUE <=  " + rangeData.max;
                    var rangeMatrixElement = {
                        range: range,

@@ -71,7 +71,7 @@
         var testData = {
             metricName: "codeCoverage2",
             formattedName: "Code Coverage 2",
-            gamificationRangeScores: [{ min: 0, max: 50, score: 0 },
+            gamificationScoringRanges: [{ min: 0, max: 50, score: 0 },
                 { min: 51, max: 60, score: 4 },
                 { min: 61, max: 70, score: 8 },
                 { min: 71, max: 80, score: 12 },

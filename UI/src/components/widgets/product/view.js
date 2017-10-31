@@ -200,7 +200,7 @@
                         score = -1;
                     } else {
                         var metricValue = Math.round(configuredTeam.summary[metricName].number);
-                        scoreMetaData.gamificationRangeScores.forEach(function(rangeObj) {
+                        scoreMetaData.gamificationScoringRanges.forEach(function(rangeObj) {
                             if (metricValue >= rangeObj.min && metricValue <= rangeObj.max) {
                                 score = rangeObj.score;
                                 return score;
