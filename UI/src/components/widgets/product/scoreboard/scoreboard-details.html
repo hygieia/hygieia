@@ -2,34 +2,20 @@
     <div ng-if="ctrl.isScoreDefined() == true">
         <label class="modal-label">{{description}}</label>
 
-        <label class="modal-label">Your {{displayName}} is {{value}}{{displaySymbol}} which gives you the score {{score}} based on the below scoring mechanism </label>
+        <label class="modal-label">Your {{formattedName}} is {{value}}{{symbol}} which gives you the score {{score}} based on the below scoring mechanism </label>
 
         <label class="modal-label">Scoring Details</label>
 
-        <div ng-if="commitMessageMatch">
-            <table class="scoreboard-range-table">
-                <tr>
-                    <th>Points per Commit</th>
-                    <th>Regex to Match</th>
-                </tr>
-                <tr>
-                    <td>{{scorePerCommit}}</td>
-                    <td>{{commitMatchRegex}}</td>
-                </tr>
-            </table>
-        </div>
-        <div ng-if="!commitMessageMatch">
-            <table class="scoreboard-range-table">
-                <tr>
-                    <th>Range</th>
-                    <th>Score</th>
-                </tr>
-                <tr ng-repeat="rangeData in rangeMatrix">
-                    <td>{{rangeData.range}}</td>
-                    <td>{{rangeData.score}}</td>
-                </tr>
-            </table>
-        <div>
+        <table class="scoreboard-range-table">
+            <tr>
+                <th>Range</th>
+                <th>Score</th>
+            </tr>
+            <tr ng-repeat="rangeData in rangeMatrix">
+                <td>{{rangeData.range}}</td>
+                <td>{{rangeData.score}}</td>
+            </tr>
+        </table>
 
         <label class="modal-label">*Scoring is performed on rounded values</label>
     </div>

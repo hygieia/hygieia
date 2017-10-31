@@ -20,28 +20,18 @@
         scoreBoardDetailsConfig.scoreBoardMetrics.forEach(function(metricData) {
 
            if(metricData.metricName == $scope.metricName) {
-               if(metricData.metricName.match("^commitMessageMatch")){
-                   $scope.commitMessageMatch = true;
-                   $scope.description = metricData.description;
-                   $scope.displayName = metricData.displayName;
-                   $scope.displaySymbol = metricData.displaySymbol;
-                   $scope.scorePerCommit = metricData.scorePerCommit;
-                   $scope.commitMatchRegex = metricData.commitMatchRegex;
-               } else {
-                   $scope.commitMessageMatch = false;
-                   $scope.description = metricData.description;
-                   $scope.displayName = metricData.displayName;
-                   $scope.displaySymbol = metricData.displaySymbol;
-                   $scope.rangeMatrix = [];
-                   metricData.scoreRanges.forEach(function (rangeData) {
-                       var range = (rangeData.rangeMin == rangeData.rangeMax) ? "VALUE = " + rangeData.rangeMax : rangeData.rangeMin + "  <= VALUE <=  " + rangeData.rangeMax;
-                       var rangeMatrixElement = {
-                           range: range,
-                           score: rangeData.score
-                       };
-                       $scope.rangeMatrix.push(rangeMatrixElement);
-                   });
-               }
+               $scope.description = metricData.description;
+               $scope.formattedName = metricData.formattedName;
+               $scope.symbol = metricData.symbol;
+               $scope.rangeMatrix = [];
+               metricData.gamificationScoringRanges.forEach(function (rangeData) {
+                   var range = (rangeData.min == rangeData.max) ? "VALUE = " + rangeData.max : rangeData.min + "  <= VALUE <=  " + rangeData.max;
+                   var rangeMatrixElement = {
+                       range: range,
+                       score: rangeData.score
+                   };
+                   $scope.rangeMatrix.push(rangeMatrixElement);
+               });
            }
         });
 
