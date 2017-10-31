@@ -142,29 +142,12 @@
                 teamScoreBoardData.name = configuredTeam.name;
                 teamScoreBoardData.data = [];
                 ctrl.scoreBoardMetrics.forEach(function(metric) {
-                    var teamScoreBoardDataElement;
-
-                    // Any metrics that start with this pattern are processed by the commit parser
-                    var commitMetricNameRegex = "^commitMessageMatch";
-                    if(metric.metricName.match(commitMetricNameRegex)){
-
-                        // Commit data is in a different part of the configured teams object
-                        var commits = configuredTeam["stages"]["Commit"]["commits"];
-                        var filtered_commit_messages = parseCommitMessages(commits, metric.commitMatchRegex);
-                        teamScoreBoardDataElement = {
-                            metricName: metric.metricName,
-                            value: filtered_commit_messages.length,
-                            score: filtered_commit_messages.length * metric.scorePerCommit
-                        };
-                    }
-                    else {
-                        teamScoreBoardDataElement = {
-                            metricName: metric.metricName,
-                            value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
-                            score: getScoreForMetric(metric.metricName, configuredTeam)
-                        };
-                    }
-                    teamScoreBoardData.data.push(teamScoreBoardDataElement);
+                var teamScoreBoardDataElement = {
+                    metricName: metric.metricName,
+                    value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
+                    score: getScoreForMetric(metric.metricName, configuredTeam)
+                };
+                teamScoreBoardData.data.push(teamScoreBoardDataElement);
                 });
 
                 var totalScore = 0;
@@ -183,13 +166,6 @@
             defineChartProperties();
             $scope.chartData = ctrl.getChartData();
             $scope.scoreBoardMetrics = ctrl.scoreBoardMetrics;
-        }
-
-        function parseCommitMessages(commits, regex){
-            var commit_messages = commits.filter(function(commit){
-                return commit["message"].match(regex);
-            });
-            return commit_messages;
         }
 
         function viewScoreDetails(teamScoreRecord, metricName) {
