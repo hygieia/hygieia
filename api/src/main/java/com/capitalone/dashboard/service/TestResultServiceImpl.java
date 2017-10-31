@@ -246,12 +246,13 @@ public class TestResultServiceImpl implements TestResultService {
     private CollectorItem createPerfCollectorItem(Collector collector, PerfTestDataCreateRequest request) throws HygieiaException {
         CollectorItem tempCi = new CollectorItem();
         tempCi.setCollectorId(collector.getId());
-        tempCi.setDescription(request.getDescription());
+        tempCi.setDescription(request.getPerfTool()+" : "+request.getTestName());
         tempCi.setPushed(true);
         tempCi.setLastUpdated(System.currentTimeMillis());
         Map<String, Object> option = new HashMap<>();
-        option.put("platformName", request.getPerfTool());
-        option.put("testName", request.getTestName());
+        option.put("jobName", request.getTestName());
+        option.put("jobUrl", request.getReportUrl());
+        option.put("instanceUrl", request.getPerfTool());
         tempCi.getOptions().putAll(option);
         tempCi.setNiceName(request.getPerfTool());
         if (StringUtils.isEmpty(tempCi.getNiceName())) {
