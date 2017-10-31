@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.rest;
 
+import com.capitalone.dashboard.auth.access.Admin;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.GamificationMetric;
 import com.capitalone.dashboard.service.GamificationService;
@@ -36,6 +37,7 @@ public class GamificationController {
                 .body(gamificationMetricCollection);
     }
 
+    @Admin
     @RequestMapping(value = "/gamification/metrics", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> saveGamificationMetrics(@Valid @RequestBody GamificationMetric gamificationMetric)
