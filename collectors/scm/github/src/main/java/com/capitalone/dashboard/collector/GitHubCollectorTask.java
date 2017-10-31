@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +53,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     private final ComponentRepository dbComponentRepository;
     private static final long FOURTEEN_DAYS_MILLISECONDS = 14 * 24 * 60 * 60 * 1000;
     private static final String API_RATE_LIMIT_MESSAGE = "API rate limit exceeded";
+    private List<Pattern> commitExclusionPatterns = new ArrayList<>();
 
     @Autowired
     public GitHubCollectorTask(TaskScheduler taskScheduler,
@@ -70,6 +72,12 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         this.gitHubSettings = gitHubSettings;
         this.dbComponentRepository = dbComponentRepository;
         this.gitRequestRepository = gitRequestRepository;
+        if (!CollectionUtils.isEmpty(gitHubSettings.getNotBuiltCommits())) {
+            for (String regExStr : gitHubSettings.getNotBuiltCommits()) {
+                Pattern pattern = Pattern.compile(regExStr, Pattern.CASE_INSENSITIVE);
+                commitExclusionPatterns.add(pattern);
+            }
+        }
     }
 
     @Override
@@ -164,7 +172,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 try {
                     LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + ":: get commits");
                     // Step 1: Get all the commits
-                    for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
+                    for (Commit commit : gitHubClient.getCommits(repo, firstRun, commitExclusionPatterns)) {
                         LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
                         if (isNewCommit(repo, commit)) {
                             commit.setCollectorItemId(repo.getId());

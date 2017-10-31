@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 /**
  * GitHubClient implementation that uses SVNKit to fetch information about
@@ -75,7 +76,7 @@ public class DefaultGitHubClient implements GitHubClient {
      * @throws HygieiaException
      */
     @Override
-    public List<Commit> getCommits(GitHubRepo repo, boolean firstRun) throws RestClientException, MalformedURLException, HygieiaException {
+    public List<Commit> getCommits(GitHubRepo repo, boolean firstRun, List<Pattern> commitExclusionPatterns) throws RestClientException, MalformedURLException, HygieiaException {
 
         List<Commit> commits = new ArrayList<>();
 
@@ -127,7 +128,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 commit.setScmCommitLog(message);
                 commit.setScmCommitTimestamp(timestamp);
                 commit.setNumberOfChanges(1);
-                commit.setType(getCommitType(CollectionUtils.size(parents), message));
+                commit.setType(getCommitType(CollectionUtils.size(parents), message, commitExclusionPatterns));
                 commits.add(commit);
             }
             if (CollectionUtils.isEmpty(jsonArray)) {
@@ -144,12 +145,14 @@ public class DefaultGitHubClient implements GitHubClient {
         return commits;
     }
 
-    private CommitType getCommitType(int parentSize, String commitMessage) {
+    private CommitType getCommitType(int parentSize, String commitMessage, List<Pattern> commitExclusionPatterns) {
         if (parentSize > 1) return CommitType.Merge;
         if (settings.getNotBuiltCommits() == null) return CommitType.New;
-        for (String s : settings.getNotBuiltCommits()) {
-            if (commitMessage.contains(s)) {
-                return CommitType.NotBuilt;
+        if (!CollectionUtils.isEmpty(commitExclusionPatterns)) {
+            for (Pattern pattern : commitExclusionPatterns) {
+                if (pattern.matcher(commitMessage).matches()) {
+                    return CommitType.NotBuilt;
+                }
             }
         }
         return CommitType.New;
@@ -189,6 +192,7 @@ public class DefaultGitHubClient implements GitHubClient {
                 JSONObject jsonObject = (JSONObject) item;
                 String message = str(jsonObject, "title");
                 String number = str(jsonObject, "number");
+                LOG.info("pr " + number + " " + message);
                 String sha = str(jsonObject, "merge_commit_sha");
 
                 JSONObject userObject = (JSONObject) jsonObject.get("user");
@@ -538,13 +542,17 @@ public class DefaultGitHubClient implements GitHubClient {
         } else {
             for (String l : link) {
                 if (l.contains("rel=\"next\"")) {
-                    String[] parts = link.get(0).split(";");
-                    if (parts.length > 0) {
-                        nextPageUrl = parts[0].replaceFirst("<","");
-                        nextPageUrl = nextPageUrl.replaceFirst(">","").trim();
-
+                    String[] parts = l.split(",");
+                    if (parts != null && parts.length > 0) {
+                        for(int i=0; i<parts.length; i++) {
+                            if (parts[i].contains("rel=\"next\"")) {
+                                nextPageUrl = parts[i].split(";")[0];
+                                nextPageUrl = nextPageUrl.replaceFirst("<","");
+                                nextPageUrl = nextPageUrl.replaceFirst(">","").trim();
+                                return nextPageUrl;
+                            }
+                        }
                     }
-                    return nextPageUrl;
                 }
             }
         }

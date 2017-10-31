@@ -9,6 +9,12 @@ public enum AuditStatus {
     PULLREQ_REVIEWED_BY_PEER,
     PULLREQ_NOT_PEER_REVIEWED,
 
+    //peer review type LGTM, GH REVIEW, COMMENTS ONLY
+    PEER_REVIEW_LGTM,
+    PEER_REVIEW_GHR,
+    PEER_REVIEW_REG_COMMENTS,
+    PEER_REVIEW_REV_COMMENTS,
+
     //no pull requests for queried date range
     NO_PULL_REQ_FOR_DATE_RANGE,
 
