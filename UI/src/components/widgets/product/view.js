@@ -136,9 +136,7 @@
 
         function populateScoreboardData(response) {
             ctrl.scoreBoardMetrics = response.data;
-            console.log(ctrl.scoreBoardMetrics);
             var teamScoreBoardData = {};
-            console.log(ctrl.configuredTeams);
             _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
                 teamScoreBoardData.collectorItemId = configuredTeam.collectorItemId;
                 teamScoreBoardData.name = configuredTeam.name;
@@ -739,7 +737,7 @@
         function getGamificationMetricDisplayNames() {
             var metricDisplayNames = [];
             ctrl.scoreBoardMetrics.forEach(function(metric) {
-                metricDisplayNames.push(metric.displayName);
+                metricDisplayNames.push(metric.formattedName);
             });
             return metricDisplayNames;
         }
