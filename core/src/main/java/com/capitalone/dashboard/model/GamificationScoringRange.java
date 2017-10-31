@@ -1,6 +1,6 @@
 package com.capitalone.dashboard.model;
 
-public class GamificationRangeScore {
+public class GamificationScoringRange {
 
     private Integer min;
     private Integer max;
