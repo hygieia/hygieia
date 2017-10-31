@@ -4,7 +4,7 @@ tags:
 keywords: 
 summary: Jenkins Plugin for Hygieia
 sidebar: hygieia_sidebar
-permalink: pluginjenkins.html
+permalink: hygieia-jenkins-plugin.html
 ---
 ## Hygieia-Jenkins Plugin
 
