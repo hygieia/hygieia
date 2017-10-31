@@ -100,11 +100,6 @@
         function defineChartProperties() {
             $scope.chartOptions = {
                 plugins: [
-                    // Chartist.plugins.ctBarLabels({
-                    //     labelInterpolationFnc: function(text, value) {
-                    //         return value > 0 ? value : "";
-                    //     }
-                    // }),
                     Chartist.plugins.legend({
                         legendNames: ctrl.getGamificationMetricDisplayNames(),
                         position: 'bottom'

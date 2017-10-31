@@ -20,7 +20,6 @@
         scoreBoardDetailsConfig.scoreBoardMetrics.forEach(function(metricData) {
 
            if(metricData.metricName == $scope.metricName) {
-               $scope.commitMessageMatch = false;
                $scope.description = metricData.description;
                $scope.formattedName = metricData.formattedName;
                $scope.symbol = metricData.symbol;
