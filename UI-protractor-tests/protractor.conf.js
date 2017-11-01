@@ -25,7 +25,7 @@ exports.config = {
     capabilities: {
         browserName: 'chrome',
         chromeOptions: {
-            binary: '/node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.32',
+            binary: 'node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.32',
             args: [
                 '--disable-infobars', "--disable-gpu", "--start-maximized", '--disable-extensions'
             ],
