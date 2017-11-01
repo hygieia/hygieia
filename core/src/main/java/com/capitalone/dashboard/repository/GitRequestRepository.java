@@ -30,8 +30,8 @@ public interface GitRequestRepository  extends CrudRepository<GitRequest, Object
     GitRequest findByCollectorItemIdAndNumber(ObjectId collectorItemId, String number);
     //GitRequest findByOrgNameAndRepoNameAndNumberAndType(String orgName, String repoName, String number, String type);
 
-    List<GitRequest> findByScmUrlAndScmBranchAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(String scmUrl, String scmBranch, long beginDt, long endDt);
+    List<GitRequest> findByScmUrlIgnoreCaseAndScmBranchAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(String scmUrl, String scmBranch, long beginDt, long endDt);
 
-    List<GitRequest> findByScmUrlAndScmBranch(String scmUrl, String scmBranch, long beginDt, long endDt);
+    List<GitRequest> findByScmUrlIgnoreCaseAndScmBranch(String scmUrl, String scmBranch, long beginDt, long endDt);
 
 }

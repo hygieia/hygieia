@@ -133,7 +133,7 @@ public class AuditServiceTest {
 
         gitRequests.add(gitRequest);
 
-        when(gitRequestRepository.findByScmUrlAndScmBranchAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(
+        when(gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(
                 request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate())).thenReturn(gitRequests);
         assertTrue(gitRequests.contains(gitRequest));
 

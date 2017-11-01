@@ -6,6 +6,7 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.TestResult;
 
+import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Component
 public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
@@ -35,7 +37,12 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
 
         for (Map.Entry<String, Object> e : allOptions.entrySet()) {
             if (selectOptions.containsKey(e.getKey())) {
-                c = c.and("options." + e.getKey()).is(selectOptions.get(e.getKey()));
+                if("url".equalsIgnoreCase(e.getKey())){
+                    String url = getGitHubParsedString(selectOptions, e);
+                    c = c.and("options." + e.getKey()).regex(Pattern.compile(url,Pattern.CASE_INSENSITIVE));
+                }else {
+                    c = c.and("options." + e.getKey()).is(selectOptions.get(e.getKey()));
+                }
             } else {
                 switch (e.getValue().getClass().getSimpleName()) {
                     case "String":
@@ -80,8 +87,13 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
 
         for (Map.Entry<String, Object> e : allOptions.entrySet()) {
             if (selectOptions.containsKey(e.getKey())) {
-                c = c.and("options." + e.getKey()).is(selectOptions.get(e.getKey()));
-            } else {
+                if("url".equalsIgnoreCase(e.getKey())){
+                    String url = getGitHubParsedString(selectOptions, e);
+                    c = c.and("options." + e.getKey()).regex(Pattern.compile(url,Pattern.CASE_INSENSITIVE));
+                }else {
+                    c = c.and("options." + e.getKey()).is(selectOptions.get(e.getKey()));
+                }
+             } else {
                 switch (e.getValue().getClass().getSimpleName()) {
                     case "String":
                         c = c.and("options." + e.getKey()).is(null);
@@ -168,4 +180,12 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
         return template.find(query, TestResult.class);
 
 	}
+
+	private String getGitHubParsedString(Map<String, Object> selectOptions, Map.Entry<String, Object> e) {
+        String url = (String)selectOptions.get(e.getKey());
+        GitHubParsedUrl gitHubParsedUrl = new GitHubParsedUrl(url);
+        String parsedUrl = gitHubParsedUrl.getUrl();
+        return parsedUrl;
+    }
+
 }
