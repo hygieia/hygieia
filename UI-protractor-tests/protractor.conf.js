@@ -23,9 +23,9 @@ exports.config = {
     },
 
     capabilities: {
-        browserName: 'chrome'
-        // chromeOptions: {
-        //     binary: 'node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.32',
+        browserName: 'chrome',
+        chromeOptions: {
+            binary: 'node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_2.32'
         //     args: [
         //         '--disable-infobars', "--disable-gpu", "--start-maximized", '--disable-extensions'
         //     ],
@@ -35,6 +35,6 @@ exports.config = {
         //         'credentials_enable_service': false,
         //         'password_manager_enabled': false
         //     }
-        // }
+        }
     }
 };
