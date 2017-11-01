@@ -3,6 +3,7 @@ const
     loginPage = require('../pages/login.page'),
     featureWidgetPage = require('../pages/featureWidget.page'),
     buildWidgetPage = require('../pages/buildWidget.page'),
+    coderepoWidgetPage = require('../pages/coderepoWidget.page'),
     listOf = require('../text').listOf,
     expect = require('../expect').expect;
 
@@ -69,4 +70,25 @@ module.exports = function widgetSteps() {
             expect(text).to.equal(buildsLabel);
         });
     });
+
+    // Step Definitions for Code Repo Widget
+
+    this.When(/^I set a repo type "(.*?)"/, (repoType) => {
+        coderepoWidgetPage.selectRepoType(repoType);
+    });
+
+    this.When(/^I set a repo url "(.*?)"/, (repoURL) => {
+        coderepoWidgetPage.setRepoURL(repoURL);
+    });
+
+    this.When(/^I set a branch "(.*?)"/, (gitBranch) => {
+        coderepoWidgetPage.setBranch(gitBranch);
+    });
+
+    this.Then(/^the coderepo widget should display the issues label "(.*?)"/, (issuesLabel) => {
+        coderepoWidgetPage.getIssuesLabel().then((text) => {
+            expect(text).to.equal(issuesLabel);
+        });
+    });
+
 };

@@ -1,5 +1,7 @@
 const format = require('util').format;
 const log = require('../util/logger');
+const waitFor = require('../util/waitFor');
+
 const CreateDashboardBubble = function() {
 
     const po = this;
@@ -99,6 +101,7 @@ const CreateDashboardBubble = function() {
     };
 
     po.getDashboardHeader = () => {
+        waitFor.elementToBeVisible("Dashboard Header", po.dashboardHeader, 5);
         return po.dashboardHeader.getText().then((headerText) => {
             log.info(`Dashboard Header Text : ${headerText}`);
             return headerText;

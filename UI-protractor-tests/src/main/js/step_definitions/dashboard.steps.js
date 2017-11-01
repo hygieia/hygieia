@@ -53,6 +53,10 @@ module.exports = function dashboardSteps() {
         dashboardPage.configureBuildWidget();
     });
 
+    this.When(/^I click on settings button for coderepo widget/, () => {
+        dashboardPage.configureCodeRepoWidget();
+    });
+
     this.When(/^I confirm delete/, () => {
         deleteConfirmationPage.confirmDelete();
     });
