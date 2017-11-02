@@ -191,6 +191,14 @@ public interface DashboardService {
 
     int getPageSize();
 
+    Page<Dashboard> findMyDashboardsByPage(Pageable page);
+
+    long myDashboardsCount();
+
+    int getMyDashboardsByTitleCount(String title);
+
+    Page<Dashboard> getMyDashboardByTitleWithFilter(String title, Pageable pageable);
+
 }
 
 

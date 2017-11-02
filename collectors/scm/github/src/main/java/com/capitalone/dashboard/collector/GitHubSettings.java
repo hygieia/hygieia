@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
- * Bean to hold settings specific to the UDeploy collector.
+ * Bean to hold settings specific to the GitHub collector.
  */
 @Component
 @ConfigurationProperties(prefix = "github")
@@ -15,7 +17,7 @@ public class GitHubSettings {
     private String key;
 	@Value("${github.firstRunHistoryDays:14}")
     private int firstRunHistoryDays;
-    private String[] notBuiltCommits;
+    private List<String> notBuiltCommits;
 	@Value("${github.errorThreshold:2}")
     private int errorThreshold;
 	@Value("${github.rateLimitThreshold:10}")
@@ -55,11 +57,11 @@ public class GitHubSettings {
 		this.firstRunHistoryDays = firstRunHistoryDays;
 	}
 
-    public String[] getNotBuiltCommits() {
+    public List<String> getNotBuiltCommits() {
         return notBuiltCommits;
     }
 
-    public void setNotBuiltCommits(String[] notBuiltCommits) {
+    public void setNotBuiltCommits(List<String> notBuiltCommits) {
         this.notBuiltCommits = notBuiltCommits;
     }
 

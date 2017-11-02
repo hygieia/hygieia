@@ -2,6 +2,8 @@ package com.capitalone.dashboard.model;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -17,6 +19,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *
  */
 @Document(collection="commits")
+@CompoundIndexes({
+        @CompoundIndex(name = "sha_url", def = "{'scmRevisionNumber' : 1, 'scmUrl': 1}")
+})
 public class Commit extends SCM {
     @Id
     private ObjectId id;
