@@ -372,9 +372,8 @@
         }
 
         function saveMetrics() {
-            ctrl.metricData.forEach(function(metric) {
-                gamificationMetricData.storeMetricData(metric).then(validatePost);
-            });
+            if ($scope.selectedMetric != null)
+                gamificationMetricData.storeMetricData($scope.selectedMetric).then(validatePost);
         }
 
         function validatePost(response) {
