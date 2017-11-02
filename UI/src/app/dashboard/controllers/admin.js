@@ -38,6 +38,7 @@
         ctrl.deleteMetricRange = deleteMetricRange;
         ctrl.addMetricRange = addMetricRange;
         ctrl.saveMetricData = saveMetrics;
+        ctrl.validateScoringRanges = validateScoringRanges;
 
         $scope.tab = "dashboards";
 
@@ -372,8 +373,49 @@
         }
 
         function saveMetrics() {
-            if ($scope.selectedMetric != null)
-                gamificationMetricData.storeMetricData($scope.selectedMetric).then(validatePost);
+            if($scope.selectedMetric != undefined) {
+                var isValidationSuccessful = ctrl.validateScoringRanges($scope.selectedMetric.gamificationScoringRanges);
+                if(isValidationSuccessful) {
+                    gamificationMetricData.storeMetricData($scope.selectedMetric).then(validatePost);
+                } else {
+                    console.log("Validation failed for the scoring ranges. Fix the ranges and click Save again");
+                }
+            }
+        }
+
+        function validateScoringRanges(gamificationScoringRanges) {
+            var prevMax = null;
+            var prevMin = null;
+            if(gamificationScoringRanges.length == 0) {
+                console.log("Atleast one range needs to be added to save.");
+                return false;
+            }
+            var isValidationSuccessful = true;
+            var ValidationException = {};
+            try {
+                gamificationScoringRanges.forEach(function(range, i) {
+                    if(i > 0) {
+                        if(prevMin == range.min && prevMax == range.max) {
+                            console.log("Duplicates detected in the scoring ranges.");
+                            throw ValidationException;
+                        }
+                        if(range.min <= prevMax || range.min - prevMax > 1) {
+                            console.log("Overlap and/or gaps detected in the scoring ranges.");
+                            throw ValidationException;
+                        }
+                    }
+                    if(range.min > range.max) {
+                        console.log("Min should be less than the max in a scoring range.");
+                        throw ValidationException;
+                    }
+                    prevMin = range.min;
+                    prevMax = range.max;
+                });
+            } catch (e) {
+                isValidationSuccessful = false;
+                if(e != ValidationException) throw e;
+            }
+            return isValidationSuccessful;
         }
 
         function validatePost(response) {
