@@ -325,7 +325,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     public List<GitRequest> getPullRequests(String repo, String branch, long beginDt, long endDt) {
-        List<GitRequest> pullRequests = gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(repo, branch, beginDt, endDt);
+        List<GitRequest> pullRequests = gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(repo, branch, beginDt, endDt);
         return pullRequests;
     }
 

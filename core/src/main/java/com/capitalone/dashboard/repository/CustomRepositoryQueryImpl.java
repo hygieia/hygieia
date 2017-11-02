@@ -37,12 +37,7 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
 
         for (Map.Entry<String, Object> e : allOptions.entrySet()) {
             if (selectOptions.containsKey(e.getKey())) {
-                if("url".equalsIgnoreCase(e.getKey())){
-                    String url = getGitHubParsedString(selectOptions, e);
-                    c = c.and("options." + e.getKey()).regex(Pattern.compile(url,Pattern.CASE_INSENSITIVE));
-                }else {
-                    c = c.and("options." + e.getKey()).is(selectOptions.get(e.getKey()));
-                }
+                c = getCriteria(selectOptions, c, e);
             } else {
                 switch (e.getValue().getClass().getSimpleName()) {
                     case "String":
@@ -87,13 +82,8 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
 
         for (Map.Entry<String, Object> e : allOptions.entrySet()) {
             if (selectOptions.containsKey(e.getKey())) {
-                if("url".equalsIgnoreCase(e.getKey())){
-                    String url = getGitHubParsedString(selectOptions, e);
-                    c = c.and("options." + e.getKey()).regex(Pattern.compile(url,Pattern.CASE_INSENSITIVE));
-                }else {
-                    c = c.and("options." + e.getKey()).is(selectOptions.get(e.getKey()));
-                }
-             } else {
+                c = getCriteria(selectOptions, c, e);
+            } else {
                 switch (e.getValue().getClass().getSimpleName()) {
                     case "String":
                         c = c.and("options." + e.getKey()).is(null);
@@ -156,10 +146,12 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
 
     @Override
     public List<Commit> findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(String scmUrl, String scmBranch, long beginDt, long endDt) {
+        GitHubParsedUrl gitHubParsedUrl = new GitHubParsedUrl(scmUrl);
+        String url = gitHubParsedUrl.getUrl();
         Query query = new Query(
-                Criteria.where("scmUrl").is(scmUrl)
+                Criteria.where("scmUrl").regex(Pattern.compile(url,Pattern.CASE_INSENSITIVE))
                         .andOperator(
-                                Criteria.where("scmBranch").is(scmBranch),
+                                Criteria.where("scmBranch").regex(Pattern.compile(scmBranch,Pattern.CASE_INSENSITIVE)),
                                 Criteria.where("scmCommitTimestamp").gte(beginDt),
                                 Criteria.where("scmCommitTimestamp").lte(endDt)
                         )
@@ -186,6 +178,22 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
         GitHubParsedUrl gitHubParsedUrl = new GitHubParsedUrl(url);
         String parsedUrl = gitHubParsedUrl.getUrl();
         return parsedUrl;
+    }
+
+    private Criteria getCriteria(Map<String, Object> selectOptions, Criteria c, Map.Entry<String, Object> e) {
+        Criteria criteria = c;
+        if("url".equalsIgnoreCase(e.getKey())){
+            String url = getGitHubParsedString(selectOptions, e);
+            criteria = criteria.and("options." + e.getKey()).regex(Pattern.compile(url,Pattern.CASE_INSENSITIVE));
+        }
+        else if("branch".equalsIgnoreCase(e.getKey())){
+            String branch = (String)selectOptions.get(e.getKey());
+            criteria = criteria.and("options." + e.getKey()).regex(Pattern.compile(branch,Pattern.CASE_INSENSITIVE));
+        }
+        else {
+            criteria = criteria.and("options." + e.getKey()).is(selectOptions.get(e.getKey()));
+        }
+        return criteria;
     }
 
 }
