@@ -325,7 +325,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     public List<GitRequest> getPullRequests(String repo, String branch, long beginDt, long endDt) {
-        List<GitRequest> pullRequests = gitRequestRepository.findByScmUrlAndScmBranchAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(repo, branch, beginDt, endDt);
+        List<GitRequest> pullRequests = gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(repo, branch, beginDt, endDt);
         return pullRequests;
     }
 
@@ -335,7 +335,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     private void getRelatedCommits(String aCommit, HashMap<String, Commit> mapCommitsRelatedToPr, GitRequest pr) {
-        Commit relatedCommit = commitRepository.findByScmRevisionNumberAndScmUrl(aCommit, pr.getScmUrl());
+        Commit relatedCommit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(aCommit, pr.getScmUrl());
         if (relatedCommit != null) {
 
             if (!mapCommitsRelatedToPr.containsKey(relatedCommit.getScmRevisionNumber())) {
@@ -394,7 +394,7 @@ public class AuditServiceImpl implements AuditService {
         for(GitRequest pr : pullRequests) {
             HashMap<String, Commit> mapCommitsRelatedToPr = new HashMap();
             String mergeSha = pr.getScmRevisionNumber();
-            Commit mergeCommit = commitRepository.findByScmRevisionNumberAndScmUrl(mergeSha, pr.getScmUrl());
+            Commit mergeCommit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(mergeSha, pr.getScmUrl());
             if (mergeCommit == null) {
                 continue;
             }
@@ -554,7 +554,7 @@ public class AuditServiceImpl implements AuditService {
 
     private boolean computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse, String baseSha, String headSha, GitRequest pr) {
         boolean traceBack = true;
-        Commit commit = commitRepository.findByScmRevisionNumberAndScmUrl(commitSha, pr.getScmUrl());
+        Commit commit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(commitSha, pr.getScmUrl());
         if (commit == null || commit.getType() == null || commit.getType() == CommitType.Merge || commit.getType() == CommitType.NotBuilt) {
             return false;
         }
