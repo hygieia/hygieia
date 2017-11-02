@@ -211,9 +211,9 @@
                                         Metrics
                                     </div>
                                     <div class="dash-modal-row delete-dashboard-row clearfix clickable"
-                                         ng-repeat="metric in ctrl.metricData | orderBy:'displayName'" ng-click="switchMetric(metric)"
+                                         ng-repeat="metric in ctrl.metricData | orderBy:'displayName'" ng-click="switchMetric(metric.metricName)"
                                          ng-class="{'selected': metric.metricName === selectedMetric.metricName}">
-                                        <div title="{{metric.displayName}}" class="btn-block metric-name">{{metric.displayName |  trunText:30}}
+                                        <div title="{{metric.formattedName}}" class="btn-block metric-name">{{metric.formattedName |  trunText:30}}
                                             <input type="checkbox" ng-model="metric.enabled" class="pull-right checkbox">
                                         </div>
                                     </div>
@@ -221,13 +221,13 @@
                             </div>
                             <div class="col-xs-6 text-center">
                                 <div class="list">
-                                    <div class="dash-modal-row delete-dashboard-row clearfix range-buttons">
+                                    <div class="dash-modal-row delete-dashboard-row clearfix  range-buttons">
                                         Ranges
-                                        <button type="button" class="btn btn-primary btn-wide pull-right" ng-click="">Save</button>
+                                        <button type="button" class="btn btn-primary btn-wide pull-right" ng-click="ctrl.saveMetricData()">Save</button>
                                         <button type="button" class="btn btn-primary btn-wide pull-right" ng-click="ctrl.addMetricRange()">Add</button>
                                     </div>
                                     <div class="dash-modal-row delete-dashboard-row clearfix"
-                                         ng-repeat="range in selectedMetric.scoringRanges">
+                                         ng-repeat="range in selectedMetric.gamificationScoringRanges">
                                         <div class="range-edit">
                                             <label>
                                                 Min:
