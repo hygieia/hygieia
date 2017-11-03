@@ -4,10 +4,10 @@
   "description": "Serenity reports with classic Protractor and Cucumber setup",
   "main": "index.js",
   "scripts": {
-    "preprotractor": "webdriver-manager update --standalone --versions.chrome=2.32",
+    "preprotractor": "webdriver-manager update --standalone --versions.chrome=2.33",
     "protractor": "protractor ./protractor.conf.js",
     "redbluhub": "protractor ./redbluhub.conf.js",
-    "jenkins": "protractor ./redbluhub.conf.js",
+    "jenkins": "protractor ./jekins.conf.js",
     "test": "npm run protractor --silent",
     "pretest": "serenity update",
     "report": "serenity run"

@@ -1,8 +1,6 @@
 
 exports.config = {
 
-    // seleniumAddress: 'http://localhost:4444/wd/hub',
-
     baseUrl: 'https://hygieia-qa.cloud.capitalone.com/',
 
     allScriptsTimeout: 110000,
@@ -29,7 +27,7 @@ exports.config = {
         // firefox_binary: '/Applications/Firefox47.app/Contents/MacOS/firefox',
         // acceptInsecureCerts: true
         chromeOptions: {
-            binary: '/opt/runtime/chromedriver-2.33'
+            binary: '/opt/runtime/google/chrome/google-chrome'
             // args: [
             //     '--disable-infobars', "--disable-gpu", "--start-maximized", '--disable-extensions'
             // ],
