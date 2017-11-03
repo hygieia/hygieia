@@ -9,8 +9,6 @@ exports.config = {
 
     disableChecks: true,
 
-    directConnect: true,
-
     ignoreUncaughtExceptions: true,
 
     framework: 'custom',
