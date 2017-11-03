@@ -19,9 +19,9 @@ public interface HpsmClient {
 
 	List<Cmdb> getApps();
 
-	List<Incident> getIncidents(String assignmentGroup);
+	List<Incident> getIncidents();
 
-	List<ChangeOrder> getChangeOrders(String assignmentGroup);
+	List<ChangeOrder> getChangeOrders();
 
     void setLastExecuted(long lastExecuted);
 
@@ -30,4 +30,9 @@ public interface HpsmClient {
 	void setIncidentCount(long incidentCount);
 
 	long getIncidentCount();
+
+	void setChangeCount(long changeCount);
+
+	long getChangeCount();
+
 }
