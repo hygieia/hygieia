@@ -1,6 +1,5 @@
 package com.capitalone.dashboard.collector;
 
-
 import com.capitalone.dashboard.model.ChangeOrder;
 import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.HpsmCollector;
@@ -16,12 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -37,9 +31,15 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     private final IncidentRepository incidentRepository;
     private final HpsmClient hpsmClient;
     private final HpsmSettings hpsmSettings;
-    private LinkedHashSet<String> assignmentGroups = new LinkedHashSet<String>();
 
-    private static final String CHANGE_ORDER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
+    private static final String APP_ACTION_NAME = "Hpsm";
+    private static final String CHANGE_ACTION_NAME = "HpsmChange";
+    private static final String INCIDENT_ACTION_NAME = "HpsmIncident";
+
+    private String collectorAction;
+
+    private static final String DEFAULT_COLLECTOR_ACTION_NAME = APP_ACTION_NAME;
+    private static final String COLLECTOR_ACTION_PROPERTY_KEY="collector.action";
 
     @Autowired
     public HpsmCollectorTask(TaskScheduler taskScheduler, HpsmSettings hpsmSettings,
@@ -48,15 +48,16 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                                 ChangeOrderRepository changeOrderRepository,
                                 IncidentRepository incidentRepository,
                                 HpsmClient hpsmClient) {
-        super(taskScheduler, "Hpsm");
 
-        this.hpsmSettings = hpsmSettings;
-        this.hpsmRepository = hpsmRepository;
-        this.cmdbRepository = cmdbRepository;
-        this.changeOrderRepository = changeOrderRepository;
-        this.incidentRepository = incidentRepository;
-        this.hpsmClient = hpsmClient;
+            super(taskScheduler, (System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY) == null) ? DEFAULT_COLLECTOR_ACTION_NAME : System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY));
+            collectorAction = (System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY) == null) ? DEFAULT_COLLECTOR_ACTION_NAME : System.getProperty(COLLECTOR_ACTION_PROPERTY_KEY);
 
+            this.hpsmSettings = hpsmSettings;
+            this.hpsmRepository = hpsmRepository;
+            this.cmdbRepository = cmdbRepository;
+            this.changeOrderRepository = changeOrderRepository;
+            this.incidentRepository = incidentRepository;
+            this.hpsmClient = hpsmClient;
     }
 
     /**
@@ -64,7 +65,7 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
      */
     @Override
     public HpsmCollector getCollector() {
-        return HpsmCollector.prototype();
+        return HpsmCollector.prototype(collectorAction);
     }
 
     @Override
@@ -74,11 +75,22 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
 
     @Override
     public String getCron() {
-        return hpsmSettings.getCron();
+        String cron = hpsmSettings.getCron();
+
+        if(collectorAction.equals(CHANGE_ACTION_NAME)) {
+            cron = hpsmSettings.getChangeOrderCron();
+        }
+        else if(collectorAction.equals(INCIDENT_ACTION_NAME)) {
+            cron = hpsmSettings.getIncidentCron();
+        }
+        return cron;
     }
 
+    public String getCollectorAction() { return collectorAction; }
+
+    public void setCollectorAction(String collectorAction) { this.collectorAction = collectorAction; }
+
     private void collectApps(HpsmCollector collector) {
-        clearAssignmentGroups();
         List<Cmdb> cmdbList;
         List<String> configurationItemNameList = new ArrayList<>();
 
@@ -103,7 +115,6 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
                 cmdbRepository.save(cmdb);
                 insertCount++;
             }
-            addAssignmentGroup(cmdb.getAssignmentGroup());
         }
 
         inValidCount = cleanUpOldCmdbItems(configurationItemNameList);
@@ -115,57 +126,32 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     }
 
     private void collectChangeOrders(HpsmCollector collector) {
+
+        long lastExecuted = collector.getLastExecuted();
+        long changeCount = changeOrderRepository.count();
+
+        hpsmClient.setLastExecuted(lastExecuted);
+        hpsmClient.setChangeCount(changeCount);
+
         List<ChangeOrder> changeList;
-        List<String> changeIdList = new ArrayList<>();
 
         int updatedCount = 0;
         int insertCount = 0;
 
-        for(String assignmentGroup:getAssignmentGroups()) {
+        changeList = hpsmClient.getChangeOrders();
 
-            changeList = hpsmClient.getChangeOrders(assignmentGroup);
-
-            for (ChangeOrder changeOrder : changeList) {
-
-                int changeOrderDays = hpsmSettings.getChangeOrderDays();
-
-                Date nowDate = new Date();
-
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(nowDate);
-                cal.add(Calendar.DATE, -changeOrderDays);
-                Date previousDate = cal.getTime();
-
-                SimpleDateFormat dateFormat = new SimpleDateFormat(CHANGE_ORDER_DATE_FORMAT);
-
-                Date dateEntered = null;
-
-                try {
-                    if (changeOrder != null && changeOrder.getDateEntered() != null) {
-                        dateEntered = dateFormat.parse(changeOrder.getDateEntered());
-                    }
-                } catch (ParseException e) {
-                    // Shouldn't happen
-                    LOG.info("Unable to parse DateEntered for : " + changeOrder.getChangeID());
-                }
-
-                boolean changeInRange = (dateEntered != null && previousDate.getTime() < dateEntered.getTime());
-
-                if (changeInRange) {
-                    String changeId = changeOrder.getChangeID();
-                    ChangeOrder changeDbItem = changeOrderRepository.findByChangeID(changeId);
-                    changeIdList.add(changeId);
-                    if (changeDbItem != null && !changeOrder.equals(changeDbItem)) {
-                        changeOrder.setId(changeDbItem.getId());
-                        changeOrder.setCollectorItemId(collector.getId());
-                        changeOrderRepository.save(changeOrder);
-                        updatedCount++;
-                    } else if (changeDbItem == null) {
-                        changeOrder.setCollectorItemId(collector.getId());
-                        changeOrderRepository.save(changeOrder);
-                        insertCount++;
-                    }
-                }
+        for (ChangeOrder changeOrder : changeList) {
+            String changeId = changeOrder.getChangeID();
+            ChangeOrder changeDbItem = changeOrderRepository.findByChangeID(changeId);
+            if (changeDbItem != null && !changeOrder.equals(changeDbItem)) {
+                changeOrder.setId(changeDbItem.getId());
+                changeOrder.setCollectorItemId(collector.getId());
+                changeOrderRepository.save(changeOrder);
+                updatedCount++;
+            } else if (changeDbItem == null) {
+                changeOrder.setCollectorItemId(collector.getId());
+                changeOrderRepository.save(changeOrder);
+                insertCount++;
             }
         }
 
@@ -180,33 +166,30 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
         long incidentCount = incidentRepository.count();
 
         List<Incident> incidentList;
-        List<String> incidentItemNameList = new ArrayList<>();
 
         int updatedCount = 0;
         int insertCount = 0;
 
-        for(String assignmentGroup:getAssignmentGroups()) {
-            hpsmClient.setLastExecuted(lastExecuted);
-            hpsmClient.setIncidentCount(incidentCount);
-            incidentList = hpsmClient.getIncidents(assignmentGroup);
+        hpsmClient.setLastExecuted(lastExecuted);
+        hpsmClient.setIncidentCount(incidentCount);
+        incidentList = hpsmClient.getIncidents();
 
-            for (Incident incident : incidentList) {
+        for (Incident incident : incidentList) {
 
-                String incidentId = incident.getIncidentID();
-                Incident incidentDbItem = incidentRepository.findByIncidentID(incidentId);
-                incidentItemNameList.add(incidentId);
-                if (incidentDbItem != null && !incident.equals(incidentDbItem)) {
-                    incident.setId(incidentDbItem.getId());
-                    incident.setCollectorItemId(collector.getId());
-                    incidentRepository.save(incident);
-                    updatedCount++;
-                } else if (incidentDbItem == null) {
-                    incident.setCollectorItemId(collector.getId());
-                    incidentRepository.save(incident);
-                    insertCount++;
-                }
+            String incidentId = incident.getIncidentID();
+            Incident incidentDbItem = incidentRepository.findByIncidentID(incidentId);
+            if (incidentDbItem != null && !incident.equals(incidentDbItem)) {
+                incident.setId(incidentDbItem.getId());
+                incident.setCollectorItemId(collector.getId());
+                incidentRepository.save(incident);
+                updatedCount++;
+            } else if (incidentDbItem == null) {
+                incident.setCollectorItemId(collector.getId());
+                incidentRepository.save(incident);
+                insertCount++;
             }
         }
+
         LOG.info("Inserted Incident Item Count: " + insertCount);
         LOG.info("Updated Incident Item Count: " + updatedCount);
     }
@@ -215,9 +198,22 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
     public void collect(HpsmCollector collector) {
         long start = System.currentTimeMillis();
         logBanner("Starting...");
-        collectApps(collector);
-        collectChangeOrders(collector);
-        collectIncidents(collector);
+
+        if(collectorAction.equals(APP_ACTION_NAME)) {
+            log("Collecting Apps");
+            collectApps(collector);
+        }
+        else if(collectorAction.equals(CHANGE_ACTION_NAME)) {
+            log("Collecting Changes");
+            collectChangeOrders(collector);
+        }
+        else if(collectorAction.equals(INCIDENT_ACTION_NAME)) {
+            log("Collecting Incidents");
+            collectIncidents(collector);
+        }
+        else{
+            log("Unknown value passed to -D" + COLLECTOR_ACTION_PROPERTY_KEY + ": " + collectorAction);
+        }
 
         log("Finished", start);
     }
@@ -239,18 +235,6 @@ public class HpsmCollectorTask extends CollectorTask<HpsmCollector> {
             }
         }
         return inValidCount;
-    }
-
-    private void clearAssignmentGroups(){
-        assignmentGroups.clear();
-    }
-
-    private void addAssignmentGroup(String assignmentGroup){
-        assignmentGroups.add(assignmentGroup);
-    }
-
-    private List<String> getAssignmentGroups(){
-        return new ArrayList<>(assignmentGroups);
     }
 
 }

@@ -3,6 +3,8 @@ package com.capitalone.dashboard.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Objects;
+
 @Document(collection="incident")
 public class Incident extends BaseModel {
 
@@ -124,6 +126,11 @@ public class Incident extends BaseModel {
                 .append(incidentID);
 
         return buf.toString();
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(incidentID);
     }
 
 }

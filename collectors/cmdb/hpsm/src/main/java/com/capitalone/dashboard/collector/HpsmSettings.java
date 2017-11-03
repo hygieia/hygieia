@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "hpsm")
 public class HpsmSettings {
     private String cron;
+    private String changeOrderCron;
+    private String incidentCron;
     private String server;
 	private String protocol;
 	private String resource;
@@ -40,6 +42,9 @@ public class HpsmSettings {
     private int firstRunHistoryDays;
     private int changeOrderDays;
 	private int incidentDays;
+
+	private String changeOrderQuery;
+	private String incidentQuery;
 
 	public String getServer() {
 		return server;
@@ -169,6 +174,14 @@ public class HpsmSettings {
         this.cron = cron;
     }
 
+	public String getChangeOrderCron() { return changeOrderCron; }
+
+	public void setChangeOrderCron(String changeOrderCron) { this.changeOrderCron = changeOrderCron; }
+
+	public String getIncidentCron() { return incidentCron; }
+
+	public void setIncidentCron(String incidentCron) { this.incidentCron = incidentCron; }
+
 	public String getKey() {
 		return key;
 	}
@@ -216,4 +229,12 @@ public class HpsmSettings {
 	public int getIncidentDays() { return incidentDays; }
 
 	public void setIncidentDays(int incidentDays) { this.incidentDays = incidentDays; }
+
+	public String getChangeOrderQuery() { return changeOrderQuery; }
+
+	public void setChangeOrderQuery(String changeOrderQuery) { this.changeOrderQuery = changeOrderQuery; }
+
+	public String getIncidentQuery() { return incidentQuery; }
+
+	public void setIncidentQuery(String incidentQuery) { this.incidentQuery = incidentQuery; }
 }
