@@ -6,6 +6,7 @@
   "scripts": {
     "preprotractor": "webdriver-manager update --standalone --versions.chrome=2.32",
     "protractor": "node_modules/protractor/bin/protractor ./protractor.conf.js",
+    "redbluhub" : "protractor ./redbluhub.conf.js",
     "test": "npm run protractor --silent",
     "pretest": "serenity update",
     "report": "serenity run"
