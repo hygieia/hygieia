@@ -7,6 +7,7 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitHubRepo;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
@@ -252,6 +253,23 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 entry.setCollectorItemId(repo.getId());
             }
             gitRequestRepository.save(entry);
+
+            //fix merge commit type for squash merged and rebased merged PRs
+            //PRs that were squash merged or rebase merged have only one parent
+            if ("pull".equalsIgnoreCase(type) && "merged".equalsIgnoreCase(entry.getState())) {
+                List<Commit> commits = commitRepository.findByScmRevisionNumber(entry.getScmRevisionNumber());
+                for(Commit commit : commits) {
+                    if (commit.getType() != null) {
+                        if (commit.getType() != CommitType.Merge) {
+                            commit.setType(CommitType.Merge);
+                            commitRepository.save(commit);
+                        }
+                    } else {
+                        commit.setType(CommitType.Merge);
+                        commitRepository.save(commit);
+                    }
+                }
+            }
         }
         return count;
     }
