@@ -1,22 +1,22 @@
-#Feature: Create Dashboard
-#
-#  As a software project stakeholder
-#  I want to ensure that I am able to create a new dashboard for my project
-#  In order to view project metrics.
-#
-#  @issues:TEART-2801
-#  Scenario: User creates a new team dashboard
-#    Given I login with valid credentials hygieia_test_user and password
-#    And I should be redirected to the home page
-#    When I click on the create dashboard button
-#    And I set the dashboard type Team dashboard
-#    And I set the layout type Select Templates
-#    And I select a template Cap One
-#    And I set the dashboard title DummyTeamDashboard
-#    And I set the application name DummyApplication
-#    And I create the dashboard
-#    Then the current dashboard header should read DummyTeamDashboard
-#
+Feature: Create Dashboard
+
+  As a software project stakeholder
+  I want to ensure that I am able to create a new dashboard for my project
+  In order to view project metrics.
+
+  @issues:TEART-2801
+  Scenario: User creates a new team dashboard
+    Given I login with valid credentials hygieia_test_user and password
+    And I should be redirected to the home page
+    When I click on the create dashboard button
+    And I set the dashboard type Team dashboard
+    And I set the layout type Select Templates
+    And I select a template Cap One
+    And I set the dashboard title DummyTeamDashboard
+    And I set the application name DummyApplication
+    And I create the dashboard
+    Then the current dashboard header should read DummyTeamDashboard
+
 #  @issues:TEART-2801
 #  Scenario: User creates a new product dashboard
 #    Given I am an authorized project stakeholder
