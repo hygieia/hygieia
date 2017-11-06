@@ -15,6 +15,13 @@
         /*jshint validthis:true */
         var ctrl = this;
 
+        // tabs to switch between product dashboard and gamification dashboard
+        ctrl.tabs = [
+            { name: "Dashboard" }
+        ];
+
+        ctrl.gamificationPromise = gamificationMetricData.getEnabledMetricData();
+
         //region Dexie configuration
         // setup our local db
         var db = new Dexie('ProductPipelineDb');
@@ -77,23 +84,33 @@
             ctrl.configuredTeams = widgetOptions.teams;
         }
 
-        // tabs to switch between product dashboard and gamification dashboard
-        ctrl.tabs = [
-            { name: "Dashboard" },
-            { name: "Gamification" }
-        ];
-
         ctrl.teamCrlStages = {};
         ctrl.prodStages={};
         ctrl.orderedStages = {};
         ctrl.scoreBoardData = [];
         ctrl.widgetView = ctrl.tabs[0].name;
 
+        ctrl.gamificationPromise
+            .then(storeGamificationData)
+            .then(conditionallyAddTab);
+
+        function storeGamificationData(response){
+            ctrl.scoreBoardMetrics = response.data;
+        }
+
+        function conditionallyAddTab(response){
+            if(ctrl.scoreBoardMetrics) {
+                if(ctrl.scoreBoardMetrics.length > 0) {
+                    ctrl.tabs.push({name: "Gamification"});
+                }
+            }
+        }
+
         // method to toggle tabs
         function toggleView(index) {
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
             if (ctrl.tabs[index].name == "Gamification") {
-                gamificationMetricData.getEnabledMetricData().then(ctrl.populateScoreboardData);
+                ctrl.populateScoreboardData();
             }
         }
 
@@ -129,8 +146,7 @@
             };
         }
 
-        function populateScoreboardData(response) {
-            ctrl.scoreBoardMetrics = response.data;
+        function populateScoreboardData() {
             ctrl.scoreBoardData = ctrl.configuredTeams.map(function(configuredTeam) {
                 var teamScoreBoardData = {};
                 teamScoreBoardData.collectorItemId = configuredTeam.collectorItemId;
