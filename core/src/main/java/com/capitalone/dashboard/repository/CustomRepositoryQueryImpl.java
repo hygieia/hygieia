@@ -4,12 +4,14 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.TestResult;
 
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -156,9 +158,24 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
                                 Criteria.where("scmCommitTimestamp").lte(endDt)
                         )
         );
+        query.with(new Sort(Sort.Direction.DESC, "scmCommitTimestamp"));
         return template.find(query, Commit.class);
     }
 
+    @Override
+    public List<GitRequest> findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndMergedAtGreaterThanEqualAndMergedAtLessThanEqual(String scmUrl, String scmBranch, long beginDt, long endDt) {
+        GitHubParsedUrl gitHubParsedUrl = new GitHubParsedUrl(scmUrl);
+        String url = gitHubParsedUrl.getUrl();
+        Query query = new Query(
+                Criteria.where("scmUrl").regex(Pattern.compile(url,Pattern.CASE_INSENSITIVE))
+                        .andOperator(
+                                Criteria.where("scmBranch").regex(Pattern.compile(scmBranch,Pattern.CASE_INSENSITIVE)),
+                                Criteria.where("mergedAt").gte(beginDt),
+                                Criteria.where("mergedAt").lte(endDt)
+                        )
+        );
+        return template.find(query, GitRequest.class);
+    }
 
 	@Override
 	public List<TestResult> findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(String jobUrl, long beginDt,long endDt) {
