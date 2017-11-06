@@ -161,6 +161,17 @@
             defineChartProperties();
             $scope.chartData = ctrl.getChartData();
             $scope.scoreBoardMetrics = ctrl.scoreBoardMetrics;
+            ctrl.scoreBoardData = ctrl.scoreBoardData.sort(
+                function(firstTeam, secondTeam){
+                    if(parseInt(firstTeam.totalScore) > parseInt(secondTeam.totalScore)){
+                        return 1;
+                    } else if (parseInt(firstTeam.totalScore) < parseInt(secondTeam.totalScore)){
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }
+            );
         }
 
         function viewScoreDetails(teamScoreRecord, metricName) {
@@ -715,62 +726,61 @@
             return metricDisplayNames;
         }
 
+        function retrieveMetricScoresAcrossTeams(sortedScoreBoardData, metricName){
+            // get a list of the data fields
+            var metric_data = sortedScoreBoardData.map(function(team){
+                return team.data;
+            });
+
+            // flatten the list
+            var flattened_metric_data = [];
+            metric_data.forEach(function(array){
+                flattened_metric_data = flattened_metric_data.concat(array);
+            });
+
+            // filter the list to the metrics we need
+            var filtered_metric_data = flattened_metric_data.filter(function(metric){
+                return metric.metricName === metricName;
+            });
+
+            var sanitized_metric_data = zeroOutInvalidMetrics(filtered_metric_data);
+
+            // return just the scores
+            return sanitized_metric_data.map(function(metric){
+                return metric.score;
+            })
+        }
+
+        function zeroOutInvalidMetrics(listOfMetrics){
+            return listOfMetrics.map(function(metric) {
+                if(metric.score === -1){
+                    metric.score = 0;
+                }
+                return metric;
+            });
+        }
+
+        function extract_chart_labels(sortedScoreBoardData) {
+            return sortedScoreBoardData.map(function(team) {
+                return team.name;
+            });
+        }
+
+        function extract_chart_series(sortedScoreBoardData){
+            var series_collection = [];
+            ctrl.scoreBoardMetrics.forEach(function(metric) {
+                var series_element = {};
+                series_element.name = metric.metricName;
+                series_element.data = retrieveMetricScoresAcrossTeams(sortedScoreBoardData, metric.metricName);
+                series_collection.push(series_element);
+            });
+            return series_collection;
+        }
+
         ctrl.getChartData = function() {
-            var labels = [];
-            var scores = [];
-
-            var tempObj = {};
-
-            ctrl.scoreBoardData.forEach(function(teamInfo) {
-                var team = {};
-                team.name = teamInfo.name;
-                team.scores = [];
-                teamInfo.data.forEach(function(metric) {
-                    metric.score !== -1 ? team.scores.push(metric.score) : team.scores.push(0);
-                });
-
-                if (!tempObj[teamInfo.totalScore])
-                    tempObj[teamInfo.totalScore] = [];
-
-                tempObj[teamInfo.totalScore].push(team);
-            });
-            Object.keys(tempObj)
-                .sort(function(firstKey, secondKey) {
-                    if(parseInt(firstKey) > parseInt(secondKey)) {
-                        return 1;
-                    } else if (parseInt(firstKey) < parseInt(secondKey)) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                })
-                .forEach(function(key) {
-                    tempObj[key].forEach(function(team, j) {
-                        labels.push(team.name);
-                        team.scores.forEach(function(score, i) {
-                            if (!scores[i])
-                                scores[i] = [];
-
-                            scores[i].push(score);
-                        });
-                    });
-                });
-
-            console.log("Scores sorted: ", scores);
-
-            var series = [];
-            scores.forEach(function(scoreArr, i) {
-               var scoreElem = {
-                   name: ctrl.scoreBoardMetrics[i].displayName,
-                   data: scoreArr
-               }
-
-               series.push(scoreElem);
-            });
-
             return {
-                labels: labels,
-                series: series
+                labels: extract_chart_labels(ctrl.scoreBoardData),
+                series: extract_chart_series(ctrl.scoreBoardData)
             };
         };
 
