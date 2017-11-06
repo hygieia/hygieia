@@ -29,6 +29,10 @@
         var dashboardCountRoute = '/api/dashboard/count';
         var dashboardFilterCountRoute = '/api/dashboard/filter/count';
         var dashboardPageSize = '/api/dashboard/pagesize';
+        var myDashboardRoutePage = '/api/dashboard/mydashboard/page';
+        var myDashboardFilterRoutePage = '/api/dashboard/mydashboard/page/filter';
+        var myDashboardCountRoute = '/api/dashboard/mydashboard/count';
+        var myDashboardFilterCountRoute = '/api/dashboard/mydashboard/filter/count';
 
         return {
             search: search,
@@ -50,7 +54,12 @@
             filterByTitle:filterByTitle,
             count:count,
             filterCount: filterCount,
-            getPageSize:getPageSize
+            getPageSize:getPageSize,
+            myDashboardsCount:myDashboardsCount,
+            searchMyDashboardsByPage:searchMyDashboardsByPage,
+            filterMyDashboardsByTitle:filterMyDashboardsByTitle,
+            filterMyDashboardCount:filterMyDashboardCount
+
         };
 
         // reusable helper
@@ -239,6 +248,33 @@
         function getPageSize() {
             return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardPageSize);
         }
+
+        // gets count of all my dashboards
+        function myDashboardsCount() {
+            return getPromise(HygieiaConfig.local ? testSearchRoute : myDashboardCountRoute);
+        }
+
+        // gets list of my dashboards according to page size (default = 10)
+        function searchMyDashboardsByPage(params) {
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardRoutePage,{params: params}).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // gets list of my dashboards filtered by title with page size (default = 10)
+        function filterMyDashboardsByTitle(params) {
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterRoutePage,{params: params}).then(function (response) {
+                return response.data;
+            });
+        }
+
+        //gets count of filtered dashboards for pagination
+        function filterMyDashboardCount(title){
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterCountRoute+ '/'+title).then(function (response) {
+                return response.data;
+            });
+        }
+
 
     }
 })();

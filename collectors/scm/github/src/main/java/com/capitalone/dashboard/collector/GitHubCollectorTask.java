@@ -7,6 +7,7 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitHubRepo;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
@@ -34,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +54,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
     private final ComponentRepository dbComponentRepository;
     private static final long FOURTEEN_DAYS_MILLISECONDS = 14 * 24 * 60 * 60 * 1000;
     private static final String API_RATE_LIMIT_MESSAGE = "API rate limit exceeded";
+    private List<Pattern> commitExclusionPatterns = new ArrayList<>();
 
     @Autowired
     public GitHubCollectorTask(TaskScheduler taskScheduler,
@@ -70,6 +73,12 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
         this.gitHubSettings = gitHubSettings;
         this.dbComponentRepository = dbComponentRepository;
         this.gitRequestRepository = gitRequestRepository;
+        if (!CollectionUtils.isEmpty(gitHubSettings.getNotBuiltCommits())) {
+            for (String regExStr : gitHubSettings.getNotBuiltCommits()) {
+                Pattern pattern = Pattern.compile(regExStr, Pattern.CASE_INSENSITIVE);
+                commitExclusionPatterns.add(pattern);
+            }
+        }
     }
 
     @Override
@@ -164,7 +173,7 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 try {
                     LOG.info(repo.getOptions().toString() + "::" + repo.getBranch() + ":: get commits");
                     // Step 1: Get all the commits
-                    for (Commit commit : gitHubClient.getCommits(repo, firstRun)) {
+                    for (Commit commit : gitHubClient.getCommits(repo, firstRun, commitExclusionPatterns)) {
                         LOG.debug(commit.getTimestamp() + ":::" + commit.getScmCommitLog());
                         if (isNewCommit(repo, commit)) {
                             commit.setCollectorItemId(repo.getId());
@@ -244,6 +253,23 @@ public class GitHubCollectorTask extends CollectorTask<Collector> {
                 entry.setCollectorItemId(repo.getId());
             }
             gitRequestRepository.save(entry);
+
+            //fix merge commit type for squash merged and rebased merged PRs
+            //PRs that were squash merged or rebase merged have only one parent
+            if ("pull".equalsIgnoreCase(type) && "merged".equalsIgnoreCase(entry.getState())) {
+                List<Commit> commits = commitRepository.findByScmRevisionNumber(entry.getScmRevisionNumber());
+                for(Commit commit : commits) {
+                    if (commit.getType() != null) {
+                        if (commit.getType() != CommitType.Merge) {
+                            commit.setType(CommitType.Merge);
+                            commitRepository.save(commit);
+                        }
+                    } else {
+                        commit.setType(CommitType.Merge);
+                        commitRepository.save(commit);
+                    }
+                }
+            }
         }
         return count;
     }
