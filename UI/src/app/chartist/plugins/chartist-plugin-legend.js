@@ -124,7 +124,6 @@
                 li.textContent = legend.name || legend;
                 legendElement.appendChild(li);
             });
-            console.log("Legend Element :", legendElement);
             chart.on('created', function (data) {
                 // Append the legend element to the DOM
                 if(!(options.position instanceof HTMLElement))

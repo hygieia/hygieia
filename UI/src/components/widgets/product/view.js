@@ -147,20 +147,19 @@
         }
 
         function populateScoreboardData() {
-            var teamScoreBoardData = {};
-            _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
+            ctrl.scoreBoardData = ctrl.configuredTeams.map(function(configuredTeam) {
+                var teamScoreBoardData = {};
                 teamScoreBoardData.collectorItemId = configuredTeam.collectorItemId;
                 teamScoreBoardData.name = configuredTeam.name;
                 teamScoreBoardData.data = [];
                 ctrl.scoreBoardMetrics.forEach(function(metric) {
-                var teamScoreBoardDataElement = {
-                    metricName: metric.metricName,
-                    value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
-                    score: getScoreForMetric(metric.metricName, configuredTeam)
-                };
-                teamScoreBoardData.data.push(teamScoreBoardDataElement);
+                    var teamScoreBoardDataElement = {
+                        metricName: metric.metricName,
+                        value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
+                        score: getScoreForMetric(metric.metricName, configuredTeam)
+                    };
+                    teamScoreBoardData.data.push(teamScoreBoardDataElement);
                 });
-
                 var totalScore = 0;
                 teamScoreBoardData.data.forEach(function(element) {
                     if(element.score != -1) {
@@ -168,26 +167,23 @@
                     }
                 });
                 teamScoreBoardData.totalScore = totalScore;
-                ctrl.scoreBoardData[i] = teamScoreBoardData;
-                teamScoreBoardData = {};
+                return teamScoreBoardData;
             });
-            console.log("Scoreboard data :", ctrl.scoreBoardData);
-            console.log("Scoreboard metrics :", ctrl.scoreBoardMetrics);
 
             defineChartProperties();
-            $scope.chartData = ctrl.getChartData();
             $scope.scoreBoardMetrics = ctrl.scoreBoardMetrics;
             ctrl.scoreBoardData = ctrl.scoreBoardData.sort(
                 function(firstTeam, secondTeam){
-                    if(parseInt(firstTeam.totalScore) > parseInt(secondTeam.totalScore)){
+                    if(parseInt(firstTeam.totalScore) < parseInt(secondTeam.totalScore)){
                         return 1;
-                    } else if (parseInt(firstTeam.totalScore) < parseInt(secondTeam.totalScore)){
+                    } else if (parseInt(firstTeam.totalScore) > parseInt(secondTeam.totalScore)){
                         return -1;
                     } else {
                         return 0;
                     }
                 }
             );
+            $scope.chartData = ctrl.getChartData();
         }
 
         function viewScoreDetails(teamScoreRecord, metricName) {
@@ -742,7 +738,7 @@
             return metricDisplayNames;
         }
 
-        function retrieveMetricScoresAcrossTeams(sortedScoreBoardData, metricName){
+        function retrieveMetricScoresAcrossTeams(sortedScoreBoardData, metricName) {
             // get a list of the data fields
             var metric_data = sortedScoreBoardData.map(function(team){
                 return team.data;
@@ -753,33 +749,20 @@
             metric_data.forEach(function(array){
                 flattened_metric_data = flattened_metric_data.concat(array);
             });
-
             // filter the list to the metrics we need
             var filtered_metric_data = flattened_metric_data.filter(function(metric){
                 return metric.metricName === metricName;
             });
 
-            var sanitized_metric_data = zeroOutInvalidMetrics(filtered_metric_data);
-
-            // return just the scores
-            return sanitized_metric_data.map(function(metric){
-                return metric.score;
-            })
-        }
-
-        function zeroOutInvalidMetrics(listOfMetrics){
-            return listOfMetrics.map(function(metric) {
-                if(metric.score === -1){
-                    metric.score = 0;
-                }
-                return metric;
-            });
+            return filtered_metric_data.map(function(metric) {
+                return (metric.score !== -1) ? metric.score : 0;
+            }).reverse();
         }
 
         function extract_chart_labels(sortedScoreBoardData) {
             return sortedScoreBoardData.map(function(team) {
                 return team.name;
-            });
+            }).reverse();
         }
 
         function extract_chart_series(sortedScoreBoardData){
