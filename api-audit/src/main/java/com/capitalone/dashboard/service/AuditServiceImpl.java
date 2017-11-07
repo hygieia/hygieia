@@ -608,7 +608,12 @@ public class AuditServiceImpl implements AuditService {
         if (commit == null || commit.getType() == null || commit.getType() == CommitType.NotBuilt) {
             return false;
         } else if (commit.getType() == CommitType.Merge) {
+            //if you are a merge commit and a pr
             if (isMergeCommitAndPr(commit)) {
+                return false;
+            }
+            //if you are a merge commit and getting merged as part of a pr
+            if (baseSha != null && headSha != null) {
                 return false;
             }
         }
