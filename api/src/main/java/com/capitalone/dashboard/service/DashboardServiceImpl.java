@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import com.capitalone.dashboard.ApiSettings;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,21 @@ import com.capitalone.dashboard.util.UnsafeDeleteException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -56,6 +72,9 @@ public class DashboardServiceImpl implements DashboardService {
     private final CmdbService cmdbService;
 
     @Autowired
+    private ApiSettings settings;
+
+    @Autowired
     public DashboardServiceImpl(DashboardRepository dashboardRepository,
                                 ComponentRepository componentRepository,
                                 CollectorRepository collectorRepository,
@@ -64,7 +83,8 @@ public class DashboardServiceImpl implements DashboardService {
                                 ServiceRepository serviceRepository,
                                 PipelineRepository pipelineRepository,
                                 UserInfoRepository userInfoRepository,
-                                CmdbService cmdbService) {
+                                CmdbService cmdbService,
+                                ApiSettings settings) {
         this.dashboardRepository = dashboardRepository;
         this.componentRepository = componentRepository;
         this.collectorRepository = collectorRepository;
@@ -74,6 +94,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.pipelineRepository = pipelineRepository;   //TODO - Review if we need this param, seems it is never used according to PMD
         this.userInfoRepository = userInfoRepository;
         this.cmdbService = cmdbService;
+        this.settings = settings;
     }
 
     @Override
@@ -338,20 +359,12 @@ public class DashboardServiceImpl implements DashboardService {
 	@Override
 	public List<Dashboard> getOwnedDashboards() {
 		Set<Dashboard> myDashboards = new HashSet<Dashboard>();
-		
+
 		Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
         List<Dashboard> findByOwnersList = dashboardRepository.findByOwners(owner);
         getAppAndComponentNames(findByOwnersList);
 		myDashboards.addAll(findByOwnersList);
-		
-		// TODO: This if check is to ensure backwards compatibility for dashboards created before AuthenticationTypes were introduced.
-		if (AuthenticationUtil.getAuthTypeFromContext() == AuthType.STANDARD) {
-            List<Dashboard> findByOwnersListOld = dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext());
-            getAppAndComponentNames(findByOwnersListOld);
-			myDashboards.addAll(findByOwnersListOld);
-		}
-		
-		return Lists.newArrayList(myDashboards);
+        return Lists.newArrayList(myDashboards);
 	}
 
     @Override
@@ -380,18 +393,18 @@ public class DashboardServiceImpl implements DashboardService {
         		throw new UserNotFoundException(username, authType);
         	}
         }
-    	
+
     	Dashboard dashboard = dashboardRepository.findOne(dashboardId);
         dashboard.setOwners(Lists.newArrayList(owners));
         Dashboard result = dashboardRepository.save(dashboard);
 
         return result.getOwners();
     }
-    
+
 	@Override
 	public String getDashboardOwner(String dashboardTitle) {
 		String dashboardOwner=dashboardRepository.findByTitle(dashboardTitle).get(0).getOwner();
-		
+
 		return dashboardOwner;
 	}
 
@@ -627,4 +640,101 @@ public class DashboardServiceImpl implements DashboardService {
             }
         }
     }
+
+    /**
+     * Get all dashboards filtered by title and Pageable ( default page size = 10)
+     *
+     * @param title, pageable
+     * @return Page<Dashboard>
+     */
+    @Override
+    public Page<Dashboard> getDashboardByTitleWithFilter(String title, Pageable pageable) {
+        Page<Dashboard> dashboardItems = dashboardRepository.findAllByTitleContainingIgnoreCase(title, pageable);
+        return dashboardItems;
+    }
+
+    /**
+     * Get count of all dashboards filtered by title
+     *
+     * @param title
+     * @return Integer
+     */
+    @Override
+    public Integer getAllDashboardsByTitleCount(String title) {
+        List<Dashboard> dashboards = dashboardRepository.findAllByTitleContainingIgnoreCase(title);
+        return dashboards != null ? dashboards.size() : 0;
+    }
+
+    /**
+     * Get count of all dashboards
+     *
+     * @param
+     * @return long
+     */
+    @Override
+    public long count() {
+        return dashboardRepository.count();
+    }
+
+    /**
+     * Get all dashboards with page size (default = 10)
+     *
+     * @param page size
+     * @return List of dashboards
+     */
+    @Override
+    public Page<Dashboard> findDashboardsByPage(Pageable page) {
+        return dashboardRepository.findAll(page);
+    }
+
+    /**
+     * Get page size
+     *
+     * @param
+     * @return Integer
+     */
+    @Override
+    public int getPageSize() {
+        return settings.getPageSize();
+    }
+
+    @Override
+    public Page<Dashboard> findMyDashboardsByPage(Pageable page){
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        Page<Dashboard> ownersList = dashboardRepository.findByOwners(owner,page);
+        for (Dashboard dashboard: ownersList) {
+            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+        }
+        return ownersList;
+    }
+
+    @Override
+    public long myDashboardsCount(){
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        List<Dashboard> ownersList = dashboardRepository.findByOwners(owner);
+        return ownersList!=null?ownersList.size():0;
+    }
+
+    @Override
+    public int getMyDashboardsByTitleCount(String title){
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        List<Dashboard> dashboards = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title);
+        return dashboards!=null?dashboards.size():0;
+    }
+
+    @Override
+    public Page<Dashboard> getMyDashboardByTitleWithFilter(String title, Pageable pageable){
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        Page<Dashboard> ownersList = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title,pageable);
+        for (Dashboard dashboard: ownersList) {
+            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+        }
+        return ownersList;
+    }
+
+
 }

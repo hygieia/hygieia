@@ -10,6 +10,8 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.Owner;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.model.DataResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface DashboardService {
 
@@ -178,6 +180,24 @@ public interface DashboardService {
     Dashboard updateDashboardBusinessItems(ObjectId dashboardId, Dashboard dashboard) throws HygieiaException;
 
     Dashboard updateDashboardWidgets(ObjectId dashboardId, Dashboard request) throws HygieiaException;
+
+    Page<Dashboard> findDashboardsByPage(Pageable page);
+
+    Page<Dashboard> getDashboardByTitleWithFilter(String title, Pageable pageable);
+
+    long count();
+
+    Integer getAllDashboardsByTitleCount(String title);
+
+    int getPageSize();
+
+    Page<Dashboard> findMyDashboardsByPage(Pageable page);
+
+    long myDashboardsCount();
+
+    int getMyDashboardsByTitleCount(String title);
+
+    Page<Dashboard> getMyDashboardByTitleWithFilter(String title, Pageable pageable);
 
 }
 

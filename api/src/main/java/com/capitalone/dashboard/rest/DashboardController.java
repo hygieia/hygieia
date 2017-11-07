@@ -11,15 +11,19 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.capitalone.dashboard.util.PaginationHeaderUtility;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitalone.dashboard.auth.access.DashboardOwnerOrAdmin;
@@ -39,11 +43,13 @@ public class DashboardController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DashboardController.class);
     private final DashboardService dashboardService;
+    private PaginationHeaderUtility paginationHeaderUtility;
 
 
     @Autowired
-    public DashboardController(DashboardService dashboardService) {
+    public DashboardController(DashboardService dashboardService, PaginationHeaderUtility paginationHeaderUtility) {
         this.dashboardService = dashboardService;
+        this.paginationHeaderUtility = paginationHeaderUtility;
     }
 
     @RequestMapping(value = "/dashboard", method = GET, produces = APPLICATION_JSON_VALUE)
@@ -302,5 +308,113 @@ public class DashboardController {
         return ResponseEntity.ok().body(new WidgetResponse(component, null));
     }
 
+    /**
+     * Get list of dashboards by page (default = 10)
+     *
+     * @return List of dashboards
+     */
+    @RequestMapping(value = "/dashboard/page", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dashboard>> dashboardByPage(@RequestParam(value = "search", required = false, defaultValue = "") String search, Pageable pageable) {
+        Page<Dashboard> pageDashboardItems = dashboardService.findDashboardsByPage(pageable);
+        return ResponseEntity
+                .ok()
+                .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
+                .body(pageDashboardItems.getContent());
+    }
+
+    /**
+     * Get count of all dashboards
+     *
+     * @return Integer
+     */
+    @RequestMapping(value = "/dashboard/count", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long dashboardsCount() {
+        return dashboardService.count();
+    }
+
+    /**
+     * Get count of all filtered dashboards
+     *
+     * @return Integer
+     */
+    @RequestMapping(value = "/dashboard/filter/count/{title}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long dashboardsFilterCount(@PathVariable String title) {
+        return dashboardService.getAllDashboardsByTitleCount(title);
+    }
+
+    /**
+     * Get dashboards filtered by title (pageable)
+     *
+     * @return List of Dashboards
+     */
+    @RequestMapping(value = "/dashboard/page/filter", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dashboard>> dashboardByTitlePage(@RequestParam(value = "search", required = false, defaultValue = "") String search, Pageable pageable) throws HygieiaException {
+        Page<Dashboard> pageDashboardItems = dashboardService.getDashboardByTitleWithFilter(search, pageable);
+        return ResponseEntity
+                .ok()
+                .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
+                .body(pageDashboardItems.getContent());
+    }
+
+    /**
+     * Get page size
+     *
+     * @return int
+     */
+    @RequestMapping(value = "/dashboard/pagesize", method = GET, produces = APPLICATION_JSON_VALUE)
+    public int getPageSize() {
+        return dashboardService.getPageSize();
+    }
+
+
+    // MyDashboard pagination
+
+    /**
+     * Get list of my dashboards by page (default = 10)
+     *
+     * @return List of dashboards
+     */
+    @RequestMapping(value = "/dashboard/mydashboard/page", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dashboard>> myDashboardByPage(@RequestParam(value = "username", required = false, defaultValue = "") String username, Pageable pageable) {
+        Page<Dashboard> pageDashboardItems = dashboardService.findMyDashboardsByPage(pageable);
+        return ResponseEntity
+                .ok()
+                .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
+                .body(pageDashboardItems.getContent());
+    }
+
+    /**
+     * Get count of my dashboards
+     *
+     * @return Integer
+     */
+    @RequestMapping(value = "/dashboard/mydashboard/count", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long myDashboardCount() {
+        return dashboardService.myDashboardsCount();
+    }
+
+    /**
+     * Get count of all filtered dashboards
+     *
+     * @return Integer
+     */
+    @RequestMapping(value = "/dashboard/mydashboard/filter/count/{title}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long myDashboardsFilterCount(@PathVariable String title) {
+        return dashboardService.getMyDashboardsByTitleCount(title);
+    }
+
+    /**
+     * Get my dashboards filtered by title (pageable)
+     *
+     * @return List of Dashboards
+     */
+    @RequestMapping(value = "/dashboard/mydashboard/page/filter", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dashboard>> myDashboardByTitlePage(@RequestParam(value = "search", required = false, defaultValue = "") String search, Pageable pageable) throws HygieiaException {
+        Page<Dashboard> pageDashboardItems = dashboardService.getMyDashboardByTitleWithFilter(search, pageable);
+        return ResponseEntity
+                .ok()
+                .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
+                .body(pageDashboardItems.getContent());
+    }
 
 }

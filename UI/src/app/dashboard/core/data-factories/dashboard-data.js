@@ -24,6 +24,15 @@
         var myownerRoute = "/api/dashboard/myowner";
         var updateBusItemsRoute = '/api/dashboard/updateBusItems';
         var updateDashboardWidgetsRoute = '/api/dashboard/updateDashboardWidgets';
+        var dashboardRoutePage = '/api/dashboard/page';
+        var dashboardFilterRoutePage = '/api/dashboard/page/filter';
+        var dashboardCountRoute = '/api/dashboard/count';
+        var dashboardFilterCountRoute = '/api/dashboard/filter/count';
+        var dashboardPageSize = '/api/dashboard/pagesize';
+        var myDashboardRoutePage = '/api/dashboard/mydashboard/page';
+        var myDashboardFilterRoutePage = '/api/dashboard/mydashboard/page/filter';
+        var myDashboardCountRoute = '/api/dashboard/mydashboard/count';
+        var myDashboardFilterCountRoute = '/api/dashboard/mydashboard/filter/count';
 
         return {
             search: search,
@@ -40,7 +49,17 @@
             getComponent:getComponent,
             updateBusItems:updateBusItems,
             updateDashboardWidgets:updateDashboardWidgets,
-            deleteWidget:deleteWidget
+            deleteWidget:deleteWidget,
+            searchByPage: searchByPage,
+            filterByTitle:filterByTitle,
+            count:count,
+            filterCount: filterCount,
+            getPageSize:getPageSize,
+            myDashboardsCount:myDashboardsCount,
+            searchMyDashboardsByPage:searchMyDashboardsByPage,
+            filterMyDashboardsByTitle:filterMyDashboardsByTitle,
+            filterMyDashboardCount:filterMyDashboardCount
+
         };
 
         // reusable helper
@@ -198,5 +217,64 @@
             });
 
         }
-  }
+
+        // gets count of all dashboards
+        function count() {
+            return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardCountRoute);
+        }
+
+        // gets list of dashboards according to page size (default = 10)
+        function searchByPage(params) {
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardRoutePage,{params: params}).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // gets list of dashboards filtered by title with page size (default = 10)
+        function filterByTitle(params) {
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardFilterRoutePage,{params: params}).then(function (response) {
+                return response.data;
+            });
+        }
+
+        //gets count of filtered dashboards for pagination
+        function filterCount(title){
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : dashboardFilterCountRoute+ '/'+title).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // gets page size
+        function getPageSize() {
+            return getPromise(HygieiaConfig.local ? testSearchRoute : dashboardPageSize);
+        }
+
+        // gets count of all my dashboards
+        function myDashboardsCount() {
+            return getPromise(HygieiaConfig.local ? testSearchRoute : myDashboardCountRoute);
+        }
+
+        // gets list of my dashboards according to page size (default = 10)
+        function searchMyDashboardsByPage(params) {
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardRoutePage,{params: params}).then(function (response) {
+                return response.data;
+            });
+        }
+
+        // gets list of my dashboards filtered by title with page size (default = 10)
+        function filterMyDashboardsByTitle(params) {
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterRoutePage,{params: params}).then(function (response) {
+                return response.data;
+            });
+        }
+
+        //gets count of filtered dashboards for pagination
+        function filterMyDashboardCount(title){
+            return  $http.get(HygieiaConfig.local ? testSearchRoute : myDashboardFilterCountRoute+ '/'+title).then(function (response) {
+                return response.data;
+            });
+        }
+
+
+    }
 })();

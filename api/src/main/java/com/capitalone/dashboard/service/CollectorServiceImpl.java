@@ -134,7 +134,6 @@ public class CollectorServiceImpl implements CollectorService {
         if (existing != null) {
             item.setId(existing.getId());
         }
-        item.setLastUpdated(System.currentTimeMillis());
         return collectorItemRepository.save(item);
     }
 
@@ -148,7 +147,6 @@ public class CollectorServiceImpl implements CollectorService {
         if (!CollectionUtils.isEmpty(existing)) {
             item.setId(existing.get(0).getId());   //
         }
-        item.setLastUpdated(System.currentTimeMillis());
         return collectorItemRepository.save(item);
     }
 
