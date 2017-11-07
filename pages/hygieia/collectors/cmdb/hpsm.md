@@ -45,8 +45,10 @@ To configure the HPSM Collector, execute the following steps:
 	To deploy the `hpsm-collector.jar` file, change directory to `hpsm\target`, and then execute the following from the command prompt:
 
 	```bash
-	java -jar hpsm-collector.jar --spring.config.name=hpsm --spring.config.location=[path to application.properties file]
+	java -Dcollector.action=[action] -jar hpsm-collector.jar --spring.config.name=hpsm --spring.config.location=[path to application.properties file]
 	```
+	
+	Note: ```[action]``` is either ```Hpsm```, ```HpsmIncident``` or ```HpsmChange``` and defaults to ```Hpsm``` if ```-Dcollector.action``` is not specified.
 
 ### Sample Application Properties File
 
