@@ -367,4 +367,54 @@ public class DashboardController {
     }
 
 
+    // MyDashboard pagination
+
+    /**
+     * Get list of my dashboards by page (default = 10)
+     *
+     * @return List of dashboards
+     */
+    @RequestMapping(value = "/dashboard/mydashboard/page", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dashboard>> myDashboardByPage(@RequestParam(value = "username", required = false, defaultValue = "") String username, Pageable pageable) {
+        Page<Dashboard> pageDashboardItems = dashboardService.findMyDashboardsByPage(pageable);
+        return ResponseEntity
+                .ok()
+                .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
+                .body(pageDashboardItems.getContent());
+    }
+
+    /**
+     * Get count of my dashboards
+     *
+     * @return Integer
+     */
+    @RequestMapping(value = "/dashboard/mydashboard/count", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long myDashboardCount() {
+        return dashboardService.myDashboardsCount();
+    }
+
+    /**
+     * Get count of all filtered dashboards
+     *
+     * @return Integer
+     */
+    @RequestMapping(value = "/dashboard/mydashboard/filter/count/{title}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public long myDashboardsFilterCount(@PathVariable String title) {
+        return dashboardService.getMyDashboardsByTitleCount(title);
+    }
+
+    /**
+     * Get my dashboards filtered by title (pageable)
+     *
+     * @return List of Dashboards
+     */
+    @RequestMapping(value = "/dashboard/mydashboard/page/filter", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Dashboard>> myDashboardByTitlePage(@RequestParam(value = "search", required = false, defaultValue = "") String search, Pageable pageable) throws HygieiaException {
+        Page<Dashboard> pageDashboardItems = dashboardService.getMyDashboardByTitleWithFilter(search, pageable);
+        return ResponseEntity
+                .ok()
+                .headers(paginationHeaderUtility.buildPaginationHeaders(pageDashboardItems))
+                .body(pageDashboardItems.getContent());
+    }
+
 }
