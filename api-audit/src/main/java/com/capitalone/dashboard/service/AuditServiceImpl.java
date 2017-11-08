@@ -359,12 +359,26 @@ public class AuditServiceImpl implements AuditService {
             if (contextString != null) {
                 prContexts.addAll(Arrays.asList(contextString.trim().split(",")));
             }
+            boolean lgtmAttempted = false;
+            boolean lgtmStateResult = false;
             for (CommitStatus status : statuses) {
-                if (prContexts.contains(status.getContext())) {
-                    //review done using LGTM workflow
-                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM);
-                    return "success".equalsIgnoreCase(status.getState());
+                if (status.getContext() != null && prContexts.contains(status.getContext())) {
+                    //review done using LGTM workflow assuming its in the settings peerReviewContexts
+                    lgtmAttempted = true;
+                    if ("pending".equalsIgnoreCase(status.getState())) {
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
+                    } else if ("error".equalsIgnoreCase(status.getState())) {
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_ERROR);
+                    } else if ("success".equalsIgnoreCase(status.getState())) {
+                        lgtmStateResult = true;
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SUCCESS);
+                    } else {
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_UNKNOWN);
+                    }
                 }
+            }
+            if (lgtmAttempted) {
+                return lgtmStateResult;
             }
         }
         if (reviews != null) {
