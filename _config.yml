@@ -1,9 +1,14 @@
 gems:
   - jekyll-redirect-from
   - jemoji
+  - jekyll-relative-links
 
 output: web
 # this property is useful for conditional filtering of content that is separate from the PDF.
+
+relative_links:
+  enabled:     true
+  collections: true
 
 topnav_title: Hygieia Documentation
 # this appears on the top navigation bar next to the home button
