@@ -63,4 +63,4 @@ The new team or product dashboard is created.
 
 **Screenshots:**
 
-[!Image](http://www.capitalone.io/Hygieia/media/images/images/h2-select-dashboard.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/images/h2-select-dashboard.png)
