@@ -761,21 +761,25 @@ tr.dash-row > td {
         right: 2rem;
     }
 
+    .metric-menu-row {
+        padding: .8rem 0;
+    }
+
     .range-edit {
         label {
             padding-left: 10px;
             padding-right: 10px;
+            font-size: 1.6rem
         }
 
         input {
             width: 40px;
             text-align: center;
         }
-    }
 
-    .range-buttons button {
-        padding-right: 10px;
-        padding-left: 10px;
+        input[disabled] {
+            background: @dash-bg;
+        }
     }
 
     .selected {
@@ -784,11 +788,39 @@ tr.dash-row > td {
     }
 
     .checkbox {
-        margin-right: 20px;
+        margin-left: 20px;
+        margin-top: 10px;
+        transform: scale(1.4);
     }
 
-    .metric-name {
-        padding-left: 20px;
+    .metric-btn {
+        text-align: left;
+
+        .metric-name {
+            margin-left: 50px;
+        }
+    }
+
+    .metric-title {
+        line-height: 4rem;
+        padding: 1rem 0;
+        font-size: 3rem;
+        width: 70%;
+        border-bottom: 1px solid @dash-divider-light;
+    }
+
+    .buttons {
+        width: 30%;
+    }
+
+    .table-font {
+        line-height: 4rem;
+        padding: 1rem 0;
+        font-size: 2rem;
+    }
+
+    .bold {
+        font-weight: bold;
     }
 }
 

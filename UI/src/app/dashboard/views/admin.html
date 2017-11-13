@@ -203,49 +203,60 @@
                     </div>
                     <div class="widget-modal-body">
                         <div class="row">
-                            <div class="col-xs-6">
+                            <div class="alert"
+                                 ng-class="{'alert-success': metricAlert.type === 'success', 'alert-warning': metricAlert.type === 'warning', 'alert-danger': metricAlert.type === 'error'}"
+                                 ng-show="metricAlert.msg">
+                                <button class="close" data-dismiss="alert" aria-label="close" ng-click="removeAlert()">&times;</button>
+                                {{metricAlert.msg}}
+                            </div>
+                            <div class="col-xs-4">
                                 <div class="text-center" ng-hide="ctrl.metricData">Loading Metric Data...</div>
 
                                 <div class="list-animate">
-                                    <div class="dash-modal-row delete-dashboard-row clearfix text-center">
-                                        Metrics
+                                    <div class="dash-modal-row delete-dashboard-row clearfix text-center bold">
+                                        Metric
                                     </div>
-                                    <div class="dash-modal-row delete-dashboard-row clearfix clickable"
-                                         ng-repeat="metric in ctrl.metricData | orderBy:'displayName'" ng-click="switchMetric(metric)"
+                                    <div class="metric-menu-row delete-dashboard-row clearfix clickable"
+                                         ng-repeat="metric in ctrl.metricData | orderBy:'displayName'" ng-click="switchMetric(metric.metricName)"
                                          ng-class="{'selected': metric.metricName === selectedMetric.metricName}">
-                                        <div title="{{metric.displayName}}" class="btn-block metric-name">{{metric.displayName |  trunText:30}}
-                                            <input type="checkbox" ng-model="metric.enabled" class="pull-right checkbox">
+                                        <div title="{{metric.formattedName}}" class="btn-block metric-btn">
+                                            <input type="checkbox" ng-model="metric.enabled" class="checkbox pull-left" ng-change="ctrl.saveStatusData(metric)">
+                                            <div class="metric-name">{{metric.formattedName |  trunText:20}}</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-6 text-center">
-                                <div class="list">
-                                    <div class="dash-modal-row delete-dashboard-row clearfix range-buttons">
-                                        Ranges
-                                        <button type="button" class="btn btn-primary btn-wide pull-right" ng-click="">Save</button>
-                                        <button type="button" class="btn btn-primary btn-wide pull-right" ng-click="ctrl.addMetricRange()">Add</button>
+                            <div class="col-xs-8 text-center">
+                                <div ng-show="selectedMetric" class="metric-title-bar">
+                                    <div class="pull-left text-center metric-title bold">
+                                        {{selectedMetric.formattedName}}
                                     </div>
-                                    <div class="dash-modal-row delete-dashboard-row clearfix"
-                                         ng-repeat="range in selectedMetric.scoringRanges">
-                                        <div class="range-edit">
-                                            <label>
-                                                Min:
-                                                <input type="string" ng-model="range.min" />
-                                            </label>
-                                            <label>
-                                                Max:
-                                                <input type="string" ng-model="range.max" />
-                                            </label>
-                                            <label>
-                                                Score:
-                                                <input type="string" ng-model="range.score" />
-                                            </label>
-
-                                            <dash-trash class="clickable pull-right" ng-click="ctrl.deleteMetricRange(range)"></dash-trash>
-                                        </div>
+                                    <div class="pull-right buttons">
+                                        <button type="button" class="btn btn-primary btn-wide" ng-click="ctrl.addMetricRange()" ng-show="editMode[selectedMetric.metricName]">Add</button>
+                                        <button type="button" class="btn btn-primary btn-wide" ng-click="ctrl.saveMetricData()" ng-show="editMode[selectedMetric.metricName]">Save</button>
+                                        <button type="button" class="btn btn-primary btn-wide" ng-click="enterEditMode()" ng-hide="editMode[selectedMetric.metricName]">Edit</button>
                                     </div>
                                 </div>
+                                <table ng-show="selectedMetric" class="table table-font">
+                                    <thead>
+                                        <th class="table-header text-center" width="60%">Range</th>
+                                        <th class="table-header text-center" width="20%">Score</th>
+                                        <th width="20%"></th>
+                                    </thead>
+                                    <tr ng-repeat="range in selectedMetric.gamificationScoringRanges">
+                                        <td class="range-edit text-center">
+                                            <input type="string" ng-model="range.min" ng-disabled="!editMode[selectedMetric.metricName]"/>
+                                            <label>{{rangeLabel}}</label>
+                                            <input type="string" ng-model="range.max" ng-disabled="!editMode[selectedMetric.metricName]"/>
+                                        </td>
+                                        <td class="range-edit text-center">
+                                            <input type="string" ng-model="range.score" ng-disabled="!editMode[selectedMetric.metricName]"/>
+                                        </td>
+                                        <td class="table-header">
+                                            <dash-trash class="clickable" ng-click="ctrl.deleteMetricRange(range)" ng-show="editMode[selectedMetric.metricName]"></dash-trash>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>

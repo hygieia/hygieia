@@ -37,52 +37,52 @@
         ctrl.editToken = editToken;
         ctrl.deleteMetricRange = deleteMetricRange;
         ctrl.addMetricRange = addMetricRange;
+        ctrl.saveMetricData = saveMetrics;
+        ctrl.validateScoringRanges = validateScoringRanges;
+        ctrl.isInteger = isInteger;
+        ctrl.saveStatusData = saveStatusData;
 
         $scope.tab = "dashboards";
+        $scope.metricAlert = null;
+        ctrl.metricData = [];
+        $scope.selectedMetric = null;
+        $scope.editMode = {};
+        $scope.changesMade = {};
 
-        ctrl.metricData = [
+        ctrl.metricList = [
             {
                 metricName: "codeCoverage",
-                displayName: "Code Coverage",
-                scoringRanges: [{ min: 0, max: 50, score: 0 },
-                    { min: 51, max: 60, score: 4 },
-                    { min: 61, max: 70, score: 8 },
-                    { min: 71, max: 80, score: 12 },
-                    { min: 81, max: 90, score: 16 },
-                    { min: 91, max: 95, score: 18 },
-                    { min: 96, max: 100, score: 20 }],
-                enabled: false
+                formattedName: "Code Coverage",
+                gamificationScoringRanges: [],
+                enabled: false,
+                description: "",
+                symbol: ""
             },
             {
                 metricName: "unitTests",
-                displayName: "Unit Test Success",
-                scoringRanges: [{ min: 0, max: 99, score: 0 },
-                    { min: 100, max: 100, score: 20 }],
-                enabled: false
+                formattedName: "Unit Test Success",
+                gamificationScoringRanges: [],
+                enabled: false,
+                description: "",
+                symbol: ""
             },
             {
                 metricName: "buildSuccess",
-                displayName: "Build Success",
-                scoringRanges: [],
-                enabled: false
+                formattedName: "Build Success",
+                gamificationScoringRanges: [],
+                enabled: false,
+                description: "",
+                symbol: ""
+            },
+            {
+                metricName: "codeViolations",
+                formattedName: "Code Violations",
+                gamificationScoringRanges: [],
+                enabled: false,
+                description: "",
+                symbol: ""
             }
         ];
-
-        var testData = {
-            metricName: "codeCoverage2",
-            formattedName: "Code Coverage 2",
-            gamificationScoringRanges: [{ min: 0, max: 50, score: 0 },
-                { min: 51, max: 60, score: 4 },
-                { min: 61, max: 70, score: 8 },
-                { min: 71, max: 80, score: 12 },
-                { min: 81, max: 90, score: 16 },
-                { min: 91, max: 95, score: 18 },
-                { min: 96, max: 100, score: 20 }],
-            enabled: false
-
-        };
-
-        $scope.selectedMetric = ctrl.metricData[0];
 
         // list of available themes. Must be updated manually
         ctrl.themes = [
@@ -122,9 +122,6 @@
         userData.apitokens().then(processTokenResponse);
         templateMangerData.getAllTemplates().then(processTemplateResponse);
         gamificationMetricData.getMetricData().then(processMetricResponse);
-        gamificationMetricData.getEnabledMetricData().then(processMetricResponse);
-        // gamificationMetricData.storeMetricData(testData).then(processMetricResponse);
-
 
         //implementation of logout
         function logout() {
@@ -241,7 +238,19 @@
         }
 
         function processMetricResponse(response) {
-            console.log(response);
+            var data = response.data;
+
+            ctrl.metricList.forEach(function(metric) {
+                // Check if metric exists in db already
+                data.forEach(function(entry) {
+                   if (metric.metricName === entry.metricName) {
+                       metric.enabled = entry.enabled;
+                       metric.gamificationScoringRanges = entry.gamificationScoringRanges;
+                   }
+                });
+
+                ctrl.metricData.push(metric);
+            });
         }
 
         // navigate to create template modal
@@ -337,26 +346,89 @@
 
         function deleteMetricRange(sel) {
             var idx = -1;
-            $scope.selectedMetric.scoringRanges.forEach(function(range, i) {
+            $scope.selectedMetric.gamificationScoringRanges.forEach(function(range, i) {
                 if (sel.min === range.min && sel.max == range.max && sel.score === range.score)
                     idx = i;
             });
 
-            $scope.selectedMetric.scoringRanges.splice(idx, 1);
-
-            ctrl.metricData.forEach(function(metric, i) {
-               if (metric.metricName === $scope.selectedMetric.metricName)
-                   ctrl.metricData[i] = $scope.selectedMetric;
-            });
+            $scope.selectedMetric.gamificationScoringRanges.splice(idx, 1);
         }
 
         function addMetricRange() {
-            ctrl.metricData.forEach(function(metric, i) {
-                if (metric.metricName === $scope.selectedMetric.metricName) {
-                    ctrl.metricData[i].scoringRanges.push({min: 0, max: 0, score: 0});
-                    $scope.selectedMetric = ctrl.metricData[i];
+            $scope.selectedMetric.gamificationScoringRanges.push({min: 0, max: 0, score: 0});
+        }
+
+        function saveMetrics() {
+            if($scope.selectedMetric != undefined) {
+                var isValidationSuccessful = ctrl.validateScoringRanges($scope.selectedMetric.gamificationScoringRanges);
+                if(isValidationSuccessful) {
+                    gamificationMetricData.storeMetricData($scope.selectedMetric).then(validatePost);
+                    $scope.exitEditMode();
+                } else {
+                    $scope.enterEditMode();
                 }
-            });
+            }
+
+        }
+
+        function isInteger(number) {
+            return (number == parseInt(number,10))  && !isNaN(parseInt(number));
+        }
+
+        function validateScoringRanges(gamificationScoringRanges) {
+            var prevMax = null;
+            var prevMin = null;
+            if(gamificationScoringRanges.length == 0) {
+                $scope.createAlert("Atleast one range needs to be added to save.", "error");
+                return false;
+            }
+            var isValidationSuccessful = true;
+            var ValidationException = {};
+            try {
+                gamificationScoringRanges.forEach(function(range, i) {
+                    if(!isInteger(range.min) || !isInteger(range.max) || !isInteger(range.score)) {
+                        $scope.createAlert("Non numeric range provided. Only integers accepted for the ranges and score", "error");
+                        throw ValidationException;
+                    }
+                    if(i > 0) {
+                        if(prevMin == range.min && prevMax == range.max) {
+                            $scope.createAlert("Duplicates detected in the scoring ranges.", "error");
+                            throw ValidationException;
+                        }
+                        if(range.min <= prevMax || range.min - prevMax > 1) {
+                            $scope.createAlert("Overlap and/or gaps detected in the scoring ranges.", "error");
+                            throw ValidationException;
+                        }
+                    }
+                    if(range.min > range.max) {
+                        $scope.createAlert("Min should be less than the max in a scoring range.", "error");
+                        throw ValidationException;
+                    }
+                    prevMin = range.min;
+                    prevMax = range.max;
+                });
+            } catch (e) {
+                isValidationSuccessful = false;
+                if(e != ValidationException) throw e;
+            }
+            return isValidationSuccessful;
+        }
+
+        function saveStatusData(metric) {
+            gamificationMetricData.storeMetricData(metric).then(validatePostStatus);
+        }
+
+        function validatePost(response) {
+            console.log(response);
+            if (response.status === 200 || response.status === 201) {
+                $scope.createAlert("Changes have been saved successfully!", "success");
+            } else {
+                $scope.createAlert("There was an error and your changes have not been saved", "error");
+            }
+        }
+
+        function validatePostStatus(response) {
+            console.log(response);
         }
 
         $scope.navigateToTab = function (tab) {
@@ -394,11 +466,29 @@
             );
         }
 
-        $scope.switchMetric = function(metric) {
-            ctrl.metricData.forEach(function(obj) {
-                if (obj.metricName === metric.metricName)
-                    $scope.selectedMetric = metric;
+        $scope.switchMetric = function(metricName) {
+            ctrl.metricData.forEach(function(obj, idx) {
+                if (obj.metricName === metricName)
+                    $scope.selectedMetric = ctrl.metricData[idx];
             });
+        }
+
+        $scope.createAlert = function(message, type) {
+            $scope.metricAlert = {msg: message, type: type};
+        }
+
+        $scope.removeAlert = function() {
+            $scope.metricAlert = null;
+        }
+
+        $scope.rangeLabel = "<= VALUE <=";
+
+        $scope.enterEditMode = function() {
+            $scope.editMode[$scope.selectedMetric.metricName] = true;
+        }
+
+        $scope.exitEditMode = function() {
+            $scope.editMode[$scope.selectedMetric.metricName] = false;
         }
     }
 })();
