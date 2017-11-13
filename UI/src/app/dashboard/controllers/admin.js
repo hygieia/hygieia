@@ -363,9 +363,12 @@
                 var isValidationSuccessful = ctrl.validateScoringRanges($scope.selectedMetric.gamificationScoringRanges);
                 if(isValidationSuccessful) {
                     gamificationMetricData.storeMetricData($scope.selectedMetric).then(validatePost);
+                    $scope.exitEditMode();
+                } else {
+                    $scope.enterEditMode();
                 }
             }
-            $scope.editMode[$scope.selectedMetric.metricName] = false;
+
         }
 
         function isInteger(number) {
@@ -482,6 +485,10 @@
 
         $scope.enterEditMode = function() {
             $scope.editMode[$scope.selectedMetric.metricName] = true;
+        }
+
+        $scope.exitEditMode = function() {
+            $scope.editMode[$scope.selectedMetric.metricName] = false;
         }
     }
 })();
