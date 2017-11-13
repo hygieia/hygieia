@@ -364,15 +364,7 @@ public class DashboardServiceImpl implements DashboardService {
         List<Dashboard> findByOwnersList = dashboardRepository.findByOwners(owner);
         getAppAndComponentNames(findByOwnersList);
 		myDashboards.addAll(findByOwnersList);
-
-		// TODO: This if check is to ensure backwards compatibility for dashboards created before AuthenticationTypes were introduced.
-		if (AuthenticationUtil.getAuthTypeFromContext() == AuthType.STANDARD) {
-            List<Dashboard> findByOwnersListOld = dashboardRepository.findByOwner(AuthenticationUtil.getUsernameFromContext());
-            getAppAndComponentNames(findByOwnersListOld);
-			myDashboards.addAll(findByOwnersListOld);
-		}
-
-		return Lists.newArrayList(myDashboards);
+        return Lists.newArrayList(myDashboards);
 	}
 
     @Override
@@ -705,5 +697,44 @@ public class DashboardServiceImpl implements DashboardService {
     public int getPageSize() {
         return settings.getPageSize();
     }
+
+    @Override
+    public Page<Dashboard> findMyDashboardsByPage(Pageable page){
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        Page<Dashboard> ownersList = dashboardRepository.findByOwners(owner,page);
+        for (Dashboard dashboard: ownersList) {
+            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+        }
+        return ownersList;
+    }
+
+    @Override
+    public long myDashboardsCount(){
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        List<Dashboard> ownersList = dashboardRepository.findByOwners(owner);
+        return ownersList!=null?ownersList.size():0;
+    }
+
+    @Override
+    public int getMyDashboardsByTitleCount(String title){
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        List<Dashboard> dashboards = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title);
+        return dashboards!=null?dashboards.size():0;
+    }
+
+    @Override
+    public Page<Dashboard> getMyDashboardByTitleWithFilter(String title, Pageable pageable){
+        Owner owner = new Owner(AuthenticationUtil.getUsernameFromContext(), AuthenticationUtil.getAuthTypeFromContext());
+        Page<Dashboard> ownersList = dashboardRepository.findByOwnersAndTitleContainingIgnoreCase(owner,title,pageable);
+        for (Dashboard dashboard: ownersList) {
+            ObjectId appObjectId = dashboard.getConfigurationItemBusServObjectId();
+            ObjectId compObjectId = dashboard.getConfigurationItemBusAppObjectId();
+            setAppAndComponentNameToDashboard(dashboard, appObjectId, compObjectId);
+        }
+        return ownersList;
+    }
+
 
 }

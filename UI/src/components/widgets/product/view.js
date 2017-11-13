@@ -15,6 +15,13 @@
         /*jshint validthis:true */
         var ctrl = this;
 
+        // tabs to switch between product dashboard and gamification dashboard
+        ctrl.tabs = [
+            { name: "Dashboard" }
+        ];
+
+        ctrl.gamificationPromise = gamificationMetricData.getEnabledMetricData();
+
         //region Dexie configuration
         // setup our local db
         var db = new Dexie('ProductPipelineDb');
@@ -77,23 +84,33 @@
             ctrl.configuredTeams = widgetOptions.teams;
         }
 
-        // tabs to switch between product dashboard and gamification dashboard
-        ctrl.tabs = [
-            { name: "Dashboard" },
-            { name: "Gamification" }
-        ];
-
         ctrl.teamCrlStages = {};
         ctrl.prodStages={};
         ctrl.orderedStages = {};
         ctrl.scoreBoardData = [];
         ctrl.widgetView = ctrl.tabs[0].name;
 
+        ctrl.gamificationPromise
+            .then(storeGamificationData)
+            .then(conditionallyAddTab);
+
+        function storeGamificationData(response){
+            ctrl.scoreBoardMetrics = response.data;
+        }
+
+        function conditionallyAddTab(response){
+            if(ctrl.scoreBoardMetrics) {
+                if(ctrl.scoreBoardMetrics.length > 0) {
+                    ctrl.tabs.push({name: "Gamification"});
+                }
+            }
+        }
+
         // method to toggle tabs
         function toggleView(index) {
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
             if (ctrl.tabs[index].name == "Gamification") {
-                gamificationMetricData.getEnabledMetricData().then(ctrl.populateScoreboardData);
+                ctrl.populateScoreboardData();
             }
         }
 
@@ -129,22 +146,20 @@
             };
         }
 
-        function populateScoreboardData(response) {
-            ctrl.scoreBoardMetrics = response.data;
-            var teamScoreBoardData = {};
-            _(ctrl.configuredTeams).forEach(function(configuredTeam, i) {
+        function populateScoreboardData() {
+            ctrl.scoreBoardData = ctrl.configuredTeams.map(function(configuredTeam) {
+                var teamScoreBoardData = {};
                 teamScoreBoardData.collectorItemId = configuredTeam.collectorItemId;
                 teamScoreBoardData.name = configuredTeam.name;
                 teamScoreBoardData.data = [];
                 ctrl.scoreBoardMetrics.forEach(function(metric) {
-                var teamScoreBoardDataElement = {
-                    metricName: metric.metricName,
-                    value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
-                    score: getScoreForMetric(metric.metricName, configuredTeam)
-                };
-                teamScoreBoardData.data.push(teamScoreBoardDataElement);
+                    var teamScoreBoardDataElement = {
+                        metricName: metric.metricName,
+                        value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
+                        score: getScoreForMetric(metric.metricName, configuredTeam)
+                    };
+                    teamScoreBoardData.data.push(teamScoreBoardDataElement);
                 });
-
                 var totalScore = 0;
                 teamScoreBoardData.data.forEach(function(element) {
                     if(element.score != -1) {
@@ -152,15 +167,23 @@
                     }
                 });
                 teamScoreBoardData.totalScore = totalScore;
-                ctrl.scoreBoardData[i] = teamScoreBoardData;
-                teamScoreBoardData = {};
+                return teamScoreBoardData;
             });
-            console.log("Scoreboard data :", ctrl.scoreBoardData);
-            console.log("Scoreboard metrics :", ctrl.scoreBoardMetrics);
 
             defineChartProperties();
-            $scope.chartData = ctrl.getChartData();
             $scope.scoreBoardMetrics = ctrl.scoreBoardMetrics;
+            ctrl.scoreBoardData = ctrl.scoreBoardData.sort(
+                function(firstTeam, secondTeam){
+                    if(parseInt(firstTeam.totalScore) < parseInt(secondTeam.totalScore)){
+                        return 1;
+                    } else if (parseInt(firstTeam.totalScore) > parseInt(secondTeam.totalScore)){
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }
+            );
+            $scope.chartData = ctrl.getChartData();
         }
 
         function viewScoreDetails(teamScoreRecord, metricName) {
@@ -715,62 +738,48 @@
             return metricDisplayNames;
         }
 
+        function retrieveMetricScoresAcrossTeams(sortedScoreBoardData, metricName) {
+            // get a list of the data fields
+            var metric_data = sortedScoreBoardData.map(function(team){
+                return team.data;
+            });
+
+            // flatten the list
+            var flattened_metric_data = [];
+            metric_data.forEach(function(array){
+                flattened_metric_data = flattened_metric_data.concat(array);
+            });
+            // filter the list to the metrics we need
+            var filtered_metric_data = flattened_metric_data.filter(function(metric){
+                return metric.metricName === metricName;
+            });
+
+            return filtered_metric_data.map(function(metric) {
+                return (metric.score !== -1) ? metric.score : 0;
+            }).reverse();
+        }
+
+        function extract_chart_labels(sortedScoreBoardData) {
+            return sortedScoreBoardData.map(function(team) {
+                return team.name;
+            }).reverse();
+        }
+
+        function extract_chart_series(sortedScoreBoardData){
+            var series_collection = [];
+            ctrl.scoreBoardMetrics.forEach(function(metric) {
+                var series_element = {};
+                series_element.name = metric.metricName;
+                series_element.data = retrieveMetricScoresAcrossTeams(sortedScoreBoardData, metric.metricName);
+                series_collection.push(series_element);
+            });
+            return series_collection;
+        }
+
         ctrl.getChartData = function() {
-            var labels = [];
-            var scores = [];
-
-            var tempObj = {};
-
-            ctrl.scoreBoardData.forEach(function(teamInfo) {
-                var team = {};
-                team.name = teamInfo.name;
-                team.scores = [];
-                teamInfo.data.forEach(function(metric) {
-                    metric.score !== -1 ? team.scores.push(metric.score) : team.scores.push(0);
-                });
-
-                if (!tempObj[teamInfo.totalScore])
-                    tempObj[teamInfo.totalScore] = [];
-
-                tempObj[teamInfo.totalScore].push(team);
-            });
-            Object.keys(tempObj)
-                .sort(function(firstKey, secondKey) {
-                    if(parseInt(firstKey) > parseInt(secondKey)) {
-                        return 1;
-                    } else if (parseInt(firstKey) < parseInt(secondKey)) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                })
-                .forEach(function(key) {
-                    tempObj[key].forEach(function(team, j) {
-                        labels.push(team.name);
-                        team.scores.forEach(function(score, i) {
-                            if (!scores[i])
-                                scores[i] = [];
-
-                            scores[i].push(score);
-                        });
-                    });
-                });
-
-            console.log("Scores sorted: ", scores);
-
-            var series = [];
-            scores.forEach(function(scoreArr, i) {
-               var scoreElem = {
-                   name: ctrl.scoreBoardMetrics[i].displayName,
-                   data: scoreArr
-               }
-
-               series.push(scoreElem);
-            });
-
             return {
-                labels: labels,
-                series: series
+                labels: extract_chart_labels(ctrl.scoreBoardData),
+                series: extract_chart_series(ctrl.scoreBoardData)
             };
         };
 

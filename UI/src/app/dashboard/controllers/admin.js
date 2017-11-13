@@ -39,8 +39,14 @@
         ctrl.addMetricRange = addMetricRange;
         ctrl.saveMetricData = saveMetrics;
         ctrl.validateScoringRanges = validateScoringRanges;
+        ctrl.saveStatusData = saveStatusData;
 
         $scope.tab = "dashboards";
+        $scope.metricAlert = null;
+        ctrl.metricData = [];
+        $scope.selectedMetric = null;
+        $scope.editMode = {};
+        $scope.changesMade = {};
 
         ctrl.metricList = [
             {
@@ -76,22 +82,6 @@
                 symbol: ""
             }
         ];
-
-        // var testData = {
-        //     metricName: "codeCoverage2",
-        //     formattedName: "Code Coverage",
-        //     gamificationScoringRanges: [{ min: 0, max: 50, score: 0 },
-        //         { min: 51, max: 60, score: 4 },
-        //         { min: 61, max: 70, score: 8 },
-        //         { min: 71, max: 80, score: 12 },
-        //         { min: 81, max: 90, score: 16 },
-        //         { min: 91, max: 95, score: 18 }],
-        //     enabled: false
-        //
-        // };
-
-        ctrl.metricData = [];
-        $scope.selectedMetric = null;
 
         // list of available themes. Must be updated manually
         ctrl.themes = [
@@ -381,6 +371,7 @@
                     console.log("Validation failed for the scoring ranges. Fix the ranges and click Save again");
                 }
             }
+            $scope.editMode[$scope.selectedMetric.metricName] = false;
         }
 
         function validateScoringRanges(gamificationScoringRanges) {
@@ -418,7 +409,22 @@
             return isValidationSuccessful;
         }
 
+        function saveStatusData(metric) {
+            gamificationMetricData.storeMetricData(metric).then(validatePostStatus);
+
+
+        }
+
         function validatePost(response) {
+            console.log(response);
+            if (response.status === 200 || response.status === 201) {
+                $scope.createAlert("Changes have been saved successfully!", "success");
+            } else {
+                $scope.createAlert("There was an error and your changes have not been saved", "error");
+            }
+        }
+
+        function validatePostStatus(response) {
             console.log(response);
         }
 
@@ -462,6 +468,20 @@
                 if (obj.metricName === metricName)
                     $scope.selectedMetric = ctrl.metricData[idx];
             });
+        }
+
+        $scope.createAlert = function(message, type) {
+            $scope.metricAlert = {msg: message, type: type};
+        }
+
+        $scope.removeAlert = function() {
+            $scope.metricAlert = null;
+        }
+
+        $scope.rangeLabel = "<= VALUE <=";
+
+        $scope.enterEditMode = function() {
+            $scope.editMode[$scope.selectedMetric.metricName] = true;
         }
     }
 })();
