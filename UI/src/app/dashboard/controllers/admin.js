@@ -122,8 +122,6 @@
         userData.apitokens().then(processTokenResponse);
         templateMangerData.getAllTemplates().then(processTemplateResponse);
         gamificationMetricData.getMetricData().then(processMetricResponse);
-        // gamificationMetricData.storeMetricData(testData).then(saveMetrics);
-
 
         //implementation of logout
         function logout() {
