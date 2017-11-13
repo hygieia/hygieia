@@ -39,6 +39,7 @@
         ctrl.addMetricRange = addMetricRange;
         ctrl.saveMetricData = saveMetrics;
         ctrl.validateScoringRanges = validateScoringRanges;
+        ctrl.isInteger = isInteger;
         ctrl.saveStatusData = saveStatusData;
 
         $scope.tab = "dashboards";
@@ -239,7 +240,6 @@
         }
 
         function processMetricResponse(response) {
-            console.log(response.data);
             var data = response.data;
 
             ctrl.metricList.forEach(function(metric) {
@@ -253,8 +253,6 @@
 
                 ctrl.metricData.push(metric);
             });
-
-            console.log(ctrl.metricData);
         }
 
         // navigate to create template modal
@@ -367,36 +365,42 @@
                 var isValidationSuccessful = ctrl.validateScoringRanges($scope.selectedMetric.gamificationScoringRanges);
                 if(isValidationSuccessful) {
                     gamificationMetricData.storeMetricData($scope.selectedMetric).then(validatePost);
-                } else {
-                    console.log("Validation failed for the scoring ranges. Fix the ranges and click Save again");
                 }
             }
             $scope.editMode[$scope.selectedMetric.metricName] = false;
+        }
+
+        function isInteger(number) {
+            return (number == parseInt(number,10))  && !isNaN(parseInt(number));
         }
 
         function validateScoringRanges(gamificationScoringRanges) {
             var prevMax = null;
             var prevMin = null;
             if(gamificationScoringRanges.length == 0) {
-                console.log("Atleast one range needs to be added to save.");
+                $scope.createAlert("Atleast one range needs to be added to save.", "error");
                 return false;
             }
             var isValidationSuccessful = true;
             var ValidationException = {};
             try {
                 gamificationScoringRanges.forEach(function(range, i) {
+                    if(!isInteger(range.min) || !isInteger(range.max) || !isInteger(range.score)) {
+                        $scope.createAlert("Non numeric range provided. Only integers accepted for the ranges and score", "error");
+                        throw ValidationException;
+                    }
                     if(i > 0) {
                         if(prevMin == range.min && prevMax == range.max) {
-                            console.log("Duplicates detected in the scoring ranges.");
+                            $scope.createAlert("Duplicates detected in the scoring ranges.", "error");
                             throw ValidationException;
                         }
                         if(range.min <= prevMax || range.min - prevMax > 1) {
-                            console.log("Overlap and/or gaps detected in the scoring ranges.");
+                            $scope.createAlert("Overlap and/or gaps detected in the scoring ranges.", "error");
                             throw ValidationException;
                         }
                     }
                     if(range.min > range.max) {
-                        console.log("Min should be less than the max in a scoring range.");
+                        $scope.createAlert("Min should be less than the max in a scoring range.", "error");
                         throw ValidationException;
                     }
                     prevMin = range.min;
@@ -411,8 +415,6 @@
 
         function saveStatusData(metric) {
             gamificationMetricData.storeMetricData(metric).then(validatePostStatus);
-
-
         }
 
         function validatePost(response) {
