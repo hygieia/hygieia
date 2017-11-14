@@ -927,6 +927,7 @@ public class AuditServiceImpl implements AuditService {
                 ObjectId collectorItemID = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getId();
                 List<TestResult> result = customRepositoryQuery.findByCollectorItemIdAndTimestampGreaterThanEqualAndTimestampLessThanEqual(collectorItemID, from, to);
                 List<PerfTest> testlist = new ArrayList<PerfTest>();
+                //loop through test result object to obtain performance artifacts.
                 for (TestResult testResult : result) { //parse though the results to obtain performance KPI's
                     Collection<TestCapability> testCapabilityCollection = testResult.getTestCapabilities();
                     List<TestCapability> testCapabilityList = new ArrayList<>(testCapabilityCollection);
