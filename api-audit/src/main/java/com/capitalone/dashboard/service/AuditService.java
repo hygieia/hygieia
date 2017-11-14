@@ -10,7 +10,13 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.response.*;
+import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
+import com.capitalone.dashboard.response.DashboardReviewResponse;
+import com.capitalone.dashboard.response.JobReviewResponse;
+import com.capitalone.dashboard.response.PeerReviewResponse;
+import com.capitalone.dashboard.response.StaticAnalysisResponse;
+import com.capitalone.dashboard.response.TestResultsResponse;
+import com.capitalone.dashboard.response.PerfReviewResponse;
 
 public interface AuditService {
 
