@@ -10,12 +10,7 @@ import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
-import com.capitalone.dashboard.response.DashboardReviewResponse;
-import com.capitalone.dashboard.response.JobReviewResponse;
-import com.capitalone.dashboard.response.PeerReviewResponse;
-import com.capitalone.dashboard.response.StaticAnalysisResponse;
-import com.capitalone.dashboard.response.TestResultsResponse;
+import com.capitalone.dashboard.response.*;
 
 public interface AuditService {
 
@@ -44,4 +39,6 @@ public interface AuditService {
     CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl,String repoBranch,String artifactGroup, String artifactName, String artifactVersion, long beginDate, long endDate) throws HygieiaException;
     
     TestResultsResponse getTestResultExecutionDetails(String jobUrl,long beginDt, long endDt) throws HygieiaException;
+
+    PerfReviewResponse getresultsBycomponetAndTime(String businessComp, long from, long to);
 }

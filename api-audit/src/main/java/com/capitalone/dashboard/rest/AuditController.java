@@ -4,18 +4,8 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.request.DashboardReviewRequest;
-import com.capitalone.dashboard.request.JobReviewRequest;
-import com.capitalone.dashboard.request.PeerReviewRequest;
-import com.capitalone.dashboard.request.QualityProfileValidationRequest;
-import com.capitalone.dashboard.request.StaticAnalysisRequest;
-import com.capitalone.dashboard.request.TestExecutionValidationRequest;
-import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
-import com.capitalone.dashboard.response.DashboardReviewResponse;
-import com.capitalone.dashboard.response.JobReviewResponse;
-import com.capitalone.dashboard.response.PeerReviewResponse;
-import com.capitalone.dashboard.response.StaticAnalysisResponse;
-import com.capitalone.dashboard.response.TestResultsResponse;
+import com.capitalone.dashboard.request.*;
+import com.capitalone.dashboard.response.*;
 import com.capitalone.dashboard.service.AuditService;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.slf4j.Logger;
@@ -38,12 +28,15 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class AuditController {
     private final AuditService auditService;
 
+	@Autowired
+	public AuditController(AuditService auditService) {
+		this.auditService = auditService;
+	}
+
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditController.class);
 
-    @Autowired
-    public AuditController(AuditService auditService) {
-        this.auditService = auditService;
-    }
+
 
     /**
      * Dashboard review
@@ -178,6 +171,16 @@ public class AuditController {
 
 		testResultsResponse = auditService.getTestResultExecutionDetails(request.getJobUrl(),request.getBeginDate(),request.getEndDate());
 		return ResponseEntity.ok().body(testResultsResponse);
+	}
+
+	@RequestMapping(value = "/validatePerfResults", method = GET, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<PerfReviewResponse> validatePerfResultExecution(PerfReviewRequest request)
+			throws HygieiaException {
+
+		PerfReviewResponse perfReviewResponse;
+
+		perfReviewResponse = auditService.getresultsBycomponetAndTime(request.getBusinessComponentName(),request.getRangeFrom(),request.getRangeTo());
+		return ResponseEntity.ok().body(perfReviewResponse);
 	}
 
 }

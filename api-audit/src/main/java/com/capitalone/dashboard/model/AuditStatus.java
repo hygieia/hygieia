@@ -68,7 +68,12 @@ public enum AuditStatus {
     TEST_RESULT_AUDIT_OK,
     TEST_RESULT_AUDIT_FAIL,
     TEST_RESULT_AUDIT_MISSING,
-    
+
+    // wheather perf results are available/pass or fail
+    PERF_RESULT_AUDIT_OK,
+    PERF_RESULT_AUDIT_FAIL,
+    PERF_RESULT_AUDIT_MISSING,
+
     // whether or not build job configuration was not changed by a commit author
     BUILD_JOB_CONFIGURATION_REVIEW_FAIL,
     BUILD_JOB_CONFIGURATION_REVIEW_PASS,

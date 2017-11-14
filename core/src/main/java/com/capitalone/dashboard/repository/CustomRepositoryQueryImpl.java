@@ -1,10 +1,6 @@
 package com.capitalone.dashboard.repository;
 
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.*;
 
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
@@ -172,6 +168,20 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
         return template.find(query, TestResult.class);
 
 	}
+
+
+	public List<TestResult> findByCollectorItemIdAndTimestampGreaterThanEqualAndTimestampLessThanEqual(ObjectId collectorItemId, long beginTime, long endTime){
+
+        Query query = new Query(
+                Criteria.where(("collectorItemId")).is(collectorItemId)
+                        .andOperator(
+                                Criteria.where("timestamp").gte(beginTime),
+                                Criteria.where("timestamp").lte(endTime),
+                                Criteria.where("type").is(TestSuiteType.Performance)
+                        )
+        );
+        return template.find(query, TestResult.class);
+    }
 
 	private String getGitHubParsedString(Map<String, Object> selectOptions, Map.Entry<String, Object> e) {
         String url = (String)selectOptions.get(e.getKey());
