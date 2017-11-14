@@ -14,7 +14,7 @@ import com.capitalone.dashboard.response.*;
 
 public interface AuditService {
 
-    List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> gitRequests, List<Commit> commits, String scmUrl, String scmBranch);
+    List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> gitRequests, List<Commit> commits, String scmUrl, String scmBranch, long beginDt, long endDt);
 
     List<GitRequest> getPullRequests(String repo, String branch, long beginDt, long endDt);
 

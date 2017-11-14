@@ -156,7 +156,7 @@ public class AuditServiceImpl implements AuditService {
                 if (scmWidgetbranch != null && scmWidgetrepoUrl != null) {
                     pullRequests = this.getPullRequests(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
                     commits = this.getCommits(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
-                    List<PeerReviewResponse> inside = this.getPeerReviewResponses(pullRequests, commits, scmWidgetrepoUrl, scmWidgetbranch);
+                    List<PeerReviewResponse> inside = this.getPeerReviewResponses(pullRequests, commits, scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
                     allRepos.add(inside);
                 }
 
@@ -296,7 +296,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     public List<GitRequest> getPullRequests(String repo, String branch, long beginDt, long endDt) {
-        List<GitRequest> pullRequests = gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(repo, branch, beginDt, endDt);
+        List<GitRequest> pullRequests = customRepositoryQuery.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndMergedAtGreaterThanEqualAndMergedAtLessThanEqual(repo, branch, beginDt, endDt);
         return pullRequests;
     }
 
@@ -330,12 +330,26 @@ public class AuditServiceImpl implements AuditService {
             if (contextString != null) {
                 prContexts.addAll(Arrays.asList(contextString.trim().split(",")));
             }
+            boolean lgtmAttempted = false;
+            boolean lgtmStateResult = false;
             for (CommitStatus status : statuses) {
-                if (prContexts.contains(status.getContext())) {
-                    //review done using LGTM workflow
-                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM);
-                    return "success".equalsIgnoreCase(status.getState());
+                if (status.getContext() != null && prContexts.contains(status.getContext())) {
+                    //review done using LGTM workflow assuming its in the settings peerReviewContexts
+                    lgtmAttempted = true;
+                    if ("pending".equalsIgnoreCase(status.getState())) {
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
+                    } else if ("error".equalsIgnoreCase(status.getState())) {
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_ERROR);
+                    } else if ("success".equalsIgnoreCase(status.getState())) {
+                        lgtmStateResult = true;
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SUCCESS);
+                    } else {
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_UNKNOWN);
+                    }
                 }
+            }
+            if (lgtmAttempted) {
+                return lgtmStateResult;
             }
         }
         if (reviews != null) {
@@ -350,8 +364,15 @@ public class AuditServiceImpl implements AuditService {
         return false;
     }
 
+<<<<<<< HEAD
     @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength", "PMD.AvoidBranchingStatementAsLastInLoop", "PMD.EmptyIfStmt"})
     public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits, String scmUrl, String scmBranch) {
+=======
+    @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
+    public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits,
+                                                           String scmUrl, String scmBranch,
+                                                           long beginDt, long endDt) {
+>>>>>>> abfa970213be89f28e62dae34034ce6e4f2941f3
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
 
         HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
@@ -364,6 +385,8 @@ public class AuditServiceImpl implements AuditService {
 
         for (GitRequest pr : pullRequests) {
             HashMap<String, Commit> mapCommitsRelatedToPr = new HashMap();
+            String baseSha = pr.getBaseSha();
+            String headSha = pr.getHeadSha();
             String mergeSha = pr.getScmRevisionNumber();
             Commit mergeCommit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(mergeSha, pr.getScmUrl());
             if (mergeCommit == null) {
@@ -374,7 +397,9 @@ public class AuditServiceImpl implements AuditService {
             List<String> relatedCommitShas = mergeCommit.getScmParentRevisionNumbers();
             if (!CollectionUtils.isEmpty(relatedCommitShas)) {
                 for (String relatedCommitSha : relatedCommitShas) {
-                    getRelatedCommits(relatedCommitSha, mapCommitsRelatedToPr, pr);
+                    if (!relatedCommitSha.equalsIgnoreCase(baseSha)) {
+                        getRelatedCommits(relatedCommitSha, mapCommitsRelatedToPr, pr);
+                    }
                 }
             }
 
@@ -443,9 +468,14 @@ public class AuditServiceImpl implements AuditService {
             }
 
             //direct commit to master
+<<<<<<< HEAD
             String baseSha = pr.getBaseSha();
             String headSha = pr.getHeadSha();
             for (Commit commit : commitsRelatedToPr) {
+=======
+            //start at the headSha and compute upto and excluding baseSha
+            for(Commit commit: commitsRelatedToPr) {
+>>>>>>> abfa970213be89f28e62dae34034ce6e4f2941f3
                 if (commit.getType() == CommitType.New) {
                     if (commit.getScmParentRevisionNumbers() != null) {
                         if (commit.getScmParentRevisionNumbers().isEmpty()) {
@@ -455,7 +485,11 @@ public class AuditServiceImpl implements AuditService {
                             //New commit has ONLY one parent
                             List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
                             if (!CollectionUtils.isEmpty(parentCommitShas)) {
-                                computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, pr, mapCommitsRelatedToPr);
+                                if (parentCommitShas.get(0).equalsIgnoreCase(baseSha)) {
+                                    break;
+                                } else {
+                                    computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, pr.getScmUrl(), mapCommitsRelatedToPr, mapCommitsRelatedToAllPrs, false, beginDt, endDt);
+                                }
                             }
 
                         }
@@ -464,6 +498,13 @@ public class AuditServiceImpl implements AuditService {
                     }
                 } else {
                     //merge commit
+                    //add its parent commits to mapCommitsRelatedToPr
+                    List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
+                    if (!CollectionUtils.isEmpty(parentCommitShas)) {
+                        for (String prntcs : parentCommitShas) {
+                            computeParentCommit(prntcs, peerReviewResponse, baseSha, headSha, pr.getScmUrl(), mapCommitsRelatedToPr, mapCommitsRelatedToAllPrs, false, beginDt, endDt);
+                        }
+                    }
                 }
             }
 
@@ -478,6 +519,23 @@ public class AuditServiceImpl implements AuditService {
             if (!mapCommitsRelatedToAllPrs.containsKey(commitSha)) {
                 if (commit.getType() == CommitType.New) {
                     commitsNotDirectlyTiedToPr.add(commit);
+
+                    if (commit.getScmParentRevisionNumbers() != null) {
+                        if (commit.getScmParentRevisionNumbers().isEmpty()) {
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                        } else {
+
+                            //New commit has ONLY one parent
+                            List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
+                            if (!CollectionUtils.isEmpty(parentCommitShas)) {
+                                computeParentCommit(parentCommitShas.get(0), peerReviewResponse, null, null, scmUrl, null, mapCommitsRelatedToAllPrs, true, beginDt, endDt);
+                            }
+
+                        }
+                    } else {
+                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                    }
+                    /*
                     if (commit.getScmParentRevisionNumbers() != null) {
                         if (commit.getScmParentRevisionNumbers().isEmpty()) {
                             peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
@@ -487,7 +545,7 @@ public class AuditServiceImpl implements AuditService {
                         }
                     } else {
                         peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
-                    }
+                    }*/
                 } else {
                     //merge commit
                 }
@@ -523,13 +581,44 @@ public class AuditServiceImpl implements AuditService {
         return allPeerReviews;
     }
 
-    private boolean computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse, String baseSha, String headSha, GitRequest pr, HashMap<String, Commit> mapCommitsRelatedToPr) {
-        boolean traceBack = true;
-        Commit commit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(commitSha, pr.getScmUrl());
-        if (commit == null || commit.getType() == null || commit.getType() == CommitType.Merge || commit.getType() == CommitType.NotBuilt) {
+    private boolean isMergeCommitAndPr(Commit commit) {
+        if (commit.getType() != null && commit.getType() == CommitType.Merge) {
+            List<GitRequest> prs = gitRequestRepository.findByScmRevisionNumber(commit.getScmRevisionNumber());
+            if (!CollectionUtils.isEmpty(prs)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
             return false;
         }
+    }
+
+    private boolean computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse,
+                                        String baseSha, String headSha, String scmUrl,
+                                        HashMap<String, Commit> mapCommitsRelatedToPr,
+                                        HashMap<String, Commit> mapCommitsRelatedToAllPrs,
+                                        boolean checkDate, long beginDt, long endDt) {
+        boolean traceBack = true;
+        Commit commit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(commitSha, scmUrl);
+        if (commit == null || commit.getType() == null || commit.getType() == CommitType.NotBuilt) {
+            return false;
+        } else if (commit.getType() == CommitType.Merge) {
+            //if you are a merge commit and a pr
+            if (isMergeCommitAndPr(commit)) {
+                return false;
+            }
+            //if you are a merge commit and getting merged as part of a pr
+            if (baseSha != null && headSha != null) {
+                return false;
+            }
+        }
         LOGGER.warn("Enter computeParentCommit " + commitSha + " " + commit.getType());
+        if (checkDate) {
+            if (commit.getScmCommitTimestamp() < beginDt || mapCommitsRelatedToAllPrs.containsKey(commitSha)) {
+                return false;
+            }
+        }
         while (traceBack) {
             if (commit.getScmRevisionNumber().equalsIgnoreCase(baseSha)) {
                 if (commit.getScmParentRevisionNumbers() != null) {
@@ -545,11 +634,20 @@ public class AuditServiceImpl implements AuditService {
             } else if (commit.getScmRevisionNumber().equalsIgnoreCase(headSha)) {
                 traceBack = false;
             } else {
-                mapCommitsRelatedToPr.put(commitSha, commit);
+                if (mapCommitsRelatedToPr != null) {
+                    mapCommitsRelatedToPr.put(commitSha, commit);
+                }
+                if (mapCommitsRelatedToAllPrs != null) {
+                    mapCommitsRelatedToAllPrs.put(commitSha, commit);
+                }
                 //New commit has ONLY one parent
                 List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
                 if (!CollectionUtils.isEmpty(parentCommitShas)) {
-                    traceBack = computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, pr, mapCommitsRelatedToPr);
+                    if (parentCommitShas.get(0).equalsIgnoreCase(baseSha)) {
+                        return false;
+                    } else {
+                        traceBack = computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, scmUrl, mapCommitsRelatedToPr, mapCommitsRelatedToAllPrs, checkDate, beginDt, endDt);
+                    }
                 } else {
                     //reached first commit
                     traceBack = false;
