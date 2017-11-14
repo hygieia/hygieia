@@ -6,7 +6,7 @@
 @import 'quality-details/quality-details.less';
 
 @ct-legend-series: a, b, c, d, e, f, g;
-@ct-legend-colors: lightgreen, deepskyblue, pink, lightyellow, teal, maroon, silver;
+@ct-legend-colors: darkorchid, mediumpurple, mediumorchid, blueviolet, darkviolet, mediumpurple, blueviolet;
 
 #product-dashboard {
     margin-top: -2rem;
@@ -405,22 +405,18 @@
     #gamification-view {
     .gamification-leaderboard {
       margin-top: 70px;
-      ul {
-        list-style-type: none;
-        margin-left: 200px;
-      }
       .ct-legend {
-        position: relative;
+        position: absolute;
+        left: 300px;
         z-index: 10;
-
         li {
-          position: relative;
-          padding-left: 23px;
-          margin-right: 30px;
-          margin-bottom: 3px;
-          cursor: pointer;
-          display: inline-block;
-        }
+             position: relative;
+             padding-left: 23px;
+             margin-right: 30px;
+             margin-bottom: 3px;
+             cursor: pointer;
+             display: inline-block;
+         }
 
         li:before {
           width: 12px;

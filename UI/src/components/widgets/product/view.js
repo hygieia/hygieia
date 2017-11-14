@@ -114,7 +114,7 @@
             }
         }
 
-        function defineChartProperties() {
+        function defineChartProperties(numberOfTeams) {
             $scope.chartOptions = {
                 plugins: [
                     Chartist.plugins.legend({
@@ -126,7 +126,7 @@
                 stackBars: true,
                 centerLabels: true,
                 horizontalBars: true,
-                height: "220",
+                height: numberOfTeams * 50 + 20,
                 width: "80%",
                 axisX: {
                     showLabel: false,
@@ -137,7 +137,7 @@
                 axisY: {
                     showGrid: false,
                     scaleMinSpace: 20,
-                    offset: ctrl.getOffset(),
+                    offset: 300,
                     labeloffset: {
                         x: 0,
                         y: 10
@@ -155,7 +155,7 @@
                 ctrl.scoreBoardMetrics.forEach(function(metric) {
                     var teamScoreBoardDataElement = {
                         metricName: metric.metricName,
-                        value: configuredTeam.summary[metric.metricName] == undefined ? 0 : configuredTeam.summary[metric.metricName].number,
+                        value: (configuredTeam.summary == undefined || configuredTeam.summary[metric.metricName] == undefined) ? 0 : configuredTeam.summary[metric.metricName].number,
                         score: getScoreForMetric(metric.metricName, configuredTeam)
                     };
                     teamScoreBoardData.data.push(teamScoreBoardDataElement);
@@ -170,7 +170,7 @@
                 return teamScoreBoardData;
             });
 
-            defineChartProperties();
+            defineChartProperties(ctrl.scoreBoardData.length);
             $scope.scoreBoardMetrics = ctrl.scoreBoardMetrics;
             ctrl.scoreBoardData = ctrl.scoreBoardData.sort(
                 function(firstTeam, secondTeam){
