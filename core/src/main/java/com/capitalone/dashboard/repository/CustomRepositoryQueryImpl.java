@@ -1,15 +1,7 @@
 package com.capitalone.dashboard.repository;
 
-<<<<<<< HEAD
 import com.capitalone.dashboard.model.*;
-=======
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Commit;
-import com.capitalone.dashboard.model.GitRequest;
-import com.capitalone.dashboard.model.TestResult;
->>>>>>> abfa970213be89f28e62dae34034ce6e4f2941f3
+
 
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;

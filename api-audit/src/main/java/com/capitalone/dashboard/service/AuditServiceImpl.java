@@ -364,15 +364,11 @@ public class AuditServiceImpl implements AuditService {
         return false;
     }
 
-<<<<<<< HEAD
-    @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength", "PMD.AvoidBranchingStatementAsLastInLoop", "PMD.EmptyIfStmt"})
-    public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits, String scmUrl, String scmBranch) {
-=======
     @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
     public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits,
                                                            String scmUrl, String scmBranch,
                                                            long beginDt, long endDt) {
->>>>>>> abfa970213be89f28e62dae34034ce6e4f2941f3
+
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
 
         HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
@@ -468,14 +464,10 @@ public class AuditServiceImpl implements AuditService {
             }
 
             //direct commit to master
-<<<<<<< HEAD
-            String baseSha = pr.getBaseSha();
-            String headSha = pr.getHeadSha();
-            for (Commit commit : commitsRelatedToPr) {
-=======
+
             //start at the headSha and compute upto and excluding baseSha
             for(Commit commit: commitsRelatedToPr) {
->>>>>>> abfa970213be89f28e62dae34034ce6e4f2941f3
+
                 if (commit.getType() == CommitType.New) {
                     if (commit.getScmParentRevisionNumbers() != null) {
                         if (commit.getScmParentRevisionNumbers().isEmpty()) {
