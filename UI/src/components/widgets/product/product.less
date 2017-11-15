@@ -469,18 +469,40 @@
             width: 60%;
             margin-left: 200px;
             margin-right: auto;
-            table, th, td {
-              border: 1px solid white;
-              text-align: center;
-              padding: 10px;
+
+            @dash-chart-alt-color:    contrast('blue');
+
+            td {
+                .text-standard;
+                vertical-align: top;
+                text-align: left;
+                padding: 1rem 1rem;
+                margin-right: 1rem;
             }
-            th {
-              background-color: #167F92;
-              opacity: 5;
-            }
-            .team-name {
+
+            .header{
+              padding: 1rem 1rem;
+              vertical-align: bottom;
               text-align: left;
-              font-weight: bold;
+
+              .generate-table-header-style(length(@ct-legend-colors));
+
+              .generate-table-header-style(@n, @index: 0) when (@index =< @n) {
+                &:nth-child(@{index}) {
+                  color: extract(@ct-legend-colors, @index - 1);
+                }
+                .generate-table-header-style(@n, (@index + 1));
+              }
+            }
+
+            tr {
+                .text-lg;
+                vertical-align: center;
+                text-align: center;
+
+                &:nth-child(even) {
+                    background: @dash-widget-section-highlight;
+                }
             }
         }
     }

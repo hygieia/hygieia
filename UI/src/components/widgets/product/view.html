@@ -219,9 +219,9 @@
 
         <table class="gamification-table" >
             <tr>
-                <th>Team Name</th>
-                <th ng-repeat="metric in scoreBoardMetrics">{{ metric.formattedName }}</th>
-                <th>Total</th>
+                <th class="first-header">Team Name</th>
+                <th class="header" ng-repeat="metric in scoreBoardMetrics">{{ metric.formattedName }}</th>
+                <th class="last-header">Total</th>
             </tr>
             <tr ng-repeat="teamScoreRecord in ctrl.scoreBoardData">
                 <td class="team-name">{{ teamScoreRecord.name }}</td>
