@@ -119,7 +119,11 @@ Note the following:
 
 ## Docker Image for API
 
-To configure the Hygieia API layer, execute the following steps:
+You can install Hygieia by creating a Docker image. This section gives detailed instructions to create a Docker image for the API layer. 
+
+For instructions on installing all components Hygieia, see [Build Docker](../Build/builddocker.md).
+
+To create a Docker image for Hygieia's API layer, execute the following steps:
 
 *	**Step 1: Run Maven Build**
 
@@ -260,7 +264,9 @@ For additional information, see jasypt spring boot [documentation](https://githu
 
 By default, a secure variable's value is not visible in the build log and can only be configured by a project administrator.
 
-### Troubleshooting
+### Troubleshooting Instructions
+
+**Scenario 1**
 
 The API module fails to launch with the following error:
 
@@ -270,7 +276,7 @@ org.springframework.dao.DuplicateKeyException: Write failed with error code 1100
 ```
 In this case, execute the following steps:
 
-* Step 1 : Save the following lines to a file called fixdups.js:
+* **Step 1** : Save the following lines to a file called fixdups.js:
 
 ```
 var dupsExist = false;
@@ -302,8 +308,46 @@ if (!dupsExist) {
 }
 ```
 
-* Step 2 : Run the following in the command line:
+* **Step 2** : Run the following in the command line:
 
 ```bash
 mongo <dbhost>:<dbport>/<dbname> fixdups.js
 ```
+
+**Scenario 2**
+
+The Hygieia dashboard does not show up for a specific login type you created, before introducing Auth type as 'STANDARD' or 'LDAP'.
+
+In this case, execute the following steps:
+
+**Step 1** : Save the following lines to a file called fixAuths.js 
+
+```
+var count = 0;
+db.dashboards.aggregate([{$match:{"owners.authType": {$exists : false}}}]).forEach(
+    function(myDoc) {
+        var ownerName = myDoc.owner;
+        print("Updating owner information for dashboard title --"+ myDoc.title+ "  owner name --"+myDoc.owner);
+        db.dashboards.update(
+            { _id: myDoc._id},
+            {
+                $push: {
+                    owners: {
+                        $each: [{username: ownerName, authType: "STANDARD"}]
+                    }
+                }
+            }
+        )
+        db.dashboards.update({_id: myDoc._id},{$unset: {owner:1}},{multi: true});
+        count++;
+    }
+);
+print(count+" dashboards updated successfully");
+```
+
+**Step 2** : Run the following in command line.
+
+```bash
+mongo <dbhost>:<dbport>/<dbname> fixAuths.js
+```
+
