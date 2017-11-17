@@ -103,7 +103,7 @@ monitor.proxy.port=[port enabled on proxy server]
 monitor.proxy.username=[proxy username]
 monitor.proxy.password=[proxy password]
 
-# This will be page size for pagination on Hygieia landing page.if this property is not set, default value is set to 10.
+# This will be the page size for pagination on Hygieia landing page. If this property is not set, the default value is set to 10.
 pageSize=[Integer value]
 ```
 
