@@ -19,7 +19,7 @@ Change the current working directory to the `jenkins` directory of your Hygieia 
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[usernname]\hygieia\collectors\scm\jenkins
+cd C:\Users\[usernname]\hygieia\collectors\build\jenkins
 ```
 
 *   **Step 2: Run Maven Build**

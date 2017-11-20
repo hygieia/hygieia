@@ -19,7 +19,7 @@ To configure the HPSM Collector, execute the following steps:
 	For example, in the Windows command prompt, run the following command:
 
 	```
-	cd C:\Users\[username]\hygieia\collectors\scm\hpsm
+	cd C:\Users\[username]\hygieia\collectors\cmdb\hpsm
 	```
 
 *   **Step 2: Run Maven Build**

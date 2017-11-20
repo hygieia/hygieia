@@ -20,7 +20,7 @@ Change the current working directory to the `sonar` directory of your Hygieia so
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[usernname]\hygieia\collectors\scm\sonar
+cd C:\Users\[usernname]\hygieia\collectors\build\sonar
 ```
 
 *   **Step 2: Run Maven Build**

@@ -23,7 +23,7 @@ To configure the Hygieia API layer, execute the following steps:
 
 *	**Step 1: Run Maven Build**
 
-	To package the API source code into an executable JAR file, run the maven build from the `\Hygieia` directory of your source code installation:
+	To package the API source code into an executable JAR file, run the Maven build from the `\Hygieia` directory of your source code installation:
 
 	```bash
 	mvn install
@@ -214,7 +214,7 @@ You can add additional request parameters for the following options:
 * `artifactName` (required)
 * `artifactGroup`
 * `artifactVersion`
-* `niceName` - Name that appears for the collector in the Hygieia UI.
+* `niceName` - Name that appears for the collector in Hygieia UI.
 
 For example, to set the `artifactName` based on the `deploymentUnit` option in the Rundeck job, the webhook URL is:
 `http://<apihost>:<apiport>/api/deploy/rundeck?artifactNameParam=deploymentUnit`. 
@@ -238,7 +238,7 @@ If these values are not provided, the webhook first queries the job to see if it
 * `niceName`
     * `hygieiaNiceName`
 
-For the required fields, if the methods to locate values is exhausted, the webhook endpoint fails and deployment will not be registered. An exception appears in the Hygieia API log with the field name that is missing from the job. If `appName` is not set, it will be set based on the Rundeck project name.
+For the required fields, if the methods to locate values is exhausted, the webhook endpoint fails and deployment is not registered. An exception appears in the Hygieia API log with the field name that is missing from the job. If `appName` is not set, it is set based on the Rundeck project name.
 
 ### Encrypted Properties
 
@@ -276,43 +276,43 @@ org.springframework.dao.DuplicateKeyException: Write failed with error code 1100
 ```
 In this case, execute the following steps:
 
-* **Step 1** : Save the following lines to a file called fixdups.js:
+*	**Step 1** : Save the following lines to a file called fixdups.js:
 
-```
-var dupsExist = false;
-db.dashboards.aggregate([
-  { $group: {
-    _id: { firstField: "$title"},
-    uniqueIds: { $addToSet: "$_id" },
-    count: { $sum: 1 }
-  }},
-  { $match: {
-    count: { $gt: 1 }
-  }}
-]).forEach(
-	function(myDoc) {
-		dupsExist = true;
-		print(myDoc.count + " dashboards have the same title " + myDoc._id.firstField);
-		var arr = myDoc.uniqueIds;
-		for(i=0; i<arr.length; i++) {
-			var oneDash = db.dashboards.findOne({_id: arr[i]});
-			var newTitle = oneDash.title + "_" + oneDash.owner + "_" + i;
-			print("Rename " + oneDash.title + " to " + newTitle);
-			db.dashboards.update({_id: arr[i]},{$set:{title: newTitle}});
+	```
+	var dupsExist = false;
+	db.dashboards.aggregate([
+	  { $group: {
+		_id: { firstField: "$title"},
+		uniqueIds: { $addToSet: "$_id" },
+		count: { $sum: 1 }
+	  }},
+	  { $match: {
+		count: { $gt: 1 }
+	  }}
+	]).forEach(
+		function(myDoc) {
+			dupsExist = true;
+			print(myDoc.count + " dashboards have the same title " + myDoc._id.firstField);
+			var arr = myDoc.uniqueIds;
+			for(i=0; i<arr.length; i++) {
+				var oneDash = db.dashboards.findOne({_id: arr[i]});
+				var newTitle = oneDash.title + "_" + oneDash.owner + "_" + i;
+				print("Rename " + oneDash.title + " to " + newTitle);
+				db.dashboards.update({_id: arr[i]},{$set:{title: newTitle}});
+			}
 		}
+	);
+
+	if (!dupsExist) {
+		print("No duplicate title dashboards found.");
 	}
-);
+	```
 
-if (!dupsExist) {
-	print("No duplicate title dashboards found.");
-}
-```
+*	**Step 2** : Run the following in the command line:
 
-* **Step 2** : Run the following in the command line:
-
-```bash
-mongo <dbhost>:<dbport>/<dbname> fixdups.js
-```
+	```bash
+	mongo <dbhost>:<dbport>/<dbname> fixdups.js
+	```
 
 **Scenario 2**
 
@@ -320,34 +320,34 @@ The Hygieia dashboard does not show up for a specific login type you created, be
 
 In this case, execute the following steps:
 
-**Step 1** : Save the following lines to a file called fixAuths.js 
+*	**Step 1** : Save the following lines to a file called fixAuths.js 
 
-```
-var count = 0;
-db.dashboards.aggregate([{$match:{"owners.authType": {$exists : false}}}]).forEach(
-    function(myDoc) {
-        var ownerName = myDoc.owner;
-        print("Updating owner information for dashboard title --"+ myDoc.title+ "  owner name --"+myDoc.owner);
-        db.dashboards.update(
-            { _id: myDoc._id},
-            {
-                $push: {
-                    owners: {
-                        $each: [{username: ownerName, authType: "STANDARD"}]
-                    }
-                }
-            }
-        )
-        db.dashboards.update({_id: myDoc._id},{$unset: {owner:1}},{multi: true});
-        count++;
-    }
-);
-print(count+" dashboards updated successfully");
-```
+	```
+	var count = 0;
+	db.dashboards.aggregate([{$match:{"owners.authType": {$exists : false}}}]).forEach(
+		function(myDoc) {
+			var ownerName = myDoc.owner;
+			print("Updating owner information for dashboard title --"+ myDoc.title+ "  owner name --"+myDoc.owner);
+			db.dashboards.update(
+				{ _id: myDoc._id},
+				{
+					$push: {
+						owners: {
+							$each: [{username: ownerName, authType: "STANDARD"}]
+						}
+					}
+				}
+			)
+			db.dashboards.update({_id: myDoc._id},{$unset: {owner:1}},{multi: true});
+			count++;
+		}
+	);
+	print(count+" dashboards updated successfully");
+	```
 
-**Step 2** : Run the following in command line.
+*	**Step 1** : Run the following in command line:
 
-```bash
-mongo <dbhost>:<dbport>/<dbname> fixAuths.js
-```
+	```bash
+	mongo <dbhost>:<dbport>/<dbname> fixAuths.js
+	```
 

@@ -21,7 +21,7 @@ Change the current working directory to the `VersionOne` directory of your Hygie
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[username]\hygieia\collectors\scm\versionone
+cd C:\Users\[username]\hygieia\collectors\feature\versionone
 ```
 
 *   **Step 2: Run Maven Build**

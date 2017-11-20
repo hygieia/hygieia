@@ -19,7 +19,7 @@ Change the current working directory to the `artifactory` directory of your Hygi
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[username]\hygieia\collectors\scm\artifactory
+cd C:\Users\[username]\hygieia\collectors\artifact\artifactory
 ```
 
 *   **Step 2: Run Maven Build**

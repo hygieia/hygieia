@@ -20,7 +20,7 @@ Change the current working directory to the `jenkins-codequality` directory of y
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[usernname]\hygieia\collectors\scm\jenkins-codequality
+cd C:\Users\[usernname]\hygieia\collectors\build\jenkins-codequality
 ```
 
 *   **Step 2: Run Maven Build**

@@ -20,7 +20,7 @@ Change the current working directory to the `aws` directory of your Hygieia sour
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[usernname]\hygieia\collectors\scm\aws
+cd C:\Users\[usernname]\hygieia\collectors\cloud\aws
 ```
 
 *   **Step 2: Run Maven Build**

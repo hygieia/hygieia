@@ -26,7 +26,7 @@ Change the current working directory to the `gitlab-feature` directory of your H
 For example, in the Windows command prompt, run the following command:
 
 ```bash
-cd C:\Users\[username]\hygieia\collectors\scm\gitlab-feature
+cd C:\Users\[username]\hygieia\collectors\feature\gitlab-feature
 ```
 
 *   **Step 2: Run Maven Build**

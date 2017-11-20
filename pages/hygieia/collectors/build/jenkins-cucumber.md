@@ -69,7 +69,7 @@ Change the current working directory to the `jenkins-cucumber` directory of your
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[usernname]\hygieia\collectors\scm\jenkins-cucumber
+cd C:\Users\[usernname]\hygieia\collectors\artifact\jenkins-cucumber
 ```
 
 *   **Step 2: Run Maven Build**
