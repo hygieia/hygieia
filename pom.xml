@@ -206,6 +206,7 @@
         <module>hygieia-jenkins-plugin</module>
         <module>UI</module>
         <module>UI-tests</module>
+        <module>UI-protractor-tests</module>
       </modules>
       <build>
         <pluginManagement>
@@ -252,6 +253,7 @@
         <module>hygieia-jenkins-plugin</module>
      	<module>UI</module>
         <module>UI-tests</module>
+        <module>UI-protractor-tests</module>
  </modules>
       <build>
         <plugins>

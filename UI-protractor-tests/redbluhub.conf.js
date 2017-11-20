@@ -24,7 +24,7 @@ exports.config = {
 
     capabilities: {
         browserName: 'chrome',
-        version: '62.0.3202.62',
+        // version: '62.0.3202.62',
         recordVideo : true,
         name : 'Hygieia SmokeTests',
         ignoreProtectedModeSettings : true
