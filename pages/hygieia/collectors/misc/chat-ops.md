@@ -26,7 +26,7 @@ Change the current working directory to the `chatops` directory of your Hygieia 
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[username]\hygieia\collectors\scm\chatops
+cd C:\Users\[username]\hygieia\collectors\misc\chatops
 ```
 
 *   **Step 2: Run Maven Build**

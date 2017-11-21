@@ -20,7 +20,7 @@ Change the current working directory to the `nexusiq` directory of your Hygieia 
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[username]\hygieia\collectors\scm\nexusiq
+cd C:\Users\[username]\hygieia\collectors\library-policy\nexusiq
 ```
 
 *   **Step 2: Run Maven Build**

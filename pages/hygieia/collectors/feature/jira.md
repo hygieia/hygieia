@@ -21,7 +21,7 @@ Change the current working directory to the `jira` directory of your Hygieia sou
 For example, in the Windows command prompt, run the following command:
 
 ```bash
-cd C:\Users\[username]\hygieia\collectors\scm\jira
+cd C:\Users\[username]\hygieia\collectors\feature\jira
 ```
 
 *   **Step 2: Run Maven Build**

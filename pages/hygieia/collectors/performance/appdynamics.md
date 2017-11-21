@@ -19,7 +19,7 @@ Change the current working directory to the `appdynamics` directory of your Hygi
 For example, in the Windows command prompt, run the following command:
 
 ```bash
-cd C:\Users\[username]\hygieia\collectors\scm\appdynamics
+cd C:\Users\[username]\hygieia\collectors\performance\appdynamics
 ```
 
 *   **Step 2: Run Maven Build**

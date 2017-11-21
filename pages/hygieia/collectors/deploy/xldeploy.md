@@ -20,7 +20,7 @@ Change the current working directory to the `xldeploy` directory of your Hygieia
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[usernname]\hygieia\collectors\scm\xldeploy
+cd C:\Users\[usernname]\hygieia\collectors\deploy\xldeploy
 ```
 
 *   **Step 2: Run Maven Build**

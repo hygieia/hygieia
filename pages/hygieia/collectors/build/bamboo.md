@@ -20,7 +20,7 @@ Change the current working directory to the `bamboo` directory of your Hygieia s
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[usernname]\hygieia\collectors\scm\bamboo
+cd C:\Users\[usernname]\hygieia\collectors\build\bamboo
 ```
 
 *   **Step 2: Run Maven Build**

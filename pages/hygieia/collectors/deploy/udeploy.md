@@ -20,7 +20,7 @@ Change the current working directory to the `udeploy` directory of your Hygieia 
 For example, in the Windows command prompt, run the following command:
 
 ```
-cd C:\Users\[usernname]\hygieia\collectors\scm\udeploy
+cd C:\Users\[usernname]\hygieia\collectors\deploy\udeploy
 ```
 
 *   **Step 2: Run Maven Build**
