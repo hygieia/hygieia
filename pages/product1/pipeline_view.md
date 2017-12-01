@@ -10,14 +10,15 @@ permalink: pipeline_view.html
 
 The pipeline view pulls back to show each component’s lifecycle progression through the development, testing, and deployment stages. To configure your delivery pipeline through the pipeline stages:
 
-1. In the Pipeline tab of your team dashboard, click 'Configure widget'. 
+1. In the Pipeline tab of your team dashboard, click **Configure widget**.
 2. In the 'Configure Delivery Pipeline' popup window, enter the following details:
    - Click Add to enter the pipeline stage and then select the environment.
-   - Once you have selected an environment for each for the pipeline stage you want to configure, click 'Save'.
+   - Once you have selected an environment for each for the pipeline stage you want to configure, choose the radio button to indicate the production stage, and then click **Save**.
 
-The Pipeline View is displayed for the configured environments.   
+The Pipeline View is displayed for the configured environments.
 
 **Screenshots:**
 
-![Image](http://www.capitalone.io/Hygieia/media/images/Screenshots/pipeline_view.png)
+[!Image](http://www.capitalone.io/Hygieia/media/images/Screenshots/pipeline_view.png)
 
+[!Image](http://www.capitalone.io/Hygieia/media/images/team-pipeline-config.png)

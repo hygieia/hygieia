@@ -17,7 +17,8 @@ The widget view gives detailed information about the features, code contribution
 |Features | Displays features in the current sprint to help you track epics or issues based on a sprint type using feature management tools |
 |Repo | Displays code contribution activities from one of the supported code repositories. |
 |Build | Displays the build status |
-|Quality and Performance | Displays the code quality and performance details based on unit and functional test results. |
+|Quality | Displays the code quality details based on unit and functional test results. |
+|Performance | Displays the performance details based on unit and functional test results. |
 |Deploy | Displays deployment and environment status details |
 |Monitor | Displays the monitor details |
 |ChatOps | Displays collaboration details from the chat engine. |
@@ -47,13 +48,14 @@ To clear a configured widget:
 
 ### Configure Feature Widget
 
-1. Click **Configure widget** to invoke the Configure Feature Widget screen. In this screen, enter the following details:
+1. Click **Configure widget** to invoke the 'Configure Feature Widget' screen. In this screen, enter the following details:
    - Agile Content Tool Type - Select one of the following feature data source:
      - JIRA
      - VersionOne
+	 - Gitlab Feature
    - Project Name - Enter a new project name or select one of the existing projects from the list of projects.
    - Team Name - Enter a team name
-   - Estimate Metric are:
+   - Estimate Metrics are:
      - Hours
      - Issue Count
      - Story Points
@@ -76,7 +78,7 @@ Based on the configuration, Hygieia displays the following details in the Featur
 
 ### Configure Repo Widget
 
-1. Click **Configure widget** to invoke the 'Configure Feature Widget' screen. In this screen, enter the following details:
+1. Click **Configure widget** to invoke the 'Configure Repo Widget' screen. In this screen, enter the following details:
    - Select the Repo Type from the dropdown list:
      - GitHub
 	 - Subversion
@@ -96,7 +98,9 @@ Hygieia displays the following details in the Repo widget:
 
 ### Configure Build Widget
 
-1. Click **Configure widget** to invoke the 'Configure Feature Widget' screen. In this screen, enter the following details:
+The Jenkins collector displays build-related details in the build widget. To configure the build widget:
+
+1. Click **Configure widget** to invoke the 'Configure Build Widget' screen. In this screen, enter the following details:
    - Enter the Build Job 
    - Enter the Build Duration Threshold (in minutes). The default duration is 3 minutes.
    - Alert Takeover Criteria indicates the number of consecutive build fails. The default number is 5.
@@ -106,9 +110,11 @@ Hygieia displays the following details in the Build widget:
 
 - Graphical representation of the number of issues, pulls and commits per day, versus time interval.
 - Summary of commits, pulls, issues, committers, contributors, and ideators for the current day, the previous week, and the last two weeks.
-- Total number of builds in the current day, the previous week, and the last two weeks. 
+- Total number of builds in the current day, the previous week, and the last two weeks.
 
 ### Configure Quality and Performance Widget
+
+Code quality related details for functional and unit tests are displayed in this widget based on your configuration of Sonar, Fortify, Nexus IQ, or Errata Code collectors. To configure the quality widget on the dashboard:
 
 1. Click **Configure widget** to invoke the 'Configure Code Analysis Widget' screen. In this screen, enter the following details:
 
@@ -130,14 +136,16 @@ Hygieia displays the following details in the Quality widget:
 
 Click **VIEW ALL** to view the code quality analysis details in your configured code quality tool.
 
-To configure the Performance widget:
+The AppDynamics collector diplays performance-related details in this widget. To configure the Performance widget:
 
-1. In the Performance tab, click **Configure widget** to invoke the 'Configure Performance Widget' screen. In this screen, enter the following details:
+- In the Performance tab, click **Configure widget** to invoke the 'Configure Performance Widget' screen. In this screen, enter the following details:
    - Select a Performance Analysis Job from the drop-down and then click **Save**.
    
 In the Performance widget, Hygieia displays performance details based on unit and functional test results. 
    
 ### Configure Deploy Widget
+
+Code deployment details are displayed in this widget based on your configuration of UDeploy, XLDeploy, or Jenkins collectors. To configure the deploy widget on the dashboard:
 
 1. In the Performance tab, click **Configure widget** to invoke the 'Configure Deploy Widget' screen. In this screen, enter the following details:
 
@@ -156,7 +164,7 @@ Hygieia displays the following details in the Deploy widget:
 Click an application environment to view additional artifact details from your application deployment tool, including:
  
 - Last updated date of the selected application environment
-- Deployment date for the artifact  
+- Deployment date for the artifact
 - Version Number of the artifact
 - Server name
 - server status (up or down)
@@ -174,12 +182,12 @@ Click 'View in [deployment tool name]' to view the application environment detai
 2. Click **Save**.
 
 The monitor widget displays a list of services with the service status. Click **ICON LEGEND** to view the icon description and the corresponding HTTP code.
-Click on each service listed in the widget to add add/modify the service status.
+Click on each service listed in the widget to add or modify the service status.
 
 ### Configure ChatOps Widget
 
-1. Click **Configure widget** to invoke the 'Monitor Configuration' screen. In this screen, enter the following details:
-   - Select HipChat as the chat engine from the drop-down list. 
-   - Enter the URL to the ChatOps Server
+1. Click **Configure widget** to invoke the 'Configure ChatOps Widget' screen. In this screen, enter the following details:
+   - Select HipChat as the chat engine from the drop-down list.
+   - Enter the URL to the ChatOps Server.
    - Enter Room Name and Room Auth Token to connect to the chat engine.
 2. Click **Save**.
