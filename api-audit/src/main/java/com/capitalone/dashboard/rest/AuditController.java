@@ -137,7 +137,7 @@ public class AuditController {
 			throws HygieiaException, IOException {
 
 		List<StaticAnalysisResponse> staticAnalysisResponse;
-		staticAnalysisResponse = auditService.getCodeQualityAudit(request.getArtifactGroup(), request.getArtifactName(), request.getArtifactVersion());
+		staticAnalysisResponse = auditService.getCodeQualityAudit(request.getProjectName(), request.getArtifactVersion());
 		return ResponseEntity.ok().body(staticAnalysisResponse);
 	}
 
@@ -157,7 +157,7 @@ public class AuditController {
 		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = null;
 
 		codeQualityGateValidationResponse = auditService.getQualityGateValidationDetails(request.getRepo(),request.getBranch(),
-				request.getArtifactGroup(), request.getArtifactName(), request.getArtifactVersion(),
+				request.getProjectName(), request.getArtifactVersion(),
 				request.getBeginDate(), request.getEndDate());
 		return ResponseEntity.ok().body(codeQualityGateValidationResponse);
 	}
