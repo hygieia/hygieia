@@ -1,242 +1,130 @@
 ---
-title: Setup
+title: General Configuration and Concepts
 tags:
 keywords:
-summary: Know the basics of installing and configuring Hygieia 
+summary: General Concepts about Hygieia Installation 
 sidebar: hygieia_sidebar
 permalink: setup.html
 folder: hygieia
 
 ---
 
-## Build Hygieia℠
-Needs Java 1.8.
+If you do not already have Hygieia installed, you can download or clone Hygieia from the [GitHub repo](https://github.com/capitalone/Hygieia). For information on cloning a repository, see [GitHub Documentation](https://help.github.com/articles/cloning-a-repository/).
+ 
+## Build Hygieia
 
-```bash
-mvn clean install package
-```
-The above command will build all components for Hygieia.
+To package all components of Hygieia's source code into executable JAR files, run the maven build. Before you build Hygieia using Maven, make sure to configure the `settings.xml` file. For more details, see [Proxy Authentication](proxyauthentication.md). 
 
-## Hygieia℠ Setup Instructions
-The following components are required to run Hygieia℠:
+Hygieia uses Spring Boot to package the components as an executable JAR file with dependencies. 
 
-### Database
-* MongoDB 3.0+
-     * [Download & Installation instructions](https://www.mongodb.org/downloads#previous)
-     * Configure MongoDB
-      * Go to the bin directory of your mongodb installation and run the following command to start the mongodb do make sure that data directory should pre-exist at the target location <br/>
-       <code>mongod --dbpath < path to the data directory> </code> <br/>
-       for e.g <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongod --dbpath /dev/data/db </code>
-      * Run the following commands as shown below at mongodb command prompt
-        <code> /usr/bin/mongodb-linux-x86_64-2.6.3/bin/mongo </code>
-          
- ```   
-         $ mongo  
-         MongoDB shell version: 3.0.4
-         connecting to: test  
-         
-         > use dashboarddb
-         switched to db dashboarddb
-         > db.createUser(
-                  {
-                    user: "dashboarduser",
-                    pwd: "dbpassword",
-                    roles: [
-                       {role: "readWrite", db: "dashboarddb"}
-                            ]
-                    })
-          
-         
-                    Output similar to below should be seen in your mongo shell
-                    
-                Successfully added user: {
-                  "user" : "dashboarduser",
-                  "roles" : [
-                  {
-                    "role" : "readWrite",
-                    "db" : "dashboarddb"
-                  }
-                  ]
-                }  
-```
+To configure Hygieia, execute the following steps:
 
-We recommend that you download MongoDB clients (RoboMongo etc) to connect to your locally
-running database and make sure that database: dashboard is created, and you are able to connect to it.
+*	**Step 1: Run Maven Build**
 
+	In the command line/terminal, run the following command from the `\Hygieia` directory of your source code installation:
+	 
+	```bash
+	mvn clean install package
+	```
 
-### Executing via a script
-To execute the above via a script in an automated fashion, use `mongosrc.js`:
+	This will build all the following components:
 
-```bash
-  mongo < mongosrc.js
-```
+	~~~
+	└── Hygieia
+		├── UI
+		├── API
+		└── Collectors
+			├─ Feature
+			│    ├── JIRA
+			│    └── VersionOne
+			└─ Repos
+			'     ├── GitHub
+			'     ├── GitLab
+			'     ├── Subversion 
+			'     └── Bitbucket
+			'
+			'
+			and so on. 		   
+	~~~
 
-## API Layer
-Please click on the link below to learn about how to build and run the API layer
-* [API](api/api.md)
+	The output `.jar` file is generated in the `\target` folder for each component of Hygieia, including collectors.
 
-## Tool Collectors
-In general, all the collectors can be run using the following command
-```bash
-java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>
-```
+*	**Step 2: Set Parameters in the Properties File**
+	
+	Set the configurable parameters in the `.properties` file to connect to each component of Hygieia. For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
 
-You can view the collector inventory [here](collectors/collectors.md).
+*	**Step 3: Run Each Component**
 
-You can pick and choose which collectors are applicable for your DevOps toolset or you can write your own collector and plug it in.
+	To run the executable file for API module, change directory to 'api\target' and then execute the following command from the command prompt:
 
-## UI Layer
-Please click on the link below to learn about how to build and run the UI layer
- * [UI](UI/ui.md)
+	```bash
+	java -jar api.jar --spring.config.location=C:\[path to]\Hygieia\api\dashboard.properties -Djasypt.encryptor.password=hygieiasecret
+	```
+	
+	To run the UI module, in the command prompt, navigate to `\Hygieia\UI`, and then execute the following command:
 
-## Plugin/Webhook
-You can use Jenkins - Hygieia plugin to publish data from Jenkins to Hygieia. Currently, you can publish build, artifact info, sonar results, deployment results and Cucumber test results. You may not need to run corresponding collectors if you use Jenkins for build, deploy, sonar analysis and running cucumber tests.
-* [Hygieia Jenkins Plugin](hygieia-jenkins-plugin/hygieia-jenkins-plugin.md)
+	```bash
+	gulp serve
+	```
+	
+	The dashboard will serve up on port 3000.
+	
+	In general, all the collectors can be run using the following command:
+	
+	```bash
+	java -jar <Path to collector-name.jar> --spring.config.name=<prefix for properties> --spring.config.location=<path to properties file location>
+	```
+	
+	The detailed instructions for installing each component of Hygieia is described in section, 'Configuration Procedure' in the Installation Guide.
+	
+## General Concepts
 
-You can use GitHub webhooks to publish commit information to Hygieia. If you use webhooks, you will not need to run the github collector.
-* Your Github webhook's payload url should be set to: http://hygieia-base-url/api/commit/github/v3
-* Select to publish just the "push" events
+### Encrypted Properties
 
+Properties that are recommended not to be stored in plain text can be encrypted/decrypted using jasypt.Encrypted properties are enclosed in keyword ENC(), that is, ENC(thisisanencryptedproperty).
 
-## Configure Proxy
-
-Hygieia supports proxy authentication for working behind corporate firewalls.  For development, please refer to the following configuration differences; for deployment/operations, please refer to the subsequent sub-section:
-
-### Proxy Config: Developer
-
-Update your Maven settings.xml file:
+To generate an encrypted property, run the following command:
 
 ```
-...
-<proxies>
-       ...
-       <proxy>
-               <id>your-proxy-id</id>
-               <active>true</active>
-               <protocol>http</protocol>
-               <host>your.proxy.domain.name</host>
-               <port>8080</port>
-               <!-- For authenticated proxy, please set the following, as well -->
-               <username>companyId999</username>
-               <password>yourPassword</password>
-               <nonProxyHosts>*.local</nonProxyHosts>
-       </proxy>
-       ...
- </proxies>
-...
+java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar  org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="dbpassword" password=hygieiasecret algorithm=PBEWithMD5AndDES
 ```
 
-Additionally, set the following export variables:
+where,
 
-```bash
-export HTTP_PROXY=http://companyId999:yourPassword@your.proxy.domain.name:8080
-export HTTPS_PROXY=http://companyId999:yourPassword@your.proxy.domain.name:8080
-export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=companyId999 -Dhttp.proxyPassword=yourPassword"
-# This option may be duplicative if you have already updated your
-# Maven settings.xml file, but will only help:
-export MAVEN_OPTS="$MAVEN_OPTS -Dhttp.proxyHost=your.proxy.domain.name -Dhttp.proxyPort=8080 -Dhttp.proxyUser=companyId999 -Dhttp.proxyPassword=yourPassword"
-```
+dbpassword - Property value being encrypted, and 
 
-Tests should now run/pass when built from behind a corporate proxy, even if it is an authenticated proxy
+hygieiasecret - the secret.
 
-##### Proxy Config: Deployment / Operations
+When you run the API, this secret should be passed as a system property using `-Djasypt.encryptor.password=hygieiasecret` to decrypt the property.
 
-Only the above proxy settings (non-authentication) may required to be set on your deployment instance.  Additionally, please update all property files for each collector/API configuration with their specific proxy setting property.
+When using Docker, pass the environment variable `docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -e "JASYPT_ENCRYPTOR_PASSWORD=hygieiasecret" -i hygieia-api:latest`.
 
-### Build Docker images and setup id for mongodb
+For additional information, see jasypt spring boot [documentation](https://github.com/ulisesbocchio/jasypt-spring-boot/blob/master/README.md).
 
-* Build the containers
+**Tip**: When using GitLab CI Runner, specify the value for JASYPT_ENCRYPTOR_PASSWORD as a secure variable. To add secure variables to a GitLab project, navigate to Project Settings > Variables > Add Variable.
 
-```bash
-mvn docker:build
-```
+By default, a secure variable's value is not visible in the build log and can only be configured by a project administrator.
 
-* Bring up the container images
+### Encryption for Private Repos
 
-```bash
-docker-compose up -d
-```
+1. From the core module, generate a secret key.
 
-* Create a user in Mongo (if you log into the container then you don't have to install Mongo locally)
+   ```bash
+   java -jar <path-to-jar>/core-2.0.5-SNAPSHOT.jar com.capitalone.dashboard.util.Encryption
+   ```
 
-```bash
-docker exec -t -i mongodb2 bash
-```
-```bash
-mongo 192.168.64.2/admin  --eval 'db.getSiblingDB("dashboarddb").createUser({user: "db", pwd: "dbpass", roles: [{role: "readWrite", db: "dashboarddb"}]})'
-```
+2. Add the generated key to the API properties file.
 
-## Create a `docker-compose.override.yml` to configure your environment
-These are the most common entries, the uncommented ones are mandatory if you want the collector to work.
-For dev/testing you will find it useful to change the CRON entries to ``"0 * * * * *"``
-```
-hygieia-github-scm-collector:
-  environment:
-  - GITHUB_HOST=github.com
-  - GITHUB_CRON=0 * * * * *
-  - GITHUB_COMMIT_THRESHOLD_DAYS=300
-hygieia-jira-feature-collector:
-  environment:
-  - JIRA_BASE_URL=https://mycompany.atlassian.net/
-  - JIRA_CREDENTIALS=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  - JIRA_ISSUE_TYPE_ID=10200
-  - JIRA_SPRINT_DATA_FIELD_NAME=customfield_10007
-  - JIRA_EPIC_FIELD_NAME=customfield_10008
-hygieia-jenkins-build-collector:
-  environment:
-  - JENKINS_CRON=0 * * * * *
-  - JENKINS_MASTER=http://192.168.99.100:9100
-  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
-  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXX
-hygieia-jenkins-cucumber-test-collector:
-  environment:
-  - JENKINS_CRON=0 * * * * *
-  - JENKINS_MASTER=http://192.168.99.100:9100
-  - JENKINS_USERNAME=XXXXXXXXXXXXXXXXXXXXXX
-  - JENKINS_API_KEY=XXXXXXXXXXXXXXXXX
-  - JENKINS_CUCUMBER_JSON_FILENAME=cucumber-report.json
-hygieia-sonar-codequality-collector:
-  environment:
-  - SONAR_URL=http://192.168.99.100:9000
-  - SONAR_CRON=0 * * * * *
-```
+   ```bash
+   #api.properties
+   key=<your-generated-key>
+   ```
 
-* Make sure everything is restarted - _it may fail if the user doesn't exist at start-up_
+3. Add the same key to your repo settings file. This is required for the target collector to decrypt your saved repo password.
 
-```bash
-docker-compose restart
-```
+   For example, if your repo is GitHub, add the following to the `github.properties` file:
 
-* Get the port for the UI
-
-```bash
-docker port hygieia-ui
-```
-
-## How to set up test data
-### 1. Set up Git - by configuring it to point to the Github master branch for Hygieia
-	a. In the SCM panel, select _git_
-	b. Enter the URL: `https://github.com/capitalone/Hygieia.git`
-	c. Set the branch to `master`
-	ote: For this to work you will need to have set your credentials on the ID that the collectors is running under, the best way to do this is first clone the repo to set your credentials.
-
-### 2. Setup Sonar -  by running a test instance of sonar
-	a. `docker-compose -f test-servers/sonar/sonar.yml up -d`
-	b. Fill it with data from the Hygieia project
-```bash
-mvn sonar:sonar -Dsonar.host.url=http://$(docker-machine ip default):9000 -Dsonar.jdbc.url="jdbc:h2:tcp://$(docker-machine ip default)/sonar"
-```
-	c. You can now go in and configure the quality panel in the UI.
-
-### 3. Set up Jenkins w/cucumber output - by starting a test jenkins master
-	a. `docker-compose -f test-servers/jenkins/jenkins.yml up -d`
-	b. Run the job: http://192.168.99.100:9100/job/Hygieia_Example_Job/build
-	c. Configure the Jenkins Build and Jenkins Cucumber panels using this jobs output.
-
-
-## Start Collectors in the background (optional as they are all running in containers by default)
-* To start individual collector as background processes, use this format:
-  * On linux platform
-```bash
-nohup java -jar <collector-name>.jar --spring.config.name=<property file name> & >/dev/null
-```
+   ```bash
+   #github.properties
+   github.key=<your-generated-key>
+   ```
