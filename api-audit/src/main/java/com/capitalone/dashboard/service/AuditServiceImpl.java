@@ -225,6 +225,7 @@ public class AuditServiceImpl implements AuditService {
 			StaticAnalysisResponse staticAnalysisResponse = this.getStaticAnalysisResponse(codeQualityDetails);
 			dashboardReviewResponse.setStaticAnalysisResponse(staticAnalysisResponse);
 			
+			//Commenting this out until Sonar Collector is updated to pull config changes
 //			if(repoItems != null && !repoItems.isEmpty()){
 //				for (CollectorItem repoItem : repoItems) {
 //					String aRepoItembranch = (String) repoItem.getOptions().get("branch");
