@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>ui-protractor-tests</artifactId>
+    <artifactId>UI-protractor-tests</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>UI Protractor Tests using Protractor-Cucumber-Serenity for the Hygieia Continuous Delivery Dashboard</description>
 
@@ -11,7 +11,6 @@
         <artifactId>Hygieia</artifactId>
         <version>2.0.5-SNAPSHOT</version>
     </parent>
-    <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <serenity.version>1.0.47</serenity.version>
@@ -30,12 +29,6 @@
             <groupId>net.serenity-bdd</groupId>
             <artifactId>serenity-junit</artifactId>
             <version>${serenity.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
