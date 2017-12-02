@@ -17,62 +17,61 @@
         <serenity.version>1.0.47</serenity.version>
         <serenity.maven.version>1.0.47</serenity.maven.version>
         <webdriver.driver>chrome</webdriver.driver>
+        <maven.test.failure.ignore>true</maven.test.failure.ignore>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>net.serenity-bdd</groupId>
             <artifactId>core</artifactId>
             <version>${serenity.version}</version>
         </dependency>
-
         <dependency>
             <groupId>net.serenity-bdd</groupId>
             <artifactId>serenity-junit</artifactId>
             <version>${serenity.version}</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.18</version>
-                <configuration>
-                    <includes>
-                        <include>**/features/**/*.feature</include>
-                    </includes>
-                    <systemProperties>
-                        <webdriver.driver>${webdriver.driver}</webdriver.driver>
-                        <surefire.rerunFailingTestsCount>${surefire.rerunFailingTestsCount}</surefire.rerunFailingTestsCount>
-                        <surefire.rerunFailingTestsCount>${surefire.rerunFailingTestsCount}</surefire.rerunFailingTestsCount>
-                    </systemProperties>
-                </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.5.0</version>
                 <executions>
                     <execution>
+                        <id>run-npm-install</id>
+                        <phase>compile</phase>
                         <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
+                            <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>redbluhub</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>net.serenity-bdd.maven.plugins</groupId>
-                <artifactId>serenity-maven-plugin</artifactId>
-                <version>${serenity.maven.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>net.serenity-bdd</groupId>
-                        <artifactId>core</artifactId>
-                        <version>${serenity.version}</version>
-                    </dependency>
-                </dependencies>
-                <executions>
                     <execution>
-                        <id>serenity-reports</id>
-                        <phase>post-integration-test</phase>
+                        <id>npm run report</id>
+                        <phase>compile</phase>
                         <goals>
-                            <goal>aggregate</goal>
+                            <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>report</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
