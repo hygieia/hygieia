@@ -10,6 +10,7 @@
         <groupId>com.capitalone.dashboard</groupId>
         <artifactId>Hygieia</artifactId>
         <version>2.0.5-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <properties>
@@ -19,7 +20,7 @@
         <webdriver.driver>chrome</webdriver.driver>
         <maven.test.failure.ignore>true</maven.test.failure.ignore>
     </properties>
-    
+
     <build>
         <plugins>
             <plugin>
