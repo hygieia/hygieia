@@ -19,19 +19,7 @@
         <webdriver.driver>chrome</webdriver.driver>
         <maven.test.failure.ignore>true</maven.test.failure.ignore>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>net.serenity-bdd</groupId>
-            <artifactId>core</artifactId>
-            <version>${serenity.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.serenity-bdd</groupId>
-            <artifactId>serenity-junit</artifactId>
-            <version>${serenity.version}</version>
-        </dependency>
-    </dependencies>
+    
     <build>
         <plugins>
             <plugin>
