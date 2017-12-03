@@ -33,7 +33,7 @@ To configure the Hygieia API layer, execute the following steps:
 
 *	**Step 2: Set Parameters in the API Properties File**
 
-	Set the configurable parameters in the `dashboard.properties` file to connect to the Dashboard MongoDB database instance, including properties required by the API module. To configure the parameters, refer to the [API properties](#api-properties-file) file.
+	Set the configurable parameters in the `api.properties` file to connect to the Dashboard MongoDB database instance, including properties required by the API module. To configure the parameters, refer to the [API properties](#api-properties-file) file.
 
 	For more information about the server configuration, see the Spring Boot [documentation](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-external-config-application-property-files).
 
@@ -42,12 +42,12 @@ To configure the Hygieia API layer, execute the following steps:
 	To run the executable file, change directory to 'api\target' and then execute the following command from the command prompt:
 
 	```bash
-	java -jar api.jar --spring.config.location=C:\[path to]\Hygieia\api\dashboard.properties -Djasypt.encryptor.password=hygieiasecret
+	java -jar api.jar --spring.config.location=C:\[path to]\Hygieia\api\api.properties -Djasypt.encryptor.password=hygieiasecret
 	```
 
 	Verify API access from the web browser using the url: http://localhost:8080/api/ping. 
 
-	By default, the server starts at port `8080` and uses the context path `\api`. You can configure these values in the `dashboard.properties` file for the following properties:
+	By default, the server starts at port `8080` and uses the context path `\api`. You can configure these values in the `api.properties` file for the following properties:
 
 	```properties
 	server.contextPath=/api
@@ -57,10 +57,10 @@ To configure the Hygieia API layer, execute the following steps:
 
 ## API Properties File
 
-The sample `dashboard.properties` file lists parameters with sample values to configure the API layer. Set the parameters based on your environment setup.
+The sample `api.properties` file lists parameters with sample values to configure the API layer. Set the parameters based on your environment setup.
 
 ```properties
-# dashboard.properties
+# api.properties
 dbname=dashboarddb
 dbusername=dashboarduser[MogoDB Database Username, defaults to empty]
 dbpassword=dbpassword[MongoDB Database Password, defaults to empty]
@@ -105,6 +105,9 @@ monitor.proxy.password=[proxy password]
 
 # This will be the page size for pagination on Hygieia landing page. If this property is not set, the default value is set to 10.
 pageSize=[Integer value]
+
+# API token generated for basic authentication to secure APIs.
+key=[api token]
 ```
 
 All the above values are optional. If you have MongoDB installed with no authorization, you must be able to run the API even without the properties file.
@@ -112,7 +115,7 @@ All the above values are optional. If you have MongoDB installed with no authori
 Note the following:
 
  * If the value of `dbusername` is empty, then system skips MongoDB authorization.
- * Expiration time is mandatory for users to see any content. If you do not specify the expiration time, then the token can be considered as permanently expired. Leaving this value blank will not terminate the application start up. However, users will not be able to see any content 
+ * Expiration time is mandatory for users to see any content. If you do not specify the expiration time, then the token can be considered as permanently expired. Leaving this value blank will not terminate the application start up. However, users will not be able to see any content. 
  * If the secret is left blank, a random key is generated. To allow multiple instances of the API to validate the same JWT token, provide the same key to each running instance of the API.  
  * If both LDAP parameters are not provided, then LDAP is not available as an authentication provider.
  * When enabling proxy support for the monitor widget, if the host is not supplied, the rest of the monitor.proxy args are ignored. If running with Docker, then by default, the port and type is 80 and HTTP respectively. When running locally, you must specify the values for these properties.
@@ -184,7 +187,7 @@ To create a Docker image for Hygieia's API layer, execute the following steps:
 
 1. From the admin menu, generate an 'apiToken' for an 'apiUser'.
 
-2. Create a POST request with the following two headers and make a rest call for secured API.
+2. Create a POST request with the following two headers and make a REST call for secured API.
 
    - Add Authorization header
 	
@@ -239,30 +242,6 @@ If these values are not provided, the webhook first queries the job to see if it
     * `hygieiaNiceName`
 
 For the required fields, if the methods to locate values is exhausted, the webhook endpoint fails and deployment is not registered. An exception appears in the Hygieia API log with the field name that is missing from the job. If `appName` is not set, it is set based on the Rundeck project name.
-
-### Encrypted Properties
-
-Properties that are recommended not to be stored in plain text can be encrypted/decrypted using jasypt.Encrypted properties are enclosed in keyword ENC(), that is, ENC(thisisanencryptedproperty).
-
-To generate an encrypted property, run the following command:
-
-```
-java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar  org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="dbpassword" password=hygieiasecret algorithm=PBEWithMD5AndDES
-```
-where,
-
-dbpassword - Property value being encrypted, and 
-hygieiasecret - the secret. 
-
-When you run the API, this secret has to be passed as a system property using `-Djasypt.encryptor.password=hygieiasecret` in order to decrypt the property.
-
-When using docker, pass the environment variable `docker run -t -p 8080:8080 -v ./logs:/hygieia/logs -e "SPRING_DATA_MONGODB_HOST=127.0.0.1" -e "JASYPT_ENCRYPTOR_PASSWORD=hygieiasecret" -i hygieia-api:latest`.
-
-For additional information, see jasypt spring boot [documentation](https://github.com/ulisesbocchio/jasypt-spring-boot/blob/master/README.md).
-
-**Tip**: When using GitLab CI Runner, specify the value for JASYPT_ENCRYPTOR_PASSWORD as a secure variable. To add secure variables to a Gitlab project, navigate to Project Settings > Variables > Add Variable. 
-
-By default, a secure variable's value is not visible in the build log and can only be configured by a project administrator.
 
 ### Troubleshooting Instructions
 
@@ -345,7 +324,7 @@ In this case, execute the following steps:
 	print(count+" dashboards updated successfully");
 	```
 
-*	**Step 1** : Run the following in command line:
+*	**Step 2** : Run the following in command line:
 
 	```bash
 	mongo <dbhost>:<dbport>/<dbname> fixAuths.js

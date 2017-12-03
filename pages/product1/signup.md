@@ -26,7 +26,7 @@ Before you login to the Hygieia dashboard, choose a login type:
 Single Sign On (SSO) 
 --->
 
-## Create and Manage Admin Users 
+## Create and Manage Admin Users
 
 Hygieia dashboards provide administrator and user access through various views. An admin user can:
 
@@ -37,20 +37,20 @@ Hygieia dashboards provide administrator and user access through various views. 
 
 ### Create Admin User
 
-Once you have installed the UI layer in Hygieia, you must create an admin user as the first user of the dashboard. This allows the admin user to manage and maintain a level of control on the dashboard users. 
+Once you have installed the UI layer in Hygieia, create a user with username 'admin'. This allows the admin user to manage and maintain a level of control on the dashboard users. For each instance, there can only be one 'admin' user.
 
 To create an account for an admin user:
-1. Click Signup in the login page.
-2. Enter 'admin' as the username, specify and confirm the password, and then click Signup.
+1. Click **Signup** on the login page.
+2. Enter 'admin' as the username, specify and confirm the password, and then click **Signup**.
 
-The 'admin' user is created for the dashboard. 
+The 'admin' user is created for the dashboard.
 
 ### Manage Administrators
 
 In the Admin screen, the 'Manage Admins' tab displays a list of all users. To add additional dashboard administrators:
 
-- In the 'Users' column, select a user, and then click the right-arrow button. 
-  The username is displayed in the 'Admin' column. 
+- In the 'Users' column, select a user, and then click the right-arrow button.
+  The username is displayed in the 'Admin' column.
 
 To find users, filter the list by entering all or part of a user name in the 'Search' field.
 
@@ -59,14 +59,14 @@ To remove an admin:
 - In the 'Admin' column, select an admin, and then click the right-arrow button.
   The username is displayed in the 'Admin' column.
 
-### Generate API Token 
+### Generate API Token
 
 Generate an API token for basic authentication to secure APIs. To generate an API token:
 
 1. Click 'New'. The 'Generate API Token' dialog box in invoked.
-2. Enter the API User name. 
+2. Enter the API User name.
 3. Select an Expiration Date using the calendar button.
-4. Click 'Create'. The generated API key is displayed. 
+4. Click 'Create'. The generated API key is displayed.
 
 **Note:** The API key is visible only until the 'Generate API Token' dialog box is open.
 
@@ -98,17 +98,21 @@ To edit the template:
 
 To delete a template:
 
-- Click the Delete icon beside the template name. System prompts a message to confirm or cancel deletion. Click Delete to confirm deletion.
+- Click the Delete icon beside the template name. System prompts a message to confirm or cancel deletion. Click **Delete** to confirm deletion.
   The template is deleted.
 
-**Note:** You cannot delete templates that are being used in existing dashboards. 
+**Note:** You cannot delete templates that are being used in existing dashboards.
+
+To view a template:
+
+- Click on the template name to view a list of all the widgets in the template.
 
 ## User Signup and Login Instructions
 
 To create an account for a new user:
 
-1.	Click Signup in the login page to create a user account.
-2.	Enter a username, password, confirm the password, and then click Signup.
+1.	Click **Signup** in the login page to create a user account.
+2.	Enter a username, password, confirm the password, and then click **Signup**.
 
-If you already have your login credentials, enter the username and password, and then click Login.
+If you already have your login credentials, enter the username and password, and then click **Login**.
 

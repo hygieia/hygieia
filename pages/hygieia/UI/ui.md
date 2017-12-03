@@ -24,26 +24,33 @@ The Hygieia dashboard requires installation of:
 If you do not already have NodeJS installed, download and install the [NodeJS MSI package](https://nodejs.org/en/download/) for your platform.
 
 *	**Step 1: Install Homebrew**
-
+	
 	Homebrew handles downloading, unpacking and installing npm on your system.
 	To install Homebrew, open terminal and execute the following command:
-
+	
 	```bash
 	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 	```
 	
  	Follow the messages in the terminal to complete the installation process.
-
+	
 *	**Step 2: Install npm**
-
+	
 	To install npm using Homebrew, execute the following command:
 	
 	```bash
 	brew install node
 	```
-
+	
+	Configure the proxy settings for npm:
+	
+	```bash
+	npm config set http-proxy http://username:password@proxy.company.com:8080
+	npm config set https-proxy http://username:password@proxy.company.com:8080
+	```
+	
 *	**Step 3: Install Global Packages**
-
+	
 	Execute the following commands to install packages to the global `node_modules` directory:
 	
 	```bash
@@ -51,14 +58,14 @@ If you do not already have NodeJS installed, download and install the [NodeJS MS
 	npm install -g gulp
 	```
 	Install dependencies configured with bower and npm:
-
+	
 	```bash
 	# Install dependencies listed in package.json
 	npm install
 	# Install dependencies listed in bower.json
 	bower install
 	```
-
+	
 *	**Step 4: Run the UI**
 	
 	In the terminal, navigate to the `/Hygieia/UI` and execute the following command:
@@ -164,26 +171,3 @@ Once the UI is successfully connected, the following screenshots show the API co
 
 ![Image](http://www.capitalone.io/Hygieia/media/images/adminuser.png)
 
-### Encryption for Private Repos
-
-1. From the core module, generate a secret key.
-
-```bash
-java -jar <path-to-jar>/core-2.0.5-SNAPSHOT.jar com.capitalone.dashboard.util.Encryption
-```
-
-2. Add the generated key to the API properties file.
-
-```bash
-#dashboard.properties
-key=<your-generated-key>
-```
-
-3. Add the same key to your repo settings file. This is required for the target collector to decrypt your saved repo password.
-
-For example, if your repo is GitHub, add the following to the `github.properties` file:
-
-```bash
-#github.properties
-github.key=<your-generated-key>
-```
