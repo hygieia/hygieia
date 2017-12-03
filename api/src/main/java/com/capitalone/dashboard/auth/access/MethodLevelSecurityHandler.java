@@ -28,6 +28,11 @@ public class MethodLevelSecurityHandler {
 		
 		String username = AuthenticationUtil.getUsernameFromContext();
 		AuthType authType = AuthenticationUtil.getAuthTypeFromContext();
+
+		//remote dashboards created via apikey tokens use an ldap id
+		if (authType == AuthType.APIKEY) {
+			authType = AuthType.LDAP;
+		}
 		
 		//Check list of owners of dashboard to see if it contains the authenticated user
 		if (null != dashboard.getOwners() && dashboard.getOwners().contains(new Owner(username, authType))) {
