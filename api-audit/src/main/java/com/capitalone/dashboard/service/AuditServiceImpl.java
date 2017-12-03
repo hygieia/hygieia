@@ -378,12 +378,22 @@ public class AuditServiceImpl implements AuditService {
                 }
             }
             if (lgtmAttempted) {
+
+                //if lgtm self-review, then no peer-review was done
+                if ( !CollectionUtils.isEmpty(peerReviewResponse.getAuditStatuses()) &&
+                        peerReviewResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
+                        CollectionUtils.isEmpty(reviews)) {
+                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
+                    return false;
+                }
+
                 return lgtmStateResult;
             }
         }
         if (reviews != null) {
             for (Review review : reviews) {
-                if ("approved".equalsIgnoreCase(review.getState())) {
+                if ("approved".equalsIgnoreCase(review.getState()) ||
+                        "commented".equalsIgnoreCase(review.getState())) {
                     //review done using GitHub Review workflow
                     peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_GHR);
                     return true;
@@ -543,6 +553,8 @@ public class AuditServiceImpl implements AuditService {
                             peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                         } else {
 
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+
                             //New commit has ONLY one parent
                             List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
                             if (!CollectionUtils.isEmpty(parentCommitShas)) {
@@ -668,6 +680,7 @@ public class AuditServiceImpl implements AuditService {
                     }
                 } else {
                     //reached first commit
+                    peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                     traceBack = false;
                 }
             }
