@@ -4,11 +4,14 @@ import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
 import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.TestResult;
 
+import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Component
 public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
@@ -35,7 +39,7 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
 
         for (Map.Entry<String, Object> e : allOptions.entrySet()) {
             if (selectOptions.containsKey(e.getKey())) {
-                c = c.and("options." + e.getKey()).is(selectOptions.get(e.getKey()));
+                c = getCriteria(selectOptions, c, e);
             } else {
                 switch (e.getValue().getClass().getSimpleName()) {
                     case "String":
@@ -80,7 +84,7 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
 
         for (Map.Entry<String, Object> e : allOptions.entrySet()) {
             if (selectOptions.containsKey(e.getKey())) {
-                c = c.and("options." + e.getKey()).is(selectOptions.get(e.getKey()));
+                c = getCriteria(selectOptions, c, e);
             } else {
                 switch (e.getValue().getClass().getSimpleName()) {
                     case "String":
@@ -144,17 +148,34 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
 
     @Override
     public List<Commit> findByScmUrlAndScmBranchAndScmCommitTimestampGreaterThanEqualAndScmCommitTimestampLessThanEqual(String scmUrl, String scmBranch, long beginDt, long endDt) {
+        GitHubParsedUrl gitHubParsedUrl = new GitHubParsedUrl(scmUrl);
+        String url = gitHubParsedUrl.getUrl();
         Query query = new Query(
-                Criteria.where("scmUrl").is(scmUrl)
+                Criteria.where("scmUrl").regex(Pattern.compile(url,Pattern.CASE_INSENSITIVE))
                         .andOperator(
-                                Criteria.where("scmBranch").is(scmBranch),
+                                Criteria.where("scmBranch").regex(Pattern.compile(scmBranch,Pattern.CASE_INSENSITIVE)),
                                 Criteria.where("scmCommitTimestamp").gte(beginDt),
                                 Criteria.where("scmCommitTimestamp").lte(endDt)
                         )
         );
+        query.with(new Sort(Sort.Direction.DESC, "scmCommitTimestamp"));
         return template.find(query, Commit.class);
     }
 
+    @Override
+    public List<GitRequest> findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndMergedAtGreaterThanEqualAndMergedAtLessThanEqual(String scmUrl, String scmBranch, long beginDt, long endDt) {
+        GitHubParsedUrl gitHubParsedUrl = new GitHubParsedUrl(scmUrl);
+        String url = gitHubParsedUrl.getUrl();
+        Query query = new Query(
+                Criteria.where("scmUrl").regex(Pattern.compile(url,Pattern.CASE_INSENSITIVE))
+                        .andOperator(
+                                Criteria.where("scmBranch").regex(Pattern.compile(scmBranch,Pattern.CASE_INSENSITIVE)),
+                                Criteria.where("mergedAt").gte(beginDt),
+                                Criteria.where("mergedAt").lte(endDt)
+                        )
+        );
+        return template.find(query, GitRequest.class);
+    }
 
 	@Override
 	public List<TestResult> findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(String jobUrl, long beginDt,long endDt) {
@@ -168,4 +189,28 @@ public class CustomRepositoryQueryImpl implements CustomRepositoryQuery {
         return template.find(query, TestResult.class);
 
 	}
+
+	private String getGitHubParsedString(Map<String, Object> selectOptions, Map.Entry<String, Object> e) {
+        String url = (String)selectOptions.get(e.getKey());
+        GitHubParsedUrl gitHubParsedUrl = new GitHubParsedUrl(url);
+        String parsedUrl = gitHubParsedUrl.getUrl();
+        return parsedUrl;
+    }
+
+    private Criteria getCriteria(Map<String, Object> selectOptions, Criteria c, Map.Entry<String, Object> e) {
+        Criteria criteria = c;
+        if("url".equalsIgnoreCase(e.getKey())){
+            String url = getGitHubParsedString(selectOptions, e);
+            criteria = criteria.and("options." + e.getKey()).regex(Pattern.compile(url,Pattern.CASE_INSENSITIVE));
+        }
+        else if("branch".equalsIgnoreCase(e.getKey())){
+            String branch = (String)selectOptions.get(e.getKey());
+            criteria = criteria.and("options." + e.getKey()).regex(Pattern.compile(branch,Pattern.CASE_INSENSITIVE));
+        }
+        else {
+            criteria = criteria.and("options." + e.getKey()).is(selectOptions.get(e.getKey()));
+        }
+        return criteria;
+    }
+
 }
