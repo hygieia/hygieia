@@ -5,6 +5,8 @@ import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
 import com.capitalone.dashboard.model.CollItemCfgHist;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
@@ -17,11 +19,14 @@ import com.capitalone.dashboard.model.Dashboard;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.model.JobCollectorItem;
 import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.model.Widget;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
+import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CollItemCfgHistRepository;
+import com.capitalone.dashboard.repository.CollectorItemRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -29,19 +34,28 @@ import com.capitalone.dashboard.repository.CustomRepositoryQuery;
 import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.JobRepository;
-import com.capitalone.dashboard.repository.CollectorItemRepository;
+import com.capitalone.dashboard.repository.TestResultRepository;
+import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
+import com.capitalone.dashboard.response.StaticAnalysisResponse;
+import com.capitalone.dashboard.response.TestResultsResponse;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,6 +63,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -65,6 +80,8 @@ public class AuditServiceImpl implements AuditService {
     private ComponentRepository componentRepository;
     private BuildRepository buildRepository;
     private CollectorItemRepository collectorItemRepository;
+    private CodeQualityRepository codeQualityRepository;
+    private TestResultRepository testResultRepository;
     private ApiSettings settings;
 
     private static final Log LOGGER = LogFactory.getLog(AuditServiceImpl.class);
@@ -79,6 +96,8 @@ public class AuditServiceImpl implements AuditService {
                             ComponentRepository componentRepository,
                             BuildRepository buildRepository,
                             CollectorItemRepository collectorItemRepository,
+                            CodeQualityRepository codeQualityRepository,
+                            TestResultRepository testResultRepository,
                             ApiSettings settings) {
         this.gitRequestRepository = gitRequestRepository;
         this.commitRepository = commitRepository;
@@ -91,6 +110,8 @@ public class AuditServiceImpl implements AuditService {
         this.componentRepository = componentRepository;
         this.buildRepository = buildRepository;
         this.collectorItemRepository = collectorItemRepository;
+        this.codeQualityRepository = codeQualityRepository;
+        this.testResultRepository = testResultRepository;
         this.settings = settings;
     }
 
@@ -164,7 +185,7 @@ public class AuditServiceImpl implements AuditService {
                 if (scmWidgetbranch != null && scmWidgetrepoUrl != null) {
                     pullRequests = this.getPullRequests(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
                     commits = this.getCommits(scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
-                    List<PeerReviewResponse> inside = this.getPeerReviewResponses(pullRequests, commits, scmWidgetrepoUrl, scmWidgetbranch);
+                    List<PeerReviewResponse> inside = this.getPeerReviewResponses(pullRequests, commits, scmWidgetrepoUrl, scmWidgetbranch, beginDate, endDate);
                     allRepos.add(inside);
                 }
 
@@ -198,7 +219,23 @@ public class AuditServiceImpl implements AuditService {
         List<CollectorItem> codeQualityItems = this.getCollectorItems(dashboard, "codeanalysis", CollectorType.CodeQuality);
 
         if (codeQualityItems != null && !codeQualityItems.isEmpty()) {
-            dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_CONFIGURED);
+        	dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_CONFIGURED);
+			CollectorItem codeQualityItem = codeQualityItems.get(0);
+			List<CodeQuality> codeQualityDetails = codeQualityRepository.findByCollectorItemIdOrderByTimestampDesc(codeQualityItem.getCollectorId());
+			StaticAnalysisResponse staticAnalysisResponse = this.getStaticAnalysisResponse(codeQualityDetails);
+			dashboardReviewResponse.setStaticAnalysisResponse(staticAnalysisResponse);
+			
+			if(repoItems != null && !repoItems.isEmpty()){
+				for (CollectorItem repoItem : repoItems) {
+					String aRepoItembranch = (String) repoItem.getOptions().get("branch");
+					String aRepoItemUrl = (String) repoItem.getOptions().get("url");
+					List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
+					
+					CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
+					dashboardReviewResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
+				}
+			}
+
         } else {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_NOT_CONFIGURED);
         }
@@ -270,12 +307,25 @@ public class AuditServiceImpl implements AuditService {
 
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_PR_AUTHOR_NE_BUILD_AUTHOR);
         }
+		
+		List<CollectorItem> testItems = this.getCollectorItems(dashboard, "test", CollectorType.Test);
 
+		if (testItems != null && !testItems.isEmpty()) {
+			dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_TEST_CONFIGURED);
+			for (CollectorItem testItem : testItems){
+				List<TestResult> testResults = getTestResults((String)testItem.getOptions().get("jobUrl"),beginDate,endDate);
+				TestResultsResponse testResultsResponse = this.regressionTestResultAudit(testResults);
+				dashboardReviewResponse.setTestResultsResponse(testResultsResponse);
+			}
+
+		} else {
+			dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_TEST_NOT_CONFIGURED);
+		}
         return dashboardReviewResponse;
     }
 
     public List<GitRequest> getPullRequests(String repo, String branch, long beginDt, long endDt) {
-        List<GitRequest> pullRequests = gitRequestRepository.findByScmUrlAndScmBranchAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(repo, branch, beginDt, endDt);
+        List<GitRequest> pullRequests = customRepositoryQuery.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndMergedAtGreaterThanEqualAndMergedAtLessThanEqual(repo, branch, beginDt, endDt);
         return pullRequests;
     }
 
@@ -285,7 +335,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     private void getRelatedCommits(String aCommit, HashMap<String, Commit> mapCommitsRelatedToPr, GitRequest pr) {
-        Commit relatedCommit = commitRepository.findByScmRevisionNumberAndScmUrl(aCommit, pr.getScmUrl());
+        Commit relatedCommit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(aCommit, pr.getScmUrl());
         if (relatedCommit != null) {
 
             if (!mapCommitsRelatedToPr.containsKey(relatedCommit.getScmRevisionNumber())) {
@@ -300,7 +350,7 @@ public class AuditServiceImpl implements AuditService {
         }
     }
 
-    boolean computePeerReviewStatus(GitRequest pr) {
+    boolean computePeerReviewStatus(GitRequest pr, PeerReviewResponse peerReviewResponse) {
         List<CommitStatus> statuses = pr.getCommitStatuses();
         List<Review> reviews = pr.getReviews();
         if (statuses != null) {
@@ -309,15 +359,43 @@ public class AuditServiceImpl implements AuditService {
             if (contextString != null) {
                 prContexts.addAll(Arrays.asList(contextString.trim().split(",")));
             }
+            boolean lgtmAttempted = false;
+            boolean lgtmStateResult = false;
             for (CommitStatus status : statuses) {
-                if (prContexts.contains(status.getContext())) {
-                    return "success".equalsIgnoreCase(status.getState());
+                if (status.getContext() != null && prContexts.contains(status.getContext())) {
+                    //review done using LGTM workflow assuming its in the settings peerReviewContexts
+                    lgtmAttempted = true;
+                    if ("pending".equalsIgnoreCase(status.getState())) {
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_PENDING);
+                    } else if ("error".equalsIgnoreCase(status.getState())) {
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_ERROR);
+                    } else if ("success".equalsIgnoreCase(status.getState())) {
+                        lgtmStateResult = true;
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SUCCESS);
+                    } else {
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_UNKNOWN);
+                    }
                 }
+            }
+            if (lgtmAttempted) {
+
+                //if lgtm self-review, then no peer-review was done
+                if ( !CollectionUtils.isEmpty(peerReviewResponse.getAuditStatuses()) &&
+                        peerReviewResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
+                        CollectionUtils.isEmpty(reviews)) {
+                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
+                    return false;
+                }
+
+                return lgtmStateResult;
             }
         }
         if (reviews != null) {
             for (Review review : reviews) {
-                if ("approved".equalsIgnoreCase(review.getState())) {
+                if ("approved".equalsIgnoreCase(review.getState()) ||
+                        "commented".equalsIgnoreCase(review.getState())) {
+                    //review done using GitHub Review workflow
+                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_GHR);
                     return true;
                 }
             }
@@ -326,7 +404,9 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
-    public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits, String scmUrl, String scmBranch) {
+    public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits,
+                                                           String scmUrl, String scmBranch,
+                                                           long beginDt, long endDt) {
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
 
         HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
@@ -339,8 +419,10 @@ public class AuditServiceImpl implements AuditService {
 
         for(GitRequest pr : pullRequests) {
             HashMap<String, Commit> mapCommitsRelatedToPr = new HashMap();
+            String baseSha = pr.getBaseSha();
+            String headSha = pr.getHeadSha();
             String mergeSha = pr.getScmRevisionNumber();
-            Commit mergeCommit = commitRepository.findByScmRevisionNumberAndScmUrl(mergeSha, pr.getScmUrl());
+            Commit mergeCommit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(mergeSha, pr.getScmUrl());
             if (mergeCommit == null) {
                 continue;
             }
@@ -349,7 +431,9 @@ public class AuditServiceImpl implements AuditService {
             List<String> relatedCommitShas = mergeCommit.getScmParentRevisionNumbers();
             if (!CollectionUtils.isEmpty(relatedCommitShas)) {
                 for (String relatedCommitSha : relatedCommitShas) {
-                    getRelatedCommits(relatedCommitSha, mapCommitsRelatedToPr, pr);
+                    if (!relatedCommitSha.equalsIgnoreCase(baseSha)) {
+                        getRelatedCommits(relatedCommitSha, mapCommitsRelatedToPr, pr);
+                    }
                 }
             }
 
@@ -372,7 +456,27 @@ public class AuditServiceImpl implements AuditService {
             allPeerReviews.add(peerReviewResponse);
 
             //check to see if pr was reviewed
-            boolean peerReviewed = computePeerReviewStatus(pr);
+            boolean peerReviewed = computePeerReviewStatus(pr, peerReviewResponse);
+
+            if (!peerReviewed) {
+                //fallback check to see if pr has comments or reviewComments
+                List<Comment> comments = pr.getComments();
+                for(Comment comment: comments) {
+                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                        peerReviewed = true;
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REG_COMMENTS);
+                        break;
+                    }
+                }
+                List<Comment> reviewComments = pr.getReviewComments();
+                for(Comment comment: reviewComments) {
+                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                        peerReviewed = true;
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REV_COMMENTS);
+                        break;
+                    }
+                }
+            }
 
             if (peerReviewed) {
                 peerReviewResponse.addAuditStatus(AuditStatus.PULLREQ_REVIEWED_BY_PEER);
@@ -398,8 +502,7 @@ public class AuditServiceImpl implements AuditService {
             }
 
             //direct commit to master
-            String baseSha = pr.getBaseSha();
-            String headSha = pr.getHeadSha();
+            //start at the headSha and compute upto and excluding baseSha
             for(Commit commit: commitsRelatedToPr) {
                 if (commit.getType() == CommitType.New) {
                     if (commit.getScmParentRevisionNumbers() != null) {
@@ -410,7 +513,11 @@ public class AuditServiceImpl implements AuditService {
                             //New commit has ONLY one parent
                             List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
                             if (!CollectionUtils.isEmpty(parentCommitShas)) {
-                                computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, pr);
+                                if (parentCommitShas.get(0).equalsIgnoreCase(baseSha)) {
+                                    break;
+                                } else {
+                                    computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, pr.getScmUrl(), mapCommitsRelatedToPr, mapCommitsRelatedToAllPrs, false, beginDt, endDt);
+                                }
                             }
 
                         }
@@ -419,6 +526,13 @@ public class AuditServiceImpl implements AuditService {
                     }
                 } else {
                     //merge commit
+                    //add its parent commits to mapCommitsRelatedToPr
+                    List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
+                    if (!CollectionUtils.isEmpty(parentCommitShas)) {
+                        for (String prntcs : parentCommitShas) {
+                            computeParentCommit(prntcs, peerReviewResponse, baseSha, headSha, pr.getScmUrl(), mapCommitsRelatedToPr, mapCommitsRelatedToAllPrs, false, beginDt, endDt);
+                        }
+                    }
                 }
             }
 
@@ -433,6 +547,25 @@ public class AuditServiceImpl implements AuditService {
             if (!mapCommitsRelatedToAllPrs.containsKey(commitSha)) {
                 if (commit.getType() == CommitType.New) {
                     commitsNotDirectlyTiedToPr.add(commit);
+
+                    if (commit.getScmParentRevisionNumbers() != null) {
+                        if (commit.getScmParentRevisionNumbers().isEmpty()) {
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                        } else {
+
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+
+                            //New commit has ONLY one parent
+                            List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
+                            if (!CollectionUtils.isEmpty(parentCommitShas)) {
+                                computeParentCommit(parentCommitShas.get(0), peerReviewResponse, null, null, scmUrl, null, mapCommitsRelatedToAllPrs, true, beginDt, endDt);
+                            }
+
+                        }
+                    } else {
+                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                    }
+                    /*
                     if (commit.getScmParentRevisionNumbers() != null) {
                         if (commit.getScmParentRevisionNumbers().isEmpty()) {
                             peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
@@ -442,7 +575,7 @@ public class AuditServiceImpl implements AuditService {
                         }
                     } else {
                         peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
-                    }
+                    }*/
                 } else {
                     //merge commit
                 }
@@ -478,26 +611,76 @@ public class AuditServiceImpl implements AuditService {
         return allPeerReviews;
     }
 
-    private boolean computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse, String baseSha, String headSha, GitRequest pr) {
-        boolean traceBack = true;
-        Commit commit = commitRepository.findByScmRevisionNumberAndScmUrl(commitSha, pr.getScmUrl());
-        if (commit == null || commit.getType() == null || commit.getType() == CommitType.Merge) {
+    private boolean isMergeCommitAndPr(Commit commit) {
+        if (commit.getType() != null && commit.getType() == CommitType.Merge) {
+            List<GitRequest> prs = gitRequestRepository.findByScmRevisionNumber(commit.getScmRevisionNumber());
+            if (!CollectionUtils.isEmpty(prs)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
             return false;
         }
+    }
+
+    private boolean computeParentCommit(String commitSha, PeerReviewResponse peerReviewResponse,
+                                        String baseSha, String headSha, String scmUrl,
+                                        HashMap<String, Commit> mapCommitsRelatedToPr,
+                                        HashMap<String, Commit> mapCommitsRelatedToAllPrs,
+                                        boolean checkDate, long beginDt, long endDt) {
+        boolean traceBack = true;
+        Commit commit = commitRepository.findByScmRevisionNumberAndScmUrlIgnoreCase(commitSha, scmUrl);
+        if (commit == null || commit.getType() == null || commit.getType() == CommitType.NotBuilt) {
+            return false;
+        } else if (commit.getType() == CommitType.Merge) {
+            //if you are a merge commit and a pr
+            if (isMergeCommitAndPr(commit)) {
+                return false;
+            }
+            //if you are a merge commit and getting merged as part of a pr
+            if (baseSha != null && headSha != null) {
+                return false;
+            }
+        }
         LOGGER.warn("Enter computeParentCommit " + commitSha + " " + commit.getType());
+        if (checkDate) {
+            if (commit.getScmCommitTimestamp() < beginDt || mapCommitsRelatedToAllPrs.containsKey(commitSha)) {
+                return false;
+            }
+        }
         while (traceBack) {
             if (commit.getScmRevisionNumber().equalsIgnoreCase(baseSha)) {
-                peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+                if (commit.getScmParentRevisionNumbers() != null) {
+                    if (commit.getScmParentRevisionNumbers().isEmpty()) {
+                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                    } else {
+                        peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
+                    }
+                } else {
+                    peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
+                }
                 traceBack = false;
             } else if (commit.getScmRevisionNumber().equalsIgnoreCase(headSha)) {
                 traceBack = false;
             } else {
+                if (mapCommitsRelatedToPr != null) {
+                    mapCommitsRelatedToPr.put(commitSha, commit);
+                }
+                if (mapCommitsRelatedToAllPrs != null) {
+                    mapCommitsRelatedToAllPrs.put(commitSha, commit);
+                }
                 //New commit has ONLY one parent
                 List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
                 if (!CollectionUtils.isEmpty(parentCommitShas)) {
-                    traceBack = computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, pr);
+                    if (parentCommitShas.get(0).equalsIgnoreCase(baseSha)) {
+                        return false;
+                    } else {
+                        traceBack = computeParentCommit(parentCommitShas.get(0), peerReviewResponse, baseSha, headSha, scmUrl, mapCommitsRelatedToPr, mapCommitsRelatedToAllPrs, checkDate, beginDt, endDt);
+                    }
                 } else {
                     //reached first commit
+                    peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                     traceBack = false;
                 }
             }
@@ -543,7 +726,230 @@ public class AuditServiceImpl implements AuditService {
         return jobReviewResponse;
     }
 
-    @Override
+	/**
+	 * Gets StaticAnalysisResponses for artifact
+	 * 
+	 * @param artifactGroup
+	 *            Artifact Group
+	 * @param artifactName
+	 *            Artifact Name
+	 * @param artifactVersion
+	 *            Artifact Version
+	 * @return List of StaticAnalysisResponse
+	 * @throws IOException
+	 *             thrown by called method
+	 * @throws HygieiaException
+	 */
+	public List<StaticAnalysisResponse> getCodeQualityAudit(String artifactGroup, String artifactName,
+			String artifactVersion) throws HygieiaException {
+		List<CodeQuality> qualities = codeQualityRepository
+				.findByNameAndVersionOrderByTimestampDesc(artifactGroup + ":" + artifactName, artifactVersion);
+		if (CollectionUtils.isEmpty(qualities))
+			throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
+		StaticAnalysisResponse response = getStaticAnalysisResponse(qualities);
+		return Arrays.asList(response);
+	}
+
+	/**
+	 * Reusable method for constructing the StaticAnalysisResponse object for a
+	 * 
+	 * @param codeQualities
+	 *            Code Quality List
+	 * @return StaticAnalysisResponse
+	 * @throws JsonMappingException
+	 * @throws JsonParseException
+	 * @throws IOException
+	 *             Thrown by Object mapper method
+	 */
+	private StaticAnalysisResponse getStaticAnalysisResponse(List<CodeQuality> codeQualities) throws HygieiaException {
+		if (codeQualities == null)
+			return new StaticAnalysisResponse();
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		if (CollectionUtils.isEmpty(codeQualities))
+			throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
+		CodeQuality returnQuality = codeQualities.get(0);
+
+		StaticAnalysisResponse staticAnalysisResponse = new StaticAnalysisResponse();
+		staticAnalysisResponse.setCodeQualityDetails(returnQuality);
+		for (CodeQualityMetric metric : returnQuality.getMetrics()) {
+			if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
+				TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
+				};
+				Map<String, String> values;
+				try {
+					values = mapper.readValue((String) metric.getValue(), typeRef);
+					if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
+						String level = (String) values.get("level");
+						if (level.equalsIgnoreCase("ok")) {
+							staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
+						} else {
+							staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_FAIL);
+						}
+					}
+					break;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		}
+		Set<AuditStatus> auditStatuses = staticAnalysisResponse.getAuditStatuses();
+		if (!(auditStatuses.contains(AuditStatus.CODE_QUALITY_AUDIT_OK)
+				|| auditStatuses.contains(AuditStatus.CODE_QUALITY_AUDIT_FAIL))) {
+			staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_GATE_MISSING);
+		}
+
+		return staticAnalysisResponse;
+	}
+
+	/**
+	 * Retrieves test result execution details for a business application and
+	 * artifact
+	 * 
+	 * @param jobUrl
+	 *            Job Url of test execution
+	 * @param beginDt
+	 *            Beginning timestamp boundary
+	 * @param endDt
+	 *            End Timestamp boundry
+	 * @return TestResultsResponse 
+	 * @throws HygieiaException
+	 */
+
+	public TestResultsResponse getTestResultExecutionDetails(String jobUrl,long beginDt, long endDt) throws HygieiaException {
+				
+		List<TestResult> testResults = getTestResults(jobUrl,beginDt,endDt);
+		
+		if (CollectionUtils.isEmpty(testResults))
+			throw new HygieiaException("Unable to retreive  test result details for : " + jobUrl,
+					HygieiaException.BAD_DATA);
+
+		TestResultsResponse testResultsResponse = regressionTestResultAudit(testResults);
+
+		return testResultsResponse;
+
+	}
+	
+	/**
+	 * Reusable method for constructing the StaticAnalysisResponse object for a
+	 * 
+	 * @param testResults
+	 *            Test Result List
+	 * @return TestResultsResponse
+	 *             Thrown by Object mapper method
+	 */
+	private TestResultsResponse regressionTestResultAudit(List<TestResult> testResults) {
+		TestResultsResponse testResultsResponse = new TestResultsResponse();
+		boolean regressionTestSuitePresent = false;
+		
+		for(TestResult testResult : testResults){
+			if ("Regression".equalsIgnoreCase(testResult.getType().name())) {
+				
+				regressionTestSuitePresent = true;
+				
+				if (testResult.getFailureCount() == 0) {
+					testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_OK);
+				} else
+					testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_FAIL);
+
+				testResultsResponse.setTestCapabilities(testResult.getTestCapabilities());
+			}
+			
+		}
+		
+		if (!regressionTestSuitePresent){
+			testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_MISSING);
+		}	
+
+		return testResultsResponse;
+	}
+
+	/**
+	 * Retrieves code quality profile changeset for a given time period and
+	 * determines if change author matches commit author within time period
+	 * 
+	 * @param repoUrl
+	 *            SCM repo url
+	 * @param repoBranch
+	 *  		  SCM repo branch
+	 * @param artifactGroup
+	 *            Artifact Group
+	 * @param artifactName
+	 *            Artifact Name
+	 * @param artifactVersion
+	 *            Artifact Version
+	 *            
+	 * @return CodeQualityProfileValidationResponse
+	 * @throws HygieiaException
+	 */
+
+	public CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl,String repoBranch,
+			String artifactGroup, String artifactName, String artifactVersion, long beginDate, long endDate)
+			throws HygieiaException {
+		
+		List<Commit> commits = getCommits(repoUrl, repoBranch, beginDate, endDate);
+
+		List<CodeQuality> codeQualities = codeQualityRepository
+				.findByNameAndVersionOrderByTimestampDesc(artifactGroup + ":" + artifactName, artifactVersion);
+		
+		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = this.qualityProfileAudit(commits,codeQualities,beginDate,endDate);
+
+		
+		return codeQualityGateValidationResponse; 
+		
+	}
+	
+	private CodeQualityProfileValidationResponse qualityProfileAudit(List<Commit> commits,List<CodeQuality> codeQualities,long beginDate, long endDate){
+		
+		Set<String> authors = new HashSet<String>();
+		for (Commit commit : commits) {
+			authors.add(commit.getScmAuthor());
+		}
+		
+		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = new CodeQualityProfileValidationResponse();
+		CodeQuality codeQuality = codeQualities.get(0);
+		String url = codeQuality.getUrl();
+		List<CollItemCfgHist> qualityProfileChanges = collItemCfgHistRepository
+				.findByJobUrlAndTimestampBetweenOrderByTimestampDesc(url, beginDate - 1, endDate + 1);
+
+		// If no change has been made to quality profile between the time range,
+		// then return an audit status of no change
+		// Need to differentiate between document not being found and whether
+		// there was no change for the quality profile
+		if (CollectionUtils.isEmpty(qualityProfileChanges)) {
+			codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_NO_CHANGE);
+		} else {
+
+			// Iterate over all the change performers and check if they exist
+			// within the authors set
+			Set<String> qualityProfileChangePerformers = new HashSet<String>();
+			for (CollItemCfgHist qualityProfileChange : qualityProfileChanges) {
+				String qualityProfileChangePerformer = qualityProfileChange.getUserID();
+				qualityProfileChangePerformers.add(qualityProfileChangePerformer);
+
+				// TODO Improve this check as it is inefficient
+				// If the change performer matches a commit author, then fail
+				// the audit
+				if (authors.contains(qualityProfileChangePerformer)) {
+					codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL);
+				}
+			}
+			// If there is no match between change performers and commit
+			// authors, then pass the audit
+			Set<AuditStatus> auditStatuses = codeQualityGateValidationResponse.getAuditStatuses();
+			if (!(auditStatuses.contains(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL))) {
+				codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_OK);
+			}
+			codeQualityGateValidationResponse.setQualityGateChangePerformers(qualityProfileChangePerformers);
+		}
+		codeQualityGateValidationResponse.setCommitAuthors(authors);
+		return codeQualityGateValidationResponse;	
+	}
+
+	@Override
     public boolean isGitRepoConfigured(String url, String branch) {
         Collector githubCollector = collectorRepository.findByName("GitHub");
         CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
@@ -553,5 +959,11 @@ public class AuditServiceImpl implements AuditService {
         }
         return false;
     }
-
+	
+	private List<TestResult> getTestResults(String jobUrl,long beginDt, long endDt){
+		List<TestResult> testResults = customRepositoryQuery
+				.findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(jobUrl,beginDt,endDt);
+		
+		return testResults;
+	}
 }
