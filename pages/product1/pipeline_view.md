@@ -19,6 +19,6 @@ The Pipeline View is displayed for the configured environments.
 
 **Screenshots:**
 
-[!Image](http://www.capitalone.io/Hygieia/media/images/Screenshots/pipeline_view.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/Screenshots/pipeline_view.png)
 
-[!Image](http://www.capitalone.io/Hygieia/media/images/team-pipeline-config.png)
+![Image](http://www.capitalone.io/Hygieia/media/images/team-pipeline-config.png)
