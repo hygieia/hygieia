@@ -22,6 +22,9 @@ public enum AuditStatus {
     //no pull requests for queried date range
     NO_PULL_REQ_FOR_DATE_RANGE,
 
+    // Error collecting from repo
+    COLLECTOR_ITEM_ERROR,
+
     // Git repo not configured
     REPO_NOT_CONFIGURED,
 

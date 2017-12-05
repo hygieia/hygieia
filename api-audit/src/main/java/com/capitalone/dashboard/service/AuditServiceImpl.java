@@ -8,6 +8,7 @@ import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
 import com.capitalone.dashboard.model.CollItemCfgHist;
+import com.capitalone.dashboard.model.CollectionError;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -379,10 +380,10 @@ public class AuditServiceImpl implements AuditService {
             }
             if (lgtmAttempted) {
 
-                //if lgtm self-review, then no peer-review was done
+                //if lgtm self-review, then no peer-review was done unless someone else looked at it
                 if ( !CollectionUtils.isEmpty(peerReviewResponse.getAuditStatuses()) &&
                         peerReviewResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
-                        CollectionUtils.isEmpty(reviews)) {
+                        !isPRLookedAtByPeer(pr)) {
                     peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
                     return false;
                 }
@@ -403,11 +404,54 @@ public class AuditServiceImpl implements AuditService {
         return false;
     }
 
+    private boolean isPRLookedAtByPeer(GitRequest pr) {
+        List<Review> reviews = pr.getReviews();
+        if (!CollectionUtils.isEmpty(reviews)) {
+            return true;
+        }
+        String prAuthor = pr.getUserId();
+        List<Comment> comments = pr.getComments();
+        for(Comment comment: comments) {
+            if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                return true;
+            }
+        }
+        List<Comment> reviewComments = pr.getReviewComments();
+        for(Comment comment: reviewComments) {
+            if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
     public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits,
                                                            String scmUrl, String scmBranch,
                                                            long beginDt, long endDt) {
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
+
+        Collector githubCollector = collectorRepository.findByName("GitHub");
+        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
+                scmUrl, scmBranch, true);
+
+        if (!CollectionUtils.isEmpty(collectorItem.getErrors())) {
+            PeerReviewResponse noPRsPeerReviewResponse = new PeerReviewResponse();
+            noPRsPeerReviewResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
+
+            String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
+            String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
+            if(collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
+                    && collectorItemScmBranch != null && collectorItemScmBranch.equals(scmBranch)){
+                noPRsPeerReviewResponse.setLastUpdated(collectorItem.getLastUpdated());
+            }
+            noPRsPeerReviewResponse.setScmBranch(scmBranch);
+            noPRsPeerReviewResponse.setScmUrl(scmUrl);
+            noPRsPeerReviewResponse.setErrorMessage(((CollectionError)collectorItem.getErrors().get(0)).getErrorMessage());
+
+            allPeerReviews.add(noPRsPeerReviewResponse);
+            return allPeerReviews;
+        }
 
         HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
 
@@ -595,9 +639,6 @@ public class AuditServiceImpl implements AuditService {
             }
         }
 
-        Collector githubCollector = collectorRepository.findByName("GitHub");
-        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
-                scmUrl, scmBranch, true);
         for(PeerReviewResponse peerReviewResponseList: allPeerReviews){
             String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
             String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
@@ -640,7 +681,7 @@ public class AuditServiceImpl implements AuditService {
             }
             //if you are a merge commit and getting merged as part of a pr
             if (baseSha != null && headSha != null) {
-                return false;
+                //return false;
             }
         }
         LOGGER.warn("Enter computeParentCommit " + commitSha + " " + commit.getType());
