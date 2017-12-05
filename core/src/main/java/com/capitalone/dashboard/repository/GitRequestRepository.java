@@ -34,4 +34,6 @@ public interface GitRequestRepository  extends CrudRepository<GitRequest, Object
 
     List<GitRequest> findByScmUrlIgnoreCaseAndScmBranchIgnoreCase(String scmUrl, String scmBranch, long beginDt, long endDt);
 
+    List<GitRequest> findByScmRevisionNumber(String revisionNumber);
+
 }
