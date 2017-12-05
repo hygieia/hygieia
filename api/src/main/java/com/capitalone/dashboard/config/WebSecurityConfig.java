@@ -24,6 +24,7 @@ import com.capitalone.dashboard.auth.apitoken.ApiTokenAuthenticationProvider;
 import com.capitalone.dashboard.auth.apitoken.ApiTokenRequestFilter;
 import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
 import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
+import com.capitalone.dashboard.auth.ping.PingAuthenticationFilter;
 import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
 import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
 import com.capitalone.dashboard.model.AuthType;
@@ -55,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable()
 			.authorizeRequests().antMatchers("/appinfo").permitAll()
 								.antMatchers("/registerUser").permitAll()
+								.antMatchers("/findUser").permitAll()
 								.antMatchers("/login**").permitAll()
 								//TODO: sample call secured with ROLE_API
 								//.antMatchers("/ping").hasAuthority("ROLE_API")
@@ -73,6 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.anyRequest().authenticated()
 									.and()
 								.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(pingAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(ldapLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -113,6 +116,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
 		return new StandardLoginRequestFilter("/login", authenticationManager(), authenticationResultHandler);
+	}
+	
+	@Bean
+	protected PingAuthenticationFilter pingAuthenticationFilter() throws Exception {
+		return new PingAuthenticationFilter("/findUser", authenticationManager(), authenticationResultHandler);
 	}
 	
 	@Bean
