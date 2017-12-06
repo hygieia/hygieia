@@ -29,7 +29,20 @@
                 <version>1.5.0</version>
                 <executions>
                     <execution>
-                        <id>run-npm-install</id>
+                        <id>npm install</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm run redbluhub</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>
