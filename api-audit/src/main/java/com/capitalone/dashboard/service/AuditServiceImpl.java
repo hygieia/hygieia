@@ -8,6 +8,7 @@ import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.CodeQuality;
 import com.capitalone.dashboard.model.CodeQualityMetric;
 import com.capitalone.dashboard.model.CollItemCfgHist;
+import com.capitalone.dashboard.model.CollectionError;
 import com.capitalone.dashboard.model.Collector;
 import com.capitalone.dashboard.model.CollectorItem;
 import com.capitalone.dashboard.model.CollectorType;
@@ -225,16 +226,17 @@ public class AuditServiceImpl implements AuditService {
 			StaticAnalysisResponse staticAnalysisResponse = this.getStaticAnalysisResponse(codeQualityDetails);
 			dashboardReviewResponse.setStaticAnalysisResponse(staticAnalysisResponse);
 			
-			if(repoItems != null && !repoItems.isEmpty()){
-				for (CollectorItem repoItem : repoItems) {
-					String aRepoItembranch = (String) repoItem.getOptions().get("branch");
-					String aRepoItemUrl = (String) repoItem.getOptions().get("url");
-					List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
-					
-					CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
-					dashboardReviewResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
-				}
-			}
+			//Commenting this out until Sonar Collector is updated to pull config changes
+//			if(repoItems != null && !repoItems.isEmpty()){
+//				for (CollectorItem repoItem : repoItems) {
+//					String aRepoItembranch = (String) repoItem.getOptions().get("branch");
+//					String aRepoItemUrl = (String) repoItem.getOptions().get("url");
+//					List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
+//					
+//					CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
+//					dashboardReviewResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
+//				}
+//			}
 
         } else {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_NOT_CONFIGURED);
@@ -379,10 +381,10 @@ public class AuditServiceImpl implements AuditService {
             }
             if (lgtmAttempted) {
 
-                //if lgtm self-review, then no peer-review was done
+                //if lgtm self-review, then no peer-review was done unless someone else looked at it
                 if ( !CollectionUtils.isEmpty(peerReviewResponse.getAuditStatuses()) &&
                         peerReviewResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
-                        CollectionUtils.isEmpty(reviews)) {
+                        !isPRLookedAtByPeer(pr)) {
                     peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
                     return false;
                 }
@@ -392,12 +394,32 @@ public class AuditServiceImpl implements AuditService {
         }
         if (reviews != null) {
             for (Review review : reviews) {
-                if ("approved".equalsIgnoreCase(review.getState()) ||
-                        "commented".equalsIgnoreCase(review.getState())) {
+                if ("approved".equalsIgnoreCase(review.getState())) {
                     //review done using GitHub Review workflow
                     peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_GHR);
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    private boolean isPRLookedAtByPeer(GitRequest pr) {
+        List<Review> reviews = pr.getReviews();
+        if (!CollectionUtils.isEmpty(reviews)) {
+            return true;
+        }
+        String prAuthor = pr.getUserId();
+        List<Comment> comments = pr.getComments();
+        for(Comment comment: comments) {
+            if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                return true;
+            }
+        }
+        List<Comment> reviewComments = pr.getReviewComments();
+        for(Comment comment: reviewComments) {
+            if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                return true;
             }
         }
         return false;
@@ -408,6 +430,28 @@ public class AuditServiceImpl implements AuditService {
                                                            String scmUrl, String scmBranch,
                                                            long beginDt, long endDt) {
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
+
+        Collector githubCollector = collectorRepository.findByName("GitHub");
+        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
+                scmUrl, scmBranch, true);
+
+        if (!CollectionUtils.isEmpty(collectorItem.getErrors())) {
+            PeerReviewResponse noPRsPeerReviewResponse = new PeerReviewResponse();
+            noPRsPeerReviewResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
+
+            String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
+            String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
+            if(collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
+                    && collectorItemScmBranch != null && collectorItemScmBranch.equals(scmBranch)){
+                noPRsPeerReviewResponse.setLastUpdated(collectorItem.getLastUpdated());
+            }
+            noPRsPeerReviewResponse.setScmBranch(scmBranch);
+            noPRsPeerReviewResponse.setScmUrl(scmUrl);
+            noPRsPeerReviewResponse.setErrorMessage(((CollectionError)collectorItem.getErrors().get(0)).getErrorMessage());
+
+            allPeerReviews.add(noPRsPeerReviewResponse);
+            return allPeerReviews;
+        }
 
         HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
 
@@ -458,25 +502,25 @@ public class AuditServiceImpl implements AuditService {
             //check to see if pr was reviewed
             boolean peerReviewed = computePeerReviewStatus(pr, peerReviewResponse);
 
-            if (!peerReviewed) {
-                //fallback check to see if pr has comments or reviewComments
-                List<Comment> comments = pr.getComments();
-                for(Comment comment: comments) {
-                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                        peerReviewed = true;
-                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REG_COMMENTS);
-                        break;
-                    }
-                }
-                List<Comment> reviewComments = pr.getReviewComments();
-                for(Comment comment: reviewComments) {
-                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                        peerReviewed = true;
-                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REV_COMMENTS);
-                        break;
-                    }
-                }
-            }
+//            if (!peerReviewed) {
+//                //fallback check to see if pr has comments or reviewComments
+//                List<Comment> comments = pr.getComments();
+//                for(Comment comment: comments) {
+//                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+//                        peerReviewed = true;
+//                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REG_COMMENTS);
+//                        break;
+//                    }
+//                }
+//                List<Comment> reviewComments = pr.getReviewComments();
+//                for(Comment comment: reviewComments) {
+//                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+//                        peerReviewed = true;
+//                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REV_COMMENTS);
+//                        break;
+//                    }
+//                }
+//            }
 
             if (peerReviewed) {
                 peerReviewResponse.addAuditStatus(AuditStatus.PULLREQ_REVIEWED_BY_PEER);
@@ -595,9 +639,6 @@ public class AuditServiceImpl implements AuditService {
             }
         }
 
-        Collector githubCollector = collectorRepository.findByName("GitHub");
-        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
-                scmUrl, scmBranch, true);
         for(PeerReviewResponse peerReviewResponseList: allPeerReviews){
             String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
             String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
@@ -640,7 +681,7 @@ public class AuditServiceImpl implements AuditService {
             }
             //if you are a merge commit and getting merged as part of a pr
             if (baseSha != null && headSha != null) {
-                return false;
+                //return false;
             }
         }
         LOGGER.warn("Enter computeParentCommit " + commitSha + " " + commit.getType());
@@ -729,10 +770,8 @@ public class AuditServiceImpl implements AuditService {
 	/**
 	 * Gets StaticAnalysisResponses for artifact
 	 * 
-	 * @param artifactGroup
-	 *            Artifact Group
-	 * @param artifactName
-	 *            Artifact Name
+	 * @param projectName
+	 *            Sonar Project Name
 	 * @param artifactVersion
 	 *            Artifact Version
 	 * @return List of StaticAnalysisResponse
@@ -740,10 +779,10 @@ public class AuditServiceImpl implements AuditService {
 	 *             thrown by called method
 	 * @throws HygieiaException
 	 */
-	public List<StaticAnalysisResponse> getCodeQualityAudit(String artifactGroup, String artifactName,
+	public List<StaticAnalysisResponse> getCodeQualityAudit(String projectName,
 			String artifactVersion) throws HygieiaException {
 		List<CodeQuality> qualities = codeQualityRepository
-				.findByNameAndVersionOrderByTimestampDesc(artifactGroup + ":" + artifactName, artifactVersion);
+				.findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
 		if (CollectionUtils.isEmpty(qualities))
 			throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
 		StaticAnalysisResponse response = getStaticAnalysisResponse(qualities);
@@ -875,10 +914,8 @@ public class AuditServiceImpl implements AuditService {
 	 *            SCM repo url
 	 * @param repoBranch
 	 *  		  SCM repo branch
-	 * @param artifactGroup
-	 *            Artifact Group
-	 * @param artifactName
-	 *            Artifact Name
+	 * @param projectName
+	 *            Sonar Project name
 	 * @param artifactVersion
 	 *            Artifact Version
 	 *            
@@ -887,13 +924,13 @@ public class AuditServiceImpl implements AuditService {
 	 */
 
 	public CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl,String repoBranch,
-			String artifactGroup, String artifactName, String artifactVersion, long beginDate, long endDate)
+			String projectName, String artifactVersion, long beginDate, long endDate)
 			throws HygieiaException {
 		
 		List<Commit> commits = getCommits(repoUrl, repoBranch, beginDate, endDate);
 
 		List<CodeQuality> codeQualities = codeQualityRepository
-				.findByNameAndVersionOrderByTimestampDesc(artifactGroup + ":" + artifactName, artifactVersion);
+				.findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
 		
 		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = this.qualityProfileAudit(commits,codeQualities,beginDate,endDate);
 
