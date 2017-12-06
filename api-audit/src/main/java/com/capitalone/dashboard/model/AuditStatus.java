@@ -11,6 +11,7 @@ public enum AuditStatus {
 
     //peer review type LGTM, GH REVIEW, COMMENTS ONLY
     PEER_REVIEW_LGTM_SUCCESS,
+    PEER_REVIEW_LGTM_SELF_APPROVAL,
     PEER_REVIEW_LGTM_ERROR,
     PEER_REVIEW_LGTM_PENDING,
     PEER_REVIEW_LGTM_UNKNOWN,
@@ -20,6 +21,9 @@ public enum AuditStatus {
 
     //no pull requests for queried date range
     NO_PULL_REQ_FOR_DATE_RANGE,
+
+    // Error collecting from repo
+    COLLECTOR_ITEM_ERROR,
 
     // Git repo not configured
     REPO_NOT_CONFIGURED,

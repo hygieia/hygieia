@@ -2,35 +2,35 @@ package com.capitalone.dashboard.model;
 
 
 public class HpsmSoapModel {
-    private String configurationItem;
-    private String configurationItemType;
-    private String configurationItemSubType;
+    private String item;
+    private String itemType;
+    private String itemSubType;
     private String status;
     private String requestTypeName;
     private String soapAction;
 
-    public String getConfigurationItem() {
-        return configurationItem;
+    public String getItem() {
+        return item;
     }
 
-    public void setConfigurationItem(String configurationItem) {
-        this.configurationItem = configurationItem;
+    public void setItem(String item) {
+        this.item = item;
     }
 
-    public String getConfigurationItemType() {
-        return configurationItemType;
+    public String getItemType() {
+        return itemType;
     }
 
-    public void setConfigurationItemType(String configurationItemType) {
-        this.configurationItemType = configurationItemType;
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
     }
 
-    public String getConfigurationItemSubType() {
-        return configurationItemSubType;
+    public String getItemSubType() {
+        return itemSubType;
     }
 
-    public void setConfigurationItemSubType(String configurationItemSubType) {
-        this.configurationItemSubType = configurationItemSubType;
+    public void setItemSubType(String itemSubType) {
+        this.itemSubType = itemSubType;
     }
 
     public String getStatus() {
