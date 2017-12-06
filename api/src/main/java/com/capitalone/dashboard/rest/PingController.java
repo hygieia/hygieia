@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+import org.apache.log4j.Logger;
+
 @PropertySource(ignoreResourceNotFound=true,value= "classpath:version.properties")
 
 @RestController
 public class PingController {
+	private static final Logger LOGGER = Logger.getLogger(PingController.class);
 
     @Value("${version.number}")
     private String versionNumber;
@@ -34,4 +37,10 @@ public class PingController {
         String appVersion=versionNumber;
         return ResponseEntity.status(HttpStatus.OK).body(appVersion);
     }
+    
+    @RequestMapping(value = "/findUser", method = GET, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<Boolean> authenticatedPing() {
+		LOGGER.debug("===> finduserMethod");
+		return ResponseEntity.status(HttpStatus.OK).body(true);
+	}
 }
