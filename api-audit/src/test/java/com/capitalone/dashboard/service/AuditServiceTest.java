@@ -1,15 +1,26 @@
 package com.capitalone.dashboard.service;
 
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.model.Comment;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.CommitStatus;
 import com.capitalone.dashboard.model.CommitType;
 import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.TestSuiteType;
+import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.repository.CommitRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
+import com.capitalone.dashboard.repository.TestResultRepository;
 import com.capitalone.dashboard.request.PeerReviewRequest;
+import com.capitalone.dashboard.request.StaticAnalysisRequest;
+import com.capitalone.dashboard.response.PeerReviewResponse;
+import com.capitalone.dashboard.response.StaticAnalysisResponse;
+
+import org.apache.commons.collections.IteratorUtils;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +43,10 @@ public class AuditServiceTest {
     @Mock
     private CommitRepository commitRepository;
     @Mock
+    private CodeQualityRepository codeQualityRepository;
+    @Mock
+    private TestResultRepository testResultRepository;
+    @Mock
     private ApiSettings settings;
 
     @InjectMocks
@@ -41,7 +56,7 @@ public class AuditServiceTest {
     public void emptyPeerReview() {
         when(settings.getPeerReviewContexts()).thenReturn("foo");
         GitRequest gitRequest = new GitRequest();
-        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
     }
 
     @Test
@@ -54,12 +69,12 @@ public class AuditServiceTest {
         status.setState("SUCCESS");
         commitStatuses.add(status);
         gitRequest.setCommitStatuses(commitStatuses);
-        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
         status.setContext("foo");
         status.setState(null);
-        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
         status.setState("SUCCESS");
-        assertTrue(auditService.computePeerReviewStatus(gitRequest));
+        assertTrue(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
     }
 
     @Test
@@ -71,16 +86,16 @@ public class AuditServiceTest {
         List<Review> reviews = new ArrayList<>();
         reviews.add(review);
         gitRequest.setReviews(reviews);
-        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
         review.setState("APPROVED");
-        assertTrue(auditService.computePeerReviewStatus(gitRequest));
+        assertTrue(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
         List<CommitStatus> commitStatuses = new ArrayList<>();
         CommitStatus status = new CommitStatus();
         commitStatuses.add(status);
         gitRequest.setCommitStatuses(commitStatuses);
         status.setContext("foo");
         status.setState(null);
-        assertFalse(auditService.computePeerReviewStatus(gitRequest));
+        assertFalse(auditService.computePeerReviewStatus(gitRequest, new PeerReviewResponse()));
     }
 
     @Test
@@ -118,7 +133,7 @@ public class AuditServiceTest {
 
         gitRequests.add(gitRequest);
 
-        when(gitRequestRepository.findByScmUrlAndScmBranchAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(
+        when(gitRequestRepository.findByScmUrlIgnoreCaseAndScmBranchIgnoreCaseAndCreatedAtGreaterThanEqualAndMergedAtLessThanEqual(
                 request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate())).thenReturn(gitRequests);
         assertTrue(gitRequests.contains(gitRequest));
 
@@ -138,4 +153,89 @@ public class AuditServiceTest {
 
         assertTrue(baseCommits.contains(commit));
     }
+    @Test
+    public void shouldGetgetCodeQualityAuditDetailsforComponentAndVersion() {
+    	String component = "BAPHYGIEIA";
+    	String artifactVersion = "2.0.5";
+    	
+    	
+    	StaticAnalysisRequest request = new StaticAnalysisRequest();
+    	request.setArtifactVersion(artifactVersion);
+    	
+    	ObjectId collectorItemId = new ObjectId("58b945a890e46b264b95127d");
+    	String version = "2.0.5";
+    	
+    	List<StaticAnalysisResponse> responses = new ArrayList<StaticAnalysisResponse>();
+    	StaticAnalysisResponse response = new StaticAnalysisResponse();
+    	List<CodeQuality> qualities = new ArrayList<CodeQuality>();
+    	CodeQuality quality = new CodeQuality();
+    	
+    	quality.setVersion(version);
+    	quality.setUrl("https://sonar.com");
+    	quality.setCollectorItemId(collectorItemId);
+    	quality.setName("sampleProject");
+    	qualities.add(quality);
+    	
+
+    	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
+    	responses.add(response);
+    	
+    	when(codeQualityRepository.findByCollectorItemIdAndVersionOrderByTimestampDesc(collectorItemId, version)).thenReturn(qualities);
+    	assertTrue(qualities.contains(quality));
+    	
+    }
+    
+    @Test
+    public void shouldGetgetCodeQualityAuditDetailsforArtifactMetatdatan() {
+    	String artifactGroup = "com.capitalone.Hygieia";
+    	String artifactName = "audit-api";
+    	String artifactVersion = "2.0.5";
+
+    	
+    	
+    	List<StaticAnalysisResponse> responses = new ArrayList<StaticAnalysisResponse>();
+    	StaticAnalysisResponse response = new StaticAnalysisResponse();
+    	List<CodeQuality> qualities = new ArrayList<CodeQuality>();
+    	CodeQuality quality = new CodeQuality();
+    	
+    	quality.setVersion(artifactVersion);
+    	quality.setUrl("https://sonar.com");
+    	quality.setName("sampleProject");
+    	qualities.add(quality);
+    	
+    	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
+    	responses.add(response);
+    	
+    	when(codeQualityRepository.findByNameAndVersionOrderByTimestampDesc(artifactGroup+ ":" + artifactName,artifactVersion)).thenReturn(qualities);
+    	assertTrue(qualities.contains(quality));
+    	
+    }
+    
+    @Test
+    public void shouldGetTestExecutionDetails() {
+    	String jobUrl = "https://testurl";
+    	List<TestResult> testResults = new ArrayList<TestResult>();
+    	TestResult testResult = new TestResult();
+    	long timestamp = 1478136705000l;
+    	long duration = 123456;
+    	long beginDate = 1478136705000l;
+    	long endDate = 1497465958000l;
+
+    	
+    	testResult.setFailureCount(0);
+    	testResult.setSuccessCount(0);
+    	testResult.setType(TestSuiteType.Functional);
+    	testResult.setUrl(jobUrl);
+    	testResult.setTimestamp(timestamp);
+    	testResult.setDuration(duration);
+    	
+    	testResults.add(testResult);
+    	
+    	when(testResultRepository.findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(jobUrl,beginDate,endDate)).thenReturn(testResults);
+
+    	assertTrue(testResults.contains(testResult));
+    	
+    	
+    }
+    
 }

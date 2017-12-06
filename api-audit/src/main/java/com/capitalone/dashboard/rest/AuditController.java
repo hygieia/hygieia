@@ -7,9 +7,15 @@ import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.request.DashboardReviewRequest;
 import com.capitalone.dashboard.request.JobReviewRequest;
 import com.capitalone.dashboard.request.PeerReviewRequest;
+import com.capitalone.dashboard.request.QualityProfileValidationRequest;
+import com.capitalone.dashboard.request.StaticAnalysisRequest;
+import com.capitalone.dashboard.request.TestExecutionValidationRequest;
+import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
 import com.capitalone.dashboard.response.DashboardReviewResponse;
 import com.capitalone.dashboard.response.JobReviewResponse;
 import com.capitalone.dashboard.response.PeerReviewResponse;
+import com.capitalone.dashboard.response.StaticAnalysisResponse;
+import com.capitalone.dashboard.response.TestResultsResponse;
 import com.capitalone.dashboard.service.AuditService;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
 import org.slf4j.Logger;
@@ -23,6 +29,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.io.IOException;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -79,7 +86,7 @@ public class AuditController {
 
         List<GitRequest> pullRequests = auditService.getPullRequests(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
         List<Commit> commits = auditService.getCommits(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
-        List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits,request.getRepo(), request.getBranch());
+        List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits,request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
         return ResponseEntity.ok().body(allPeerReviews);
     }
 
@@ -116,5 +123,62 @@ public class AuditController {
         JobReviewResponse jobReviewResponse = auditService.getBuildJobReviewResponse(request.getJobUrl(), request.getJobName(), request.getBeginDate(), request.getEndDate());
         return ResponseEntity.ok().body(jobReviewResponse);
     }
+    
+	/**
+	 * Code Quality Analysis - Has artifact met code quality gate threshold
+	 * 
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 */
+
+	@RequestMapping(value = "/staticCodeAnalysis", method = GET, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<StaticAnalysisResponse>> staticCodeAnalysis(StaticAnalysisRequest request)
+			throws HygieiaException, IOException {
+
+		List<StaticAnalysisResponse> staticAnalysisResponse;
+		staticAnalysisResponse = auditService.getCodeQualityAudit(request.getProjectName(), request.getArtifactVersion());
+		return ResponseEntity.ok().body(staticAnalysisResponse);
+	}
+
+	
+	/**
+	 * Code Quality Profile Validation for a business application - Has the code
+	 * quality profile been changed by a user other than the commit author
+	 * 
+	 * @param request
+	 * @return
+	 */
+
+	@RequestMapping(value = "/codeQualityProfileValidation", method = GET, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<CodeQualityProfileValidationResponse> codeQualityGateValidation(QualityProfileValidationRequest request)
+			throws HygieiaException {
+
+		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = null;
+
+		codeQualityGateValidationResponse = auditService.getQualityGateValidationDetails(request.getRepo(),request.getBranch(),
+				request.getProjectName(), request.getArtifactVersion(),
+				request.getBeginDate(), request.getEndDate());
+		return ResponseEntity.ok().body(codeQualityGateValidationResponse);
+	}
+
+	/**
+	 * Test Result Validation for a business application - Has the code quality
+	 * profile been changed by a user other than the commit author
+	 * 
+	 * @param request
+	 * @return
+	 */
+
+	@RequestMapping(value = "/validateTestResults", method = GET, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<TestResultsResponse> validatetestResultExecution(TestExecutionValidationRequest request)
+			throws HygieiaException {
+
+		TestResultsResponse testResultsResponse;
+
+		testResultsResponse = auditService.getTestResultExecutionDetails(request.getJobUrl(),request.getBeginDate(),request.getEndDate());
+		return ResponseEntity.ok().body(testResultsResponse);
+	}
 
 }
+
