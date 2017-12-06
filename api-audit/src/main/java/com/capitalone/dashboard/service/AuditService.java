@@ -39,9 +39,9 @@ public interface AuditService {
 
 //    List<CollectorItem> getAllRepos();
     
-    List<StaticAnalysisResponse> getCodeQualityAudit(String artifactGroup, String artifactName, String artifactVersion) throws IOException, HygieiaException;
+    List<StaticAnalysisResponse> getCodeQualityAudit(String projectName, String artifactVersion) throws IOException, HygieiaException;
     
-    CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl,String repoBranch,String artifactGroup, String artifactName, String artifactVersion, long beginDate, long endDate) throws HygieiaException;
+    CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl,String repoBranch,String projectName, String artifactVersion, long beginDate, long endDate) throws HygieiaException;
     
     TestResultsResponse getTestResultExecutionDetails(String jobUrl,long beginDt, long endDt) throws HygieiaException;
 }
