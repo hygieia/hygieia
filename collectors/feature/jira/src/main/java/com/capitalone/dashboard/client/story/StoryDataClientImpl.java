@@ -316,8 +316,13 @@ public class StoryDataClientImpl implements StoryDataClient {
 		// sStoryPoints
 		IssueField storyPointsField = fields.get(featureSettings.getJiraStoryPointsFieldName());
 		if (storyPointsField != null && storyPointsField.getValue() != null && !TOOLS.sanitizeResponse(storyPointsField.getValue()).isEmpty()) {
-			Double value = Double.parseDouble(TOOLS.sanitizeResponse(storyPointsField.getValue()));
-			feature.setsEstimate(String.valueOf(value.intValue()));
+			try {
+				Double value = Double.parseDouble(TOOLS.sanitizeResponse(storyPointsField.getValue()));
+				feature.setsEstimate(String.valueOf(value.intValue()));
+			} catch (NumberFormatException nfe) {
+				LOGGER.error ("Issue: " +issue.getKey()+ " :Unable to convert the story points field value '" +storyPointsField.getValue()+ "' to a number. Setting the estimate to '0'");
+				feature.setsEstimate("0");
+			}
 		} else {
 			feature.setsEstimate("0");
 		}
