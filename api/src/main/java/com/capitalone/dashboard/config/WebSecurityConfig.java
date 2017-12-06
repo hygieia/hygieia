@@ -24,7 +24,7 @@ import com.capitalone.dashboard.auth.apitoken.ApiTokenAuthenticationProvider;
 import com.capitalone.dashboard.auth.apitoken.ApiTokenRequestFilter;
 import com.capitalone.dashboard.auth.ldap.CustomUserDetailsContextMapper;
 import com.capitalone.dashboard.auth.ldap.LdapLoginRequestFilter;
-import com.capitalone.dashboard.auth.ping.PingAuthenticationFilter;
+import com.capitalone.dashboard.auth.sso.SsoAuthenticationFilter;
 import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
 import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
 import com.capitalone.dashboard.model.AuthType;
@@ -75,7 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.anyRequest().authenticated()
 									.and()
 								.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
-								.addFilterBefore(pingAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+								.addFilterBefore(ssoAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(ldapLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -119,8 +119,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	
 	@Bean
-	protected PingAuthenticationFilter pingAuthenticationFilter() throws Exception {
-		return new PingAuthenticationFilter("/findUser", authenticationManager(), authenticationResultHandler);
+	protected SsoAuthenticationFilter ssoAuthenticationFilter() throws Exception {
+		return new SsoAuthenticationFilter("/findUser", authenticationManager(), authenticationResultHandler);
 	}
 	
 	@Bean

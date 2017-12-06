@@ -1,7 +1,7 @@
 /**
  * Session Factory - This service updates the session variables
  * for the user by making a call to our API to create the user details of which it got from
- * Ping SSO.
+ * SSO.
  *
  * @return {[type]} [description]
  */
