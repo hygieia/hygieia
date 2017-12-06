@@ -226,16 +226,17 @@ public class AuditServiceImpl implements AuditService {
 			StaticAnalysisResponse staticAnalysisResponse = this.getStaticAnalysisResponse(codeQualityDetails);
 			dashboardReviewResponse.setStaticAnalysisResponse(staticAnalysisResponse);
 			
-			if(repoItems != null && !repoItems.isEmpty()){
-				for (CollectorItem repoItem : repoItems) {
-					String aRepoItembranch = (String) repoItem.getOptions().get("branch");
-					String aRepoItemUrl = (String) repoItem.getOptions().get("url");
-					List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
-					
-					CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
-					dashboardReviewResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
-				}
-			}
+			//Commenting this out until Sonar Collector is updated to pull config changes
+//			if(repoItems != null && !repoItems.isEmpty()){
+//				for (CollectorItem repoItem : repoItems) {
+//					String aRepoItembranch = (String) repoItem.getOptions().get("branch");
+//					String aRepoItemUrl = (String) repoItem.getOptions().get("url");
+//					List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
+//					
+//					CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
+//					dashboardReviewResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
+//				}
+//			}
 
         } else {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_NOT_CONFIGURED);
@@ -770,10 +771,8 @@ public class AuditServiceImpl implements AuditService {
 	/**
 	 * Gets StaticAnalysisResponses for artifact
 	 * 
-	 * @param artifactGroup
-	 *            Artifact Group
-	 * @param artifactName
-	 *            Artifact Name
+	 * @param projectName
+	 *            Sonar Project Name
 	 * @param artifactVersion
 	 *            Artifact Version
 	 * @return List of StaticAnalysisResponse
@@ -781,10 +780,10 @@ public class AuditServiceImpl implements AuditService {
 	 *             thrown by called method
 	 * @throws HygieiaException
 	 */
-	public List<StaticAnalysisResponse> getCodeQualityAudit(String artifactGroup, String artifactName,
+	public List<StaticAnalysisResponse> getCodeQualityAudit(String projectName,
 			String artifactVersion) throws HygieiaException {
 		List<CodeQuality> qualities = codeQualityRepository
-				.findByNameAndVersionOrderByTimestampDesc(artifactGroup + ":" + artifactName, artifactVersion);
+				.findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
 		if (CollectionUtils.isEmpty(qualities))
 			throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
 		StaticAnalysisResponse response = getStaticAnalysisResponse(qualities);
@@ -916,10 +915,8 @@ public class AuditServiceImpl implements AuditService {
 	 *            SCM repo url
 	 * @param repoBranch
 	 *  		  SCM repo branch
-	 * @param artifactGroup
-	 *            Artifact Group
-	 * @param artifactName
-	 *            Artifact Name
+	 * @param projectName
+	 *            Sonar Project name
 	 * @param artifactVersion
 	 *            Artifact Version
 	 *            
@@ -928,13 +925,13 @@ public class AuditServiceImpl implements AuditService {
 	 */
 
 	public CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl,String repoBranch,
-			String artifactGroup, String artifactName, String artifactVersion, long beginDate, long endDate)
+			String projectName, String artifactVersion, long beginDate, long endDate)
 			throws HygieiaException {
 		
 		List<Commit> commits = getCommits(repoUrl, repoBranch, beginDate, endDate);
 
 		List<CodeQuality> codeQualities = codeQualityRepository
-				.findByNameAndVersionOrderByTimestampDesc(artifactGroup + ":" + artifactName, artifactVersion);
+				.findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
 		
 		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = this.qualityProfileAudit(commits,codeQualities,beginDate,endDate);
 
