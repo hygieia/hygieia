@@ -70,7 +70,7 @@ public class Scope extends BaseModel {
 	}
 
 	public void setpId(String pId) {
-		this.pId = pId;
+		this.pId = (pId != null ? pId.trim() : "");
 	}
 
 	public String getName() {
@@ -78,7 +78,7 @@ public class Scope extends BaseModel {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = (name != null ? name.trim() : "");
 	}
 
 	public String getProjectPath() {

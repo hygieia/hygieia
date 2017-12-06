@@ -3,6 +3,20 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>${project.groupId}:${project.artifactId}</name>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.10.19</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
   <packaging>pom</packaging>
 
   <groupId>com.capitalone.dashboard</groupId>
@@ -168,10 +182,12 @@
       <modules>
         <module>core</module>
         <module>api</module>
+        <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
+        <module>collectors/build/jenkins-codequality</module>
         <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/deploy/udeploy</module>
@@ -190,6 +206,7 @@
         <module>hygieia-jenkins-plugin</module>
         <module>UI</module>
         <module>UI-tests</module>
+        <module>UI-protractor-tests</module>
       </modules>
       <build>
         <pluginManagement>
@@ -212,10 +229,12 @@
       <modules>
         <module>core</module>
         <module>api</module>
+        <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
+        <module>collectors/build/jenkins-codequality</module>
         <module>collectors/build/sonar</module>
         <module>collectors/cloud/aws</module>
         <module>collectors/deploy/udeploy</module>
@@ -234,6 +253,7 @@
         <module>hygieia-jenkins-plugin</module>
      	<module>UI</module>
         <module>UI-tests</module>
+        <module>UI-protractor-tests</module>
  </modules>
       <build>
         <plugins>

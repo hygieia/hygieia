@@ -7,8 +7,8 @@
     angular.module(HygieiaConfig.module)
         .controller('TemplateController', TemplateController);
 
-    TemplateController.$inject = [ '$scope', '$location', 'userService', 'widgetManager', 'DashboardType', 'dashboardData', '$uibModal' ];
-    function TemplateController($scope, $location, userService, widgetManager, DashboardType, dashboardData, $uibModal) {
+    TemplateController.$inject = [ '$scope', '$location', 'userService', 'widgetManager', 'DashboardType','templateMangerData','$uibModalInstance'];
+    function TemplateController($scope, $location, userService, widgetManager, DashboardType,templateMangerData,$uibModalInstance) {
         var ctrl = this;
 
         // public variables
@@ -22,9 +22,7 @@
         // public methods
         ctrl.createTemplate = createTemplate;
         ctrl.goToManager = goToManager;
-        ctrl.logout = logout;
         ctrl.admin = admin;
-        ctrl.filterTemplates = filterTemplates;
 
         ctrl.toggleWidget = toggleWidget;
         ctrl.removeWidget = removeWidget;
@@ -32,7 +30,11 @@
         ctrl.onDragStart = onDragStart;
         ctrl.onResizeStart = onResizeStart;
         ctrl.onResizeStop = onResizeStop;
-        ctrl.clearWidgets = clearWidgets;
+        ctrl.saveTemplate = saveTemplate;
+
+        ctrl.templateName ='';
+        ctrl.count = 0;
+        ctrl.templateDetails ={};
 
         if (ctrl.username === 'admin') {
             ctrl.myadmin = true;
@@ -47,26 +49,58 @@
         };
 
         function toggleWidget(widget, $event) {
-            if (widget in $scope.widgets) removeWidget(widget);
-            else addWidget(widget);
+            if (widget in $scope.widgets) {
+                removeWidget(widget);
+            }else{
+                addWidget(widget);
+            }
 
             $event.target.classList.toggle("added");
         }
 
         function addWidget(widgetTitle) {
-            var newWidget = { x:0, y:0, width:3, height:1 };
+            var newWidget = { x:0, y:0, width:4, height:1,order :ctrl.count++ };
             $scope.widgets[widgetTitle] = newWidget;
         };
 
         function removeWidget(title, $event) {
             if ($event != null) document.getElementById(title + '-button').classList.remove('added');
             delete $scope.widgets[title];
+            ctrl.count--;
         };
 
-        function clearWidgets($event) {
+        function saveTemplate($event,form) {
+            var widgets = [];
+            var order=[];
+            _($scope.widgets).forEach(function(widget){
+                var title = widget.title;
+
+            });
             for (var title in $scope.widgets) {
+                widgets.push(title);
+                var obj = $scope.widgets[title];
                 removeWidget(title, $event);
+                order[obj.order] = title;
             }
+            var submitData = {
+                template: ctrl.templateName,
+                widgets: widgets,
+                order:order
+            };
+
+            if(form.$valid ){
+                templateMangerData.createTemplate(submitData) .then(function (data) {
+                    var result = data;
+                    var res = result;
+                    ctrl.templateName ="";
+                    var obj = false;
+                    obj = {
+                        tabName: 'templates'
+                    };
+                    $uibModalInstance.close(obj);
+                });
+            }
+
         }
 
         function onChange(event, items) {
@@ -88,15 +122,6 @@
         function onResizeStop(event, ui) {
             console.log("onResizeStop event: "+event+" ui:"+ui);
         };
-
-        function filterTemplates(item) {
-            var matchesSearch = (!ctrl.search || item.name.toLowerCase().indexOf(ctrl.search.toLowerCase()) !== -1);
-            if (ctrl.templateType == DashboardType.PRODUCT) {Template
-                return !item.isProduct && matchesSearch;
-            }
-
-            return matchesSearch;
-        }
 
         function admin() {
             console.log('sending to admin page');

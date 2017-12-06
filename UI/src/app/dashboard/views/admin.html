@@ -7,6 +7,7 @@
         <li role="presentation" ng-class="{active:tab === 'dashboards'}"><a href ng-click="navigateToTab('dashboards')">Edit Dashboards</a></li>
         <li role="presentation" ng-class="{active:tab === 'users'}"><a href ng-click="navigateToTab('users')">Manage Admins</a></li>
         <li role="presentation" ng-class="{active:tab === 'apitokens'}"><a href ng-click="navigateToTab('apitokens')">Generate ApiTokens</a></li>
+        <li role="presentation"  ng-class="{active:tab === 'templates'}"><a href ng-click="navigateToTab('templates')">Manage Templates</a></li>
       </ul>
     </div>
 
@@ -40,6 +41,55 @@
                   </div>
               </div>
             </div>
+
+            <div ng-show="tab === 'templates'">
+                <div class="widget-modal">
+                    <div class="widget-modal-heading">
+                        Manage Templates
+                    </div>
+                    <div class="widget-modal-body">
+
+                        <div class="row gap">
+                            <div class="col-sm-4 col-sm-push-8 text-center">
+                                <div>
+                                    <div class="create-dashboard-button btn btn-default btn-wide-2x" ng-click="ctrl.goToManager()">
+                                        <span class="fa fa-stack fa-lg">
+                                            <span class="fa-circle-thin fa-stack-2x"></span>
+                                            <span class="fa-plus fa-stack-1x"></span>
+                                        </span>
+                                        <br/>
+                                        Create a new<br/>template
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-8 col-sm-pull-4">
+                                <div>
+                                    <ul class="list-animate list-group text-left">
+                                        <li class="list-group-item" ng-repeat="myitem in ctrl.templates" >
+                                    <span class="pull-right">
+                                         <a href ng-click="ctrl.editTemplate(myitem)">
+                                           <span class="fa fa-lg fa-edit "></span>
+                                       </a>
+                                       <a href ng-click="ctrl.deleteTemplate(myitem)">
+                                           <span class="fa fa-lg fa-trash text-danger"></span>
+                                       </a>
+                                    </span>
+
+                                            <a class="btn-block clickable" ng-click="ctrl.viewTemplateDetails(myitem)">
+                                                <span class="fa fa-lg left-icon" ></span>
+                                                {{ myitem.template }}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div ng-show="tab === 'users'">
                 <div class="widget-modal">
                     <div class="widget-modal-heading">
@@ -130,6 +180,8 @@
                                             <div class="btn-block col-xs-15">
                                                 <span class="col-xs-3">{{apitoken.apiUser}}</span>
                                                 <span>{{::apitoken.expirationDt | date:'MM/dd/yyyy HH:mm:ss'}}</span>
+                                                <dash-trash class="clickable pull-right" ng-click="ctrl.deleteToken(apitoken.id)"></dash-trash>
+                                                <dash-edit class="clickable pull-right" ng-click="ctrl.editToken(apitoken)"></dash-edit>
                                             </div>
                                         </div>
                                     </div>
