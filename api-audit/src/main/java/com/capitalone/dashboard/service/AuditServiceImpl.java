@@ -394,8 +394,7 @@ public class AuditServiceImpl implements AuditService {
         }
         if (reviews != null) {
             for (Review review : reviews) {
-                if ("approved".equalsIgnoreCase(review.getState()) ||
-                        "commented".equalsIgnoreCase(review.getState())) {
+                if ("approved".equalsIgnoreCase(review.getState())) {
                     //review done using GitHub Review workflow
                     peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_GHR);
                     return true;
@@ -503,25 +502,25 @@ public class AuditServiceImpl implements AuditService {
             //check to see if pr was reviewed
             boolean peerReviewed = computePeerReviewStatus(pr, peerReviewResponse);
 
-            if (!peerReviewed) {
-                //fallback check to see if pr has comments or reviewComments
-                List<Comment> comments = pr.getComments();
-                for(Comment comment: comments) {
-                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                        peerReviewed = true;
-                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REG_COMMENTS);
-                        break;
-                    }
-                }
-                List<Comment> reviewComments = pr.getReviewComments();
-                for(Comment comment: reviewComments) {
-                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                        peerReviewed = true;
-                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REV_COMMENTS);
-                        break;
-                    }
-                }
-            }
+//            if (!peerReviewed) {
+//                //fallback check to see if pr has comments or reviewComments
+//                List<Comment> comments = pr.getComments();
+//                for(Comment comment: comments) {
+//                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+//                        peerReviewed = true;
+//                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REG_COMMENTS);
+//                        break;
+//                    }
+//                }
+//                List<Comment> reviewComments = pr.getReviewComments();
+//                for(Comment comment: reviewComments) {
+//                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+//                        peerReviewed = true;
+//                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REV_COMMENTS);
+//                        break;
+//                    }
+//                }
+//            }
 
             if (peerReviewed) {
                 peerReviewResponse.addAuditStatus(AuditStatus.PULLREQ_REVIEWED_BY_PEER);
