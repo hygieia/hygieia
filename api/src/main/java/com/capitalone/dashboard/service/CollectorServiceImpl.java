@@ -80,6 +80,7 @@ public class CollectorServiceImpl implements CollectorService {
         return collectorItems;
     }
 
+    // method to remove jobUrl and instanceUrl from build collector items.
     private Page<CollectorItem> removeJobUrlAndInstanceUrl(Page<CollectorItem> collectorItems) {
         for (CollectorItem cItem : collectorItems) {
             cItem.getOptions().put("jobUrl", "");
