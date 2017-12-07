@@ -101,7 +101,7 @@ public class PipelineServiceTest {
         assertThat(actual.getStageCommits(PipelineStage.BUILD).size(), is(0));
         assertThat(actual.getStageCommits(PipelineStage.valueOf("dev")).size(),is(0));
         assertThat(actual.getStageCommits(PipelineStage.valueOf("qa")).size(),is(0));
-        assertThat(actual.getStageCommits(PipelineStage.valueOf("prod")).size(),is(1));
+        assertThat(actual.getStageCommits(PipelineStage.valueOf("prod")).size(),is(0));
     }
 
     private Widget makePipelineWidget(String devName, String qaName, String intName, String perfName, String prodName){

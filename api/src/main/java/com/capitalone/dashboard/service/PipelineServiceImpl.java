@@ -106,15 +106,13 @@ public class PipelineServiceImpl implements PipelineService {
                          * remove prod commits outside of filter date range
                          */
                         Iterator<PipelineResponseCommit> commitIterator = commitsForStage.iterator();
-                        if (stage.equals(pipelineResponse.getProdStage())) {
                             while (commitIterator.hasNext()) {
                                 PipelineResponseCommit commit = commitIterator.next();
                                 if (!isBetween(commit.getProcessedTimestamps().get(stage.getName()), lowerBound, upperBound)) {
                                     commitIterator.remove();
                                 }
                             }
-                        }
-                    }
+                      }
                 }
             }
         pipelineResponse.setUnmappedStages(findUnmappedStages(dashboard,pipelineStageList)
