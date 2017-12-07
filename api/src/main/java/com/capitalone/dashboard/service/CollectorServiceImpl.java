@@ -81,14 +81,14 @@ public class CollectorServiceImpl implements CollectorService {
 
     private List<String> findJobNameAndNiceName(String descriptionFilter){
         if(descriptionFilter.contains(":"))
-          return  Stream.of(descriptionFilter.split(":"))
+          return  Stream.of(descriptionFilter.split(":")).map(String::trim)
                             .collect(Collectors.toList());
         return new ArrayList<>();
     }
 
 
     private static String findIndex(String descriptionFilter){
-        return descriptionFilter.substring(descriptionFilter.indexOf(":")+1,descriptionFilter.length());
+        return descriptionFilter.substring(descriptionFilter.indexOf(":")+1,descriptionFilter.length()).trim();
 
     }
 
