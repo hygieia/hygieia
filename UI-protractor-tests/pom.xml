@@ -43,7 +43,7 @@
                     </execution>
                     <execution>
                         <id>npm run redbluhub</id>
-                        <phase>compile</phase>
+                        <phase>integration-test</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -51,13 +51,13 @@
                             <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
-                                <argument>redbluhub</argument>
+                                <argument>protractor</argument>
                             </arguments>
                         </configuration>
                     </execution>
                     <execution>
                         <id>npm run report</id>
-                        <phase>compile</phase>
+                        <phase>post-integration-test</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
