@@ -69,6 +69,7 @@ public class CollectorServiceImpl implements CollectorService {
         }
         if(!niceName.isEmpty() && collectorType == CollectorType.Build){
            collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingAndNiceNameContainingAllIgnoreCase(collectorIds, jobName,niceName, pageable);
+            removeJobUrlAndInstanceUrl(collectorItems);
         }else{
            collectorItems = collectorItemRepository.findByCollectorIdInAndDescriptionContainingIgnoreCase(collectorIds, descriptionFilter, pageable);
         }
@@ -76,6 +77,15 @@ public class CollectorServiceImpl implements CollectorService {
             options.setCollector(collectorById(options.getCollectorId(), collectors));
         }
 
+        return collectorItems;
+    }
+
+    // method to remove jobUrl and instanceUrl from build collector items.
+    private Page<CollectorItem> removeJobUrlAndInstanceUrl(Page<CollectorItem> collectorItems) {
+        for (CollectorItem cItem : collectorItems) {
+            cItem.getOptions().remove("jobUrl");
+            cItem.getOptions().remove("instanceUrl");
+        }
         return collectorItems;
     }
 
