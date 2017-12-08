@@ -93,7 +93,12 @@ var localStorageSupported = (function () {
                 .state('site', {
                     url: '/',
                     controller: 'SiteController as ctrl',
-                    templateUrl: 'app/dashboard/views/site.html'
+                    templateUrl: 'app/dashboard/views/site.html',
+                    resolve: {
+                    	user: function (Session) {
+                    		return Session.updateSession();
+                    	}
+                    }
                 })
 
                 .state('signup', {
