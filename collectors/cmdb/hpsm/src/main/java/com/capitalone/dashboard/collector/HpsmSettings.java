@@ -46,6 +46,10 @@ public class HpsmSettings {
 	private String changeOrderQuery;
 	private String incidentQuery;
 
+	private String cmdbReturnLimit;
+	private String incidentReturnLimit;
+	private String changeOrderReturnLimit;
+
 	public String getServer() {
 		return server;
 	}
@@ -237,4 +241,16 @@ public class HpsmSettings {
 	public String getIncidentQuery() { return incidentQuery; }
 
 	public void setIncidentQuery(String incidentQuery) { this.incidentQuery = incidentQuery; }
+
+	public String getCmdbReturnLimit() {return cmdbReturnLimit;	}
+
+	public void setCmdbReturnLimit(String cmdbReturnLimit) { this.cmdbReturnLimit = cmdbReturnLimit; }
+
+	public String getIncidentReturnLimit() { return incidentReturnLimit; }
+
+	public void setIncidentReturnLimit(String incidentReturnLimit) { this.incidentReturnLimit = incidentReturnLimit; }
+
+	public String getChangeOrderReturnLimit() { return changeOrderReturnLimit; }
+
+	public void setChangeOrderReturnLimit(String changeOrderReturnLimit) { this.changeOrderReturnLimit = changeOrderReturnLimit; }
 }
