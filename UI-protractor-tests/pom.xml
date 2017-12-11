@@ -48,6 +48,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <skip>true</skip>
                             <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
@@ -62,6 +63,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <skip>true</skip>
                             <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
