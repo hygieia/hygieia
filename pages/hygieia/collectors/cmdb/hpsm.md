@@ -95,7 +95,7 @@ The sample `application.properties` file lists parameters with sample values to 
 		#API App Query settings
 		hpsm.appSubType=[Your APP configuration Subtype]
 		hpsm.appType= [Your APP configuration Type. Leave empty if not required]
-		hpsm.appStatus=[Status of APPs]
+		hpsm.appStatus=[Status of APPs.  Multiple comma separated values may be specified.]
 
 		#API Component Query settings
 		hpsm.compSubType=[Your Component Subtype]
@@ -130,4 +130,11 @@ The sample `application.properties` file lists parameters with sample values to 
 		
 		#Default query for incidents may be changed by uncommenting and editing the following line:
 		#hpsm.incidentQuery=(Severity=1 or Severity=2 or Severity=3 or Severity=4) and update.time > ''{0}'' and update.time < ''{1}''
+		
+		#Optional for testing/debugging.
+		#The following lines can be uncommented to limit the number of entities returned to 250 in order to speed up testing/debugging.  Substitute whatever value you would like.
+		#These should only be used for testing/debugging purposes.
+		#hpsm.cmdbReturnLimit=250
+		#hpsm.changeOrderReturnLimit=250
+		#hpsm.incidentReturnLimit=250		
 ```
