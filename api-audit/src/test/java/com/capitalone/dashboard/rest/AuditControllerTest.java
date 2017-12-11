@@ -129,22 +129,19 @@ public class AuditControllerTest {
     public void performStaticCodeAnalysisReviewWithArtifactMetadata() throws Exception {
     	
     	// Request
-    	String artGroup = "com.capitalone.dashboard";
-    	String artName = "Hygieia";
+    	String projectName = "com.capitalone.dashboard:Hygieia";
     	String artVersion = "2.0.6-SNAPSHOT";
     	
-    	//Response contents
-    	String component = "BAPHYGIEIA";
+
     	
     	List<StaticAnalysisResponse> responses = new ArrayList<StaticAnalysisResponse>();
     	StaticAnalysisResponse response =  new StaticAnalysisResponse();
     	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
     	responses.add(response);
     	
-    	when(auditService.getCodeQualityAudit(artGroup,artName,artVersion)).thenReturn(responses);
+    	when(auditService.getCodeQualityAudit(projectName,artVersion)).thenReturn(responses);
     	
-    	mockMvc.perform(get("/staticCodeAnalysis" + "?artifactGroup=" + artGroup
-        + "&artifactName=" + artName
+    	mockMvc.perform(get("/staticCodeAnalysis" + "?projectName=" + projectName
         + "&artifactVersion=" + artVersion).contentType(MediaType.APPLICATION_JSON))
     	.andExpect(status().isOk());
     	
@@ -156,8 +153,7 @@ public class AuditControllerTest {
     	// Request
     	String repo = "http://test.git.com/capone/better.git";
     	String branch = "master";
-    	String artifactGroup = "com.capitalone.Hygiea";
-    	String artifactName = "hygieia-api";
+    	String projectName = "com.capitalone.Hygiea:hygieia-api";
     	String artifactVersion = "2.0.5-SNAPSHOT";
     	long beginDate = 1478136705000l;
     	long endDate = 1497465958000l; 
@@ -168,8 +164,7 @@ public class AuditControllerTest {
     	request.setRepo(repo);
         request.setBranch(branch);
     	request.setArtifactVersion(artifactVersion);
-    	request.setArtifactGroup(artifactGroup);
-    	request.setArtifactName(artifactName);
+    	request.setProjectName(projectName);
     	request.setBeginDate(beginDate);
     	request.setEndDate(endDate);
     	    	
@@ -180,9 +175,9 @@ public class AuditControllerTest {
     	response.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_GATE_MISSING);
     	responses.add(response);
     	
-    	when(auditService.getQualityGateValidationDetails(request.getRepo(),request.getBranch(),artifactGroup,artifactName,artifactVersion,beginDate,endDate)).thenReturn(response);
+    	when(auditService.getQualityGateValidationDetails(request.getRepo(),request.getBranch(),projectName,artifactVersion,beginDate,endDate)).thenReturn(response);
     	
-    	String requestUrl= "/codeQualityProfileValidation" + "?repo=" +repo +"&branch=" + branch + "&artifactGroup=" + artifactGroup + "&artifactName=" + artifactName + 
+    	String requestUrl= "/codeQualityProfileValidation" + "?repo=" +repo +"&branch=" + branch + "&projectName=" + projectName  + 
     			"&artifactVersion=" + artifactVersion + "&beginDate=" + beginDate + "&endDate=" + endDate;
     	
     	mockMvc.perform(get(requestUrl).contentType(MediaType.APPLICATION_JSON))
