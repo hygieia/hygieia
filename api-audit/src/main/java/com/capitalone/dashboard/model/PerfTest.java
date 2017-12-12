@@ -3,9 +3,6 @@ package com.capitalone.dashboard.model;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * Created by gyf420 on 11/1/17.
- */
 public class PerfTest {
 
     private String testName;

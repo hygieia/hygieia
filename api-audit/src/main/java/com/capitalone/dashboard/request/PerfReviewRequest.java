@@ -2,9 +2,6 @@ package com.capitalone.dashboard.request;
 
 import javax.validation.constraints.NotNull;
 
-/**
- * Created by gyf420 on 11/1/17.
- */
 public class PerfReviewRequest {
 
     @NotNull

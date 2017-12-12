@@ -2,7 +2,33 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
+import com.capitalone.dashboard.model.AuditStatus;
+import com.capitalone.dashboard.model.Build;
+import com.capitalone.dashboard.model.Cmdb;
+import com.capitalone.dashboard.model.CodeQuality;
+import com.capitalone.dashboard.model.CodeQualityMetric;
+import com.capitalone.dashboard.model.CollItemCfgHist;
+import com.capitalone.dashboard.model.CollectionError;
+import com.capitalone.dashboard.model.Collector;
+import com.capitalone.dashboard.model.CollectorItem;
+import com.capitalone.dashboard.model.CollectorType;
+import com.capitalone.dashboard.model.Comment;
+import com.capitalone.dashboard.model.Commit;
+import com.capitalone.dashboard.model.CommitStatus;
+import com.capitalone.dashboard.model.CommitType;
+import com.capitalone.dashboard.model.Dashboard;
+import com.capitalone.dashboard.model.GitRequest;
+import com.capitalone.dashboard.model.JobCollectorItem;
+import com.capitalone.dashboard.model.RepoBranch;
+import com.capitalone.dashboard.model.TestResult;
+import com.capitalone.dashboard.model.Review;
+import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.PerfTest;
+import com.capitalone.dashboard.model.PerfIndicators;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.model.TestCase;
+import com.capitalone.dashboard.model.TestCaseStep;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
@@ -16,9 +42,14 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.JobRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
-import com.capitalone.dashboard.response.*;
+import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
+import com.capitalone.dashboard.response.DashboardReviewResponse;
+import com.capitalone.dashboard.response.JobReviewResponse;
+import com.capitalone.dashboard.response.PeerReviewResponse;
+import com.capitalone.dashboard.response.StaticAnalysisResponse;
+import com.capitalone.dashboard.response.TestResultsResponse;
+import com.capitalone.dashboard.response.PerfReviewResponse;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
-import com.sun.net.httpserver.Authenticator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,9 +62,17 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Collection;
 
 @Component
 public class AuditServiceImpl implements AuditService {
@@ -914,83 +953,88 @@ public class AuditServiceImpl implements AuditService {
 
     public PerfReviewResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
         Cmdb cmdb = cmdbRepository.findByConfigurationItemIgnoreCase(businessComp); // get CMDB iD
-        Iterable<Dashboard> dashboard = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId()); //get dashboard based on CMDB ID
-        Iterator<Dashboard> dashboardIT = dashboard.iterator();  //Iterate through the dashboards to obtain the collectorIteamID
-        PerfReviewResponse perfReviewResponse = new PerfReviewResponse();
-        while(dashboardIT.hasNext()) {
-            dashboardIT.next();
-            Set<CollectorType> ci = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().keySet();
-            boolean Isperf = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getOptions().containsValue("jmeter");
-            boolean Istest = ci.iterator().next().name().equals(CollectorType.Test.name());
-            if (Istest && Isperf)  //validate if the Test collector exists with jmeter collector Item
-            {
-                ObjectId collectorItemID = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getId();
-                List<TestResult> result = customRepositoryQuery.findByCollectorItemIdAndTimestampGreaterThanEqualAndTimestampLessThanEqual(collectorItemID, from, to);
-                List<PerfTest> testlist = new ArrayList<PerfTest>();
-                //loop through test result object to obtain performance artifacts.
-                for (TestResult testResult : result) { //parse though the results to obtain performance KPI's
-                    Collection<TestCapability> testCapabilityCollection = testResult.getTestCapabilities();
-                    List<TestCapability> testCapabilityList = new ArrayList<>(testCapabilityCollection);
+            if(cmdb !=null) {
+                Iterable<Dashboard> dashboard = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId()); //get dashboard based on CMDB ID
+                Iterator<Dashboard> dashboardIT = dashboard.iterator();  //Iterate through the dashboards to obtain the collectorIteamID
+                PerfReviewResponse perfReviewResponse = new PerfReviewResponse();
+                while (dashboardIT.hasNext()) {
+                    dashboardIT.next();
+                    Set<CollectorType> ci = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().keySet();
+                    boolean Isperf = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getOptions().containsValue("jmeter");
+                    boolean Istest = ci.iterator().next().name().equals(CollectorType.Test.name());
+                    if (Istest && Isperf)  //validate if the Test collector exists with jmeter collector Item
+                    {
+                        ObjectId collectorItemID = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getId();
+                        List<TestResult> result = customRepositoryQuery.findByCollectorItemIdAndTimestampGreaterThanEqualAndTimestampLessThanEqual(collectorItemID, from, to);
+                        List<PerfTest> testlist = new ArrayList<PerfTest>();
+                        //loop through test result object to obtain performance artifacts.
+                        for (TestResult testResult : result) { //parse though the results to obtain performance KPI's
+                            Collection<TestCapability> testCapabilityCollection = testResult.getTestCapabilities();
+                            List<TestCapability> testCapabilityList = new ArrayList<>(testCapabilityCollection);
 
-                    for (TestCapability testCapability : testCapabilityList) {
-                        PerfTest test = new PerfTest();
-                        List<PerfIndicators> kpilist = new ArrayList<PerfIndicators>();
-                        Collection<TestSuite> testSuitesCollection = testCapability.getTestSuites();
-                        List<TestSuite> testSuiteList = new ArrayList<>(testSuitesCollection);
+                            for (TestCapability testCapability : testCapabilityList) {
+                                PerfTest test = new PerfTest();
+                                List<PerfIndicators> kpilist = new ArrayList<PerfIndicators>();
+                                Collection<TestSuite> testSuitesCollection = testCapability.getTestSuites();
+                                List<TestSuite> testSuiteList = new ArrayList<>(testSuitesCollection);
 
-                        for (TestSuite testSuite : testSuiteList) {
-                            Collection<TestCase> testCaseCollection = testSuite.getTestCases();
-                            List<TestCase> testCaseList = new ArrayList<>(testCaseCollection);
+                                for (TestSuite testSuite : testSuiteList) {
+                                    Collection<TestCase> testCaseCollection = testSuite.getTestCases();
+                                    List<TestCase> testCaseList = new ArrayList<>(testCaseCollection);
 
-                            for (TestCase testCase : testCaseList) {
-                                PerfIndicators kpi = new PerfIndicators();
-                                kpi.setStatus(testCase.getStatus().toString());
-                                kpi.setType(testCase.getDescription().toString());
-                                Collection<TestCaseStep> testCaseStepCollection = testCase.getTestSteps();
-                                List<TestCaseStep> testCaseStepList = new ArrayList<>(testCaseStepCollection);
-                                int j = 0;
-                                for (TestCaseStep testCaseStep : testCaseStepList) {
-                                    String value = testCaseStep.getDescription();
-                                    if (j == 0) {
-                                        double targetdouble = Double.parseDouble(value);
-                                        kpi.setTarget(targetdouble);
-                                    } else {
-                                        double achievedouble = Double.parseDouble(value);
-                                        kpi.setAchieved(achievedouble);
+                                    for (TestCase testCase : testCaseList) {
+                                        PerfIndicators kpi = new PerfIndicators();
+                                        kpi.setStatus(testCase.getStatus().toString());
+                                        kpi.setType(testCase.getDescription().toString());
+                                        Collection<TestCaseStep> testCaseStepCollection = testCase.getTestSteps();
+                                        List<TestCaseStep> testCaseStepList = new ArrayList<>(testCaseStepCollection);
+                                        int j = 0;
+                                        for (TestCaseStep testCaseStep : testCaseStepList) {
+                                            String value = testCaseStep.getDescription();
+                                            if (j == 0) {
+                                                double targetdouble = Double.parseDouble(value);
+                                                kpi.setTarget(targetdouble);
+                                            } else {
+                                                double achievedouble = Double.parseDouble(value);
+                                                kpi.setAchieved(achievedouble);
+                                            }
+                                            j++;
+                                        }
+                                        kpilist.add(kpi);
                                     }
-                                    j++;
+                                    //create performance test review object
+                                    test.setRunId(testResult.getExecutionId());
+                                    test.setStartTime(testResult.getStartTime());
+                                    test.setEndTime(testResult.getEndTime());
+                                    test.setResultStatus(testResult.getDescription());
+                                    test.setPerfIndicators(kpilist);
+                                    CollectorItem collectoritem = collectorItemRepository.findOne(collectorItemID);
+                                    test.setTestName((String) collectoritem.getOptions().get("jobName"));
+                                    test.setTimeStamp(testResult.getTimestamp());
+                                    testlist.add(test);
                                 }
-                                kpilist.add(kpi);
                             }
-                            //create performance test review object
-                            test.setRunId(testResult.getExecutionId());
-                            test.setStartTime(testResult.getStartTime());
-                            test.setEndTime(testResult.getEndTime());
-                            test.setResultStatus(testResult.getDescription());
-                            test.setPerfIndicators(kpilist);
-                            CollectorItem collectoritem = collectorItemRepository.findOne(collectorItemID);
-                            test.setTestName((String) collectoritem.getOptions().get("jobName"));
-                            test.setTimeStamp(testResult.getTimestamp());
-                            testlist.add(test);
+                        }
+                        perfReviewResponse.setResult(testlist);
+                        int counter = 0;
+                        for (PerfTest list : testlist) {
+                            if (list.getResultStatus().matches("Success")) {
+                                counter++;
+                            }
+                        }
+                        if (testlist.size() == 0) {
+                            perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_MISSING);
+                        } else if (counter >= 1) {
+                            perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_OK);
+                        } else {
+                            perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_FAIL);
                         }
                     }
                 }
-                perfReviewResponse.setResult(testlist);
-                int counter = 0;
-                for (PerfTest list : testlist) {
-                    if (list.getResultStatus().matches("Success")) {
-                        counter++;
-                    }
-                }
-                if(testlist.size()==0){
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_MISSING);
-                }else if (counter >= 1) {
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_OK);
-                } else {
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_FAIL);
-                }
+                return perfReviewResponse;
             }
+            return null;
         }
-        return perfReviewResponse;
-    }
+
+
 }

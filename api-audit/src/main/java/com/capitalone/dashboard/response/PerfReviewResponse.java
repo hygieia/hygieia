@@ -8,9 +8,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-/**
- * Created by gyf420 on 11/1/17.
- */
 public class PerfReviewResponse {
 
 

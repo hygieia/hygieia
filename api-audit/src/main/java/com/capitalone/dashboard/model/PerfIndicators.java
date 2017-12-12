@@ -1,8 +1,5 @@
 package com.capitalone.dashboard.model;
 
-/**
- * Created by gyf420 on 11/1/17.
- */
 public class PerfIndicators {
 
 
