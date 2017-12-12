@@ -2,7 +2,6 @@ package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.AuditStatus;
-import com.capitalone.dashboard.model.Cmdb;
 import com.capitalone.dashboard.model.Commit;
 import com.capitalone.dashboard.model.GitRequest;
 import com.capitalone.dashboard.request.DashboardReviewRequest;
@@ -21,12 +20,9 @@ import com.capitalone.dashboard.response.TestResultsResponse;
 import com.capitalone.dashboard.response.PerfReviewResponse;
 import com.capitalone.dashboard.service.AuditService;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
-import com.capitalone.dashboard.repository.CmdbRepository;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,12 +38,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class AuditController {
     private final AuditService auditService;
 
-	private CmdbRepository cmdbRepository;
+	//private final CmdbRepository cmdbRepository;
+
+
 	@Autowired
-	public AuditController(AuditService auditService,CmdbRepository cmdbRepository) {
+	public AuditController(AuditService auditService) {
 
 		this.auditService = auditService;
-		this.cmdbRepository = cmdbRepository;
+		//this.cmdbRepository = cmdbRepository;
 	}
 
 
@@ -191,17 +189,12 @@ public class AuditController {
 	public ResponseEntity validatePerfResultExecution(PerfReviewRequest request)
 			throws HygieiaException {
 		try {
-			Cmdb cmdb = cmdbRepository.findByConfigurationItemIgnoreCase(request.getBusinessComponentName()); // get CMDB iD
-			if(cmdb != null){
 				PerfReviewResponse perfReviewResponse;
 				perfReviewResponse = auditService.getresultsBycomponetAndTime(request.getBusinessComponentName(), request.getRangeFrom(), request.getRangeTo());
 				return ResponseEntity.ok().body(perfReviewResponse);
-			}
 		}catch (Exception e){
-			return ResponseEntity.ok().body(e.getMessage());
+			return ResponseEntity.ok().body(request.getBusinessComponentName() + " is not a valid businessComp name or does not exists");
 		}
-		return ResponseEntity.ok().body(request.getBusinessComponentName() + " is not a valid businessComp name or does not exists");
-
-			}
+	}
 }
 
