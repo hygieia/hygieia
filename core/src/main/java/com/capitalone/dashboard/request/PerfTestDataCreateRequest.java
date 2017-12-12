@@ -8,9 +8,7 @@ import com.capitalone.dashboard.model.TestSuiteType;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
-/**
- * Created by gyf420 on 10/26/17.
- */
+
 public class PerfTestDataCreateRequest {
 
 
