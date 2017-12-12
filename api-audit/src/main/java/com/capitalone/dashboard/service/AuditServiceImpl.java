@@ -2,7 +2,6 @@ package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.ApiSettings;
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.model.AuditStatus;
 import com.capitalone.dashboard.model.Build;
 import com.capitalone.dashboard.model.Cmdb;
@@ -24,6 +23,12 @@ import com.capitalone.dashboard.model.RepoBranch;
 import com.capitalone.dashboard.model.TestResult;
 import com.capitalone.dashboard.model.Review;
 import com.capitalone.dashboard.model.Widget;
+import com.capitalone.dashboard.model.PerfTest;
+import com.capitalone.dashboard.model.PerfIndicators;
+import com.capitalone.dashboard.model.TestCapability;
+import com.capitalone.dashboard.model.TestSuite;
+import com.capitalone.dashboard.model.TestCase;
+import com.capitalone.dashboard.model.TestCaseStep;
 import com.capitalone.dashboard.repository.BuildRepository;
 import com.capitalone.dashboard.repository.CmdbRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
@@ -37,9 +42,14 @@ import com.capitalone.dashboard.repository.DashboardRepository;
 import com.capitalone.dashboard.repository.GitRequestRepository;
 import com.capitalone.dashboard.repository.JobRepository;
 import com.capitalone.dashboard.repository.TestResultRepository;
-import com.capitalone.dashboard.response.*;
+import com.capitalone.dashboard.response.CodeQualityProfileValidationResponse;
+import com.capitalone.dashboard.response.DashboardReviewResponse;
+import com.capitalone.dashboard.response.JobReviewResponse;
+import com.capitalone.dashboard.response.PeerReviewResponse;
+import com.capitalone.dashboard.response.StaticAnalysisResponse;
+import com.capitalone.dashboard.response.TestResultsResponse;
+import com.capitalone.dashboard.response.PerfReviewResponse;
 import com.capitalone.dashboard.util.GitHubParsedUrl;
-import com.sun.net.httpserver.Authenticator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,9 +62,17 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Collection;
 
 @Component
 public class AuditServiceImpl implements AuditService {
@@ -209,25 +227,24 @@ public class AuditServiceImpl implements AuditService {
         }
 
         List<CollectorItem> codeQualityItems = this.getCollectorItems(dashboard, "codeanalysis", CollectorType.CodeQuality);
-      
+
         if (codeQualityItems != null && !codeQualityItems.isEmpty()) {
-        	dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_CONFIGURED);
-			CollectorItem codeQualityItem = codeQualityItems.get(0);
-			List<CodeQuality> codeQualityDetails = codeQualityRepository.findByCollectorItemIdOrderByTimestampDesc(codeQualityItem.getCollectorId());
-			StaticAnalysisResponse staticAnalysisResponse = this.getStaticAnalysisResponse(codeQualityDetails);
-			dashboardReviewResponse.setStaticAnalysisResponse(staticAnalysisResponse);
-			
-			//Commenting this out until Sonar Collector is updated to pull config changes
-//			if(repoItems != null && !repoItems.isEmpty()){
-//				for (CollectorItem repoItem : repoItems) {
-//					String aRepoItembranch = (String) repoItem.getOptions().get("branch");
-//					String aRepoItemUrl = (String) repoItem.getOptions().get("url");
-//					List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
-//					
-//					CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
-//					dashboardReviewResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
-//				}
-//			}
+            dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_CONFIGURED);
+            CollectorItem codeQualityItem = codeQualityItems.get(0);
+            List<CodeQuality> codeQualityDetails = codeQualityRepository.findByCollectorItemIdOrderByTimestampDesc(codeQualityItem.getCollectorId());
+            StaticAnalysisResponse staticAnalysisResponse = this.getStaticAnalysisResponse(codeQualityDetails);
+            dashboardReviewResponse.setStaticAnalysisResponse(staticAnalysisResponse);
+
+            if (repoItems != null && !repoItems.isEmpty()) {
+                for (CollectorItem repoItem : repoItems) {
+                    String aRepoItembranch = (String) repoItem.getOptions().get("branch");
+                    String aRepoItemUrl = (String) repoItem.getOptions().get("url");
+                    List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
+
+                    CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits, codeQualityDetails, beginDate, endDate);
+                    dashboardReviewResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
+                }
+            }
 
         } else {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_NOT_CONFIGURED);
@@ -371,15 +388,6 @@ public class AuditServiceImpl implements AuditService {
                 }
             }
             if (lgtmAttempted) {
-
-                //if lgtm self-review, then no peer-review was done unless someone else looked at it
-                if ( !CollectionUtils.isEmpty(peerReviewResponse.getAuditStatuses()) &&
-                        peerReviewResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
-                        !isPRLookedAtByPeer(pr)) {
-                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
-                    return false;
-                }
-
                 return lgtmStateResult;
             }
         }
@@ -395,55 +403,12 @@ public class AuditServiceImpl implements AuditService {
         return false;
     }
 
-    private boolean isPRLookedAtByPeer(GitRequest pr) {
-        List<Review> reviews = pr.getReviews();
-        if (!CollectionUtils.isEmpty(reviews)) {
-            return true;
-        }
-        String prAuthor = pr.getUserId();
-        List<Comment> comments = pr.getComments();
-        for(Comment comment: comments) {
-            if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                return true;
-            }
-        }
-        List<Comment> reviewComments = pr.getReviewComments();
-        for(Comment comment: reviewComments) {
-            if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
     public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits,
                                                            String scmUrl, String scmBranch,
                                                            long beginDt, long endDt) {
 
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
-
-        Collector githubCollector = collectorRepository.findByName("GitHub");
-        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
-                scmUrl, scmBranch, true);
-
-        if (!CollectionUtils.isEmpty(collectorItem.getErrors())) {
-            PeerReviewResponse noPRsPeerReviewResponse = new PeerReviewResponse();
-            noPRsPeerReviewResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
-
-            String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
-            String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
-            if(collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
-                    && collectorItemScmBranch != null && collectorItemScmBranch.equals(scmBranch)){
-                noPRsPeerReviewResponse.setLastUpdated(collectorItem.getLastUpdated());
-            }
-            noPRsPeerReviewResponse.setScmBranch(scmBranch);
-            noPRsPeerReviewResponse.setScmUrl(scmUrl);
-            noPRsPeerReviewResponse.setErrorMessage(((CollectionError)collectorItem.getErrors().get(0)).getErrorMessage());
-
-            allPeerReviews.add(noPRsPeerReviewResponse);
-            return allPeerReviews;
-        }
 
         HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
 
@@ -494,25 +459,25 @@ public class AuditServiceImpl implements AuditService {
             //check to see if pr was reviewed
             boolean peerReviewed = computePeerReviewStatus(pr, peerReviewResponse);
 
-//            if (!peerReviewed) {
-//                //fallback check to see if pr has comments or reviewComments
-//                List<Comment> comments = pr.getComments();
-//                for(Comment comment: comments) {
-//                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-//                        peerReviewed = true;
-//                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REG_COMMENTS);
-//                        break;
-//                    }
-//                }
-//                List<Comment> reviewComments = pr.getReviewComments();
-//                for(Comment comment: reviewComments) {
-//                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-//                        peerReviewed = true;
-//                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REV_COMMENTS);
-//                        break;
-//                    }
-//                }
-//            }
+            if (!peerReviewed) {
+                //fallback check to see if pr has comments or reviewComments
+                List<Comment> comments = pr.getComments();
+                for (Comment comment : comments) {
+                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                        peerReviewed = true;
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REG_COMMENTS);
+                        break;
+                    }
+                }
+                List<Comment> reviewComments = pr.getReviewComments();
+                for (Comment comment : reviewComments) {
+                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                        peerReviewed = true;
+                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REV_COMMENTS);
+                        break;
+                    }
+                }
+            }
 
             if (peerReviewed) {
                 peerReviewResponse.addAuditStatus(AuditStatus.PULLREQ_REVIEWED_BY_PEER);
@@ -591,8 +556,6 @@ public class AuditServiceImpl implements AuditService {
                             peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                         } else {
 
-                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
-
                             //New commit has ONLY one parent
                             List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
                             if (!CollectionUtils.isEmpty(parentCommitShas)) {
@@ -633,7 +596,10 @@ public class AuditServiceImpl implements AuditService {
             }
         }
 
-        for(PeerReviewResponse peerReviewResponseList: allPeerReviews){
+        Collector githubCollector = collectorRepository.findByName("GitHub");
+        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
+                scmUrl, scmBranch, true);
+        for (PeerReviewResponse peerReviewResponseList : allPeerReviews) {
             String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
             String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
             if (collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
@@ -675,7 +641,7 @@ public class AuditServiceImpl implements AuditService {
             }
             //if you are a merge commit and getting merged as part of a pr
             if (baseSha != null && headSha != null) {
-                //return false;
+                return false;
             }
         }
         LOGGER.warn("Enter computeParentCommit " + commitSha + " " + commit.getType());
@@ -715,7 +681,6 @@ public class AuditServiceImpl implements AuditService {
                     }
                 } else {
                     //reached first commit
-                    peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                     traceBack = false;
                 }
             }
@@ -761,226 +726,214 @@ public class AuditServiceImpl implements AuditService {
         return jobReviewResponse;
     }
 
-	/**
-	 * Gets StaticAnalysisResponses for artifact
-	 * 
-	 * @param projectName
-	 *            Sonar Project Name
-	 * @param artifactVersion
-	 *            Artifact Version
-	 * @return List of StaticAnalysisResponse
-	 * @throws IOException
-	 *             thrown by called method
-	 * @throws HygieiaException
-	 */
-	public List<StaticAnalysisResponse> getCodeQualityAudit(String projectName,
-			String artifactVersion) throws HygieiaException {
-		List<CodeQuality> qualities = codeQualityRepository
-				.findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
-		if (CollectionUtils.isEmpty(qualities))
-			throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
-		StaticAnalysisResponse response = getStaticAnalysisResponse(qualities);
-		return Arrays.asList(response);
-	}
+    /**
+     * Gets StaticAnalysisResponses for artifact
+     *
+     * @param artifactGroup   Artifact Group
+     * @param artifactName    Artifact Name
+     * @param artifactVersion Artifact Version
+     * @return List of StaticAnalysisResponse
+     * @throws IOException      thrown by called method
+     * @throws HygieiaException
+     */
+    public List<StaticAnalysisResponse> getCodeQualityAudit(String artifactGroup, String artifactName,
+                                                            String artifactVersion) throws HygieiaException {
+        List<CodeQuality> qualities = codeQualityRepository
+                .findByNameAndVersionOrderByTimestampDesc(artifactGroup + ":" + artifactName, artifactVersion);
+        if (CollectionUtils.isEmpty(qualities))
+            throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
+        StaticAnalysisResponse response = getStaticAnalysisResponse(qualities);
+        return Arrays.asList(response);
+    }
 
-	/**
-	 * Reusable method for constructing the StaticAnalysisResponse object for a
-	 * 
-	 * @param codeQualities
-	 *            Code Quality List
-	 * @return StaticAnalysisResponse
-	 * @throws JsonMappingException
-	 * @throws JsonParseException
-	 * @throws IOException
-	 *             Thrown by Object mapper method
-	 */
-	private StaticAnalysisResponse getStaticAnalysisResponse(List<CodeQuality> codeQualities) throws HygieiaException {
-		if (codeQualities == null)
-			return new StaticAnalysisResponse();
+    /**
+     * Reusable method for constructing the StaticAnalysisResponse object for a
+     *
+     * @param codeQualities Code Quality List
+     * @return StaticAnalysisResponse
+     * @throws JsonMappingException
+     * @throws JsonParseException
+     * @throws IOException          Thrown by Object mapper method
+     */
+    private StaticAnalysisResponse getStaticAnalysisResponse(List<CodeQuality> codeQualities) throws HygieiaException {
+        if (codeQualities == null)
+            return new StaticAnalysisResponse();
 
-		ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
 
-		if (CollectionUtils.isEmpty(codeQualities))
-			throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
-		CodeQuality returnQuality = codeQualities.get(0);
+        if (CollectionUtils.isEmpty(codeQualities))
+            throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
+        CodeQuality returnQuality = codeQualities.get(0);
 
-		StaticAnalysisResponse staticAnalysisResponse = new StaticAnalysisResponse();
-		staticAnalysisResponse.setCodeQualityDetails(returnQuality);
-		for (CodeQualityMetric metric : returnQuality.getMetrics()) {
-			if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
-				TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-				};
-				Map<String, String> values;
-				try {
-					values = mapper.readValue((String) metric.getValue(), typeRef);
-					if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
-						String level = (String) values.get("level");
-						if (level.equalsIgnoreCase("ok")) {
-							staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
-						} else {
-							staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_FAIL);
-						}
-					}
-					break;
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+        StaticAnalysisResponse staticAnalysisResponse = new StaticAnalysisResponse();
+        staticAnalysisResponse.setCodeQualityDetails(returnQuality);
+        for (CodeQualityMetric metric : returnQuality.getMetrics()) {
+            if (metric.getName().equalsIgnoreCase("quality_gate_details")) {
+                TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
+                };
+                Map<String, String> values;
+                try {
+                    values = mapper.readValue((String) metric.getValue(), typeRef);
+                    if (MapUtils.isNotEmpty(values) && values.containsKey("level")) {
+                        String level = (String) values.get("level");
+                        if (level.equalsIgnoreCase("ok")) {
+                            staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_OK);
+                        } else {
+                            staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_FAIL);
+                        }
+                    }
+                    break;
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
-			}
-		}
-		Set<AuditStatus> auditStatuses = staticAnalysisResponse.getAuditStatuses();
-		if (!(auditStatuses.contains(AuditStatus.CODE_QUALITY_AUDIT_OK)
-				|| auditStatuses.contains(AuditStatus.CODE_QUALITY_AUDIT_FAIL))) {
-			staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_GATE_MISSING);
-		}
+            }
+        }
+        Set<AuditStatus> auditStatuses = staticAnalysisResponse.getAuditStatuses();
+        if (!(auditStatuses.contains(AuditStatus.CODE_QUALITY_AUDIT_OK)
+                || auditStatuses.contains(AuditStatus.CODE_QUALITY_AUDIT_FAIL))) {
+            staticAnalysisResponse.addAuditStatus(AuditStatus.CODE_QUALITY_AUDIT_GATE_MISSING);
+        }
 
-		return staticAnalysisResponse;
-	}
+        return staticAnalysisResponse;
+    }
 
-	/**
-	 * Retrieves test result execution details for a business application and
-	 * artifact
-	 * 
-	 * @param jobUrl
-	 *            Job Url of test execution
-	 * @param beginDt
-	 *            Beginning timestamp boundary
-	 * @param endDt
-	 *            End Timestamp boundry
-	 * @return TestResultsResponse 
-	 * @throws HygieiaException
-	 */
+    /**
+     * Retrieves test result execution details for a business application and
+     * artifact
+     *
+     * @param jobUrl  Job Url of test execution
+     * @param beginDt Beginning timestamp boundary
+     * @param endDt   End Timestamp boundry
+     * @return TestResultsResponse
+     * @throws HygieiaException
+     */
 
-	public TestResultsResponse getTestResultExecutionDetails(String jobUrl,long beginDt, long endDt) throws HygieiaException {
-				
-		List<TestResult> testResults = getTestResults(jobUrl,beginDt,endDt);
-		
-		if (CollectionUtils.isEmpty(testResults))
-			throw new HygieiaException("Unable to retreive  test result details for : " + jobUrl,
-					HygieiaException.BAD_DATA);
+    public TestResultsResponse getTestResultExecutionDetails(String jobUrl, long beginDt, long endDt) throws HygieiaException {
 
-		TestResultsResponse testResultsResponse = regressionTestResultAudit(testResults);
+        List<TestResult> testResults = getTestResults(jobUrl, beginDt, endDt);
 
-		return testResultsResponse;
+        if (CollectionUtils.isEmpty(testResults))
+            throw new HygieiaException("Unable to retreive  test result details for : " + jobUrl,
+                    HygieiaException.BAD_DATA);
 
-	}
-	
-	/**
-	 * Reusable method for constructing the StaticAnalysisResponse object for a
-	 * 
-	 * @param testResults
-	 *            Test Result List
-	 * @return TestResultsResponse
-	 *             Thrown by Object mapper method
-	 */
-	private TestResultsResponse regressionTestResultAudit(List<TestResult> testResults) {
-		TestResultsResponse testResultsResponse = new TestResultsResponse();
-		boolean regressionTestSuitePresent = false;
-		
-		for(TestResult testResult : testResults){
-			if ("Regression".equalsIgnoreCase(testResult.getType().name())) {
-				
-				regressionTestSuitePresent = true;
-				
-				if (testResult.getFailureCount() == 0) {
-					testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_OK);
-				} else
-					testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_FAIL);
+        TestResultsResponse testResultsResponse = regressionTestResultAudit(testResults);
 
-				testResultsResponse.setTestCapabilities(testResult.getTestCapabilities());
-			}
-			
-		}
-		
-		if (!regressionTestSuitePresent){
-			testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_MISSING);
-		}	
+        return testResultsResponse;
 
-		return testResultsResponse;
-	}
+    }
 
-	/**
-	 * Retrieves code quality profile changeset for a given time period and
-	 * determines if change author matches commit author within time period
-	 * 
-	 * @param repoUrl
-	 *            SCM repo url
-	 * @param repoBranch
-	 *  		  SCM repo branch
-	 * @param projectName
-	 *            Sonar Project name
-	 * @param artifactVersion
-	 *            Artifact Version
-	 *            
-	 * @return CodeQualityProfileValidationResponse
-	 * @throws HygieiaException
-	 */
+    /**
+     * Reusable method for constructing the StaticAnalysisResponse object for a
+     *
+     * @param testResults Test Result List
+     * @return TestResultsResponse
+     * Thrown by Object mapper method
+     */
+    private TestResultsResponse regressionTestResultAudit(List<TestResult> testResults) {
+        TestResultsResponse testResultsResponse = new TestResultsResponse();
+        boolean regressionTestSuitePresent = false;
 
-	public CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl,String repoBranch,
-			String projectName, String artifactVersion, long beginDate, long endDate)
-			throws HygieiaException {
-		
-		List<Commit> commits = getCommits(repoUrl, repoBranch, beginDate, endDate);
+        for (TestResult testResult : testResults) {
+            if ("Regression".equalsIgnoreCase(testResult.getType().name())) {
 
-		List<CodeQuality> codeQualities = codeQualityRepository
-				.findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
-		
-		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = this.qualityProfileAudit(commits,codeQualities,beginDate,endDate);
+                regressionTestSuitePresent = true;
 
-		
-		return codeQualityGateValidationResponse; 
-		
-	}
-	
-	private CodeQualityProfileValidationResponse qualityProfileAudit(List<Commit> commits,List<CodeQuality> codeQualities,long beginDate, long endDate){
-		
-		Set<String> authors = new HashSet<String>();
-		for (Commit commit : commits) {
-			authors.add(commit.getScmAuthor());
-		}
-		
-		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = new CodeQualityProfileValidationResponse();
-		CodeQuality codeQuality = codeQualities.get(0);
-		String url = codeQuality.getUrl();
-		List<CollItemCfgHist> qualityProfileChanges = collItemCfgHistRepository
-				.findByJobUrlAndTimestampBetweenOrderByTimestampDesc(url, beginDate - 1, endDate + 1);
+                if (testResult.getFailureCount() == 0) {
+                    testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_OK);
+                } else
+                    testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_FAIL);
 
-		// If no change has been made to quality profile between the time range,
-		// then return an audit status of no change
-		// Need to differentiate between document not being found and whether
-		// there was no change for the quality profile
-		if (CollectionUtils.isEmpty(qualityProfileChanges)) {
-			codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_NO_CHANGE);
-		} else {
+                testResultsResponse.setTestCapabilities(testResult.getTestCapabilities());
+            }
 
-			// Iterate over all the change performers and check if they exist
-			// within the authors set
-			Set<String> qualityProfileChangePerformers = new HashSet<String>();
-			for (CollItemCfgHist qualityProfileChange : qualityProfileChanges) {
-				String qualityProfileChangePerformer = qualityProfileChange.getUserID();
-				qualityProfileChangePerformers.add(qualityProfileChangePerformer);
+        }
 
-				// TODO Improve this check as it is inefficient
-				// If the change performer matches a commit author, then fail
-				// the audit
-				if (authors.contains(qualityProfileChangePerformer)) {
-					codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL);
-				}
-			}
-			// If there is no match between change performers and commit
-			// authors, then pass the audit
-			Set<AuditStatus> auditStatuses = codeQualityGateValidationResponse.getAuditStatuses();
-			if (!(auditStatuses.contains(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL))) {
-				codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_OK);
-			}
-			codeQualityGateValidationResponse.setQualityGateChangePerformers(qualityProfileChangePerformers);
-		}
-		codeQualityGateValidationResponse.setCommitAuthors(authors);
-		return codeQualityGateValidationResponse;	
-	}
+        if (!regressionTestSuitePresent) {
+            testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_MISSING);
+        }
 
-	@Override
+        return testResultsResponse;
+    }
+
+    /**
+     * Retrieves code quality profile changeset for a given time period and
+     * determines if change author matches commit author within time period
+     *
+     * @param repoUrl         SCM repo url
+     * @param repoBranch      SCM repo branch
+     * @param artifactGroup   Artifact Group
+     * @param artifactName    Artifact Name
+     * @param artifactVersion Artifact Version
+     * @return CodeQualityProfileValidationResponse
+     * @throws HygieiaException
+     */
+
+    public CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl, String repoBranch,
+                                                                                String artifactGroup, String artifactName, String artifactVersion, long beginDate, long endDate)
+            throws HygieiaException {
+
+        List<Commit> commits = getCommits(repoUrl, repoBranch, beginDate, endDate);
+
+        List<CodeQuality> codeQualities = codeQualityRepository
+                .findByNameAndVersionOrderByTimestampDesc(artifactGroup + ":" + artifactName, artifactVersion);
+
+        CodeQualityProfileValidationResponse codeQualityGateValidationResponse = this.qualityProfileAudit(commits, codeQualities, beginDate, endDate);
+
+
+        return codeQualityGateValidationResponse;
+
+    }
+
+    private CodeQualityProfileValidationResponse qualityProfileAudit(List<Commit> commits, List<CodeQuality> codeQualities, long beginDate, long endDate) {
+
+        Set<String> authors = new HashSet<String>();
+        for (Commit commit : commits) {
+            authors.add(commit.getScmAuthor());
+        }
+
+        CodeQualityProfileValidationResponse codeQualityGateValidationResponse = new CodeQualityProfileValidationResponse();
+        CodeQuality codeQuality = codeQualities.get(0);
+        String url = codeQuality.getUrl();
+        List<CollItemCfgHist> qualityProfileChanges = collItemCfgHistRepository
+                .findByJobUrlAndTimestampBetweenOrderByTimestampDesc(url, beginDate - 1, endDate + 1);
+
+        // If no change has been made to quality profile between the time range,
+        // then return an audit status of no change
+        // Need to differentiate between document not being found and whether
+        // there was no change for the quality profile
+        if (CollectionUtils.isEmpty(qualityProfileChanges)) {
+            codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_NO_CHANGE);
+        } else {
+
+            // Iterate over all the change performers and check if they exist
+            // within the authors set
+            Set<String> qualityProfileChangePerformers = new HashSet<String>();
+            for (CollItemCfgHist qualityProfileChange : qualityProfileChanges) {
+                String qualityProfileChangePerformer = qualityProfileChange.getUserID();
+                qualityProfileChangePerformers.add(qualityProfileChangePerformer);
+
+                // TODO Improve this check as it is inefficient
+                // If the change performer matches a commit author, then fail
+                // the audit
+                if (authors.contains(qualityProfileChangePerformer)) {
+                    codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL);
+                }
+            }
+            // If there is no match between change performers and commit
+            // authors, then pass the audit
+            Set<AuditStatus> auditStatuses = codeQualityGateValidationResponse.getAuditStatuses();
+            if (!(auditStatuses.contains(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_FAIL))) {
+                codeQualityGateValidationResponse.addAuditStatus(AuditStatus.QUALITY_PROFILE_VALIDATION_AUDIT_OK);
+            }
+            codeQualityGateValidationResponse.setQualityGateChangePerformers(qualityProfileChangePerformers);
+        }
+        codeQualityGateValidationResponse.setCommitAuthors(authors);
+        return codeQualityGateValidationResponse;
+    }
+
+    @Override
     public boolean isGitRepoConfigured(String url, String branch) {
         Collector githubCollector = collectorRepository.findByName("GitHub");
         CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
@@ -1000,83 +953,88 @@ public class AuditServiceImpl implements AuditService {
 
     public PerfReviewResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
         Cmdb cmdb = cmdbRepository.findByConfigurationItemIgnoreCase(businessComp); // get CMDB iD
-        Iterable<Dashboard> dashboard = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId()); //get dashboard based on CMDB ID
-        Iterator<Dashboard> dashboardIT = dashboard.iterator();  //Iterate through the dashboards to obtain the collectorIteamID
-        PerfReviewResponse perfReviewResponse = new PerfReviewResponse();
-        while(dashboardIT.hasNext()) {
-            dashboardIT.next();
-            Set<CollectorType> ci = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().keySet();
-            boolean Isperf = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getOptions().containsValue("jmeter");
-            boolean Istest = ci.iterator().next().name().equals(CollectorType.Test.name());
-            if (Istest && Isperf)  //validate if the Test collector exists with jmeter collector Item
-            {
-                ObjectId collectorItemID = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getId();
-                List<TestResult> result = customRepositoryQuery.findByCollectorItemIdAndTimestampGreaterThanEqualAndTimestampLessThanEqual(collectorItemID, from, to);
-                List<PerfTest> testlist = new ArrayList<PerfTest>();
-                //loop through test result object to obtain performance artifacts.
-                for (TestResult testResult : result) { //parse though the results to obtain performance KPI's
-                    Collection<TestCapability> testCapabilityCollection = testResult.getTestCapabilities();
-                    List<TestCapability> testCapabilityList = new ArrayList<>(testCapabilityCollection);
+            if(cmdb !=null) {
+                Iterable<Dashboard> dashboard = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId()); //get dashboard based on CMDB ID
+                Iterator<Dashboard> dashboardIT = dashboard.iterator();  //Iterate through the dashboards to obtain the collectorIteamID
+                PerfReviewResponse perfReviewResponse = new PerfReviewResponse();
+                while (dashboardIT.hasNext()) {
+                    dashboardIT.next();
+                    Set<CollectorType> ci = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().keySet();
+                    boolean Isperf = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getOptions().containsValue("jmeter");
+                    boolean Istest = ci.iterator().next().name().equals(CollectorType.Test.name());
+                    if (Istest && Isperf)  //validate if the Test collector exists with jmeter collector Item
+                    {
+                        ObjectId collectorItemID = dashboard.iterator().next().getApplication().getComponents().iterator().next().getCollectorItems().values().iterator().next().iterator().next().getId();
+                        List<TestResult> result = customRepositoryQuery.findByCollectorItemIdAndTimestampGreaterThanEqualAndTimestampLessThanEqual(collectorItemID, from, to);
+                        List<PerfTest> testlist = new ArrayList<PerfTest>();
+                        //loop through test result object to obtain performance artifacts.
+                        for (TestResult testResult : result) { //parse though the results to obtain performance KPI's
+                            Collection<TestCapability> testCapabilityCollection = testResult.getTestCapabilities();
+                            List<TestCapability> testCapabilityList = new ArrayList<>(testCapabilityCollection);
 
-                    for (TestCapability testCapability : testCapabilityList) {
-                        PerfTest test = new PerfTest();
-                        List<PerfIndicators> kpilist = new ArrayList<PerfIndicators>();
-                        Collection<TestSuite> testSuitesCollection = testCapability.getTestSuites();
-                        List<TestSuite> testSuiteList = new ArrayList<>(testSuitesCollection);
+                            for (TestCapability testCapability : testCapabilityList) {
+                                PerfTest test = new PerfTest();
+                                List<PerfIndicators> kpilist = new ArrayList<PerfIndicators>();
+                                Collection<TestSuite> testSuitesCollection = testCapability.getTestSuites();
+                                List<TestSuite> testSuiteList = new ArrayList<>(testSuitesCollection);
 
-                        for (TestSuite testSuite : testSuiteList) {
-                            Collection<TestCase> testCaseCollection = testSuite.getTestCases();
-                            List<TestCase> testCaseList = new ArrayList<>(testCaseCollection);
+                                for (TestSuite testSuite : testSuiteList) {
+                                    Collection<TestCase> testCaseCollection = testSuite.getTestCases();
+                                    List<TestCase> testCaseList = new ArrayList<>(testCaseCollection);
 
-                            for (TestCase testCase : testCaseList) {
-                                PerfIndicators kpi = new PerfIndicators();
-                                kpi.setStatus(testCase.getStatus().toString());
-                                kpi.setType(testCase.getDescription().toString());
-                                Collection<TestCaseStep> testCaseStepCollection = testCase.getTestSteps();
-                                List<TestCaseStep> testCaseStepList = new ArrayList<>(testCaseStepCollection);
-                                int j = 0;
-                                for (TestCaseStep testCaseStep : testCaseStepList) {
-                                    String value = testCaseStep.getDescription();
-                                    if (j == 0) {
-                                        double targetdouble = Double.parseDouble(value);
-                                        kpi.setTarget(targetdouble);
-                                    } else {
-                                        double achievedouble = Double.parseDouble(value);
-                                        kpi.setAchieved(achievedouble);
+                                    for (TestCase testCase : testCaseList) {
+                                        PerfIndicators kpi = new PerfIndicators();
+                                        kpi.setStatus(testCase.getStatus().toString());
+                                        kpi.setType(testCase.getDescription().toString());
+                                        Collection<TestCaseStep> testCaseStepCollection = testCase.getTestSteps();
+                                        List<TestCaseStep> testCaseStepList = new ArrayList<>(testCaseStepCollection);
+                                        int j = 0;
+                                        for (TestCaseStep testCaseStep : testCaseStepList) {
+                                            String value = testCaseStep.getDescription();
+                                            if (j == 0) {
+                                                double targetdouble = Double.parseDouble(value);
+                                                kpi.setTarget(targetdouble);
+                                            } else {
+                                                double achievedouble = Double.parseDouble(value);
+                                                kpi.setAchieved(achievedouble);
+                                            }
+                                            j++;
+                                        }
+                                        kpilist.add(kpi);
                                     }
-                                    j++;
+                                    //create performance test review object
+                                    test.setRunId(testResult.getExecutionId());
+                                    test.setStartTime(testResult.getStartTime());
+                                    test.setEndTime(testResult.getEndTime());
+                                    test.setResultStatus(testResult.getDescription());
+                                    test.setPerfIndicators(kpilist);
+                                    CollectorItem collectoritem = collectorItemRepository.findOne(collectorItemID);
+                                    test.setTestName((String) collectoritem.getOptions().get("jobName"));
+                                    test.setTimeStamp(testResult.getTimestamp());
+                                    testlist.add(test);
                                 }
-                                kpilist.add(kpi);
                             }
-                            //create performance test review object
-                            test.setRunId(testResult.getExecutionId());
-                            test.setStartTime(testResult.getStartTime());
-                            test.setEndTime(testResult.getEndTime());
-                            test.setResultStatus(testResult.getDescription());
-                            test.setPerfIndicators(kpilist);
-                            CollectorItem collectoritem = collectorItemRepository.findOne(collectorItemID);
-                            test.setTestName((String) collectoritem.getOptions().get("jobName"));
-                            test.setTimeStamp(testResult.getTimestamp());
-                            testlist.add(test);
+                        }
+                        perfReviewResponse.setResult(testlist);
+                        int counter = 0;
+                        for (PerfTest list : testlist) {
+                            if (list.getResultStatus().matches("Success")) {
+                                counter++;
+                            }
+                        }
+                        if (testlist.size() == 0) {
+                            perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_MISSING);
+                        } else if (counter >= 1) {
+                            perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_OK);
+                        } else {
+                            perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_FAIL);
                         }
                     }
                 }
-                perfReviewResponse.setResult(testlist);
-                int counter = 0;
-                for (PerfTest list : testlist) {
-                    if (list.getResultStatus().matches("Success")) {
-                        counter++;
-                    }
-                }
-                if(testlist.size()==0){
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_MISSING);
-                }else if (counter >= 1) {
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_OK);
-                } else {
-                    perfReviewResponse.setAuditStatuses(AuditStatus.PERF_RESULT_AUDIT_FAIL);
-                }
+                return perfReviewResponse;
             }
+            return null;
         }
-        return perfReviewResponse;
-    }
+
+
 }
