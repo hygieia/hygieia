@@ -148,7 +148,7 @@ public class AuditServiceImpl implements AuditService {
         return component.getCollectorItems().get(collectorType);
     }
 
-    @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength", "PMD.AvoidBranchingStatementAsLastInLoop", "PMD.EmptyIfStmt"})
+    @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
     public DashboardReviewResponse getDashboardReviewResponse(String title, String type, String busServ, String busApp,
                                                               long beginDate, long endDate) throws HygieiaException {
         Dashboard dashboard = null;
@@ -157,11 +157,9 @@ public class AuditServiceImpl implements AuditService {
 
         } else if (!StringUtils.isEmpty(busServ) && !StringUtils.isEmpty(busApp)) {
             Cmdb busServItem = cmdbRepository.findByConfigurationItemAndItemType(busServ, "app"); //asv
-            if (busServItem == null)
-                throw new HygieiaException("Invalid Business Service Name.", HygieiaException.BAD_DATA);
+            if (busServItem == null) throw new HygieiaException("Invalid Business Service Name.", HygieiaException.BAD_DATA);
             Cmdb busAppItem = cmdbRepository.findByConfigurationItemAndItemType(busApp, "component"); //bap
-            if (busAppItem == null)
-                throw new HygieiaException("Invalid Business Application Name.", HygieiaException.BAD_DATA);
+            if (busAppItem == null) throw new HygieiaException("Invalid Business Application Name.", HygieiaException.BAD_DATA);
 
             dashboard = dashboardRepository.findByConfigurationItemBusServObjectIdAndConfigurationItemBusAppObjectId(busServItem.getId(), busAppItem.getId());
         }
@@ -187,9 +185,9 @@ public class AuditServiceImpl implements AuditService {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_CONFIGURED);
             List<List<PeerReviewResponse>> allRepos = new ArrayList<>();
 
-            for (CollectorItem repoItem : repoItems) {
-                scmWidgetbranch = (String) repoItem.getOptions().get("branch");
-                scmWidgetrepoUrl = (String) repoItem.getOptions().get("url");
+            for(CollectorItem repoItem: repoItems) {
+                scmWidgetbranch = (String)repoItem.getOptions().get("branch");
+                scmWidgetrepoUrl = (String)repoItem.getOptions().get("url");
                 GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(scmWidgetrepoUrl);
                 scmWidgetrepoUrl = gitHubParsed.getUrl();
                 if (scmWidgetbranch != null && scmWidgetrepoUrl != null) {
@@ -213,8 +211,8 @@ public class AuditServiceImpl implements AuditService {
 
             CollectorItem buildItem = buildItems.get(0);
 
-            String jobUrl = (String) buildItem.getOptions().get("jobUrl");
-            String jobName = (String) buildItem.getOptions().get("jobName");
+            String jobUrl = (String)buildItem.getOptions().get("jobUrl");
+            String jobName = (String)buildItem.getOptions().get("jobName");
 
             if (jobUrl != null && jobName != null) {
                 JobReviewResponse jobReviewResponse = this.getBuildJobReviewResponse(jobUrl, jobName, beginDate, endDate);
@@ -235,16 +233,17 @@ public class AuditServiceImpl implements AuditService {
             StaticAnalysisResponse staticAnalysisResponse = this.getStaticAnalysisResponse(codeQualityDetails);
             dashboardReviewResponse.setStaticAnalysisResponse(staticAnalysisResponse);
 
-            if (repoItems != null && !repoItems.isEmpty()) {
-                for (CollectorItem repoItem : repoItems) {
-                    String aRepoItembranch = (String) repoItem.getOptions().get("branch");
-                    String aRepoItemUrl = (String) repoItem.getOptions().get("url");
-                    List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
-
-                    CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits, codeQualityDetails, beginDate, endDate);
-                    dashboardReviewResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
-                }
-            }
+            //Commenting this out until Sonar Collector is updated to pull config changes
+//			if(repoItems != null && !repoItems.isEmpty()){
+//				for (CollectorItem repoItem : repoItems) {
+//					String aRepoItembranch = (String) repoItem.getOptions().get("branch");
+//					String aRepoItemUrl = (String) repoItem.getOptions().get("url");
+//					List<Commit> repoCommits = getCommits(aRepoItemUrl, aRepoItembranch, beginDate, endDate);
+//
+//					CodeQualityProfileValidationResponse codeQualityProfileValidationResponse = this.qualityProfileAudit(repoCommits,codeQualityDetails,beginDate, endDate);
+//					dashboardReviewResponse.setCodeQualityProfileValidationResponse(codeQualityProfileValidationResponse);
+//				}
+//			}
 
         } else {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_CODEQUALITY_NOT_CONFIGURED);
@@ -265,14 +264,14 @@ public class AuditServiceImpl implements AuditService {
                     if (repoItems != null && !repoItems.isEmpty()) {
 
                         boolean matchFound = false;
-                        for (CollectorItem repoItem : repoItems) {
+                        for(CollectorItem repoItem: repoItems) {
 
-                            String aRepoItembranch = (String) repoItem.getOptions().get("branch");
-                            String aRepoItemUrl = (String) repoItem.getOptions().get("url");
+                            String aRepoItembranch = (String)repoItem.getOptions().get("branch");
+                            String aRepoItemUrl = (String)repoItem.getOptions().get("url");
                             GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(aRepoItemUrl);
                             aRepoItemUrl = gitHubParsed.getUrl();
 
-                            if (aRepoItembranch != null && aRepoItemUrl != null
+                            if (aRepoItembranch != null &&  aRepoItemUrl != null
                                     && buildWidgetBranch != null && buildWidgetUrl != null) {
                                 if (aRepoItembranch.equalsIgnoreCase(buildWidgetBranch) && aRepoItemUrl.equalsIgnoreCase(buildWidgetUrl)) {
                                     dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_BUILD_VALID);
@@ -297,17 +296,17 @@ public class AuditServiceImpl implements AuditService {
 
         if (pullRequests != null && jobConfigHists != null) {
             HashSet<String> prAuthorsSet = new HashSet();
-            for (GitRequest pr : pullRequests) {
+            for(GitRequest pr : pullRequests) {
                 prAuthorsSet.add(pr.getUserId());
             }
 
             HashSet<String> configAuthorsSet = new HashSet();
-            for (CollItemCfgHist cfgHist : jobConfigHists) {
+            for(CollItemCfgHist cfgHist : jobConfigHists) {
                 configAuthorsSet.add(cfgHist.getUserID());
             }
 
             Iterator<String> prAuthorsSetIter = prAuthorsSet.iterator();
-            while (prAuthorsSetIter.hasNext()) {
+            while(prAuthorsSetIter.hasNext()) {
                 String prAuthor = prAuthorsSetIter.next();
                 if (configAuthorsSet.contains(prAuthor)) {
                     dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_PR_AUTHOR_EQ_BUILD_AUTHOR);
@@ -322,8 +321,8 @@ public class AuditServiceImpl implements AuditService {
 
         if (testItems != null && !testItems.isEmpty()) {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_TEST_CONFIGURED);
-            for (CollectorItem testItem : testItems) {
-                List<TestResult> testResults = getTestResults((String) testItem.getOptions().get("jobUrl"), beginDate, endDate);
+            for (CollectorItem testItem : testItems){
+                List<TestResult> testResults = getTestResults((String)testItem.getOptions().get("jobUrl"),beginDate,endDate);
                 TestResultsResponse testResultsResponse = this.regressionTestResultAudit(testResults);
                 dashboardReviewResponse.setTestResultsResponse(testResultsResponse);
             }
@@ -388,6 +387,15 @@ public class AuditServiceImpl implements AuditService {
                 }
             }
             if (lgtmAttempted) {
+
+                //if lgtm self-review, then no peer-review was done unless someone else looked at it
+                if ( !CollectionUtils.isEmpty(peerReviewResponse.getAuditStatuses()) &&
+                        peerReviewResponse.getAuditStatuses().contains(AuditStatus.COMMITAUTHOR_EQ_MERGECOMMITER) &&
+                        !isPRLookedAtByPeer(pr)) {
+                    peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_LGTM_SELF_APPROVAL);
+                    return false;
+                }
+
                 return lgtmStateResult;
             }
         }
@@ -403,12 +411,54 @@ public class AuditServiceImpl implements AuditService {
         return false;
     }
 
+    private boolean isPRLookedAtByPeer(GitRequest pr) {
+        List<Review> reviews = pr.getReviews();
+        if (!CollectionUtils.isEmpty(reviews)) {
+            return true;
+        }
+        String prAuthor = pr.getUserId();
+        List<Comment> comments = pr.getComments();
+        for(Comment comment: comments) {
+            if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                return true;
+            }
+        }
+        List<Comment> reviewComments = pr.getReviewComments();
+        for(Comment comment: reviewComments) {
+            if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @SuppressWarnings({"PMD.NPathComplexity","PMD.ExcessiveMethodLength","PMD.AvoidBranchingStatementAsLastInLoop","PMD.EmptyIfStmt"})
     public List<PeerReviewResponse> getPeerReviewResponses(List<GitRequest> pullRequests, List<Commit> commits,
                                                            String scmUrl, String scmBranch,
                                                            long beginDt, long endDt) {
-
         List<PeerReviewResponse> allPeerReviews = new ArrayList<PeerReviewResponse>();
+
+        Collector githubCollector = collectorRepository.findByName("GitHub");
+        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
+                scmUrl, scmBranch, true);
+
+        if (!CollectionUtils.isEmpty(collectorItem.getErrors())) {
+            PeerReviewResponse noPRsPeerReviewResponse = new PeerReviewResponse();
+            noPRsPeerReviewResponse.addAuditStatus(AuditStatus.COLLECTOR_ITEM_ERROR);
+
+            String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
+            String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
+            if(collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
+                    && collectorItemScmBranch != null && collectorItemScmBranch.equals(scmBranch)){
+                noPRsPeerReviewResponse.setLastUpdated(collectorItem.getLastUpdated());
+            }
+            noPRsPeerReviewResponse.setScmBranch(scmBranch);
+            noPRsPeerReviewResponse.setScmUrl(scmUrl);
+            noPRsPeerReviewResponse.setErrorMessage(((CollectionError)collectorItem.getErrors().get(0)).getErrorMessage());
+
+            allPeerReviews.add(noPRsPeerReviewResponse);
+            return allPeerReviews;
+        }
 
         HashMap<String, Commit> mapCommitsRelatedToAllPrs = new HashMap();
 
@@ -418,7 +468,7 @@ public class AuditServiceImpl implements AuditService {
             allPeerReviews.add(noPRsPeerReviewResponse);
         }
 
-        for (GitRequest pr : pullRequests) {
+        for(GitRequest pr : pullRequests) {
             HashMap<String, Commit> mapCommitsRelatedToPr = new HashMap();
             String baseSha = pr.getBaseSha();
             String headSha = pr.getHeadSha();
@@ -459,25 +509,25 @@ public class AuditServiceImpl implements AuditService {
             //check to see if pr was reviewed
             boolean peerReviewed = computePeerReviewStatus(pr, peerReviewResponse);
 
-            if (!peerReviewed) {
-                //fallback check to see if pr has comments or reviewComments
-                List<Comment> comments = pr.getComments();
-                for (Comment comment : comments) {
-                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                        peerReviewed = true;
-                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REG_COMMENTS);
-                        break;
-                    }
-                }
-                List<Comment> reviewComments = pr.getReviewComments();
-                for (Comment comment : reviewComments) {
-                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
-                        peerReviewed = true;
-                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REV_COMMENTS);
-                        break;
-                    }
-                }
-            }
+//            if (!peerReviewed) {
+//                //fallback check to see if pr has comments or reviewComments
+//                List<Comment> comments = pr.getComments();
+//                for(Comment comment: comments) {
+//                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+//                        peerReviewed = true;
+//                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REG_COMMENTS);
+//                        break;
+//                    }
+//                }
+//                List<Comment> reviewComments = pr.getReviewComments();
+//                for(Comment comment: reviewComments) {
+//                    if (!comment.getUser().equalsIgnoreCase(prAuthor)) {
+//                        peerReviewed = true;
+//                        peerReviewResponse.addAuditStatus(AuditStatus.PEER_REVIEW_REV_COMMENTS);
+//                        break;
+//                    }
+//                }
+//            }
 
             if (peerReviewed) {
                 peerReviewResponse.addAuditStatus(AuditStatus.PULLREQ_REVIEWED_BY_PEER);
@@ -503,10 +553,8 @@ public class AuditServiceImpl implements AuditService {
             }
 
             //direct commit to master
-
             //start at the headSha and compute upto and excluding baseSha
             for(Commit commit: commitsRelatedToPr) {
-
                 if (commit.getType() == CommitType.New) {
                     if (commit.getScmParentRevisionNumbers() != null) {
                         if (commit.getScmParentRevisionNumbers().isEmpty()) {
@@ -545,7 +593,7 @@ public class AuditServiceImpl implements AuditService {
         PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
         List<Commit> commitsNotDirectlyTiedToPr = new ArrayList<>();
         //check any commits not directly tied to pr
-        for (Commit commit : commits) {
+        for(Commit commit: commits) {
             String commitSha = commit.getScmRevisionNumber();
             if (!mapCommitsRelatedToAllPrs.containsKey(commitSha)) {
                 if (commit.getType() == CommitType.New) {
@@ -555,6 +603,8 @@ public class AuditServiceImpl implements AuditService {
                         if (commit.getScmParentRevisionNumbers().isEmpty()) {
                             peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                         } else {
+
+                            peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE);
 
                             //New commit has ONLY one parent
                             List<String> parentCommitShas = commit.getScmParentRevisionNumbers();
@@ -596,14 +646,11 @@ public class AuditServiceImpl implements AuditService {
             }
         }
 
-        Collector githubCollector = collectorRepository.findByName("GitHub");
-        CollectorItem collectorItem = collectorItemRepository.findRepoByUrlAndBranch(githubCollector.getId(),
-                scmUrl, scmBranch, true);
-        for (PeerReviewResponse peerReviewResponseList : allPeerReviews) {
+        for(PeerReviewResponse peerReviewResponseList: allPeerReviews){
             String collectorItemScmUrl = (String) collectorItem.getOptions().get("url");
             String collectorItemScmBranch = (String) collectorItem.getOptions().get("branch");
-            if (collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
-                    && collectorItemScmBranch != null && collectorItemScmBranch.equals(scmBranch)) {
+            if(collectorItemScmUrl != null && collectorItemScmUrl.equals(scmUrl)
+                    && collectorItemScmBranch != null && collectorItemScmBranch.equals(scmBranch)){
                 peerReviewResponseList.setLastUpdated(collectorItem.getLastUpdated());
             }
             peerReviewResponseList.setScmBranch(scmBranch);
@@ -641,7 +688,7 @@ public class AuditServiceImpl implements AuditService {
             }
             //if you are a merge commit and getting merged as part of a pr
             if (baseSha != null && headSha != null) {
-                return false;
+                //return false;
             }
         }
         LOGGER.warn("Enter computeParentCommit " + commitSha + " " + commit.getType());
@@ -681,6 +728,7 @@ public class AuditServiceImpl implements AuditService {
                     }
                 } else {
                     //reached first commit
+                    peerReviewResponse.addAuditStatus(AuditStatus.DIRECT_COMMITS_TO_BASE_FIRST_COMMIT);
                     traceBack = false;
                 }
             }
@@ -698,7 +746,7 @@ public class AuditServiceImpl implements AuditService {
         Collector hudsonCollector = collectorRepository.findByName("Hudson");
         JobCollectorItem collectorItem = jobRepository.findJobByJobUrl(hudsonCollector.getId(), jobUrl, jobName);
         //since beginDate and endDate are the same column and between is excluding the edge values, we need to subtract/add a millisec
-        return collItemCfgHistRepository.findByCollectorItemIdAndJobAndJobUrlAndTimestampBetweenOrderByTimestampDesc(collectorItem.getId(), jobName, jobUrl, beginDt - 1, endDt + 1);
+        return collItemCfgHistRepository.findByCollectorItemIdAndJobAndJobUrlAndTimestampBetweenOrderByTimestampDesc(collectorItem.getId(), jobName, jobUrl, beginDt-1, endDt+1);
     }
 
     public JobReviewResponse getBuildJobReviewResponse(String jobUrl, String jobName, long beginDt, long endDt) {
@@ -729,17 +777,19 @@ public class AuditServiceImpl implements AuditService {
     /**
      * Gets StaticAnalysisResponses for artifact
      *
-     * @param artifactGroup   Artifact Group
-     * @param artifactName    Artifact Name
-     * @param artifactVersion Artifact Version
+     * @param projectName
+     *            Sonar Project Name
+     * @param artifactVersion
+     *            Artifact Version
      * @return List of StaticAnalysisResponse
-     * @throws IOException      thrown by called method
+     * @throws IOException
+     *             thrown by called method
      * @throws HygieiaException
      */
-    public List<StaticAnalysisResponse> getCodeQualityAudit(String artifactGroup, String artifactName,
+    public List<StaticAnalysisResponse> getCodeQualityAudit(String projectName,
                                                             String artifactVersion) throws HygieiaException {
         List<CodeQuality> qualities = codeQualityRepository
-                .findByNameAndVersionOrderByTimestampDesc(artifactGroup + ":" + artifactName, artifactVersion);
+                .findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
         if (CollectionUtils.isEmpty(qualities))
             throw new HygieiaException("Empty CodeQuality collection", HygieiaException.BAD_DATA);
         StaticAnalysisResponse response = getStaticAnalysisResponse(qualities);
@@ -749,11 +799,13 @@ public class AuditServiceImpl implements AuditService {
     /**
      * Reusable method for constructing the StaticAnalysisResponse object for a
      *
-     * @param codeQualities Code Quality List
+     * @param codeQualities
+     *            Code Quality List
      * @return StaticAnalysisResponse
      * @throws JsonMappingException
      * @throws JsonParseException
-     * @throws IOException          Thrown by Object mapper method
+     * @throws IOException
+     *             Thrown by Object mapper method
      */
     private StaticAnalysisResponse getStaticAnalysisResponse(List<CodeQuality> codeQualities) throws HygieiaException {
         if (codeQualities == null)
@@ -803,16 +855,19 @@ public class AuditServiceImpl implements AuditService {
      * Retrieves test result execution details for a business application and
      * artifact
      *
-     * @param jobUrl  Job Url of test execution
-     * @param beginDt Beginning timestamp boundary
-     * @param endDt   End Timestamp boundry
+     * @param jobUrl
+     *            Job Url of test execution
+     * @param beginDt
+     *            Beginning timestamp boundary
+     * @param endDt
+     *            End Timestamp boundry
      * @return TestResultsResponse
      * @throws HygieiaException
      */
 
-    public TestResultsResponse getTestResultExecutionDetails(String jobUrl, long beginDt, long endDt) throws HygieiaException {
+    public TestResultsResponse getTestResultExecutionDetails(String jobUrl,long beginDt, long endDt) throws HygieiaException {
 
-        List<TestResult> testResults = getTestResults(jobUrl, beginDt, endDt);
+        List<TestResult> testResults = getTestResults(jobUrl,beginDt,endDt);
 
         if (CollectionUtils.isEmpty(testResults))
             throw new HygieiaException("Unable to retreive  test result details for : " + jobUrl,
@@ -827,15 +882,16 @@ public class AuditServiceImpl implements AuditService {
     /**
      * Reusable method for constructing the StaticAnalysisResponse object for a
      *
-     * @param testResults Test Result List
+     * @param testResults
+     *            Test Result List
      * @return TestResultsResponse
-     * Thrown by Object mapper method
+     *             Thrown by Object mapper method
      */
     private TestResultsResponse regressionTestResultAudit(List<TestResult> testResults) {
         TestResultsResponse testResultsResponse = new TestResultsResponse();
         boolean regressionTestSuitePresent = false;
 
-        for (TestResult testResult : testResults) {
+        for(TestResult testResult : testResults){
             if ("Regression".equalsIgnoreCase(testResult.getType().name())) {
 
                 regressionTestSuitePresent = true;
@@ -850,7 +906,7 @@ public class AuditServiceImpl implements AuditService {
 
         }
 
-        if (!regressionTestSuitePresent) {
+        if (!regressionTestSuitePresent){
             testResultsResponse.addAuditStatus(AuditStatus.TEST_RESULT_AUDIT_MISSING);
         }
 
@@ -861,32 +917,36 @@ public class AuditServiceImpl implements AuditService {
      * Retrieves code quality profile changeset for a given time period and
      * determines if change author matches commit author within time period
      *
-     * @param repoUrl         SCM repo url
-     * @param repoBranch      SCM repo branch
-     * @param artifactGroup   Artifact Group
-     * @param artifactName    Artifact Name
-     * @param artifactVersion Artifact Version
+     * @param repoUrl
+     *            SCM repo url
+     * @param repoBranch
+     *  		  SCM repo branch
+     * @param projectName
+     *            Sonar Project name
+     * @param artifactVersion
+     *            Artifact Version
+     *
      * @return CodeQualityProfileValidationResponse
      * @throws HygieiaException
      */
 
-    public CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl, String repoBranch,
-                                                                                String artifactGroup, String artifactName, String artifactVersion, long beginDate, long endDate)
+    public CodeQualityProfileValidationResponse getQualityGateValidationDetails(String repoUrl,String repoBranch,
+                                                                                String projectName, String artifactVersion, long beginDate, long endDate)
             throws HygieiaException {
 
         List<Commit> commits = getCommits(repoUrl, repoBranch, beginDate, endDate);
 
         List<CodeQuality> codeQualities = codeQualityRepository
-                .findByNameAndVersionOrderByTimestampDesc(artifactGroup + ":" + artifactName, artifactVersion);
+                .findByNameAndVersionOrderByTimestampDesc(projectName, artifactVersion);
 
-        CodeQualityProfileValidationResponse codeQualityGateValidationResponse = this.qualityProfileAudit(commits, codeQualities, beginDate, endDate);
+        CodeQualityProfileValidationResponse codeQualityGateValidationResponse = this.qualityProfileAudit(commits,codeQualities,beginDate,endDate);
 
 
         return codeQualityGateValidationResponse;
 
     }
 
-    private CodeQualityProfileValidationResponse qualityProfileAudit(List<Commit> commits, List<CodeQuality> codeQualities, long beginDate, long endDate) {
+    private CodeQualityProfileValidationResponse qualityProfileAudit(List<Commit> commits,List<CodeQuality> codeQualities,long beginDate, long endDate){
 
         Set<String> authors = new HashSet<String>();
         for (Commit commit : commits) {
@@ -944,9 +1004,9 @@ public class AuditServiceImpl implements AuditService {
         return false;
     }
 
-    private List<TestResult> getTestResults(String jobUrl, long beginDt, long endDt) {
+    private List<TestResult> getTestResults(String jobUrl,long beginDt, long endDt){
         List<TestResult> testResults = customRepositoryQuery
-                .findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(jobUrl, beginDt, endDt);
+                .findByUrlAndTimestampGreaterThanEqualAndTimestampLessThanEqual(jobUrl,beginDt,endDt);
 
         return testResults;
     }
@@ -1035,6 +1095,6 @@ public class AuditServiceImpl implements AuditService {
             }
             return null;
         }
-
-
 }
+
+

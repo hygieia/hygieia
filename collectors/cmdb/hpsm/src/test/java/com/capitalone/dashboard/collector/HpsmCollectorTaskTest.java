@@ -31,6 +31,8 @@ public class HpsmCollectorTaskTest {
     @Mock private HpsmCollector hpsmCollector;
     @Mock private HpsmClient hpsmClient;
     @Mock private HpsmSettings hpsmSettings;
+    @Mock private IncidentRepository incidentRepository;
+    @Mock private ChangeOrderRepository changeOrderRepository;
 
     @Mock private Cmdb cmdb1;
     @Mock private Cmdb cmdb2;
@@ -45,6 +47,32 @@ public class HpsmCollectorTaskTest {
         assertTrue(collector.isOnline());
         assertTrue(collector.isEnabled());
     }
+
+    private void testCollectorAction(String collectorAction){
+        System.setProperty("collector.action", collectorAction);
+        Collector collector = collector(collectorAction);
+
+        assertEquals(collectorAction, collector.getName());
+        assertEquals(CollectorType.CMDB, collector.getCollectorType());
+        assertTrue(collector.isOnline());
+        assertTrue(collector.isEnabled());
+    }
+
+    @Test
+    public void shouldGetIncidentCollector() {
+        testCollectorAction("HpsmIncident");
+    }
+
+    @Test
+    public void shouldGetChangeCollector() {
+        testCollectorAction("HpsmChange");
+    }
+
+    @Test
+    public void shouldGetHpsmCollector() {
+        testCollectorAction("Hpsm");
+    }
+
     @Test
     public void collect_testCollect() {
         when(hpsmClient.getApps()).thenReturn(getMockList());
@@ -54,17 +82,15 @@ public class HpsmCollectorTaskTest {
         HpsmCollector collector =collector();
         collector.setId(new ObjectId("111ca42a258ad365fbb64ecc"));
 
+        task.setCollectorAction("Hpsm");
         task.collect(collector);
 
         verify(cmdbRepository).findByConfigurationItem("ASVTEST");
         assertNull(cmdbRepository.findByConfigurationItem("test213"));
-
-
-
     }
+
     public ArrayList<Cmdb> getMockList(){
         ArrayList<Cmdb> mockList = new ArrayList<>();
-
 
         Cmdb cmdb = new Cmdb();
 
@@ -103,7 +129,6 @@ public class HpsmCollectorTaskTest {
         cmdb.setCollectorItemId(new ObjectId("111ca42a258ad365fbb64ecc"));
         mockList.add(cmdb);
 
-
         cmdb = new Cmdb();
         cmdb.setId(new ObjectId("1c1ca42a258ad365fbb64ecf"));
         cmdb.setConfigurationItem("ASVTEST12346");
@@ -118,7 +143,135 @@ public class HpsmCollectorTaskTest {
         return mockList;
     }
 
+    @Test
+    public void collect_testCollectChangeOrders() {
+        String collectorAction = "HpsmChange";
+        System.setProperty("collector.action", collectorAction);
+
+        when(hpsmClient.getChangeOrders()).thenReturn(getMockChangeOrderList());
+        when(changeOrderRepository.findAll()).thenReturn(getMockChangeOrderList());
+
+        HpsmCollector collector =collector(collectorAction);
+        collector.setId(new ObjectId(createGuid()));
+
+        task.setCollectorAction(collectorAction);
+        task.collect(collector);
+
+        verify(changeOrderRepository).findByChangeID("C012345");
+        assertNull(changeOrderRepository.findByChangeID("C012399"));
+
+    }
+
+    public ArrayList<ChangeOrder> getMockChangeOrderList(){
+        ObjectId collectorItemId = new ObjectId(createGuid());
+        ArrayList<ChangeOrder> mockList = new ArrayList<>();
+        ChangeOrder changeOrder = new ChangeOrder();
+
+        changeOrder.setId(new ObjectId(createGuid()));
+        changeOrder.setCollectorItemId(collectorItemId);
+        changeOrder.setChangeID("C012345");
+        changeOrder.setAssignmentGroup("HYGIEIA");
+        mockList.add(changeOrder);
+
+        changeOrder = new ChangeOrder();
+        changeOrder.setId(new ObjectId(createGuid()));
+        changeOrder.setCollectorItemId(collectorItemId);
+        changeOrder.setChangeID("C012346");
+        changeOrder.setAssignmentGroup("GITHUB");
+        mockList.add(changeOrder);
+
+        changeOrder = new ChangeOrder();
+        changeOrder.setId(new ObjectId(createGuid()));
+        changeOrder.setCollectorItemId(collectorItemId);
+        changeOrder.setChangeID("C012347");
+        changeOrder.setAssignmentGroup("JENKINS");
+        mockList.add(changeOrder);
+
+        changeOrder = new ChangeOrder();
+        changeOrder.setId(new ObjectId(createGuid()));
+        changeOrder.setCollectorItemId(collectorItemId);
+        changeOrder.setChangeID("C012348");
+        changeOrder.setAssignmentGroup("ARTIFACTORY");
+        mockList.add(changeOrder);
+
+        return mockList;
+    }
+
+    @Test
+    public void collect_testCollectIncidents() {
+        String collectorAction = "HpsmIncident";
+        System.setProperty("collector.action", collectorAction);
+
+        when(hpsmClient.getIncidents()).thenReturn(getMockIncidentList());
+        when(incidentRepository.findAll()).thenReturn(getMockIncidentList());
+
+        HpsmCollector collector =collector(collectorAction);
+        collector.setId(new ObjectId(createGuid()));
+
+        task.setCollectorAction(collectorAction);
+        task.collect(collector);
+
+        verify(incidentRepository).findByIncidentID("IR01234");
+        assertNull(incidentRepository.findByIncidentID("IR02468"));
+
+    }
+
+    public ArrayList<Incident> getMockIncidentList(){
+        ObjectId collectorItemId = new ObjectId(createGuid());
+        ArrayList<Incident> mockList = new ArrayList<>();
+        Incident incident = new Incident();
+
+        incident.setId(new ObjectId(createGuid()));
+        incident.setIncidentID("IR01234");
+        incident.setCollectorItemId(collectorItemId);
+        incident.setPrimaryAssignmentGroup("HYGIEIA");
+        mockList.add(incident);
+
+        incident = new Incident();
+        incident.setId(new ObjectId(createGuid()));
+        incident.setIncidentID("IR01235");
+        incident.setCollectorItemId(collectorItemId);
+        incident.setPrimaryAssignmentGroup("JENKINS");
+        mockList.add(incident);
+
+        incident = new Incident();
+        incident.setId(new ObjectId(createGuid()));
+        incident.setIncidentID("IR01236");
+        incident.setCollectorItemId(collectorItemId);
+        incident.setPrimaryAssignmentGroup("ARTIFACTORY");
+        mockList.add(incident);
+
+        incident = new Incident();
+        incident.setId(new ObjectId(createGuid()));
+        incident.setIncidentID("IR01237");
+        incident.setCollectorItemId(collectorItemId);
+        incident.setPrimaryAssignmentGroup("GITHUB");
+        mockList.add(incident);
+
+        return mockList;
+    }
+
+
     private HpsmCollector collector() {
         return HpsmCollector.prototype();
     }
+
+    private HpsmCollector collector(String collectorAction) {
+        return HpsmCollector.prototype(collectorAction);
+    }
+
+    public static String createGuid() {
+        byte[]  bytes = new byte[12];
+        new Random().nextBytes(bytes);
+
+        char[] hexArray = "0123456789abcdef".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
 }

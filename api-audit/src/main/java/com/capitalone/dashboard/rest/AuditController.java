@@ -52,54 +52,50 @@ public class AuditController {
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditController.class);
+	/**
+	 * Dashboard review
+	 *     - Check which widgets are configured
+	 *     - Check whether repo and build point to same repository
+	 * @param request
+	 * @return
+	 * @throws HygieiaException
+	 */
+	@RequestMapping(value = "/dashboardReview", method = GET, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<DashboardReviewResponse> dashboardReview(@Valid DashboardReviewRequest request) throws HygieiaException {
+		DashboardReviewResponse dashboardReviewResponse = auditService.getDashboardReviewResponse(request.getTitle(), request.getType(),
+				request.getBusServ(), request.getBusApp(),
+				request.getBeginDate(), request.getEndDate());
 
+		return ResponseEntity.ok().body(dashboardReviewResponse);
+	}
 
+	/**
+	 * Peer Review
+	 *     - Check commit author v/s who merged the pr
+	 *     - peer review of a pull request
+	 *     - check whether there are direct commits to base
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/peerReview", method = GET, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<Iterable<PeerReviewResponse>> peerReview(@Valid PeerReviewRequest request)  {
+		GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(request.getRepo());
+		String repoUrl = gitHubParsed.getUrl();
 
+		LOGGER.warn("********************* repo " + repoUrl + " branch " + request.getBranch()
+				+ " " + request.getBeginDate() + " " + request.getEndDate());
+		boolean isGitConfigured = auditService.isGitRepoConfigured(repoUrl,request.getBranch());
+		if(!isGitConfigured){
+			PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
+			peerReviewResponse.addAuditStatus(AuditStatus.REPO_NOT_CONFIGURED);
+			return  ResponseEntity.ok().body(Stream.of(peerReviewResponse).collect(Collectors.toList()));
+		}
 
-    /**
-     * Dashboard review
-     *     - Check which widgets are configured
-     *     - Check whether repo and build point to same repository
-     * @param request
-     * @return
-     * @throws HygieiaException
-     */
-    @RequestMapping(value = "/dashboardReview", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<DashboardReviewResponse> dashboardReview(@Valid DashboardReviewRequest request) throws HygieiaException {
-        DashboardReviewResponse dashboardReviewResponse = auditService.getDashboardReviewResponse(request.getTitle(), request.getType(),
-                request.getBusServ(), request.getBusApp(),
-                request.getBeginDate(), request.getEndDate());
-
-        return ResponseEntity.ok().body(dashboardReviewResponse);
-    }
-
-    /**
-     * Peer Review
-     *     - Check commit author v/s who merged the pr
-     *     - peer review of a pull request
-     *     - check whether there are direct commits to base
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "/peerReview", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Iterable<PeerReviewResponse>> peerReview(@Valid PeerReviewRequest request)  {
-        GitHubParsedUrl gitHubParsed = new GitHubParsedUrl(request.getRepo());
-        String repoUrl = gitHubParsed.getUrl();
-
-        LOGGER.warn("********************* repo " + repoUrl + " branch " + request.getBranch()
-                + " " + request.getBeginDate() + " " + request.getEndDate());
-        boolean isGitConfigured = auditService.isGitRepoConfigured(repoUrl,request.getBranch());
-        if(!isGitConfigured){
-            PeerReviewResponse peerReviewResponse = new PeerReviewResponse();
-            peerReviewResponse.addAuditStatus(AuditStatus.REPO_NOT_CONFIGURED);
-            return  ResponseEntity.ok().body(Stream.of(peerReviewResponse).collect(Collectors.toList()));
-        }
-
-        List<GitRequest> pullRequests = auditService.getPullRequests(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
-        List<Commit> commits = auditService.getCommits(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
-        List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits,request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
-        return ResponseEntity.ok().body(allPeerReviews);
-    }
+		List<GitRequest> pullRequests = auditService.getPullRequests(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
+		List<Commit> commits = auditService.getCommits(repoUrl, request.getBranch(), request.getBeginDate(), request.getEndDate());
+		List<PeerReviewResponse> allPeerReviews = auditService.getPeerReviewResponses(pullRequests, commits,request.getRepo(), request.getBranch(), request.getBeginDate(), request.getEndDate());
+		return ResponseEntity.ok().body(allPeerReviews);
+	}
 
 //    @RequestMapping(value = "/allPeerReviews", method = GET, produces = APPLICATION_JSON_VALUE)
 //    public ResponseEntity<Iterable<Iterable<PeerReviewResponse>>> allPeerReviews(@Valid PeerReviewRequest request)  {
@@ -121,23 +117,23 @@ public class AuditController {
 //        return ResponseEntity.ok().body(allRepoPeerReviews);
 //    }
 
-    /**
-     * Build Job Review
-     *     - Is job running on a Prod server
-     *     - Is job inside a prod folder
-     *     - Get config history
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "/buildJobReview", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<JobReviewResponse> buildJobReview(@Valid JobReviewRequest request) {
-        JobReviewResponse jobReviewResponse = auditService.getBuildJobReviewResponse(request.getJobUrl(), request.getJobName(), request.getBeginDate(), request.getEndDate());
-        return ResponseEntity.ok().body(jobReviewResponse);
-    }
-    
+	/**
+	 * Build Job Review
+	 *     - Is job running on a Prod server
+	 *     - Is job inside a prod folder
+	 *     - Get config history
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/buildJobReview", method = GET, produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<JobReviewResponse> buildJobReview(@Valid JobReviewRequest request) {
+		JobReviewResponse jobReviewResponse = auditService.getBuildJobReviewResponse(request.getJobUrl(), request.getJobName(), request.getBeginDate(), request.getEndDate());
+		return ResponseEntity.ok().body(jobReviewResponse);
+	}
+
 	/**
 	 * Code Quality Analysis - Has artifact met code quality gate threshold
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 * @throws IOException
@@ -148,15 +144,15 @@ public class AuditController {
 			throws HygieiaException, IOException {
 
 		List<StaticAnalysisResponse> staticAnalysisResponse;
-		staticAnalysisResponse = auditService.getCodeQualityAudit(request.getArtifactGroup(), request.getArtifactName(), request.getArtifactVersion());
+		staticAnalysisResponse = auditService.getCodeQualityAudit(request.getProjectName(), request.getArtifactVersion());
 		return ResponseEntity.ok().body(staticAnalysisResponse);
 	}
 
-	
+
 	/**
 	 * Code Quality Profile Validation for a business application - Has the code
 	 * quality profile been changed by a user other than the commit author
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 */
@@ -168,7 +164,7 @@ public class AuditController {
 		CodeQualityProfileValidationResponse codeQualityGateValidationResponse = null;
 
 		codeQualityGateValidationResponse = auditService.getQualityGateValidationDetails(request.getRepo(),request.getBranch(),
-				request.getArtifactGroup(), request.getArtifactName(), request.getArtifactVersion(),
+				request.getProjectName(), request.getArtifactVersion(),
 				request.getBeginDate(), request.getEndDate());
 		return ResponseEntity.ok().body(codeQualityGateValidationResponse);
 	}
@@ -176,7 +172,7 @@ public class AuditController {
 	/**
 	 * Test Result Validation for a business application - Has the code quality
 	 * profile been changed by a user other than the commit author
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 */
