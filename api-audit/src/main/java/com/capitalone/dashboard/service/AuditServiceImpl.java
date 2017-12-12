@@ -1013,7 +1013,6 @@ public class AuditServiceImpl implements AuditService {
 
     public PerfReviewResponse getresultsBycomponetAndTime(String businessComp, long from, long to) {
         Cmdb cmdb = cmdbRepository.findByConfigurationItemIgnoreCase(businessComp); // get CMDB iD
-            if(cmdb !=null) {
                 Iterable<Dashboard> dashboard = dashboardRepository.findAllByConfigurationItemBusAppObjectId(cmdb.getId()); //get dashboard based on CMDB ID
                 Iterator<Dashboard> dashboardIT = dashboard.iterator();  //Iterate through the dashboards to obtain the collectorIteamID
                 PerfReviewResponse perfReviewResponse = new PerfReviewResponse();
@@ -1093,8 +1092,7 @@ public class AuditServiceImpl implements AuditService {
                 }
                 return perfReviewResponse;
             }
-            return null;
-        }
+
 }
 
 
