@@ -297,17 +297,17 @@ public class AuditServiceImpl implements AuditService {
 
         if (pullRequests != null && jobConfigHists != null) {
             HashSet<String> prAuthorsSet = new HashSet();
-            for(GitRequest pr : pullRequests) {
+            for (GitRequest pr : pullRequests) {
                 prAuthorsSet.add(pr.getUserId());
             }
 
             HashSet<String> configAuthorsSet = new HashSet();
-            for(CollItemCfgHist cfgHist : jobConfigHists) {
+            for (CollItemCfgHist cfgHist : jobConfigHists) {
                 configAuthorsSet.add(cfgHist.getUserID());
             }
 
             Iterator<String> prAuthorsSetIter = prAuthorsSet.iterator();
-            while(prAuthorsSetIter.hasNext()) {
+            while (prAuthorsSetIter.hasNext()) {
                 String prAuthor = prAuthorsSetIter.next();
                 if (configAuthorsSet.contains(prAuthor)) {
                     dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_PR_AUTHOR_EQ_BUILD_AUTHOR);
@@ -318,7 +318,7 @@ public class AuditServiceImpl implements AuditService {
             dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_REPO_PR_AUTHOR_NE_BUILD_AUTHOR);
         }
 
-		List<CollectorItem> testItems = this.getCollectorItems(dashboard, "test", CollectorType.Test);
+        List<CollectorItem> testItems = this.getCollectorItems(dashboard, "test", CollectorType.Test);
 
 		if (testItems != null && !testItems.isEmpty()) {
 			dashboardReviewResponse.addAuditStatus(AuditStatus.DASHBOARD_TEST_CONFIGURED);
