@@ -101,7 +101,7 @@
         function conditionallyAddTab(response){
             if(ctrl.scoreBoardMetrics) {
                 if(ctrl.scoreBoardMetrics.length > 0) {
-                    ctrl.tabs.push({name: "Gamification"});
+                    ctrl.tabs.push({name: "Score"});
                 }
             }
         }
@@ -109,7 +109,7 @@
         // method to toggle tabs
         function toggleView(index) {
             ctrl.widgetView = typeof ctrl.tabs[index] === 'undefined' ? ctrl.tabs[0].name : ctrl.tabs[index].name;
-            if (ctrl.tabs[index].name == "Gamification") {
+            if (ctrl.tabs[index].name == "Score") {
                 ctrl.populateScoreboardData();
             }
         }

@@ -208,7 +208,7 @@
         </div>
     </div>
 
-    <div id="gamification-view" ng-if="ctrl.widgetView == 'Gamification'">
+    <div id="gamification-view" ng-if="ctrl.widgetView == 'Score'">
         <div class="gamification-leaderboard">
             <chartist class="ct-chart"
                       chartist-chart-type="Bar"
@@ -224,7 +224,7 @@
                 <th class="last-header">Total</th>
             </tr>
             <tr ng-repeat="teamScoreRecord in ctrl.scoreBoardData">
-                <td class="team-name">{{ teamScoreRecord.name }}</td>
+                <td>{{ teamScoreRecord.name }}</td>
                 <td ng-repeat="metricData in teamScoreRecord.data" class="clickable" ng-click="ctrl.viewScoreDetails(teamScoreRecord, metricData.metricName)">{{ metricData.score == -1 ? 0 : metricData.score }}</td>
                 <td>{{ teamScoreRecord.totalScore }}</td>
             </tr>

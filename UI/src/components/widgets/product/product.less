@@ -402,6 +402,12 @@
         }
     }
 
+    .ct-label{
+        .gamification-text;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+
     #gamification-view {
     .gamification-leaderboard {
       margin-top: 70px;
@@ -416,6 +422,7 @@
              margin-bottom: 3px;
              cursor: pointer;
              display: inline-block;
+            .gamification-text;
          }
 
         li:before {
@@ -464,46 +471,66 @@
               .generate-ct-series-colors(@n, (@i + 1));
           }
         }
-        .gamification-table {
-            margin-top: 100px;
-            width: 60%;
-            margin-left: 200px;
-            margin-right: auto;
+    }
+}
 
-            @dash-chart-alt-color:    contrast('blue');
+.gamification-text{
+    Font-size: 1.4rem;
+    Font-weight: 400;
+    Color: #fff;
+    Text-shadow: 0 1px 4px rgba(0,0,0,.5);
+    Font-family: "Open Sans", sans-serif;
+}
 
-            td {
-                .text-standard;
-                vertical-align: top;
-                text-align: left;
-                padding: 1rem 1rem;
-                margin-right: 1rem;
+.gamification-table {
+    margin-top: 100px;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+
+    td {
+        vertical-align: top;
+        text-align: left;
+        padding: 1rem 1rem;
+        margin-right: 1rem;
+        .gamification-text;
+    }
+
+    .first-header{
+        vertical-align: bottom;
+        padding: 1rem 1rem;
+        text-align: left;
+        .gamification-text;
+    }
+
+    .last-header{
+        vertical-align: bottom;
+        padding: 1rem 1rem;
+        text-align: left;
+        .gamification-text;
+    }
+
+    .header{
+        padding: 1rem 1rem;
+        vertical-align: bottom;
+        text-align: left;
+        .gamification-text;
+
+        .generate-table-header-style(length(@ct-legend-colors));
+
+        .generate-table-header-style(@n, @index: 0) when (@index =< @n) {
+            &:nth-child(@{index}) {
+                color: extract(@ct-legend-colors, @index - 1);
             }
+            .generate-table-header-style(@n, (@index + 1));
+        }
+    }
 
-            .header{
-              padding: 1rem 1rem;
-              vertical-align: bottom;
-              text-align: left;
+    tr {
+        .gamification-text;
 
-              .generate-table-header-style(length(@ct-legend-colors));
-
-              .generate-table-header-style(@n, @index: 0) when (@index =< @n) {
-                &:nth-child(@{index}) {
-                  color: extract(@ct-legend-colors, @index - 1);
-                }
-                .generate-table-header-style(@n, (@index + 1));
-              }
-            }
-
-            tr {
-                .text-lg;
-                vertical-align: center;
-                text-align: center;
-
-                &:nth-child(even) {
-                    background: @dash-widget-section-highlight;
-                }
-            }
+        &:nth-child(even) {
+            background: @dash-widget-section-highlight;
         }
     }
 }
