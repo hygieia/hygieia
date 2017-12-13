@@ -379,7 +379,7 @@
             var prevMax = null;
             var prevMin = null;
             if(gamificationScoringRanges.length == 0) {
-                $scope.createAlert("Atleast one range needs to be added to save.", "error");
+                $scope.createAlert("At least one range needs to be added to save.", "error");
                 return false;
             }
             var isValidationSuccessful = true;

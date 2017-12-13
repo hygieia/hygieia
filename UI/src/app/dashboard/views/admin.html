@@ -199,7 +199,7 @@
             <div ng-show="tab === 'gamification'">
                 <div class="widget-modal">
                     <div class="widget-modal-heading">
-                        Manage Gamification Metrics
+                        Manage Metric Scoring
                     </div>
                     <div class="widget-modal-body">
                         <div class="row">
@@ -228,32 +228,32 @@
                             </div>
                             <div class="col-xs-8 text-center">
                                 <div ng-show="selectedMetric" class="metric-title-bar">
-                                    <div class="pull-left text-center metric-title bold">
+                                    <div class="metric-title bold">
                                         {{selectedMetric.formattedName}}
-                                    </div>
-                                    <div class="pull-right buttons">
-                                        <button type="button" class="btn btn-primary btn-wide" ng-click="ctrl.addMetricRange()" ng-show="editMode[selectedMetric.metricName]">Add</button>
-                                        <button type="button" class="btn btn-primary btn-wide" ng-click="ctrl.saveMetricData()" ng-show="editMode[selectedMetric.metricName]">Save</button>
-                                        <button type="button" class="btn btn-primary btn-wide" ng-click="enterEditMode()" ng-hide="editMode[selectedMetric.metricName]">Edit</button>
+                                        <dash-save class="clickable pull-right" ng-click="ctrl.saveMetricData()" ng-show="editMode[selectedMetric.metricName]"></dash-save>
+                                        <dash-plus class="clickable pull-right" ng-click="ctrl.addMetricRange()" ng-show="editMode[selectedMetric.metricName]"></dash-plus>
+                                        <dash-edit class="clickable pull-right" ng-click="enterEditMode()" ng-hide="editMode[selectedMetric.metricName]"></dash-edit>
                                     </div>
                                 </div>
                                 <table ng-show="selectedMetric" class="table table-font">
                                     <thead>
-                                        <th class="table-header text-center" width="60%">Range</th>
+                                        <th class="table-header text-center" width="30%">Min</th>
+                                        <th class="table-header text-center" width="30%">Max</th>
                                         <th class="table-header text-center" width="20%">Score</th>
-                                        <th width="20%"></th>
+                                        <th class="table-header" width="20%"></th>
                                     </thead>
                                     <tr ng-repeat="range in selectedMetric.gamificationScoringRanges">
                                         <td class="range-edit text-center">
                                             <input type="string" ng-model="range.min" ng-disabled="!editMode[selectedMetric.metricName]"/>
-                                            <label>{{rangeLabel}}</label>
+                                        </td>
+                                        <td class="range-edit text-center">
                                             <input type="string" ng-model="range.max" ng-disabled="!editMode[selectedMetric.metricName]"/>
                                         </td>
                                         <td class="range-edit text-center">
                                             <input type="string" ng-model="range.score" ng-disabled="!editMode[selectedMetric.metricName]"/>
                                         </td>
                                         <td class="table-header">
-                                            <dash-trash class="clickable" ng-click="ctrl.deleteMetricRange(range)" ng-show="editMode[selectedMetric.metricName]"></dash-trash>
+                                            <dash-trash class="clickable pull-right" ng-click="ctrl.deleteMetricRange(range)" ng-show="editMode[selectedMetric.metricName]"></dash-trash>
                                         </td>
                                     </tr>
                                 </table>
