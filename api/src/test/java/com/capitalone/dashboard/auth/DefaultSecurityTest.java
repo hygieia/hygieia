@@ -78,16 +78,7 @@ import com.google.common.collect.Lists;
      public void appinfo() throws Exception {
          mockMvc.perform(get("/appinfo")).andExpect(status().isOk());
      }
-     
-     @Test
-     public void registerUser() throws Exception {
-     	when(authenticationTestRepository.save(isA(Authentication.class))).thenReturn(new Authentication("somebody", "somebody"));
-		 when(userInfoRepository.findByUsernameAndAuthType(isA(String.class),isA(AuthType.class))).thenReturn(new UserInfo());
-         mockMvc.perform(post("/registerUser")
-         		.contentType(MediaType.APPLICATION_JSON_VALUE).content("{\"username\":\"somebody\",\"password\":\"somebody\"}")
-         		).andExpect(status().isOk());
-     }
-     
+
      @Test
      public void viewDashboards() throws Exception {
          mockMvc.perform(get("/dashboard")).andExpect(status().isOk());
