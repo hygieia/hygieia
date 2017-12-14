@@ -17,6 +17,7 @@ import com.capitalone.dashboard.auth.token.TokenAuthenticationService;
 import com.capitalone.dashboard.config.TestAuthConfig;
 import com.capitalone.dashboard.config.TestConfig;
 import com.capitalone.dashboard.misc.HygieiaException;
+import com.capitalone.dashboard.service.AuthenticationService;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -72,6 +73,8 @@ public class DefaultAuthenticationTest {
     @Autowired
     private UserInfoRepository userInfoRepository;
 
+    @Autowired
+    private AuthenticationService authenticationTestService;
 
     private MockMvc mockMvc;
 
@@ -88,11 +91,12 @@ public class DefaultAuthenticationTest {
 
 
         try {
+            when(authenticationTestService.create("somebody","somebody")).thenReturn(AuthenticationFixture.getAuthentication("somebody"));
             when(authenticationTestRepository.save(isA(Authentication.class))).thenReturn(new Authentication("somebody", "somebody"));
             when(userInfoRepository.findByUsernameAndAuthType(isA(String.class), isA(AuthType.class))).thenReturn(new UserInfo());
             mockMvc.perform(post("/registerUser")
                     .contentType(MediaType.APPLICATION_JSON_VALUE).content("{\"username\":\"somebody\",\"password\":\"somebody\"}")
-            ).andExpect(status().isOk()) .andExpect(status().reason("Bad credentials")).andDo(MockMvcResultHandlers.print());
+            ).andExpect(status().isOk());
         }catch (Exception e){
             Assert.fail(e.getMessage());
         }
