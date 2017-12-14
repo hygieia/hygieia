@@ -56,7 +56,6 @@ import javax.servlet.http.HttpServletResponse;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {TestAuthConfig.class, WebMVCConfig.class, WebSecurityConfig.class})
 @WebAppConfiguration
-@TestPropertySource(locations = "classpath:test.properties")
 @Rollback(true)
 public class DefaultAuthenticationTest {
 
@@ -71,9 +70,6 @@ public class DefaultAuthenticationTest {
     private UserInfoRepository userInfoRepository;
 
 
-    @Autowired
-    private TokenAuthenticationServiceImpl tokenAuthenticationTestServiceImpl;
-
     private MockMvc mockMvc;
 
     @Before
@@ -82,15 +78,13 @@ public class DefaultAuthenticationTest {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
-        tokenAuthenticationTestServiceImpl = Mockito.mock(TokenAuthenticationServiceImpl.class);
     }
 
     @Test
     public void registerUser() throws Exception {
         when(authenticationTestRepository.save(isA(Authentication.class))).thenReturn(new Authentication("somebody", "somebody"));
         when(userInfoRepository.findByUsernameAndAuthType(isA(String.class), isA(AuthType.class))).thenReturn(new UserInfo());
-        doNothing().when(tokenAuthenticationTestServiceImpl).addAuthentication(isA(HttpServletResponse.class), isA(org.springframework.security.core.Authentication.class));
-        mockMvc.perform(post("/registerUser")
+       mockMvc.perform(post("/registerUser")
                 .contentType(MediaType.APPLICATION_JSON_VALUE).content("{\"username\":\"somebody\",\"password\":\"somebody\"}")
         ).andExpect(status().isOk());
 
